@@ -90,6 +90,40 @@ $log->check_in = $request->timestamp;
 $log->check_in = now(); // Carbon avec timezone de l'entreprise
 ```
 
+### 3-bis. Check-out = UPDATE, JAMAIS un INSERT (règle critique)
+
+La table `attendance_logs` a une contrainte UNIQUE sur `(employee_id, date)`.
+Il n'y a **qu'une seule ligne par employé par jour**. Le check-in crée la ligne,
+le check-out la met à jour. Si tu fais un INSERT pour le check-out, tu auras une
+violation de contrainte UNIQUE.
+
+```php
+// ❌ INTERDIT — crée une 2ème ligne → viole UNIQUE(employee_id, date)
+AttendanceLog::create([
+    'employee_id' => $employee->id,
+    'date'        => today(),
+    'check_out'   => now(),
+]);
+
+// ✅ CORRECT — récupère la ligne du jour et la met à jour
+$log = AttendanceLog::where('employee_id', $employee->id)
+    ->where('date', today()->toDateString())
+    ->whereNotNull('check_in')
+    ->whereNull('check_out')
+    ->firstOrFail(); // 404 si pas de check-in → erreur MISSING_CHECK_IN
+
+$log->update([
+    'check_out'      => now(),
+    'hours_worked'   => $this->attendanceService->calculateHoursWorked($log, $schedule),
+    'overtime_hours' => $this->attendanceService->calculateOvertime($log, $schedule),
+    'status'         => $this->attendanceService->resolveStatus($log),
+]);
+```
+
+**Règle d'or :** `AttendanceService` doit exposer une méthode `getTodayLog(Employee $employee)`
+qui retourne le log du jour ou `null`. Le Controller s'appuie sur elle pour décider
+si c'est un check-in (INSERT) ou un check-out (UPDATE).
+
 ### 4. FormRequest pour toute validation
 Jamais de validation dans le Controller. Toujours un FormRequest dédié.
 

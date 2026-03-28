@@ -408,6 +408,12 @@ Pagination    : ?page=1&per_page=15
 
 ### GET /attendance
 **Params :** `?employee_id=42&from=2026-04-01&to=2026-04-30`
+
+> ⚠️ **Convention dates — valable sur TOUS les endpoints :**
+> Toutes les valeurs timestamp sont en **ISO 8601 UTC complet** (`2026-04-15T07:58:00Z`).
+> Le formatage pour l'affichage (HH:mm, dd/MM/yyyy, etc.) se fait **uniquement côté Flutter**
+> avec `DateFormat('HH:mm').format(dateTime)` — jamais côté API.
+
 **Response 200 :**
 ```json
 {
@@ -415,8 +421,8 @@ Pagination    : ?page=1&per_page=15
     {
       "id": 1547,
       "date": "2026-04-15",
-      "check_in": "07:58",
-      "check_out": "17:02",
+      "check_in": "2026-04-15T07:58:00Z",
+      "check_out": "2026-04-15T17:02:00Z",
       "hours_worked": 8.07,
       "overtime_hours": 0.07,
       "status": "ontime",
@@ -426,8 +432,8 @@ Pagination    : ?page=1&per_page=15
     {
       "id": 1546,
       "date": "2026-04-14",
-      "check_in": "08:22",
-      "check_out": "17:00",
+      "check_in": "2026-04-14T08:22:00Z",
+      "check_out": "2026-04-14T17:00:00Z",
       "hours_worked": 7.63,
       "overtime_hours": 0,
       "status": "late",
@@ -595,6 +601,15 @@ Pagination    : ?page=1&per_page=15
 }
 ```
 
+> ⚠️ **Workflow de clôture automatique des avances — règle pour PayrollService :**
+> À chaque calcul de paie mensuel, pour chaque avance `status=approved` de l'employé :
+> 1. Vérifier si le mois courant figure dans `repayment_plan` et `paid = false`
+> 2. Déduire la mensualité du `net_salary` → renseigner `advance_deduction` dans `payrolls`
+> 3. Marquer la mensualité `paid = true` dans le JSON `repayment_plan`
+> 4. Mettre à jour `amount_remaining -= mensualité`
+> 5. Si `amount_remaining <= 0` → passer `status = 'repaid'` dans la même transaction
+> Tout se passe dans `DB::transaction()` pour garantir la cohérence.
+
 ---
 
 ## 7. TÂCHES
@@ -696,6 +711,8 @@ Pagination    : ?page=1&per_page=15
 {
   "data": {
     "period": "Avril 2026",
+    "validation_token": "pay-sim-7c9e6679-7425-40de-944b-e07fc1f90ae7",
+    "token_expires_at": "2026-04-30T23:59:59Z",
     "employees_count": 47,
     "total_gross": 3245000,
     "total_net": 2687500,
@@ -720,7 +737,7 @@ Pagination    : ?page=1&per_page=15
         "advance_deduction": 5000,
         "absence_deduction": 0,
         "net": 56700,
-        "vs_last_month": +3500
+        "vs_last_month": 3500
       }
     ]
   },
@@ -728,16 +745,20 @@ Pagination    : ?page=1&per_page=15
 }
 ```
 
+> ⚠️ **Note sur `validation_token` :**
+> Le token est un UUID généré côté serveur, stocké en cache Redis avec TTL = fin de journée.
+> Il est **obligatoire** pour appeler `/payroll/validate` — remplace la string fragile
+> "VALIDER_PAIE_AVRIL_2026" qui posait des problèmes de localisation (langue/encodage).
+> Si le gestionnaire recalcule, un nouveau token est généré et l'ancien est invalidé.
+
 ---
 
 ### POST /payroll/validate
 **Request :**
 ```json
 {
-  "period_month": 4,
-  "period_year": 2026,
-  "send_email_to_employees": true,
-  "confirmation": "VALIDER_PAIE_AVRIL_2026"
+  "validation_token": "pay-sim-7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "send_email_to_employees": true
 }
 ```
 **Response 202 (async) :**

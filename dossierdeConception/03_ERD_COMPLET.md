@@ -435,21 +435,77 @@ payroll_export_batches
 ├── employees_count INT         NN
 ├── exported_by     INT         FK » employees.id NN
 └── created_at      TIMESTAMP
+
+INDEX : (period_month, period_year)
+```
+
+### payroll_export_items *(table pivot batch ↔ payrolls)*
+```
+payroll_export_items
+├── id          INT     PK AUTO
+├── batch_id    INT     FK » payroll_export_batches.id NN
+├── payroll_id  BIGINT  FK » payrolls.id NN
+└── amount      DECIMAL(12,2) NN  (net_salary au moment de l'export — snapshot)
+
+UNIQUE : (batch_id, payroll_id)
+```
+
+### employee_devices *(tokens FCM push notifications)*
+```
+employee_devices
+├── id          INT         PK AUTO
+├── employee_id INT         FK » employees.id NN
+├── fcm_token   TEXT        NN  (token Firebase Cloud Messaging)
+├── platform    VARCHAR(10)  NN  [android|ios]
+├── device_name VARCHAR(150) NULL  ex: "iPhone 15 de Ahmed"
+├── last_seen   TIMESTAMP   NN
+└── created_at  TIMESTAMP
+
+UNIQUE : (fcm_token)
+INDEX  : (employee_id)
+⚠️  À chaque connexion Flutter, upsert sur fcm_token.
+    Si le token a changé (app réinstallée) → mettre à jour last_seen et fcm_token.
+    Tokens non vus depuis 90 jours → purger automatiquement.
 ```
 
 ### company_settings
 ```
 company_settings
 ├── key         VARCHAR(100) PK  ex: "payroll.cotisations", "attendance.gps_enabled"
-├── value       TEXT        NN
+├── value       TEXT        NN   (toujours stocké en TEXT — voir value_type pour parser)
+├── value_type  VARCHAR(10)  NN DEF 'string'  [string|integer|boolean|json|decimal]
+│   ⚠️  Utiliser value_type pour savoir comment interpréter value :
+│      boolean → value IN ('true','false') → cast PHP
+│      integer → intval($setting->value)
+│      decimal → floatval($setting->value)
+│      json    → json_decode($setting->value, true)
+│      string  → $setting->value direct
 └── updated_at  TIMESTAMP
+
+Exemples de clés standards :
+  attendance.gps_enabled          → boolean  → 'false'
+  attendance.gps_radius_m         → integer  → '100'
+  attendance.photo_enabled         → boolean  → 'false'
+  attendance.qr_code_token         → string   → 'LEOPARDO-QR-abc123'
+  advance.enabled                  → boolean  → 'false'
+  advance.max_percentage           → integer  → '50'
+  payroll.cotisations              → json     → '[{"name":"CNAS",...}]'
+  payroll.ir_brackets              → json     → '[{"min":0,...}]'
+  payroll.bank_export_format       → string   → 'DZ_GENERIC'
+  leave.accrual_rate_monthly       → decimal  → '2.5'
+  leave.carry_over                 → boolean  → 'true'
 ```
 
 ### audit_logs
 ```
 audit_logs
 ├── id          BIGINT      PK AUTO
-├── user_id     INT         FK » employees.id NULL  (NULL si Super Admin)
+├── actor_type  VARCHAR(20)  NN DEF 'employee'  [employee|super_admin|system]
+│   ⚠️  PAS de FK — le Super Admin vit dans le schéma public, pas dans le schéma tenant.
+│      Une FK vers employees.id serait invalide pour les actions du Super Admin.
+│      actor_type + actor_id permettent de retrouver l'auteur sans cross-schema FK.
+├── actor_id    INT         NULL  (employees.id si employee, super_admins.id si super_admin, NULL si system)
+├── actor_name  VARCHAR(200) NULL  (dénormalisé : "Ahmed Benali" ou "Super Admin" — pour l'affichage sans JOIN)
 ├── action      VARCHAR(100) NN  ex: "employee.updated", "payroll.validated"
 ├── table_name  VARCHAR(100) NN
 ├── record_id   VARCHAR(50)  NULL
@@ -459,7 +515,7 @@ audit_logs
 ├── user_agent  TEXT        NULL
 └── created_at  TIMESTAMP
 
-INDEX : (user_id, created_at DESC), (table_name, record_id), (created_at)
+INDEX : (actor_type, actor_id, created_at DESC), (table_name, record_id), (created_at)
 Rétention : 24 mois — purge automatique via commande cron
 ```
 

@@ -237,13 +237,15 @@ Language::insert([
     'name' => 'Code du travail français',
     'cotisations' => json_encode([
         'salariales' => [
-            ['name' => 'Sécurité sociale maladie', 'rate' => 0.75, 'base' => 'gross', 'ceiling' => null],
-            ['name' => 'Vieillesse (plafonné)', 'rate' => 6.90, 'base' => 'gross', 'ceiling' => 3666],
-            ['name' => 'Vieillesse (déplafonné)', 'rate' => 0.40, 'base' => 'gross', 'ceiling' => null],
-            ['name' => 'Chômage (Pôle emploi)', 'rate' => 0.0, 'base' => 'gross', 'ceiling' => null],
-            ['name' => 'Complémentaire retraite T1', 'rate' => 3.15, 'base' => 'gross', 'ceiling' => 3666],
-            ['name' => 'CSG déductible', 'rate' => 6.80, 'base' => 'gross_x_0.9825', 'ceiling' => null],
-            ['name' => 'CSG non déductible + CRDS', 'rate' => 2.90, 'base' => 'gross_x_0.9825', 'ceiling' => null],
+            ['name' => 'Sécurité sociale maladie', 'rate' => 0.75, 'base' => 'gross', 'ceiling' => null, 'multiplier' => 1.0],
+            ['name' => 'Vieillesse (plafonné)', 'rate' => 6.90, 'base' => 'gross', 'ceiling' => 3666, 'multiplier' => 1.0],
+            ['name' => 'Vieillesse (déplafonné)', 'rate' => 0.40, 'base' => 'gross', 'ceiling' => null, 'multiplier' => 1.0],
+            ['name' => 'Chômage (Pôle emploi)', 'rate' => 0.0, 'base' => 'gross', 'ceiling' => null, 'multiplier' => 1.0],
+            ['name' => 'Complémentaire retraite T1', 'rate' => 3.15, 'base' => 'gross', 'ceiling' => 3666, 'multiplier' => 1.0],
+            // ⚠️ CSG/CRDS : base = gross × 0.9825 (abattement 1.75% frais professionnels)
+            // multiplier indique le coefficient à appliquer sur gross avant le calcul du taux
+            ['name' => 'CSG déductible', 'rate' => 6.80, 'base' => 'gross', 'ceiling' => null, 'multiplier' => 0.9825],
+            ['name' => 'CSG non déductible + CRDS', 'rate' => 2.90, 'base' => 'gross', 'ceiling' => null, 'multiplier' => 0.9825],
         ],
         'patronales' => [
             ['name' => 'Sécurité sociale maladie', 'rate' => 7.0, 'base' => 'gross', 'ceiling' => null],
