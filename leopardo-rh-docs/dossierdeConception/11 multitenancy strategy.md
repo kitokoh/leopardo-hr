@@ -1,15 +1,50 @@
 # STRATÉGIE MULTI-TENANT — LEOPARDO RH
-# Version 1.0 | Mars 2026
-# Remplace : multitenancy_strategy.md (supprimé — contenait une architecture erronée)
+# Version 2.0 | Mars 2026
 
 ---
 
-## STRATÉGIE RETENUE : MULTI-SCHÉMA POSTGRESQL
+## STRATÉGIE HYBRIDE : MULTI-SCHÉMA vs SHARED-TABLE
 
-**⚠️ DÉCISION FIGÉE — NE PAS MODIFIER**
+Afin d'optimiser les ressources pour les petits clients tout en garantissant une isolation totale pour les grands comptes, Leopardo RH utilise une approche hybride pilotée par le champ `companies.tenancy_type`.
 
-La stratégie est **Multi-schéma PostgreSQL**, PAS "Single Database + tenant_id".
-Ces deux approches sont mutuellement exclusives. Le choix est définitif.
+### 1. Mode "schema" (Par défaut pour Enterprise)
+- Chaque entreprise a son propre schéma PostgreSQL (`company_{uuid}`).
+- Isolation physique totale au niveau de la base de données.
+- Idéal pour la sécurité, les sauvegardes indépendantes et les performances.
+
+### 2. Mode "shared" (Par défaut pour Starter/Trial)
+- Les données de plusieurs petites entreprises sont regroupées dans un schéma partagé (ex: `shared_tenants`).
+- L'isolation est logique via une colonne `company_id` présente dans toutes les tables.
+- Réduit la consommation de ressources (moins de tables et d'index à gérer par PostgreSQL).
+
+---
+
+## DÉCISION DYNAMIQUE DU TENANT_ID
+
+Le `TenantMiddleware` détecte le mode via le `user_lookups` et ajuste la connexion :
+
+```php
+// app/Http/Middleware/TenantMiddleware.php
+public function handle(Request $request, Closure $next)
+{
+    $lookup = DB::table('user_lookups')->where('email', $request->user()->email)->first();
+    $company = Company::find($lookup->company_id);
+
+    if ($company->tenancy_type === 'schema') {
+        // Mode Isolation Physique
+        DB::statement("SET search_path TO {$company->schema_name}, public");
+    } else {
+        // Mode Isolation Logique (Shared)
+        DB::statement("SET search_path TO shared_tenants, public");
+        // Injecter un Global Scope Laravel pour filtrer par company_id
+        Employee::addGlobalScope('tenant', function (Builder $builder) use ($company) {
+            $builder->where('company_id', $company->id);
+        });
+    }
+
+    return $next($request);
+}
+```
 
 ---
 
