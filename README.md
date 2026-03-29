@@ -6,55 +6,31 @@ et realisation des taches
 
 # LEOPARDO RH — DOSSIER PROJET COMPLET
 ## Architecture du dossier & Guide de démarrage
-**Version 2.0 | Mars 2026 | Statut : PRÊT POUR EXÉCUTION**
+**Version 3.0 | Mars 2026 | Statut : MONOREPO PRÊT POUR EXÉCUTION**
 
 ---
 
-## STRUCTURE DU PROJET
+## STRUCTURE DU PROJET (MONOREPO)
 
 ```
 leopardo-rh/
 │
-├── README.md                          ← CE FICHIER — lire en premier
+├── api/                               ← BACKEND Laravel 11 + WEB Vue.js
+├── mobile/                            ← MOBILE Flutter
 │
-├── dossier_de_conception/             ← Référence technique figée
-│   ├── 01_PROMPT_MASTER_CLAUDE_CODE.md
-│   ├── 02_API_CONTRATS.md
-│   ├── 03_ERD_COMPLET.md
-│   ├── 04_SPRINT_0_CHECKLIST.md
-│   ├── 05_SEEDERS_ET_DONNEES_INITIALES.md
-│   ├── 06_PROMPT_MASTER_JULES_FLUTTER.md
-│   ├── 07_SCHEMA_SQL_COMPLET.sql
-│   ├── 08_FEUILLE_DE_ROUTE.md
-│   ├── 09_REGLES_METIER_COMPLETES.md      ← NOUVEAU
-│   ├── 10_RBAC_COMPLET.md                 ← NOUVEAU (remplace rbac_matrrix.md)
-│   ├── 11_MULTITENANCY_STRATEGY.md        ← NOUVEAU (remplace multitenancy_strategy.md)
-│   ├── 12_SECURITY_SPEC_COMPLETE.md       ← NOUVEAU (remplace security_specification.md)
-│   ├── 13_USER_FLOWS_VALIDES.md           ← NOUVEAU (remplace users_flows_complet.md)
-│   ├── 14_NOTIFICATION_TEMPLATES.md       ← NOUVEAU
-│   └── 15_GUIDE_AJOUT_PAYS.md             ← NOUVEAU
+├── docs/                              ← DOCUMENTATION (ex-leopardo-rh-docs)
+│   ├── dossier_de_conception/
+│   │   ├── 01_PROMPT_MASTER_CLAUDE_CODE.md
+│   │   ├── 02_API_CONTRATS.md
+│   │   ├── 03_ERD_COMPLET.md
+│   │   ├── ...
+│   │   ├── 16_STRATEGIE_TESTS.md          ← NOUVEAU
+│   │   ├── 17_MOCK_DATA_MOBILE.md         ← NOUVEAU
+│   │   ├── 18_MARKETING_ET_VENTES.md      ← NOUVEAU
+│   │   └── 19_CICD_ET_GIT.md              ← NOUVEAU
+│   └── prompts_execution/
 │
-├── prompts_execution/                 ← Prompts prêts à coller dans Claude Code et Jules
-│   ├── LIRE_EN_PREMIER.md
-│   ├── backend/
-│   │   ├── P01_INIT_INFRASTRUCTURE.md
-│   │   ├── P02_AUTH_MULTITENANT.md
-│   │   ├── P03_MODULE_EMPLOYES.md
-│   │   ├── P04_MODULE_POINTAGE.md
-│   │   ├── P05_MODULE_ABSENCES.md
-│   │   ├── P06_MODULE_TACHES.md
-│   │   ├── P07_MODULE_PAIE.md
-│   │   ├── P08_MODULE_NOTIFICATIONS.md
-│   │   ├── P09_SUPER_ADMIN.md
-│   │   └── P10_DEPLOIEMENT_O2SWITCH.md
-│   └── mobile/
-│       ├── P01_INIT_FLUTTER.md
-│       ├── P02_ECRAN_POINTAGE.md
-│       ├── P03_ECRANS_EMPLOYE.md
-│       ├── P04_ECRANS_GESTIONNAIRE.md
-│       └── P05_BUILD_PUBLICATION.md
-│
-└── config/
+└── config/                            ← Fichiers i18n et .env partagés
     ├── .env.example                   ← NOUVEAU — toutes les variables d'env
     ├── lang_fr.php                    ← NOUVEAU — squelette Laravel i18n
     ├── lang_ar.php                    ← NOUVEAU — squelette Laravel i18n
@@ -82,17 +58,18 @@ leopardo-rh/
 | Serveur | Nginx + PHP-FPM (o2switch VPS) | Production |
 | Biométrique | ZKTeco SDK (Push + Pull) | Pointage par empreinte |
 
-### Architecture multi-tenant
+### Architecture multi-tenant (Hybride)
 ```
-STRATÉGIE : Multi-schéma PostgreSQL (PAS shared table avec tenant_id)
+STRATÉGIE : Hybride (Multi-schéma OU Shared Table selon le plan)
 ─────────────────────────────────────────────────────────────────────
 Schéma PUBLIC (partagé)
-  └── companies, plans, super_admins, invoices, languages, hr_model_templates
+  └── companies, user_lookups, plans, super_admins, invoices...
 
-Schéma company_{uuid} (1 par entreprise)
-  └── employees, attendance_logs, absences, payrolls, tasks... (20 tables)
+Mode ISOLATION (tenancy_type = 'schema')
+  └── Schéma company_{uuid} dédié (PostgreSQL search_path)
 
-Isolation garantie par PostgreSQL SET search_path — TenantMiddleware Laravel
+Mode PARTAGÉ (tenancy_type = 'shared')
+  └── Schéma shared_tenants (Filtrage Laravel via company_id)
 ```
 
 ### Flux d'une requête
