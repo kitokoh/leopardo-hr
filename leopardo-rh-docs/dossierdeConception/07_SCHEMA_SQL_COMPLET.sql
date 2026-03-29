@@ -52,6 +52,8 @@ CREATE TABLE IF NOT EXISTS companies (
     logo_path           VARCHAR(255)    NULL,
     plan_id             INT             NOT NULL REFERENCES plans(id),
     schema_name         VARCHAR(60)     NOT NULL UNIQUE, -- ex: "company_7c9e6679"
+    tenancy_type        VARCHAR(20)     NOT NULL DEFAULT 'schema'
+                            CHECK (tenancy_type IN ('schema','shared')),
     status              VARCHAR(20)     NOT NULL DEFAULT 'trial'
                             CHECK (status IN ('active','trial','suspended','expired')),
     subscription_start  DATE            NOT NULL,
@@ -145,6 +147,19 @@ CREATE TABLE IF NOT EXISTS hr_model_templates (
     holiday_calendar    JSONB           NOT NULL DEFAULT '[]'
 );
 
+-- ------------------------------------------------------------
+-- user_lookups (Table de correspondance pour le login multi-tenant)
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_lookups (
+    email           VARCHAR(150)    PRIMARY KEY,
+    company_id      UUID            NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    schema_name     VARCHAR(60)     NOT NULL,
+    user_id         INT             NOT NULL, -- ID de l'employé dans son schéma
+    role            VARCHAR(20)     NOT NULL
+);
+
+CREATE INDEX idx_user_lookups_company ON user_lookups(company_id);
+
 COMMENT ON COLUMN hr_model_templates.cotisations      IS 'Structure: {salariales:[{name,rate,base,ceiling,multiplier}], patronales:[...]}';
 COMMENT ON COLUMN hr_model_templates.ir_brackets      IS 'Structure: [{min,max,rate,deduction}]';
 COMMENT ON COLUMN hr_model_templates.leave_rules      IS 'Structure: {accrual_rate_monthly,initial_balance,carry_over,max_balance,min_notice_days}';
@@ -169,10 +184,13 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.departments (
         id          SERIAL          PRIMARY KEY,
+        company_id  UUID            NULL,       -- Utilisé uniquement en mode tenancy_type=''shared''
         name        VARCHAR(100)    NOT NULL,
         manager_id  INT             NULL,       -- FK ajoutée après employees
         created_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
     )', p_schema_name);
+
+    EXECUTE format('CREATE INDEX IF NOT EXISTS idx_dept_company ON %I.departments(company_id) WHERE company_id IS NOT NULL', p_schema_name);
 
     -- --------------------------------------------------------
     -- positions
@@ -180,6 +198,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.positions (
         id              SERIAL          PRIMARY KEY,
+        company_id      UUID            NULL,
         name            VARCHAR(100)    NOT NULL,
         department_id   INT             NOT NULL REFERENCES %I.departments(id) ON DELETE CASCADE,
         created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW()
@@ -191,6 +210,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.schedules (
         id                          SERIAL          PRIMARY KEY,
+        company_id                  UUID            NULL,
         name                        VARCHAR(100)    NOT NULL,
         start_time                  TIME            NOT NULL DEFAULT ''08:00:00'',
         end_time                    TIME            NOT NULL DEFAULT ''17:00:00'',
@@ -208,6 +228,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.sites (
         id              SERIAL          PRIMARY KEY,
+        company_id      UUID            NULL,
         name            VARCHAR(100)    NOT NULL,
         address         TEXT            NULL,
         gps_lat         DECIMAL(10,8)   NULL,
@@ -221,7 +242,9 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.employees (
         id                  SERIAL          PRIMARY KEY,
+        company_id          UUID            NULL,       -- Utilisé uniquement en mode tenancy_type=''shared''
         matricule           VARCHAR(20)     NOT NULL UNIQUE,
+        zkteco_id           VARCHAR(50)     NULL,       -- ID unique dans le lecteur biométrique
         first_name          VARCHAR(100)    NOT NULL,
         last_name           VARCHAR(100)    NOT NULL,
         email               VARCHAR(150)    NOT NULL UNIQUE,
@@ -284,6 +307,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.employee_devices (
         id          SERIAL          PRIMARY KEY,
+        company_id  UUID            NULL,
         employee_id INT             NOT NULL REFERENCES %I.employees(id) ON DELETE CASCADE,
         fcm_token   TEXT            NOT NULL UNIQUE,
         platform    VARCHAR(10)     NOT NULL CHECK (platform IN (''android'',''ios'')),
@@ -300,6 +324,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.devices (
         id              SERIAL          PRIMARY KEY,
+        company_id      UUID            NULL,
         name            VARCHAR(100)    NOT NULL,
         model           VARCHAR(100)    NOT NULL,
         serial_number   VARCHAR(100)    NULL UNIQUE,
@@ -320,6 +345,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.attendance_logs (
         id                  BIGSERIAL       PRIMARY KEY,
+        company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
         date                DATE            NOT NULL,
         check_in            TIMESTAMPTZ     NULL,   -- horodatage serveur UTC
@@ -337,8 +363,7 @@ BEGIN
         is_manual_edit      BOOLEAN         NOT NULL DEFAULT FALSE,
         edited_by           INT             NULL REFERENCES %I.employees(id),
         edit_reason         TEXT            NULL,
-        created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-        CONSTRAINT uq_attendance_day UNIQUE (employee_id, date)
+        created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
     )', p_schema_name, p_schema_name, p_schema_name);
 
     EXECUTE format('CREATE INDEX idx_att_date_status ON %I.attendance_logs(date, status)', p_schema_name);
@@ -350,6 +375,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.absence_types (
         id                      SERIAL          PRIMARY KEY,
+        company_id              UUID            NULL,
         label                   VARCHAR(100)    NOT NULL,
         is_paid                 BOOLEAN         NOT NULL DEFAULT TRUE,
         pay_rate                DECIMAL(5,2)    NULL,   -- % si paiement partiel
@@ -368,6 +394,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.absences (
         id                  SERIAL          PRIMARY KEY,
+        company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
         type_id             INT             NOT NULL REFERENCES %I.absence_types(id),
         start_date          DATE            NOT NULL,
@@ -392,6 +419,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.leave_balance_logs (
         id              BIGSERIAL       PRIMARY KEY,
+        company_id      UUID            NULL,
         employee_id     INT             NOT NULL REFERENCES %I.employees(id),
         type            VARCHAR(20)     NOT NULL
                             CHECK (type IN (''accrual'',''consumption'',''adjustment'',''reset'',''carry_over'')),
@@ -411,6 +439,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.salary_advances (
         id                  SERIAL          PRIMARY KEY,
+        company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
         amount              DECIMAL(12,2)   NOT NULL,
         reason              TEXT            NULL,
@@ -434,6 +463,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.projects (
         id          SERIAL          PRIMARY KEY,
+        company_id  UUID            NULL,
         name        VARCHAR(150)    NOT NULL,
         description TEXT            NULL,
         start_date  DATE            NULL,
@@ -451,6 +481,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.tasks (
         id              SERIAL          PRIMARY KEY,
+        company_id      UUID            NULL,
         title           VARCHAR(200)    NOT NULL,
         description     TEXT            NULL,
         created_by      INT             NOT NULL REFERENCES %I.employees(id),
@@ -493,6 +524,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.evaluations (
         id                  SERIAL          PRIMARY KEY,
+        company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
         evaluator_id        INT             NOT NULL REFERENCES %I.employees(id),
         period              VARCHAR(20)     NOT NULL,   -- ex: "2026-S1", "2026-Q1"
@@ -513,6 +545,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.payrolls (
         id                  BIGSERIAL       PRIMARY KEY,
+        company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
         period_month        INT             NOT NULL CHECK (period_month BETWEEN 1 AND 12),
         period_year         INT             NOT NULL CHECK (period_year >= 2020),
@@ -583,6 +616,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.audit_logs (
         id          BIGSERIAL       PRIMARY KEY,
+        company_id  UUID            NULL,
         actor_type  VARCHAR(20)     NOT NULL DEFAULT ''employee''
                         CHECK (actor_type IN (''employee'',''super_admin'',''system'')),
         actor_id    INT             NULL,       -- employees.id OU super_admins.id selon actor_type
@@ -607,6 +641,7 @@ BEGIN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.notifications (
         id              BIGSERIAL       PRIMARY KEY,
+        company_id      UUID            NULL,
         recipient_id    INT             NOT NULL REFERENCES %I.employees(id) ON DELETE CASCADE,
         type            VARCHAR(100)    NOT NULL,   -- "absence.approved", "task.assigned"
         title           VARCHAR(200)    NOT NULL,

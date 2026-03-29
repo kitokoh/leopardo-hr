@@ -332,13 +332,20 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-### 0-C.6 Créer les repositories Git
+### 0-C.6 Initialisation du MONOREPO Git
 ```bash
-# Repository 1 : Backend
+# À la racine du projet leopardo-rh/
 git init
-git remote add origin git@github.com:ton-compte/leopardo-rh-api.git
+git remote add origin git@github.com:ton-compte/leopardo-rh.git
+
+# Créer les dossiers de base
+mkdir api mobile docs config
+
+# Initialiser api/ (Laravel) et mobile/ (Flutter) à l'intérieur
+# Voir sections 0-C et 0-D
+
 git add .
-git commit -m "chore: initialisation projet Laravel 11"
+git commit -m "chore: initialisation monorepo Leopardo RH"
 git push -u origin main
 
 # Créer .gitignore avec au minimum :

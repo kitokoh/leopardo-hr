@@ -1,28 +1,26 @@
 # ARBORESCENCE COMPLÈTE — LEOPARDO RH
-# Architecture 3-Tiers : Backend API / Frontend Web / Mobile Flutter
-# Version 1.0 | Mars 2026
+# Architecture Monorepo : Backend API / Frontend Web / Mobile Flutter
+# Version 2.0 | Mars 2026
 
 ---
 
-## VUE MACRO — 3 REPOSITORIES GIT
+## VUE MACRO — REPO UNIQUE (MONOREPO)
 
 ```
-GitHub / GitLab
-├── leopardo-rh-api/          ← Repo 1 : Backend (Laravel 11 + Vue.js via Inertia)
-├── leopardo-rh-mobile/       ← Repo 2 : Mobile (Flutter — Android + iOS)
-└── leopardo-rh-docs/         ← Repo 3 : Documentation (ce repo — conception uniquement)
+leopardo-rh/
+├── api/                      ← Backend (Laravel 11 + Vue.js via Inertia)
+├── mobile/                   ← Mobile (Flutter — Android + iOS)
+└── docs/                     ← Documentation (conception, architecture, prompts)
 ```
 
-Les 3 repos sont indépendants.
-Le backend expose une API REST que le mobile ET le frontend web consomment.
-Inertia.js est une exception : le frontend web est servi PAR le backend Laravel (pas un repo séparé).
+Le repo unique permet aux agents IA (Claude Code, Jules) d'avoir une vision globale du projet et facilite la cohérence entre l'API et le client mobile.
 
 ---
 
-## REPO 1 — leopardo-rh-api (Backend + Frontend Web)
+## DOSSIER /api (Backend + Frontend Web)
 
 ```
-leopardo-rh-api/
+api/
 │
 ├── .env.example                          ← Variables d'environnement (jamais commiter .env)
 ├── .gitignore
@@ -334,10 +332,10 @@ leopardo-rh-api/
 
 ---
 
-## REPO 2 — leopardo-rh-mobile (Flutter)
+## DOSSIER /mobile (Flutter)
 
 ```
-leopardo-rh-mobile/
+mobile/
 │
 ├── pubspec.yaml                                  ← Toutes les dépendances (voir Sprint 0 section 0-D.2)
 ├── l10n.yaml                                     ← Config i18n Flutter
@@ -509,10 +507,10 @@ leopardo-rh-mobile/
 
 ---
 
-## REPO 3 — leopardo-rh-docs (Documentation)
+## DOSSIER /docs (Documentation)
 
 ```
-leopardo-rh-docs/
+docs/
 │
 ├── README.md                                     ← Point d'entrée unique (voir README existant)
 │

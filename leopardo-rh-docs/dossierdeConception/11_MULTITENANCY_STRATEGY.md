@@ -1,15 +1,50 @@
 # STRATÉGIE MULTI-TENANT — LEOPARDO RH
-# Version 1.0 | Mars 2026
-# Remplace : multitenancy_strategy.md (supprimé — contenait une architecture erronée)
+# Version 2.0 | Mars 2026
 
 ---
 
-## STRATÉGIE RETENUE : MULTI-SCHÉMA POSTGRESQL
+## STRATÉGIE HYBRIDE : MULTI-SCHÉMA vs SHARED-TABLE
 
-**⚠️ DÉCISION FIGÉE — NE PAS MODIFIER**
+Afin d'optimiser les ressources pour les petits clients tout en garantissant une isolation totale pour les grands comptes, Leopardo RH utilise une approche hybride pilotée par le champ `companies.tenancy_type`.
 
-La stratégie est **Multi-schéma PostgreSQL**, PAS "Single Database + tenant_id".
-Ces deux approches sont mutuellement exclusives. Le choix est définitif.
+### 1. Mode "schema" (Par défaut pour Enterprise)
+- Chaque entreprise a son propre schéma PostgreSQL (`company_{uuid}`).
+- Isolation physique totale au niveau de la base de données.
+- Idéal pour la sécurité, les sauvegardes indépendantes et les performances.
+
+### 2. Mode "shared" (Par défaut pour Starter/Trial)
+- Les données de plusieurs petites entreprises sont regroupées dans un schéma partagé (ex: `shared_tenants`).
+- L'isolation est logique via une colonne `company_id` présente dans toutes les tables.
+- Réduit la consommation de ressources (moins de tables et d'index à gérer par PostgreSQL).
+
+---
+
+## DÉCISION DYNAMIQUE DU TENANT_ID
+
+Le `TenantMiddleware` détecte le mode via le `user_lookups` et ajuste la connexion :
+
+```php
+// app/Http/Middleware/TenantMiddleware.php
+public function handle(Request $request, Closure $next)
+{
+    $lookup = DB::table('user_lookups')->where('email', $request->user()->email)->first();
+    $company = Company::find($lookup->company_id);
+
+    if ($company->tenancy_type === 'schema') {
+        // Mode Isolation Physique
+        DB::statement("SET search_path TO {$company->schema_name}, public");
+    } else {
+        // Mode Isolation Logique (Shared)
+        DB::statement("SET search_path TO shared_tenants, public");
+        // Injecter un Global Scope Laravel pour filtrer par company_id
+        Employee::addGlobalScope('tenant', function (Builder $builder) use ($company) {
+            $builder->where('company_id', $company->id);
+        });
+    }
+
+    return $next($request);
+}
+```
 
 ---
 
@@ -182,12 +217,40 @@ it('isole les données entre deux tenants', function () {
 - Jusqu'à ~200 entreprises actives simultanément sans optimisation supplémentaire
 - Au-delà : migration vers un cluster PostgreSQL ou des bases dédiées par région
 
-### Migration future possible
+### GESTION DES MIGRATIONS DE SCHÉMA (MÉTHODE)
+
+Dans une architecture multi-schéma, les migrations standard de Laravel (`php artisan migrate`) ne touchent que le schéma par défaut (public). Pour mettre à jour tous les schémas tenants lors d'une évolution du code :
+
+**Stratégie de migration groupée :**
+```php
+// app/Console/Commands/TenantsMigrate.php
+public function handle()
+{
+    $companies = Company::where('status', '!=', 'archived')->get();
+
+    foreach ($companies as $company) {
+        $this->info("Migrating tenant: {$company->name}");
+
+        // Switch schema
+        DB::statement("SET search_path TO {$company->schema_name}, public");
+
+        // Exécuter les fichiers de migration spécifiques aux tenants
+        // Note : On peut utiliser une table 'migrations' propre à chaque schéma
+        // ou gérer les versions manuellement via TenantService.
+    }
+}
+```
+
+**Règles de sécurité pour les migrations :**
+1. **Zéro temps d'arrêt** : Toujours ajouter des colonnes (nullable) ou des tables. Ne jamais supprimer/renommer de colonne sans une phase de transition.
+2. **Atomicité** : Chaque migration de tenant doit être enveloppée dans une transaction.
+3. **Journalisation** : Tracer le succès/échec de chaque migration par tenant dans les logs de déploiement.
+
+### MIGRATION VERS BASE DÉDIÉE (Futur)
 Si un client enterprise nécessite une base dédiée :
-```
-1. pg_dump company_{uuid}
+1. `pg_dump company_{uuid}`
 2. Restaurer dans une base dédiée
-3. Mettre à jour companies.db_connection dans le schéma public
-4. TenantMiddleware utilise la connexion dédiée pour ce tenant
-```
+3. Mettre à jour `companies.db_connection` dans le schéma public
+4. `TenantMiddleware` utilise la connexion dédiée pour ce tenant
+
 Cette migration est transparente pour l'application Laravel.

@@ -43,7 +43,21 @@ Hébergement : o2switch VPS (Nginx + PHP-FPM + Supervisor)
 
 ---
 
-## 📐 RÈGLES ABSOLUES DE DÉVELOPPEMENT
+## 5. STRATÉGIE CACHE REDIS
+
+| Donnée | Clé Redis | TTL | Invalidation |
+|--------|-----------|-----|-------------|
+| Paramètres entreprise | `tenant:{uuid}:settings` | 1h | `Cache::tags(['tenant:{uuid}'])->forget('settings')` à chaque PUT /settings |
+| Plannings de travail | `tenant:{uuid}:schedules` | 24h | À chaque CRUD schedule |
+| Départements | `tenant:{uuid}:departments` | 24h | À chaque CRUD department |
+| Jours fériés | `holidays:{country}:{year}` | 365j | Jamais (données statiques) |
+| Token → company mapping | `auth:company:{token_hash}` | TTL du token | À la déconnexion |
+| Statistiques dashboard | `tenant:{uuid}:dashboard:{date}` | 5 min | TTL automatique |
+| Compteur notifications non lues | `tenant:{uuid}:notif:{employee_id}:unread` | 1h | À chaque nouvelle notif / lecture |
+
+---
+
+## 6. RÈGLES DE SÉCURITÉ LARAVEL
 
 ### 1. Toujours commencer par les tests
 Avant d'écrire un Controller, écris le test Feature correspondant. Laravel Pest est le framework de test.
