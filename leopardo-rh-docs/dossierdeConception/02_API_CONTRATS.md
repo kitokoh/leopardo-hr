@@ -31,7 +31,8 @@ Pagination    : ?page=1&per_page=15
 {
   "email": "ahmed.benali@entreprise.com",
   "password": "MonMotDePasse123!",
-  "device_name": "iPhone 15 Pro d'Ahmed"
+  "device_name": "iPhone 15 Pro d'Ahmed",
+  "fcm_token": "fcm_abc123..."
 }
 ```
 **Response 200 :**
@@ -128,6 +129,18 @@ Pagination    : ?page=1&per_page=15
 ```json
 { "message": "Mot de passe réinitialisé avec succès" }
 ```
+
+---
+
+### POST /auth/device/fcm
+**Request :** `{ "fcm_token": "new_token_abc123", "platform": "android" }`
+**Response 200 :** `{ "message": "Token FCM enregistré" }`
+
+---
+
+### DELETE /auth/device/fcm
+**Request :** `{ "fcm_token": "token_abc123" }`
+**Response 200 :** `{ "message": "Token FCM supprimé" }`
 
 ---
 
@@ -313,56 +326,22 @@ Pagination    : ?page=1&per_page=15
 
 ---
 
-### POST /employees
-**Request :**
-```json
-{
-  "first_name": "Fatima",
-  "last_name": "Boudaoud",
-  "email": "f.boudaoud@entreprise.com",
-  "phone": "+213 770 123456",
-  "date_of_birth": "1992-07-15",
-  "gender": "F",
-  "nationality": "DZ",
-  "national_id": "924151234567890",
-  "address": "5 Cité des Roses, Alger",
-  "personal_email": "fatima.b@gmail.com",
-  "emergency_contact": {
-    "name": "Mohammed Boudaoud",
-    "phone": "+213 661 987654",
-    "relation": "Époux"
-  },
-  "department_id": 3,
-  "position_id": 8,
-  "schedule_id": 1,
-  "manager_id": 5,
-  "site_id": 1,
-  "contract_type": "CDI",
-  "contract_start": "2026-04-01",
-  "contract_end": null,
-  "salary_base": 75000,
-  "salary_type": "fixed",
-  "hourly_rate": null,
-  "payment_method": "bank_transfer",
-  "iban": "DZ004 0020 0601 2345 6789 0123",
-  "leave_balance_initial": 0,
-  "role": "employee"
-}
-```
-**Response 201 :**
-```json
-{
-  "data": {
-    "id": 48,
-    "matricule": "EMP-0048",
-    "first_name": "Fatima",
-    "last_name": "Boudaoud",
-    "email": "f.boudaoud@entreprise.com",
-    "status": "active"
-  },
-  "message": "Employé créé. Identifiants envoyés par email."
-}
-```
+### GET /employees/{id}
+**Response 200 :** *(Format complet identique à GET /employees mais pour un seul objet)*
+
+### PUT /employees/{id}
+**Request :** *(Mêmes champs que POST /employees, tous optionnels)*
+**Response 200 :** `{ "data": { "id": 42, ... }, "message": "Employé mis à jour" }`
+
+### DELETE /employees/{id}
+**Response 200 :** `{ "message": "Employé archivé avec succès" }`
+
+### POST /employees/import
+**Request :** `multipart/form-data` (file: employees.csv)
+**Response 200 :** `{ "imported": 45, "errors": [] }`
+
+### GET /employees/{id}/payslips
+**Response 200 :** `{ "data": [ { "id": 101, "period": "2026-03", "net_salary": 75000, "status": "validated" } ] }`
 
 ---
 
@@ -463,6 +442,11 @@ Pagination    : ?page=1&per_page=15
 
 ---
 
+### POST /devices/{id}/test-connection
+**Response 200 :** `{ "status": "online", "latency_ms": 120 }`
+
+---
+
 ### GET /attendance
 **Params :** `?employee_id=42&from=2026-04-01&to=2026-04-30`
 
@@ -523,6 +507,19 @@ Pagination    : ?page=1&per_page=15
 ---
 
 ## 5. ABSENCES ET CONGÉS
+
+### GET /absences
+**Params :** `?status=pending&employee_id=42&from=2026-01-01&to=2026-12-31`
+**Response 200 :** `{ "data": [ ... ] }`
+
+### GET /absences/{id}
+**Response 200 :** `{ "data": { "id": 89, ... } }`
+
+### PUT /absences/{id}/cancel
+**Response 200 :** `{ "message": "Demande annulée par l'employé" }`
+
+### GET /absence-types
+**Response 200 :** `{ "data": [ { "id": 1, "label": "Congé payé", "deducts_leave": true } ] }`
 
 ### POST /absences
 **Request :**
@@ -599,6 +596,16 @@ Pagination    : ?page=1&per_page=15
 ---
 
 ## 6. AVANCES SUR SALAIRE
+
+### GET /advances
+**Params :** `?status=pending&employee_id=42`
+
+### GET /advances/{id}
+**Response 200 :** `{ "data": { "id": 23, ... } }`
+
+### PUT /advances/{id}/reject
+**Request :** `{ "comment": "Raison du refus" }`
+**Response 200 :** `{ "message": "Demande d'avance refusée" }`
 
 ### POST /advances
 **Request :**
@@ -946,7 +953,29 @@ Pagination    : ?page=1&per_page=15
 
 ---
 
-## 11. PARAMÈTRES ENTREPRISE
+## 11. NOTIFICATIONS
+
+### GET /notifications
+**Params :** `?read=false&page=1`
+**Response 200 :**
+```json
+{
+  "data": [
+    { "id": 1, "type": "absence.approved", "title": "Congé approuvé", "body": "Votre demande pour le 15 mai...", "read_at": null, "created_at": "..." }
+  ],
+  "meta": { "unread_count": 3 }
+}
+```
+
+### PUT /notifications/{id}/read
+**Response 200 :** `{ "message": "Marquée comme lue" }`
+
+### PUT /notifications/read-all
+**Response 200 :** `{ "message": "Toutes les notifications marquées comme lues" }`
+
+---
+
+## 12. PARAMÈTRES ENTREPRISE
 
 ### GET /settings
 **Response 200 :**
@@ -1000,6 +1029,17 @@ Pagination    : ?page=1&per_page=15
   }
 }
 ```
+
+---
+
+## 13. SUPER ADMIN — FACTURATION ET PLANS
+
+### GET /admin/plans
+**Response 200 :** `{ "data": [ { "id": 1, "name": "Starter", "price_monthly": 0 } ] }`
+
+### POST /admin/billing/invoice
+**Request :** `{ "company_id": "uuid", "amount": 500, "period": "2026-04" }`
+**Response 201 :** `{ "data": { "id": 501, "pdf_url": "..." } }`
 
 ---
 
