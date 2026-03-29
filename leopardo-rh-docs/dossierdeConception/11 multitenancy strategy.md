@@ -182,12 +182,40 @@ it('isole les données entre deux tenants', function () {
 - Jusqu'à ~200 entreprises actives simultanément sans optimisation supplémentaire
 - Au-delà : migration vers un cluster PostgreSQL ou des bases dédiées par région
 
-### Migration future possible
+### GESTION DES MIGRATIONS DE SCHÉMA (MÉTHODE)
+
+Dans une architecture multi-schéma, les migrations standard de Laravel (`php artisan migrate`) ne touchent que le schéma par défaut (public). Pour mettre à jour tous les schémas tenants lors d'une évolution du code :
+
+**Stratégie de migration groupée :**
+```php
+// app/Console/Commands/TenantsMigrate.php
+public function handle()
+{
+    $companies = Company::where('status', '!=', 'archived')->get();
+
+    foreach ($companies as $company) {
+        $this->info("Migrating tenant: {$company->name}");
+
+        // Switch schema
+        DB::statement("SET search_path TO {$company->schema_name}, public");
+
+        // Exécuter les fichiers de migration spécifiques aux tenants
+        // Note : On peut utiliser une table 'migrations' propre à chaque schéma
+        // ou gérer les versions manuellement via TenantService.
+    }
+}
+```
+
+**Règles de sécurité pour les migrations :**
+1. **Zéro temps d'arrêt** : Toujours ajouter des colonnes (nullable) ou des tables. Ne jamais supprimer/renommer de colonne sans une phase de transition.
+2. **Atomicité** : Chaque migration de tenant doit être enveloppée dans une transaction.
+3. **Journalisation** : Tracer le succès/échec de chaque migration par tenant dans les logs de déploiement.
+
+### MIGRATION VERS BASE DÉDIÉE (Futur)
 Si un client enterprise nécessite une base dédiée :
-```
-1. pg_dump company_{uuid}
+1. `pg_dump company_{uuid}`
 2. Restaurer dans une base dédiée
-3. Mettre à jour companies.db_connection dans le schéma public
-4. TenantMiddleware utilise la connexion dédiée pour ce tenant
-```
+3. Mettre à jour `companies.db_connection` dans le schéma public
+4. `TenantMiddleware` utilise la connexion dédiée pour ce tenant
+
 Cette migration est transparente pour l'application Laravel.

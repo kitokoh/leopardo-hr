@@ -24,6 +24,8 @@ Pagination    : ?page=1&per_page=15
 ## 1. AUTHENTIFICATION
 
 ### POST /auth/login
+**Note sur l'implémentation :** Le serveur utilise la table `user_lookups` pour identifier instantanément l'entreprise et le schéma de l'utilisateur sans avoir à parcourir tous les schémas de la base de données.
+
 **Request :**
 ```json
 {
@@ -125,6 +127,61 @@ Pagination    : ?page=1&per_page=15
 **Response 200 :**
 ```json
 { "message": "Mot de passe réinitialisé avec succès" }
+```
+
+---
+
+### GET /auth/me
+**Auth :** Bearer token
+**Response 200 :**
+```json
+{
+  "data": {
+    "id": 42,
+    "first_name": "Ahmed",
+    "last_name": "Benali",
+    "email": "ahmed.benali@entreprise.com",
+    "role": "employee",
+    "manager_role": null,
+    "photo_url": "https://api.leopardo-rh.com/storage/photos/42.jpg",
+    "company": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "TechCorp SPA",
+      "language": "fr",
+      "timezone": "Africa/Algiers",
+      "currency": "DZD"
+    }
+  }
+}
+```
+
+---
+
+### GET /attendance/today
+**Auth :** Bearer token
+**Response 200 (si pointé) :**
+```json
+{
+  "data": {
+    "id": 1547,
+    "date": "2026-04-15",
+    "check_in": "2026-04-15T07:58:00Z",
+    "check_out": null,
+    "status": "incomplete",
+    "method": "mobile"
+  }
+}
+```
+**Response 200 (si non pointé) :**
+```json
+{
+  "data": null,
+  "context": {
+    "is_holiday": false,
+    "is_leave": false,
+    "expected_start": "08:00:00"
+  }
+}
 ```
 
 ---
@@ -827,7 +884,69 @@ Pagination    : ?page=1&per_page=15
 
 ---
 
-## 10. PARAMÈTRES ENTREPRISE
+## 10. CONFIGURATION (DÉPARTEMENTS, POSTES, SITES, PLANNINGS)
+
+### GET /departments
+**Response 200 :**
+```json
+{
+  "data": [
+    { "id": 1, "name": "Direction Générale", "manager": { "id": 1, "name": "Boss" } },
+    { "id": 2, "name": "RH", "manager": null }
+  ]
+}
+```
+
+### POST /departments
+**Request :** `{ "name": "Informatique", "manager_id": 42 }`
+
+---
+
+### GET /positions
+**Response 200 :**
+```json
+{
+  "data": [
+    { "id": 1, "name": "Développeur Senior", "department_id": 3 },
+    { "id": 2, "name": "Chef de projet", "department_id": 3 }
+  ]
+}
+```
+
+---
+
+### GET /sites
+**Response 200 :**
+```json
+{
+  "data": [
+    { "id": 1, "name": "Siège Alger", "gps_lat": 36.7372, "gps_lng": 3.0869, "gps_radius_m": 100 }
+  ]
+}
+```
+
+---
+
+### GET /schedules
+**Response 200 :**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Standard 8h-17h",
+      "start_time": "08:00:00",
+      "end_time": "17:00:00",
+      "work_days": [1,2,3,4,5],
+      "is_default": true
+    }
+  ]
+}
+```
+
+---
+
+## 11. PARAMÈTRES ENTREPRISE
 
 ### GET /settings
 **Response 200 :**
