@@ -145,6 +145,19 @@ CREATE TABLE IF NOT EXISTS hr_model_templates (
     holiday_calendar    JSONB           NOT NULL DEFAULT '[]'
 );
 
+-- ------------------------------------------------------------
+-- user_lookups (Table de correspondance pour le login multi-tenant)
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_lookups (
+    email           VARCHAR(150)    PRIMARY KEY,
+    company_id      UUID            NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    schema_name     VARCHAR(60)     NOT NULL,
+    user_id         INT             NOT NULL, -- ID de l'employé dans son schéma
+    role            VARCHAR(20)     NOT NULL
+);
+
+CREATE INDEX idx_user_lookups_company ON user_lookups(company_id);
+
 COMMENT ON COLUMN hr_model_templates.cotisations      IS 'Structure: {salariales:[{name,rate,base,ceiling,multiplier}], patronales:[...]}';
 COMMENT ON COLUMN hr_model_templates.ir_brackets      IS 'Structure: [{min,max,rate,deduction}]';
 COMMENT ON COLUMN hr_model_templates.leave_rules      IS 'Structure: {accrual_rate_monthly,initial_balance,carry_over,max_balance,min_notice_days}';
@@ -222,6 +235,7 @@ BEGIN
     CREATE TABLE IF NOT EXISTS %I.employees (
         id                  SERIAL          PRIMARY KEY,
         matricule           VARCHAR(20)     NOT NULL UNIQUE,
+        zkteco_id           VARCHAR(50)     NULL,       -- ID unique dans le lecteur biométrique
         first_name          VARCHAR(100)    NOT NULL,
         last_name           VARCHAR(100)    NOT NULL,
         email               VARCHAR(150)    NOT NULL UNIQUE,
@@ -337,8 +351,7 @@ BEGIN
         is_manual_edit      BOOLEAN         NOT NULL DEFAULT FALSE,
         edited_by           INT             NULL REFERENCES %I.employees(id),
         edit_reason         TEXT            NULL,
-        created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-        CONSTRAINT uq_attendance_day UNIQUE (employee_id, date)
+        created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
     )', p_schema_name, p_schema_name, p_schema_name);
 
     EXECUTE format('CREATE INDEX idx_att_date_status ON %I.attendance_logs(date, status)', p_schema_name);
