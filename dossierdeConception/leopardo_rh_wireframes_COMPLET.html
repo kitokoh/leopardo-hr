@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leopardo RH — Dossier Wireframes Complet v2.0</title>
+<style>
+:root {
+  --navy:#1A237E; --navy2:#283593; --navy3:#3949AB;
+  --accent:#FF6F00; --accent2:#FFB300;
+  --ok:#388E3C; --warn:#F57C00; --err:#C62828; --info:#1565C0;
+  --ok-bg:#E8F5E9; --warn-bg:#FFF8E1; --err-bg:#FFEBEE; --info-bg:#E3F2FD;
+  --gray1:#212121; --gray2:#424242; --gray3:#757575; --gray4:#BDBDBD;
+  --gray5:#E0E0E0; --gray6:#F5F5F5;
+  --white:#FFFFFF; --page:#ECEFF1;
+  --sidebar-w:192px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--page);color:var(--gray1);font-size:12px;line-height:1.4}
+
+/* ══ NAV TABS ══ */
+.master-nav{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.master-nav-inner{display:flex;align-items:stretch;overflow-x:auto;scrollbar-width:none}
+.master-nav-inner::-webkit-scrollbar{display:none}
+.nav-logo{display:flex;align-items:center;gap:8px;padding:0 20px;border-right:1px solid rgba(255,255,255,.12);flex-shrink:0}
+.nav-logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:white}
+.nav-logo-text{color:white;font-size:13px;font-weight:700;white-space:nowrap}
+.nav-tab{padding:0 16px;height:52px;display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.6);font-size:11px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.nav-tab:hover{color:white;background:rgba(255,255,255,.06)}
+.nav-tab.active{color:white;border-bottom-color:var(--accent);background:rgba(255,255,255,.08)}
+.nav-tab .role-dot{width:7px;height:7px;border-radius:50%}
+
+/* ══ SECTIONS ══ */
+.section{display:none;padding:0 0 40px}
+.section.active{display:block}
+.section-hero{background:var(--navy2);color:white;padding:28px 36px;display:flex;align-items:flex-start;gap:24px}
+.section-hero-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;flex-shrink:0}
+.section-hero h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.section-hero p{font-size:13px;opacity:.7;max-width:640px;line-height:1.6}
+.section-hero .role-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.rtag{background:rgba(255,255,255,.12);color:white;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:600}
+
+/* ══ SCREEN GRID ══ */
+.screens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px;padding:24px 28px}
+.screens-grid.wide{grid-template-columns:1fr}
+.screens-grid.duo{grid-template-columns:repeat(2,1fr)}
+
+/* ══ SCREEN CARD ══ */
+.sc{background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.1)}
+.sc-head{padding:10px 14px;border-bottom:1px solid var(--gray5);display:flex;align-items:center;gap:8px;background:#FAFAFA}
+.sc-id{border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;color:white}
+.sc-title{font-size:12px;font-weight:700;flex:1}
+.sc-role{font-size:9px;padding:2px 6px;border-radius:3px;background:var(--info-bg);color:var(--info)}
+.sc-body{padding:0}
+.note{background:#FFFDE7;border-left:3px solid var(--accent2);padding:7px 12px;margin:8px 12px;font-size:10px;color:#5D4037;border-radius:0 4px 4px 0}
+.note strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);margin-bottom:2px}
+.flow-row{display:flex;align-items:center;gap:0;padding:10px 12px}
+.flow-box{background:var(--navy);color:white;border-radius:5px;padding:5px 10px;font-size:10px;font-weight:600;text-align:center}
+.flow-box.acc{background:var(--accent)}
+.flow-box.ok{background:var(--ok)}
+.flow-box.lite{background:var(--info-bg);color:var(--info);border:1px solid #90CAF9}
+.flow-arrow{color:var(--gray4);font-size:14px;padding:0 4px}
+.flow-diamond{background:var(--warn-bg);color:var(--warn);border:1.5px solid var(--warn);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;text-align:center;flex-shrink:0}
+
+/* ══ MOBILE FRAME ══ */
+.mf{width:272px;margin:12px auto;background:#1C1C2E;border-radius:30px;padding:9px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.ms{background:var(--gray6);border-radius:22px;overflow:hidden;min-height:500px;display:flex;flex-direction:column}
+
+/* ══ WEB FRAME ══ */
+.wf{margin:12px;border:1.5px solid var(--gray5);border-radius:8px;overflow:hidden}
+.wf-bar{background:#F0F0F0;border-bottom:1px solid var(--gray5);padding:7px 10px;display:flex;align-items:center;gap:5px}
+.wf-dot{width:8px;height:8px;border-radius:50%}
+.wf-url{flex:1;background:white;border:1px solid var(--gray5);border-radius:4px;padding:2px 8px;font-size:9px;color:var(--gray3);margin:0 8px}
+
+/* ══ APP BAR ══ */
+.abar{background:var(--navy);color:white;padding:10px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.abar-title{font-size:14px;font-weight:700;flex:1}
+.abar-sub{font-size:10px;opacity:.65}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0}
+
+/* ══ BOTTOM NAV ══ */
+.bnav{background:white;border-top:1px solid var(--gray5);display:flex;flex-shrink:0}
+.bni{flex:1;padding:7px 3px;text-align:center;font-size:8px;color:var(--gray3);display:flex;flex-direction:column;align-items:center;gap:2px}
+.bni.act{color:var(--navy)}
+.bni-icon{width:18px;height:18px;border-radius:4px;background:currentColor;opacity:.15}
+.bni.act .bni-icon{opacity:1}
+
+/* ══ UI ATOMS ══ */
+.btn-main{background:var(--accent);color:white;border-radius:8px;padding:12px 16px;text-align:center;font-size:12px;font-weight:700}
+.btn-sec{border:1.5px solid var(--navy);color:var(--navy);border-radius:7px;padding:9px 14px;text-align:center;font-size:11px;font-weight:600}
+.btn-ghost{border:1px solid var(--gray5);color:var(--gray3);border-radius:6px;padding:6px 12px;text-align:center;font-size:10px}
+.btn-danger{border:1px solid var(--err);color:var(--err);border-radius:7px;padding:8px 14px;text-align:center;font-size:11px;font-weight:600}
+.inp{border:1.5px solid var(--gray5);border-radius:7px;padding:9px 11px;background:white;font-size:11px;color:var(--gray3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.inp.focus{border-color:var(--navy)}
+.inp-ico{width:12px;height:12px;background:var(--gray5);border-radius:2px;flex-shrink:0}
+.badge{display:inline-block;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:700}
+.b-ok{background:var(--ok-bg);color:var(--ok)}
+.b-warn{background:var(--warn-bg);color:var(--warn)}
+.b-err{background:var(--err-bg);color:var(--err)}
+.b-info{background:var(--info-bg);color:var(--info)}
+.b-neu{background:var(--gray6);color:var(--gray3)}
+.b-navy{background:var(--navy);color:white}
+.card{background:white;border-radius:9px;border:1px solid var(--gray5);padding:10px;margin:0 10px 8px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:2px 0}
+.row .lbl{font-size:10px;color:var(--gray3)}
+.row .val{font-size:10px;font-weight:600}
+.divider{height:1px;background:var(--gray6);margin:6px 10px}
+.slbl{padding:6px 10px 3px;font-size:9px;font-weight:700;color:var(--gray3);text-transform:uppercase;letter-spacing:.7px}
+.li{padding:8px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FAFAFA}
+.li:last-child{border-bottom:none}
+.pbar{height:5px;background:var(--gray5);border-radius:3px;overflow:hidden;margin:3px 0}
+.pfill{height:100%;border-radius:3px}
+
+/* ══ SIDEBAR WEB ══ */
+.sb{width:var(--sidebar-w);background:var(--navy);color:white;display:flex;flex-direction:column;flex-shrink:0}
+.sb.dark{background:#0A1628}
+.sb-logo{padding:14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo-m{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.sb-logo-t{font-size:13px;font-weight:700}
+.sbi{padding:7px 14px;display:flex;align-items:center;gap:7px;font-size:10px;opacity:.65;cursor:pointer}
+.sbi.act{background:rgba(255,255,255,.1);opacity:1}
+.sbi-ico{width:14px;height:14px;background:currentColor;border-radius:3px;opacity:.6}
+.sbi .badge{margin-left:auto}
+.sb-sect{font-size:8px;text-transform:uppercase;letter-spacing:1px;opacity:.35;padding:10px 14px 3px}
+
+/* ══ WEB CONTENT AREA ══ */
+.wc{flex:1;overflow:auto;display:flex;flex-direction:column}
+.wc-topbar{background:white;border-bottom:1px solid var(--gray5);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.wc-title{font-size:15px;font-weight:800;color:var(--navy)}
+.web-layout{display:flex;height:460px}
+.kpi-row{display:grid;gap:10px;padding:14px 16px}
+.kpi-card{background:white;border-radius:7px;border:1px solid var(--gray5);padding:12px}
+.kpi-lbl{font-size:9px;color:var(--gray3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.kpi-val{font-size:22px;font-weight:900}
+.kpi-sub{font-size:9px;color:var(--gray3);margin-top:3px}
+.tw{margin:0 16px 12px;background:white;border-radius:7px;border:1px solid var(--gray5);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{padding:8px 10px;text-align:left;font-weight:700;color:var(--gray3);font-size:9px;text-transform:uppercase;background:#F8F9FA;letter-spacing:.4px}
+td{padding:8px 10px;border-top:1px solid var(--gray6)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot-g{background:var(--ok)}.dot-o{background:var(--warn)}.dot-r{background:var(--err)}
+
+/* ══ BIG CHECK BTN ══ */
+.bigbtn{border-radius:14px;margin:10px;padding:28px 16px;text-align:center;font-weight:800;font-size:16px;letter-spacing:.3px;cursor:pointer}
+.bigbtn-in{background:var(--accent);color:white}
+.bigbtn-out{background:var(--navy);color:white}
+.bigbtn .sub{font-size:10px;font-weight:400;opacity:.75;margin-top:4px}
+.time-big{font-size:30px;font-weight:900;color:var(--navy);text-align:center;padding:6px 0;letter-spacing:-1px}
+
+/* ══ CALENDAR ══ */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 10px}
+.cdh{font-size:8px;font-weight:700;color:var(--gray3);text-align:center;padding-bottom:3px}
+.cd{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500}
+.cd-p{background:#E8F5E9;color:#2E7D32}
+.cd-a{background:#FFEBEE;color:#C62828}
+.cd-l{background:#FFF8E1;color:#E65100}
+.cd-w{background:var(--gray6);color:var(--gray4)}
+.cd-t{background:var(--navy);color:white;font-weight:800}
+.cd-h{background:#E8EAF6;color:var(--navy3)}
+
+/* ══ KANBAN ══ */
+.kboard{display:flex;gap:6px;padding:10px}
+.kcol{flex:1;background:var(--gray6);border-radius:6px;padding:5px}
+.khead{font-size:8px;font-weight:700;text-align:center;padding:4px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.kcard{background:white;border-radius:4px;padding:5px;margin-bottom:3px;font-size:9px;border-left:2px solid}
+
+/* ══ STATS CHIPS ══ */
+.chips{display:flex;gap:6px;padding:6px 10px}
+.chip{flex:1;background:white;border:1px solid var(--gray5);border-radius:7px;padding:7px;text-align:center}
+.chip-n{font-size:16px;font-weight:900;color:var(--navy)}
+.chip-l{font-size:8px;color:var(--gray3);margin-top:1px}
+
+/* ══ PROFILE BADGE ══ */
+.pbadge{display:flex;align-items:center;gap:10px;padding:10px 12px;background:white;border-bottom:1px solid var(--gray5)}
+
+/* ══ COVER ══ */
+.cover{background:var(--navy);color:white;padding:48px 40px;min-height:280px}
+.cover h1{font-size:40px;font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:8px}
+.cover .tagline{font-size:15px;opacity:.65;margin-bottom:32px}
+.cover-meta{display:flex;gap:32px;flex-wrap:wrap}
+.cm{}.cm .l{font-size:9px;opacity:.45;text-transform:uppercase;letter-spacing:1px}.cm .v{font-size:13px;font-weight:700;margin-top:2px}
+.profiles-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px}
+.prof-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px}
+.prof-chip .dot{margin:0}
+
+/* ══ TOC ══ */
+.toc{background:white;margin:0;border-bottom:1px solid var(--gray5)}
+.toc-inner{padding:20px 36px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.toc-item{background:var(--gray6);border-radius:8px;padding:10px 12px;cursor:pointer;transition:background .1s}
+.toc-item:hover{background:#E8EAF6}
+.toc-bloc{background:var(--navy);color:white;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;margin-bottom:4px;display:inline-block}
+.toc-name{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:1px}
+.toc-sub{font-size:9px;color:var(--gray3)}
+
+/* ══ EVALUATION ══ */
+.stars{display:flex;gap:2px}
+.star{width:14px;height:14px;border-radius:2px;background:var(--accent)}
+.star.empty{background:var(--gray5)}
+</style>
+</head>
+<body>
+
+<!-- ══════════ MASTER NAV ══════════ -->
+<nav class="master-nav">
+  <div class="master-nav-inner">
+    <div class="nav-logo"><div class="nav-logo-mark">L</div><div class="nav-logo-text">Leopardo RH · Wireframes v2.0</div></div>
+    <div class="nav-tab active" onclick="show('cover')">📋 Couverture</div>
+    <div class="nav-tab" onclick="show('employe')"><span class="role-dot" style="background:#4CAF50"></span>Employé</div>
+    <div class="nav-tab" onclick="show('manager')"><span class="role-dot" style="background:#2196F3"></span>Manager Dept.</div>
+    <div class="nav-tab" onclick="show('rh')"><span class="role-dot" style="background:#9C27B0"></span>Resp. RH</div>
+    <div class="nav-tab" onclick="show('comptable')"><span class="role-dot" style="background:#FF9800"></span>Comptable</div>
+    <div class="nav-tab" onclick="show('superviseur')"><span class="role-dot" style="background:#00BCD4"></span>Superviseur</div>
+    <div class="nav-tab" onclick="show('gestionnaire')"><span class="role-dot" style="background:#F44336"></span>Gest. Principal</div>
+    <div class="nav-tab" onclick="show('superadmin')"><span class="role-dot" style="background:#FF6F00"></span>Super Admin</div>
+    <div class="nav-tab" onclick="show('flows')">🔀 Flux &amp; Nav</div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     COVER
+══════════════════════════════════════════════════════════ -->
+<div id="cover" class="section active">
+  <div class="cover">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:32px">
+      <div style="width:44px;height:44px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:white">L</div>
+      <div style="color:white;font-size:18px;font-weight:700">Leopardo RH</div>
+    </div>
+    <h1>Dossier Wireframes<br>Complet — v2.0</h1>
+    <div class="tagline">35+ écrans · 7 profils utilisateurs · Flutter Mobile + Vue.js Web · Prêt pour le développement</div>
+    <div class="cover-meta">
+      <div class="cm"><div class="l">Stack</div><div class="v">Flutter 3.x + Laravel 11 + Vue.js 3</div></div>
+      <div class="cm"><div class="l">Base CDC</div><div class="v">v3.0 — Définitive Mars 2026</div></div>
+      <div class="cm"><div class="l">Couleurs</div><div class="v">#1A237E Navy · #FF6F00 Orange</div></div>
+      <div class="cm"><div class="l">Langues</div><div class="v">FR · AR (RTL) · TR · EN</div></div>
+    </div>
+    <div class="profiles-row">
+      <div class="prof-chip"><div class="dot" style="background:#4CAF50"></div>Employé</div>
+      <div class="prof-chip"><div class="dot" style="background:#2196F3"></div>Manager Département</div>
+      <div class="prof-chip"><div class="dot" style="background:#9C27B0"></div>Responsable RH</div>
+      <div class="prof-chip"><div class="dot" style="background:#FF9800"></div>Comptable</div>
+      <div class="prof-chip"><div class="dot" style="background:#00BCD4"></div>Superviseur</div>
+      <div class="prof-chip"><div class="dot" style="background:#F44336"></div>Gestionnaire Principal</div>
+      <div class="prof-chip"><div class="dot" style="background:#FF6F00"></div>Super Admin (Éditeur SaaS)</div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div style="padding:14px 36px 6px;font-size:12px;font-weight:700;color:var(--navy)">Navigation rapide — cliquer pour accéder</div>
+    <div class="toc-inner">
+      <div class="toc-item" onclick="show('employe')"><div class="toc-bloc" style="background:#4CAF50">EMPLOYÉ</div><div class="toc-name">9 écrans Flutter</div><div class="toc-sub">Auth · Pointage · Absences · Tâches · Avances · Paie · Profil</div></div>
+      <div class="toc-item" onclick="show('manager')"><div class="toc-bloc" style="background:#2196F3">MANAGER DEPT.</div><div class="toc-name">6 écrans Flutter+Web</div><div class="toc-sub">Dashboard équipe · Validations · Tâches Kanban · Présences</div></div>
+      <div class="toc-item" onclick="show('rh')"><div class="toc-bloc" style="background:#9C27B0">RESP. RH</div><div class="toc-name">5 écrans Web</div><div class="toc-sub">Employés CRUD · Absences · Avances · Rapports · Import CSV</div></div>
+      <div class="toc-item" onclick="show('comptable')"><div class="toc-bloc" style="background:#FF9800">COMPTABLE</div><div class="toc-name">4 écrans Web</div><div class="toc-sub">Paie · Bulletins PDF · Export bancaire · Historique</div></div>
+      <div class="toc-item" onclick="show('superviseur')"><div class="toc-bloc" style="background:#00BCD4">SUPERVISEUR</div><div class="toc-name">3 écrans Flutter</div><div class="toc-sub">Présence équipe · Tâches équipe · Validations simples</div></div>
+      <div class="toc-item" onclick="show('gestionnaire')"><div class="toc-bloc" style="background:#F44336">GEST. PRINCIPAL</div><div class="toc-name">5 écrans Web</div><div class="toc-sub">Dashboard global · Employés · Paramètres · Gestion gestionnaires · Paie</div></div>
+      <div class="toc-item" onclick="show('superadmin')"><div class="toc-bloc" style="background:#FF6F00">SUPER ADMIN</div><div class="toc-name">5 écrans Web Admin</div><div class="toc-sub">Dashboard SaaS · Entreprises · Plans · Facturation · Langues</div></div>
+      <div class="toc-item" onclick="show('flows')"><div class="toc-bloc">FLUX</div><div class="toc-name">Routes &amp; Workflows</div><div class="toc-sub">GoRouter Flutter · Middleware Laravel · Flux métier complets</div></div>
+    </div>
+  </div>
+
+  <!-- RBAC MATRIX -->
+  <div style="padding:20px 28px">
+    <div style="background:white;border-radius:12px;overflow:hidden;border:1px solid var(--gray5)">
+      <div style="background:var(--navy);color:white;padding:12px 16px;font-size:13px;font-weight:700">Matrice RBAC complète — CDC v3.0 Section 2.2</div>
+      <div style="overflow-x:auto">
+      <table style="font-size:10px">
+        <thead><tr>
+          <th>Action</th>
+          <th><span class="dot dot-o"></span>Super Admin</th>
+          <th><span class="dot dot-r"></span>Gest. Principal</th>
+          <th><span class="dot" style="background:#9C27B0"></span>Resp. RH</th>
+          <th><span class="dot" style="background:#FF9800"></span>Comptable</th>
+          <th><span class="dot" style="background:#2196F3"></span>Manager Dept.</th>
+          <th><span class="dot" style="background:#00BCD4"></span>Superviseur</th>
+          <th><span class="dot dot-g"></span>Employé</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="font-weight:600">Créer/suspendre entreprise</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">Gérer plans tarifaires</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr><td style="font-weight:600">Créer gestionnaires</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">CRUD employés (toute entreprise)</td><td>❌</td><td>✅</td><td>✅</td><td>🔍 lecture</td><td>🔍 dpt seul</td><td>❌</td><td>❌</td></tr>
+          <tr><td style="font-weight:600">Valider absences/congés</td><td>❌</td><td>✅</td><td>✅</td><td>❌</td><td>✅ dpt seul</td><td>✅ équipe</td><td>❌</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">Calculer et valider la paie</td><td>❌</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr><td style="font-weight:600">Export virement bancaire</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">Modifier paramètres entreprise</td><td>❌</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr><td style="font-weight:600">Créer/assigner tâches</td><td>❌</td><td>✅</td><td>✅</td><td>❌</td><td>✅ dpt seul</td><td>✅ équipe</td><td>❌</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">Pointer arrivée/départ</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+          <tr><td style="font-weight:600">Voir ses bulletins de paie</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">Demander congé/avance</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+          <tr><td style="font-weight:600">Rapports avancés + export</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>🔍 dpt seul</td><td>❌</td><td>❌</td></tr>
+          <tr style="background:#FAFAFA"><td style="font-weight:600">Corriger pointage manuellement</td><td>❌</td><td>✅</td><td>✅</td><td>❌</td><td>✅ dpt seul</td><td>✅ équipe</td><td>❌</td></tr>
+          <tr><td style="font-weight:600">Journal d'audit</td><td>✅</td><td>✅</td><td>🔍 lecture</td><td>🔍 paie seul</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     EMPLOYÉ — 9 écrans Flutter
+══════════════════════════════════════════════════════════ -->
+<div id="employe" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:#4CAF50">👤</div>
+    <div>
+      <h1>Profil Employé</h1>
+      <p>Accès uniquement via l'application Flutter (Android/iOS). Interface centrée sur le pointage, les absences, les tâches et les bulletins. L'employé n'a accès qu'à ses propres données. Session maintenue entre les ouvertures.</p>
+      <div class="role-tags"><span class="rtag">Flutter Mobile uniquement</span><span class="rtag">Données personnelles seulement</span><span class="rtag">Offline-first pour données consultatives</span></div>
+    </div>
+  </div>
+
+  <div class="screens-grid">
+
+    <!-- A1 CONNEXION -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:var(--navy)">A1</div><div class="sc-title">Connexion</div><div class="sc-role">Tous profils</div></div>
+      <div class="mf"><div class="ms">
+        <div style="background:var(--navy);padding:32px 20px 24px;text-align:center;color:white">
+          <div style="width:52px;height:52px;background:var(--accent);border-radius:13px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900">L</div>
+          <div style="font-size:17px;font-weight:700">Leopardo RH</div>
+          <div style="font-size:10px;opacity:.6;margin-top:3px">Gestion RH intelligente</div>
+        </div>
+        <div style="padding:20px 14px 14px">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px">Connexion</div>
+          <div class="inp focus"><div class="inp-ico"></div>email@entreprise.com</div>
+          <div class="inp"><div class="inp-ico"></div><div style="flex:1">••••••••</div><div style="font-size:10px;color:var(--navy)">Voir</div></div>
+          <div style="text-align:right;font-size:10px;color:var(--navy);margin-bottom:14px">Mot de passe oublié ?</div>
+          <div class="btn-main">Se connecter</div>
+          <div style="background:var(--err-bg);border-radius:6px;padding:7px 10px;margin-top:9px;font-size:10px;color:var(--err)">Email ou mot de passe incorrect</div>
+          <div style="background:var(--warn-bg);border-radius:6px;padding:7px 10px;margin-top:6px;font-size:10px;color:var(--warn)">Compte bloqué — 5 tentatives. 15 min.</div>
+        </div>
+        <div style="padding:8px 14px;border-top:1px solid var(--gray5);display:flex;justify-content:center;gap:10px;margin-top:auto">
+          <div style="font-size:10px;color:var(--navy);font-weight:700">FR</div>
+          <div style="font-size:10px;color:var(--gray3)">AR</div>
+          <div style="font-size:10px;color:var(--gray3)">TR</div>
+          <div style="font-size:10px;color:var(--gray3)">EN</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Auth</strong>flutter_secure_storage uniquement. Blocage 5 tentatives → 15 min. Biométrie téléphone après 1ère connexion (Face ID / empreinte).</div>
+    </div>
+
+    <!-- B1 ACCUEIL POINTAGE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:var(--accent)">B1</div><div class="sc-title">Accueil — Pointage ★ PRIORITÉ 1</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar">
+          <div class="avatar" style="width:30px;height:30px;font-size:11px;background:rgba(255,255,255,.2)">AK</div>
+          <div style="flex:1"><div class="abar-sub">Bonjour,</div><div style="font-size:13px;font-weight:700">Ahmed Karim</div></div>
+          <div style="position:relative"><div style="width:22px;height:22px;background:rgba(255,255,255,.15);border-radius:5px"></div><div style="position:absolute;top:-3px;right:-3px;width:13px;height:13px;background:var(--accent);border-radius:50%;border:2px solid var(--navy);font-size:7px;color:white;display:flex;align-items:center;justify-content:center">3</div></div>
+        </div>
+        <div style="padding:8px 12px 4px;text-align:center;font-size:10px;color:var(--gray3)">Lundi 15 Avril 2026</div>
+        <!-- Déjà pointé arrivée -->
+        <div style="margin:0 10px;background:var(--ok-bg);border-radius:7px;padding:8px 12px;display:flex;align-items:center;gap:7px;border-left:3px solid var(--ok)">
+          <div style="font-size:13px">✅</div>
+          <div><div style="font-size:10px;font-weight:700;color:#2E7D32">Arrivée enregistrée</div><div style="font-size:15px;font-weight:900;color:#1B5E20">07:58</div></div>
+        </div>
+        <!-- GRAND BOUTON -->
+        <div class="bigbtn bigbtn-out">
+          <div style="font-size:26px;margin-bottom:5px">🏠</div>
+          POINTER MON DÉPART
+          <div class="sub">Maintenir 1.5 sec pour confirmer</div>
+        </div>
+        <!-- QR alt -->
+        <div style="display:flex;justify-content:center;margin-bottom:8px"><div class="btn-ghost">📷 Scanner QR Code</div></div>
+        <!-- Stats -->
+        <div class="slbl">Aujourd'hui</div>
+        <div class="chips">
+          <div class="chip"><div class="chip-n">8h04</div><div class="chip-l">Travaillées</div></div>
+          <div class="chip"><div class="chip-n" style="color:var(--ok)">12.5j</div><div class="chip-l">Congés dispo.</div></div>
+          <div class="chip"><div class="chip-n" style="color:var(--warn)">0</div><div class="chip-l">Retards</div></div>
+        </div>
+        <div class="bnav">
+          <div class="bni act"><div class="bni-icon"></div>Accueil</div>
+          <div class="bni"><div class="bni-icon"></div>Absences</div>
+          <div class="bni"><div class="bni-icon"></div>Tâches</div>
+          <div class="bni"><div class="bni-icon"></div>Paie</div>
+          <div class="bni"><div class="bni-icon"></div>Profil</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Règle UX critique</strong>Bouton occupe min. 40% écran. Appui long 1.5s → animation cercle. HapticFeedback.heavyImpact(). JAMAIS DateTime.now() — heure serveur uniquement.</div>
+    </div>
+
+    <!-- B2 CONFIRMATION -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:var(--ok)">B2</div><div class="sc-title">Confirmation Pointage</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="text-align:center;font-size:13px">Confirmation</div></div>
+        <div style="text-align:center;padding:28px 20px 16px">
+          <div style="width:72px;height:72px;background:var(--ok-bg);border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;border:3px solid var(--ok);font-size:30px">✓</div>
+          <div style="font-size:16px;font-weight:800;color:var(--ok)">Pointage enregistré !</div>
+          <div style="font-size:11px;color:var(--gray3);margin-top:4px">Départ enregistré à</div>
+          <div class="time-big">17:03</div>
+          <div style="font-size:10px;color:var(--gray3)">Lundi 15 Avril 2026</div>
+        </div>
+        <div class="card">
+          <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:8px">Récapitulatif journée</div>
+          <div class="row"><div class="lbl">Arrivée</div><div class="val">07:58</div></div>
+          <div class="row"><div class="lbl">Départ</div><div class="val">17:03</div></div>
+          <div class="row"><div class="lbl">Temps travaillé</div><div class="val" style="color:var(--ok)">8h 05min</div></div>
+          <div class="row"><div class="lbl">Heures sup.</div><div class="val" style="color:var(--accent)">0h 05min</div></div>
+          <div class="row"><div class="lbl">Statut</div><div><span class="badge b-ok">À l'heure</span></div></div>
+        </div>
+        <div style="padding:0 10px;font-size:9px;color:var(--gray3);text-align:center">📍 GPS : Site principal (33.57°N, 7.59°W)</div>
+        <div style="padding:12px 10px"><div class="btn-main">Retour au tableau de bord</div></div>
+        <div style="text-align:center;font-size:9px;color:var(--gray4);padding-bottom:8px;font-style:italic">Fermeture automatique dans 3 secondes</div>
+      </div></div>
+      <div class="note"><strong>Animation</strong>Checkmark SVG animé 1s. Message 3s puis auto-dismiss. Heure = data.check_out de l'API. Vibration HapticFeedback.</div>
+    </div>
+
+    <!-- B3 HISTORIQUE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:var(--navy)">B3</div><div class="sc-title">Historique — Calendrier Mensuel</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:13px">Mes Pointages</div><div style="font-size:9px;background:rgba(255,255,255,.15);border-radius:3px;padding:2px 7px">Avr 2026</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 14px">
+          <div style="font-size:16px;color:var(--gray3)">‹</div>
+          <div style="font-size:12px;font-weight:700;color:var(--navy)">Avril 2026</div>
+          <div style="font-size:16px;color:var(--gray3)">›</div>
+        </div>
+        <div class="cal" style="margin-bottom:3px">
+          <div class="cdh">L</div><div class="cdh">M</div><div class="cdh">M</div><div class="cdh">J</div><div class="cdh">V</div><div class="cdh">S</div><div class="cdh">D</div>
+        </div>
+        <div class="cal">
+          <div class="cd"></div><div class="cd cd-p">1</div><div class="cd cd-p">2</div><div class="cd cd-p">3</div><div class="cd cd-p">4</div><div class="cd cd-w">5</div><div class="cd cd-w">6</div>
+          <div class="cd cd-p">7</div><div class="cd cd-l">8</div><div class="cd cd-p">9</div><div class="cd cd-p">10</div><div class="cd cd-h">11</div><div class="cd cd-w">12</div><div class="cd cd-w">13</div>
+          <div class="cd cd-t">15</div><div class="cd cd-p">16</div><div class="cd cd-a">17</div><div class="cd cd-p">18</div><div class="cd cd-p">19</div><div class="cd cd-w">20</div><div class="cd cd-w">21</div>
+          <div class="cd cd-p">22</div><div class="cd cd-p">23</div><div class="cd cd-p">24</div><div class="cd cd-l">25</div><div class="cd cd-p">26</div><div class="cd cd-w">27</div><div class="cd cd-w">28</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding:7px 10px">
+          <div style="display:flex;align-items:center;gap:3px;font-size:8px"><div class="cd-p" style="width:10px;height:10px;border-radius:2px;display:inline-block"></div>Présent</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:8px"><div class="cd-a" style="width:10px;height:10px;border-radius:2px;display:inline-block"></div>Absent</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:8px"><div class="cd-l" style="width:10px;height:10px;border-radius:2px;display:inline-block"></div>Retard</div>
+          <div style="display:flex;align-items:center;gap:3px;font-size:8px"><div class="cd-h" style="width:10px;height:10px;border-radius:2px;display:inline-block"></div>Férié</div>
+        </div>
+        <div class="slbl">Détail — 15 Avril (tap)</div>
+        <div class="card">
+          <div class="row"><div class="lbl">Arrivée</div><div class="val">07:58 — mobile</div></div>
+          <div class="row"><div class="lbl">Départ</div><div class="val">17:03 — mobile</div></div>
+          <div class="row"><div class="lbl">Total</div><div class="val" style="color:var(--ok)">8h05 · À l'heure</div></div>
+        </div>
+        <div class="chips" style="padding:4px 10px 10px">
+          <div class="chip"><div class="chip-n" style="font-size:13px">18j</div><div class="chip-l">Présent</div></div>
+          <div class="chip"><div class="chip-n" style="font-size:13px;color:var(--warn)">2</div><div class="chip-l">Retards</div></div>
+          <div class="chip"><div class="chip-n" style="font-size:13px;color:var(--err)">1j</div><div class="chip-l">Absent</div></div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Cache offline</strong>Shimmer pendant chargement. Données cachées localement. Tap jour → panneau détail. GET /attendance?from=&to=</div>
+    </div>
+
+    <!-- C1 ABSENCES LISTE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#9C27B0">C1</div><div class="sc-title">Mes Absences — Solde + Liste</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:13px">Mes Absences</div></div>
+        <div style="background:var(--navy);padding:14px;text-align:center;color:white">
+          <div style="font-size:10px;opacity:.65;margin-bottom:3px">Solde de congés disponible</div>
+          <div style="font-size:42px;font-weight:900;line-height:1">12.5</div>
+          <div style="font-size:11px;opacity:.75">jours</div>
+          <div style="display:flex;justify-content:center;gap:20px;margin-top:10px">
+            <div><div style="font-size:9px;opacity:.55">Acquis</div><div style="font-size:12px;font-weight:700">26j</div></div>
+            <div><div style="font-size:9px;opacity:.55">Pris</div><div style="font-size:12px;font-weight:700">13.5j</div></div>
+            <div><div style="font-size:9px;opacity:.55">En attente</div><div style="font-size:12px;font-weight:700">2j</div></div>
+          </div>
+        </div>
+        <div style="padding:10px 10px 6px"><div class="btn-main" style="font-size:11px;padding:9px">+ Nouvelle demande</div></div>
+        <div style="display:flex;gap:5px;padding:0 10px 7px">
+          <div style="background:var(--navy);color:white;border-radius:20px;padding:3px 10px;font-size:9px">Toutes</div>
+          <div class="btn-ghost" style="border-radius:20px;padding:3px 9px">En attente</div>
+          <div class="btn-ghost" style="border-radius:20px;padding:3px 9px">Approuvées</div>
+        </div>
+        <div class="li"><div style="flex:1"><div style="font-size:10px;font-weight:700">Congé annuel</div><div style="font-size:9px;color:var(--gray3)">14–16 Avr 2026 · 3 jours</div></div><span class="badge b-warn">En attente</span></div>
+        <div class="li"><div style="flex:1"><div style="font-size:10px;font-weight:700">Maladie</div><div style="font-size:9px;color:var(--gray3)">22 Mar 2026 · 1 jour</div></div><span class="badge b-ok">Approuvée</span></div>
+        <div class="li"><div style="flex:1"><div style="font-size:10px;font-weight:700">Congé annuel</div><div style="font-size:9px;color:var(--gray3)">10–14 Mar 2026 · 5 jours</div></div><span class="badge b-ok">Approuvée</span></div>
+        <div class="li"><div style="flex:1"><div style="font-size:10px;font-weight:700">Personnel</div><div style="font-size:9px;color:var(--gray3)">5 Fév 2026 · 1 jour</div></div><span class="badge b-err">Refusée</span></div>
+      </div></div>
+      <div class="note"><strong>UX</strong>Solde 42px font-size. Badge couleur statut. GET /absences. POST /absences → C2. Soft delete uniquement.</div>
+    </div>
+
+    <!-- C2 FORMULAIRE DEMANDE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#9C27B0">C2</div><div class="sc-title">Nouvelle Demande d'Absence</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:13px">Nouvelle demande</div></div>
+        <div style="padding:12px 12px;overflow:auto">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:5px">Type de congé *</div>
+          <div style="border:1.5px solid var(--navy);border-radius:7px;padding:8px 10px;display:flex;justify-content:space-between;background:#E8EAF6;margin-bottom:10px">
+            <span style="font-size:11px;color:var(--navy);font-weight:600">Congé annuel</span><span style="color:var(--gray3)">▼</span>
+          </div>
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:5px">Dates *</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px">
+            <div class="inp" style="margin-bottom:0"><div style="font-size:9px;color:var(--gray3)">Début<br><span style="font-size:11px;font-weight:700;color:var(--gray1)">14 Avr</span></div></div>
+            <div class="inp" style="margin-bottom:0"><div style="font-size:9px;color:var(--gray3)">Fin<br><span style="font-size:11px;font-weight:700;color:var(--gray1)">16 Avr</span></div></div>
+          </div>
+          <div style="background:var(--ok-bg);border-radius:6px;padding:7px 10px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:10px;color:var(--ok)">Durée calculée auto (jours ouvrables)</div>
+            <div style="font-size:14px;font-weight:900;color:#1B5E20">3 jours</div>
+          </div>
+          <div style="background:var(--warn-bg);border-radius:6px;padding:7px 10px;margin-bottom:9px;font-size:9px;color:var(--warn)">Solde : 12.5j → Après approbation : 9.5j</div>
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:5px">Commentaire</div>
+          <div style="border:1.5px solid var(--gray5);border-radius:7px;padding:8px 10px;min-height:50px;font-size:10px;color:var(--gray3);margin-bottom:9px">Congé planifié depuis janvier…</div>
+          <div style="border:1.5px dashed var(--gray5);border-radius:7px;padding:10px;text-align:center;font-size:10px;color:var(--gray3);margin-bottom:12px">📎 Pièce jointe (optionnel)</div>
+          <!-- Erreurs possibles -->
+          <div style="background:var(--err-bg);border-radius:5px;padding:6px 9px;margin-bottom:7px;font-size:9px;color:var(--err)">Solde insuffisant. Dispo : 4j, demandés : 6j.</div>
+          <div style="background:var(--err-bg);border-radius:5px;padding:6px 9px;margin-bottom:10px;font-size:9px;color:var(--err)">Préavis minimum : 3 jours requis.</div>
+          <div class="btn-main">Soumettre la demande</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Validation</strong>Hors week-ends + jours fériés. FormRequest côté serveur. Erreurs INSUFFICIENT_LEAVE_BALANCE + INSUFFICIENT_NOTICE.</div>
+    </div>
+
+    <!-- D1 MES TÂCHES -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#2196F3">D1</div><div class="sc-title">Mes Tâches</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:13px">Mes Tâches</div><div style="font-size:10px;background:var(--accent);border-radius:10px;padding:1px 7px">5</div></div>
+        <div style="display:flex;gap:4px;padding:7px 10px;overflow-x:auto">
+          <div style="background:var(--navy);color:white;border-radius:20px;padding:4px 10px;font-size:9px;white-space:nowrap">Toutes (8)</div>
+          <div class="btn-ghost" style="border-radius:20px;padding:4px 9px;white-space:nowrap">À faire (5)</div>
+          <div class="btn-ghost" style="border-radius:20px;padding:4px 9px;white-space:nowrap">En cours (2)</div>
+          <div class="btn-ghost" style="border-radius:20px;padding:4px 9px;white-space:nowrap">Terminées (1)</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--err)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px"><div style="font-size:11px;font-weight:700;flex:1;padding-right:5px">Rapport mensuel RH</div><span class="badge b-err">Urgent</span></div>
+          <div style="font-size:9px;color:var(--gray3);margin-bottom:5px">Échéance : <span style="color:var(--err)">Aujourd'hui</span> · Commercial</div>
+          <div class="pbar"><div class="pfill" style="width:30%;background:var(--err)"></div></div>
+          <div style="font-size:8px;color:var(--gray3);margin-top:2px">30% — À faire</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--warn)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px"><div style="font-size:11px;font-weight:700;flex:1;padding-right:5px">Mise à jour fiches employés</div><span class="badge b-warn">Normal</span></div>
+          <div style="font-size:9px;color:var(--gray3);margin-bottom:5px">Échéance : 18 Avr · Admin</div>
+          <div class="pbar"><div class="pfill" style="width:65%;background:var(--warn)"></div></div>
+          <div style="font-size:8px;color:var(--gray3);margin-top:2px">65% — En cours</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--navy)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-size:11px;font-weight:700;flex:1;padding-right:5px">Formation onboarding Q2</div><span class="badge b-info">Normal</span></div>
+          <div style="font-size:9px;color:var(--gray3);margin-top:3px">Échéance : 30 Avr</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--ok);opacity:.7">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;font-weight:600;text-decoration:line-through;color:var(--gray3)">Planification réunion</div><span class="badge b-ok">Terminée</span></div>
+        </div>
+        <div class="bnav">
+          <div class="bni"><div class="bni-icon"></div>Accueil</div>
+          <div class="bni"><div class="bni-icon"></div>Absences</div>
+          <div class="bni act"><div class="bni-icon"></div>Tâches</div>
+          <div class="bni"><div class="bni-icon"></div>Paie</div>
+          <div class="bni"><div class="bni-icon"></div>Profil</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Performance</strong>ListView.builder. Shimmer chargement. Priorité = couleur bordure gauche. CachedNetworkImage avatars. GET /tasks.</div>
+    </div>
+
+    <!-- D2 DÉTAIL TÂCHE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#2196F3">D2</div><div class="sc-title">Détail Tâche + Commentaires</div><div class="sc-role">Employé</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:12px">Rapport mensuel RH</div></div>
+        <div style="padding:6px 10px;display:flex;gap:5px;align-items:center">
+          <span class="badge b-err">Urgent</span><span class="badge b-warn">À faire</span>
+          <div style="flex:1"></div><div style="font-size:9px;color:var(--err)">Échéance : Aujourd'hui</div>
+        </div>
+        <div style="padding:0 10px 7px;font-size:10px;color:var(--gray3);line-height:1.5">Préparer le rapport mensuel RH incluant absences, pointages et avances pour validation DG.</div>
+        <!-- Changer statut -->
+        <div style="margin:0 10px 7px;border:1px solid var(--gray5);border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:10px;color:var(--gray3)">Changer le statut</span>
+          <span style="font-size:10px;color:var(--navy);font-weight:600">En cours ▼</span>
+        </div>
+        <div class="slbl">Checklist (2/4)</div>
+        <div style="padding:4px 10px">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px"><div style="width:13px;height:13px;border-radius:3px;background:var(--ok);border:1.5px solid var(--ok);display:flex;align-items:center;justify-content:center;color:white;font-size:8px;flex-shrink:0">✓</div><div style="font-size:10px;text-decoration:line-through;color:var(--gray3)">Collecter données pointages</div></div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px"><div style="width:13px;height:13px;border-radius:3px;background:var(--ok);display:flex;align-items:center;justify-content:center;color:white;font-size:8px;flex-shrink:0">✓</div><div style="font-size:10px;text-decoration:line-through;color:var(--gray3)">Calculer absences</div></div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px"><div style="width:13px;height:13px;border-radius:3px;border:1.5px solid var(--gray5);flex-shrink:0"></div><div style="font-size:10px">Mettre en forme le tableau</div></div>
+          <div style="display:flex;gap:6px;align-items:center"><div style="width:13px;height:13px;border-radius:3px;border:1.5px solid var(--gray5);flex-shrink:0"></div><div style="font-size:10px">Envoyer pour validation</div></div>
+        </div>
+        <div class="slbl">Commentaires (2)</div>
+        <div style="padding:4px 10px 4px">
+          <div style="display:flex;gap:6px;margin-bottom:7px">
+            <div class="avatar" style="width:22px;height:22px;font-size:8px;background:#3949AB">NB</div>
+            <div style="flex:1;background:var(--gray6);border-radius:0 6px 6px 6px;padding:5px 7px">
+              <div style="font-size:9px;font-weight:600;margin-bottom:1px">Nadia B. · 14 Avr 09:15</div>
+              <div style="font-size:9px;color:var(--gray2)">N'oubliez pas les heures supplémentaires.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:7px">
+            <div class="avatar" style="width:22px;height:22px;font-size:8px;background:var(--accent)">AK</div>
+            <div style="flex:1;background:#E8EAF6;border-radius:0 6px 6px 6px;padding:5px 7px">
+              <div style="font-size:9px;font-weight:600;margin-bottom:1px">Ahmed K. · 14 Avr 11:40</div>
+              <div style="font-size:9px;color:var(--gray2)">Compris, je les intègre.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:5px;align-items:center">
+            <div class="inp" style="flex:1;margin-bottom:0;padding:7px 9px;font-size:10px">Ajouter un commentaire...</div>
+            <div style="background:var(--navy);color:white;border-radius:5px;padding:7px 9px;font-size:11px">→</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="note"><strong>APIs</strong>PUT /tasks/{id}/status · POST /tasks/{id}/comments. Checklist interactive (tap to toggle). Statuts : todo/inprogress/review/done/rejected.</div>
+    </div>
+
+    <!-- E1 MES AVANCES -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#FF9800">E1</div><div class="sc-title">Mes Avances sur Salaire</div><div class="sc-role">Employé (si activé)</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:13px">Mes Avances</div></div>
+        <!-- Module désactivé state -->
+        <div style="background:var(--warn-bg);padding:10px 12px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #FFE082">
+          <div style="font-size:12px">⚙</div>
+          <div style="font-size:9px;color:var(--warn)">Module avances désactivé pour votre entreprise. Contactez votre gestionnaire.</div>
+        </div>
+        <!-- Module activé state below -->
+        <div style="padding:12px">
+          <div style="font-size:10px;color:var(--gray3);margin-bottom:6px">Si module activé :</div>
+          <div style="background:#E3F2FD;border-radius:7px;padding:10px;margin-bottom:8px">
+            <div style="font-size:10px;color:var(--info);margin-bottom:4px">Avance en cours</div>
+            <div style="font-size:15px;font-weight:800;color:var(--info)">15 000 DZD</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">Restant dû : 10 000 DZD</div>
+            <div class="pbar" style="margin-top:5px"><div class="pfill" style="width:33%;background:var(--info)"></div></div>
+          </div>
+          <div class="slbl" style="padding:0 0 4px">Plan de remboursement</div>
+          <div class="li" style="padding:6px 0"><div class="lbl" style="flex:1">Mai 2026</div><div class="val">5 000 DZD</div><span class="badge b-ok" style="margin-left:6px">Payé</span></div>
+          <div class="li" style="padding:6px 0"><div class="lbl" style="flex:1">Juin 2026</div><div class="val">5 000 DZD</div><span class="badge b-warn" style="margin-left:6px">En cours</span></div>
+          <div class="li" style="padding:6px 0;border:none"><div class="lbl" style="flex:1">Juil. 2026</div><div class="val">5 000 DZD</div><span class="badge b-neu" style="margin-left:6px">Planifié</span></div>
+          <div style="margin-top:10px"><div class="btn-main" style="font-size:11px;padding:10px">+ Nouvelle demande d'avance</div></div>
+          <div style="font-size:9px;color:var(--gray3);text-align:center;margin-top:6px">Max autorisé : 50% du salaire = 37 500 DZD</div>
+        </div>
+        <div class="bnav">
+          <div class="bni"><div class="bni-icon"></div>Accueil</div>
+          <div class="bni act"><div class="bni-icon"></div>Absences</div>
+          <div class="bni"><div class="bni-icon"></div>Tâches</div>
+          <div class="bni"><div class="bni-icon"></div>Paie</div>
+          <div class="bni"><div class="bni-icon"></div>Profil</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Désactivé par défaut</strong>L'entreprise active le module dans Paramètres. Max 50% salaire brut. Max 1 avance simultanée. Délai min 30j entre demandes.</div>
+    </div>
+
+  </div><!-- /screens-grid -->
+</div><!-- /employe -->
+
+<!-- ══════════════════════════════════════════════════════
+     MANAGER DÉPARTEMENT
+══════════════════════════════════════════════════════════ -->
+<div id="manager" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:#1565C0">👥</div>
+    <div>
+      <h1>Profil Manager Département</h1>
+      <p>Accès à son département uniquement. Valide les absences et pointages de son équipe, assigne des tâches, surveille les présences. Interface mobile (Flutter) + web pour les rapports. Pas d'accès à la paie ni aux paramètres.</p>
+      <div class="role-tags"><span class="rtag">Périmètre : département uniquement</span><span class="rtag">Flutter + Web</span><span class="rtag">Pas de paie, pas de paramètres</span></div>
+    </div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- MG1 DASHBOARD ÉQUIPE -->
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-head"><div class="sc-id" style="background:#1565C0">MG1</div><div class="sc-title">Dashboard Présence Équipe — Temps Réel</div><div class="sc-role">Manager Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/manager/dashboard</div></div>
+        <div class="web-layout">
+          <div class="sb">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sb-sect">Mon périmètre</div>
+            <div class="sbi act"><div class="sbi-ico"></div>Dashboard équipe</div>
+            <div class="sbi"><div class="sbi-ico"></div>Présences <span class="badge b-warn">3</span></div>
+            <div class="sbi"><div class="sbi-ico"></div>Absences <span class="badge b-warn">2</span></div>
+            <div class="sbi"><div class="sbi-ico"></div>Tâches équipe</div>
+            <div class="sbi"><div class="sbi-ico"></div>Mon profil</div>
+            <div style="margin-top:auto;padding:10px 14px;font-size:9px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.08)">Dept. Commercial · 12 membres</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div><div style="font-size:9px;color:var(--gray3)">15 Avr 2026</div><div class="wc-title">Dashboard — Département Commercial</div></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:9px;color:var(--gray3)">Rafraîchi il y a 2 min</div>
+                <div class="btn-ghost" style="font-size:9px">↻ Actualiser</div>
+                <div class="avatar" style="width:26px;height:26px;font-size:9px;background:var(--navy)">NB</div>
+              </div>
+            </div>
+            <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+              <div class="kpi-card"><div class="kpi-lbl">Présents</div><div class="kpi-val" style="color:var(--ok)">9</div><div class="kpi-sub">sur 12 · 75%</div><div class="pbar" style="margin-top:5px"><div class="pfill" style="width:75%;background:var(--ok)"></div></div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Absents</div><div class="kpi-val" style="color:var(--err)">2</div><div class="kpi-sub">1 justifié · 1 non</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Retards</div><div class="kpi-val" style="color:var(--warn)">1</div><div class="kpi-sub">Arrivé 08:34</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Non pointés</div><div class="kpi-val" style="color:var(--navy)">1</div><div class="kpi-sub">Action requise</div></div>
+            </div>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Employé</th><th>Arrivée</th><th>Départ</th><th>Heures</th><th>Statut</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:var(--navy)">AK</div>Ahmed Karim</div></td><td>07:58</td><td>—</td><td>—</td><td><span class="badge b-ok">Présent</span></td><td><span style="color:var(--navy);font-size:9px">Voir →</span></td></tr>
+                  <tr><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:#3949AB">FM</div>Fatima Mansouri</div></td><td>08:34</td><td>—</td><td>—</td><td><span class="badge b-warn">Retard</span></td><td><span style="color:var(--navy);font-size:9px">Voir →</span></td></tr>
+                  <tr><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:var(--accent)">KB</div>Karim Bensaid</div></td><td>—</td><td>—</td><td>—</td><td><span class="badge b-err">Absent</span></td><td><span style="color:var(--accent);font-size:9px">Justifier</span></td></tr>
+                  <tr><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:var(--ok)">SO</div>Sara Ouali</div></td><td>07:52</td><td>—</td><td>—</td><td><span class="badge b-ok">Présent</span></td><td><span style="color:var(--navy);font-size:9px">Voir →</span></td></tr>
+                  <tr style="background:#FFF3E0"><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:#9C27B0">HZ</div>Hassan Zaidi</div></td><td>—</td><td>—</td><td>—</td><td><span class="badge b-neu">Non pointé</span></td><td><span style="color:var(--err);font-size:9px">Alerter</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Scope</strong>Vue filtrée sur le département du manager. Filtre par sous-équipe. Correction pointage manuel possible. PUT /attendance/{id}.</div>
+    </div>
+
+    <!-- MG2 VALIDATIONS ABSENCES -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#1565C0">MG2</div><div class="sc-title">Validation Absences — Mon Équipe</div><div class="sc-role">Manager Web + Flutter</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar"><div style="font-size:16px">←</div><div class="abar-title" style="font-size:12px">Demandes en attente</div><div style="font-size:10px;background:var(--accent);border-radius:10px;padding:1px 7px">2</div></div>
+        <div style="padding:7px 10px;border-bottom:1px solid var(--gray5)">
+          <div style="font-size:9px;color:var(--gray3)">Département Commercial · 2 en attente</div>
+        </div>
+        <!-- Demande 1 -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
+            <div class="avatar" style="width:26px;height:26px;font-size:9px;background:var(--navy)">AK</div>
+            <div><div style="font-size:11px;font-weight:700">Ahmed Karim</div><div style="font-size:9px;color:var(--gray3)">Congé annuel · Soumis 12 Avr</div></div>
+          </div>
+          <div class="row"><div class="lbl">Dates</div><div class="val">14–16 Avr 2026 · <strong>3 jours</strong></div></div>
+          <div class="row"><div class="lbl">Solde actuel</div><div class="val" style="color:var(--ok)">12.5 jours ✓</div></div>
+          <div class="row"><div class="lbl">Planning équipe</div><div class="val">2 autres en congé cette période</div></div>
+          <div style="font-size:9px;color:var(--gray3);font-style:italic;margin:5px 0">Congé planifié depuis janvier.</div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <div style="flex:1;background:var(--ok-bg);color:var(--ok);border-radius:6px;padding:8px;text-align:center;font-size:10px;font-weight:700">✓ Approuver</div>
+            <div style="flex:1;background:var(--err-bg);color:var(--err);border-radius:6px;padding:8px;text-align:center;font-size:10px;font-weight:700">✗ Refuser</div>
+          </div>
+        </div>
+        <!-- Modal refus -->
+        <div style="margin:0 10px;border:1px solid var(--err-bg);border-radius:7px;padding:8px;background:#FFF5F5">
+          <div style="font-size:9px;font-weight:700;color:var(--err);margin-bottom:4px">Motif de refus (obligatoire)</div>
+          <div class="inp" style="margin-bottom:6px;font-size:10px">Effectif insuffisant sur cette période…</div>
+          <div class="btn-danger" style="font-size:10px;padding:7px">Confirmer le refus</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Workflow</strong>PUT /absences/{id}/approve ou /reject. DB::transaction : absence + solde + notification push employé. Motif obligatoire si refus.</div>
+    </div>
+
+    <!-- MG3 TÂCHES KANBAN -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#1565C0">MG3</div><div class="sc-title">Tâches Équipe — Vue Kanban</div><div class="sc-role">Manager Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/manager/tasks</div></div>
+        <div style="display:flex">
+          <div class="sb" style="width:160px">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sbi"><div class="sbi-ico"></div>Dashboard</div>
+            <div class="sbi act"><div class="sbi-ico"></div>Tâches <span class="badge b-warn">3</span></div>
+            <div class="sbi"><div class="sbi-ico"></div>Absences</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div class="wc-title">Tâches équipe</div>
+              <div style="display:flex;gap:6px">
+                <div class="btn-ghost" style="font-size:9px">Liste ▼</div>
+                <div style="background:var(--navy);color:white;padding:5px 12px;border-radius:5px;font-size:10px;font-weight:700">+ Créer tâche</div>
+              </div>
+            </div>
+            <div class="kboard">
+              <div class="kcol">
+                <div class="khead" style="color:var(--gray3)">À faire (3)</div>
+                <div class="kcard" style="border-left-color:var(--err)"><div style="font-size:9px;font-weight:700">Rapport RH</div><div style="font-size:8px;color:var(--err)">Urgent · Ahmed K.</div></div>
+                <div class="kcard" style="border-left-color:var(--warn)"><div style="font-size:9px;font-weight:700">MAJ fiches</div><div style="font-size:8px;color:var(--gray3)">Normal · Fatima M.</div></div>
+                <div class="kcard" style="border-left-color:var(--navy)"><div style="font-size:9px;font-weight:700">Formation Q2</div><div style="font-size:8px;color:var(--gray3)">Normal · Sara O.</div></div>
+              </div>
+              <div class="kcol">
+                <div class="khead" style="color:var(--info)">En cours (2)</div>
+                <div class="kcard" style="border-left-color:var(--warn)"><div style="font-size:9px;font-weight:700">Analyse marché</div><div style="font-size:8px;color:var(--gray3)">Normal · Karim B.</div></div>
+                <div class="kcard" style="border-left-color:var(--navy)"><div style="font-size:9px;font-weight:700">Onboarding</div><div style="font-size:8px;color:var(--gray3)">Normal · Hassan Z.</div></div>
+              </div>
+              <div class="kcol">
+                <div class="khead" style="color:var(--warn)">Révision (1)</div>
+                <div class="kcard" style="border-left-color:var(--accent)"><div style="font-size:9px;font-weight:700">Présentation Q1</div><div style="font-size:8px;color:var(--gray3)">Urgent · Ahmed K.</div></div>
+              </div>
+              <div class="kcol">
+                <div class="khead" style="color:var(--ok)">Terminées (4)</div>
+                <div class="kcard" style="border-left-color:var(--ok);opacity:.7"><div style="font-size:9px;font-weight:600;text-decoration:line-through;color:var(--gray3)">Réunion hebdo</div></div>
+                <div class="kcard" style="border-left-color:var(--ok);opacity:.7"><div style="font-size:9px;font-weight:600;text-decoration:line-through;color:var(--gray3)">Plan recrutement</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Création tâche</strong>POST /tasks. Assignable à un ou plusieurs employés. Checklist, pièces jointes, projet parent. Notification push aux assignés.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     RESPONSABLE RH
+══════════════════════════════════════════════════════════ -->
+<div id="rh" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:#7B1FA2">🏢</div>
+    <div>
+      <h1>Profil Responsable RH</h1>
+      <p>Accès à toute l'entreprise pour les fonctions RH : gestion des employés (CRUD complet), absences, avances, rapports. Pas d'accès aux paramètres système ni à la paie finale. Interface web uniquement.</p>
+      <div class="role-tags"><span class="rtag">Web uniquement</span><span class="rtag">Toute l'entreprise</span><span class="rtag">Pas de paramètres, pas de validation paie</span></div>
+    </div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- RH1 LISTE EMPLOYÉS + CRUD -->
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-head"><div class="sc-id" style="background:#7B1FA2">RH1</div><div class="sc-title">Gestion Employés — Liste + CRUD complet</div><div class="sc-role">Responsable RH Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/rh/employees</div></div>
+        <div class="web-layout">
+          <div class="sb">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sb-sect">Ressources humaines</div>
+            <div class="sbi act"><div class="sbi-ico"></div>Employés</div>
+            <div class="sbi"><div class="sbi-ico"></div>Absences</div>
+            <div class="sbi"><div class="sbi-ico"></div>Avances</div>
+            <div class="sbi"><div class="sbi-ico"></div>Rapports</div>
+            <div class="sbi"><div class="sbi-ico"></div>Mon profil</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div class="wc-title">Employés (48)</div>
+              <div style="display:flex;gap:7px;align-items:center">
+                <div class="btn-ghost" style="font-size:9px">Tous les dépts ▼</div>
+                <div class="btn-ghost" style="font-size:9px">Actifs ▼</div>
+                <div class="btn-ghost" style="font-size:9px">🔍 Rechercher…</div>
+                <div class="btn-ghost" style="font-size:9px">📥 Import CSV</div>
+                <div style="background:var(--navy);color:white;padding:6px 12px;border-radius:5px;font-size:10px;font-weight:700">+ Ajouter employé</div>
+              </div>
+            </div>
+            <div class="tw" style="margin-top:10px">
+              <table>
+                <thead><tr><th>Matricule</th><th>Nom prénom</th><th>Poste / Dpt</th><th>Contrat</th><th>Solde congés</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td style="font-family:monospace;font-size:9px">EMP-0042</td><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:var(--navy)">AK</div><div><div style="font-weight:600">Ahmed Karim</div><div style="font-size:9px;color:var(--gray3)">ahmed.k@entreprise.dz</div></div></div></td><td><div>Dév. Senior</div><div style="font-size:9px;color:var(--gray3)">Informatique</div></td><td><span class="badge b-info">CDI</span></td><td style="font-weight:700;color:var(--ok)">12.5j</td><td><span class="badge b-ok">Actif</span></td><td><div style="display:flex;gap:4px"><span style="color:var(--navy);font-size:9px;cursor:pointer">Voir</span> · <span style="color:var(--warn);font-size:9px">Modifier</span></div></td></tr>
+                  <tr><td style="font-family:monospace;font-size:9px">EMP-0043</td><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:#3949AB">FM</div><div><div style="font-weight:600">Fatima Mansouri</div><div style="font-size:9px;color:var(--gray3)">f.mansouri@entreprise.dz</div></div></div></td><td><div>Commerciale</div><div style="font-size:9px;color:var(--gray3)">Commercial</div></td><td><span class="badge b-info">CDD</span></td><td style="font-weight:700;color:var(--warn)">2.5j</td><td><span class="badge b-ok">Actif</span></td><td><div style="display:flex;gap:4px"><span style="color:var(--navy);font-size:9px">Voir</span> · <span style="color:var(--warn);font-size:9px">Modifier</span></div></td></tr>
+                  <tr><td style="font-family:monospace;font-size:9px">EMP-0038</td><td><div style="display:flex;align-items:center;gap:5px"><div class="avatar" style="width:20px;height:20px;font-size:8px;background:var(--ok)">YK</div><div><div style="font-weight:600">Yacine Kaci</div><div style="font-size:9px;color:var(--err)">⚠ Contrat expire dans 7j</div></div></div></td><td><div>Stagiaire RH</div><div style="font-size:9px;color:var(--gray3)">RH</div></td><td><span class="badge b-warn">Stage</span></td><td>0j</td><td><span class="badge b-warn">Période essai</span></td><td><div style="display:flex;gap:4px"><span style="color:var(--navy);font-size:9px">Voir</span> · <span style="color:var(--err);font-size:9px">Archiver</span></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Formulaire ajout employé (condensé) -->
+            <div style="margin:0 16px;padding:10px;background:var(--info-bg);border-radius:7px;border:1px solid #90CAF9">
+              <div style="font-size:10px;font-weight:700;color:var(--info);margin-bottom:8px">Formulaire Ajouter Employé (champs obligatoires)</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Prénom *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Fatima</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Nom *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Boudaoud</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Email pro *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">f.b@entreprise.dz</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Département *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Commercial ▼</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Poste *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Commercial ▼</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Contrat *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">CDI ▼</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Salaire brut *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">75 000 DZD</div></div>
+                <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Planning *</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Standard ▼</div></div>
+              </div>
+              <div style="margin-top:7px;display:flex;justify-content:flex-end;gap:6px">
+                <div class="btn-ghost" style="font-size:9px;padding:5px 10px">Annuler</div>
+                <div style="background:var(--navy);color:white;padding:5px 14px;border-radius:5px;font-size:9px;font-weight:700">Créer + Envoyer identifiants</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Import CSV</strong>POST /employees/import. Modèle téléchargeable. Validation avant import (doublons, manquants). Rapport ligne par ligne. Alerte contrats expirant J-30/J-15/J-7.</div>
+    </div>
+
+    <!-- RH2 RAPPORTS -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#7B1FA2">RH2</div><div class="sc-title">Rapports Présence + Export</div><div class="sc-role">Responsable RH Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/rh/reports</div></div>
+        <div style="display:flex;height:380px">
+          <div class="sb" style="width:160px">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sbi"><div class="sbi-ico"></div>Employés</div>
+            <div class="sbi"><div class="sbi-ico"></div>Absences</div>
+            <div class="sbi act"><div class="sbi-ico"></div>Rapports</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar"><div class="wc-title">Rapports</div></div>
+            <div style="padding:10px 14px">
+              <!-- Filtres -->
+              <div style="display:flex;gap:7px;margin-bottom:10px;align-items:center">
+                <div class="inp" style="margin-bottom:0;padding:5px 9px;font-size:9px">Présence ▼</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 9px;font-size:9px">01 Avr → 30 Avr 2026</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 9px;font-size:9px">Tous dépts ▼</div>
+                <div style="background:var(--navy);color:white;padding:5px 12px;border-radius:5px;font-size:9px;font-weight:700">Générer</div>
+              </div>
+              <!-- Résumé -->
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:10px">
+                <div class="kpi-card" style="padding:8px"><div class="kpi-lbl">Taux présence</div><div class="kpi-val" style="font-size:16px;color:var(--ok)">94.2%</div></div>
+                <div class="kpi-card" style="padding:8px"><div class="kpi-lbl">Heures travaillées</div><div class="kpi-val" style="font-size:14px">1 876.5h</div></div>
+                <div class="kpi-card" style="padding:8px"><div class="kpi-lbl">Heures sup.</div><div class="kpi-val" style="font-size:14px;color:var(--accent)">45.5h</div></div>
+                <div class="kpi-card" style="padding:8px"><div class="kpi-lbl">Retards</div><div class="kpi-val" style="font-size:14px;color:var(--warn)">8</div></div>
+                <div class="kpi-card" style="padding:8px"><div class="kpi-lbl">Absences</div><div class="kpi-val" style="font-size:14px;color:var(--err)">3</div></div>
+              </div>
+              <div class="tw" style="margin:0">
+                <table>
+                  <thead><tr><th>Employé</th><th>Jours présent</th><th>Heures</th><th>Retards</th><th>Taux</th></tr></thead>
+                  <tbody>
+                    <tr><td>Ahmed Karim</td><td>21</td><td>168.5h</td><td>1</td><td style="color:var(--ok);font-weight:700">95.5%</td></tr>
+                    <tr><td>Fatima Mansouri</td><td>18</td><td>144h</td><td>3</td><td style="color:var(--warn);font-weight:700">81.8%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="display:flex;gap:7px;margin-top:9px">
+                <div class="btn-ghost" style="font-size:9px">📄 Export PDF</div>
+                <div class="btn-ghost" style="font-size:9px">📊 Export Excel</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>API</strong>GET /reports/attendance?from=&to=&department_id=&format=json|pdf|excel. Plan Starter = PDF seul. Business/Enterprise = PDF+Excel.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     COMPTABLE
+══════════════════════════════════════════════════════════ -->
+<div id="comptable" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:#E65100">💰</div>
+    <div>
+      <h1>Profil Comptable</h1>
+      <p>Accès exclusif à la paie et facturation. Calcule la simulation, valide les bulletins, génère l'export bancaire. Lecture seule sur les données RH (pas de modification employés). Interface web uniquement.</p>
+      <div class="role-tags"><span class="rtag">Web uniquement</span><span class="rtag">Paie + export bancaire</span><span class="rtag">Lecture seule RH</span></div>
+    </div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- COMPTA1 MODULE PAIE -->
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-head"><div class="sc-id" style="background:#E65100">CP1</div><div class="sc-title">Module Paie — Simulation + Validation + Export</div><div class="sc-role">Comptable Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/payroll</div></div>
+        <div class="web-layout">
+          <div class="sb">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sbi act"><div class="sbi-ico"></div>Module Paie</div>
+            <div class="sbi"><div class="sbi-ico"></div>Historique bulletins</div>
+            <div class="sbi"><div class="sbi-ico"></div>Export bancaire</div>
+            <div class="sbi"><div class="sbi-ico"></div>Rapports paie</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div class="wc-title">Module Paie</div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="inp" style="margin-bottom:0;padding:5px 10px;font-size:9px">Avril 2026 ▼</div>
+                <div style="background:var(--accent);color:white;padding:7px 16px;border-radius:5px;font-size:10px;font-weight:800">⚡ Calculer (Simuler)</div>
+              </div>
+            </div>
+            <!-- Status bar -->
+            <div style="background:var(--warn-bg);border-bottom:1px solid #FFE082;padding:7px 16px;font-size:10px;color:var(--warn);display:flex;align-items:center;gap:8px">
+              <span>⚠ Paie Avril 2026 — Simulation (non validée)</span>
+              <span style="flex:1"></span>
+              <span style="font-size:9px">Token : pay-sim-7c9e6679… · Expire 30 Avr 23:59</span>
+            </div>
+            <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+              <div class="kpi-card"><div class="kpi-lbl">Employés</div><div class="kpi-val" style="color:var(--navy)">48</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Masse brute</div><div class="kpi-val" style="font-size:14px;color:var(--navy)">3.245M</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Masse nette</div><div class="kpi-val" style="font-size:14px;color:var(--ok)">2.688M</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Anomalies</div><div class="kpi-val" style="color:var(--err)">3</div><div class="kpi-sub">Voir →</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Avances déduites</div><div class="kpi-val" style="font-size:14px;color:var(--accent)">85k DZD</div></div>
+            </div>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Employé</th><th>Brut</th><th>HS</th><th>Cotisations</th><th>IR</th><th>Avance</th><th>Absences</th><th>Net à payer</th><th>Statut</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="display:flex;align-items:center;gap:4px"><div class="avatar" style="width:18px;height:18px;font-size:7px;background:var(--navy)">AK</div>Ahmed Karim</div></td><td>85 000</td><td style="color:var(--accent)">+3 500</td><td>12 300</td><td>4 500</td><td>—</td><td style="color:var(--ok)">0j</td><td style="font-weight:800;color:var(--navy)">71 700</td><td><span class="badge b-ok">OK</span></td></tr>
+                  <tr style="background:#FFF8E1"><td><div style="display:flex;align-items:center;gap:4px"><div class="avatar" style="width:18px;height:18px;font-size:7px;background:var(--warn)">KB</div>Karim Bensaid</div></td><td>72 000</td><td>—</td><td>10 800</td><td>3 200</td><td style="color:var(--err)">5 000</td><td style="color:var(--err)">3j NJ</td><td style="font-weight:800;color:var(--navy)">44 200</td><td><span class="badge b-warn">⚠ Anomalie</span></td></tr>
+                  <tr><td><div style="display:flex;align-items:center;gap:4px"><div class="avatar" style="width:18px;height:18px;font-size:7px;background:var(--ok)">SO</div>Sara Ouali</div></td><td>68 000</td><td style="color:var(--accent)">+600</td><td>10 200</td><td>2 800</td><td>—</td><td style="color:var(--ok)">0j</td><td style="font-weight:800;color:var(--navy)">55 600</td><td><span class="badge b-ok">OK</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding:8px 16px;display:flex;gap:8px;align-items:center">
+              <div style="background:var(--navy);color:white;padding:9px 20px;border-radius:6px;font-size:10px;font-weight:700">✓ Valider (token UUID requis)</div>
+              <div class="btn-ghost" style="font-size:9px">📄 Générer bulletins PDF (async)</div>
+              <div class="btn-ghost" style="font-size:9px">🏦 Export virement (DZ_GENERIC)</div>
+              <div style="flex:1"></div>
+              <div class="btn-ghost" style="font-size:9px">📊 Export Excel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Formule</strong>Brut total → Cotisations salariales → IR (tranches) → Avances + Absences NJ = NET. Token UUID anti-double-validation. Job queue GeneratePayslipPDF. Formats : DZ/MA/TN/FR/SEPA.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SUPERVISEUR
+══════════════════════════════════════════════════════════ -->
+<div id="superviseur" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:#00838F">👁</div>
+    <div>
+      <h1>Profil Superviseur</h1>
+      <p>Périmètre limité à l'équipe qui lui est assignée. Surveille les présences, valide les absences et tâches de son équipe uniquement. Accès Flutter mobile. Pas d'accès à la paie, ni aux employés hors de son équipe.</p>
+      <div class="role-tags"><span class="rtag">Flutter Mobile</span><span class="rtag">Équipe assignée uniquement</span><span class="rtag">Pas de paie, pas d'employés CRUD</span></div>
+    </div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- SV1 PRÉSENCE ÉQUIPE MOBILE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#00838F">SV1</div><div class="sc-title">Présence Équipe — Mobile</div><div class="sc-role">Superviseur Flutter</div></div>
+      <div class="mf"><div class="ms">
+        <div class="abar">
+          <div style="font-size:16px">←</div>
+          <div class="abar-title" style="font-size:12px">Mon Équipe · 15 Avr</div>
+          <div style="font-size:10px;background:var(--accent);border-radius:10px;padding:1px 7px">1</div>
+        </div>
+        <div class="chips">
+          <div class="chip"><div class="chip-n" style="color:var(--ok)">9</div><div class="chip-l">Présents</div></div>
+          <div class="chip"><div class="chip-n" style="color:var(--err)">1</div><div class="chip-l">Absents</div></div>
+          <div class="chip"><div class="chip-n" style="color:var(--warn)">1</div><div class="chip-l">Retard</div></div>
+          <div class="chip"><div class="chip-n" style="color:var(--navy)">1</div><div class="chip-l">Non pointé</div></div>
+        </div>
+        <div style="display:flex;gap:5px;padding:4px 10px 7px">
+          <div style="background:var(--navy);color:white;border-radius:20px;padding:3px 10px;font-size:9px">Tous</div>
+          <div class="btn-ghost" style="border-radius:20px;padding:3px 8px">⚠ Alertes</div>
+        </div>
+        <div class="li">
+          <div class="avatar" style="width:26px;height:26px;font-size:9px;background:var(--navy)">AK</div>
+          <div style="flex:1"><div style="font-size:10px;font-weight:600">Ahmed Karim</div><div style="font-size:9px;color:var(--gray3)">Arrivée 07:58</div></div>
+          <span class="badge b-ok">Présent</span>
+        </div>
+        <div class="li">
+          <div class="avatar" style="width:26px;height:26px;font-size:9px;background:#3949AB">FM</div>
+          <div style="flex:1"><div style="font-size:10px;font-weight:600">Fatima Mansouri</div><div style="font-size:9px;color:var(--warn)">Arrivée 08:34 · Retard</div></div>
+          <span class="badge b-warn">Retard</span>
+        </div>
+        <div class="li" style="background:#FFEBEE20">
+          <div class="avatar" style="width:26px;height:26px;font-size:9px;background:var(--err)">KB</div>
+          <div style="flex:1"><div style="font-size:10px;font-weight:600">Karim Bensaid</div><div style="font-size:9px;color:var(--err)">Pas de pointage</div></div>
+          <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end">
+            <span class="badge b-err">Absent</span>
+            <span style="font-size:8px;color:var(--navy)">Corriger →</span>
+          </div>
+        </div>
+        <div class="li">
+          <div class="avatar" style="width:26px;height:26px;font-size:9px;background:var(--ok)">SO</div>
+          <div style="flex:1"><div style="font-size:10px;font-weight:600">Sara Ouali</div><div style="font-size:9px;color:var(--ok)">Arrivée 07:52</div></div>
+          <span class="badge b-ok">Présent</span>
+        </div>
+        <!-- Correction pointage manuel -->
+        <div class="slbl">Correction manuelle pointage</div>
+        <div class="card">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:6px">Karim Bensaid — 15 Avr</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+            <div class="inp" style="margin-bottom:0;padding:6px 9px;font-size:10px">Arrivée : 08:00</div>
+            <div class="inp" style="margin-bottom:0;padding:6px 9px;font-size:10px">Départ : 17:00</div>
+          </div>
+          <div class="inp" style="font-size:10px">Motif obligatoire : Oubli de pointer</div>
+          <div class="btn-main" style="font-size:10px;padding:8px">Corriger le pointage</div>
+        </div>
+        <div class="bnav">
+          <div class="bni act"><div class="bni-icon"></div>Équipe</div>
+          <div class="bni"><div class="bni-icon"></div>Tâches</div>
+          <div class="bni"><div class="bni-icon"></div>Absences</div>
+          <div class="bni"><div class="bni-icon"></div>Profil</div>
+        </div>
+      </div></div>
+      <div class="note"><strong>Périmètre</strong>Ne voit que son équipe assignée. Correction pointage : PUT /attendance/{id} avec edit_reason obligatoire. Tracé audit automatique.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GESTIONNAIRE PRINCIPAL
+══════════════════════════════════════════════════════════ -->
+<div id="gestionnaire" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:#C62828">⚙</div>
+    <div>
+      <h1>Profil Gestionnaire Principal</h1>
+      <p>Accès complet à toute l'entreprise. Peut créer d'autres gestionnaires avec des rôles différents. Configure les paramètres, valide la paie, gère les abonnements. Interface web complète. Selon plan : 1 gestionnaire (Starter), 3+ (Business), illimité (Enterprise).</p>
+      <div class="role-tags"><span class="rtag">Web uniquement</span><span class="rtag">Accès total entreprise</span><span class="rtag">Crée d'autres gestionnaires</span><span class="rtag">Paramètres système</span></div>
+    </div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- GP1 DASHBOARD GLOBAL -->
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-head"><div class="sc-id" style="background:#C62828">GP1</div><div class="sc-title">Dashboard Global — Toute l'entreprise</div><div class="sc-role">Gestionnaire Principal Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/dashboard</div></div>
+        <div class="web-layout">
+          <div class="sb">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sb-sect">Accès complet</div>
+            <div class="sbi act"><div class="sbi-ico"></div>Dashboard</div>
+            <div class="sbi"><div class="sbi-ico"></div>Employés <span class="badge b-warn">48</span></div>
+            <div class="sbi"><div class="sbi-ico"></div>Présences</div>
+            <div class="sb-sect">Validation</div>
+            <div class="sbi"><div class="sbi-ico"></div>Absences <span class="badge b-err">5</span></div>
+            <div class="sbi"><div class="sbi-ico"></div>Avances <span class="badge b-warn">2</span></div>
+            <div class="sbi"><div class="sbi-ico"></div>Tâches</div>
+            <div class="sb-sect">Finance</div>
+            <div class="sbi"><div class="sbi-ico"></div>Paie</div>
+            <div class="sbi"><div class="sbi-ico"></div>Rapports</div>
+            <div class="sb-sect">Config</div>
+            <div class="sbi"><div class="sbi-ico"></div>Gestionnaires</div>
+            <div class="sbi"><div class="sbi-ico"></div>Paramètres</div>
+            <div class="sbi"><div class="sbi-ico"></div>Abonnement</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div><div style="font-size:9px;color:var(--gray3)">Gestionnaire Principal · TechAlgeria SPA</div><div class="wc-title">Dashboard Global</div></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="btn-ghost" style="font-size:9px">↻ Actualiser</div>
+                <div class="avatar" style="width:26px;height:26px;font-size:9px;background:var(--navy)">NB</div>
+              </div>
+            </div>
+            <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+              <div class="kpi-card"><div class="kpi-lbl">Présents aujourd'hui</div><div class="kpi-val" style="color:var(--ok)">42</div><div class="kpi-sub">sur 48 · 87%</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Demandes en attente</div><div class="kpi-val" style="color:var(--warn)">7</div><div class="kpi-sub">5 congés + 2 avances</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Paie du mois</div><div class="kpi-val" style="font-size:14px;color:var(--navy)">Non validée</div><div class="kpi-sub"><span style="color:var(--warn)">Calculer →</span></div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Abonnement</div><div class="kpi-val" style="font-size:14px;color:var(--ok)">Business</div><div class="kpi-sub">Expire 31 Jan 2027</div></div>
+            </div>
+            <!-- Alertes -->
+            <div style="padding:0 16px 10px;display:flex;flex-direction:column;gap:5px">
+              <div style="background:var(--warn-bg);border-left:3px solid var(--warn);border-radius:0 5px 5px 0;padding:6px 10px;font-size:10px;color:var(--warn)">⚠ Contrat de Yacine Kaci expire dans 7 jours — Renouveler ou archiver</div>
+              <div style="background:var(--info-bg);border-left:3px solid var(--info);border-radius:0 5px 5px 0;padding:6px 10px;font-size:10px;color:var(--info)">ℹ Hassan Zaidi n'a pas pointé aujourd'hui — Alerter</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GP2 GESTION GESTIONNAIRES -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#C62828">GP2</div><div class="sc-title">Gestion des Gestionnaires</div><div class="sc-role">Gestionnaire Principal Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/managers</div></div>
+        <div style="display:flex;height:360px">
+          <div class="sb" style="width:160px">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sbi"><div class="sbi-ico"></div>Dashboard</div>
+            <div class="sbi act"><div class="sbi-ico"></div>Gestionnaires</div>
+            <div class="sbi"><div class="sbi-ico"></div>Paramètres</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div class="wc-title">Gestionnaires (3/3 Business)</div>
+              <div style="background:var(--navy);color:white;padding:6px 12px;border-radius:5px;font-size:10px;font-weight:700">+ Ajouter gestionnaire</div>
+            </div>
+            <div class="tw" style="margin-top:10px">
+              <table>
+                <thead><tr><th>Nom</th><th>Rôle</th><th>Périmètre</th><th>Dernière connexion</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="font-weight:700">Nadia Ben Salah<br><span style="font-size:9px;color:var(--gray3)">n.bensalah@entreprise.dz</span></div></td><td><span class="badge b-err">Gestionnaire Principal</span></td><td>Toute l'entreprise</td><td style="font-size:9px;color:var(--gray3)">15 Avr 09:12</td><td><span style="color:var(--gray3);font-size:9px">Moi-même</span></td></tr>
+                  <tr><td><div style="font-weight:700">Khalid Moussa<br><span style="font-size:9px;color:var(--gray3)">k.moussa@entreprise.dz</span></div></td><td><span class="badge b-info">Resp. RH</span></td><td>Toute l'entreprise</td><td style="font-size:9px;color:var(--gray3)">14 Avr 16:30</td><td><div style="display:flex;gap:4px"><span style="color:var(--warn);font-size:9px">Modifier</span> · <span style="color:var(--err);font-size:9px">Désactiver</span></div></td></tr>
+                  <tr><td><div style="font-weight:700">Ahmed Slimani<br><span style="font-size:9px;color:var(--gray3)">a.slimani@entreprise.dz</span></div></td><td><span class="badge b-warn">Comptable</span></td><td>Paie & Facturation</td><td style="font-size:9px;color:var(--gray3)">15 Avr 08:45</td><td><div style="display:flex;gap:4px"><span style="color:var(--warn);font-size:9px">Modifier</span> · <span style="color:var(--err);font-size:9px">Désactiver</span></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding:10px 16px;background:var(--info-bg);margin:0 16px;border-radius:7px;border:1px solid #90CAF9">
+              <div style="font-size:10px;font-weight:700;color:var(--info);margin-bottom:7px">Créer un nouveau gestionnaire</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Prénom + Nom</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Email professionnel</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Rôle ▼ (Principal/RH/Dept/Comptable/Superviseur)</div>
+              </div>
+              <div style="margin-top:6px;text-align:right"><div style="background:var(--navy);color:white;padding:5px 14px;border-radius:5px;font-size:9px;display:inline-block">Créer + Envoyer mot de passe</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Plans</strong>Starter : 1 gestionnaire (principal). Business : 3 + rôles. Enterprise : illimité + rôles. Rôles : Principal / RH / Département / Comptable / Superviseur.</div>
+    </div>
+
+    <!-- GP3 PARAMÈTRES ENTREPRISE -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:#C62828">GP3</div><div class="sc-title">Paramètres Entreprise — Complet</div><div class="sc-role">Gestionnaire Principal Web</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">app.leopardo-rh.com/settings</div></div>
+        <div style="display:flex;height:400px">
+          <div class="sb" style="width:160px">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo RH</div></div>
+            <div class="sbi act"><div class="sbi-ico"></div>Général</div>
+            <div class="sbi"><div class="sbi-ico"></div>Horaires travail</div>
+            <div class="sbi"><div class="sbi-ico"></div>Congés</div>
+            <div class="sbi"><div class="sbi-ico"></div>Paie & Cotisations</div>
+            <div class="sbi"><div class="sbi-ico"></div>Pointage</div>
+            <div class="sbi"><div class="sbi-ico"></div>Avances</div>
+            <div class="sbi"><div class="sbi-ico"></div>Notifications</div>
+            <div class="sbi"><div class="sbi-ico"></div>Biométrique ZKTeco</div>
+            <div class="sbi"><div class="sbi-ico"></div>Jours fériés</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar"><div class="wc-title">Paramètres généraux</div></div>
+            <div style="padding:12px 16px;overflow:auto">
+              <!-- Général -->
+              <div style="background:white;border:1px solid var(--gray5);border-radius:7px;padding:12px;margin-bottom:10px">
+                <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:8px;border-bottom:1px solid var(--gray5);padding-bottom:5px">Informations entreprise</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+                  <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Nom</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">TechAlgeria SPA</div></div>
+                  <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Fuseau horaire</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Africa/Algiers ▼</div></div>
+                  <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Langue</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Français ▼</div></div>
+                  <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Devise</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">DZD ▼</div></div>
+                  <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Pays</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Algérie ▼</div></div>
+                  <div><div style="font-size:9px;color:var(--gray3);margin-bottom:2px">Modèle RH</div><div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">DZ — Pré-rempli ▼</div></div>
+                </div>
+              </div>
+              <!-- Pointage toggles -->
+              <div style="background:white;border:1px solid var(--gray5);border-radius:7px;padding:12px;margin-bottom:10px">
+                <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:8px">Pointage — Options</div>
+                <div style="display:flex;flex-direction:column;gap:7px">
+                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:10px">GPS obligatoire au pointage (rayon configurable)</span><div style="width:32px;height:16px;background:var(--ok);border-radius:8px;position:relative"><div style="position:absolute;right:2px;top:2px;width:12px;height:12px;background:white;border-radius:50%"></div></div></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:10px">Photo obligatoire à chaque pointage</span><div style="width:32px;height:16px;background:var(--gray4);border-radius:8px;position:relative"><div style="position:absolute;left:2px;top:2px;width:12px;height:12px;background:white;border-radius:50%"></div></div></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:10px">Module avances sur salaire</span><div style="width:32px;height:16px;background:var(--gray4);border-radius:8px;position:relative"><div style="position:absolute;left:2px;top:2px;width:12px;height:12px;background:white;border-radius:50%"></div></div></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:10px">Intégration biométrique ZKTeco</span><div style="width:32px;height:16px;background:var(--gray4);border-radius:8px;position:relative"><div style="position:absolute;left:2px;top:2px;width:12px;height:12px;background:white;border-radius:50%"></div></div></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:flex-end;gap:7px">
+                <div class="btn-ghost" style="font-size:9px">Annuler</div>
+                <div style="background:var(--navy);color:white;padding:6px 16px;border-radius:5px;font-size:10px;font-weight:700">Sauvegarder</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Cache Redis</strong>Cache::tags(['tenant:UUID']).forget('settings') après chaque sauvegarde. GET /settings retourne toutes les clés/valeurs de company_settings.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SUPER ADMIN
+══════════════════════════════════════════════════════════ -->
+<div id="superadmin" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:var(--accent)">🌐</div>
+    <div>
+      <h1>Super Administrateur — Éditeur SaaS</h1>
+      <p>Unique, créé manuellement lors du déploiement. Accès total à la plateforme. Gère toutes les entreprises clientes, les plans tarifaires, la facturation, les langues et peut accéder en lecture à n'importe quel espace entreprise. Interface web admin dédiée.</p>
+      <div class="role-tags"><span class="rtag">Web admin.leopardo-rh.com</span><span class="rtag">Créé manuellement — pas d'interface inscription</span><span class="rtag">Accès lecture toutes entreprises</span></div>
+    </div>
+  </div>
+  <div class="screens-grid">
+
+    <!-- SA1 DASHBOARD GLOBAL -->
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-head"><div class="sc-id" style="background:var(--accent)">SA1</div><div class="sc-title">Dashboard Global SaaS</div><div class="sc-role">Super Admin</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">admin.leopardo-rh.com/dashboard</div></div>
+        <div class="web-layout">
+          <div class="sb dark">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo Admin</div></div>
+            <div style="padding:4px 14px;font-size:8px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">SUPER ADMIN</div>
+            <div class="sbi act" style="background:rgba(255,255,255,.08);opacity:1"><div class="sbi-ico"></div>Dashboard global</div>
+            <div class="sbi"><div class="sbi-ico"></div>Entreprises</div>
+            <div class="sbi"><div class="sbi-ico"></div>Plans tarifaires</div>
+            <div class="sbi"><div class="sbi-ico"></div>Facturation</div>
+            <div class="sbi"><div class="sbi-ico"></div>Langues</div>
+            <div class="sbi"><div class="sbi-ico"></div>Export bancaire global</div>
+            <div class="sbi"><div class="sbi-ico"></div>Logs système</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar" style="background:#F8F9FA">
+              <div><div style="font-size:9px;color:var(--gray3)">Super Admin SaaS</div><div class="wc-title">Dashboard Global</div></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="btn-ghost" style="font-size:9px">📧 Email groupé gestionnaires</div>
+                <span class="badge b-ok">Plateforme opérationnelle</span>
+                <div class="avatar" style="width:26px;height:26px;font-size:9px;background:#0A1628">SA</div>
+              </div>
+            </div>
+            <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+              <div class="kpi-card"><div class="kpi-lbl">Entreprises actives</div><div class="kpi-val" style="color:var(--navy)">127</div><div class="kpi-sub" style="color:var(--ok)">+3 ce mois</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Employés total</div><div class="kpi-val" style="color:var(--navy)">4 891</div><div class="kpi-sub">12 pays</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">MRR</div><div class="kpi-val" style="font-size:16px;color:var(--ok)">142k DZD</div><div class="kpi-sub" style="color:var(--ok)">+8.3%</div></div>
+              <div class="kpi-card"><div class="kpi-lbl">Expire dans 30j</div><div class="kpi-val" style="color:var(--warn)">7</div><div class="kpi-sub"><span style="color:var(--warn)">Action requise</span></div></div>
+            </div>
+            <!-- Plans distribution + alertes expirations -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 14px">
+              <div style="background:white;border:1px solid var(--gray5);border-radius:7px;padding:12px">
+                <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:8px">Répartition par plan</div>
+                <div class="row" style="margin-bottom:4px"><div class="lbl">Starter (20 emp. max)</div><div class="val">48</div></div>
+                <div class="pbar"><div class="pfill" style="width:38%;background:var(--navy)"></div></div>
+                <div class="row" style="margin:5px 0 4px"><div class="lbl">Business (200 emp. max)</div><div class="val">62</div></div>
+                <div class="pbar"><div class="pfill" style="width:49%;background:var(--accent)"></div></div>
+                <div class="row" style="margin:5px 0 4px"><div class="lbl">Enterprise (illimité)</div><div class="val">17</div></div>
+                <div class="pbar"><div class="pfill" style="width:13%;background:var(--ok)"></div></div>
+              </div>
+              <div style="background:white;border:1px solid var(--gray5);border-radius:7px;padding:12px">
+                <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:8px">Abonnements expirant bientôt</div>
+                <div class="li" style="padding:5px 0"><div style="flex:1;font-size:10px;font-weight:600">TunisBTP SA</div><div style="font-size:9px;color:var(--err);font-weight:700">3 jours</div></div>
+                <div class="li" style="padding:5px 0"><div style="flex:1;font-size:10px;font-weight:600">MarocAuto SARL</div><div style="font-size:9px;color:var(--warn)">18 jours</div></div>
+                <div class="li" style="padding:5px 0;border:none"><div style="flex:1;font-size:10px;font-weight:600">+5 autres</div><div style="font-size:9px;color:var(--info)">Voir tout →</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SA2 LISTE ENTREPRISES -->
+    <div class="sc" style="grid-column:1/-1">
+      <div class="sc-head"><div class="sc-id" style="background:var(--accent)">SA2</div><div class="sc-title">Liste Entreprises + Création + Suspension</div><div class="sc-role">Super Admin</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">admin.leopardo-rh.com/companies</div></div>
+        <div class="web-layout">
+          <div class="sb dark">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo Admin</div></div>
+            <div class="sbi"><div class="sbi-ico"></div>Dashboard global</div>
+            <div class="sbi act" style="background:rgba(255,255,255,.08);opacity:1"><div class="sbi-ico"></div>Entreprises</div>
+            <div class="sbi"><div class="sbi-ico"></div>Plans tarifaires</div>
+            <div class="sbi"><div class="sbi-ico"></div>Facturation</div>
+            <div class="sbi"><div class="sbi-ico"></div>Langues</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar">
+              <div class="wc-title">Entreprises (127)</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <div class="btn-ghost" style="font-size:9px">Tous les plans ▼</div>
+                <div class="btn-ghost" style="font-size:9px">Tous pays ▼</div>
+                <div class="btn-ghost" style="font-size:9px">Tous statuts ▼</div>
+                <div class="btn-ghost" style="font-size:9px">🔍 Rechercher…</div>
+                <div style="background:var(--navy);color:white;padding:6px 12px;border-radius:5px;font-size:10px;font-weight:700">+ Créer entreprise</div>
+              </div>
+            </div>
+            <div class="tw" style="margin-top:10px">
+              <table>
+                <thead><tr><th>Entreprise</th><th>Plan</th><th>Pays</th><th>Employés</th><th>Expiration</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody>
+                  <tr><td><div style="font-size:10px;font-weight:700">TechAlgeria SPA</div><div style="font-size:9px;color:var(--gray3);font-family:monospace">tech-algeria</div></td><td><span class="badge b-info">Business</span></td><td>🇩🇿 DZ</td><td>48</td><td style="font-size:9px;color:var(--ok)">31 Jan 2027</td><td><div class="dot dot-g"></div><span style="font-size:9px">Active</span></td><td><div style="display:flex;gap:4px"><span style="color:var(--navy);font-size:9px">Gérer →</span></div></td></tr>
+                  <tr style="background:#FFF8E1"><td><div style="font-size:10px;font-weight:700">TunisBTP SA</div></td><td><span class="badge b-info">Business</span></td><td>🇹🇳 TN</td><td>85</td><td style="font-size:9px;color:var(--err);font-weight:700">⚠ 18 Avr 2026</td><td><div class="dot dot-o"></div><span style="font-size:9px;color:var(--warn)">Expire bientôt</span></td><td><span style="color:var(--accent);font-size:9px">Renouveler</span></td></tr>
+                  <tr style="opacity:.65"><td><div style="font-size:10px;font-weight:700">ConsulParis SARL</div></td><td><span class="badge b-err">Enterprise</span></td><td>🇫🇷 FR</td><td>210</td><td style="font-size:9px">—</td><td><div class="dot dot-r"></div><span style="font-size:9px;color:var(--err)">Suspendue</span></td><td><span style="color:var(--ok);font-size:9px">Réactiver</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Formulaire Création entreprise (condensé) -->
+            <div style="margin:8px 16px;padding:10px;background:#E8EAF6;border-radius:7px;border:1px solid #9FA8DA">
+              <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:8px">Créer une entreprise cliente</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px">
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Nom entreprise *</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Pays * (→ modèle RH)</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Langue *</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Devise *</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Email gestionnaire *</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Plan * ▼</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Essai gratuit (jours)</div>
+                <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Notes internes</div>
+              </div>
+              <div style="text-align:right"><div style="background:var(--navy);color:white;padding:5px 14px;border-radius:5px;font-size:9px;display:inline-block;font-weight:700">Créer → Email bienvenue auto</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>À la création</strong>UUID généré. Schéma PostgreSQL company_{uuid} créé + migré. Modèle RH pays appliqué. Compte gestionnaire créé. Email bienvenue envoyé avec identifiants.</div>
+    </div>
+
+    <!-- SA3 PLANS + LANGUES -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:var(--accent)">SA3</div><div class="sc-title">Plans Tarifaires + Gestion Langues</div><div class="sc-role">Super Admin</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">admin.leopardo-rh.com/plans</div></div>
+        <div style="display:flex;height:380px">
+          <div class="sb dark" style="width:160px">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo Admin</div></div>
+            <div class="sbi act" style="opacity:1;background:rgba(255,255,255,.08)"><div class="sbi-ico"></div>Plans tarifaires</div>
+            <div class="sbi"><div class="sbi-ico"></div>Langues</div>
+            <div class="sbi"><div class="sbi-ico"></div>Facturation</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar"><div class="wc-title">Plans tarifaires</div><div style="background:var(--navy);color:white;padding:6px 12px;border-radius:5px;font-size:10px;font-weight:700">+ Nouveau plan</div></div>
+            <div style="padding:12px 16px">
+              <!-- Plans cards -->
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+                <div style="background:white;border:1px solid var(--gray5);border-radius:7px;padding:12px">
+                  <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:3px">Starter</div>
+                  <div style="font-size:10px;color:var(--gray3);margin-bottom:8px">Jusqu'à 20 employés · 1 gestionnaire</div>
+                  <div style="font-size:9px;display:flex;flex-direction:column;gap:3px">
+                    <div>✓ Pointage déclaratif</div>
+                    <div>✓ QR Code</div>
+                    <div>✓ Rapports PDF seul</div>
+                    <div style="color:var(--gray4)">✗ Biométrique</div>
+                    <div style="color:var(--gray4)">✗ Module tâches</div>
+                    <div style="color:var(--gray4)">✗ Export bancaire</div>
+                  </div>
+                  <div style="margin-top:8px;display:flex;gap:5px"><span class="btn-ghost" style="font-size:9px;padding:4px 8px">Modifier</span></div>
+                </div>
+                <div style="background:white;border:2px solid var(--navy);border-radius:7px;padding:12px">
+                  <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:3px">Business ⭐</div>
+                  <div style="font-size:10px;color:var(--gray3);margin-bottom:8px">Jusqu'à 200 emp · 3 gestionnaires + rôles</div>
+                  <div style="font-size:9px;display:flex;flex-direction:column;gap:3px">
+                    <div>✓ Tout Starter</div>
+                    <div>✓ Biométrique ZKTeco</div>
+                    <div>✓ Photo pointage</div>
+                    <div>✓ Module tâches</div>
+                    <div>✓ PDF + Excel</div>
+                    <div>✓ Export bancaire</div>
+                  </div>
+                  <div style="margin-top:8px;display:flex;gap:5px"><span class="btn-ghost" style="font-size:9px;padding:4px 8px">Modifier</span></div>
+                </div>
+                <div style="background:white;border:1px solid var(--gray5);border-radius:7px;padding:12px">
+                  <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:3px">Enterprise</div>
+                  <div style="font-size:10px;color:var(--gray3);margin-bottom:8px">Illimité · Gestionnaires illimités</div>
+                  <div style="font-size:9px;display:flex;flex-direction:column;gap:3px">
+                    <div>✓ Tout Business</div>
+                    <div>✓ API publique</div>
+                    <div>✓ Support prioritaire</div>
+                    <div>✓ SLA 99.5%</div>
+                  </div>
+                  <div style="margin-top:8px;display:flex;gap:5px"><span class="btn-ghost" style="font-size:9px;padding:4px 8px">Modifier</span></div>
+                </div>
+              </div>
+              <!-- Langues -->
+              <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:7px">Gestion des langues</div>
+              <div class="tw" style="margin:0">
+                <table>
+                  <thead><tr><th>Code</th><th>Langue</th><th>Direction</th><th>Statut</th><th>Action</th></tr></thead>
+                  <tbody>
+                    <tr><td style="font-family:monospace">fr</td><td>Français</td><td>LTR</td><td><span class="badge b-ok">Active</span></td><td><span style="color:var(--gray3);font-size:9px">Référence</span></td></tr>
+                    <tr><td style="font-family:monospace">ar</td><td>Arabe</td><td style="color:var(--navy)">RTL ⚠</td><td><span class="badge b-ok">Active</span></td><td><span style="color:var(--warn);font-size:9px">Désactiver</span></td></tr>
+                    <tr><td style="font-family:monospace">tr</td><td>Turc</td><td>LTR</td><td><span class="badge b-ok">Active</span></td><td><span style="color:var(--warn);font-size:9px">Désactiver</span></td></tr>
+                    <tr><td style="font-family:monospace">en</td><td>Anglais</td><td>LTR</td><td><span class="badge b-ok">Active</span></td><td><span style="color:var(--warn);font-size:9px">Désactiver</span></td></tr>
+                    <tr><td style="font-family:monospace">es</td><td>Espagnol</td><td>LTR</td><td><span class="badge b-neu">Inactive</span></td><td><span style="color:var(--ok);font-size:9px">Activer</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="margin-top:7px;font-size:9px;color:var(--gray3)">Ajout langue : créer resources/lang/{code}/messages.php + assets/l10n/app_{code}.arb → Activer ici. Pas de redéploiement requis.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SA4 FACTURATION -->
+    <div class="sc">
+      <div class="sc-head"><div class="sc-id" style="background:var(--accent)">SA4</div><div class="sc-title">Facturation — Manuelle + Alertes</div><div class="sc-role">Super Admin</div></div>
+      <div class="wf">
+        <div class="wf-bar"><div class="wf-dot" style="background:#FF5F57"></div><div class="wf-dot" style="background:#FFBD2E"></div><div class="wf-dot" style="background:#28CA41"></div><div class="wf-url">admin.leopardo-rh.com/billing</div></div>
+        <div style="display:flex;height:360px">
+          <div class="sb dark" style="width:160px">
+            <div class="sb-logo"><div class="sb-logo-m">L</div><div class="sb-logo-t">Leopardo Admin</div></div>
+            <div class="sbi"><div class="sbi-ico"></div>Dashboard global</div>
+            <div class="sbi"><div class="sbi-ico"></div>Entreprises</div>
+            <div class="sbi act" style="opacity:1;background:rgba(255,255,255,.08)"><div class="sbi-ico"></div>Facturation</div>
+          </div>
+          <div class="wc">
+            <div class="wc-topbar"><div class="wc-title">Facturation & Abonnements</div></div>
+            <div style="padding:10px 16px">
+              <!-- Alertes J-30/J-15/J-7/J-0 -->
+              <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:7px">Alertes automatiques abonnements</div>
+              <div style="display:flex;gap:8px;margin-bottom:10px">
+                <div style="background:var(--err-bg);border-radius:5px;padding:7px 10px;flex:1;text-align:center"><div style="font-size:9px;color:var(--err);font-weight:700">Expirés</div><div style="font-size:16px;font-weight:900;color:var(--err)">2</div></div>
+                <div style="background:var(--warn-bg);border-radius:5px;padding:7px 10px;flex:1;text-align:center"><div style="font-size:9px;color:var(--warn);font-weight:700">≤ 7j</div><div style="font-size:16px;font-weight:900;color:var(--warn)">1</div></div>
+                <div style="background:var(--warn-bg);border-radius:5px;padding:7px 10px;flex:1;text-align:center"><div style="font-size:9px;color:var(--warn);font-weight:700">≤ 15j</div><div style="font-size:16px;font-weight:900;color:var(--warn)">3</div></div>
+                <div style="background:var(--info-bg);border-radius:5px;padding:7px 10px;flex:1;text-align:center"><div style="font-size:9px;color:var(--info);font-weight:700">≤ 30j</div><div style="font-size:16px;font-weight:900;color:var(--info)">7</div></div>
+              </div>
+              <!-- Factures récentes -->
+              <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:5px">Factures récentes</div>
+              <div class="tw" style="margin:0">
+                <table>
+                  <thead><tr><th>Entreprise</th><th>Période</th><th>Montant</th><th>Statut</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    <tr><td>TechAlgeria SPA</td><td>Avr 2026</td><td style="font-weight:700">12 000 DZD</td><td><span class="badge b-ok">Payée</span></td><td><span style="color:var(--navy);font-size:9px">📄 PDF</span></td></tr>
+                    <tr style="background:#FFF8E1"><td>TunisBTP SA</td><td>Avr 2026</td><td style="font-weight:700">18 000 TND</td><td><span class="badge b-warn">En attente</span></td><td><div style="display:flex;gap:5px"><span style="color:var(--ok);font-size:9px">Marquer payée</span> · <span style="color:var(--err);font-size:9px">Suspendre</span></div></td></tr>
+                    <tr style="background:var(--err-bg)"><td>ConsulParis SARL</td><td>Mar 2026</td><td style="font-weight:700">480 EUR</td><td><span class="badge b-err">Impayée</span></td><td><div style="display:flex;gap:5px"><span style="color:var(--err);font-size:9px">Suspendu</span></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Facturation manuelle -->
+              <div style="margin-top:10px;background:white;border:1px solid var(--gray5);border-radius:6px;padding:10px">
+                <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:7px">Créer facture manuelle</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                  <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Entreprise ▼</div>
+                  <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Montant + Devise</div>
+                  <div class="inp" style="margin-bottom:0;padding:5px 8px;font-size:9px">Période (mois)</div>
+                </div>
+                <div style="margin-top:6px;text-align:right"><div style="background:var(--navy);color:white;padding:5px 12px;border-radius:5px;font-size:9px;display:inline-block">Générer PDF + Envoyer</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><strong>Alertes auto</strong>Artisan cron : SubscriptionExpiryAlerts. J-30/J-15/J-7/J-0. Suspension auto ou manuelle. MVP = facturation manuelle. Phase 2 = passerelle (CMI/CIB/Stripe).</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     FLUX & NAVIGATION
+══════════════════════════════════════════════════════════ -->
+<div id="flows" class="section">
+  <div class="section-hero">
+    <div class="section-hero-icon" style="background:var(--navy2)">🔀</div>
+    <div>
+      <h1>Flux Métier &amp; Architecture Navigation</h1>
+      <p>Routes GoRouter Flutter complets, middleware Laravel, flux des processus métier critiques (pointage, absence, paie), et dépendances entre profils.</p>
+    </div>
+  </div>
+
+  <div style="padding:20px 28px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+    <!-- Routes Flutter -->
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:var(--navy);color:white;padding:10px 14px;font-size:11px;font-weight:700">Routes GoRouter Flutter — Employé + Gestionnaire</div>
+      <div style="padding:12px 14px;font-family:monospace;font-size:10px;line-height:2;color:var(--gray2)">
+        <div style="color:var(--gray4)"># Auth (public)</div>
+        <div>/login <span style="color:var(--ok)">← A1</span></div>
+        <div>/forgot-password</div>
+        <div style="color:var(--gray4);margin-top:4px"># Employé (guard: token requis)</div>
+        <div>/dashboard <span style="color:var(--ok)">← B1</span></div>
+        <div>/attendance/check <span style="color:var(--ok)">← B1</span></div>
+        <div>/attendance/confirm <span style="color:var(--ok)">← B2</span></div>
+        <div>/attendance/history <span style="color:var(--ok)">← B3</span></div>
+        <div>/attendance/qr <span style="color:var(--ok)">← B4 (scanner)</span></div>
+        <div>/absences <span style="color:var(--ok)">← C1</span></div>
+        <div>/absences/new <span style="color:var(--ok)">← C2</span></div>
+        <div>/absences/:id <span style="color:var(--ok)">← Détail</span></div>
+        <div>/tasks <span style="color:var(--ok)">← D1</span></div>
+        <div>/tasks/:id <span style="color:var(--ok)">← D2</span></div>
+        <div>/advances <span style="color:var(--ok)">← E1</span></div>
+        <div>/advances/new</div>
+        <div>/payslips <span style="color:var(--ok)">← Bulletins liste</span></div>
+        <div>/payslips/:id <span style="color:var(--ok)">← Viewer PDF</span></div>
+        <div>/profile <span style="color:var(--ok)">← G2</span></div>
+        <div style="color:var(--gray4);margin-top:4px"># Gestionnaire/Supervisor (guard: manager_role)</div>
+        <div>/manager/dashboard <span style="color:var(--ok)">← MG1</span></div>
+        <div>/manager/attendance</div>
+        <div>/manager/absences <span style="color:var(--ok)">← MG2</span></div>
+        <div>/manager/tasks <span style="color:var(--ok)">← MG3</span></div>
+        <div>/manager/employees</div>
+        <div>/manager/employees/:id <span style="color:var(--ok)">← RH1</span></div>
+        <div>/manager/payroll <span style="color:var(--ok)">← CP1</span></div>
+        <div>/manager/reports <span style="color:var(--ok)">← RH2</span></div>
+        <div>/manager/settings <span style="color:var(--ok)">← GP3</span></div>
+      </div>
+    </div>
+
+    <!-- Middleware Laravel -->
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:var(--navy);color:white;padding:10px 14px;font-size:11px;font-weight:700">Middleware Laravel — Guards par profil</div>
+      <div style="padding:12px 14px">
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:4px">TenantMiddleware (toutes routes /v1/*)</div>
+          <div style="font-family:monospace;font-size:9px;background:var(--gray6);padding:7px 9px;border-radius:5px;color:var(--gray2)">SET search_path TO company_{uuid}<br>App::setLocale($company->language)</div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:4px">SuperAdminMiddleware → /admin/*</div>
+          <div style="font-family:monospace;font-size:9px;background:var(--gray6);padding:7px 9px;border-radius:5px;color:var(--gray2)">Schema public seul. Role = super_admin.</div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:4px">ManagerMiddleware → /manager/*</div>
+          <div style="font-family:monospace;font-size:9px;background:var(--gray6);padding:7px 9px;border-radius:5px;color:var(--gray2)">role=manager. Scope selon manager_role:<br>principal → all, rh → rh scope,<br>dept → department_id only,<br>comptable → payroll only,<br>superviseur → assigned team only</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:4px">EmployeePolicy → /v1/* (rôle employee)</div>
+          <div style="font-family:monospace;font-size:9px;background:var(--gray6);padding:7px 9px;border-radius:5px;color:var(--gray2)">Accès aux propres données uniquement.<br>Laravel Policy + Gate::allows()</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flux pointage -->
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:var(--accent);color:white;padding:10px 14px;font-size:11px;font-weight:700">Flux Pointage — Règles automatiques (CDC §6.5)</div>
+      <div style="padding:12px 14px">
+        <div class="flow-row" style="flex-wrap:wrap;gap:6px">
+          <div class="flow-box" style="font-size:9px">Employé ouvre app</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box acc" style="font-size:9px">Tap bouton pointage</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="font-size:9px">Appui long 1.5s</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;padding:8px 0">
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;background:var(--ok);border-radius:50%;flex-shrink:0"></div><div style="font-size:9px">GPS activé → vérifier rayon (< rayon_m → OK, sinon GPS_OUT_OF_ZONE)</div></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;background:var(--accent);border-radius:50%;flex-shrink:0"></div><div style="font-size:9px">Photo activée → ouvrir caméra → envoyer base64</div></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;background:var(--navy);border-radius:50%;flex-shrink:0"></div><div style="font-size:9px">POST /attendance/check-in → now() serveur (JAMAIS client)</div></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;background:var(--ok);border-radius:50%;flex-shrink:0"></div><div style="font-size:9px">check_in &lt; start + tolérance → "À l'heure", sinon → "Retard" + notif gestionnaire</div></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;background:var(--warn);border-radius:50%;flex-shrink:0"></div><div style="font-size:9px">H+1 sans pointage → Artisan AttendanceCheckMissing → alerte gestionnaire</div></div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:7px;height:7px;background:var(--err);border-radius:50%;flex-shrink:0"></div><div style="font-size:9px">Check-out = UPDATE attendance_log (JAMAIS INSERT → contrainte UNIQUE)</div></div>
+        </div>
+        <div style="background:var(--info-bg);border-radius:5px;padding:6px 8px;font-size:9px;color:var(--info)">Méthodes : mobile (défaut) · QR Code (si imprimé) · Biométrique ZKTeco (option payante) · Manuel gestionnaire (toujours)</div>
+      </div>
+    </div>
+
+    <!-- Flux paie -->
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:#E65100;color:white;padding:10px 14px;font-size:11px;font-weight:700">Flux Paie Mensuel — 5 étapes (CDC §13.2)</div>
+      <div style="padding:12px 14px">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0">1</div>
+            <div style="font-size:9px"><strong>Vérification</strong> — Récapitulatif tous employés, anomalies signalées (0 présences, données manquantes)</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0">2</div>
+            <div style="font-size:9px"><strong>Simulation</strong> — POST /payroll/calculate → validation_token UUID. Calcul préliminaire. Comparaison mois précédent.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;background:var(--warn);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0">3</div>
+            <div style="font-size:9px"><strong>Corrections</strong> — Primes ponctuelles, corrections pointages, plans remboursement avances</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;background:var(--ok);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0">4</div>
+            <div style="font-size:9px"><strong>Validation</strong> — POST /payroll/validate (token UUID requis) → Job GeneratePayslipPDF async (Queue payroll)</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:22px;height:22px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0">5</div>
+            <div style="font-size:9px"><strong>Export</strong> — Excel + Fichier virement bancaire (DZ_GENERIC / MA_CIH / FR_SEPA / TN) + Envoi bulletins email</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;background:var(--navy);border-radius:5px;padding:7px 9px;font-size:9px;color:white">
+          <strong>Formule :</strong> Brut (base + HS + primes) → − Cotisations salariales → − IR (tranches configurables) → − Avances déduites − Absences NJ − Mutuelles = NET À PAYER
+        </div>
+      </div>
+    </div>
+
+    <!-- Flux absence -->
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:#7B1FA2;color:white;padding:10px 14px;font-size:11px;font-weight:700">Flux Demande Absence (CDC §10.2)</div>
+      <div style="padding:12px 14px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:8px">
+          <div class="flow-box" style="font-size:9px">Employé soumet</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="font-size:9px;background:#7B1FA2">Calc. jours ouvrables</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="font-size:9px;background:#7B1FA2">Check solde</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-box" style="font-size:9px;background:#7B1FA2">Notif gestionnaire</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div style="flex:1">
+            <div style="font-size:9px;font-weight:700;color:var(--ok);margin-bottom:3px">✓ Approuver</div>
+            <div style="font-size:9px;color:var(--gray3)">DB::transaction() :<br>· absence.status = approved<br>· employee.leave_balance −= days<br>· LeaveBalanceLog.create()<br>· Push notif employé</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:9px;font-weight:700;color:var(--err);margin-bottom:3px">✗ Refuser</div>
+            <div style="font-size:9px;color:var(--gray3)">Motif obligatoire.<br>· absence.status = rejected<br>· Solde inchangé<br>· Push notif + email employé<br>· Motif visible dans C3</div>
+          </div>
+        </div>
+        <div style="margin-top:7px;font-size:9px;color:var(--gray3)">Cron mensuel : LeaveAccrueMonthly → accrual_rate_monthly j/mois. Ajustement manuel tracé dans audit_logs.</div>
+      </div>
+    </div>
+
+    <!-- Cron jobs -->
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:var(--navy2);color:white;padding:10px 14px;font-size:11px;font-weight:700">Artisan Commands — Cron Jobs Supervisor</div>
+      <div style="padding:12px 14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+          <div style="background:var(--gray6);border-radius:5px;padding:7px 9px">
+            <div style="font-family:monospace;font-size:9px;color:var(--navy);font-weight:700">AttendanceCheckMissing</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">Toutes les heures — alerte si pas de check-in à H+1</div>
+          </div>
+          <div style="background:var(--gray6);border-radius:5px;padding:7px 9px">
+            <div style="font-family:monospace;font-size:9px;color:var(--navy);font-weight:700">LeaveAccrueMonthly</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">1er du mois — accrual automatique des congés</div>
+          </div>
+          <div style="background:var(--gray6);border-radius:5px;padding:7px 9px">
+            <div style="font-family:monospace;font-size:9px;color:var(--navy);font-weight:700">ContractsExpiryAlerts</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">Quotidien — CDD/Stage expirant J-30/J-15/J-7</div>
+          </div>
+          <div style="background:var(--gray6);border-radius:5px;padding:7px 9px">
+            <div style="font-family:monospace;font-size:9px;color:var(--navy);font-weight:700">TasksOverdueAlerts</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">Quotidien — tâches dépassant leur échéance</div>
+          </div>
+          <div style="background:var(--gray6);border-radius:5px;padding:7px 9px">
+            <div style="font-family:monospace;font-size:9px;color:var(--navy);font-weight:700">SubscriptionExpiryAlerts</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">Quotidien — abonnements J-30/J-15/J-7/J-0</div>
+          </div>
+          <div style="background:var(--gray6);border-radius:5px;padding:7px 9px">
+            <div style="font-family:monospace;font-size:9px;color:var(--navy);font-weight:700">SyncZKTeco</div>
+            <div style="font-size:9px;color:var(--gray3);margin-top:2px">Toutes les minutes — Pull biométrique si Push KO</div>
+          </div>
+        </div>
+        <div style="margin-top:9px;font-size:9px;color:var(--gray3)">Supervisor + Nginx sur o2switch VPS. Jobs lourds (paie/PDF) → Queue payroll. FCM push → Queue notifications.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modèles RH par pays -->
+  <div style="padding:0 28px 28px">
+    <div style="background:white;border-radius:10px;border:1px solid var(--gray5);overflow:hidden">
+      <div style="background:var(--navy);color:white;padding:10px 14px;font-size:11px;font-weight:700">Modèles RH Pré-configurés par Pays (CDC §5.2) — Sélectionnés à la création entreprise</div>
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Pays</th><th>Cotisations salariales incluses</th><th>Jours fériés</th><th>Format export bancaire</th></tr></thead>
+        <tbody>
+          <tr><td>🇩🇿 Algérie</td><td>CNAS salarié, Retraite, Mutuelle optionnelle</td><td>14 jours légaux</td><td>DZ_GENERIC (CNEP, BEA, BNA)</td></tr>
+          <tr style="background:#FAFAFA"><td>🇲🇦 Maroc</td><td>CNSS 6.29%, AMO 2.26%, IR barème progressif</td><td>13 jours légaux</td><td>MA_CIH (CIH, Attijariwafa, BMCE)</td></tr>
+          <tr><td>🇹🇳 Tunisie</td><td>CNSS 9.18%, AMO, IR tranches</td><td>12 jours légaux</td><td>TN_STB (STB, BIAT)</td></tr>
+          <tr style="background:#FAFAFA"><td>🇫🇷 France</td><td>Sécu sociale, Retraite, Chômage (cotisations patronales)</td><td>11 jours légaux</td><td>XML ISO 20022 pain.001 (SEPA)</td></tr>
+          <tr><td>🇹🇷 Turquie</td><td>SGK (sécurité sociale turque)</td><td>15 jours légaux</td><td>CSV générique</td></tr>
+          <tr style="background:#FAFAFA"><td>🇸🇳 Sénégal</td><td>IPRES, CSS</td><td>13 jours légaux</td><td>CSV générique</td></tr>
+          <tr><td>🇨🇮 Côte d'Ivoire</td><td>CNPS</td><td>12 jours légaux</td><td>CSV générique</td></tr>
+          <tr style="background:#FAFAFA"><td>✏ Personnalisé</td><td>Tout à configurer manuellement</td><td>À saisir</td><td>CSV configurable</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div style="padding:8px 14px;font-size:9px;color:var(--gray3)">Tout reste modifiable après application du modèle. Les cotisations patronales sont informatives sur le bulletin de paie.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ FOOTER ══════ -->
+<div style="background:var(--navy);color:white;padding:20px 28px;display:flex;justify-content:space-between;align-items:center">
+  <div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:3px">Leopardo RH — Dossier Wireframes Complet v2.0</div>
+    <div style="font-size:10px;opacity:.5">Mars 2026 · 35+ écrans · 7 profils · CDC v3.0 · Flutter 3.x + Laravel 11 + Vue.js 3 · o2switch VPS</div>
+  </div>
+  <div style="text-align:right;font-size:10px;opacity:.5">
+    <div>#1A237E Navy · #FF6F00 Orange · PostgreSQL multi-schéma · Riverpod · GoRouter</div>
+    <div>Langues : FR · AR (RTL) · TR · EN — extensible sans redéploiement</div>
+  </div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const map = {cover:0,employe:1,manager:2,rh:3,comptable:4,superviseur:5,gestionnaire:6,superadmin:7,flows:8};
+  tabs[map[id]]&&tabs[map[id]].classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
