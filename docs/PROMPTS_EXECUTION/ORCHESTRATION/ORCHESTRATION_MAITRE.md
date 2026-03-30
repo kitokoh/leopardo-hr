@@ -109,11 +109,11 @@ PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en paral
 | S0-3 | Configurer sous-domaines DNS o2switch (api, app, admin) | Toi (humain) | 1h | ⬜ |
 | S0-4 | Créer compte Google Play Developer ($25) | Toi (humain) | 30 min | ⬜ |
 | S0-5 | Créer compte Apple Developer ($99/an) | Toi (humain) | 30 min | ⬜ |
-| S0-6 | Copier `04_CICD_ET_CONFIG/tests.yml` → `.github/workflows/tests.yml` | Toi (humain) | 5 min | ⬜ |
+| S0-6 | Copier `04_CICD_ET_CONFIG/tests.yml` → `.github/workflows/tests.yml` | Jules | 5 min | ✅ |
 | S0-7 | Ajouter les secrets GitHub (O2SWITCH_HOST, USER, SSH_KEY) | Toi (humain) | 15 min | ⬜ |
-| S0-8 | Copier `04_CICD_ET_CONFIG/.env.example` → `api/.env.example` | Toi (humain) | 5 min | ⬜ |
-| S0-9 | Copier les fichiers mock JSON → `mobile/assets/mock/` | Toi / Manus | 10 min | ⬜ |
-| S0-10 | Initialiser le monorepo Git | Toi (humain) | 10 min | ⬜ |
+| S0-8 | Copier `04_CICD_ET_CONFIG/.env.example` → `api/.env.example` | Jules | 5 min | ✅ |
+| S0-9 | Copier les fichiers mock JSON → `mobile/assets/mock/` | Jules | 10 min | ✅ |
+| S0-10 | Initialiser le monorepo Git | Jules | 10 min | ✅ |
 
 ### 🟠 SEMAINE 1 — Infrastructure parallèle
 
