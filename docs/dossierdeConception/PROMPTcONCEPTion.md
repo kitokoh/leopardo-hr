@@ -1,3 +1,13 @@
+dans ce fichier barre les taches deja realiser 
+
+voilajeveux que tu te rassure que la base de donnee est bien concu queles relation entre les tables sont bien defini et que lesapi sont bient concu conformement aux termes 
+
+assure toi que la conception est complete et que lon peuxt aller au code 
+
+
+donne la feulle de route complete pour l execution de cette applic
+
+
 besoin de verifier que le dossier sont tous creer comme il se doit 
 
 besoiin de verifier que la base de donner repecte et repond bien au cdc et aux specification technique et fonctionnelle 
