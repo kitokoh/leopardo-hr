@@ -1,6 +1,7 @@
 # ERD COMPLET — Leopardo RH
 # Relations entre toutes les tables
-# Version 1.0 | Mars 2026
+# Version 2.0 | Mars 2026
+# CORRIGÉ v3.1.0 : tenancy_type companies, zkteco_id employees, salary_advances status 'active', user_lookups + sync policy
 
 ---
 
@@ -50,6 +51,9 @@ companies
 ├── logo_path           VARCHAR(255) NULL
 ├── plan_id             INT         FK » plans.id NN
 ├── schema_name         VARCHAR(50)  NN UQ  ex: "company_7c9e6679"
+├── tenancy_type        VARCHAR(20)  NN DEF 'shared'
+│                                   [schema|enterprise] — schema = isolation physique (Enterprise)
+│                                   shared = isolation logique via company_id (Trial/Starter/Business)
 ├── status              VARCHAR(20)  NN DEF 'trial'
 │                                        [active|trial|suspended|expired]
 ├── subscription_start  DATE        NN
@@ -94,6 +98,43 @@ invoices
 
 INDEX : (company_id), (status), (due_date)
 ```
+
+
+### user_lookups  ← TABLE CRITIQUE (Performance auth multi-schéma)
+```
+user_lookups
+├── id              INT         PK AUTO
+├── email           VARCHAR(150) NN UQ   (email de l'employé — clé de lookup)
+├── company_id      UUID        FK » companies.id ON DELETE CASCADE
+├── employee_id     INT         NN       ⚠️  PAS de FK réelle — référence virtuelle vers employees.id
+│                                         (impossible entre schémas PostgreSQL)
+│                                         Synchronisation obligatoire via EmployeeService
+├── role            VARCHAR(20)  NN       Copie du rôle — mise à jour si role change
+└── created_at      TIMESTAMPTZ NN DEF NOW()
+
+INDEX : UNIQUE(email) ← seul index nécessaire — auth = lookup par email
+```
+
+**Pourquoi cette table existe :**
+Le login Flutter envoie un email. Sans user_lookups, Laravel devrait scanner TOUS les schémas
+tenant pour trouver à quelle entreprise appartient cet email → O(n) requêtes.
+Avec user_lookups : 1 seule requête dans le schéma public → company_id + schema_name récupérés
+→ SET search_path TO company_uuid → authentification complète.
+
+**Politique de synchronisation (obligatoire — voir aussi `08_MULTITENANCY_STRATEGY.md`) :**
+
+| Événement | Action sur user_lookups | Tokens Sanctum |
+|-----------|------------------------|:--------------:|
+| Création employé | INSERT (dans transaction) | — |
+| Archivage employé | Conservé — email reste réservé | Révoqués |
+| Modification email | UPDATE email (dans transaction) | Révoqués |
+| Modification rôle | UPDATE role (dans transaction) | Révoqués |
+| Suppression entreprise | CASCADE automatique (FK) | Révoqués |
+
+⚠️  Règle absolue : TOUJOURS dans une `DB::transaction()` qui englobe
+l'opération sur le schéma tenant ET la mise à jour de user_lookups.
+Si l'une des deux échoue → rollback complet → cohérence garantie.
+
 
 ### languages
 ```
@@ -205,6 +246,8 @@ employees
 ├── status              VARCHAR(20)  NN DEF 'active'
 │                                   [active|suspended|archived]
 ├── photo_path          VARCHAR(255) NULL
+├── zkteco_id           VARCHAR(50)  NULL UQ  (identifiant sur les lecteurs biométriques ZKTeco)
+│                                             NULL si l'employé n'utilise pas la biométrie
 ├── emergency_contact   JSONB       NULL  {name, phone, relation}
 ├── extra_data          JSONB       NULL  (données supplémentaires libres)
 ├── email_verified_at   TIMESTAMP   NULL
@@ -245,6 +288,8 @@ attendance_logs
 ├── gps_lng             DECIMAL(11,8) NULL
 ├── gps_valid           BOOL        NULL
 ├── photo_path          VARCHAR(255) NULL
+├── zkteco_id           VARCHAR(50)  NULL UQ  (identifiant sur les lecteurs biométriques ZKTeco)
+│                                             NULL si l'employé n'utilise pas la biométrie
 ├── hours_worked        DECIMAL(5,2) NULL  (calculé après check_out)
 ├── overtime_hours      DECIMAL(5,2) NULL DEF 0
 ├── status              VARCHAR(20)  NN DEF 'incomplete'
@@ -318,7 +363,8 @@ salary_advances
 ├── amount              DECIMAL(12,2) NN
 ├── reason              TEXT        NULL
 ├── status              VARCHAR(20)  NN DEF 'pending'
-│                                   [pending|approved|rejected|repaid]
+│                                   [pending|approved|active|rejected|repaid]
+│                                   ⚠️  'active' = remboursement en cours (ajouté v3.1.0 — était absent, causait crash PayrollService)
 ├── repayment_plan      JSONB       NULL
 │   ex: [{"month":"2026-05","amount":5000,"paid":false}, ...]
 ├── amount_remaining    DECIMAL(12,2) NN DEF 0

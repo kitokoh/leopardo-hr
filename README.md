@@ -1,162 +1,106 @@
-solution d aide aux RH
-pointage
-presence
-et realisation des taches
-
-
-# LEOPARDO RH — DOSSIER PROJET COMPLET
-## Architecture du dossier & Guide de démarrage
-**Version 3.0 | Mars 2026 | Statut : MONOREPO PRÊT POUR EXÉCUTION**
+# LEOPARDO RH — Guide du projet
+## SaaS RH multilingue pour PME africaines et méditerranéennes
+**Version 3.1 | Mars 2026 | Statut : Prêt pour le codage**
 
 ---
 
-## STRUCTURE DU PROJET (MONOREPO)
+## STRUCTURE DU MONOREPO
 
 ```
 leopardo-rh/
-│
-├── api/                               ← BACKEND Laravel 11 + WEB Vue.js
-├── mobile/                            ← MOBILE Flutter
-│
-├── docs/                              ← DOCUMENTATION (ex-leopardo-rh-docs)
-│   ├── dossier_de_conception/
-│   │   ├── 01_PROMPT_MASTER_CLAUDE_CODE.md
-│   │   ├── 02_API_CONTRATS.md
-│   │   ├── 03_ERD_COMPLET.md
-│   │   ├── ...
-│   │   ├── 16_STRATEGIE_TESTS.md          ← NOUVEAU
-│   │   ├── 17_MOCK_DATA_MOBILE.md         ← NOUVEAU
-│   │   ├── 18_MARKETING_ET_VENTES.md      ← NOUVEAU
-│   │   └── 19_CICD_ET_GIT.md              ← NOUVEAU
-│   └── prompts_execution/
-│
-└── config/                            ← Fichiers i18n et .env partagés
-    ├── .env.example                   ← NOUVEAU — toutes les variables d'env
-    ├── lang_fr.php                    ← NOUVEAU — squelette Laravel i18n
-    ├── lang_ar.php                    ← NOUVEAU — squelette Laravel i18n
-    ├── lang_tr.php                    ← NOUVEAU — squelette Laravel i18n
-    ├── lang_en.php                    ← NOUVEAU — squelette Laravel i18n
-    ├── app_fr.arb                     ← NOUVEAU — squelette Flutter i18n
-    ├── app_ar.arb                     ← NOUVEAU — squelette Flutter i18n
-    ├── app_tr.arb                     ← NOUVEAU — squelette Flutter i18n
-    └── app_en.arb                     ← NOUVEAU — squelette Flutter i18n
+├── api/                    ← BACKEND Laravel 11 + Vue.js/Inertia (à initialiser avec CC-01)
+├── mobile/                 ← MOBILE Flutter (à initialiser avec JU-01)
+│   └── assets/mock/        ← Données JSON pour dev sans API réelle
+├── .github/workflows/      ← CI/CD GitHub Actions (deploy.yml + tests.yml)
+└── docs/                   ← DOCUMENTATION (source de vérité)
+    ├── dossierdeConception/ ← Specs techniques et fonctionnelles
+    └── PROMPTS_EXECUTION/  ← Prompts agents IA (Claude Code, Jules)
 ```
 
 ---
 
-## ARCHITECTURE TECHNIQUE — VUE D'ENSEMBLE
+## SOURCES DE VÉRITÉ — Références obligatoires avant de coder
 
-### Stack complète
-| Couche | Technologie | Rôle |
-|--------|-------------|------|
-| Backend API | Laravel 11 (PHP 8.3) | Logique métier, API REST, PDF, emails |
-| Base de données | PostgreSQL 16 multi-schéma | 1 schéma isolé par entreprise cliente |
-| Cache & Queues | Redis 7 | Sessions, cache paramètres, jobs async |
-| Frontend Web | Vue.js 3 + Inertia.js | Dashboard gestionnaire web |
-| Application Mobile | Flutter 3.x | Interface employé et gestionnaire |
-| Notifications Push | Firebase Cloud Messaging | Alertes temps réel sur mobile |
-| Serveur | Nginx + PHP-FPM (o2switch VPS) | Production |
-| Biométrique | ZKTeco SDK (Push + Pull) | Pointage par empreinte |
+| Quoi | Fichier |
+|------|---------|
+| **Contrats API** (70 endpoints) | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` |
+| **ERD** v2.0 | `docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md` |
+| **Schéma SQL** PostgreSQL complet | `docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql` |
+| **Règles métier** (paie, pointage, absences) | `docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md` |
+| **Multitenancy** (shared vs schema) | `docs/dossierdeConception/08_multitenancy/08_MULTITENANCY_STRATEGY.md` |
+| **RBAC** (7 rôles + permissions) | `docs/dossierdeConception/07_securite_rbac/10_RBAC_COMPLET.md` |
+| **Sécurité** (Sanctum, chiffrement, brute force) | `docs/dossierdeConception/07_securite_rbac/07_SECURITE_COMPLETE.md` |
+| **i18n** (fr/ar/en/tr, RTL) | `docs/dossierdeConception/13_i18n/11_I18N_STRATEGIE_COMPLETE.md` |
+| **Modèles Dart** Flutter | `docs/dossierdeConception/16_MODELES_DART/20_MODELES_DART_COMPLET.md` |
+| **Mocks JSON** mobile | `mobile/assets/mock/` |
 
-### Architecture multi-tenant (Hybride)
-```
-STRATÉGIE : Hybride (Multi-schéma OU Shared Table selon le plan)
-─────────────────────────────────────────────────────────────────────
-Schéma PUBLIC (partagé)
-  └── companies, user_lookups, plans, super_admins, invoices...
+---
 
-Mode ISOLATION (tenancy_type = 'schema')
-  └── Schéma company_{uuid} dédié (PostgreSQL search_path)
+## DOCUMENTATION — Dossier par dossier
 
-Mode PARTAGÉ (tenancy_type = 'shared')
-  └── Schéma shared_tenants (Filtrage Laravel via company_id)
-```
+| Dossier | Contenu |
+|---------|---------|
+| `00_docs/` | CDC et DCT d'origine (PDF/DOCX) |
+| `00_vision_marche/` | Vision produit, analyse marché, concurrents |
+| `01_API_CONTRATS_COMPLETS/` | 70 endpoints documentés — source de vérité API |
+| `02_personas/` | Personas et User Stories |
+| `03_modele_economique/` | Plans tarifaires (Trial/Starter/Business/Enterprise) |
+| `04_architecture_erd/` | ERD v2.0 + Seeders données initiales |
+| `05_regles_metier/` | Règles métier complètes + Guide ajout pays |
+| `07_securite_rbac/` | Sécurité, RBAC, PlanLimitMiddleware |
+| `08_multitenancy/` | Stratégie hybride shared/schema |
+| `09_tests_qualite/` | Stratégie de tests + Erreurs et logs |
+| `10_deploiement_cicd/` | CI/CD, Git workflow, sauvegardes |
+| `11_ux_wireframes/` | Wireframes HTML + User Flows + Guide onboarding |
+| `12_notifications/` | Templates push/email + stratégie SSE |
+| `13_i18n/` | Stratégie i18n complète (fr/ar/en/tr + RTL) |
+| `14_glossaire/` | Glossaire et dictionnaire technique |
+| `15_CICD_ET_CONFIG/` | Fichiers config opérationnels (nginx, supervisor, env) |
+| `16_MODELES_DART/` | Classes Dart Flutter complètes |
+| `17_MOCK_JSON/` | Documentation des mocks (les fichiers sont dans `mobile/assets/mock/`) |
+| `18_schemas_sql/` | Schéma SQL PostgreSQL + Seeders |
 
-### Flux d'une requête
-```
-Flutter / Navigateur
-    → Nginx (SSL, rate limit)
-    → Laravel API
-        → Sanctum : valide le token Bearer
-        → TenantMiddleware : SET search_path TO company_{uuid}
-        → SetLocale : App::setLocale(company.language)
-        → Controller → Service → Eloquent Model
-        → Réponse JSON ISO 8601
+---
+
+## PROMPTS D'EXÉCUTION — Pour les agents IA
+
+| Prompt | Agent | Description |
+|--------|-------|-------------|
+| `ORCHESTRATION/ORCHESTRATION_MAITRE.md` | Tous | **Tableau de bord global** — mettre à jour après chaque tâche |
+| `backend/CC-01_INIT_LARAVEL.md` | Claude Code | Initialisation Laravel 11 |
+| `backend/CC-02_MODULE_AUTH.md` | Claude Code | Module Auth + Sanctum |
+| `backend/CC-03_A_CC-06_MODULES.md` | Claude Code | Modules métier (pointage, absences, paie…) |
+| `mobile/JU-01_A_JU-04_FLUTTER.md` | Jules | App Flutter complète |
+| `frontend/CU-01_ET_AGENTS.md` | Claude | Frontend Vue.js + Landing page |
+| `99_prompts_execution/01_PROMPT_MASTER_CLAUDE_CODE.md` | Claude Code | Prompt master complet |
+
+---
+
+## DÉMARRAGE
+
+```bash
+# 1. Backend
+cd api
+composer create-project laravel/laravel . --prefer-dist
+# → Lire et exécuter : docs/PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md
+
+# 2. Mobile
+cd mobile
+flutter create . --org com.leopardo --project-name leopardo_rh
+# → Lire et exécuter : docs/PROMPTS_EXECUTION/mobile/JU-01_A_JU-04_FLUTTER.md
 ```
 
 ---
 
-## ORDRE DE LECTURE DES DOCUMENTS
+## RÈGLES DU PROJET
 
-### Pour Claude Code (Backend)
-```
-1. CE README (architecture globale)
-2. 11_MULTITENANCY_STRATEGY.md (stratégie multi-tenant)
-3. 12_SECURITY_SPEC_COMPLETE.md (sécurité, auth)
-4. 10_RBAC_COMPLET.md (permissions)
-5. 03_ERD_COMPLET.md (modèle de données)
-6. 07_SCHEMA_SQL_COMPLET.sql (schéma PostgreSQL exécutable)
-7. 02_API_CONTRATS.md (endpoints, payloads, codes erreur)
-8. 09_REGLES_METIER_COMPLETES.md (calculs, cas limites)
-9. 05_SEEDERS_ET_DONNEES_INITIALES.md (données à insérer)
-10. 01_PROMPT_MASTER_CLAUDE_CODE.md (règles de code)
-11. prompts_execution/backend/P01_*.md → P10_*.md (prompts d'exécution)
-```
-
-### Pour Jules (Flutter Mobile)
-```
-1. CE README (architecture globale)
-2. 10_RBAC_COMPLET.md (qui voit quoi)
-3. 02_API_CONTRATS.md (endpoints consommés)
-4. 13_USER_FLOWS_VALIDES.md (flux UX validés)
-5. 06_PROMPT_MASTER_JULES_FLUTTER.md (règles Flutter)
-6. 04_SPRINT_0_CHECKLIST.md section 0-D (initialisation Flutter)
-7. prompts_execution/mobile/P01_*.md → P05_*.md (prompts d'exécution)
-```
-
----
-
-## DÉCISIONS FIGÉES — NE PAS REMETTRE EN QUESTION
-
-Ces décisions ont été prises, documentées et validées. Elles ne se discutent plus pendant le développement.
-
-| Décision | Choix retenu |
-|----------|-------------|
-| Architecture multi-tenant | Multi-schéma PostgreSQL (PAS tenant_id) |
-| Auth mobile | Sanctum tokens opaques (PAS JWT) |
-| Framework mobile | Flutter uniquement (PAS React Native) |
-| État Flutter | Riverpod 2.x uniquement (PAS BLoC, PAS Provider) |
-| Pointage par défaut | Déclaratif — sans photo ni GPS |
-| Photo au pointage | Option désactivée par défaut |
-| GPS au pointage | Option désactivée par défaut |
-| Avances sur salaire | Module désactivé par défaut |
-| Facturation | Manuelle Phase 1, automatique Phase 2 |
-| Biométrique | ZKTeco uniquement |
-| Hébergement | o2switch VPS |
-| Langues initiales | FR + AR (RTL) + TR + EN |
-
----
-
-## RÈGLE DE COMMUNICATION INTER-ÉQUIPE
-
-```
-Claude Code modifie un endpoint → Mettre à jour 02_API_CONTRATS.md en premier
-Jules détecte un bug API       → Signaler avec : endpoint + comportement observé + attendu
-Tout changement de schéma      → Mettre à jour 03_ERD_COMPLET.md + 07_SCHEMA_SQL_COMPLET.sql
-Breaking change API            → Versionner /v2/ — JAMAIS casser /v1/
-```
-
----
-
-## CONTACTS TECHNIQUES
-
-| Rôle | Outil | Priorité |
-|------|-------|----------|
-| Backend Laravel + Vue.js | Claude Code | Messages directs via prompts_execution/backend/ |
-| Mobile Flutter | Jules | Messages directs via prompts_execution/mobile/ |
-| Architecture & décisions | Ce dossier | Référence unique — pas d'oral |
-
----
-
-*Leopardo RH — Dossier Projet v2.0 — Mars 2026*
-*Ce README est le point d'entrée unique. Tout commence ici.*
+| Règle | Valeur |
+|-------|--------|
+| Langue principale | Français (`fr`) — fallback i18n |
+| Stack Backend | Laravel 11 · PostgreSQL 16 · Redis · Sanctum |
+| Stack Mobile | Flutter 3.x · Riverpod · Dio |
+| Stack Frontend | Vue.js 3 · Inertia.js (servi par Laravel) |
+| Multitenancy défaut | `shared` (Trial/Starter/Business) |
+| Multitenancy Enterprise | `schema` (isolation physique PostgreSQL) |
+| Auth mobile | Tokens Sanctum opaques — 90 jours |
+| Auth web SPA | Cookie httpOnly SameSite=Strict — 8h |

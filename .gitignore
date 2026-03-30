@@ -1,0 +1,31 @@
+# Exports et archives — NE JAMAIS commiter dans le repo
+*.zip
+*.tar.gz
+gestionemployer_CLEAN/
+*_CLEAN/
+*_export/
+*_backup/
+
+# Environnements
+api/.env
+api/.env.backup
+mobile/.env
+
+# Dépendances (générées à l'init)
+api/vendor/
+api/node_modules/
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/build/
+
+# Caches Laravel
+api/bootstrap/cache/*.php
+api/storage/logs/*.log
+api/storage/app/public/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
