@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS companies (
     logo_path           VARCHAR(255)    NULL,
     plan_id             INT             NOT NULL REFERENCES plans(id),
     schema_name         VARCHAR(60)     NOT NULL UNIQUE, -- ex: "company_7c9e6679"
-    tenancy_type        VARCHAR(20)     NOT NULL DEFAULT 'schema'
+    tenancy_type        VARCHAR(20)     NOT NULL DEFAULT 'shared'
                             CHECK (tenancy_type IN ('schema','shared')),
     status              VARCHAR(20)     NOT NULL DEFAULT 'trial'
                             CHECK (status IN ('active','trial','suspended','expired')),
