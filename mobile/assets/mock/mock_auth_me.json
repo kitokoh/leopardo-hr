@@ -1,0 +1,27 @@
+{
+  "data": {
+    "id": 42,
+    "matricule": "EMP-0042",
+    "zkteco_id": "00042",
+    "first_name": "Ahmed",
+    "last_name": "Benali",
+    "email": "ahmed.benali@techcorp.dz",
+    "phone": "+213 555 123 456",
+    "role": "employee",
+    "manager_role": null,
+    "department": { "id": 3, "name": "Développement" },
+    "position": { "id": 7, "name": "Développeur Senior" },
+    "hire_date": "2023-03-01",
+    "photo_url": "https://i.pravatar.cc/150?u=42",
+    "leave_balance": 12.5,
+    "status": "active",
+    "company": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "TechCorp SPA",
+      "language": "fr",
+      "timezone": "Africa/Algiers",
+      "currency": "DZD",
+      "logo_url": "https://ui-avatars.com/api/?name=TechCorp&background=1A5276&color=fff"
+    }
+  }
+}

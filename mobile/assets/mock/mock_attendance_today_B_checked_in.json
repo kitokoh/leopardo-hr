@@ -1,0 +1,19 @@
+{
+  "_comment": "CAS B — Employé a pointé son arrivée (afficher bouton Pointer mon départ)",
+  "data": {
+    "id": 5432,
+    "date": "2026-04-15",
+    "check_in": "2026-04-15T07:55:12Z",
+    "check_out": null,
+    "status": "ontime",
+    "method": "mobile",
+    "hours_worked": null,
+    "overtime_hours": null,
+    "is_manual_edit": false
+  },
+  "context": {
+    "is_holiday": false,
+    "is_leave": false,
+    "expected_start": "08:00:00"
+  }
+}
