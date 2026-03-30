@@ -1,0 +1,3 @@
+# Dossier réservé au backend Laravel 11
+# Initialiser avec : composer create-project laravel/laravel . --prefer-dist
+# Voir docs/dossierdeConception/PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md
