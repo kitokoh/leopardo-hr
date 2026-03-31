@@ -19,7 +19,7 @@
 // lib/shared/models/employee.dart
 
 enum EmployeeRole { employee, manager, superAdmin }
-enum EmployeeStatus { active, inactive, archived }
+enum EmployeeStatus { active, suspended, archived }
 enum ManagerRole { principal, rh, dept, comptable, superviseur }
 
 class EmployeeCompany {
@@ -176,7 +176,7 @@ class Employee {
 ```dart
 // lib/shared/models/attendance_log.dart
 
-enum AttendanceStatus { ontime, late, earlyLeave, absent, incomplete, leave, holiday }
+enum AttendanceStatus { ontime, late, absent, incomplete, leave, holiday }
 enum AttendanceMethod { mobile, qr, biometric, manual }
 
 class AttendanceLog {
@@ -431,13 +431,15 @@ class SalaryAdvance {
 ```dart
 // lib/shared/models/task.dart
 
-enum TaskStatus { todo, inprogress, done, cancelled }
+enum TaskStatus { todo, inprogress, review, done, rejected, cancelled }
 enum TaskPriority { low, normal, high, urgent }
 
 TaskStatus taskStatusFromString(String s) {
   switch (s) {
     case 'inprogress': return TaskStatus.inprogress;
+    case 'review': return TaskStatus.review;
     case 'done': return TaskStatus.done;
+    case 'rejected': return TaskStatus.rejected;
     case 'cancelled': return TaskStatus.cancelled;
     default: return TaskStatus.todo;
   }
@@ -582,13 +584,11 @@ class TaskComment {
 ```dart
 // lib/shared/models/payroll_slip.dart
 
-enum PayrollStatus { draft, calculated, validated, paid }
+enum PayrollStatus { draft, validated }
 
 PayrollStatus payrollStatusFromString(String s) {
   switch (s) {
-    case 'calculated': return PayrollStatus.calculated;
     case 'validated': return PayrollStatus.validated;
-    case 'paid': return PayrollStatus.paid;
     default: return PayrollStatus.draft;
   }
 }
@@ -749,7 +749,7 @@ class AppNotification {
 ```dart
 // lib/shared/models/project.dart
 
-enum ProjectStatus { active, paused, completed, cancelled }
+enum ProjectStatus { active, completed, archived }
 
 class Project {
   final int id;
@@ -784,9 +784,8 @@ class Project {
 
   static ProjectStatus _statusFromString(String s) {
     switch (s) {
-      case 'paused': return ProjectStatus.paused;
       case 'completed': return ProjectStatus.completed;
-      case 'cancelled': return ProjectStatus.cancelled;
+      case 'archived': return ProjectStatus.archived;
       default: return ProjectStatus.active;
     }
   }

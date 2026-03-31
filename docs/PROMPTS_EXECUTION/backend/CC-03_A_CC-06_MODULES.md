@@ -27,6 +27,14 @@ Payloads exacts : voir `02_API_CONTRATS_COMPLET.md` — Section 4.
 ## RÈGLES MÉTIER CRITIQUES (voir aussi 09_REGLES_METIER_COMPLETES.md)
 
 ```php
+// 0. CONVERSION TIMEZONE — OBLIGATOIRE (voir 22_ERREURS_ET_LOGS.md §4)
+// Les timestamps sont stockés UTC en DB. Les plannings sont TIME sans TZ.
+// Conversion obligatoire AVANT toute comparaison métier.
+$timezone = $employee->company->timezone; // ex: "Africa/Algiers"
+$checkInLocal = $log->check_in->setTimezone($timezone);
+$scheduleStart = Carbon::parse($employee->schedule->start_time, $timezone);
+// → Comparer $checkInLocal avec $scheduleStart (jamais directement le UTC)
+
 // 1. TOUJOURS horodatage serveur — JAMAIS le timestamp client
 $checkIn = now(); // ✅
 $checkIn = $request->timestamp; // ❌ INTERDIT

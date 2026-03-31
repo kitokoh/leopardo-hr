@@ -7,6 +7,15 @@
 ## [3.3.2] - 2026-03-31
 ### Rétrospection finale — Lacunes comblées avant top départ
 
+#### Corrections de cohérence (audit final v3.3.2)
+- **README.md** : version corrigée 3.1 → 3.3.2, compteur endpoints 70 → 82+
+- **API contrats header** : « 70/70 » → « 82+/82+ », version 2.0 → 2.1
+- **ARBORESCENCE_PROJET_COMPLET.md** : compteur endpoints 70 → 82+
+- **Dart Project model** : `ProjectStatus` enum corrigé — suppression `paused`/`cancelled` (inexistants SQL), alignement sur `active|completed|archived`
+- **22_ERREURS_ET_LOGS.md** v1.1 : ajout section complète « Stratégie de remplissage audit_logs » (Observer Eloquent, modèles observés, rétention 24 mois, exclusion champs sensibles)
+- **22_ERREURS_ET_LOGS.md** v1.1 : ajout section « Gestion des timezones dans les calculs » (conversion UTC ↔ timezone entreprise, règles obligatoires pour développeurs, impact sur rapports)
+- **CC-03 Module Pointage** : ajout règle §0 conversion timezone obligatoire avant toute comparaison métier (référence 22_ERREURS_ET_LOGS.md §4)
+
 #### Endpoints manquants ajoutés dans API_CONTRATS (02_API_CONTRATS_COMPLET.md)
 - **Profil employé** : `GET /profile`, `PUT /profile`, `POST /profile/photo`, `PUT /profile/password` (4 endpoints)
 - **Notifications SSE** : `GET /notifications/stream` — Content-Type text/event-stream, note Nginx (1 endpoint)
