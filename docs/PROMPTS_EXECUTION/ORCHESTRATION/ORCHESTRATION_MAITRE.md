@@ -1,5 +1,5 @@
 # 🐆 LEOPARDO RH — FICHIER D'ORCHESTRATION MAÎTRE
-# Version 3.3.1 | Mars 2026
+# Version 3.3.3 | Mars 2026
 # Ce fichier est la SOURCE DE VÉRITÉ du projet
 # À mettre à jour après CHAQUE tâche accomplie
 
@@ -45,7 +45,7 @@ PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en paral
 | Document | Statut | Version |
 |---|---|---|
 | 01_PROMPT_MASTER_CLAUDE_CODE.md | ✅ Complet | 1.0 |
-| **02_API_CONTRATS_COMPLET.md** | ✅ **COMPLET** (70/70 endpoints) | **2.0 FINALE** |
+| **02_API_CONTRATS_COMPLET.md** | ✅ **COMPLET** (82+ endpoints) | **2.1 FINALE** |
 | 03_ERD_COMPLET.md | ✅ Complet | 1.0 |
 | 04_SPRINT_0_CHECKLIST.md | ✅ Complet | 1.0 |
 | 05_SEEDERS_ET_DONNEES_INITIALES.md | ✅ Complet | 1.0 |
@@ -74,7 +74,8 @@ PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en paral
 
 | Fichier | Statut | Description |
 |---|---|---|
-| `01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` | ✅ Prêt | 70 endpoints documentés |
+| `01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` | ✅ Prêt | 82+ endpoints documentés |
+| `api/openapi.yaml` | ✅ Prêt | 76 endpoints OpenAPI 3.0.3 machine-readable |
 | `02_MODELES_DART/20_MODELES_DART_COMPLET.md` | ✅ Prêt | 9 classes Dart complètes |
 | `03_MOCK_JSON/mock_auth_login.json` | ✅ Prêt | Mock POST /auth/login |
 | `03_MOCK_JSON/mock_auth_me.json` | ✅ Prêt | Mock GET /auth/me |
@@ -262,6 +263,18 @@ PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en paral
 18_schemas_sql/05_SEEDERS_ET_DONNEES_INITIALES.md → Seeders (plans, langues, 7 pays)
 20_templates_pdf/25_TEMPLATE_BULLETIN_PAIE.md → Template Blade bulletin de paie
 20_templates_pdf/26_FORMATS_EXPORT_BANCAIRE.md → Formats virement bancaire par pays
+19_diagrammes_uml/01_auth_multi_tenant_sequence.md → Séquence auth multi-tenant
+19_diagrammes_uml/02_payroll_calculation_sequence.md → Séquence calcul paie
+19_diagrammes_uml/03_absence_approval_sequence.md → Séquence approbation absence
+19_diagrammes_uml/04_attendance_checkin_sequence.md → Séquence pointage check-in/out
+19_diagrammes_uml/05_state_machines.md → State machines (5 entités)
+19_diagrammes_uml/06_class_diagramme.md → Diagramme de classes complet
+19_diagrammes_uml/07_deploiement.md → Diagramme de déploiement
+19_diagrammes_uml/08_use_case_diagramme.md → Use Case (7 acteurs, 49 use cases)
+19_diagrammes_uml/09_public_registration_sequence.md → Séquence inscription publique
+08_multitenancy/10_TENANT_MIGRATION_SERVICE.md → Migration shared → dedicated schema
+07_securite_rbac/14_PAYMENT_WEBHOOKS_SPEC.md → Webhooks Stripe + Paydunya
+07_securite_rbac/15_SUPERADMIN_MIDDLEWARE_SPEC.md → Double provider Sanctum SuperAdmin
 ```
 
 ### CI/CD GitHub Actions

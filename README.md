@@ -1,6 +1,6 @@
 # LEOPARDO RH — Guide du projet
 ## SaaS RH multilingue pour PME africaines et méditerranéennes
-**Version 3.3.2 | Mars 2026 | Statut : Prêt pour le codage**
+**Version 3.3.3 | Mars 2026 | Statut : Prêt pour le codage — ~100%**
 
 ---
 
@@ -24,6 +24,7 @@ leopardo-rh/
 | Quoi | Fichier |
 |------|---------|
 | **Contrats API** (82+ endpoints) | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` — Source de vérité |
+| **OpenAPI/Swagger** (76 endpoints) | `api/openapi.yaml` — Spécification machine-readable |
 | **ERD** v2.0 | `docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md` |
 | **Schéma SQL** PostgreSQL complet | `docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql` |
 | **Règles métier** (paie, pointage, absences) | `docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md` |
@@ -59,6 +60,7 @@ leopardo-rh/
 | `12_notifications/` | Templates push/email + stratégie SSE |
 | `13_i18n/` | Stratégie i18n complète (fr/ar/en/tr + RTL) |
 | `14_glossaire/` | Glossaire et dictionnaire technique |
+| `19_diagrammes_uml/` | 9 diagrammes UML Mermaid (classe, séquence, state machines, use case, déploiement) |
 | `15_CICD_ET_CONFIG/` | Fichiers config opérationnels (nginx, supervisor, env) |
 | `16_MODELES_DART/` | Classes Dart Flutter complètes |
 | `17_MOCK_JSON/` | Documentation des mocks (les fichiers sont dans `mobile/assets/mock/`) |
@@ -71,6 +73,7 @@ leopardo-rh/
 | Prompt | Agent | Description |
 |--------|-------|-------------|
 | `ORCHESTRATION/ORCHESTRATION_MAITRE.md` | Tous | **Tableau de bord global** — mettre à jour après chaque tâche |
+| `api/openapi.yaml` | Claude Code / Swagger UI | **Spec OpenAPI 3.0** — 76 endpoints machine-readable |
 | `backend/CC-01_INIT_LARAVEL.md` | Claude Code | Initialisation Laravel 11 |
 | `backend/CC-02_MODULE_AUTH.md` | Claude Code | Module Auth + Sanctum |
 | `backend/CC-03_A_CC-06_MODULES.md` | Claude Code | Modules métier (pointage, absences, paie…) |
