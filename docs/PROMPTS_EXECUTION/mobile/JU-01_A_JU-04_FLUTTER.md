@@ -104,7 +104,7 @@ lib/
 │   ├── services/       → DioService, MockDataService, NotificationService
 │   ├── widgets/        → composants réutilisables
 │   └── utils/          → formatters, validators
-└── l10n/               → fichiers ARB (fr, ar, en, es)
+└── l10n/               → fichiers ARB (fr, ar, en, tr)
 ```
 
 ### Étape 4 — Copier les modèles Dart

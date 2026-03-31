@@ -23,7 +23,7 @@ leopardo-rh/
 
 | Quoi | Fichier |
 |------|---------|
-| **Contrats API** (70 endpoints) | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` |
+| **Contrats API** (82+ endpoints) | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` |
 | **ERD** v2.0 | `docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md` |
 | **Schéma SQL** PostgreSQL complet | `docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql` |
 | **Règles métier** (paie, pointage, absences) | `docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md` |
@@ -31,6 +31,10 @@ leopardo-rh/
 | **RBAC** (7 rôles + permissions) | `docs/dossierdeConception/07_securite_rbac/10_RBAC_COMPLET.md` |
 | **Sécurité** (Sanctum, chiffrement, brute force) | `docs/dossierdeConception/07_securite_rbac/07_SECURITE_COMPLETE.md` |
 | **i18n** (fr/ar/en/tr, RTL) | `docs/dossierdeConception/13_i18n/11_I18N_STRATEGIE_COMPLETE.md` |
+| **TenantService** (7 étapes transactionnelles) | `docs/dossierdeConception/08_multitenancy/09_TENANT_SERVICE_SPEC.md` |
+| **CheckSubscription** (grâce, suspension, purge) | `docs/dossierdeConception/07_securite_rbac/13_CHECK_SUBSCRIPTION_SPEC.md` |
+| **Bulletin de paie** (template Blade + DomPDF) | `docs/dossierdeConception/20_templates_pdf/25_TEMPLATE_BULLETIN_PAIE.md` |
+| **Export bancaire** (DZ/MA/FR/TN/TR) | `docs/dossierdeConception/20_templates_pdf/26_FORMATS_EXPORT_BANCAIRE.md` |
 | **Modèles Dart** Flutter | `docs/dossierdeConception/16_MODELES_DART/20_MODELES_DART_COMPLET.md` |
 | **Mocks JSON** mobile | `mobile/assets/mock/` |
 

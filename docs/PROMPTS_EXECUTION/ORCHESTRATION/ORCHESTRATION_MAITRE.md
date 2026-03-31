@@ -1,5 +1,5 @@
 # 🐆 LEOPARDO RH — FICHIER D'ORCHESTRATION MAÎTRE
-# Version 1.0 | Mars 2026
+# Version 3.3.1 | Mars 2026
 # Ce fichier est la SOURCE DE VÉRITÉ du projet
 # À mettre à jour après CHAQUE tâche accomplie
 
@@ -8,8 +8,8 @@
 ## ⚡ ÉTAT ACTUEL DU PROJET
 
 ```
-DATE DE MISE À JOUR : 29 Mars 2026
-PHASE ACTUELLE      : PHASE 0 — Préparation finale avant code
+DATE DE MISE À JOUR : 31 Mars 2026
+PHASE ACTUELLE      : PHASE 0 — Conception terminée ✅ — Prêt pour CC-01 et JU-01
 PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en parallèle
 ```
 
@@ -68,7 +68,7 @@ PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en paral
 | 22_ERREURS_ET_LOGS.md | ✅ Complet | 1.0 |
 | 23_STOCKAGE_ET_SAUVEGARDES.md | ✅ Complet | 1.0 |
 
-**SCORE DOCUMENTATION : 23/23 documents ✅ — 100%**
+**SCORE DOCUMENTATION : 31/31 documents ✅ — 100% (v3.3.1)**
 
 ### Fichiers de complétion (ce dossier)
 
@@ -232,52 +232,60 @@ PROCHAINE ACTION    : Initialiser les repos Git + lancer CC-01 et JU-01 en paral
 
 ### Documentation de conception (docs/dossierdeConception/)
 ```
-01_PROMPT_MASTER_CLAUDE_CODE.md   → Règles absolues Claude Code
-02_API_CONTRATS_COMPLET.md        → 70 endpoints documentés (SOURCE DE VÉRITÉ API)
-03_ERD_COMPLET.md                 → Relations entre tables
-04_SPRINT_0_CHECKLIST.md          → Setup o2switch, Firebase, stores
-05_SEEDERS_ET_DONNEES_INITIALES.md → Données initiales (plans, langues, modèles RH)
-06_PROMPT_MASTER_JULES_FLUTTER.md → Règles absolues Jules/Flutter
-07_SCHEMA_SQL_COMPLET.sql         → Schéma PostgreSQL complet
-08_FEUILLE_DE_ROUTE.md            → Planning 16 semaines
-09_REGLES_METIER_COMPLETES.md     → Calculs paie, absences, pointage
-10_RBAC_COMPLET.md                → Matrice permissions 7 rôles
-11_MULTITENANCY_STRATEGY.md       → Architecture multi-tenant hybride
-12_SECURITY_SPEC_COMPLETE.md      → Règles de sécurité
-13_USER_FLOWS_VALIDES.md          → Flux utilisateurs validés
-14_NOTIFICATION_TEMPLATES.md      → Templates push/email/SMS
-15_GUIDE_AJOUT_PAYS.md            → Ajouter un nouveau pays
-16_STRATEGIE_TESTS.md             → Tests obligatoires
-17_MOCK_DATA_MOBILE.md            → Format mock data (ancien)
-18_MARKETING_ET_VENTES.md         → Tunnel de vente
-19_CICD_ET_GIT.md                 → Git flow + CI/CD
-20_MODELES_DART_COMPLET.md        → 9 classes Dart (SOURCE DE VÉRITÉ FLUTTER)
-21_GLOSSAIRE_ET_DICTIONNAIRE.md   → Termes du domaine
-22_ERREURS_ET_LOGS.md             → Codes d'erreur standardisés
-23_STOCKAGE_ET_SAUVEGARDES.md     → Stratégie de stockage
+00_docs/                          → CDC et DCT d'origine + notes initiales
+00_vision_marche/01_VISION_ET_MARCHE.md       → Vision produit, marché, concurrents
+01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md → 82+ endpoints (SOURCE DE VÉRITÉ API)
+02_personas/02_PERSONAS_ET_USER_STORIES.md    → Personas et User Stories
+03_modele_economique/03_MODELE_ECONOMIQUE.md  → Plans Trial/Starter/Business/Enterprise
+04_architecture_erd/03_ERD_COMPLET.md         → ERD v2.0 (SOURCE DE VÉRITÉ BASE DE DONNÉES)
+05_regles_metier/05_REGLES_METIER.md          → Calculs paie, absences, pointage, pénalités
+07_securite_rbac/10_RBAC_COMPLET.md           → Matrice permissions 7 rôles
+07_securite_rbac/11_PLAN_LIMIT_MIDDLEWARE.md  → Middleware limites plan
+07_securite_rbac/12_SECURITY_SPEC_COMPLETE.md → Sécurité (Sanctum, chiffrement, brute force)
+07_securite_rbac/13_CHECK_SUBSCRIPTION_SPEC.md → Grâce abonnement + suspension
+08_multitenancy/08_MULTITENANCY_STRATEGY.md   → Architecture shared/schema
+08_multitenancy/09_TENANT_SERVICE_SPEC.md     → TenantService 7 étapes transactionnelles
+09_tests_qualite/16_STRATEGIE_TESTS.md        → Tests obligatoires + scénarios bloquants
+10_deploiement_cicd/19_CICD_ET_GIT.md         → Git flow + rollback
+10_deploiement_cicd/23_STOCKAGE_ET_SAUVEGARDES.md → Stockage local Phase1 → R2 Phase2
+11_ux_wireframes/13_USER_FLOWS_VALIDES.md     → Flux utilisateurs validés
+11_ux_wireframes/24_ONBOARDING_GUIDE.md       → Guide onboarding 4 étapes
+12_notifications/14_NOTIFICATION_TEMPLATES.md → Templates push/email + SSE
+13_i18n/11_I18N_STRATEGIE_COMPLETE.md         → i18n fr/ar/en/tr + RTL
+14_glossaire/21_GLOSSAIRE_ET_DICTIONNAIRE.md  → 40+ termes métier et techniques
+15_CICD_ET_CONFIG/.env.example                → Variables d'environnement complètes
+15_CICD_ET_CONFIG/nginx-api.conf              → Config Nginx o2switch
+15_CICD_ET_CONFIG/leopardo-horizon.supervisor.conf → Config Supervisor
+16_MODELES_DART/20_MODELES_DART_COMPLET.md    → Classes Dart (SOURCE DE VÉRITÉ FLUTTER)
+17_MOCK_JSON/README_INTEGRATION_FLUTTER.md    → Comment utiliser les mocks
+18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql      → Schéma PostgreSQL complet (SOURCE DE VÉRITÉ SQL)
+18_schemas_sql/05_SEEDERS_ET_DONNEES_INITIALES.md → Seeders (plans, langues, 7 pays)
+20_templates_pdf/25_TEMPLATE_BULLETIN_PAIE.md → Template Blade bulletin de paie
+20_templates_pdf/26_FORMATS_EXPORT_BANCAIRE.md → Formats virement bancaire par pays
 ```
 
-### Fichiers de complétion (leopardo-completion/)
+### CI/CD GitHub Actions
 ```
-01_API_CONTRATS_COMPLETS/         → Contrats API 70/70 endpoints
-02_MODELES_DART/                  → Modèles Dart 9 classes
-03_MOCK_JSON/                     → 9 fichiers mock pour Flutter
-04_CICD_ET_CONFIG/                → tests.yml, deploy.yml, .env.example, nginx, supervisor
-05_PROMPTS_EXECUTION/             → Prompts prêts à coller dans chaque IA
-  backend/CC-01_INIT_LARAVEL.md
-  backend/CC-02_MODULE_AUTH.md
-  backend/CC-03_A_CC-06_MODULES.md
-  mobile/JU-01_A_JU-04_FLUTTER.md
-  frontend/CU-01_ET_AGENTS.md
-06_ORCHESTRATION/                 → Ce fichier (ORCHESTRATION_MAITRE.md)
+.github/workflows/tests.yml  → Tests automatiques (PR → develop/main)
+.github/workflows/deploy.yml → Déploiement o2switch (push → main)
+```
+
+### Prompts d'exécution (docs/PROMPTS_EXECUTION/)
+```
+ORCHESTRATION/ORCHESTRATION_MAITRE.md    → Ce fichier — tableau de bord global
+backend/CC-01_INIT_LARAVEL.md            → Init Laravel 11 + infra
+backend/CC-02_MODULE_AUTH.md             → Module Auth + Sanctum
+backend/CC-03_A_CC-06_MODULES.md         → Modules métier (pointage, paie, absences...)
+mobile/JU-01_A_JU-04_FLUTTER.md         → App Flutter complète
+frontend/CU-01_ET_AGENTS.md             → Frontend Vue.js + Landing page
 ```
 
 ---
 
 ## ✅ CHECKLIST FINALE — CONCEPTION À 100%
 
-- [x] 23 documents de conception complets
-- [x] API contrats : 70/70 endpoints documentés
+- [x] 31 documents de conception complets
+- [x] API contrats : 82+ endpoints documentés (profil, SSE, onboarding, admin langues/HR ajoutés)
 - [x] Modèles Dart : 9 classes + enums + copyWith + fromJson/toJson
 - [x] Mock JSON : 9 fichiers couvrant tous les écrans Flutter
 - [x] CI/CD : tests.yml + deploy.yml prêts à copier

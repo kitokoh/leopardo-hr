@@ -1,6 +1,14 @@
 {
   "_comment": "CAS A — Employé pas encore pointé (afficher bouton Pointer mon arrivée)",
-  "data": null,
+  "data": {
+    "date": "2026-04-15",
+    "sessions": [],
+    "daily_summary": {
+      "total_hours_worked": null,
+      "total_overtime_hours": null,
+      "status": "incomplete"
+    }
+  },
   "context": {
     "is_holiday": false,
     "is_leave": false,

@@ -2,7 +2,11 @@
   "data": [
     {
       "id": 406,
-      "employee": { "id": 42, "name": "Ahmed Benali", "matricule": "EMP-0042" },
+      "employee": {
+        "id": 42,
+        "name": "Ahmed Benali",
+        "matricule": "EMP-0042"
+      },
       "period": "Avril 2026",
       "month": 4,
       "year": 2026,
@@ -12,7 +16,8 @@
         "social_security": 7500,
         "income_tax": 4250,
         "advance_deduction": 5000,
-        "absence_deduction": 0
+        "absence_deduction": 0,
+        "penalty_deduction": 0
       },
       "net_salary": 60750,
       "status": "validated",
@@ -21,7 +26,11 @@
     },
     {
       "id": 405,
-      "employee": { "id": 42, "name": "Ahmed Benali", "matricule": "EMP-0042" },
+      "employee": {
+        "id": 42,
+        "name": "Ahmed Benali",
+        "matricule": "EMP-0042"
+      },
       "period": "Mars 2026",
       "month": 3,
       "year": 2026,
@@ -31,7 +40,8 @@
         "social_security": 7500,
         "income_tax": 4250,
         "advance_deduction": 5000,
-        "absence_deduction": 681
+        "absence_deduction": 681,
+        "penalty_deduction": 0
       },
       "net_salary": 57569,
       "status": "validated",
@@ -40,7 +50,11 @@
     },
     {
       "id": 404,
-      "employee": { "id": 42, "name": "Ahmed Benali", "matricule": "EMP-0042" },
+      "employee": {
+        "id": 42,
+        "name": "Ahmed Benali",
+        "matricule": "EMP-0042"
+      },
       "period": "Février 2026",
       "month": 2,
       "year": 2026,
@@ -50,7 +64,8 @@
         "social_security": 7500,
         "income_tax": 4250,
         "advance_deduction": 5000,
-        "absence_deduction": 0
+        "absence_deduction": 0,
+        "penalty_deduction": 0
       },
       "net_salary": 59500,
       "status": "validated",
@@ -59,7 +74,11 @@
     },
     {
       "id": 403,
-      "employee": { "id": 42, "name": "Ahmed Benali", "matricule": "EMP-0042" },
+      "employee": {
+        "id": 42,
+        "name": "Ahmed Benali",
+        "matricule": "EMP-0042"
+      },
       "period": "Janvier 2026",
       "month": 1,
       "year": 2026,
@@ -69,7 +88,8 @@
         "social_security": 7500,
         "income_tax": 4250,
         "advance_deduction": 0,
-        "absence_deduction": 0
+        "absence_deduction": 0,
+        "penalty_deduction": 0
       },
       "net_salary": 63250,
       "status": "validated",
@@ -78,7 +98,11 @@
     },
     {
       "id": 402,
-      "employee": { "id": 42, "name": "Ahmed Benali", "matricule": "EMP-0042" },
+      "employee": {
+        "id": 42,
+        "name": "Ahmed Benali",
+        "matricule": "EMP-0042"
+      },
       "period": "Décembre 2025",
       "month": 12,
       "year": 2025,
@@ -88,7 +112,8 @@
         "social_security": 7500,
         "income_tax": 4250,
         "advance_deduction": 0,
-        "absence_deduction": 0
+        "absence_deduction": 0,
+        "penalty_deduction": 0
       },
       "net_salary": 67000,
       "status": "validated",
@@ -97,7 +122,11 @@
     },
     {
       "id": 401,
-      "employee": { "id": 42, "name": "Ahmed Benali", "matricule": "EMP-0042" },
+      "employee": {
+        "id": 42,
+        "name": "Ahmed Benali",
+        "matricule": "EMP-0042"
+      },
       "period": "Novembre 2025",
       "month": 11,
       "year": 2025,
@@ -107,7 +136,8 @@
         "social_security": 7500,
         "income_tax": 4250,
         "advance_deduction": 0,
-        "absence_deduction": 1364
+        "absence_deduction": 1364,
+        "penalty_deduction": 0
       },
       "net_salary": 61886,
       "status": "validated",

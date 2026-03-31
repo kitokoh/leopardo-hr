@@ -182,6 +182,7 @@ enum AttendanceMethod { mobile, qr, biometric, manual }
 class AttendanceLog {
   final int id;
   final String date;           // Format: "2026-04-15"
+  final int sessionNumber;     // 1 = session principale, 2 = split-shift
   final DateTime? checkIn;     // TOUJOURS DateTime — jamais String
   final DateTime? checkOut;    // TOUJOURS DateTime — jamais String
   final double? hoursWorked;
@@ -193,6 +194,7 @@ class AttendanceLog {
   const AttendanceLog({
     required this.id,
     required this.date,
+    this.sessionNumber = 1,
     this.checkIn,
     this.checkOut,
     this.hoursWorked,
@@ -205,6 +207,7 @@ class AttendanceLog {
   factory AttendanceLog.fromJson(Map<String, dynamic> json) => AttendanceLog(
     id: json['id'] as int,
     date: json['date'] as String,
+    sessionNumber: json['session_number'] as int? ?? 1,
     checkIn: json['check_in'] != null
         ? DateTime.parse(json['check_in'] as String).toLocal()
         : null,

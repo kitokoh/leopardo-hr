@@ -81,7 +81,7 @@ Puis créer les migrations Laravel correspondantes (pour les futures migrations 
 ### Étape 6 — Créer et exécuter les seeders
 Selon `05_SEEDERS_ET_DONNEES_INITIALES.md` :
 - `PlanSeeder` (Starter, Business, Enterprise)
-- `LanguageSeeder` (fr, ar, tr, en, es)
+- `LanguageSeeder` (fr, ar, tr, en)
 - `HRModelSeeder` (algeria, morocco, tunisia, turkey, france)
 
 ### Étape 7 — Configurer les routes API

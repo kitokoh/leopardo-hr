@@ -66,8 +66,25 @@ RateLimiter::for('login', function (Request $request) {
 ### Données chiffrées en base
 ```
 employees.iban          → Laravel Crypt::encryptString() (AES-256-CBC)
-employees.bank_account  → Laravel Crypt::encryptString()
-employees.national_id   → Stocké en clair (non chiffré — identifiant administratif)
+employees.bank_account  → Laravel Crypt::encryptString() (AES-256-CBC)
+employees.national_id   → Laravel Crypt::encryptString() (AES-256-CBC)
+                          ⚠️  OBLIGATOIRE — conformité légale :
+                          · RGPD (UE/France) Art. 9 : donnée personnelle sensible
+                          · Loi 18-07 Algérie : protection des données personnelles
+                          · Loi 09-08 Maroc   : idem
+                          En cas de breach DB : le numéro national NE DOIT PAS être exposé en clair
+```
+
+### Cast dans le modèle Employee (les 3 champs)
+```php
+// app/Models/Tenant/Employee.php
+protected $casts = [
+    'iban'         => EncryptedCast::class,  // Crypt::encryptString automatique
+    'bank_account' => EncryptedCast::class,
+    'national_id'  => EncryptedCast::class,  // ← chiffré depuis v3.3.0
+];
+// → Chiffré automatiquement à l'écriture, déchiffré automatiquement à la lecture
+// → Recherche par national_id impossible en DB (prévoir cache ou index hashed si besoin)
 ```
 
 ### Clé de chiffrement

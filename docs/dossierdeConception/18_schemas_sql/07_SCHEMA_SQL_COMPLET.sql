@@ -262,7 +262,7 @@ BEGIN
         date_of_birth       DATE            NULL,
         gender              CHAR(1)         NULL CHECK (gender IN (''M'',''F'')),
         nationality         CHAR(2)         NULL,
-        national_id         VARCHAR(50)     NULL,
+        national_id         VARCHAR(50)     NULL,       -- ⚠️  CHIFFRÉ AES-256 (Laravel EncryptedCast) — conformité RGPD/Loi 18-07 DZ/09-08 MA
         address             TEXT            NULL,
         personal_email      VARCHAR(150)    NULL,
         emergency_contact   JSONB           NULL,
@@ -339,8 +339,9 @@ BEGIN
 
     -- --------------------------------------------------------
     -- attendance_logs
-    -- ⚠️  RÈGLE CRITIQUE : check-out = UPDATE sur la ligne du jour
-    --                       check-in  = INSERT (une seule ligne par employé par jour)
+    -- ⚠️  SPLIT-SHIFT : un employé peut avoir 2 sessions par jour (matin + après-midi)
+    --                   session_number = 1 (première session), 2 (deuxième session), etc.
+    --                   UNIQUE(employee_id, date, session_number) — pas UNIQUE(employee_id, date)
     -- --------------------------------------------------------
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.attendance_logs (
@@ -348,6 +349,7 @@ BEGIN
         company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
         date                DATE            NOT NULL,
+        session_number      SMALLINT        NOT NULL DEFAULT 1,  -- 1 = session principale, 2 = split-shift
         check_in            TIMESTAMPTZ     NULL,   -- horodatage serveur UTC
         check_out           TIMESTAMPTZ     NULL,   -- horodatage serveur UTC — UPDATE, jamais INSERT
         method              VARCHAR(20)     NOT NULL DEFAULT ''mobile''
@@ -363,7 +365,8 @@ BEGIN
         is_manual_edit      BOOLEAN         NOT NULL DEFAULT FALSE,
         edited_by           INT             NULL REFERENCES %I.employees(id),
         edit_reason         TEXT            NULL,
-        created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
+        created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+        UNIQUE (employee_id, date, session_number)
     )', p_schema_name, p_schema_name, p_schema_name);
 
     EXECUTE format('CREATE INDEX idx_att_date_status ON %I.attendance_logs(date, status)', p_schema_name);
