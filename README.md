@@ -1,6 +1,6 @@
 # LEOPARDO RH — Guide du projet
 ## SaaS RH multilingue pour PME africaines et méditerranéennes
-**Version 3.1 | Mars 2026 | Statut : Prêt pour le codage**
+**Version 3.3.2 | Mars 2026 | Statut : Prêt pour le codage**
 
 ---
 
@@ -23,7 +23,7 @@ leopardo-rh/
 
 | Quoi | Fichier |
 |------|---------|
-| **Contrats API** (82+ endpoints) | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` |
+| **Contrats API** (82+ endpoints) | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` — Source de vérité |
 | **ERD** v2.0 | `docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md` |
 | **Schéma SQL** PostgreSQL complet | `docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql` |
 | **Règles métier** (paie, pointage, absences) | `docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md` |
@@ -46,7 +46,7 @@ leopardo-rh/
 |---------|---------|
 | `00_docs/` | CDC et DCT d'origine (PDF/DOCX) |
 | `00_vision_marche/` | Vision produit, analyse marché, concurrents |
-| `01_API_CONTRATS_COMPLETS/` | 70 endpoints documentés — source de vérité API |
+| `01_API_CONTRATS_COMPLETS/` | 82+ endpoints documentés — source de vérité API |
 | `02_personas/` | Personas et User Stories |
 | `03_modele_economique/` | Plans tarifaires (Trial/Starter/Business/Enterprise) |
 | `04_architecture_erd/` | ERD v2.0 + Seeders données initiales |

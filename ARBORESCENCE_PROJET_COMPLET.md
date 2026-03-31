@@ -241,7 +241,7 @@ docs/
 ├── dossierdeConception/
 │   ├── 00_docs/                                ← CDC, DCT originaux + notes initiales
 │   ├── 00_vision_marche/                       ← Vision, marché, concurrents
-│   ├── 01_API_CONTRATS_COMPLETS/               ← ✅ SOURCE DE VÉRITÉ API (70 endpoints)
+│   ├── 01_API_CONTRATS_COMPLETS/               ← ✅ SOURCE DE VÉRITÉ API (82+ endpoints)
 │   ├── 02_personas/                            ← Personas et User Stories
 │   ├── 03_modele_economique/                   ← Plans tarifaires + stratégie acquisition
 │   ├── 04_architecture_erd/                    ← ✅ ERD v2.0 (source de vérité)

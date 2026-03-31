@@ -1,6 +1,6 @@
 # API CONTRATS — Leopardo RH
-# Payloads JSON COMPLETS — Version 2.0 FINALE | Mars 2026
-# Tous les endpoints couverts : 70/70
+# Payloads JSON COMPLETS — Version 2.1 FINALE | Mars 2026
+# Tous les endpoints couverts : 82+/82+
 # Référence commune Backend (Claude Code) ↔ Mobile (Jules) ↔ Web (Cursor)
 
 ---
