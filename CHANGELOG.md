@@ -4,6 +4,31 @@
 
 ---
 
+## [3.3.3] - 2026-03-31
+### Complétion des 8% manquants — Approche 100% de couverture
+
+#### Diagrammes UML (19_diagrammes_uml/ — 9 fichiers Mermaid)
+- **`08_use_case_diagramme.md`** : Diagramme Use Case complet — 7 acteurs, 49 use cases, 11 modules fonctionnels, tableaux détaillés par acteur
+- **`09_public_registration_sequence.md`** : Diagramme de séquence inscription publique — flux `POST /public/register` avec TenantService 7 étapes, 3 chemins alternatifs (422/409/429)
+
+#### Spécification OpenAPI/Swagger (api/openapi.yaml)
+- **`openapi.yaml`** : Spécification OpenAPI 3.0.3 complète — 76 endpoints, 57 schemas composants, 22 tags, exemples de payloads, codes HTTP francisés, références croisées `$ref`
+
+#### Nouvelles specs techniques
+- **`08_multitenancy/10_TENANT_MIGRATION_SERVICE.md`** : Spec TenantMigrationService — migration shared → dedicated schema (Enterprise upgrade), 8 étapes avec rollback transactionnel, backup pre-migration, vérification intégrité, temps estimé < 30s/500 employés
+- **`07_securite_rbac/14_PAYMENT_WEBHOOKS_SPEC.md`** : Spec Webhooks Paiement — Stripe + Paydunya (SN, CI, ML, BF, CM, GN), 4 événements, vérification signature (Stripe SDK + HMAC-SHA256), queue async, retry exponentiel 3x
+- **`07_securite_rbac/15_SUPERADMIN_MIDDLEWARE_SPEC.md`** : Spec SuperAdminMiddleware — double provider Sanctum (super_admin_tokens public vs personal_access_tokens tenant), fallback employee → super_admin, routes /admin/* protégées
+
+#### Corrections SQL
+- **`07_SCHEMA_SQL_COMPLET.sql`** : Ajout `CONSTRAINT chk_absence_dates CHECK (end_date >= start_date)` dans la table `absences` du schéma tenant
+
+#### Documents mis à jour
+- **`ARBORESCENCE_PROJET_COMPLET.md`** : version 3.1 → 3.3.2, ajout `19_diagrammes_uml/`, `TenantMigrationService`, `SuperAdminMiddleware` dans la structure
+- **`README.md`** : ajout `api/openapi.yaml` et `19_diagrammes_uml/` dans les sources de vérité et la documentation
+- **`ORCHESTRATION_MAITRE.md`** : mise à jour index fichiers, score docs, endpoints 70→82+
+
+---
+
 ## [3.3.2] - 2026-03-31
 ### Rétrospection finale — Lacunes comblées avant top départ
 

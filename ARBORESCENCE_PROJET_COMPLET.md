@@ -1,6 +1,6 @@
 # ARBORESCENCE COMPLÈTE — LEOPARDO RH
 # Monorepo : Backend Laravel 11 / Mobile Flutter / Frontend Vue.js
-# Version 3.1 | Mars 2026 — MIS À JOUR et validé
+# Version 3.3.2 | Mars 2026 — MIS À JOUR et validé
 
 ---
 
@@ -71,7 +71,7 @@ api/
 │   │   │
 │   │   ├── Middleware/
 │   │   │   ├── TenantMiddleware.php            ← SET search_path + injecte company
-│   │   │   ├── SuperAdminMiddleware.php
+│   │   │   ├── SuperAdminMiddleware.php             ← Double provider Sanctum (super_admin_tokens)
 │   │   │   ├── ManagerMiddleware.php
 │   │   │   ├── PlanLimitMiddleware.php         ← Vérifie limites du plan (employees, etc.)
 │   │   │   ├── SetLocale.php                   ← App::setLocale(company.language)
@@ -129,6 +129,7 @@ api/
 │   │
 │   ├── Services/                               ← Logique métier (jamais dans Controllers)
 │   │   ├── TenantService.php                   ← Création schéma PostgreSQL + migrations
+│   │   ├── TenantMigrationService.php           ← Migration shared → dedicated schema (Enterprise upgrade)
 │   │   ├── EmployeeService.php                 ← CRUD + sync user_lookups (toujours en transaction)
 │   │   ├── AttendanceService.php               ← Calcul heures, statut, GPS, pénalités
 │   │   ├── PayrollService.php                  ← Formule brut → net
@@ -246,8 +247,8 @@ docs/
 │   ├── 03_modele_economique/                   ← Plans tarifaires + stratégie acquisition
 │   ├── 04_architecture_erd/                    ← ✅ ERD v2.0 (source de vérité)
 │   ├── 05_regles_metier/                       ← Règles métier + guide pays
-│   ├── 07_securite_rbac/                       ← RBAC, Sécurité, PlanLimit, CheckSubscription (grâce 3j)
-│   ├── 08_multitenancy/                        ← Stratégie shared/schema + spec TenantService (7 étapes)
+│   ├── 07_securite_rbac/                       ← RBAC, Sécurité, PlanLimit, CheckSubscription, Webhooks, SuperAdminMiddleware
+│   ├── 08_multitenancy/                        ← Stratégie shared/schema + TenantService + TenantMigrationService
 │   ├── 09_tests_qualite/                       ← Stratégie tests + Erreurs et logs
 │   ├── 10_deploiement_cicd/                    ← Git workflow + Sauvegardes
 │   ├── 11_ux_wireframes/                       ← Wireframes HTML + User Flows + Onboarding
@@ -257,6 +258,7 @@ docs/
 │   ├── 16_MODELES_DART/                        ← Classes Dart Flutter
 │   ├── 17_MOCK_JSON/                           ← Documentation mocks (JSON dans mobile/assets/mock/)
 │   ├── 18_schemas_sql/                         ← ✅ SQL + Seeders (sources de vérité)
+│   ├── 19_diagrammes_uml/                      ← ✅ 9 diagrammes UML Mermaid (classe, séquence, state machines, use case, déploiement)
 │   └── 20_templates_pdf/                       ← Template bulletin de paie (Blade/DomPDF) + formats export bancaire
 │
 └── PROMPTS_EXECUTION/

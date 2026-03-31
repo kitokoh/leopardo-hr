@@ -1,0 +1,4922 @@
+openapi: "3.0.3"
+
+info:
+  title: "Leopardo RH API"
+  version: "3.3.2"
+  description: |
+    API REST de la plateforme SaaS Leopardo RH — Gestion des Ressources Humaines multitenant.
+    Développée avec Laravel 11 et PostgreSQL, elle couvre la gestion des employés,
+    le pointage (présence), les absences, les avances sur salaire, la paie, les tâches,
+    les projets, les évaluations, les rapports, les notifications et l'administration.
+
+    ## Conventions
+    - **Authentification** : Bearer token Sanctum via header `Authorization: Bearer {token}`
+    - **Content-Type** : `application/json` (sauf import fichier)
+    - **Dates** : Format ISO 8601 (`2026-04-15T08:30:00Z`)
+    - **Heures** : Format `HH:MM:SS` (`08:30:00`)
+    - **Décimaux** : Point `.` comme séparateur
+    - **Pagination** : Query params `?page=1&per_page=15`
+    - **Rate limit** : 60 requêtes/min par token
+
+    ## Format de réponse standard
+    - Succès : `{ "data": { ... } }` ou `{ "data": [...], "meta": { "current_page": 1, "last_page": 5, "per_page": 15, "total": 74 } }`
+    - Erreur : `{ "error": "CODE_ERREUR", "message": "Description", "errors": { "field": ["message"] } }`
+
+  contact:
+    name: "Leopardo RH"
+    email: "support@leopardo-rh.com"
+    url: "https://www.leopardo-rh.com"
+
+servers:
+  - url: "https://api.leopardo-rh.com/api/v1"
+    description: "Serveur de production"
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: "Auth"
+    description: "Authentification et gestion de session"
+  - name: "Onboarding"
+    description: "Inscription publique et auto-onboarding"
+  - name: "Employees"
+    description: "Gestion des employés"
+  - name: "Attendance"
+    description: "Pointage et suivi de présence"
+  - name: "Absences"
+    description: "Gestion des absences et congés"
+  - name: "Advances"
+    description: "Avances sur salaire et remboursements"
+  - name: "Payroll"
+    description: "Calcul et gestion de la paie"
+  - name: "Tasks"
+    description: "Gestion des tâches et commentaires"
+  - name: "Projects"
+    description: "Gestion des projets"
+  - name: "Departments"
+    description: "Départements de l'entreprise"
+  - name: "Positions"
+    description: "Postes et fonctions"
+  - name: "Schedules"
+    description: "Plannings de travail (horaires)"
+  - name: "Sites"
+    description: "Lieux de travail (sites géolocalisés)"
+  - name: "Devices"
+    description: "Appareils biométriques ZKTeco et QR"
+  - name: "Notifications"
+    description: "Notifications push et in-app"
+  - name: "Profile"
+    description: "Profil de l'utilisateur connecté"
+  - name: "Settings"
+    description: "Paramètres de l'entreprise"
+  - name: "Evaluations"
+    description: "Évaluations des employés"
+  - name: "Reports"
+    description: "Rapports et statistiques"
+  - name: "Admin"
+    description: "Administration (rôles manager)"
+  - name: "SuperAdmin"
+    description: "Administration de la plateforme"
+  - name: "Billing"
+    description: "Facturation et abonnements"
+
+paths:
+  # ============================================================
+  # AUTHENTIFICATION
+  # ============================================================
+  /auth/login:
+    post:
+      tags: ["Auth"]
+      summary: "Connexion"
+      description: "Authentifie un utilisateur et retourne un token Sanctum avec ses informations."
+      operationId: authLogin
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              email: "ahmed.benali@entreprise.com"
+              password: "MonMotDePasse123!"
+              device_name: "iPhone 15 Pro"
+              fcm_token: "fcm_abc123..."
+      responses:
+        "200":
+          description: "Connexion réussie"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: "Identifiants invalides"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "INVALID_CREDENTIALS"
+                message: "Email ou mot de passe incorrect."
+        "403":
+          description: "Compte suspendu ou abonnement expiré"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "ACCOUNT_SUSPENDED"
+                message: "Votre entreprise est suspendue. Contactez le support."
+        "422":
+          description: "Données invalides"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /auth/logout:
+    post:
+      tags: ["Auth"]
+      summary: "Déconnexion"
+      description: "Révoque le token Sanctum actuel de l'utilisateur."
+      operationId: authLogout
+      responses:
+        "200":
+          description: "Déconnexion réussie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "LOGGED_OUT"
+
+  /auth/refresh:
+    post:
+      tags: ["Auth"]
+      summary: "Rafraîchir le token"
+      description: "Génère un nouveau token Sanctum pour l'utilisateur authentifié."
+      operationId: authRefresh
+      responses:
+        "200":
+          description: "Token rafraîchi"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: "2|NewTokenValue..."
+                      expires_at:
+                        type: string
+                        format: date-time
+                        example: "2026-10-15T10:00:00Z"
+
+  /auth/me:
+    get:
+      tags: ["Auth"]
+      summary: "Utilisateur actuel"
+      description: "Retourne les informations complètes de l'utilisateur authentifié avec sa relation entreprise."
+      operationId: authMe
+      responses:
+        "200":
+          description: "Informations de l'utilisateur"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CurrentUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/forgot-password:
+    post:
+      tags: ["Auth"]
+      summary: "Mot de passe oublié"
+      description: "Envoie un email de réinitialisation de mot de passe."
+      operationId: authForgotPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["email"]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "ahmed.benali@entreprise.com"
+      responses:
+        "200":
+          description: "Email de réinitialisation envoyé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "RESET_EMAIL_SENT"
+
+  /auth/reset-password:
+    post:
+      tags: ["Auth"]
+      summary: "Réinitialiser le mot de passe"
+      description: "Réinitialise le mot de passe avec le token reçu par email."
+      operationId: authResetPassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["token", "email", "password", "password_confirmation"]
+              properties:
+                token:
+                  type: string
+                  example: "reset_token_from_email"
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+      responses:
+        "200":
+          description: "Mot de passe réinitialisé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "PASSWORD_RESET_SUCCESS"
+        "422":
+          description: "Token invalide ou expiré"
+
+  /auth/device/fcm:
+    post:
+      tags: ["Auth"]
+      summary: "Enregistrer un appareil FCM"
+      description: "Enregistre le token FCM d'un appareil pour les push notifications."
+      operationId: authDeviceFcmRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FcmDeviceRequest"
+      responses:
+        "200":
+          description: "Appareil enregistré"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "FCM_TOKEN_REGISTERED"
+    delete:
+      tags: ["Auth"]
+      summary: "Supprimer un appareil FCM"
+      description: "Retire le token FCM d'un appareil."
+      operationId: authDeviceFcmDelete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["fcm_token"]
+              properties:
+                fcm_token:
+                  type: string
+                  example: "fcm_xyz789..."
+      responses:
+        "200":
+          description: "Appareil supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "FCM_TOKEN_REMOVED"
+
+  # ============================================================
+  # ONBOARDING PUBLIC
+  # ============================================================
+  /public/register:
+    post:
+      tags: ["Onboarding"]
+      summary: "Inscription auto-onboarding"
+      description: |
+        Crée un compte Trial sans intervention du Super Admin.
+        Accessible sans authentification. Rate limit : 3 requêtes/heure/IP.
+        Crée automatiquement l'entreprise, le schéma tenant, le manager et les paramètres RH.
+      operationId: publicRegister
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            example:
+              company_name: "Entreprise SARL"
+              manager_email: "contact@entreprise.com"
+              manager_password: "MotDePasse123!"
+              country: "DZ"
+              estimated_employees: 15
+              plan: "starter"
+      responses:
+        "201":
+          description: "Compte créé avec succès"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+        "422":
+          description: "Email déjà utilisé ou données invalides"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "EMAIL_ALREADY_EXISTS"
+                message: "Cet email est déjà enregistré."
+
+  # ============================================================
+  # EMPLOYÉS
+  # ============================================================
+  /employees:
+    get:
+      tags: ["Employees"]
+      summary: "Lister les employés"
+      description: "Retourne la liste paginée des employés de l'entreprise avec filtres optionnels."
+      operationId: listEmployees
+      parameters:
+        - name: department_id
+          in: query
+          description: "Filtrer par département"
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: "Filtrer par statut"
+          schema:
+            type: string
+            enum: ["active", "suspended", "archived"]
+        - name: search
+          in: query
+          description: "Recherche par nom ou email"
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        "200":
+          description: "Liste des employés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/EmployeeSummary"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: ["Employees"]
+      summary: "Créer un employé"
+      description: "Crée un nouvel employé dans l'entreprise. Vérifie la limite du plan (PlanLimitMiddleware)."
+      operationId: createEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEmployeeRequest"
+      responses:
+        "201":
+          description: "Employé créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeCreated"
+        "403":
+          description: "Limite du plan atteinte"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "PLAN_EMPLOYEE_LIMIT_REACHED"
+                message: "Votre plan Starter est limité à 20 employés. Passez au plan Business pour continuer."
+                data:
+                  current_count: 20
+                  plan_limit: 20
+                  plan: "Starter"
+                  upgrade_url: "https://app.leopardo-rh.com/settings/billing"
+        "422":
+          description: "Données invalides"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /employees/{id}:
+    get:
+      tags: ["Employees"]
+      summary: "Détails d'un employé"
+      description: "Retourne les informations complètes d'un employé avec ses relations."
+      operationId: getEmployee
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      responses:
+        "200":
+          description: "Détails de l'employé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Employee"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags: ["Employees"]
+      summary: "Modifier un employé"
+      description: "Met à jour les informations d'un employé (champs partiels acceptés)."
+      operationId: updateEmployee
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEmployeeRequest"
+      responses:
+        "200":
+          description: "Employé mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Employee"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          description: "Données invalides"
+
+    delete:
+      tags: ["Employees"]
+      summary: "Archiver un employé"
+      description: "Soft delete — archive l'employé sans supprimer ses données historiques."
+      operationId: deleteEmployee
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+      responses:
+        "200":
+          description: "Employé archivé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "EMPLOYEE_ARCHIVED"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /employees/import:
+    post:
+      tags: ["Employees"]
+      summary: "Importer des employés"
+      description: |
+        Importe un fichier CSV d'employés en arrière-plan.
+        Colonnes attendues : first_name, last_name, email, department_id, position_id, hire_date, salary_base
+      operationId: importEmployees
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: ["file"]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "Fichier CSV des employés"
+      responses:
+        "202":
+          description: "Import en file d'attente"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        example: "import_abc123"
+                      total_rows:
+                        type: integer
+                        example: 45
+                      message:
+                        type: string
+                        example: "IMPORT_QUEUED"
+
+  /employees/{id}/payslips:
+    get:
+      tags: ["Employees", "Payroll"]
+      summary: "Bulletins de paie d'un employé"
+      description: "Retourne la liste des bulletins de paie d'un employé."
+      operationId: getEmployeePayslips
+      parameters:
+        - $ref: "#/components/parameters/EmployeeId"
+        - name: year
+          in: query
+          schema:
+            type: integer
+            example: 2026
+      responses:
+        "200":
+          description: "Liste des bulletins"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayslipSummary"
+
+  # ============================================================
+  # POINTAGE (ATTENDANCE)
+  # ============================================================
+  /attendance/check-in:
+    post:
+      tags: ["Attendance"]
+      summary: "Pointer l'arrivée"
+      description: "Enregistre l'arrivée de l'employé avec vérification GPS optionnelle."
+      operationId: attendanceCheckIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckInRequest"
+      responses:
+        "201":
+          description: "Arrivée enregistrée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceLog"
+        "409":
+          description: "Déjà pointé"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "ALREADY_CHECKED_IN"
+                message: "Vous avez déjà pointé votre arrivée aujourd'hui."
+        "422":
+          description: "Hors zone GPS ou planning manquant"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "GPS_OUTSIDE_ZONE"
+                message: "Vous êtes hors du périmètre géolocalisé du site."
+
+  /attendance/check-out:
+    post:
+      tags: ["Attendance"]
+      summary: "Pointer le départ"
+      description: "Enregistre le départ de l'employé et calcule les heures travaillées."
+      operationId: attendanceCheckOut
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckOutRequest"
+      responses:
+        "200":
+          description: "Départ enregistré"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceLog"
+        "422":
+          description: "Pas d'arrivée enregistrée ou départ avant l'arrivée"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "MISSING_CHECK_IN"
+                message: "Aucune arrivée enregistrée pour aujourd'hui."
+
+  /attendance/today:
+    get:
+      tags: ["Attendance"]
+      summary: "Pointage du jour"
+      description: "Retourne le pointage du jour de l'employé connecté ou null avec le contexte (férié, congé, heure attendue)."
+      operationId: attendanceToday
+      responses:
+        "200":
+          description: "Pointage du jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceLog"
+                  context:
+                    $ref: "#/components/schemas/AttendanceContext"
+
+  /attendance:
+    get:
+      tags: ["Attendance"]
+      summary: "Historique de pointage"
+      description: "Retourne l'historique de pointage avec filtres (admin/manager)."
+      operationId: listAttendance
+      parameters:
+        - name: employee_id
+          in: query
+          description: "Filtrer par employé"
+          schema:
+            type: integer
+        - name: month
+          in: query
+          description: "Mois (1-12)"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: "Filtrer par statut"
+          schema:
+            type: string
+            enum: ["ontime", "late", "absent", "leave", "holiday", "incomplete"]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+      responses:
+        "200":
+          description: "Liste des pointages"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AttendanceLogWithEmployee"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+  /attendance/{id}:
+    put:
+      tags: ["Attendance"]
+      summary: "Corriger un pointage"
+      description: "Correction manuelle par un gestionnaire. Marque automatiquement is_manual_edit à true."
+      operationId: updateAttendance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID du log de pointage"
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditAttendanceRequest"
+      responses:
+        "200":
+          description: "Pointage corrigé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceLogWithEmployee"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /attendance/qrcode:
+    post:
+      tags: ["Attendance"]
+      summary: "Pointage par QR Code"
+      description: "Enregistre un pointage (arrivée ou départ) via QR code avec vérification GPS."
+      operationId: attendanceQrCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["qr_payload"]
+              properties:
+                qr_payload:
+                  type: string
+                  example: "LEO-SITE-1-2026-04-15"
+                gps_lat:
+                  type: number
+                  format: double
+                  example: 36.7375
+                gps_lng:
+                  type: number
+                  format: double
+                  example: 3.0868
+      responses:
+        "201":
+          description: "Pointage enregistré via QR"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceLog"
+
+  /attendance/biometric:
+    post:
+      tags: ["Attendance", "Devices"]
+      summary: "Webhook biométrique ZKTeco"
+      description: "Endpoint webhook pour les lecteurs biométriques ZKTeco."
+      operationId: attendanceBiometric
+      security: []
+      parameters:
+        - name: X-Device-Token
+          in: header
+          required: true
+          description: "Token d'authentification de l'appareil"
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["zkteco_id", "event_type", "device_id", "timestamp"]
+              properties:
+                zkteco_id:
+                  type: string
+                  example: "00042"
+                event_type:
+                  type: string
+                  enum: ["check_in", "check_out"]
+                device_id:
+                  type: string
+                  example: "ZK-ALGER-01"
+                timestamp:
+                  type: string
+                  format: date-time
+      responses:
+        "200":
+          description: "Pointage enregistré"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ATTENDANCE_RECORDED"
+        "401":
+          description: "Token appareil invalide"
+
+  # ============================================================
+  # ABSENCES
+  # ============================================================
+  /absences:
+    get:
+      tags: ["Absences"]
+      summary: "Lister les absences"
+      description: "Retourne la liste des demandes d'absence avec filtres."
+      operationId: listAbsences
+      parameters:
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "approved", "rejected", "cancelled"]
+        - name: month
+          in: query
+          schema:
+            type: integer
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+      responses:
+        "200":
+          description: "Liste des absences"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Absence"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+    post:
+      tags: ["Absences"]
+      summary: "Demander une absence"
+      description: "Crée une demande d'absence (congé, maladie, etc.). Vérifie le solde de congés."
+      operationId: createAbsence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AbsenceRequest"
+      responses:
+        "201":
+          description: "Demande créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "422":
+          description: "Solde insuffisant ou conflit de dates"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "INSUFFICIENT_LEAVE_BALANCE"
+                message: "Solde de congés insuffisant pour cette période."
+
+  /absences/{id}/approve:
+    put:
+      tags: ["Absences"]
+      summary: "Approuver une absence"
+      description: "Approuve une demande d'absence en attente (réservé aux gestionnaires)."
+      operationId: approveAbsence
+      parameters:
+        - $ref: "#/components/parameters/AbsenceId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  example: "Approuvé — bon repos !"
+      responses:
+        "200":
+          description: "Absence approuvée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+
+  /absences/{id}/reject:
+    put:
+      tags: ["Absences"]
+      summary: "Rejeter une absence"
+      description: "Rejette une demande d'absence en attente."
+      operationId: rejectAbsence
+      parameters:
+        - $ref: "#/components/parameters/AbsenceId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  example: "Période trop chargée — à reporter."
+      responses:
+        "200":
+          description: "Absence rejetée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+
+  /absences/{id}/cancel:
+    put:
+      tags: ["Absences"]
+      summary: "Annuler une absence"
+      description: "Annule une demande d'absence (uniquement si statut pending)."
+      operationId: cancelAbsence
+      parameters:
+        - $ref: "#/components/parameters/AbsenceId"
+      responses:
+        "200":
+          description: "Absence annulée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ABSENCE_CANCELLED"
+        "422":
+          description: "Impossible d'annuler une absence approuvée"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "CANNOT_CANCEL_APPROVED"
+                message: "Impossible d'annuler une absence déjà approuvée."
+
+  /absence-types:
+    get:
+      tags: ["Absences"]
+      summary: "Lister les types d'absence"
+      description: "Retourne les types d'absence configurés pour l'entreprise."
+      operationId: listAbsenceTypes
+      responses:
+        "200":
+          description: "Types d'absence"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AbsenceType"
+
+    post:
+      tags: ["Absences"]
+      summary: "Créer un type d'absence"
+      operationId: createAbsenceType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AbsenceTypeRequest"
+      responses:
+        "201":
+          description: "Type créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AbsenceType"
+
+  # ============================================================
+  # AVANCES SUR SALAIRE
+  # ============================================================
+  /advances:
+    get:
+      tags: ["Advances"]
+      summary: "Lister les avances"
+      description: "Retourne la liste des demandes d'avance sur salaire."
+      operationId: listAdvances
+      parameters:
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "approved", "rejected", "active", "repaid"]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Liste des avances"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SalaryAdvance"
+
+    post:
+      tags: ["Advances"]
+      summary: "Demander une avance"
+      description: "Crée une demande d'avance sur salaire pour l'employé connecté."
+      operationId: createAdvance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdvanceRequest"
+      responses:
+        "201":
+          description: "Demande créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+
+  /advances/{id}/approve:
+    put:
+      tags: ["Advances"]
+      summary: "Approuver une avance"
+      operationId: approveAdvance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repayment_months:
+                  type: integer
+                  example: 3
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: "Avance approuvée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+
+  /advances/{id}/reject:
+    put:
+      tags: ["Advances"]
+      summary: "Rejeter une avance"
+      operationId: rejectAdvance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: "Avance rejetée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+
+  /advances/{id}/repayment:
+    put:
+      tags: ["Advances"]
+      summary: "Modifier le plan de remboursement"
+      description: "Met à jour le nombre de mois et la déduction mensuelle d'une avance approuvée."
+      operationId: updateAdvanceRepayment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["repayment_months"]
+              properties:
+                repayment_months:
+                  type: integer
+                  example: 6
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: "Plan de remboursement modifié"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+
+  # ============================================================
+  # PAIE
+  # ============================================================
+  /payroll/calculate:
+    post:
+      tags: ["Payroll"]
+      summary: "Simuler la paie"
+      description: |
+        Calcule la paie pour les employés sélectionnés sans valider ni générer de PDF.
+        Retourne le détail des cotisations, impôts, retenues et le salaire net.
+      operationId: calculatePayroll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollCalculateRequest"
+      responses:
+        "200":
+          description: "Résultat de la simulation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollCalculation"
+
+  /payroll/validate:
+    post:
+      tags: ["Payroll"]
+      summary: "Valider et générer la paie"
+      description: "Valide les bulletins et génère les PDF en arrière-plan (job queue)."
+      operationId: validatePayroll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayrollCalculateRequest"
+      responses:
+        "202":
+          description: "Génération en file d'attente"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        example: "payroll_job_abc123"
+                      message:
+                        type: string
+                        example: "PAYROLL_GENERATION_QUEUED"
+                      employees_count:
+                        type: integer
+                        example: 3
+
+  /payroll:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les bulletins de paie"
+      description: "Retourne la liste des bulletins de paie générés."
+      operationId: listPayroll
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: integer
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["draft", "validated"]
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Liste des bulletins"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Payroll"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+  /payroll/{id}:
+    get:
+      tags: ["Payroll"]
+      summary: "Détails d'un bulletin"
+      description: "Retourne les détails complets d'un bulletin de paie avec toutes les déductions."
+      operationId: getPayroll
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Détails du bulletin"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /payroll/{id}/pdf:
+    get:
+      tags: ["Payroll"]
+      summary: "Télécharger le bulletin PDF"
+      description: "Télécharge le fichier PDF du bulletin de paie."
+      operationId: getPayrollPdf
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier PDF"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /payroll/export-bank:
+    get:
+      tags: ["Payroll"]
+      summary: "Exporter les virements bancaires"
+      description: "Exporte un fichier CSV/Excel pour les virements bancaires du mois."
+      operationId: exportPayrollBank
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier d'export bancaire"
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+
+  /payroll/status/{job_id}:
+    get:
+      tags: ["Payroll"]
+      summary: "Statut de la génération de paie"
+      description: "Retourne la progression d'un job de génération de bulletins en arrière-plan."
+      operationId: getPayrollJobStatus
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Statut du job"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollJobStatus"
+
+  # ============================================================
+  # TÂCHES
+  # ============================================================
+  /tasks:
+    get:
+      tags: ["Tasks"]
+      summary: "Lister les tâches"
+      description: "Retourne la liste des tâches avec filtres par statut, priorité, assigné et projet."
+      operationId: listTasks
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+        - name: assignee_id
+          in: query
+          schema:
+            type: integer
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: ["low", "normal", "high", "urgent"]
+        - name: project_id
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Liste des tâches"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Task"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+    post:
+      tags: ["Tasks"]
+      summary: "Créer une tâche"
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        "201":
+          description: "Tâche créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+        "422":
+          description: "Données invalides"
+
+  /tasks/{id}:
+    get:
+      tags: ["Tasks"]
+      summary: "Détails d'une tâche"
+      description: "Retourne la tâche complète avec checklist et commentaires."
+      operationId: getTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Détails de la tâche"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags: ["Tasks"]
+      summary: "Modifier une tâche"
+      description: "Met à jour une tâche (champs partiels acceptés)."
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: "Tâche mise à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+
+    delete:
+      tags: ["Tasks"]
+      summary: "Supprimer une tâche"
+      operationId: deleteTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Tâche supprimée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "TASK_DELETED"
+
+  /tasks/{id}/status:
+    put:
+      tags: ["Tasks"]
+      summary: "Mettre à jour le statut d'une tâche"
+      description: "Mise à jour du statut par l'employé assigné (avec checklist optionnelle)."
+      operationId: updateTaskStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["status"]
+              properties:
+                status:
+                  type: string
+                  enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+                checklist:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      done:
+                        type: boolean
+      responses:
+        "200":
+          description: "Statut mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+
+  /tasks/{id}/comments:
+    get:
+      tags: ["Tasks"]
+      summary: "Commentaires d'une tâche"
+      operationId: getTaskComments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Liste des commentaires"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskComment"
+
+    post:
+      tags: ["Tasks"]
+      summary: "Ajouter un commentaire"
+      operationId: addTaskComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["content"]
+              properties:
+                content:
+                  type: string
+                  example: "Fait — scénarios couverts."
+      responses:
+        "201":
+          description: "Commentaire ajouté"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaskComment"
+
+  # ============================================================
+  # PROJETS
+  # ============================================================
+  /projects:
+    get:
+      tags: ["Projects"]
+      summary: "Lister les projets"
+      operationId: listProjects
+      responses:
+        "200":
+          description: "Liste des projets"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Project"
+
+    post:
+      tags: ["Projects"]
+      summary: "Créer un projet"
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name"]
+              properties:
+                name:
+                  type: string
+                  example: "Refonte Site Web"
+                manager_id:
+                  type: integer
+                  example: 5
+      responses:
+        "201":
+          description: "Projet créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Project"
+
+  /projects/{id}:
+    put:
+      tags: ["Projects"]
+      summary: "Modifier un projet"
+      operationId: updateProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                status:
+                  type: string
+                  enum: ["active", "completed", "archived"]
+      responses:
+        "200":
+          description: "Projet mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Project"
+
+  # ============================================================
+  # DÉPARTEMENTS
+  # ============================================================
+  /departments:
+    get:
+      tags: ["Departments"]
+      summary: "Lister les départements"
+      operationId: listDepartments
+      responses:
+        "200":
+          description: "Liste des départements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Department"
+
+    post:
+      tags: ["Departments"]
+      summary: "Créer un département"
+      operationId: createDepartment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name"]
+              properties:
+                name:
+                  type: string
+                  example: "Marketing Digital"
+      responses:
+        "201":
+          description: "Département créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Department"
+
+  /departments/{id}:
+    put:
+      tags: ["Departments"]
+      summary: "Modifier un département"
+      operationId: updateDepartment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name"]
+              properties:
+                name:
+                  type: string
+                  example: "Marketing & Communication"
+      responses:
+        "200":
+          description: "Département mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Department"
+
+    delete:
+      tags: ["Departments"]
+      summary: "Supprimer un département"
+      operationId: deleteDepartment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Département supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "DEPARTMENT_DELETED"
+        "409":
+          description: "Le département contient des employés"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "DEPARTMENT_HAS_EMPLOYEES"
+                message: "Veuillez réaffecter les employés avant de supprimer ce département."
+
+  # ============================================================
+  # POSTES
+  # ============================================================
+  /positions:
+    get:
+      tags: ["Positions"]
+      summary: "Lister les postes"
+      operationId: listPositions
+      responses:
+        "200":
+          description: "Liste des postes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Position"
+
+    post:
+      tags: ["Positions"]
+      summary: "Créer un poste"
+      operationId: createPosition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name", "department_id"]
+              properties:
+                name:
+                  type: string
+                  example: "Chef de Projet"
+                department_id:
+                  type: integer
+                  example: 3
+      responses:
+        "201":
+          description: "Poste créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Position"
+
+  /positions/{id}:
+    put:
+      tags: ["Positions"]
+      summary: "Modifier un poste"
+      operationId: updatePosition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name"]
+              properties:
+                name:
+                  type: string
+                  example: "Chef de Projet Senior"
+      responses:
+        "200":
+          description: "Poste mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Position"
+
+    delete:
+      tags: ["Positions"]
+      summary: "Supprimer un poste"
+      operationId: deletePosition
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Poste supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "POSITION_DELETED"
+
+  # ============================================================
+  # PLANNINGS (SCHEDULES)
+  # ============================================================
+  /schedules:
+    get:
+      tags: ["Schedules"]
+      summary: "Lister les plannings"
+      description: "Retourne les plannings de travail (horaires) configurés."
+      operationId: listSchedules
+      responses:
+        "200":
+          description: "Liste des plannings"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Schedule"
+
+    post:
+      tags: ["Schedules"]
+      summary: "Créer un planning"
+      operationId: createSchedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateScheduleRequest"
+      responses:
+        "201":
+          description: "Planning créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Schedule"
+
+  /schedules/{id}:
+    put:
+      tags: ["Schedules"]
+      summary: "Modifier un planning"
+      operationId: updateSchedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateScheduleRequest"
+      responses:
+        "200":
+          description: "Planning mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Schedule"
+
+    delete:
+      tags: ["Schedules"]
+      summary: "Supprimer un planning"
+      operationId: deleteSchedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Planning supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "SCHEDULE_DELETED"
+        "409":
+          description: "Planning utilisé par des employés"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "SCHEDULE_IN_USE"
+                message: "Ce planning est assigné à des employés."
+
+  # ============================================================
+  # SITES
+  # ============================================================
+  /sites:
+    get:
+      tags: ["Sites"]
+      summary: "Lister les sites"
+      description: "Retourne les lieux de travail avec coordonnées GPS."
+      operationId: listSites
+      responses:
+        "200":
+          description: "Liste des sites"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Site"
+
+    post:
+      tags: ["Sites"]
+      summary: "Créer un site"
+      operationId: createSite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteRequest"
+      responses:
+        "201":
+          description: "Site créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Site"
+
+  /sites/{id}:
+    put:
+      tags: ["Sites"]
+      summary: "Modifier un site"
+      operationId: updateSite
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteRequest"
+      responses:
+        "200":
+          description: "Site mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Site"
+
+    delete:
+      tags: ["Sites"]
+      summary: "Supprimer un site"
+      operationId: deleteSite
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Site supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "SITE_DELETED"
+
+  # ============================================================
+  # APPAREILS (DEVICES)
+  # ============================================================
+  /devices:
+    get:
+      tags: ["Devices"]
+      summary: "Lister les appareils"
+      description: "Retourne les appareils biométriques et QR enregistrés."
+      operationId: listDevices
+      responses:
+        "200":
+          description: "Liste des appareils"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Device"
+
+    post:
+      tags: ["Devices"]
+      summary: "Enregistrer un appareil"
+      description: "Ajoute un nouvel appareil biométrique ou terminal QR."
+      operationId: createDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["name", "type", "site_id"]
+              properties:
+                name:
+                  type: string
+                  example: "QR Code Salle B"
+                type:
+                  type: string
+                  enum: ["zkteco", "qrcode_terminal", "tablet"]
+                site_id:
+                  type: integer
+                  example: 1
+                model:
+                  type: string
+                  example: "ZK-X800"
+      responses:
+        "201":
+          description: "Appareil créé avec token"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Device"
+
+  /devices/{id}:
+    put:
+      tags: ["Devices"]
+      summary: "Modifier un appareil"
+      operationId: updateDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                ip_address:
+                  type: string
+      responses:
+        "200":
+          description: "Appareil mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Device"
+
+    delete:
+      tags: ["Devices"]
+      summary: "Supprimer un appareil"
+      operationId: deleteDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Appareil supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "DEVICE_DELETED"
+
+  /devices/{id}/rotate-token:
+    post:
+      tags: ["Devices"]
+      summary: "Renouveler le token d'un appareil"
+      description: "Réservé aux rôles principal et rh. Utilisé en cas de compromission du token."
+      operationId: rotateDeviceToken
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Token renouvelé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      device_id:
+                        type: integer
+                      new_token:
+                        type: string
+                        example: "lrh_tkn_9f3a..."
+                      rotated_at:
+                        type: string
+                        format: date-time
+                      message:
+                        type: string
+                        example: "Token renouvelé. Reconfigurer l'appareil avec le nouveau token."
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /devices/{id}/test-connection:
+    post:
+      tags: ["Devices"]
+      summary: "Tester la connexion d'un appareil"
+      description: "Vérifie la connectivité et retourne la latence et la version firmware."
+      operationId: testDeviceConnection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Résultat du test"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: ["reachable", "unreachable"]
+                      latency_ms:
+                        type: integer
+                        example: 23
+                      firmware:
+                        type: string
+                        example: "ZEM800-2.4.13"
+                      error:
+                        type: string
+                        example: "CONNECTION_TIMEOUT"
+
+  # ============================================================
+  # NOTIFICATIONS
+  # ============================================================
+  /notifications:
+    get:
+      tags: ["Notifications"]
+      summary: "Lister les notifications"
+      description: "Retourne les notifications de l'utilisateur avec filtres."
+      operationId: listNotifications
+      parameters:
+        - name: is_read
+          in: query
+          schema:
+            type: boolean
+        - name: type
+          in: query
+          description: "Type de notification"
+          schema:
+            type: string
+            enum: ["absence_approved", "absence_rejected", "advance_approved", "advance_rejected", "task_assigned", "task_commented", "payslip_available", "evaluation_received"]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+      responses:
+        "200":
+          description: "Liste des notifications"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Notification"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+  /notifications/stream:
+    get:
+      tags: ["Notifications"]
+      summary: "Flux Server-Sent Events"
+      description: "Flux SSE pour les notifications en temps réel."
+      operationId: notificationStream
+      responses:
+        "200":
+          description: "Flux SSE de notifications"
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /notifications/{id}/read:
+    put:
+      tags: ["Notifications"]
+      summary: "Marquer une notification comme lue"
+      operationId: markNotificationRead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Notification marquée comme lue"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "NOTIFICATION_MARKED_READ"
+
+  /notifications/read-all:
+    put:
+      tags: ["Notifications"]
+      summary: "Marquer toutes les notifications comme lues"
+      operationId: markAllNotificationsRead
+      responses:
+        "200":
+          description: "Toutes les notifications marquées comme lues"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ALL_NOTIFICATIONS_MARKED_READ"
+
+  /notifications/count:
+    get:
+      tags: ["Notifications"]
+      summary: "Nombre de notifications non lues"
+      description: "Retourne le nombre de notifications non lues (badge cloche)."
+      operationId: notificationCount
+      responses:
+        "200":
+          description: "Nombre de non lues"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      unread_count:
+                        type: integer
+                        example: 3
+
+  # ============================================================
+  # PROFIL
+  # ============================================================
+  /profile:
+    get:
+      tags: ["Profile"]
+      summary: "Profil de l'utilisateur"
+      description: "Retourne le profil complet de l'utilisateur connecté."
+      operationId: getProfile
+      responses:
+        "200":
+          description: "Profil utilisateur"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CurrentUser"
+
+    put:
+      tags: ["Profile"]
+      summary: "Modifier le profil"
+      description: "Met à jour les informations du profil (champs partiels acceptés)."
+      operationId: updateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone:
+                  type: string
+                personal_email:
+                  type: string
+                address:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: date
+      responses:
+        "200":
+          description: "Profil mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CurrentUser"
+
+  /profile/photo:
+    post:
+      tags: ["Profile"]
+      summary: "Uploader une photo de profil"
+      operationId: uploadProfilePhoto
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: ["photo"]
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                  description: "Image (JPG, PNG, max 2 Mo)"
+      responses:
+        "200":
+          description: "Photo mise à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      photo_url:
+                        type: string
+                        format: uri
+
+  # ============================================================
+  # PARAMÈTRES ENTREPRISE
+  # ============================================================
+  /settings:
+    get:
+      tags: ["Settings"]
+      summary: "Paramètres de l'entreprise"
+      description: "Retourne tous les paramètres de configuration de l'entreprise."
+      operationId: getSettings
+      responses:
+        "200":
+          description: "Paramètres"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CompanySettings"
+
+    put:
+      tags: ["Settings"]
+      summary: "Modifier les paramètres"
+      description: "Met à jour les paramètres de l'entreprise (champs partiels acceptés)."
+      operationId: updateSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanySettingsUpdate"
+      responses:
+        "200":
+          description: "Paramètres mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CompanySettings"
+
+  /settings/hr-models:
+    get:
+      tags: ["Settings"]
+      summary: "Modèles RH disponibles"
+      description: "Retourne la liste des modèles RH par pays (cotisations, IR, congés)."
+      operationId: listHrModels
+      responses:
+        "200":
+          description: "Modèles RH"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/HrModel"
+
+  /settings/apply-hr-model:
+    put:
+      tags: ["Settings"]
+      summary: "Appliquer un modèle RH"
+      description: "Change le modèle RH de l'entreprise et met à jour les paramètres de paie."
+      operationId: applyHrModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["hr_model"]
+              properties:
+                hr_model:
+                  type: string
+                  example: "morocco"
+      responses:
+        "200":
+          description: "Modèle appliqué"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "HR_MODEL_APPLIED"
+                  data:
+                    type: object
+                    properties:
+                      hr_model:
+                        type: string
+                        example: "morocco"
+                      currency:
+                        type: string
+                        example: "MAD"
+
+  # ============================================================
+  # ÉVALUATIONS
+  # ============================================================
+  /evaluations:
+    get:
+      tags: ["Evaluations"]
+      summary: "Lister les évaluations"
+      parameters:
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+        - name: period
+          in: query
+          schema:
+            type: string
+            example: "2026-Q1"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Liste des évaluations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        employee:
+                          $ref: "#/components/schemas/EmployeeRef"
+                        period:
+                          type: string
+                        overall_score:
+                          type: number
+                          format: double
+                        status:
+                          type: string
+                        self_eval_done:
+                          type: boolean
+                        evaluated_by:
+                          $ref: "#/components/schemas/EmployeeRef"
+                        created_at:
+                          type: string
+                          format: date-time
+
+    post:
+      tags: ["Evaluations"]
+      summary: "Créer une évaluation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["employee_id", "period", "criteria"]
+              properties:
+                employee_id:
+                  type: integer
+                period:
+                  type: string
+                  example: "2026-Q2"
+                criteria:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      score:
+                        type: integer
+                        minimum: 1
+                        maximum: 5
+                      comment:
+                        type: string
+                global_comment:
+                  type: string
+      responses:
+        "201":
+          description: "Évaluation créée"
+
+  /evaluations/{id}/self:
+    put:
+      tags: ["Evaluations"]
+      summary: "Auto-évaluation"
+      description: "Permet à l'employé de remplir sa propre évaluation."
+      operationId: selfEvaluation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["criteria"]
+              properties:
+                criteria:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      score:
+                        type: integer
+                      comment:
+                        type: string
+                global_comment:
+                  type: string
+      responses:
+        "200":
+          description: "Auto-évaluation enregistrée"
+
+  # ============================================================
+  # RAPPORTS
+  # ============================================================
+  /reports/attendance:
+    get:
+      tags: ["Reports"]
+      summary: "Rapport de pointage"
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: integer
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: department_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Rapport de présence"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: string
+                      department:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          total_employees:
+                            type: integer
+                          total_working_days:
+                            type: integer
+                          average_punctuality_rate:
+                            type: number
+                          total_late_occurrences:
+                            type: integer
+                          total_absences_days:
+                            type: integer
+
+  /reports/absences:
+    get:
+      tags: ["Reports"]
+      summary: "Rapport d'absences"
+      parameters:
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: department_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Rapport d'absences"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          total_absence_days:
+                            type: integer
+                          by_type:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                days:
+                                  type: integer
+                                percentage:
+                                  type: number
+
+  /reports/payroll:
+    get:
+      tags: ["Reports"]
+      summary: "Rapport de paie"
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: integer
+        - name: year
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Rapport de paie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          total_gross:
+                            type: number
+                          total_net:
+                            type: number
+                          total_social_security:
+                            type: number
+                          total_income_tax:
+                            type: number
+                          total_advance_deductions:
+                            type: number
+                          employees_count:
+                            type: integer
+
+  /reports/performance:
+    get:
+      tags: ["Reports"]
+      summary: "Rapport de performance"
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+        - name: department_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Rapport de performance"
+
+  # ============================================================
+  # SUPER ADMIN
+  # ============================================================
+  /admin/companies:
+    get:
+      tags: ["SuperAdmin"]
+      summary: "Lister les entreprises"
+      description: "Retourne la liste des entreprises de la plateforme (Super Admin uniquement)."
+      operationId: adminListCompanies
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["active", "trial", "suspended", "expired"]
+        - name: plan
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Liste des entreprises"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AdminCompany"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags: ["SuperAdmin"]
+      summary: "Créer une entreprise"
+      description: "Crée une entreprise avec son schéma tenant et son administrateur."
+      operationId: adminCreateCompany
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCreateCompanyRequest"
+      responses:
+        "201":
+          description: "Entreprise créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AdminCompany"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          description: "Données invalides"
+
+  /admin/companies/{id}:
+    get:
+      tags: ["SuperAdmin"]
+      summary: "Détails d'une entreprise"
+      operationId: adminGetCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: "Détails de l'entreprise"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AdminCompany"
+
+    put:
+      tags: ["SuperAdmin"]
+      summary: "Modifier une entreprise"
+      operationId: adminUpdateCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                plan_id:
+                  type: integer
+                status:
+                  type: string
+                  enum: ["active", "trial", "suspended", "expired"]
+      responses:
+        "200":
+          description: "Entreprise mise à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AdminCompany"
+
+  /admin/companies/{id}/suspend:
+    put:
+      tags: ["SuperAdmin"]
+      summary: "Suspendre une entreprise"
+      operationId: adminSuspendCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["reason"]
+              properties:
+                reason:
+                  type: string
+                  example: "Impayé depuis 60 jours"
+      responses:
+        "200":
+          description: "Entreprise suspendue"
+
+  /admin/plans:
+    get:
+      tags: ["SuperAdmin", "Billing"]
+      summary: "Lister les plans tarifaires"
+      operationId: adminListPlans
+      responses:
+        "200":
+          description: "Liste des plans"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Plan"
+
+    post:
+      tags: ["SuperAdmin", "Billing"]
+      summary: "Créer un plan tarifaire"
+      operationId: adminCreatePlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanRequest"
+      responses:
+        "201":
+          description: "Plan créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Plan"
+
+  /admin/invoices:
+    get:
+      tags: ["SuperAdmin", "Billing"]
+      summary: "Lister les factures"
+      operationId: adminListInvoices
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["draft", "sent", "paid", "overdue", "cancelled"]
+        - name: company_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: "Liste des factures"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Invoice"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+  /admin/languages:
+    get:
+      tags: ["SuperAdmin"]
+      summary: "Lister les langues"
+      operationId: adminListLanguages
+      responses:
+        "200":
+          description: "Langues disponibles"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Language"
+
+    put:
+      tags: ["SuperAdmin"]
+      summary: "Modifier une langue"
+      operationId: adminUpdateLanguage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["code"]
+              properties:
+                code:
+                  type: string
+                  example: "ar"
+                name:
+                  type: string
+                is_active:
+                  type: boolean
+      responses:
+        "200":
+          description: "Langue mise à jour"
+
+  /admin/hr-models:
+    get:
+      tags: ["SuperAdmin", "Settings"]
+      summary: "Modèles RH (Super Admin)"
+      description: "Retourne les modèles RH templates par pays avec cotisations et IR."
+      operationId: adminListHrModels
+      responses:
+        "200":
+          description: "Modèles RH disponibles"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        country_code:
+                          type: string
+                          example: "DZ"
+                        name:
+                          type: string
+                          example: "Algérie"
+                        currency:
+                          type: string
+                          example: "DZD"
+                        cotisations:
+                          type: object
+                        ir_brackets:
+                          type: array
+                        leave_rules:
+                          type: object
+
+# ============================================================
+# COMPONENTS
+# ============================================================
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: "Token Sanctum Laravel obtenu via POST /auth/login"
+
+  parameters:
+    EmployeeId:
+      name: id
+      in: path
+      required: true
+      description: "Identifiant de l'employé"
+      schema:
+        type: integer
+
+    AbsenceId:
+      name: id
+      in: path
+      required: true
+      description: "Identifiant de l'absence"
+      schema:
+        type: integer
+
+  responses:
+    Unauthorized:
+      description: "Non authentifié — token manquant, invalide ou expiré"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: "UNAUTHENTICATED"
+            message: "Token invalide ou expiré."
+
+    Forbidden:
+      description: "Accès refusé — permissions insuffisantes"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: "FORBIDDEN"
+            message: "Vous n'avez pas les permissions nécessaires."
+
+    NotFound:
+      description: "Ressource introuvable"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: "NOT_FOUND"
+            message: "Ressource introuvable."
+
+  schemas:
+    # ----------------------------------------------------------
+    # Réponses génériques
+    # ----------------------------------------------------------
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: "Code d'erreur technique"
+          example: "INVALID_CREDENTIALS"
+        message:
+          type: string
+          description: "Message lisible de l'erreur"
+          example: "Email ou mot de passe incorrect."
+        errors:
+          type: object
+          description: "Détails par champ (erreurs de validation)"
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email: ["L'email est déjà utilisé."]
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Les données fournies sont invalides."
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email:
+              - "Le champ email est requis."
+            password:
+              - "Le mot de passe doit contenir au moins 8 caractères."
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        last_page:
+          type: integer
+          example: 5
+        per_page:
+          type: integer
+          example: 15
+        total:
+          type: integer
+          example: 74
+
+    # ----------------------------------------------------------
+    # Auth
+    # ----------------------------------------------------------
+    LoginRequest:
+      type: object
+      required: ["email", "password"]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "ahmed.benali@entreprise.com"
+        password:
+          type: string
+          format: password
+          example: "MonMotDePasse123!"
+        device_name:
+          type: string
+          description: "Nom de l'appareil pour l'historique"
+          example: "iPhone 15 Pro"
+        fcm_token:
+          type: string
+          description: "Token Firebase Cloud Messaging pour les push"
+          example: "fcm_abc123..."
+
+    LoginResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: "1|AbCdEfGhIjKlMnOpQrStUvWxYz"
+            token_type:
+              type: string
+              example: "Bearer"
+            expires_at:
+              type: string
+              format: date-time
+              example: "2026-07-15T10:00:00Z"
+            user:
+              $ref: "#/components/schemas/LoginUser"
+
+    LoginUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        first_name:
+          type: string
+          example: "Ahmed"
+        last_name:
+          type: string
+          example: "Benali"
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: ["manager", "employee"]
+        manager_role:
+          type: string
+          nullable: true
+          enum: ["principal", "rh", "dept", "comptable", "superviseur", null]
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        leave_balance:
+          type: number
+          format: double
+          example: 12.5
+        company:
+          $ref: "#/components/schemas/CompanyRef"
+
+    FcmDeviceRequest:
+      type: object
+      required: ["fcm_token", "device_name", "platform"]
+      properties:
+        fcm_token:
+          type: string
+        device_name:
+          type: string
+          example: "iPhone 15 Pro"
+        platform:
+          type: string
+          enum: ["android", "ios"]
+
+    # ----------------------------------------------------------
+    # Onboarding
+    # ----------------------------------------------------------
+    RegisterRequest:
+      type: object
+      required: ["company_name", "manager_email", "manager_password", "country", "estimated_employees"]
+      properties:
+        company_name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Entreprise SARL"
+        manager_email:
+          type: string
+          format: email
+          example: "contact@entreprise.com"
+        manager_password:
+          type: string
+          minLength: 8
+          description: "Min 8 caractères, 1 majuscule, 1 chiffre"
+          example: "MotDePasse123!"
+        country:
+          type: string
+          description: "Code ISO 3166-1 alpha-2"
+          pattern: "^[A-Z]{2}$"
+          example: "DZ"
+        estimated_employees:
+          type: integer
+          minimum: 1
+          example: 15
+        plan:
+          type: string
+          enum: ["starter", "business"]
+          default: "starter"
+
+    RegisterResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            company:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                slug:
+                  type: string
+                status:
+                  type: string
+                  enum: ["trial"]
+                trial_ends_at:
+                  type: string
+                  format: date
+                plan:
+                  type: string
+            token:
+              type: string
+            user:
+              type: object
+              properties:
+                id:
+                  type: integer
+                email:
+                  type: string
+                role:
+                  type: string
+                manager_role:
+                  type: string
+
+    # ----------------------------------------------------------
+    # Company
+    # ----------------------------------------------------------
+    CompanyRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "TechCorp SPA"
+        language:
+          type: string
+          example: "fr"
+        timezone:
+          type: string
+          example: "Africa/Algiers"
+        currency:
+          type: string
+          example: "DZD"
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
+
+    # ----------------------------------------------------------
+    # Employee
+    # ----------------------------------------------------------
+    EmployeeRef:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Ahmed Benali"
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+
+    EmployeeSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        matricule:
+          type: string
+          example: "EMP-0042"
+        first_name:
+          type: string
+          example: "Ahmed"
+        last_name:
+          type: string
+          example: "Benali"
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: ["manager", "employee"]
+        department:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              example: "Développement"
+        position:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              example: "Développeur Senior"
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        status:
+          type: string
+          enum: ["active", "suspended", "archived"]
+        hire_date:
+          type: string
+          format: date
+          example: "2023-03-01"
+
+    Employee:
+      type: object
+      description: "Employé complet avec toutes les informations du schéma SQL"
+      properties:
+        id:
+          type: integer
+          example: 42
+        matricule:
+          type: string
+          example: "EMP-0042"
+        zkteco_id:
+          type: string
+          nullable: true
+          description: "ID dans le lecteur biométrique"
+          example: "00042"
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: ["manager", "employee"]
+        manager_role:
+          type: string
+          nullable: true
+          enum: ["principal", "rh", "dept", "comptable", "superviseur"]
+        department:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        position:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        schedule:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              example: "Standard 8h-17h"
+        site:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+              example: "Siège social"
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+          enum: ["M", "F"]
+        nationality:
+          type: string
+          nullable: true
+          description: "Code ISO 3166-1 alpha-2"
+        address:
+          type: string
+          nullable: true
+        contract_type:
+          type: string
+          enum: ["CDI", "CDD", "Stage", "Interim", "Consultant"]
+          default: "CDI"
+        contract_start:
+          type: string
+          format: date
+          description: "Date de début de contrat"
+        contract_end:
+          type: string
+          format: date
+          nullable: true
+          description: "Date de fin de contrat (CDD, Stage, etc.)"
+        hire_date:
+          type: string
+          format: date
+          description: "Alias de contract_start pour l'API"
+          example: "2023-03-01"
+        salary_base:
+          type: number
+          format: double
+          example: 75000
+        salary_type:
+          type: string
+          enum: ["fixed", "hourly", "daily"]
+        hourly_rate:
+          type: number
+          format: double
+          nullable: true
+        payment_method:
+          type: string
+          enum: ["bank_transfer", "cash", "cheque"]
+        iban:
+          type: string
+          nullable: true
+          description: "Chiffré AES-256 côté serveur"
+        leave_balance:
+          type: number
+          format: double
+          example: 12.5
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        status:
+          type: string
+          enum: ["active", "suspended", "archived"]
+
+    EmployeeCreated:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        matricule:
+          type: string
+          example: "EMP-0101"
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: ["active"]
+
+    CreateEmployeeRequest:
+      type: object
+      required: ["first_name", "last_name", "email"]
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        role:
+          type: string
+          enum: ["manager", "employee"]
+          default: "employee"
+        department_id:
+          type: integer
+        position_id:
+          type: integer
+        schedule_id:
+          type: integer
+        site_id:
+          type: integer
+        hire_date:
+          type: string
+          format: date
+          example: "2026-04-01"
+        salary_base:
+          type: number
+          format: double
+          example: 75000
+        iban:
+          type: string
+        zkteco_id:
+          type: string
+        contract_type:
+          type: string
+          enum: ["CDI", "CDD", "Stage", "Interim", "Consultant"]
+        gender:
+          type: string
+          enum: ["M", "F"]
+        date_of_birth:
+          type: string
+          format: date
+
+    UpdateEmployeeRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        department_id:
+          type: integer
+        position_id:
+          type: integer
+        schedule_id:
+          type: integer
+        site_id:
+          type: integer
+        salary_base:
+          type: number
+          format: double
+        iban:
+          type: string
+        contract_type:
+          type: string
+          enum: ["CDI", "CDD", "Stage", "Interim", "Consultant"]
+        role:
+          type: string
+          enum: ["manager", "employee"]
+        manager_role:
+          type: string
+          enum: ["principal", "rh", "dept", "comptable", "superviseur"]
+        status:
+          type: string
+          enum: ["active", "suspended", "archived"]
+
+    CurrentUser:
+      type: object
+      description: "Utilisateur connecté avec toutes ses informations"
+      properties:
+        id:
+          type: integer
+          example: 42
+        matricule:
+          type: string
+          example: "EMP-0042"
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: ["manager", "employee"]
+        manager_role:
+          type: string
+          nullable: true
+        department:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        position:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        hire_date:
+          type: string
+          format: date
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        leave_balance:
+          type: number
+          format: double
+        status:
+          type: string
+        company:
+          $ref: "#/components/schemas/CompanyRef"
+
+    # ----------------------------------------------------------
+    # Attendance
+    # ----------------------------------------------------------
+    CheckInRequest:
+      type: object
+      required: ["method"]
+      properties:
+        gps_lat:
+          type: number
+          format: double
+          example: 36.7375
+        gps_lng:
+          type: number
+          format: double
+          example: 3.0868
+        method:
+          type: string
+          enum: ["mobile", "qrcode", "biometric"]
+          default: "mobile"
+
+    CheckOutRequest:
+      type: object
+      properties:
+        gps_lat:
+          type: number
+          format: double
+        gps_lng:
+          type: number
+          format: double
+
+    AttendanceContext:
+      type: object
+      properties:
+        is_holiday:
+          type: boolean
+        is_leave:
+          type: boolean
+        expected_start:
+          type: string
+          example: "08:00:00"
+
+    AttendanceLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5432
+        date:
+          type: string
+          format: date
+          example: "2026-04-15"
+        session_number:
+          type: integer
+          description: "1 = session principale, 2 = split-shift"
+          example: 1
+        check_in:
+          type: string
+          format: date-time
+          nullable: true
+        check_out:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum: ["ontime", "late", "absent", "leave", "holiday", "incomplete"]
+        method:
+          type: string
+          enum: ["mobile", "qrcode", "biometric", "manual"]
+        hours_worked:
+          type: number
+          format: double
+          nullable: true
+        overtime_hours:
+          type: number
+          format: double
+          nullable: true
+
+    AttendanceLogWithEmployee:
+      allOf:
+        - $ref: "#/components/schemas/AttendanceLog"
+        - type: object
+          properties:
+            employee:
+              $ref: "#/components/schemas/EmployeeRef"
+            is_manual_edit:
+              type: boolean
+
+    EditAttendanceRequest:
+      type: object
+      required: ["reason"]
+      properties:
+        check_in:
+          type: string
+          format: date-time
+        check_out:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          description: "Motif de la correction (obligatoire)"
+          example: "Erreur de pointage biométrique"
+
+    # ----------------------------------------------------------
+    # Absences
+    # ----------------------------------------------------------
+    AbsenceType:
+      type: object
+      properties:
+        id:
+          type: integer
+        label:
+          type: string
+          example: "Congé payé"
+        color:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+          example: "#4CAF50"
+        is_paid:
+          type: boolean
+        requires_document:
+          type: boolean
+
+    AbsenceTypeRequest:
+      type: object
+      required: ["label"]
+      properties:
+        label:
+          type: string
+        color:
+          type: string
+          default: "#4CAF50"
+        is_paid:
+          type: boolean
+          default: true
+        requires_document:
+          type: boolean
+          default: false
+
+    AbsenceRequest:
+      type: object
+      required: ["absence_type_id", "start_date", "end_date"]
+      properties:
+        absence_type_id:
+          type: integer
+          example: 1
+        start_date:
+          type: string
+          format: date
+          example: "2026-08-01"
+        end_date:
+          type: string
+          format: date
+          example: "2026-08-15"
+        comment:
+          type: string
+
+    Absence:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 801
+        employee:
+          $ref: "#/components/schemas/EmployeeRef"
+        type:
+          type: object
+          properties:
+            id:
+              type: integer
+            label:
+              type: string
+              example: "Congé payé"
+            color:
+              type: string
+              example: "#4CAF50"
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        days_count:
+          type: integer
+          description: "Nombre de jours ouvrés calculé automatiquement"
+          example: 11
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected", "cancelled"]
+        comment:
+          type: string
+          nullable: true
+        approved_by:
+          $ref: "#/components/schemas/EmployeeRef"
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    # ----------------------------------------------------------
+    # Advances
+    # ----------------------------------------------------------
+    AdvanceRequest:
+      type: object
+      required: ["amount", "reason", "repayment_months"]
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 15000
+        reason:
+          type: string
+          example: "Frais médicaux urgents"
+        repayment_months:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 3
+
+    SalaryAdvance:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 301
+        employee:
+          $ref: "#/components/schemas/EmployeeRef"
+        amount:
+          type: number
+          format: double
+          example: 15000
+        amount_remaining:
+          type: number
+          format: double
+          nullable: true
+          example: 10000
+        reason:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected", "active", "repaid"]
+        repayment_months:
+          type: integer
+          nullable: true
+          example: 3
+        monthly_deduction:
+          type: number
+          format: double
+          nullable: true
+          example: 5000
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ----------------------------------------------------------
+    # Payroll
+    # ----------------------------------------------------------
+    PayrollCalculateRequest:
+      type: object
+      required: ["employee_ids", "month", "year"]
+      properties:
+        employee_ids:
+          type: array
+          items:
+            type: integer
+          example: [42, 43, 44]
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 4
+        year:
+          type: integer
+          minimum: 2020
+          example: 2026
+
+    PayrollCalculation:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+        gross_salary:
+          type: number
+          format: double
+          example: 75000
+        overtime_pay:
+          type: number
+          format: double
+          example: 2500
+        deductions:
+          type: object
+          properties:
+            social_security:
+              type: number
+              example: 7500
+            income_tax:
+              type: number
+              example: 4250
+            penalty_deduction:
+              type: number
+              example: 0
+            advance_deduction:
+              type: number
+              example: 5000
+            absence_deduction:
+              type: number
+              example: 0
+        net_salary:
+          type: number
+          format: double
+          example: 60750
+        advance_remaining_after:
+          type: number
+          format: double
+          nullable: true
+
+    Payroll:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 401
+        employee:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            matricule:
+              type: string
+        period:
+          type: string
+          example: "Avril 2026"
+        month:
+          type: integer
+        year:
+          type: integer
+        gross_salary:
+          type: number
+          format: double
+        net_salary:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: ["draft", "validated"]
+        pdf_url:
+          type: string
+          format: uri
+          nullable: true
+
+    PayrollDetail:
+      allOf:
+        - $ref: "#/components/schemas/Payroll"
+        - type: object
+          properties:
+            employee:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                matricule:
+                  type: string
+                iban:
+                  type: string
+                  nullable: true
+            overtime_pay:
+              type: number
+              format: double
+            deductions:
+              type: object
+              properties:
+                social_security:
+                  type: number
+                income_tax:
+                  type: number
+                penalty_deduction:
+                  type: number
+                advance_deduction:
+                  type: number
+                absence_deduction:
+                  type: number
+            validated_at:
+              type: string
+              format: date-time
+              nullable: true
+
+    PayslipSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        period:
+          type: string
+        month:
+          type: integer
+        year:
+          type: integer
+        salary_base:
+          type: number
+        net_salary:
+          type: number
+        status:
+          type: string
+        pdf_url:
+          type: string
+          format: uri
+
+    PayrollJobStatus:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum: ["queued", "processing", "completed", "failed"]
+        progress:
+          type: integer
+          description: "Pourcentage de progression (0-100)"
+          example: 67
+        completed:
+          type: integer
+        total:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+
+    # ----------------------------------------------------------
+    # Tasks
+    # ----------------------------------------------------------
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 901
+        title:
+          type: string
+          example: "Finaliser le module mobile"
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+        priority:
+          type: string
+          enum: ["low", "normal", "high", "urgent"]
+        assignee:
+          $ref: "#/components/schemas/EmployeeRef"
+          nullable: true
+        project:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        due_date:
+          type: string
+          format: date-time
+        checklist:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              label:
+                type: string
+              done:
+                type: boolean
+        comments_count:
+          type: integer
+          example: 3
+
+    CreateTaskRequest:
+      type: object
+      required: ["title", "due_date"]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        assignee_id:
+          type: integer
+        project_id:
+          type: integer
+        priority:
+          type: string
+          enum: ["low", "normal", "high", "urgent"]
+          default: "normal"
+        due_date:
+          type: string
+          format: date-time
+        checklist:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        assignee_id:
+          type: integer
+        project_id:
+          type: integer
+        priority:
+          type: string
+          enum: ["low", "normal", "high", "urgent"]
+        due_date:
+          type: string
+          format: date-time
+
+    TaskComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        author:
+          $ref: "#/components/schemas/EmployeeRef"
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    # ----------------------------------------------------------
+    # Projects
+    # ----------------------------------------------------------
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Leopardo Mobile v1"
+        status:
+          type: string
+          enum: ["active", "completed", "archived"]
+        manager:
+          $ref: "#/components/schemas/EmployeeRef"
+        tasks_count:
+          type: integer
+          example: 12
+        tasks_done:
+          type: integer
+          example: 7
+
+    # ----------------------------------------------------------
+    # Departments, Positions, Schedules, Sites
+    # ----------------------------------------------------------
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Développement"
+        employees_count:
+          type: integer
+          example: 18
+
+    Position:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Développeur Senior"
+        department_id:
+          type: integer
+
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Standard 8h-17h"
+        start_time:
+          type: string
+          example: "08:00:00"
+        end_time:
+          type: string
+          example: "17:00:00"
+        break_minutes:
+          type: integer
+          example: 60
+        days:
+          type: array
+          items:
+            type: string
+          example: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        late_tolerance_minutes:
+          type: integer
+          example: 10
+        overtime_threshold_daily:
+          type: number
+          format: double
+          example: 8.0
+
+    CreateScheduleRequest:
+      type: object
+      required: ["name", "start_time", "end_time", "days"]
+      properties:
+        name:
+          type: string
+        start_time:
+          type: string
+          example: "22:00:00"
+        end_time:
+          type: string
+          example: "06:00:00"
+        break_minutes:
+          type: integer
+          default: 60
+        days:
+          type: array
+          items:
+            type: string
+          example: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        late_tolerance_minutes:
+          type: integer
+          default: 15
+        overtime_threshold_daily:
+          type: number
+          format: double
+          default: 8.0
+
+    Site:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Siège social Alger"
+        address:
+          type: string
+          nullable: true
+        gps_lat:
+          type: number
+          format: double
+          nullable: true
+          example: 36.7375
+        gps_lng:
+          type: number
+          format: double
+          nullable: true
+          example: 3.0868
+        gps_radius_meters:
+          type: integer
+          example: 100
+        timezone:
+          type: string
+          example: "Africa/Algiers"
+
+    SiteRequest:
+      type: object
+      required: ["name"]
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        gps_lat:
+          type: number
+          format: double
+        gps_lng:
+          type: number
+          format: double
+        gps_radius_meters:
+          type: integer
+          default: 100
+        timezone:
+          type: string
+          default: "Africa/Algiers"
+
+    # ----------------------------------------------------------
+    # Devices
+    # ----------------------------------------------------------
+    Device:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "ZKTeco Entrée principale"
+        type:
+          type: string
+          enum: ["zkteco", "qrcode_terminal", "tablet"]
+        model:
+          type: string
+          nullable: true
+          example: "ZK-X800"
+        ip_address:
+          type: string
+          nullable: true
+        site:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        status:
+          type: string
+          enum: ["active", "inactive", "error"]
+        last_sync_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ----------------------------------------------------------
+    # Notifications
+    # ----------------------------------------------------------
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 551
+        type:
+          type: string
+          description: "Type de notification pour le routage"
+          example: "absence_approved"
+        title:
+          type: string
+          example: "Absence approuvée"
+        body:
+          type: string
+          example: "Votre demande de congé du 01/06 au 15/06 a été approuvée."
+        data:
+          type: object
+          description: "Données pour le deep link (ex: absence_id)"
+          example:
+            absence_id: 801
+        is_read:
+          type: boolean
+          default: false
+        created_at:
+          type: string
+          format: date-time
+
+    # ----------------------------------------------------------
+    # Settings
+    # ----------------------------------------------------------
+    CompanySettings:
+      type: object
+      properties:
+        company_name:
+          type: string
+        language:
+          type: string
+          example: "fr"
+        timezone:
+          type: string
+          example: "Africa/Algiers"
+        currency:
+          type: string
+          example: "DZD"
+        hr_model:
+          type: string
+          example: "algeria"
+        payroll_day:
+          type: integer
+          example: 28
+        leave_accrual_monthly:
+          type: number
+          format: double
+          example: 2.5
+        max_carry_over_days:
+          type: integer
+          example: 15
+        overtime_rate_multiplier:
+          type: number
+          format: double
+          example: 1.5
+        late_tolerance_minutes:
+          type: integer
+          example: 10
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
+
+    CompanySettingsUpdate:
+      type: object
+      description: "Champs partiels acceptés"
+      properties:
+        payroll_day:
+          type: integer
+        leave_accrual_monthly:
+          type: number
+          format: double
+        max_carry_over_days:
+          type: integer
+        overtime_rate_multiplier:
+          type: number
+          format: double
+        late_tolerance_minutes:
+          type: integer
+        language:
+          type: string
+        timezone:
+          type: string
+
+    HrModel:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "algeria"
+        name:
+          type: string
+          example: "Algérie (DAS, IRG)"
+        currency:
+          type: string
+          example: "DZD"
+
+    # ----------------------------------------------------------
+    # Super Admin / Billing
+    # ----------------------------------------------------------
+    AdminCompany:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "TechCorp SPA"
+        plan:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "Business"
+        employees_count:
+          type: integer
+          example: 47
+        status:
+          type: string
+          enum: ["active", "trial", "suspended", "expired"]
+        subscription_ends_at:
+          type: string
+          format: date
+        tenancy_type:
+          type: string
+          enum: ["schema", "shared"]
+        created_at:
+          type: string
+          format: date-time
+
+    AdminCreateCompanyRequest:
+      type: object
+      required: ["name", "email", "plan_id", "admin_first_name", "admin_last_name", "admin_password"]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        plan_id:
+          type: integer
+        language:
+          type: string
+          default: "fr"
+        timezone:
+          type: string
+          default: "Africa/Algiers"
+        currency:
+          type: string
+          default: "DZD"
+        hr_model:
+          type: string
+          default: "algeria"
+        tenancy_type:
+          type: string
+          enum: ["schema", "shared"]
+          default: "shared"
+        admin_first_name:
+          type: string
+        admin_last_name:
+          type: string
+        admin_password:
+          type: string
+          format: password
+
+    Plan:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "Business"
+        price_monthly:
+          type: number
+          format: double
+          example: 29.99
+        price_yearly:
+          type: number
+          format: double
+          example: 299.88
+        max_employees:
+          type: integer
+          nullable: true
+          description: "NULL = illimité (Enterprise)"
+        features:
+          type: object
+          example:
+            biometric: true
+            tasks: true
+            bank_export: true
+        trial_days:
+          type: integer
+          default: 14
+        is_active:
+          type: boolean
+
+    PlanRequest:
+      type: object
+      required: ["name", "price_monthly", "price_yearly"]
+      properties:
+        name:
+          type: string
+        price_monthly:
+          type: number
+          format: double
+        price_yearly:
+          type: number
+          format: double
+        max_employees:
+          type: integer
+          nullable: true
+        features:
+          type: object
+        trial_days:
+          type: integer
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          example: "EUR"
+        period:
+          type: string
+          example: "2026-04"
+        status:
+          type: string
+          enum: ["draft", "sent", "paid", "overdue", "cancelled"]
+        due_date:
+          type: string
+          format: date
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+          example: "fr"
+        name:
+          type: string
+          example: "Français"
+        direction:
+          type: string
+          enum: ["ltr", "rtl"]
+        is_active:
+          type: boolean

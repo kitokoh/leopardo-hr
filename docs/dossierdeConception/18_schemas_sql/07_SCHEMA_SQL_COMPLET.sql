@@ -402,6 +402,7 @@ BEGIN
         type_id             INT             NOT NULL REFERENCES %I.absence_types(id),
         start_date          DATE            NOT NULL,
         end_date            DATE            NOT NULL,
+        CONSTRAINT chk_absence_dates CHECK (end_date >= start_date),
         days_count          INT             NOT NULL,   -- calculé auto (hors WE et fériés)
         status              VARCHAR(20)     NOT NULL DEFAULT ''pending''
                                 CHECK (status IN (''pending'',''approved'',''rejected'',''cancelled'')),
