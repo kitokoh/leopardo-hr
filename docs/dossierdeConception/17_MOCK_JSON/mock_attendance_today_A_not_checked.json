@@ -1,9 +1,0 @@
-{
-  "_comment": "CAS A — Employé pas encore pointé (afficher bouton Pointer mon arrivée)",
-  "data": null,
-  "context": {
-    "is_holiday": false,
-    "is_leave": false,
-    "expected_start": "08:00:00"
-  }
-}

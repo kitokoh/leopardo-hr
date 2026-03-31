@@ -301,7 +301,7 @@ Pagination    : ?page=1&per_page=15
   "schedule_id": 1,
   "site_id": 1,
   "hire_date": "2026-04-01",
-  "gross_salary": 75000,
+  "salary_base": 75000,
   "iban": "DZ123456789012345678901234",
   "zkteco_id": "00123"
 }
@@ -357,7 +357,7 @@ Pagination    : ?page=1&per_page=15
     "schedule": { "id": 1, "name": "Standard 8h-17h" },
     "site": { "id": 1, "name": "Siège social" },
     "hire_date": "2023-03-01",
-    "gross_salary": 75000,
+    "salary_base": 75000,
     "iban": "DZ123456789012345678901234",
     "leave_balance": 12.5,
     "photo_url": "https://api.leopardo-rh.com/storage/photos/42.jpg",
@@ -375,7 +375,7 @@ Pagination    : ?page=1&per_page=15
 {
   "phone": "+213 555 999 888",
   "department_id": 4,
-  "gross_salary": 80000
+  "salary_base": 80000
 }
 ```
 **Response 200 :** Retourne l'employé complet mis à jour (même format que GET /employees/{id})
@@ -394,7 +394,7 @@ Pagination    : ?page=1&per_page=15
 ### POST /employees/import
 **Request :** `multipart/form-data`
 ```
-file: employees.csv (colonnes: first_name,last_name,email,department_id,position_id,hire_date,gross_salary)
+file: employees.csv (colonnes: first_name,last_name,email,department_id,position_id,hire_date,salary_base)
 ```
 **Response 202 :**
 ```json
@@ -420,7 +420,7 @@ file: employees.csv (colonnes: first_name,last_name,email,department_id,position
       "period": "Avril 2026",
       "month": 4,
       "year": 2026,
-      "gross_salary": 75000,
+      "salary_base": 75000,
       "net_salary": 61350,
       "status": "validated",
       "pdf_url": "https://api.leopardo-rh.com/storage/payslips/2026-04-42.pdf"
@@ -1170,6 +1170,7 @@ file: employees.csv (colonnes: first_name,last_name,email,department_id,position
       "deductions": {
         "social_security": 7500,
         "income_tax": 4250,
+        "penalty_deduction": 0,
         "advance_deduction": 5000,
         "absence_deduction": 0
       },
@@ -1239,6 +1240,7 @@ file: employees.csv (colonnes: first_name,last_name,email,department_id,position
     "deductions": {
       "social_security": 7500,
       "income_tax": 4250,
+      "penalty_deduction": 0,
       "advance_deduction": 5000,
       "absence_deduction": 0
     },
@@ -1782,3 +1784,134 @@ file: employees.csv (colonnes: first_name,last_name,email,department_id,position
   }
 }
 ```
+
+---
+
+## 9. PROFIL EMPLOYÉ (3 endpoints)
+
+### GET /profile
+**Response 200 :**
+```json
+{
+  "data": {
+    "id": 42,
+    "first_name": "Ahmed", "last_name": "Benali",
+    "email": "ahmed.benali@corp.com",
+    "phone": "+213 555 123 456",
+    "photo_url": "https://api.leopardo-rh.com/storage/photos/42.jpg",
+    "matricule": "EMP-0042",
+    "hire_date": "2023-01-15",
+    "contract_type": "CDI",
+    "department": { "id": 3, "name": "Développement" },
+    "position": { "id": 7, "name": "Développeur Senior" },
+    "leave_balance": 12.5
+  }
+}
+```
+
+### PUT /profile
+**Request :**
+```json
+{ "phone": "+213 555 999 888", "preferred_language": "fr" }
+```
+**Response 200 :** Profil mis à jour (même format que GET /profile)
+**Note :** L'employé ne peut modifier que : `phone`, `preferred_language`. Pas l'email ni le salaire.
+
+### POST /profile/photo
+**Request :** `multipart/form-data` — champ `photo` (JPEG/PNG, max 2MB)
+**Response 200 :**
+```json
+{ "data": { "photo_url": "https://api.leopardo-rh.com/storage/photos/42.jpg" } }
+```
+
+### PUT /profile/password
+**Request :**
+```json
+{ "current_password": "OldPass123!", "password": "NewPass456!", "password_confirmation": "NewPass456!" }
+```
+**Response 200 :** `{ "message": "Mot de passe mis à jour" }`
+**Erreurs :** `422 CURRENT_PASSWORD_WRONG`
+
+---
+
+## 10. NOTIFICATIONS SSE — WEB (1 endpoint)
+
+### GET /notifications/stream
+**Headers :** `Accept: text/event-stream`
+**Auth :** Bearer token (Sanctum)
+**Response :** Stream SSE continu — `Content-Type: text/event-stream`
+```
+event: notification
+data: {"id":99,"type":"absence.approved","title":"Congé approuvé","body":"Votre demande...","data":{"absence_id":12}}
+
+event: heartbeat
+data: {"ts":"2026-04-15T10:00:30Z"}
+```
+**Note Nginx :** `proxy_buffering off` obligatoire sur `/api/v1/notifications/stream`
+**Voir spec complète :** `12_notifications/14_NOTIFICATION_TEMPLATES.md`
+
+---
+
+## 11. ONBOARDING (2 endpoints)
+
+### GET /onboarding/status
+**Response 200 :**
+```json
+{
+  "data": {
+    "completed": false,
+    "current_step": 1,
+    "steps": [
+      { "id": 1, "title": "Ajoutez vos employés", "completed": false, "required": true },
+      { "id": 2, "title": "Configurez votre planning", "completed": false, "required": true },
+      { "id": 3, "title": "Téléchargez l'app mobile", "completed": false, "required": false },
+      { "id": 4, "title": "Premier pointage de test", "completed": false, "required": false }
+    ]
+  }
+}
+```
+
+### POST /onboarding/complete
+**Request :** `{}` (aucun body)
+**Response 200 :** `{ "message": "Onboarding complété" }`
+**Effet :** Positionne `company_settings.onboarding_completed = true`
+
+---
+
+## 12. ADMIN — LANGUES & MODÈLES RH (4 endpoints)
+
+### GET /admin/languages
+**Response 200 :**
+```json
+{
+  "data": [
+    { "id": 1, "code": "fr", "name_fr": "Français", "name_native": "Français", "is_rtl": false, "is_active": true },
+    { "id": 2, "code": "ar", "name_fr": "Arabe", "name_native": "العربية", "is_rtl": true, "is_active": true },
+    { "id": 3, "code": "en", "name_fr": "Anglais", "name_native": "English", "is_rtl": false, "is_active": true },
+    { "id": 4, "code": "tr", "name_fr": "Turc", "name_native": "Türkçe", "is_rtl": false, "is_active": true }
+  ]
+}
+```
+
+### PUT /admin/languages/{id}
+**Request :** `{ "is_active": false }`
+**Response 200 :** Langue mise à jour
+
+### GET /admin/hr-models
+**Response 200 :**
+```json
+{
+  "data": [
+    { "id": 1, "country_code": "DZ", "name": "Droit du travail algérien" },
+    { "id": 2, "country_code": "MA", "name": "Droit du travail marocain" },
+    { "id": 3, "country_code": "TN", "name": "Droit du travail tunisien" },
+    { "id": 4, "country_code": "FR", "name": "Droit du travail français" },
+    { "id": 5, "country_code": "TR", "name": "Droit du travail turc" },
+    { "id": 6, "country_code": "SN", "name": "Droit du travail sénégalais" },
+    { "id": 7, "country_code": "CI", "name": "Droit du travail ivoirien" }
+  ]
+}
+```
+
+### GET /admin/hr-models/{country_code}
+**Response 200 :** Modèle RH complet avec `cotisations`, `ir_brackets`, `leave_rules`, `holiday_calendar`

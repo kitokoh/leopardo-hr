@@ -228,7 +228,7 @@ employees
 ├── date_of_birth       DATE        NULL
 ├── gender              CHAR(1)     NULL  [M|F]
 ├── nationality         CHAR(2)     NULL
-├── national_id         VARCHAR(50)  NULL
+├── national_id         VARCHAR(50)  NULL  ⚠️  CHIFFRÉ (EncryptedCast) — conformité RGPD/Loi 18-07 DZ/09-08 MA
 ├── address             TEXT        NULL
 ├── personal_email      VARCHAR(150) NULL
 ├── contract_type       VARCHAR(20)  NN DEF 'CDI'
@@ -279,6 +279,7 @@ attendance_logs
 ├── id                  BIGINT      PK AUTO
 ├── employee_id         INT         FK » employees.id NN
 ├── date                DATE        NN
+├── session_number      SMALLINT    NN DEF 1   (1 = session principale, 2 = split-shift matin/soir)
 ├── check_in            TIMESTAMP   NULL  (horodatage serveur UTC)
 ├── check_out           TIMESTAMP   NULL  (horodatage serveur UTC)
 ├── declared_check_in   TIME        NULL  (heure déclarée par l'employé si différente)
@@ -288,8 +289,6 @@ attendance_logs
 ├── gps_lng             DECIMAL(11,8) NULL
 ├── gps_valid           BOOL        NULL
 ├── photo_path          VARCHAR(255) NULL
-├── zkteco_id           VARCHAR(50)  NULL UQ  (identifiant sur les lecteurs biométriques ZKTeco)
-│                                             NULL si l'employé n'utilise pas la biométrie
 ├── hours_worked        DECIMAL(5,2) NULL  (calculé après check_out)
 ├── overtime_hours      DECIMAL(5,2) NULL DEF 0
 ├── status              VARCHAR(20)  NN DEF 'incomplete'
@@ -299,7 +298,7 @@ attendance_logs
 ├── edit_reason         TEXT        NULL
 └── created_at          TIMESTAMP
 
-UNIQUE : (employee_id, date)
+UNIQUE : (employee_id, date, session_number)   ← session_number permet le split-shift
 INDEX : (date, status), (employee_id, date DESC)
 ```
 
@@ -451,7 +450,8 @@ payrolls
 ├── employee_id         INT         FK » employees.id NN
 ├── period_month        INT         NN  (1-12)
 ├── period_year         INT         NN  ex: 2026
-├── gross_salary        DECIMAL(12,2) NN
+├── gross_salary        DECIMAL(12,2) NN  ← brut calculé (salary_base + overtime + bonuses)
+│                                               ≠ employees.salary_base (salaire contractuel)
 ├── overtime_amount     DECIMAL(12,2) NN DEF 0
 ├── bonuses             JSONB       NN DEF '[]'  [{name, amount}]
 ├── deductions          JSONB       NN DEF '[]'  [{name, amount}]

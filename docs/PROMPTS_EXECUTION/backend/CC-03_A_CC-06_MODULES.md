@@ -272,8 +272,8 @@ public function calculateForEmployee(Employee $employee, int $month, int $year):
     $settings = $this->getCompanySettings(); // Depuis cache Redis
     $hrModel = $this->getHRModel($settings->hr_model); // Taux cotisations par pays
 
-    // 1. Brut de base
-    $grossBase = $employee->gross_salary;
+    // 1. Brut de base (champ réel : salary_base — gross_salary n'existe pas dans le modèle)
+    $grossBase = $employee->salary_base;
 
     // 2. Heures supplémentaires du mois
     $overtimePay = $this->calculateOvertimePay($employee, $month, $year);
@@ -290,26 +290,32 @@ public function calculateForEmployee(Employee $employee, int $month, int $year):
     // 6. Impôt sur le revenu (tranches progressives selon pays)
     $incomeTax = $this->calculateIncomeTax($taxableBase, $hrModel);
 
-    // 7. Avances en cours
+    // 7. Pénalités de retard (voir 05_REGLES_METIER.md §3 — mode proportionnel ou forfait par tranche)
+    // Mode configuré via company_settings['payroll.penalty_mode'] : 'proportional' | 'bracket'
+    $penaltyDeduction = $this->calculateLatePenalties($employee, $month, $year);
+    // Règle : pénalité ≤ salaire d'une journée (MAX($grossBase / $workingDays))
+
+    // 8. Avances en cours (salary_advances.status = 'active')
     $advanceDeduction = $this->getActiveAdvanceDeduction($employee);
 
-    // 8. Absences non justifiées
+    // 9. Absences non justifiées / non payées
     $absenceDeduction = $this->calculateAbsenceDeduction($employee, $month, $year);
 
-    // 9. Net à payer
-    $netSalary = $grossTotal - $socialSecurity - $incomeTax - $advanceDeduction - $absenceDeduction;
+    // 10. Net à payer
+    $netSalary = $grossTotal - $socialSecurity - $incomeTax - $penaltyDeduction - $advanceDeduction - $absenceDeduction;
 
-    // 10. Mettre à jour l'avance (amount_remaining - advanceDeduction)
+    // 11. Mettre à jour l'avance (amount_remaining - advanceDeduction)
     $this->updateAdvanceRepayment($employee, $advanceDeduction);
 
     return [
-        'gross_salary' => round($grossBase, 2),
-        'overtime_pay' => round($overtimePay, 2),
+        'salary_base'      => round($grossBase, 2),
+        'overtime_pay'     => round($overtimePay, 2),
         'deductions' => [
-            'social_security' => round($socialSecurity, 2),
-            'income_tax' => round($incomeTax, 2),
-            'advance_deduction' => round($advanceDeduction, 2),
-            'absence_deduction' => round($absenceDeduction, 2),
+            'social_security'  => round($socialSecurity, 2),
+            'income_tax'       => round($incomeTax, 2),
+            'penalty_deduction'=> round($penaltyDeduction, 2),
+            'advance_deduction'=> round($advanceDeduction, 2),
+            'absence_deduction'=> round($absenceDeduction, 2),
         ],
         'net_salary' => round($netSalary, 2),
     ];

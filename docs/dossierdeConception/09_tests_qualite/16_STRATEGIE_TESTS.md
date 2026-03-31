@@ -110,3 +110,61 @@ it('advance status transitions are valid', function () {
     expect($advance->fresh()->status)->toBe('repaid');
 });
 ```
+
+
+---
+
+## 5. TESTS COMPLÉMENTAIRES (ajoutés depuis pull ami — v3.3.0)
+
+### CreateTenantTest
+```php
+// tests/Feature/TenantService/CreateTenantTest.php
+it('creates a complete tenant in a single transaction', function () {
+    $data = [
+        'name' => 'TestCorp SPA', 'sector' => 'construction',
+        'country' => 'DZ', 'city' => 'Alger',
+        'email' => 'contact@testcorp.dz',
+        'plan_id' => Plan::where('name', 'Business')->first()->id,
+        'tenancy_type' => 'shared', 'language' => 'fr',
+        'manager_first_name' => 'Karim', 'manager_last_name' => 'Bensalem',
+        'manager_email' => 'karim@testcorp.dz', 'manager_password' => 'SecurePass123!',
+    ];
+    $company = app(TenantService::class)->createTenant($data);
+
+    expect($company->status)->toBe('trial');
+    expect(UserLookup::where('email', 'karim@testcorp.dz')->exists())->toBeTrue();
+    // Vérifier : employees, company_settings, absence_types, schedule créés
+});
+
+it('rolls back everything if manager email already exists', function () {
+    // Aucune company ne doit être créée si user_lookups.email existe déjà
+    expect(fn() => app(TenantService::class)->createTenant([
+        'manager_email' => 'exists@test.dz', ...
+    ]))->toThrow(\Exception::class);
+    expect(Company::where('email', 'contact@test.dz')->exists())->toBeFalse();
+});
+```
+
+### SubscriptionTest
+```php
+// tests/Feature/SubscriptionTest.php
+it('blocks access after grace period', function () {
+    // subscription_end = -4 jours → hors grâce (3 jours) → 403
+    $company = Company::factory()->create(['status' => 'active', 'subscription_end' => now()->subDays(4)]);
+    $this->withToken($token)->getJson('/api/v1/employees')->assertStatus(403)
+         ->assertJson(['error' => 'SUBSCRIPTION_EXPIRED']);
+});
+
+it('allows access during grace period with X-Subscription-Grace header', function () {
+    // subscription_end = -2 jours → dans la grâce → 200 + header
+    $response = $this->withToken($token)->getJson('/api/v1/employees');
+    $response->assertStatus(200)->assertHeader('X-Subscription-Grace', 'true');
+});
+
+it('suspends trial after 14 days without upgrade', function () {
+    $company = Company::factory()->create(['status' => 'trial', 'created_at' => now()->subDays(15)]);
+    $this->artisan('subscriptions:check');
+    expect($company->fresh()->status)->toBe('suspended');
+});
+```
+Voir spec complète : `07_securite_rbac/13_CHECK_SUBSCRIPTION_SPEC.md`
