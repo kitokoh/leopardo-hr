@@ -1,0 +1,40 @@
+{
+  "version": "2026-03",
+  "description": "Facebook selectors for English interface",
+  "selectors": {
+    "publish_button": [
+      {"type": "role", "value": "button", "name": "Post"},
+      {"type": "text", "value": "Post"},
+      {"type": "aria", "value": "Post"},
+      {"type": "xpath", "value": "//div[@role='button' and contains(text(), 'Post')]"}
+    ],
+    "display_input": [
+      {"type": "aria", "value": "Write something"},
+      {"type": "role", "value": "button", "name": "Write"},
+      {"type": "text", "value": "Write something"},
+      {"type": "xpath", "value": "//div[@role='button' and contains(@aria-label, 'Write')]"}
+    ],
+    "input": [
+      {"type": "role", "value": "textbox"},
+      {"type": "aria", "value": "Write"},
+      {"type": "css", "value": "div[role='textbox'][contenteditable='true']"},
+      {"type": "xpath", "value": "//div[@role='textbox' and @contenteditable='true']"}
+    ],
+    "show_image_input": [
+      {"type": "aria", "value": "Photo/video"},
+      {"type": "text", "value": "Photo"},
+      {"type": "css", "value": "[aria-label*='Photo']"},
+      {"type": "xpath", "value": "//div[contains(@aria-label, 'Photo')]"}
+    ],
+    "add_image": [
+      {"type": "css", "value": "input[type='file'][accept*='image']"},
+      {"type": "xpath", "value": "//input[@type='file' and contains(@accept, 'image')]"}
+    ],
+    "submit": [
+      {"type": "aria", "value": "Post"},
+      {"type": "role", "value": "button", "name": "Post"},
+      {"type": "text", "value": "Post"},
+      {"type": "xpath", "value": "//div[@role='button' and contains(@aria-label, 'Post')]"}
+    ]
+  }
+}

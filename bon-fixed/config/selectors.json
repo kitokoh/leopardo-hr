@@ -1,0 +1,267 @@
+{
+  "version": "2026-03",
+  "description": "Sélecteurs Facebook multi-fallback. Ordre de priorité : aria-label > data-testid > XPath sémantique > CSS (dernier recours).",
+
+  "selectors": {
+
+    "display_input": {
+      "note": "Bouton pour ouvrir la zone de saisie d'un post dans un groupe",
+      "selectors": [
+        "[aria-label*='Write something'][role='button']",
+        "[aria-label*='Écrire quelque chose'][role='button']",
+        "[aria-label*='Bir şeyler yaz'][role='button']",
+        "[aria-label*='اكتب شيئاً'][role='button']",
+        "[aria-label*='Escribe algo'][role='button']",
+        "[aria-label*='Schreib etwas'][role='button']",
+        "[aria-label*='Scrivi qualcosa'][role='button']",
+        "[aria-label*='Escreva algo'][role='button']",
+        "[aria-label*='Schrijf iets'][role='button']",
+        "[aria-label*='Написать что-нибудь'][role='button']",
+        "span + [role='button']",
+        "div[role='button'][tabindex='0']:has-text('Write')",
+        "div[role='button'][tabindex='0']:has-text('Écrire')",
+        "div[role='button'][tabindex='0']:has-text('Publicar')"
+      ]
+    },
+
+    "input": {
+      "note": "Zone de saisie du texte du post",
+      "selectors": [
+        "div[role='textbox'][aria-label*='Write something']",
+        "div[role='textbox'][aria-label*='Écrire quelque chose']",
+        "div[role='textbox'][aria-label*='Bir şeyler yaz']",
+        "div[role='textbox'][aria-label*='اكتب شيئاً']",
+        "div[role='textbox'][aria-label*='Escribe algo']",
+        "div[role='textbox'][aria-label*='Schreib etwas']",
+        "div[role='textbox'][aria-label*='Scrivi qualcosa']",
+        "div[role='textbox'][aria-label*='Escreva algo']",
+        "div[role='textbox'][contenteditable='true']",
+        "div[data-lexical-editor='true']",
+        "div[contenteditable='true'][role='textbox']",
+        "div.notranslate[role='textbox']"
+      ]
+    },
+
+    "submit": {
+      "note": "Bouton de soumission du post",
+      "selectors": [
+        "[role='button'][aria-label='Post']",
+        "[role='button'][aria-label='Publier']",
+        "[role='button'][aria-label='Paylaş']",
+        "[role='button'][aria-label='نشر']",
+        "[role='button'][aria-label='Publicar']",
+        "[role='button'][aria-label='Beitrag']",
+        "[role='button'][aria-label='Pubblica']",
+        "[role='button'][aria-label='投稿']",
+        "[role='button'][aria-label='게시']",
+        "[role='button'][aria-label='发布']",
+        "[role='button'][aria-label='Indlæg']",
+        "[role='button'][aria-label='Příspěvek']",
+        "[role='button'][aria-label='Lähetä']",
+        "[role='button'][aria-label='Δημοσίευση']",
+        "[role='button'][aria-label='פרסום']",
+        "[role='button'][aria-label='Inlägg']",
+        "[role='button'][aria-label='Objavi']",
+        "[role='button'][aria-label='Paskelbti']",
+        "[role='button'][aria-label='Bejegyzés']",
+        "[role='button'][aria-label='Príspevok']",
+        "[role='button'][aria-label='Опубликовать']",
+        "[role='button'][aria-label='Postează']",
+        "div[role='button']:has-text('Post')",
+        "div[role='button']:has-text('Publier')",
+        "div[role='button']:has-text('Publicar')"
+      ]
+    },
+
+    "show_image_input": {
+      "note": "Bouton pour afficher l'input d'upload photo/vidéo",
+      "selectors": [
+        "[aria-label*='Photo/video']",
+        "[aria-label*='Photo/vidéo']",
+        "[aria-label*='Fotoğraf/video']",
+        "[aria-label*='صورة/فيديو']",
+        "[aria-label*='Foto/video']",
+        "[aria-label*='Bild/Video']",
+        "[aria-label*='画像/動画']",
+        "[aria-label*='사진/동영상']",
+        "[aria-label*='图片/视频']",
+        "[aria-label*='Kuva/video']",
+        "[aria-label*='Εικόνα/βίντεο']",
+        "[aria-label*='תמונה/וידאו']",
+        "[aria-label*='Nuotrauka/vaizdo']",
+        "[aria-label*='Kép/videó']",
+        "[aria-label*='Фото/видео']",
+        "div[role='button']:has-text('Photo')",
+        "div[role='button']:has-text('Foto')"
+      ]
+    },
+
+    "add_image": {
+      "note": "Input file pour l'upload d'images",
+      "selectors": [
+        "input[type='file'][accept*='image/*']",
+        "input[type='file'][accept*='image']",
+        "input[type='file']"
+      ]
+    },
+
+    "group_link": {
+      "note": "Liens des groupes dans la page de recherche",
+      "selectors": [
+        "a[href*='/groups/'][role='link']:not([href*='search']):not([href*='create'])",
+        "a[href*='facebook.com/groups/']:not([href*='search'])",
+        "div[role='article'] a[href*='/groups/']",
+        "a[href*='/groups/']"
+      ]
+    },
+
+    "display_themes": {
+      "note": "Bouton pour afficher les options de thème/arrière-plan",
+      "selectors": [
+        "div[aria-label*='Show Background Options']",
+        "div[aria-label*='Afficher les options d\\'arrière-plan']",
+        "div[aria-label*='Arka Plan Seçeneklerini Göster']",
+        "div[aria-label*='عرض خيارات الخلفية']",
+        "div[aria-label*='Mostrar opciones de fondo']",
+        "div[aria-label*='Hintergrundoptionen anzeigen']",
+        "div[aria-label*='Mostra opzioni di sfondo']",
+        "div[aria-label*='背景オプションを表示']",
+        "div[aria-label*='배경 옵션 표시']",
+        "div[aria-label*='显示背景选项']",
+        "div[aria-label*='Mostrar opções de fundo']",
+        "div[aria-label*='Показать параметры фона']"
+      ]
+    },
+
+    "theme": {
+      "note": "Sélecteur de thème individuel (remplacer 'index' par 1-5)",
+      "selectors": [
+        "div[role='listitem']:nth-child(index) div[aria-pressed='false']",
+        "div[aria-label*='background']:nth-child(index)",
+        "div.x1qjc9v5 > div:nth-child(index) > div[aria-pressed='false']"
+      ]
+    },
+
+    "comment_input": {
+      "note": "Zone de saisie d'un commentaire",
+      "selectors": [
+        "div[aria-label='Write a comment'][role='textbox']",
+        "div[aria-label='Écrire un commentaire'][role='textbox']",
+        "div[aria-label='Yorum yazın'][role='textbox']",
+        "div[aria-label='اكتب تعليقًا'][role='textbox']",
+        "div[aria-label='Escribir un comentario'][role='textbox']",
+        "div[aria-label='Schreibe einen Kommentar'][role='textbox']",
+        "div[aria-label='Scrivi un commento'][role='textbox']",
+        "div[aria-label='コメントを入力'][role='textbox']",
+        "div[aria-label='댓글 입력'][role='textbox']",
+        "div[aria-label='写评论'][role='textbox']",
+        "div[aria-label='Написать комментарий'][role='textbox']",
+        "div[role='textbox'][aria-label*='comment' i]",
+        "div[role='textbox'][aria-label*='commentaire' i]",
+        "div[role='textbox'][aria-label*='Comentario' i]"
+      ]
+    },
+
+    "submit_comment": {
+      "note": "Bouton/action pour soumettre un commentaire (Entrée)",
+      "selectors": [
+        "div[aria-label='Press Enter to post.']",
+        "div[aria-label='Appuyez sur Entrée pour publier.']",
+        "div[aria-label='Enter tuşuna basarak gönder.']",
+        "div[aria-label='اضغط Enter للنشر.']",
+        "div[aria-label='Presiona Enter para publicar.']"
+      ]
+    },
+
+    "like_button": {
+      "note": "Bouton J'aime",
+      "selectors": [
+        "div[aria-label='Like'][role='button']",
+        "div[aria-label=\"J'aime\"][role='button']",
+        "div[aria-label='Beğen'][role='button']",
+        "div[aria-label='أعجبني'][role='button']",
+        "div[aria-label='Me gusta'][role='button']",
+        "div[aria-label='Gefällt mir'][role='button']",
+        "div[aria-label='Mi piace'][role='button']",
+        "div[aria-label='いいね！'][role='button']",
+        "div[aria-label='好きです'][role='button']",
+        "div[aria-label='좋아요'][role='button']",
+        "div[aria-label='赞'][role='button']"
+      ]
+    },
+
+    "marketplace_title": {
+      "note": "Champ titre dans la création d'annonce Marketplace",
+      "selectors": [
+        "input[aria-label*='Title']",
+        "input[aria-label*='Titre']",
+        "input[aria-label*='Başlık']",
+        "input[aria-label*='عنوان']",
+        "input[aria-label*='Título']",
+        "input[placeholder*='Title']",
+        "input[placeholder*='Titre']",
+        "input[placeholder*='Başlık']",
+        "label:has-text('Title') + div input",
+        "label:has-text('Titre') + div input"
+      ]
+    },
+
+    "marketplace_price": {
+      "note": "Champ prix dans la création d'annonce Marketplace",
+      "selectors": [
+        "input[aria-label*='Price']",
+        "input[aria-label*='Prix']",
+        "input[aria-label*='Fiyat']",
+        "input[aria-label*='سعر']",
+        "input[aria-label*='Precio']",
+        "input[placeholder*='Price']",
+        "input[placeholder*='Prix']",
+        "input[placeholder*='Fiyat']",
+        "label:has-text('Price') + div input",
+        "label:has-text('Prix') + div input"
+      ]
+    },
+
+    "marketplace_description": {
+      "note": "Champ description dans la création d'annonce Marketplace",
+      "selectors": [
+        "div[aria-label*='Description'][role='textbox']",
+        "div[aria-label*='Açıklama'][role='textbox']",
+        "div[aria-label*='وصف'][role='textbox']",
+        "div[aria-label*='Descripción'][role='textbox']",
+        "textarea[aria-label*='Description']",
+        "div[contenteditable='true'][aria-label*='Description']",
+        "div[contenteditable='true'][aria-label*='description' i]",
+        "label:has-text('Description') + div textarea"
+      ]
+    },
+
+    "marketplace_add_photos": {
+      "note": "Bouton ajout de photos dans Marketplace",
+      "selectors": [
+        "div[aria-label*='Add photos'][role='button']",
+        "div[aria-label*='Ajouter des photos'][role='button']",
+        "div[aria-label*='Fotoğraf ekle'][role='button']",
+        "div[aria-label*='إضافة صور'][role='button']",
+        "div[role='button']:has-text('Add photos')",
+        "div[role='button']:has-text('Ajouter des photos')",
+        "div[role='button']:has-text('Foto ekle')"
+      ]
+    },
+
+    "marketplace_submit": {
+      "note": "Bouton de soumission/étape suivante dans Marketplace",
+      "selectors": [
+        "div[aria-label='Next'][role='button']",
+        "div[aria-label='Suivant'][role='button']",
+        "div[aria-label='Sonraki'][role='button']",
+        "div[aria-label='التالي'][role='button']",
+        "div[aria-label='Siguiente'][role='button']",
+        "div[role='button']:has-text('Next')",
+        "div[role='button']:has-text('Suivant')",
+        "div[role='button']:has-text('Publish')",
+        "div[role='button']:has-text('Publier')"
+      ]
+    }
+  }
+}
