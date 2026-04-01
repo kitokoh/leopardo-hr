@@ -4,6 +4,44 @@
 
 ---
 
+## [4.0.0] - 2026-03-31
+### Gestion de projet + Dossier API complet (première tâche backend)
+
+#### Gestion de projet robuste (docs/GESTION_PROJET/)
+- **`JOURNAL_DE_BORD.md`** — Source de vérité opérationnelle : tableau d'avancement B1-B12/M1-M4/F1, log de sessions (template), décisions architecturales figées (12 décisions), index des fichiers
+- **`CONTEXTE_SESSION_IA.md`** — À copier en début de chaque session IA : 12 règles absolues, état actuel, structure repo, convention de commits, fichiers de référence
+- **`SUIVI_PROMPTS.md`** — Checklist détaillée par session : Sprint 0 infra (14 items), CC-01 à CC-12 (backend), JU-01 à JU-04 (mobile), CU-01 (frontend), déploiement
+
+#### Dossier API — Migrations complètes (api/database/migrations/)
+
+**Schéma public (public/) :**
+- `000001_create_plans_table` — plans avec features JSONB (excel_export corrigé Starter)
+- `000002_create_companies_table` — UUID, tenancy_type, timezone, currency, status
+- `000003_create_public_support_tables` — super_admins, user_lookups (employee_id unifié), languages, hr_model_templates, invoices, billing_transactions
+
+**Schéma tenant (tenant/) :**
+- `000100` — departments (sans manager_id), positions, schedules (work_days JSONB, HS thresholds), sites (GPS)
+- `000101` — employees : manager_id (décision figée, PAS supervisor_id), status VARCHAR (PAS is_active), zkteco_id, salary_base, EncryptedCast pour iban/bank_account/national_id
+- `000102` — departments.manager_id (résolution dépendance circulaire), employee_devices (FCM — décision: table séparée, PAS JSONB), devices (ZKTeco/QR)
+- `000103` — attendance_logs (session_number split-shift, contrainte UNIQUE corrigée, commentaire timezone UTC→tz entreprise), absence_types, absences (CHECK end>=start), leave_balance_logs, salary_advances (statut 'active' présent, amount_remaining)
+- `000104` — projects, tasks, task_comments, evaluations, payrolls (gross_salary champ calculé ≠ salary_base), payroll_export_batches, company_settings (onboarding 4 étapes), audit_logs (Observer Eloquent), notifications
+
+#### Dossier API — Seeders (api/database/seeders/)
+- **`PlanSeeder`** — 3 plans avec TOUTES les features (excel_export=true Starter, evaluations, schema_isolation)
+- **`LanguageSeeder`** — fr/ar(RTL)/en/tr (JAMAIS es)
+- **`HrModelSeeder`** — 5 modèles pays complets : DZ/MA/TN/FR/TR (cotisations salariales+patronales, tranches IR, règles congés, jours fériés, seuils HS)
+- **`SuperAdminSeeder`** — Premier admin depuis .env, idempotent, sécurisé
+- **`DatabaseSeeder`** — Orchestrateur avec messages clairs + conseils post-seed
+- **`DemoCompanySeeder`** — Local uniquement : 7 employés + 20j pointages + absences + avance + paie
+
+#### Dossier API — Factories (api/database/factories/)
+- **`CompanyFactory`** — États: withPlan(), enterprise(), trial(), suspended(), inGracePeriod(), algeria()
+- **`EmployeeFactory`** — États: manager(), managerRh(), managerDept(), archived(), withBiometric(), createWithToken()
+- **`TenantFactories`** — AttendanceLogFactory (late, withOvertime, manual), AbsenceFactory (approved, rejected, past), SalaryAdvanceFactory (active/repaid avec calcul mensualités), PayrollFactory (validated, withAdvanceDeduction)
+- **`api/database/README.md`** — Guide complet : architecture, ordre migrations, commandes, factories usage, connexions démo
+
+---
+
 ## [3.3.3] - 2026-03-31
 ### Complétion des 8% manquants — Approche 100% de couverture
 
