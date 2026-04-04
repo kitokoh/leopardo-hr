@@ -1,10 +1,11 @@
-# Exports et archives — NE JAMAIS commiter dans le repo
+﻿# Exports et archives — NE JAMAIS commiter dans le repo
 *.zip
 *.tar.gz
 gestionemployer_CLEAN/
 *_CLEAN/
 *_export/
 *_backup/
+bon-fixed/
 
 # Environnements
 api/.env
@@ -29,3 +30,4 @@ api/storage/app/public/
 .vscode/
 *.swp
 .DS_Store
+
