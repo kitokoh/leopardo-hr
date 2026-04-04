@@ -1,6 +1,7 @@
 # ✅ SUIVI DES PROMPTS D'EXÉCUTION — LEOPARDO RH
 # Cochez chaque item après accomplissement — NE JAMAIS SAUTER UNE ÉTAPE
-# Version 4.0 | 31 Mars 2026
+# Version 4.1.1 | 04 Avril 2026
+# Reference programme: v4.1.1
 
 ---
 

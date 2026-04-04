@@ -1,6 +1,7 @@
 # ARBORESCENCE COMPLÈTE — LEOPARDO RH
 # Monorepo : Backend Laravel 11 / Mobile Flutter / Frontend Vue.js
-# Version 3.3.2 | Mars 2026 — MIS À JOUR et validé
+# Version 4.1.1 | Avril 2026 - mise a jour harmonisee
+# Reference programme: v4.1.1
 
 ---
 

@@ -1,5 +1,6 @@
 # LEOPARDO RH — Documentation Technique
-## Source de vérité conception | Version 3.1 | Mars 2026
+## Source de verite conception | Version 4.1.1 | Avril 2026
+## Reference programme: v4.1.1
 
 ---
 
@@ -17,7 +18,7 @@ docs/
 
 | Quoi | Fichier |
 |------|---------|
-| API (70 endpoints) | `dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` |
+| API (82 endpoints) | `dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` |
 | ERD v2.0 | `dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md` |
 | SQL complet | `dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql` |
 | Seeders | `dossierdeConception/18_schemas_sql/05_SEEDERS_ET_DONNEES_INITIALES.md` |

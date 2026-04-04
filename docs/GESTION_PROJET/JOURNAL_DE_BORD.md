@@ -1,15 +1,16 @@
 ﻿# ðŸ“‹ JOURNAL DE BORD â€” LEOPARDO RH
 # SOURCE DE VÃ‰RITÃ‰ OPÃ‰RATIONNELLE
 # Mettre Ã  jour aprÃ¨s CHAQUE session IA â€” sans exception
-# Version 4.0 | 31 Mars 2026
+# Version 4.1.1 | 04 Avril 2026
+# Reference programme: v4.1.1
 
 ---
 
 ## âš¡ Ã‰TAT INSTANTANÃ‰ DU PROJET
 
 ```
-DATE MAJ         : 31 Mars 2026
-PHASE            : PHASE 0 â€” Conception âœ… TERMINÃ‰E (v3.3.3)
+DATE MAJ         : 04 Avril 2026
+PHASE            : PHASE 1 - Execution gouvernee (baseline v4.1.1)
 CODE             : 0% â€” PAS ENCORE DÃ‰MARRÃ‰
 PROCHAINE TÃ‚CHE  : CC-01 â€” Init Laravel (Backend)
 PROCHAINE TÃ‚CHE  : JU-01 â€” Init Flutter (Mobile) â€” EN PARALLÃˆLE
