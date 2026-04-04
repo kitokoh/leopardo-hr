@@ -4,6 +4,19 @@
 
 ---
 
+## [4.1.4] - 2026-04-04
+### Hardening execution discipline (post-governance)
+
+- Added PR template: `.github/PULL_REQUEST_TEMPLATE.md`
+- Added mandatory branch-protection spec: `.github/BRANCH_PROTECTION_REQUIRED.md`
+- Added local governance checker script: `tools/check-governance.ps1`
+- Added runbook drills register: `docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md`
+- Added operational blockers + next actions tracker: `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md`
+- CI governance gate extended to enforce existence of these execution-control files
+- `ORCHESTRATION_MAITRE.md` updated with imperative references to new control files
+
+---
+
 ## [4.1.3] - 2026-04-04
 ### Elimination des 4 faiblesses residuelles (imperatif)
 
