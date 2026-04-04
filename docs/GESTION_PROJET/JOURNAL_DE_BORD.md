@@ -190,3 +190,13 @@ docs/dossierdeConception/07_securite_rbac/10_RBAC_COMPLET.md                  â
 api/openapi.yaml                                                                â† OpenAPI 3.0.3
 ```
 
+### Gouvernance obligatoire (phase active)
+```
+docs/GESTION_PROJET/INDEX_CANONIQUE.md
+docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md
+docs/GESTION_PROJET/RUNBOOK_DEPLOY.md
+docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md
+docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md
+docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md
+```
+

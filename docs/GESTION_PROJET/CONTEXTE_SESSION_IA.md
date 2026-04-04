@@ -161,3 +161,11 @@ Gate avant merge (obligatoire) :
 - tenant isolation verifiee
 - RBAC verifie
 - changelog + journal racine mis a jour
+
+Fichiers de pilotage obligatoires :
+- `docs/GESTION_PROJET/INDEX_CANONIQUE.md`
+- `docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md`
+- `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md`
+- `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md`
+- `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md`
+- `docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md`
