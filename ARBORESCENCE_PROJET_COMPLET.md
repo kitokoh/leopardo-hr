@@ -27,7 +27,7 @@ leopardo-rh/                          ← Racine du monorepo
 ## DOSSIER `api/` — Backend Laravel 11
 
 > À créer avec : `composer create-project laravel/laravel . --prefer-dist`
-> Prompt de démarrage : `docs/PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md`
+> Prompt de démarrage : `docs/PROMPTS_EXECUTION/v2/backend/CC-01_INIT_LARAVEL.md`
 
 ```
 api/
@@ -186,7 +186,7 @@ api/
 ## DOSSIER `mobile/` — Flutter
 
 > À créer avec : `flutter create . --org com.leopardo --project-name leopardo_rh`
-> Prompt de démarrage : `docs/PROMPTS_EXECUTION/mobile/JU-01_A_JU-04_FLUTTER.md`
+> Prompt de démarrage : `docs/PROMPTS_EXECUTION/v2/mobile/JU-01_A_JU-04_FLUTTER.md`
 
 ```
 mobile/
@@ -263,17 +263,17 @@ docs/
 │
 └── PROMPTS_EXECUTION/
     ├── ORCHESTRATION/
-    │   └── ORCHESTRATION_MAITRE.md             ← Tableau de bord — mettre à jour après chaque tâche
-    ├── backend/
+│   └── CONTINUE.md                         ← Tableau de bord orchestration d'exécution
+    ├── v2/backend/
     │   ├── CC-01_INIT_LARAVEL.md
     │   ├── CC-02_MODULE_AUTH.md
     │   └── CC-03_A_CC-06_MODULES.md
-    ├── mobile/
+    ├── v2/mobile/
     │   └── JU-01_A_JU-04_FLUTTER.md
-    ├── frontend/
+    ├── v2/frontend/
     │   └── CU-01_ET_AGENTS.md
-    └── 99_prompts_execution/
-        └── 01_PROMPT_MASTER_CLAUDE_CODE.md     ← Prompt master complet (501 lignes)
+    └── patches/
+        └── INDEX_PATCHES.md                    ← Patches cumulés et correctifs ciblés
 ```
 
 ---

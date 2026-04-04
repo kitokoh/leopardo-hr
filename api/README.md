@@ -18,6 +18,6 @@ php artisan serve
 
 ## Références
 - Contrats API : `../docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`
-- ERD : `../docs/dossierdeConception/04_architecture_erd/04_ERD_COMPLET.md`
+- ERD : `../docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md`
 - Règles métier : `../docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md`
-- Prompt démarrage : `../docs/PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md`
+- Prompt démarrage : `../docs/PROMPTS_EXECUTION/v2/backend/CC-01_INIT_LARAVEL.md`

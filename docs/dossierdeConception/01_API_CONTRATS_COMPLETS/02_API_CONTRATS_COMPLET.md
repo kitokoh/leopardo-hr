@@ -154,17 +154,12 @@ Pagination    : ?page=1&per_page=15
 
 ---
 
-### POST /auth/refresh
-**Request :** aucun body (token Bearer dans le header)
-**Response 200 :**
-```json
-{
-  "data": {
-    "token": "2|NewTokenValue...",
-    "expires_at": "2026-10-15T10:00:00Z"
-  }
-}
-```
+### Stratégie de renouvellement de token (Sanctum opaques)
+- Token Flutter valide 90 jours (config `sanctum.expiration`)
+- À l'expiration : Flutter reçoit `401 UNAUTHENTICATED`
+- Flutter intercepte ce `401` et redirige vers l'écran de login
+- L'utilisateur se reconnecte → nouveau token émis
+- Pas d'endpoint refresh
 
 ---
 
@@ -1915,3 +1910,65 @@ data: {"ts":"2026-04-15T10:00:30Z"}
 
 ### GET /admin/hr-models/{country_code}
 **Response 200 :** Modèle RH complet avec `cotisations`, `ir_brackets`, `leave_rules`, `holiday_calendar`
+
+---
+
+## 13. EMPLOYES - ESTIMATIONS RAPIDES (2 endpoints)
+
+### GET /employees/{id}/daily-summary?date=2026-04-04
+**Description :** Resume journalier d'un employe avec estimation du montant du jour.
+
+**Response 200 :**
+```json
+{
+  "data": {
+    "employee_id": 12,
+    "name": "Ahmed Yilmaz",
+    "date": "2026-04-04",
+    "check_in": "08:30",
+    "check_out": "18:15",
+    "hours_worked": 9.75,
+    "overtime_hours": 1.75,
+    "daily_wage": 487.50,
+    "wage_breakdown": {
+      "base": 400.00,
+      "overtime": 87.50
+    },
+    "status": "complete"
+  }
+}
+```
+
+**Regles :**
+- Roles autorises : `manager` (`principal`, `rh`, `dept`, `superviseur`) + employe sur lui-meme.
+- Le montant retourne est une estimation operationnelle, pas un bulletin officiel.
+- Les dedications fiscales et sociales definitives restent calculees en fin de mois.
+
+### GET /employees/{id}/quick-estimate?from=2026-04-01&to=2026-04-17
+**Description :** Simulation rapide sur periode libre (sortie employee, litige, avance de calcul).
+
+**Response 200 :**
+```json
+{
+  "data": {
+    "employee_id": 12,
+    "name": "Ahmed Yilmaz",
+    "period": "2026-04-01 -> 2026-04-17",
+    "working_days_in_period": 12,
+    "days_present": 11,
+    "days_absent": 1,
+    "total_hours_worked": 89.5,
+    "overtime_hours": 5.5,
+    "estimated_gross": 5230.00,
+    "estimated_deductions": 523.00,
+    "estimated_net": 4707.00,
+    "currency": "TRY",
+    "disclaimer": "Estimation - le net exact inclura les cotisations et IR calcules en fin de mois"
+  }
+}
+```
+
+**Regles :**
+- `from` et `to` requis, `from <= to`, plage max recommandee 62 jours.
+- Role autorise : manager uniquement.
+- Endpoint en lecture seule, sans generation de paie ni ecriture DB.

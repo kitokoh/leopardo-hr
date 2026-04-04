@@ -15,6 +15,22 @@ Leopardo RH utilise **Laravel Sanctum avec tokens opaques** (pas JWT).
 | Super Admin | 4h | 2FA obligatoire |
 | ZKTeco | Permanent | Changement manuel si compromis |
 
+### Super Admin — accès lecture aux schémas tenant (impersonation)
+
+Le `SuperAdminMiddleware` gère un header spécial :
+- `X-Leopardo-Impersonate: {company_id}`
+
+Flux :
+1. Vérifier que l'utilisateur est bien un `super_admin`
+2. Si le header est présent : `SET search_path TO company_{uuid}, public`
+3. Activer un mode `read-only` pour la requête (aucun `POST/PUT/PATCH/DELETE`)
+4. Logger l'accès : `actor_type='super_admin'`, `action='impersonate'`, `ip`
+
+Sécurité :
+- Mode strictement `READ ONLY`
+- Timeout d'impersonation : 30 minutes d'inactivité
+- Chaque accès est journalisé
+
 ---
 
 ## 2. CHIFFREMENT DES DONNÉES SENSIBLES

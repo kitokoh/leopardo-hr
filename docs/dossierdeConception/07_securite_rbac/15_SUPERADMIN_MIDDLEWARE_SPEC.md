@@ -51,6 +51,22 @@ Toutes les routes sous le préfixe `/admin/*` sont protégées par ce middleware
 /admin/companies/{id}/migrate-to-dedicated — Migration tenant
 ```
 
+## 4.1 Impersonation tenant (lecture seule)
+
+Header supporté :
+`X-Leopardo-Impersonate: {company_id}`
+
+Comportement :
+1. Valider token super admin
+2. Résoudre le schéma de la company (`company_{uuid}`)
+3. Positionner le `search_path` sur le schéma ciblé
+4. Autoriser uniquement les méthodes de lecture (`GET`, `HEAD`, `OPTIONS`)
+5. Logger chaque impersonation dans `audit_logs` (`actor_type=super_admin`)
+
+Contraintes :
+- Toute méthode d'écriture retourne `403 READ_ONLY_IMPERSONATION`
+- Expiration de session d'impersonation après 30 minutes d'inactivité
+
 ## 5. Exemple de middleware
 
 ```php

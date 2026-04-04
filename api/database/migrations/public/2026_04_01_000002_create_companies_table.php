@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('phone', 30)->nullable();
             $table->string('logo_path', 255)->nullable();
             $table->unsignedInteger('plan_id')->references('id')->on('plans');
-            $table->string('schema_name', 60)->unique();            // ex: 'company_a1b2c3d4'
+            $table->string('schema_name', 63)->unique();            // ex: 'company_a1b2c3d4'
             $table->enum('tenancy_type', ['schema', 'shared'])->default('shared');
             $table->enum('status', ['active', 'trial', 'suspended', 'expired'])->default('trial');
             $table->date('subscription_start');

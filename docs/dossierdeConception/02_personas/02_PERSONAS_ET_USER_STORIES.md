@@ -163,3 +163,45 @@ US-AV02 : En tant que gestionnaire, je veux voir le plan de remboursement d'une 
 | Paie | La paie d'un employé est calculée en < 500ms (hors PDF) |
 | Tâches | Un changement de statut est visible par le manager en temps réel |
 | Auth | Token stocké sécurisé, session maintenue 90 jours mobile |
+
+---
+
+## PERSONA 4 - MURAT, PETIT PATRON (Usage informel)
+
+**Profil :**
+- Murat, 42 ans, proprietaire d'un restaurant de 8 employes a Bursa.
+- Gere seul depuis son telephone, sans assistant RH.
+- Salaries payes au jour ou a l'heure selon les postes.
+
+**Objectifs :**
+- Savoir en quelques secondes ce qu'il doit a chaque employe.
+- Produire une trace simple en cas de litige ou depart brusque.
+- Demarrer sans parametrage RH complexe.
+
+**Douleurs :**
+- Desaccords frequents sur heures sup et montants dus.
+- Pas de calcul instantane sur une periode partielle.
+- Trop de temps perdu en fin de semaine pour consolider les heures.
+
+**Citation :** *"Je veux juste savoir ce que je dois payer aujourd'hui, sans Excel."*
+
+---
+
+## USER STORIES SUPPLEMENTAIRES (Persona Murat)
+
+```
+US-M01 : En tant que patron, je veux voir ce que je dois aujourd'hui a chaque employe
+         afin d'eviter les surprises de fin de journee.
+
+US-M02 : En tant que patron, je veux simuler ce que je dois sur une periode libre
+         afin de regler rapidement un depart en cours de mois.
+
+US-M03 : En tant que patron, je veux generer un recu simple de periode
+         afin d'avoir une preuve partageable en cas de litige.
+
+US-M04 : En tant qu'employe journalier/horaire, je veux voir mon gain estime du jour
+         afin de verifier immediatement mes heures et ma paie.
+
+US-M05 : En tant que patron, je veux ajouter un employe en moins de 2 minutes
+         afin de commencer a pointer sans configuration avancee.
+```

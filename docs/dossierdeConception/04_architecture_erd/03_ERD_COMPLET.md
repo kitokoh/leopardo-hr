@@ -50,10 +50,11 @@ companies
 ├── phone               VARCHAR(30)  NULL
 ├── logo_path           VARCHAR(255) NULL
 ├── plan_id             INT         FK » plans.id NN
-├── schema_name         VARCHAR(50)  NN UQ  ex: "company_7c9e6679"
+├── schema_name         VARCHAR(63)  NN UQ  ex: "company_7c9e6679"
 ├── tenancy_type        VARCHAR(20)  NN DEF 'shared'
-│                                   [schema|enterprise] — schema = isolation physique (Enterprise)
-│                                   shared = isolation logique via company_id (Trial/Starter/Business)
+│                                   CHECK : ['shared'|'schema']
+│                                   'shared' = isolation logique (Trial / Starter / Business)
+│                                   'schema' = isolation physique PostgreSQL (Enterprise uniquement)
 ├── status              VARCHAR(20)  NN DEF 'trial'
 │                                        [active|trial|suspended|expired]
 ├── subscription_start  DATE        NN
@@ -74,7 +75,7 @@ super_admins
 ├── name            VARCHAR(100) NN
 ├── email           VARCHAR(150) NN UQ
 ├── password_hash   VARCHAR(255) NN
-├── 2fa_secret      VARCHAR(32)  NULL
+├── two_fa_secret   VARCHAR(32)  NULL
 ├── last_login_at   TIMESTAMP   NULL
 └── created_at      TIMESTAMP
 ```
@@ -103,8 +104,7 @@ INDEX : (company_id), (status), (due_date)
 ### user_lookups  ← TABLE CRITIQUE (Performance auth multi-schéma)
 ```
 user_lookups
-├── id              INT         PK AUTO
-├── email           VARCHAR(150) NN UQ   (email de l'employé — clé de lookup)
+├── email           VARCHAR(150) PK      (email de l'employé — clé de lookup)
 ├── company_id      UUID        FK » companies.id ON DELETE CASCADE
 ├── employee_id     INT         NN       ⚠️  PAS de FK réelle — référence virtuelle vers employees.id
 │                                         (impossible entre schémas PostgreSQL)
@@ -112,7 +112,7 @@ user_lookups
 ├── role            VARCHAR(20)  NN       Copie du rôle — mise à jour si role change
 └── created_at      TIMESTAMPTZ NN DEF NOW()
 
-INDEX : UNIQUE(email) ← seul index nécessaire — auth = lookup par email
+INDEX : PRIMARY KEY(email) ← seul index nécessaire — auth = lookup par email
 ```
 
 **Pourquoi cette table existe :**
@@ -141,8 +141,9 @@ Si l'une des deux échoue → rollback complet → cohérence garantie.
 languages
 ├── id          INT         PK AUTO
 ├── code        CHAR(2)     NN UQ  [fr|ar|tr|en|...]
-├── name        VARCHAR(50)  NN    ex: "Français"
-├── direction   VARCHAR(3)   NN DEF 'ltr'  [ltr|rtl]
+├── name_fr     VARCHAR(50)  NN    ex: "Arabe"
+├── name_native VARCHAR(50)  NN    ex: "العربية"
+├── is_rtl      BOOL        NN DEF false
 └── is_active   BOOL        NN DEF true
 ```
 
@@ -278,6 +279,8 @@ devices
 attendance_logs
 ├── id                  BIGINT      PK AUTO
 ├── employee_id         INT         FK » employees.id NN
+├── schedule_id         INT         FK » schedules.id NULL
+│                                    Planning actif AU MOMENT du pointage (snapshot)
 ├── date                DATE        NN
 ├── session_number      SMALLINT    NN DEF 1   (1 = session principale, 2 = split-shift matin/soir)
 ├── check_in            TIMESTAMP   NULL  (horodatage serveur UTC)
@@ -387,6 +390,9 @@ projects
 ├── status      VARCHAR(20)  NN DEF 'active'  [active|completed|archived]
 ├── created_by  INT         FK » employees.id NN
 └── created_at  TIMESTAMP
+
+INDEX : GIN(members) pour requêtes d'appartenance (`@> '[employee_id]'`)
+NOTE  : Phase 1 conserve JSONB ; nettoyage des références membres obligatoire via EmployeeService.archiveEmployee().
 ```
 
 ### tasks
@@ -459,6 +465,7 @@ payrolls
 ├── ir_amount           DECIMAL(12,2) NN DEF 0
 ├── advance_deduction   DECIMAL(12,2) NN DEF 0
 ├── absence_deduction   DECIMAL(12,2) NN DEF 0
+├── penalty_deduction   DECIMAL(12,2) NN DEF 0
 ├── net_salary          DECIMAL(12,2) NN
 ├── pdf_path            VARCHAR(255) NULL
 ├── status              VARCHAR(10)  NN DEF 'draft'  [draft|validated]
@@ -467,6 +474,12 @@ payrolls
 
 UNIQUE : (employee_id, period_month, period_year)
 INDEX : (period_month, period_year, status)
+
+Formule net (contrat) :
+net_salary = gross_salary + overtime_amount + bonuses
+           - cotisations - ir_amount
+           - advance_deduction - absence_deduction - penalty_deduction
+           - autres deductions JSONB
 ```
 
 ### payroll_export_batches

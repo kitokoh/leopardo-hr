@@ -52,7 +52,7 @@ COMMIT         → git commit -m "docs: SUIVI_PROMPTS session CC-XX done"
 ## ══════════════════════════════════════════════
 
 **Agent** : Claude Code
-**Prompt** : `docs/PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md`
+**Prompt** : `docs/PROMPTS_EXECUTION/v2/backend/CC-01_INIT_LARAVEL.md`
 **Durée** : 4-6 heures | **Prérequis** : Sprint 0 ✅
 
 ### Setup projet
@@ -124,7 +124,7 @@ COMMIT         → git commit -m "docs: SUIVI_PROMPTS session CC-XX done"
 ## ══════════════════════════════════════════════
 
 **Agent** : Jules / Claude Code
-**Prompt** : `docs/PROMPTS_EXECUTION/mobile/JU-01_A_JU-04_FLUTTER.md` (section JU-01)
+**Prompt** : `docs/PROMPTS_EXECUTION/v2/mobile/JU-01_A_JU-04_FLUTTER.md` (section JU-01)
 **Durée** : 4-6 heures | **Prérequis** : Sprint 0 ✅ (Firebase au minimum)
 
 ```
@@ -162,7 +162,7 @@ COMMIT         → git commit -m "docs: SUIVI_PROMPTS session CC-XX done"
 ## ══════════════════════════════════════════════
 
 **Agent** : Claude Code
-**Prompt** : `docs/PROMPTS_EXECUTION/backend/CC-02_MODULE_AUTH.md`
+**Prompt** : `docs/PROMPTS_EXECUTION/v2/backend/CC-02_MODULE_AUTH.md`
 **Durée** : 4-5 heures | **Prérequis** : CC-01 ✅
 
 ```
@@ -170,7 +170,6 @@ COMMIT         → git commit -m "docs: SUIVI_PROMPTS session CC-XX done"
 [ ] POST /api/v1/auth/login (lookup user_lookups → switch schéma → Sanctum)
 [ ] POST /api/v1/auth/logout
 [ ] GET  /api/v1/auth/me
-[ ] POST /api/v1/auth/refresh
 [ ] POST /api/v1/auth/forgot-password
 [ ] POST /api/v1/auth/reset-password
 [ ] POST /api/v1/auth/device/fcm
@@ -478,7 +477,7 @@ COMMIT         → git commit -m "docs: SUIVI_PROMPTS session CC-XX done"
 ## ══════════════════════════════════════════════
 
 **Agent** : Cursor / Claude Code
-**Prompt** : `docs/PROMPTS_EXECUTION/frontend/CU-01_ET_AGENTS.md`
+**Prompt** : `docs/PROMPTS_EXECUTION/v2/frontend/CU-01_ET_AGENTS.md`
 
 ```
 [ ] Init Vue.js 3 + Inertia.js + Tailwind CSS + PrimeVue

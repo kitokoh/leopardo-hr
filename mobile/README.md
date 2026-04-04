@@ -23,4 +23,4 @@ pour activer le mode mock.
 ## Références
 - Modèles Dart : `../docs/dossierdeConception/16_MODELES_DART/20_MODELES_DART_COMPLET.md`
 - Contrats API : `../docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`
-- Prompt démarrage : `../docs/PROMPTS_EXECUTION/mobile/JU-01_A_JU-04_FLUTTER.md`
+- Prompt démarrage : `../docs/PROMPTS_EXECUTION/v2/mobile/JU-01_A_JU-04_FLUTTER.md`

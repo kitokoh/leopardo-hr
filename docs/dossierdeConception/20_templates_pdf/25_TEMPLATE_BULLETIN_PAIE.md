@@ -251,3 +251,26 @@ return [
     'generated_by'       => 'Généré par',
 ];
 ```
+
+---
+
+## TEMPLATE COMPLEMENTAIRE - RECU DE PERIODE (INFORMATIF)
+
+Document distinct du bulletin officiel.
+
+### Usage
+- Generation depuis `QuickEstimateScreen` (manager).
+- Objectif: preuve simple en cas de separation ou contestation.
+- Statut legal: informatif uniquement.
+
+### Contenu minimal obligatoire
+- Identite entreprise + employe
+- Periode choisie (`from` -> `to`)
+- Jours travailles, heures totales, heures supplementaires
+- Montant estime brut, deductions estimees, net estime
+- Mention fixe:
+  - "Document informatif - bulletin officiel emis en fin de mois."
+- Zone de signature manager / employe (impression papier)
+
+### Fichier cible conseille
+- `api/resources/views/pdf/period-receipt.blade.php`

@@ -4,6 +4,73 @@
 
 ---
 
+## [4.1.1] - 2026-04-04
+### Renforcement gouvernance, coherence et pilotage
+
+- `ORCHESTRATION_MAITRE.md` : version canonique reecrite avec ordre de priorite documentaire
+- Ajout du cadre `GOUVERNANCE CANONIQUE (ANTI-CONTRADICTION)`
+- Ajout de la strategie produit par phase (Phase 1 Murat, Phase 2 PME structurees)
+- Ajout des quality gates obligatoires avant merge
+- `08_FEUILLE_DE_ROUTE.md` : ajout `Definition of Done` module et cadre anti-scope-creep
+- `docs/GESTION_PROJET/CONTEXTE_SESSION_IA.md` : ajout bloc `OVERRIDE CANONIQUE (04 Avril 2026)`
+
+---
+
+## [4.1.0] - 2026-04-04
+### Ajout usage informel et petites structures (Persona Murat)
+
+- Nouveau persona: Murat, petit patron (usage terrain, structures 5-15 employes)
+- Ajout des user stories US-M01 a US-M05 dans le document personas
+- API contrats: ajout `GET /employees/{id}/daily-summary`
+- API contrats: ajout `GET /employees/{id}/quick-estimate`
+- Regles metier: ajout section salary_type `daily` et `hourly`
+- Onboarding: ajout mode `quickstart` (< 15 employes) et regles de fallback
+- SQL spec: ajout de la cle `company_settings` `onboarding.mode`
+- Mobile prompts: ajout DailyCostScreen, widget gain journalier, QuickEstimate + partage PDF
+- Templates PDF: ajout du template informatif "recu de periode"
+
+---
+
+## [4.0.3] - 2026-04-04
+### Corrections globales post-audit (hors DB-only)
+
+- attendance_logs : ajout `schedule_id` (snapshot planning actif au pointage) dans SQL + ERD
+- languages : structure unifiée (`code`, `name_fr`, `name_native`, `is_rtl`, `is_active`) dans SQL + ERD
+- auth : suppression de `/auth/refresh` (Sanctum opaque, stratégie 401 puis relogin)
+- super_admin : spécification d'impersonation tenant en lecture seule (`X-Leopardo-Impersonate`)
+- ERD : renommage `2fa_secret` → `two_fa_secret` (alignement SQL)
+- company_settings defaults : ajout `payroll.penalty_mode` et `payroll.penalty_brackets`
+
+---
+
+## [4.0.2] - 2026-04-04
+### Corrections schéma base de données (post-audit)
+
+- companies.schema_name : VARCHAR(50/60) → VARCHAR(63) (limite PostgreSQL)
+- user_lookups.schema_name : VARCHAR(60) → VARCHAR(63) (alignement)
+- ERD : tenancy_type corrigé vers ['shared'|'schema'] (suppression de 'enterprise')
+- ERD : user_lookups PK corrigée (email PK, suppression colonne id)
+- payrolls : ajout colonne penalty_deduction DECIMAL(12,2) DEFAULT 0
+- projects : ajout index GIN sur members JSONB (`idx_proj_members`)
+- company_settings : ajout du commentaire de contrat sur les clés valides
+- TenantService spec : ajout de la règle source de vérité `getDefaultSettings()`
+
+---
+
+## [4.0.1] - 2026-04-04
+### Corrections post-audit critique
+
+- AUDIT_COMPLET_MANQUES.md : marqué ARCHIVÉ (obsolète depuis v3.3.0)
+- ORCHESTRATION_MAITRE.md : chemins fichiers corrigés, Manus retiré,
+  responsabilités frontend clarifiées
+- 03_MODELE_ECONOMIQUE.md : pricing multi-devises (DZD/MAD/TND) + TVA locale ajoutés
+- 08_FEUILLE_DE_ROUTE.md : buffer de réalité + jalons révisés ajoutés
+- NOUVEAU : 08_multitenancy/TENANT_MIGRATION_SERVICE_SPEC.md
+  (migration shared → schema, 7 étapes transactionnelles + tests)
+- CU-01_ET_AGENTS.md : règle de responsabilité frontend définitive ajoutée
+
+---
+
 ## [4.0.0] - 2026-03-31
 ### Gestion de projet + Dossier API complet (première tâche backend)
 

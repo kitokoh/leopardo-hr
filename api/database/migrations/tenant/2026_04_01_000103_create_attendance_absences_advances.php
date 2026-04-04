@@ -19,6 +19,9 @@ return new class extends Migration
             $table->uuid('company_id')->nullable()->index();
             $table->unsignedInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+            $table->unsignedInteger('schedule_id')->nullable();
+            $table->foreign('schedule_id')->references('id')->on('schedules')->nullOnDelete();
+            // Planning actif AU MOMENT du pointage (snapshot)
             $table->date('date');
             $table->smallInteger('session_number')->default(1);     // 1 = session normale, 2+ = split-shift
             $table->timestampTz('check_in')->nullable();

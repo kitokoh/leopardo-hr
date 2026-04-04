@@ -279,3 +279,34 @@ Si le planning d'un employé change le 15 du mois :
 7. Envoyer l'email de bienvenue avec identifiants
 TOUT dans une transaction — rollback complet si une étape échoue
 ```
+
+---
+
+## 10. REGLES SALARIE JOURNALIER ET HORAIRE
+
+### 10.1 salary_type = 'daily'
+```
+salaire_journalier = employees.salary_base     (taux par jour)
+salaire_mensuel    = salaire_journalier x jours_presents_reels
+heures_sup         = calculees si heures_travail > overtime_threshold_daily
+montant_HS         = (HS x salaire_journalier / heures_journalieres_attendues) x overtime_rate_1
+absence_deduction  = 0  (absence = jour non paye, deja exclu du calcul)
+prorata            = non applicable
+```
+
+### 10.2 salary_type = 'hourly'
+```
+salaire_mensuel    = hourly_rate x total_hours_worked
+heures_sup         = calculees si heures_travail > overtime_threshold_daily
+montant_HS         = (HS x hourly_rate) x (overtime_rate_1 - 1)
+                     (la base est deja incluse dans total_hours_worked)
+absence_deduction  = 0
+prorata            = non applicable
+```
+
+### 10.3 Affichage UX obligatoire
+```
+salary_type = 'fixed'  -> "Salaire mensuel : X"
+salary_type = 'daily'  -> "Taux journalier : X - Ce mois : Y jours x X = Z"
+salary_type = 'hourly' -> "Taux horaire : X - Ce mois : Y heures x X = Z"
+```

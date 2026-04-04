@@ -79,7 +79,7 @@ gestionemployerBackend-main/
 
 ```
 1. docs/GESTION_PROJET/JOURNAL_DE_BORD.md           ← État actuel + décisions
-2. docs/PROMPTS_EXECUTION/backend/CC-XX.md           ← Ta tâche du jour
+2. docs/PROMPTS_EXECUTION/v2/backend/CC-XX.md        ← Ta tâche du jour
 3. docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md
 4. docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql
 5. docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md
@@ -129,3 +129,34 @@ test(tenant): add isolation test company A cannot see company B data
 1. Cocher les items dans `docs/GESTION_PROJET/SUIVI_PROMPTS.md`
 2. Remplir un bloc SESSION dans `docs/GESTION_PROJET/JOURNAL_DE_BORD.md`
 3. Committer : `git commit -m "docs: update journal session CC-XX"`
+
+---
+
+## OVERRIDE CANONIQUE (04 Avril 2026)
+
+Ce bloc prevaut sur toute section plus ancienne de ce fichier.
+
+Etat projet :
+- Conception : terminee et harmonisee jusqu'a `4.1.1`
+- Phase active : Phase 1 (petites structures - persona Murat)
+- Objectif execution : MVP operationnel en 20-24 semaines
+
+Source de verite documentaire :
+1. `ORCHESTRATION_MAITRE.md`
+2. `docs/dossierdeConception/*`
+3. `docs/PROMPTS_EXECUTION/v2/*`
+4. `docs/GESTION_PROJET/*`
+5. Archives historiques
+
+Ordre de lecture minimal par session d'implementation :
+1. `ORCHESTRATION_MAITRE.md`
+2. prompt d'execution de la tache (`CC-*`, `JU-*`, `CU-*`)
+3. `02_API_CONTRATS_COMPLET.md`
+4. `03_ERD_COMPLET.md` et `07_SCHEMA_SQL_COMPLET.sql`
+5. `05_REGLES_METIER.md`
+
+Gate avant merge (obligatoire) :
+- tests module OK
+- tenant isolation verifiee
+- RBAC verifie
+- changelog + journal racine mis a jour

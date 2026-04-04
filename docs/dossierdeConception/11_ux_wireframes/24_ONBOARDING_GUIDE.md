@@ -158,3 +158,26 @@ Inertia::share([
 | J+7 (si onboarding incomplet) | "Astuce : configurez le pointage mobile" |
 | J+12 | "Votre trial se termine dans 2 jours" |
 | J+14 (expiration) | "Votre compte est suspendu — vos données sont conservées 30 jours" |
+
+---
+
+## MODE QUICK START (< 15 employes)
+
+### Detection a l'inscription
+```
+Question : "Combien d'employes avez-vous ?"
+- Moins de 15  -> onboarding.mode = quickstart
+- 15 a 50      -> onboarding.mode = standard
+- Plus de 50   -> onboarding.mode = enterprise
+```
+
+### Parcours quickstart (3 etapes)
+```
+Etape 1 : Ajouter un employe minimal (prenom, nom, taux journalier/horaire)
+Etape 2 : Installer mobile et realiser un pointage test
+Etape 3 : Activer le suivi "ce que je dois aujourd'hui"
+```
+
+### Regle de fallback
+- Si `onboarding.mode = quickstart`, appliquer automatiquement un planning par defaut `08:00-17:00`, `Lun-Sam`.
+- Le passage vers onboarding standard reste possible a tout moment depuis Parametres.
