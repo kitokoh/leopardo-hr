@@ -152,31 +152,6 @@ paths:
                     type: string
                     example: "LOGGED_OUT"
 
-  /auth/refresh:
-    post:
-      tags: ["Auth"]
-      summary: "Rafraîchir le token"
-      description: "Génère un nouveau token Sanctum pour l'utilisateur authentifié."
-      operationId: authRefresh
-      responses:
-        "200":
-          description: "Token rafraîchi"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      token:
-                        type: string
-                        example: "2|NewTokenValue..."
-                      expires_at:
-                        type: string
-                        format: date-time
-                        example: "2026-10-15T10:00:00Z"
-
   /auth/me:
     get:
       tags: ["Auth"]
