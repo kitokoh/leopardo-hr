@@ -4,6 +4,24 @@
 
 ---
 
+## [4.1.3] - 2026-04-04
+### Elimination des 4 faiblesses residuelles (imperatif)
+
+- Ajout d'un index canonique anti-confusion: `docs/GESTION_PROJET/INDEX_CANONIQUE.md`
+- Ajout d'un backlog unique executable Phase 1: `docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md`
+- Ajout des runbooks ops obligatoires:
+  - `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md`
+  - `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md`
+  - `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md`
+  - `docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md`
+- Renforcement CI:
+  - workflow `tests.yml` reecrit
+  - gate de gouvernance PR: changements critiques -> `CHANGELOG.md` obligatoire
+  - verification automatique de presence des fichiers canoniques
+- `ORCHESTRATION_MAITRE.md` enrichi avec bloc execution imperative (backlog/runbooks obligatoires)
+
+---
+
 ## [4.1.2] - 2026-04-04
 ### Harmonisation versionning programme
 

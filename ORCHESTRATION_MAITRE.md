@@ -118,3 +118,20 @@ Un livrable ne peut pas etre merge si un seul point est manquant :
 - Contrat API aligne (`02_API_CONTRATS_COMPLET.md` + OpenAPI si endpoint public)
 - Changelog et journal mis a jour
 - Risques d'exploitation documentes (rollback ou runbook impacte)
+
+---
+
+## EXECUTION IMPERATIVE (ANTI-FAIBLESSES RESIDUELLES)
+
+Ces fichiers sont maintenant obligatoires pour l'execution :
+- Index canonique: `docs/GESTION_PROJET/INDEX_CANONIQUE.md`
+- Backlog unique Phase 1: `docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md`
+- Runbooks ops:
+  - `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md`
+  - `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md`
+  - `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md`
+  - `docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md`
+
+Regle:
+- Aucune implementation ne demarre hors backlog unique.
+- Aucune release sans runbook applicable et teste.
