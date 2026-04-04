@@ -11,7 +11,7 @@ Située à la racine du domaine `https://leopardo-rh.com`.
 - **Problématique** : "Marre des feuilles de présence papier ? Des erreurs de paie ?"
 - **Solution** : Présentation des 4 piliers (Pointage, Absences, Paie, Tâches).
 - **Social Proof** : Logos de clients fictifs/réels et témoignages.
-- **Prix (Plans)** : Starter (Gratuit), Business, Enterprise.
+- **Prix (Plans)** : Starter (29€/mois), Business (79€/mois), Enterprise (sur devis). <!-- CORRIGE v4.1.4 : etait "Gratuit" -->
 - **FAQ** : Questions sur la sécurité, le biométrique ZKTeco, etc.
 
 ---

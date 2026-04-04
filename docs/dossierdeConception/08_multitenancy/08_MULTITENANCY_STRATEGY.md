@@ -37,7 +37,6 @@ namespace App\Http\Middleware;
 
 use App\Models\Public\Company;
 use App\Models\Public\UserLookup;
-use App\Scopes\CompanyScope;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -74,9 +73,6 @@ class TenantMiddleware
             // Isolation logique — Global Scope injecte WHERE company_id automatiquement
             DB::statement("SET search_path TO shared_tenants, public");
 
-            // Le Global Scope s'applique à TOUS les modèles Tenant automatiquement
-            // via le trait HasCompanyScope (voir ci-dessous)
-            CompanyScope::setCurrentCompanyId($company->id);
         }
 
         return $next($request);
@@ -86,61 +82,40 @@ class TenantMiddleware
 
 ---
 
-## 3. GLOBAL SCOPE POUR LE MODE SHARED
+## 3. TRAIT UNIQUE POUR LE MODE SHARED (CORRIGE)
 
 ```php
-// app/Scopes/CompanyScope.php
-
-namespace App\Scopes;
-
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Scope;
-
-class CompanyScope implements Scope
-{
-    private static ?string $currentCompanyId = null;
-
-    public static function setCurrentCompanyId(string $id): void
-    {
-        self::$currentCompanyId = $id;
-    }
-
-    public function apply(Builder $builder, Model $model): void
-    {
-        if (self::$currentCompanyId !== null) {
-            $builder->where('company_id', self::$currentCompanyId);
-        }
-    }
-}
-```
-
-```php
-// app/Traits/HasCompanyScope.php
+// app/Traits/BelongsToCompany.php
 
 namespace App\Traits;
 
-use App\Scopes\CompanyScope;
+use Illuminate\Database\Eloquent\Builder;
 
-trait HasCompanyScope
+trait BelongsToCompany
 {
-    protected static function bootHasCompanyScope(): void
+    protected static function bootBelongsToCompany(): void
     {
-        static::addGlobalScope(new CompanyScope());
-    }
+        // Scope automatique en mode shared
+        static::addGlobalScope('company', function (Builder $builder) {
+            if (app()->bound('current_company')) {
+                $builder->where('company_id', app('current_company')->id);
+            }
+        });
 
-    // Lors d'un CREATE en mode shared, injecter automatiquement company_id
-    protected static function bootHasCompanyId(): void
-    {
+        // Injection automatique de company_id à la création
         static::creating(function ($model) {
-            $company = app('current_company');
-            if ($company && $company->tenancy_type === 'shared' && !$model->company_id) {
-                $model->company_id = $company->id;
+            if (app()->bound('current_company') && empty($model->company_id)) {
+                $company = app('current_company');
+                if ($company->tenancy_type === 'shared') {
+                    $model->company_id = $company->id;
+                }
             }
         });
     }
 }
 ```
+
+Ce design elimine le bug du double boot (`bootHasCompanyScope` + `bootHasCompanyId`).
 
 ---
 
@@ -151,12 +126,12 @@ trait HasCompanyScope
 
 namespace App\Models\Tenant;
 
-use App\Traits\HasCompanyScope;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
-    use HasCompanyScope;  // ← OBLIGATOIRE sur tous les modèles Tenant
+    use BelongsToCompany;  // obligatoire sur tous les modeles Tenant
 
     protected $table = 'employees';
 
@@ -167,7 +142,7 @@ class Employee extends Model
         'salary_base', 'iban', 'contract_type',
         'hire_date', 'contract_end_date',
         'leave_balance', 'photo_path',
-        'is_active', 'password_hash',
+        'status', 'password_hash',  // corrige v4.1.4 : is_active -> status (voir SQL)
         // company_id : présent en DB shared, ignoré en mode schema
     ];
 
@@ -178,7 +153,7 @@ class Employee extends Model
         'contract_end_date' => 'date',
         'salary_base'       => 'decimal:2',
         'leave_balance'     => 'decimal:1',
-        'is_active'         => 'boolean',
+        'status'            => 'string',   // corrige v4.1.4 : 'active'|'suspended'|'archived'
     ];
 }
 ```
@@ -343,16 +318,16 @@ leopardo_db (PostgreSQL 16)
 
 ```sql
 -- Dans le schéma public
+-- CORRIGE v4.1.4 : aligne sur 07_SCHEMA_SQL_COMPLET.sql (email = PK, pas id SERIAL)
 CREATE TABLE user_lookups (
-    id          SERIAL      PRIMARY KEY,
-    email       VARCHAR(150) NOT NULL UNIQUE,
-    company_id  UUID        NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    employee_id INT         NOT NULL,
-    role        VARCHAR(20)  NOT NULL,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    email       VARCHAR(150) PRIMARY KEY,
+    company_id  UUID         NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    schema_name VARCHAR(63)  NOT NULL,
+    employee_id INT          NOT NULL,
+    role        VARCHAR(20)  NOT NULL
 );
 
-CREATE INDEX idx_user_lookups_email ON user_lookups(email);
+CREATE INDEX idx_user_lookups_company ON user_lookups(company_id);
 ```
 
 **Pourquoi ?**

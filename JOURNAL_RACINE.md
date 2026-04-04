@@ -12,6 +12,8 @@ Ce journal trace les opérations transverses du repo (structure, documentation, 
 | 2026-04-04 | Codex | Harmonisation versionning | Docs pilotage + changelog | Alignement des entetes vers baseline programme v4.1.1 et correction compteur API de reference |
 | 2026-04-04 | Codex | Suppression des 4 faiblesses residuelles | Index canonique, backlog unique, runbooks, CI gates | Verrouillage execution (anti-confusion, anti-derapage, anti-regression) en v4.1.3 |
 | 2026-04-04 | Codex | Durcissement execution | PR template, branch protection spec, checker local, drills log | Passage de la gouvernance documentaire a un controle operationnel concret (v4.1.4) |
+| 2026-04-04 | Codex | Normalisation finale coherence | Pilotage/OpenAPI/Multitenancy | PROGRAM_VERSION fixe a 4.1.4, retrait propre de /auth/refresh OpenAPI, correction doc trait BelongsToCompany |
+| 2026-04-04 | Antigravity | Restructuration globale (v4.1.4) | `PILOTAGE.md`, `GARDE_FOUS.md`, `v3/prompts` | Source de vérité unique activée, prompts MVP v3, scope verrouillé |
 
 ## Template d'entrée
 

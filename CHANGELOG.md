@@ -2,6 +2,49 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+
+## Convention de versioning (active a partir de 4.1.4)
+
+```
+PROGRAM_VERSION  = Version globale projet/pilotage (PILOTAGE.md fait foi)
+DOC_VERSION      = Version propre de chaque document technique
+CODE_VERSION     = Version release applicative (git tag)
+```
+
+---
+
+## [ARCHIVE-NOTE] - 2026-04-04
+### Restructuration gouvernance (historique, nomenclature retiree)
+
+**Gouvernance :**
+- Nouveau fichier maître unique : `PILOTAGE.md` (remplace ORCHESTRATION_MAITRE, INDEX_CANONIQUE, CONTEXTE_SESSION, CONTINUE, JOURNAL_DE_BORD, BACKLOG)
+- Nouveau fichier règles : `docs/GESTION_PROJET/GARDE_FOUS.md` (8 garde-fous)
+- Nouveau fichier corrections : `docs/GESTION_PROJET/CORRECTIONS.md`
+- Convention de versioning : PROGRAM_VERSION / DOC_VERSION / CODE_VERSION
+- 7 fichiers marqués 📦 HISTORIQUE avec bannière interdisant l'utilisation comme instruction
+
+**Filière prompts :**
+- Nouvelle filière active : `docs/PROMPTS_EXECUTION/v3/MVP-01 à MVP-06` (6 prompts)
+- Ancienne filière `v2/CC-*` et `v2/JU-*` marquée LEGACY (non exécutable)
+- Réduction de 10 prompts backend + patches → 6 prompts MVP unifiés
+
+**Corrections documentaires appliquées (Sprint 0) :**
+- C-1 : Supprimé `/auth/refresh` de `api/openapi.yaml` (obsolète depuis v4.0.3)
+- C-2 : Corrigé `is_active` → `status` dans `08_MULTITENANCY_STRATEGY.md`
+- C-3 : Aligné `user_lookups` PK = email dans `08_MULTITENANCY_STRATEGY.md` (conforme au SQL)
+- C-4 : Corrigé "Starter Gratuit" → "Starter 29€/mois" dans `18_MARKETING_ET_VENTES.md`
+- C-6 : Déplacé `AUDIT_COMPLET_MANQUES.md` → `docs/notes/archive/`
+- C-7 : Supprimé répertoire vide `bon-fixed/`
+- C-5 (trait HasCompanyScope bug double boot) : documenté, sera corrigé en MVP-01
+
+**Scope MVP verrouillé :**
+- ~15 endpoints (vs 82+ en vision complète)
+- 2 rôles (vs 7)
+- 1 langue, 1 pays
+- Mode shared uniquement (pas de schéma)
+- File cache/sync queue (pas Redis/Horizon)
+- Blade + Alpine.js (pas Vue.js/Inertia)
+
 ---
 
 ## [4.1.4] - 2026-04-04
@@ -14,6 +57,10 @@
 - Added operational blockers + next actions tracker: `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md`
 - CI governance gate extended to enforce existence of these execution-control files
 - `ORCHESTRATION_MAITRE.md` updated with imperative references to new control files
+- Normalisation governance appliquee sans bump de version programme:
+  - `PROGRAM_VERSION` harmonise a `4.1.4` dans les fichiers de pilotage actifs/historiques
+  - nettoyage OpenAPI: suppression du bloc commente `/auth/refresh`
+  - correction multitenancy doc: remplacement du pattern `HasCompanyScope` (double boot) par `BelongsToCompany`
 
 ---
 
