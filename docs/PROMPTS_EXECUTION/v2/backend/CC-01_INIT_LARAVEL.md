@@ -73,7 +73,7 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 ## ÉTAPE 3 — Copier et configurer .env
 
 ```bash
-cp docs/PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md /dev/null  # référence seulement
+cp docs/PROMPTS_EXECUTION/v2/backend/CC-01_INIT_LARAVEL.md /dev/null  # référence seulement
 cp api/.env.example .env
 php artisan key:generate
 ```

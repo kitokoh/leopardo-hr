@@ -234,7 +234,7 @@ Héritent d'un `TenantModel` qui n'a PAS de `$connection` fixe (le search_path e
 ### 5. Controllers
 
 ```
-app/Http/Controllers/Auth/AuthController.php      → login, logout, refresh, me
+app/Http/Controllers/Auth/AuthController.php      → login, logout, me
 app/Http/Controllers/Auth/RegisterController.php  → store (POST /public/register)
 app/Http/Controllers/Auth/PasswordController.php  → forgot, reset
 app/Http/Controllers/Auth/DeviceController.php    → fcm store/destroy

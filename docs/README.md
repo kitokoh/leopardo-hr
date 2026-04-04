@@ -33,9 +33,9 @@ docs/
 
 | Prompt | Pour |
 |--------|------|
-| `PROMPTS_EXECUTION/ORCHESTRATION/ORCHESTRATION_MAITRE.md` | Tableau de bord global |
-| `PROMPTS_EXECUTION/backend/CC-01_INIT_LARAVEL.md` | Démarrer le backend |
-| `PROMPTS_EXECUTION/backend/CC-02_MODULE_AUTH.md` | Module Auth |
-| `PROMPTS_EXECUTION/backend/CC-03_A_CC-06_MODULES.md` | Modules métier |
-| `PROMPTS_EXECUTION/mobile/JU-01_A_JU-04_FLUTTER.md` | App Flutter |
-| `PROMPTS_EXECUTION/frontend/CU-01_ET_AGENTS.md` | Frontend Vue.js |
+| `PROMPTS_EXECUTION/ORCHESTRATION/CONTINUE.md` | Tableau de bord global |
+| `PROMPTS_EXECUTION/v2/backend/CC-01_INIT_LARAVEL.md` | Démarrer le backend |
+| `PROMPTS_EXECUTION/v2/backend/CC-02_MODULE_AUTH.md` | Module Auth |
+| `PROMPTS_EXECUTION/v2/backend/CC-03_A_CC-06_MODULES.md` | Modules métier |
+| `PROMPTS_EXECUTION/v2/mobile/JU-01_A_JU-04_FLUTTER.md` | App Flutter |
+| `PROMPTS_EXECUTION/v2/frontend/CU-01_ET_AGENTS.md` | Frontend Vue.js |

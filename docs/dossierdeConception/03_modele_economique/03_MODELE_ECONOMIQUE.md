@@ -65,6 +65,46 @@ ENTERPRISE (199€) :
 
 ---
 
+## PRICING MULTI-DEVISES (Phase 1)
+
+### Taux de référence (à mettre à jour trimestriellement)
+| EUR | DZD | MAD | TND | TRY |
+|-----|-----|-----|-----|-----|
+| 1   | 145 | 10.8| 3.3 | 36  |
+
+### Prix affichés par pays (arrondis pour lisibilité)
+
+| Plan | EUR | DZD | MAD | TND |
+|------|-----|-----|-----|-----|
+| Starter | 29€ | 4 200 DA | 315 MAD | 96 TND |
+| Business | 79€ | 11 500 DA | 855 MAD | 261 TND |
+| Enterprise | 199€ | 29 000 DA | 2 150 MAD | 657 TND |
+
+### TVA et fiscalité locale
+| Pays | TVA | Règle |
+|------|-----|-------|
+| Algérie | 19% | TVA sur services numériques étrangers — à ajouter sur facture |
+| Maroc | 20% | TVA normale — applicable |
+| Tunisie | 19% | TVA normale — applicable |
+| France | 20% | TVA normale — applicable |
+| Turquie | 20% | KDV — applicable |
+
+### Note Phase 1
+- Facturation en EUR uniquement (simplifie la comptabilité Phase 1)
+- Prix locaux affichés à titre indicatif sur la landing page
+- Facture émise en EUR avec mention du taux de change du jour
+- Phase 2 : facturation native en devise locale via Paydunya (Afrique)
+  et Iyzico (Turquie)
+
+### Conformité
+- Algérie : Loi 18-07 sur la protection des données personnelles
+- Maroc : Loi 09-08
+- France : RGPD
+- Note : Ces conformités sont déjà couvertes par le chiffrement
+  national_id (AES-256) documenté dans 12_SECURITY_SPEC_COMPLETE.md
+
+---
+
 ## 3. STRATÉGIE DE MULTITENANCY LIÉE AUX PLANS
 
 **Règle simple et non ambiguë :**

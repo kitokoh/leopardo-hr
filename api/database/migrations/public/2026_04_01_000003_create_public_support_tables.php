@@ -36,7 +36,7 @@ return new class extends Migration
         Schema::create('user_lookups', function (Blueprint $table) {
             $table->string('email', 150)->primary();
             $table->uuid('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->string('schema_name', 60);                      // Dupliqué pour éviter JOIN
+            $table->string('schema_name', 63);                      // Dupliqué pour éviter JOIN
             $table->unsignedInteger('employee_id');                 // ID dans le schéma tenant
             $table->string('role', 20);                             // Cache du rôle (lecture rapide)
 

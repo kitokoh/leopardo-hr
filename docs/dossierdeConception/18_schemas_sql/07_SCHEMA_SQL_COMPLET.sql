@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS companies (
     phone               VARCHAR(30)     NULL,
     logo_path           VARCHAR(255)    NULL,
     plan_id             INT             NOT NULL REFERENCES plans(id),
-    schema_name         VARCHAR(60)     NOT NULL UNIQUE, -- ex: "company_7c9e6679"
+    schema_name         VARCHAR(63)     NOT NULL UNIQUE, -- ex: "company_7c9e6679"
     tenancy_type        VARCHAR(20)     NOT NULL DEFAULT 'shared'
                             CHECK (tenancy_type IN ('schema','shared')),
     status              VARCHAR(20)     NOT NULL DEFAULT 'trial'
@@ -128,9 +128,10 @@ CREATE INDEX idx_btrans_invoice_id ON billing_transactions(invoice_id);
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS languages (
     id          SERIAL          PRIMARY KEY,
-    code        CHAR(5)         NOT NULL UNIQUE,  -- 'fr','ar','tr','en'
-    name        VARCHAR(50)     NOT NULL,
-    direction   VARCHAR(3)      NOT NULL DEFAULT 'ltr' CHECK (direction IN ('ltr','rtl')),
+    code        CHAR(2)         NOT NULL UNIQUE,  -- 'fr','ar','tr','en'
+    name_fr     VARCHAR(50)     NOT NULL,
+    name_native VARCHAR(50)     NOT NULL,
+    is_rtl      BOOLEAN         NOT NULL DEFAULT FALSE,
     is_active   BOOLEAN         NOT NULL DEFAULT TRUE
 );
 
@@ -153,7 +154,7 @@ CREATE TABLE IF NOT EXISTS hr_model_templates (
 CREATE TABLE IF NOT EXISTS user_lookups (
     email           VARCHAR(150)    PRIMARY KEY,
     company_id      UUID            NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    schema_name     VARCHAR(60)     NOT NULL,
+    schema_name     VARCHAR(63)     NOT NULL,
     employee_id     INT             NOT NULL, -- ID de l'employé dans son schéma tenant (aligné ERD)
     role            VARCHAR(20)     NOT NULL
 );
@@ -348,6 +349,9 @@ BEGIN
         id                  BIGSERIAL       PRIMARY KEY,
         company_id          UUID            NULL,
         employee_id         INT             NOT NULL REFERENCES %I.employees(id),
+        schedule_id         INT             NULL REFERENCES %I.schedules(id) ON DELETE SET NULL,
+        -- Planning actif AU MOMENT du pointage — snapshot obligatoire
+        -- NULL si le planning a été supprimé depuis
         date                DATE            NOT NULL,
         session_number      SMALLINT        NOT NULL DEFAULT 1,  -- 1 = session principale, 2 = split-shift
         check_in            TIMESTAMPTZ     NULL,   -- horodatage serveur UTC
@@ -367,7 +371,7 @@ BEGIN
         edit_reason         TEXT            NULL,
         created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
         UNIQUE (employee_id, date, session_number)
-    )', p_schema_name, p_schema_name, p_schema_name);
+    )', p_schema_name, p_schema_name, p_schema_name, p_schema_name);
 
     EXECUTE format('CREATE INDEX idx_att_date_status ON %I.attendance_logs(date, status)', p_schema_name);
     EXECUTE format('CREATE INDEX idx_att_emp_date    ON %I.attendance_logs(employee_id, date DESC)', p_schema_name);
@@ -507,6 +511,7 @@ BEGIN
 
     EXECUTE format('CREATE INDEX idx_tasks_status_due ON %I.tasks(status, due_date)', p_schema_name);
     EXECUTE format('CREATE INDEX idx_tasks_assigned   ON %I.tasks USING GIN(assigned_to)', p_schema_name);
+    EXECUTE format('CREATE INDEX IF NOT EXISTS idx_proj_members ON %I.projects USING GIN(members)', p_schema_name);
 
     -- --------------------------------------------------------
     -- task_comments
@@ -546,6 +551,10 @@ BEGIN
 
     -- --------------------------------------------------------
     -- payrolls
+    -- net_salary = gross_salary + overtime_amount + bonuses
+    --            - cotisations - ir_amount
+    --            - advance_deduction - absence_deduction - penalty_deduction
+    --            - autres deductions JSONB
     -- --------------------------------------------------------
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %I.payrolls (
@@ -562,6 +571,7 @@ BEGIN
         ir_amount           DECIMAL(12,2)   NOT NULL DEFAULT 0,
         advance_deduction   DECIMAL(12,2)   NOT NULL DEFAULT 0,
         absence_deduction   DECIMAL(12,2)   NOT NULL DEFAULT 0,
+        penalty_deduction   DECIMAL(12,2)   NOT NULL DEFAULT 0,
         net_salary          DECIMAL(12,2)   NOT NULL DEFAULT 0,
         pdf_path            VARCHAR(255)    NULL,
         status              VARCHAR(10)     NOT NULL DEFAULT ''draft''
@@ -612,6 +622,10 @@ BEGIN
                         CHECK (value_type IN (''string'',''integer'',''boolean'',''json'',''decimal'')),
         updated_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW()
     )', p_schema_name);
+    EXECUTE format('
+        COMMENT ON TABLE %I.company_settings IS
+        ''Clés valides documentées dans docs/dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql section PARAMÈTRES COMPANY_SETTINGS PAR DÉFAUT. Toute nouvelle clé doit être ajoutée à TenantService.getDefaultSettings() ET documentée ici. Ne jamais insérer une clé non documentée.''
+    ', p_schema_name);
 
     -- --------------------------------------------------------
     -- audit_logs
@@ -691,10 +705,16 @@ $$ LANGUAGE plpgsql;
 --   ('leave.max_balance',              '60',     'decimal'),
 --   ('leave.validation_levels',        '1',      'integer'),
 --   ('leave.min_notice_days',          '3',      'integer'),
+--   ('onboarding.mode',                'standard', 'string'),
+--   -- 'standard' | 'quickstart' | 'enterprise'
 --   ('payroll.cotisations',            '[]',     'json'),
 --   ('payroll.ir_brackets',            '[]',     'json'),
 --   ('payroll.overtime_rate_1',        '1.25',   'decimal'),
 --   ('payroll.overtime_rate_2',        '1.50',   'decimal'),
+--   ('payroll.penalty_mode',           'proportional', 'string'),
+--   ('payroll.penalty_brackets',       '[]',     'json'),
+--   -- 'proportional' = Mode A | 'bracket' = Mode B
+--   -- Format: [{"min":16,"max":30,"deduct_hours":0.5},{"min":31,"max":60,"deduct_hours":1}]
 --   ('payroll.bank_export_format',     'GENERIC_CSV', 'string'),
 --   ('tasks.enabled',                  'true',   'boolean'),
 --   ('evaluations.auto_enabled',       'false',  'boolean'),

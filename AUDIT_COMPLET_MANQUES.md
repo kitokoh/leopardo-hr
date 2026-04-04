@@ -1,3 +1,10 @@
+⚠️ CE FICHIER EST ARCHIVÉ — NE PLUS UTILISER COMME RÉFÉRENCE D'ÉTAT
+Remplacé par ORCHESTRATION_MAITRE.md v3.3.1+
+Les manques listés ici ont été comblés dans les versions 3.3.0 à 3.3.2.
+Conservé uniquement pour la traçabilité historique.
+
+---
+
 # CE QUI MANQUE — LEOPARDO RH
 # Audit complet au stade actuel | Mars 2026
 # À compléter AVANT ou PENDANT le démarrage du code

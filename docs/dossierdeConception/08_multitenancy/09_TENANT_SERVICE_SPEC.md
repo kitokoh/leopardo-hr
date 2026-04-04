@@ -11,6 +11,12 @@ TenantService orchestre la création complète d'une nouvelle entreprise cliente
 Les 7 étapes s'exécutent dans une **transaction PostgreSQL unique** :
 si une étape échoue, tout est rollback — jamais d'état partiel en production.
 
+## CONTRAT SETTINGS (SOURCE DE VÉRITÉ)
+
+- La méthode `getDefaultSettings()` est la SOURCE DE VÉRITÉ des clés valides.
+- Toute lecture de settings doit passer par `SettingsService::get(key, default)`.
+- Ne jamais retourner `null` sans défaut explicite.
+
 ---
 
 ## IMPLÉMENTATION COMPLÈTE
