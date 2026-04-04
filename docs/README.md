@@ -1,6 +1,6 @@
-# LEOPARDO RH — Documentation Technique
-## Source de verite conception | Version 4.1.1 | Avril 2026
-## Reference programme: v4.1.1
+﻿# LEOPARDO RH — Documentation Technique
+## Source de vérité conception | Version 4.1.5 | Avril 2026
+## Référence programme: v4.1.5 (`PILOTAGE.md` fait foi)
 
 ---
 
@@ -34,9 +34,8 @@ docs/
 
 | Prompt | Pour |
 |--------|------|
-| `PROMPTS_EXECUTION/ORCHESTRATION/CONTINUE.md` | Tableau de bord global |
-| `PROMPTS_EXECUTION/v2/backend/CC-01_INIT_LARAVEL.md` | Démarrer le backend |
-| `PROMPTS_EXECUTION/v2/backend/CC-02_MODULE_AUTH.md` | Module Auth |
-| `PROMPTS_EXECUTION/v2/backend/CC-03_A_CC-06_MODULES.md` | Modules métier |
-| `PROMPTS_EXECUTION/v2/mobile/JU-01_A_JU-04_FLUTTER.md` | App Flutter |
-| `PROMPTS_EXECUTION/v2/frontend/CU-01_ET_AGENTS.md` | Frontend Vue.js |
+| `PROMPTS_EXECUTION/v3/MVP-0*_*.md` | Filière **ACTIVE** (MVP) |
+| `PROMPTS_EXECUTION/v2/backend/CC-*.md` | Legacy (lecture seule — ne pas exécuter) |
+| `PROMPTS_EXECUTION/v2/mobile/JU-*.md` | Legacy (lecture seule — ne pas exécuter) |
+| `PROMPTS_EXECUTION/v2/frontend/CU-*.md` | Legacy (lecture seule — ne pas exécuter) |
+

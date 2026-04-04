@@ -1,5 +1,5 @@
-# 🐆 LEOPARDO RH — PILOTAGE UNIQUE
-# PROGRAM_VERSION = 4.1.4 | 04 Avril 2026
+﻿# 🐆 LEOPARDO RH — PILOTAGE UNIQUE
+# PROGRAM_VERSION = 4.1.5 | 04 Avril 2026
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -8,7 +8,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.4   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.5   → Version globale du projet/pilotage (ce fichier fait foi)
 DOC_VERSION      = propre   → Chaque doc technique garde sa version interne
                               (ex: ERD v2.0, API v2.1, SQL v1.1)
 CODE_VERSION     = 0.0.0   → Version release applicative (sera 0.1.0 au premier déploiement)
@@ -34,7 +34,7 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ```
 Date MAJ       : 04 Avril 2026
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/)
-Code           : ❌ 0% — prochaine action = SPRINT 1
+Code           : ⚠️ MVP-01 initialise — prochaine action = SPRINT 1 (MVP-02)
 Phase active   : MVP — scope verrouillé ci-dessous
 Objectif       : Premier utilisateur payant en 8 semaines
 ```
@@ -317,3 +317,4 @@ Phase 6 (après 100 clients)   → API publique + Export bancaire + 7 pays
 
 > Les 40+ documents de conception sont le PLAN de l'immeuble complet.
 > On construit étage par étage. Chaque phase utilise les specs déjà écrites.
+

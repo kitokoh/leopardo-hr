@@ -1,4 +1,4 @@
-# CHANGELOG — LEOPARDO RH
+﻿# CHANGELOG — LEOPARDO RH
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
@@ -47,6 +47,16 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.5] - 2026-04-04
+### Hygiene docs + renforcement gouvernance
+
+- Alignement des points d'entrée repo sur `PILOTAGE.md` + prompts `v3` (README + docs/README)
+- `tools/check-governance.ps1` renforcé: inclut `PILOTAGE.md`, `.github/*`, et `docs/GESTION_PROJET/*` comme scope critique
+- Ajout `bon-fixed/` à `.gitignore` (évite le bruit local sur répertoire historique)
+- Normalisation encodage docs sous Windows (UTF-8 BOM sur les `.md` clés + `.editorconfig`)
+
+---
+
 ## [4.1.4] - 2026-04-04
 ### Hardening execution discipline (post-governance)
 
@@ -61,6 +71,11 @@ CODE_VERSION     = Version release applicative (git tag)
   - `PROGRAM_VERSION` harmonise a `4.1.4` dans les fichiers de pilotage actifs/historiques
   - nettoyage OpenAPI: suppression du bloc commente `/auth/refresh`
   - correction multitenancy doc: remplacement du pattern `HasCompanyScope` (double boot) par `BelongsToCompany`
+- MVP-01 execute sans bump de version programme (toujours `4.1.4`):
+  - bootstrap Laravel 11 effectif dans `api/`
+  - ajout fondation multitenancy shared (`BelongsToCompany`, `TenantMiddleware`, routes `/api/v1/*`)
+  - ajout tests `HealthEndpointTest` et `TenantIsolationTest` (verts)
+  - installation dependances MVP backend: `laravel/sanctum`, `barryvdh/laravel-dompdf`
 
 ---
 
@@ -404,3 +419,4 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
+
