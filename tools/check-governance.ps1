@@ -45,7 +45,7 @@ foreach ($f in $requiredFiles) {
 }
 Pass "All required governance files exist."
 
-$criticalPattern = '^(api/|docs/dossierdeConception/|docs/GESTION_PROJET/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1|ORCHESTRATION_MAITRE\.md|08_FEUILLE_DE_ROUTE\.md)'
+$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1|ORCHESTRATION_MAITRE\.md|08_FEUILLE_DE_ROUTE\.md)'
 $requiresChangelog = $false
 foreach ($line in $changed) {
     if ($line -match $criticalPattern) {

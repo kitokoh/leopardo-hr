@@ -65,6 +65,14 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.8] - 2026-04-04
+### CI — Gouvernance unifiée
+
+- CI: `Governance Gates` exécute `tools/check-governance.ps1` (plus de logique bash dupliquée)
+- Scope critique étendu à `mobile/` (PR Flutter ⇒ `CHANGELOG.md` requis)
+
+---
+
 ## [4.1.4] - 2026-04-04
 ### Hardening execution discipline (post-governance)
 
