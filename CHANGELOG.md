@@ -57,6 +57,14 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.6] - 2026-04-04
+### Gouvernance anti-conflits (scribe)
+
+- Ajout règle “scribe” dans `docs/GESTION_PROJET/GARDE_FOUS.md` : un seul agent édite `PILOTAGE.md` + `CHANGELOG.md`
+- Bump `PROGRAM_VERSION` à `4.1.6` dans `PILOTAGE.md`
+
+---
+
 ## [4.1.4] - 2026-04-04
 ### Hardening execution discipline (post-governance)
 

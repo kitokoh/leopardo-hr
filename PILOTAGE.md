@@ -1,5 +1,5 @@
 ﻿# 🐆 LEOPARDO RH — PILOTAGE UNIQUE
-# PROGRAM_VERSION = 4.1.5 | 04 Avril 2026
+# PROGRAM_VERSION = 4.1.6 | 04 Avril 2026
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -8,7 +8,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.5   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.6   → Version globale du projet/pilotage (ce fichier fait foi)
 DOC_VERSION      = propre   → Chaque doc technique garde sa version interne
                               (ex: ERD v2.0, API v2.1, SQL v1.1)
 CODE_VERSION     = 0.0.0   → Version release applicative (sera 0.1.0 au premier déploiement)
