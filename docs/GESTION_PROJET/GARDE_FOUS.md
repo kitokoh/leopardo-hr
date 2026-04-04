@@ -182,6 +182,20 @@ Les deux avancent EN MÊME TEMPS.
 
 ## GARDE-FOU 8 — COMMUNICATION CLAIRE
 
+### Règle scribe (anti-conflits Git)
+```
+Un seul agent IA (désigné “scribe”) a le droit de modifier :
+- PILOTAGE.md
+- CHANGELOG.md
+
+Tous les autres agents IA : interdiction totale d'y toucher.
+
+Process :
+1) Les mises à jour PILOTAGE/CHANGELOG se font uniquement en fin de PR.
+2) Si un agent non-scribe pense qu'un update est nécessaire : il n'édite pas le fichier,
+   il laisse une note claire dans la PR pour que le scribe l'applique.
+```
+
 ### Template de fin de session IA
 
 Chaque session IA DOIT finir par mettre à jour `PILOTAGE.md` :
