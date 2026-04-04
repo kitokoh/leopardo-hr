@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+
+class Employee extends Authenticatable
+{
+    use BelongsToCompany;
+    use HasApiTokens;
+    use HasFactory;
+
+    protected $table = 'employees';
+
+    protected $fillable = [
+        'company_id',
+        'matricule',
+        'first_name',
+        'last_name',
+        'email',
+        'password_hash',
+        'role',
+        'status',
+    ];
+
+    protected $hidden = [
+        'password_hash',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    public function getAuthPassword(): string
+    {
+        return $this->password_hash;
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+}
