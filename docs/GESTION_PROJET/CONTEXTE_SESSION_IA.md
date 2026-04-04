@@ -1,7 +1,8 @@
 # ⚡ CONTEXTE SESSION IA — LEOPARDO RH
 # Copier-coller ce fichier EN DÉBUT de chaque nouvelle session IA
 # Il contient tout ce qu'un agent doit savoir pour travailler sans ambiguïté
-# Version 4.0 | 31 Mars 2026
+# Version 4.1.1 | 04 Avril 2026
+# Reference programme: v4.1.1
 
 ---
 
@@ -21,7 +22,7 @@
 ## ÉTAT ACTUEL (lire JOURNAL_DE_BORD.md pour détail)
 
 ```
-Conception : ✅ TERMINÉE v3.3.3
+Conception : ✅ HARMONISEE v4.1.1
 Code       : ⬜ PAS DÉMARRÉ — prochaine tâche = CC-01
 ```
 

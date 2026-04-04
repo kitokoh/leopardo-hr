@@ -4,6 +4,22 @@
 
 ---
 
+## [4.1.2] - 2026-04-04
+### Harmonisation versionning programme
+
+- Alignement des fichiers de pilotage sur `v4.1.1` :
+  - `08_FEUILLE_DE_ROUTE.md`
+  - `CU-01_ET_AGENTS.md`
+  - `ARBORESCENCE_PROJET_COMPLET.md`
+  - `docs/README.md`
+  - `docs/GESTION_PROJET/CONTEXTE_SESSION_IA.md`
+  - `docs/GESTION_PROJET/JOURNAL_DE_BORD.md`
+  - `docs/GESTION_PROJET/SUIVI_PROMPTS.md`
+- Mise a jour du repere `Conception` dans le contexte/session vers baseline harmonisee `v4.1.1`
+- Correction du compteur API de reference dans `docs/README.md` (`70` -> `82`)
+
+---
+
 ## [4.1.1] - 2026-04-04
 ### Renforcement gouvernance, coherence et pilotage
 
