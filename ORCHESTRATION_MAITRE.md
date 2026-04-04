@@ -126,11 +126,16 @@ Un livrable ne peut pas etre merge si un seul point est manquant :
 Ces fichiers sont maintenant obligatoires pour l'execution :
 - Index canonique: `docs/GESTION_PROJET/INDEX_CANONIQUE.md`
 - Backlog unique Phase 1: `docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md`
+- Blockers et next actions: `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md`
 - Runbooks ops:
   - `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md`
   - `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md`
   - `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md`
   - `docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md`
+  - `docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md`
+- PR discipline:
+  - `.github/PULL_REQUEST_TEMPLATE.md`
+  - `.github/BRANCH_PROTECTION_REQUIRED.md`
 
 Regle:
 - Aucune implementation ne demarre hors backlog unique.

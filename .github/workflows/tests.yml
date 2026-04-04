@@ -143,6 +143,10 @@ jobs:
           test -f docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md
           test -f docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md
           test -f docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md
+          test -f docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md
+          test -f docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md
+          test -f .github/PULL_REQUEST_TEMPLATE.md
+          test -f .github/BRANCH_PROTECTION_REQUIRED.md
 
   notify:
     name: Notify Result
