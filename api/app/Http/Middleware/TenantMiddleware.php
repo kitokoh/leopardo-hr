@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class TenantMiddleware
@@ -14,17 +15,32 @@ class TenantMiddleware
         $employee = $request->user();
 
         if (! $employee) {
-            return new JsonResponse(['error' => 'UNAUTHENTICATED'], 401);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return new JsonResponse(['error' => 'UNAUTHENTICATED'], 401);
+            }
+
+            /** @var RedirectResponse $response */
+            $response = redirect()->route('login');
+
+            return $response;
         }
 
         $company = $employee->company;
 
         if (! $company) {
-            return new JsonResponse(['error' => 'COMPANY_NOT_FOUND'], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return new JsonResponse(['error' => 'COMPANY_NOT_FOUND'], 403);
+            }
+
+            abort(403);
         }
 
         if (in_array($company->status, ['suspended', 'expired'], true)) {
-            return new JsonResponse(['error' => 'ACCOUNT_SUSPENDED'], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return new JsonResponse(['error' => 'ACCOUNT_SUSPENDED'], 403);
+            }
+
+            abort(403);
         }
 
         $request->attributes->set('company', $company);

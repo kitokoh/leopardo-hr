@@ -112,6 +112,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.14] - 2026-04-05
+### MVP-05 — Dashboard Web (Blade + Alpine.js)
+
+- Ajout auth web (session) : `/login` → `/dashboard` (manager only)
+- Ajout dashboard manager : présence du jour + total estimé + retard + table employés
+- Ajout page employé : quick estimate (Alpine) + téléchargement PDF + historique 30 derniers logs
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 
