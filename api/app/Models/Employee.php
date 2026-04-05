@@ -40,6 +40,11 @@ class Employee extends Authenticatable
         return $this->password_hash;
     }
 
+    public function isManager(): bool
+    {
+        return $this->role === 'manager';
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
