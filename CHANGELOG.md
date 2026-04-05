@@ -92,6 +92,19 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.12] - 2026-04-05
+### MVP-04 — Estimation rapide + Reçu PDF
+
+- Ajout endpoints estimation:
+  - `GET /api/v1/employees/{id}/daily-summary`
+  - `GET /api/v1/employees/{id}/quick-estimate` (manager only)
+  - `GET /api/v1/employees/{id}/receipt` (PDF, manager only)
+- Calcul estimation (MVP): base + heures sup (taux 1.25), déduction DZ 9% (CNAS)
+- Ajout template PDF avec disclaimer "NON OFFICIEL"
+- Ajout tests feature estimation + mise à jour schema de tests
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AttendanceController;
+use App\Http\Controllers\Api\V1\EstimationController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,10 @@ Route::prefix('v1')->group(function (): void {
         Route::put('/employees/{employee}', [EmployeeController::class, 'update']);
         Route::patch('/employees/{employee}', [EmployeeController::class, 'update']);
         Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive']);
+
+        Route::get('/employees/{employee}/daily-summary', [EstimationController::class, 'dailySummary']);
+        Route::get('/employees/{employee}/quick-estimate', [EstimationController::class, 'quickEstimate']);
+        Route::get('/employees/{employee}/receipt', [EstimationController::class, 'receipt']);
 
         Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
         Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);

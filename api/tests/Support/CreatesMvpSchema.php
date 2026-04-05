@@ -44,6 +44,9 @@ trait CreatesMvpSchema
             $table->string('last_name', 100)->nullable();
             $table->string('email', 150)->unique();
             $table->string('password_hash', 255);
+            $table->string('salary_type', 20)->default('fixed');
+            $table->decimal('salary_base', 10, 2)->default(0);
+            $table->decimal('hourly_rate', 10, 2)->default(0);
             $table->string('role', 20)->default('employee');
             $table->string('status', 20)->default('active');
             $table->timestamps();
