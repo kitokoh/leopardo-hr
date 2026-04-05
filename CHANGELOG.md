@@ -129,6 +129,39 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.16] - 2026-04-05
+### Beta — Hardening auth web manager
+
+- Blocage du login web pour les comptes employe, inactifs, ou rattaches a une societe suspendue/expiree
+- Ajout de tests feature web pour la redirection guest, le login manager et les refus d'acces Beta
+
+---
+
+## [4.1.17] - 2026-04-05
+### Beta — Web polish et couverture manager
+
+- Correction des libelles web corrompus dans les vues Blade du dashboard et de la fiche employe
+- Ajout de tests feature pour l'acces manager au dashboard, au detail employe, au quick estimate et au PDF
+- Correction isolation tenant sur les routes web employe: resolution de l'employe apres `TenantMiddleware`, pas via route model binding
+
+---
+
+## [4.1.18] - 2026-04-05
+### Beta — Config MVP par defaut
+
+- Alignement des fallbacks Laravel sur le MVP reel: `SESSION_DRIVER=file`, `CACHE_STORE=file`, `QUEUE_CONNECTION=sync`
+- Remplacement de `api/.env.example` pour retirer les defaults Redis/Horizon et autres options hors scope Beta
+
+---
+
+## [4.1.19] - 2026-04-05
+### Beta — Docs deploiement alignees MVP
+
+- Mise a jour de `api/README.md` pour refleter le stack MVP reel et les checks utiles
+- Mise a jour de `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` avec verifications post-deploy web, PDF et session
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 
