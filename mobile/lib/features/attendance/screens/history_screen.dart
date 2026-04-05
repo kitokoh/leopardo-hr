@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/features/attendance/providers/attendance_provider.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+  const HistoryScreen({super.key});
 
   @override
   ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
@@ -134,7 +134,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: statusColor.withOpacity(0.2),
+                        backgroundColor: statusColor.withValues(alpha: 0.2),
                         child: Icon(Icons.circle, color: statusColor, size: 12),
                       ),
                       title: Text('${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}'),

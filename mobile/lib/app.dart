@@ -8,7 +8,7 @@ import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 
 class LeopardoApp extends ConsumerWidget {
-  const LeopardoApp({Key? key}) : super(key: key);
+  const LeopardoApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

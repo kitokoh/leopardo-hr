@@ -6,6 +6,7 @@ class AttendanceLog {
   final DateTime? checkOut;
   final String status;
   final double? workedHours;
+  final double? overtimeHours;
 
   AttendanceLog({
     required this.id,
@@ -15,17 +16,22 @@ class AttendanceLog {
     this.checkOut,
     required this.status,
     this.workedHours,
+    this.overtimeHours,
   });
 
   factory AttendanceLog.fromJson(Map<String, dynamic> json) {
+    final hoursRaw = json['hours_worked'] ?? json['worked_hours'] ?? json['workedHours'];
+    final overtimeRaw = json['overtime_hours'] ?? json['overtimeHours'];
+
     return AttendanceLog(
-      id: json['id'],
-      employeeId: json['employee_id'],
-      date: DateTime.parse(json['date']),
+      id: (json['id'] ?? 0) as int,
+      employeeId: (json['employee_id'] ?? json['employeeId']) as int,
+      date: DateTime.parse((json['date'] ?? DateTime.now().toIso8601String()) as String),
       checkIn: json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
       checkOut: json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
-      status: json['status'],
-      workedHours: json['worked_hours'] != null ? (json['worked_hours'] as num).toDouble() : null,
+      status: (json['status'] ?? 'incomplete') as String,
+      workedHours: hoursRaw != null ? (hoursRaw as num).toDouble() : null,
+      overtimeHours: overtimeRaw != null ? (overtimeRaw as num).toDouble() : null,
     );
   }
 }
