@@ -10,7 +10,9 @@ trait CreatesMvpSchema
     protected function setUpMvpSchema(): void
     {
         Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('attendance_logs');
         Schema::dropIfExists('employees');
+        Schema::dropIfExists('schedules');
         Schema::dropIfExists('companies');
 
         Schema::create('companies', function (Blueprint $table): void {
@@ -36,6 +38,7 @@ trait CreatesMvpSchema
         Schema::create('employees', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id');
+            $table->unsignedInteger('schedule_id')->nullable();
             $table->string('matricule', 20)->nullable();
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
@@ -44,6 +47,40 @@ trait CreatesMvpSchema
             $table->string('role', 20)->default('employee');
             $table->string('status', 20)->default('active');
             $table->timestamps();
+        });
+
+        Schema::create('schedules', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('name', 100);
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
+            $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);
+            $table->boolean('is_default')->default(false);
+            $table->timestamps();
+        });
+
+        Schema::create('attendance_logs', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('employee_id');
+            $table->unsignedInteger('schedule_id')->nullable();
+            $table->date('date');
+            $table->smallInteger('session_number')->default(1);
+            $table->timestampTz('check_in')->nullable();
+            $table->timestampTz('check_out')->nullable();
+            $table->string('method', 20)->default('mobile');
+            $table->string('status', 20)->default('incomplete');
+            $table->decimal('hours_worked', 5, 2)->nullable();
+            $table->decimal('overtime_hours', 5, 2)->default(0);
+            $table->unsignedSmallInteger('late_minutes')->default(0);
+            $table->decimal('gps_lat', 10, 8)->nullable();
+            $table->decimal('gps_lng', 11, 8)->nullable();
+            $table->timestamps();
+
+            $table->unique(['employee_id', 'date', 'session_number']);
+            $table->index(['employee_id', 'date']);
         });
 
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
@@ -62,8 +99,9 @@ trait CreatesMvpSchema
     {
         app()->forgetInstance('current_company');
         Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('attendance_logs');
         Schema::dropIfExists('employees');
+        Schema::dropIfExists('schedules');
         Schema::dropIfExists('companies');
     }
 }
-
