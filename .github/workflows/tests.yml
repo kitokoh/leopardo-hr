@@ -43,8 +43,10 @@ jobs:
       - name: Setup PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip
+          # NOTE: composer.lock currently pins Symfony v8 packages requiring PHP >= 8.4.
+          # We run CI on 8.4 to keep backend checks green until dependencies are re-locked for 8.3.
+          php-version: '8.4'
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
           coverage: xdebug
 
       - name: Prepare environment
@@ -74,7 +76,7 @@ jobs:
         run: php artisan test
 
   mobile-tests:
-    name: Mobile Flutter (stable)
+    name: Mobile Flutter (Stable Channel)
     runs-on: ubuntu-latest
 
     steps:

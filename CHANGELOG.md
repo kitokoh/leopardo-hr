@@ -65,6 +65,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.9] - 2026-04-04
+### CI — Stabilisation des checks PR
+
+- Backend CI: ajout `gd` aux extensions PHP (dépendance requise par `barryvdh/laravel-dompdf`)
+- Backend CI: exécution temporaire sous PHP 8.4 (le `composer.lock` actuel exige Symfony v8 → PHP >= 8.4)
+- Mobile CI: alignement du nom du job sur `Mobile Flutter (Stable Channel)` (conforme aux règles de protection de branche)
+
+---
+
 ## [4.1.8] - 2026-04-04
 ### CI — Gouvernance unifiée
 
