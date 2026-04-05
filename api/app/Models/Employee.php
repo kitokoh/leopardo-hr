@@ -24,6 +24,9 @@ class Employee extends Authenticatable
         'last_name',
         'email',
         'password_hash',
+        'salary_type',
+        'salary_base',
+        'hourly_rate',
         'role',
         'status',
     ];

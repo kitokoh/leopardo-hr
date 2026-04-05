@@ -31,3 +31,7 @@ api/storage/app/public/
 *.swp
 .DS_Store
 
+# Git worktrees (local only)
+.ci-worktree/
+.mobile-worktree/
+
