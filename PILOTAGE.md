@@ -1,5 +1,5 @@
 ﻿# 🐆 LEOPARDO RH — PILOTAGE UNIQUE
-# PROGRAM_VERSION = 4.1.6 | 04 Avril 2026
+# PROGRAM_VERSION = 4.1.14 | 05 Avril 2026
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -8,7 +8,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.6   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.14  → Version globale du projet/pilotage (ce fichier fait foi)
 DOC_VERSION      = propre   → Chaque doc technique garde sa version interne
                               (ex: ERD v2.0, API v2.1, SQL v1.1)
 CODE_VERSION     = 0.0.0   → Version release applicative (sera 0.1.0 au premier déploiement)
@@ -32,10 +32,11 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 04 Avril 2026
+Date MAJ       : 05 Avril 2026
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/)
-Code           : ⚠️ MVP-01 initialise — prochaine action = SPRINT 1 (MVP-02)
+Code           : ✅ MVP-01 à MVP-06 mergés sur `main`
 Phase active   : MVP — scope verrouillé ci-dessous
+Prochaine action : SPRINT 4 — Beta réelle + déploiement VPS
 Objectif       : Premier utilisateur payant en 8 semaines
 ```
 
@@ -116,42 +117,52 @@ Pays MVP :
 | S0-3 | Créer la landing page (Carrd ou HTML statique) | Humain | ⬜ |
 | S0-4 | Réserver le domaine leopardo-rh.com | Humain | ⬜ |
 
-### Sprint 1 — Fondations (semaines 1-2)
+### Sprint 1 — Fondations (semaines 1-2) ✅ Terminé
 
-| # | Ticket | Prompt | Critère de validation |
-|---|--------|--------|-----------------------|
-| S1-1 | Init Laravel + migrations public + seeders | `MVP-01` | `php artisan test` → 0 failure, `GET /health` → 200 |
-| S1-2 | Trait BelongsToCompany + TenantMiddleware simplifié | `MVP-01` | Test isolation company A ≠ company B |
-| S1-3 | Auth (login / logout / me) | `MVP-02` | Token valide, company suspendue → 403 |
-| S1-4 | CRUD Employés (list/create/show/update/archive) | `MVP-02` | 5 endpoints, RBAC manager/self |
-| S1-5 | Premier déploiement VPS | Humain | App en ligne, health check OK |
+| # | Ticket | Prompt | Critère de validation | Statut |
+|---|--------|--------|-----------------------|--------|
+| S1-1 | Init Laravel + migrations public + seeders | `MVP-01` | `php artisan test` → 0 failure, `GET /health` → 200 | ✅ |
+| S1-2 | Trait BelongsToCompany + TenantMiddleware simplifié | `MVP-01` | Test isolation company A ≠ company B | ✅ |
+| S1-3 | Auth (login / logout / me) | `MVP-02` | Token valide, company suspendue → 403 | ✅ |
+| S1-4 | CRUD Employés (list/create/show/update/archive) | `MVP-02` | 5 endpoints, RBAC manager/self | ✅ |
+| S1-5 | Premier déploiement VPS | Humain | App en ligne, health check OK | ⬜ |
 
-### Sprint 2 — Cœur métier (semaines 3-4)
+### Sprint 2 — Cœur métier (semaines 3-4) ✅ Terminé
 
-| # | Ticket | Prompt | Critère de validation |
-|---|--------|--------|-----------------------|
-| S2-1 | Pointage check-in/check-out | `MVP-03` | Horodatage serveur, GPS optionnel |
-| S2-2 | GET /attendance/today | `MVP-03` | État du jour correct |
-| S2-3 | Historique pointages | `MVP-03` | Filtres mois/employé |
-| S2-4 | Daily Summary | `MVP-04` | Montant journalier estimé correct |
-| S2-5 | Quick Estimate | `MVP-04` | Simulation période libre |
+| # | Ticket | Prompt | Critère de validation | Statut |
+|---|--------|--------|-----------------------|--------|
+| S2-1 | Pointage check-in/check-out | `MVP-03` | Horodatage serveur, GPS optionnel | ✅ |
+| S2-2 | GET /attendance/today | `MVP-03` | État du jour correct | ✅ |
+| S2-3 | Historique pointages | `MVP-03` | Filtres mois/employé | ✅ |
+| S2-4 | Daily Summary | `MVP-04` | Montant journalier estimé correct | ✅ |
+| S2-5 | Quick Estimate | `MVP-04` | Simulation période libre | ✅ |
 
-### Sprint 3 — Interface + Polish (semaines 5-6)
+### Sprint 3 — Interface + Polish (semaines 5-6) ✅ Terminé
 
-| # | Ticket | Prompt | Critère de validation |
-|---|--------|--------|-----------------------|
-| S3-1 | Dashboard web Blade (liste employés + pointages) | `MVP-05` | 2 pages fonctionnelles |
-| S3-2 | Reçu PDF période | `MVP-04` | PDF généré et téléchargeable |
-| S3-3 | Flutter : login + pointage + historique | `MVP-06` | 3 écrans fonctionnels |
-| S3-4 | Bug fixes + tests | Tous | 0 bug bloquant |
+| # | Ticket | Prompt | Critère de validation | Statut |
+|---|--------|--------|-----------------------|--------|
+| S3-1 | Dashboard web Blade (liste employés + pointages) | `MVP-05` | 2 pages fonctionnelles | ✅ |
+| S3-2 | Reçu PDF période | `MVP-04` | PDF généré et téléchargeable | ✅ |
+| S3-3 | Flutter : login + pointage + historique | `MVP-06` | 3 écrans fonctionnels | ✅ |
+| S3-4 | Bug fixes + tests | Tous | 0 bug bloquant | ✅ |
 
-### Sprint 4 — Beta (semaines 7-8)
+### Sprint 4 — Beta (semaines 7-8) 🚧 En cours
 
-| # | Ticket | Responsable | Critère de validation |
-|---|--------|-------------|----------------------|
-| S4-1 | Inviter 3-5 prospects beta | Humain | Retours collectés |
-| S4-2 | Corrections prioritaires | IA | Feedback implémenté |
-| S4-3 | Ouvrir les inscriptions | Humain | Premier client payant |
+| # | Ticket | Responsable | Critère de validation | Statut |
+|---|--------|-------------|----------------------|--------|
+| S4-1 | Déployer backend + web sur VPS | Humain | Domaine/VPS répondent, login web OK | ⬜ |
+| S4-2 | Brancher mobile sur environnement beta réel | IA/Humain | Login, check-in/out, history OK sur backend déployé | ⬜ |
+| S4-3 | Inviter 3-5 prospects beta | Humain | Retours collectés | ⬜ |
+| S4-4 | Corrections prioritaires | IA | Feedback implémenté | ⬜ |
+| S4-5 | Ouvrir les inscriptions | Humain | Premier client payant | ⬜ |
+
+---
+
+## BLOCAGES / POINTS DE VIGILANCE
+
+- CI backend tourne temporairement en PHP 8.4, car `composer.lock` référence des paquets Symfony 8 incompatibles PHP 8.3.
+- `PILOTAGE.md` avait du retard sur l'état réel du dépôt ; corrigé dans cette version.
+- Le dossier local `bon-fixed/` existe encore sur certaines machines, mais il ne doit plus être utilisé comme source d'instruction.
 
 ---
 

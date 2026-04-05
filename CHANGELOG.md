@@ -121,6 +121,14 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.15] - 2026-04-05
+### Gouvernance — Alignement post-merges + Beta
+
+- Mise à jour `PILOTAGE.md` : MVP-01 à MVP-06 marqués comme mergés, Sprint 4 défini comme prochaine phase active
+- Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour la validation end-to-end avant ouverture Beta
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 
