@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_rh/features/auth/data/auth_repository.dart';
 import 'package:leopardo_rh/models/employee.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
+import 'package:leopardo_rh/core/api/api_exceptions.dart';
 
 class AuthState {
   final bool isLoading;
@@ -43,6 +44,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: false, employee: data['employee']);
       return true;
     } catch (e) {
+      if (e is ApiException && e.statusCode == 403) {
+        state = state.copyWith(isLoading: false, error: e.message);
+        return false;
+      }
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
     }

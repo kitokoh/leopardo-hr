@@ -1,6 +1,5 @@
 import 'package:leopardo_rh/core/api/api_client.dart';
 import 'package:leopardo_rh/models/employee.dart';
-import 'package:leopardo_rh/models/company.dart';
 import 'package:leopardo_rh/core/storage/secure_storage.dart';
 
 class AuthRepository {
@@ -16,14 +15,14 @@ class AuthRepository {
       'device_name': 'Mobile App',
     });
 
-    final data = response.data['data'];
-    final token = data['token'];
-    
+    final data = response.data as Map<String, dynamic>;
+    final employeeJson = (data['data'] as Map).cast<String, dynamic>();
+    final token = data['token'] as String;
+
     await storage.saveToken(token);
 
     return {
-      'employee': Employee.fromJson(data['user']),
-      'company': Company.fromJson(data['company'] ?? data['user']['company'] ?? {}),
+      'employee': Employee.fromJson(employeeJson),
     };
   }
 

@@ -6,14 +6,14 @@ class PulseButton extends StatefulWidget {
   final VoidCallback? onTap;
 
   const PulseButton({
-    Key? key,
+    super.key,
     required this.isCheckedIn,
     required this.isLoading,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
-  _PulseButtonState createState() => _PulseButtonState();
+  State<PulseButton> createState() => _PulseButtonState();
 }
 
 class _PulseButtonState extends State<PulseButton> with SingleTickerProviderStateMixin {
@@ -51,7 +51,7 @@ class _PulseButtonState extends State<PulseButton> with SingleTickerProviderStat
                 color: widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor,
                 boxShadow: [
                   BoxShadow(
-                    color: (widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor).withOpacity(0.3),
+                    color: (widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor).withValues(alpha: 0.3),
                     blurRadius: 30,
                     spreadRadius: widget.isLoading ? 5 : 15 * _animation.value,
                   )

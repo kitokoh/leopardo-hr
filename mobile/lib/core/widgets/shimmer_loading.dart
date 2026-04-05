@@ -7,17 +7,17 @@ class ShimmerLoading extends StatelessWidget {
   final double borderRadius;
 
   const ShimmerLoading({
-    Key? key,
+    super.key,
     required this.width,
     required this.height,
     this.borderRadius = 8.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
       baseColor: Theme.of(context).cardColor,
-      highlightColor: Theme.of(context).cardColor.withOpacity(0.5),
+      highlightColor: Theme.of(context).cardColor.withValues(alpha: 0.5),
       child: Container(
         width: width,
         height: height,

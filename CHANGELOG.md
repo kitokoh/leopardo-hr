@@ -98,6 +98,7 @@ CODE_VERSION     = Version release applicative (git tag)
 - Ajout app Flutter sous `mobile/` : login, pointage (today/history), navigation (GoRouter) et state (Riverpod)
 - Couche API Dio + `flutter_secure_storage` (token auto + redirection login sur 401)
 - Mock interceptor + cache Hive + écrans shimmer + polish UI (pulse button, i18n format)
+- Post-MVP-06: branchement sur backend réel (parsing `token` + alignements endpoints attendance)
 
 ---
 

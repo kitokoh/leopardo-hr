@@ -8,7 +8,7 @@ import 'package:leopardo_rh/features/attendance/providers/attendance_provider.da
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
 class AttendanceScreen extends ConsumerWidget {
-  const AttendanceScreen({Key? key}) : super(key: key);
+  const AttendanceScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
