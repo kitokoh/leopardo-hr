@@ -13,12 +13,15 @@
 4. Backup DB `pg_dump -Fc`
 5. `php artisan migrate --force`
 6. Rebuild caches (`config`, `route`, `view`, `event`)
-7. Restart workers (`supervisorctl`)
+7. Verifier permissions `storage/` et `bootstrap/cache/`
 8. `php artisan up`
 9. Health check `/api/v1/health`
+10. Verifier `/login` puis `/dashboard`
 
 ## Validation post-deploy
 - HTTP 200 health
 - Login manager OK
+- Dashboard manager OK
+- PDF estimation OK
 - Endpoint attendance OK
-- Queue processing OK
+- Session web OK

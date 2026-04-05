@@ -18,9 +18,10 @@ class WebEmployeeController extends Controller
     {
     }
 
-    public function show(Employee $employee): View
+    public function show(string $employeeId): View
     {
         $this->authorize('viewAny', Employee::class);
+        $employee = Employee::query()->findOrFail($employeeId);
 
         $company = app('current_company');
 
@@ -61,9 +62,10 @@ class WebEmployeeController extends Controller
         ]);
     }
 
-    public function quickEstimate(Request $request, Employee $employee): JsonResponse
+    public function quickEstimate(Request $request, string $employeeId): JsonResponse
     {
         $this->authorize('viewAny', Employee::class);
+        $employee = Employee::query()->findOrFail($employeeId);
 
         $validated = $request->validate([
             'from' => ['required', 'date_format:Y-m-d'],
@@ -79,9 +81,10 @@ class WebEmployeeController extends Controller
         return new JsonResponse(['data' => $estimate]);
     }
 
-    public function receipt(Request $request, Employee $employee): Response
+    public function receipt(Request $request, string $employeeId): Response
     {
         $this->authorize('viewAny', Employee::class);
+        $employee = Employee::query()->findOrFail($employeeId);
 
         $validated = $request->validate([
             'from' => ['required', 'date_format:Y-m-d'],
