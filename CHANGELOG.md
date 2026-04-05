@@ -82,6 +82,16 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.9] - 2026-04-04
+### MVP-02 — Auth + Employés
+
+- Ajout endpoints Auth : `/api/v1/auth/login`, `/api/v1/auth/logout`, `/api/v1/auth/me`
+- Ajout CRUD employés : list/create/show/update/archive avec RBAC (manager vs self)
+- Ajout policies + services + FormRequests (pas de logique métier dans controllers)
+- Tests Pest : auth, RBAC employés, isolation tenant
+
+---
+
 ## [4.1.4] - 2026-04-04
 ### Hardening execution discipline (post-governance)
 
