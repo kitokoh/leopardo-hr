@@ -92,6 +92,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.11] - 2026-04-05
+### MVP-06 — App Flutter (bootstrap)
+
+- Ajout app Flutter sous `mobile/` : login, pointage (today/history), navigation (GoRouter) et state (Riverpod)
+- Couche API Dio + `flutter_secure_storage` (token auto + redirection login sur 401)
+- Mock interceptor + cache Hive + écrans shimmer + polish UI (pulse button, i18n format)
+
+---
+
 ## [4.1.10] - 2026-04-05
 ### MVP-03 — Pointage (attendance)
 
