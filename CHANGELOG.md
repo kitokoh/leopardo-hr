@@ -105,6 +105,13 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.13] - 2026-04-05
+### Gouvernance — Branch protection
+
+- Mise à jour `.github/BRANCH_PROTECTION_REQUIRED.md` : alignement des checks requis (notamment `Mobile Flutter (Stable Channel)`) et note anti-"Expected"
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 
