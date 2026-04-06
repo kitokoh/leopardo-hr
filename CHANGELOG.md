@@ -160,6 +160,13 @@ CODE_VERSION     = Version release applicative (git tag)
 - Mise a jour de `api/README.md` pour refleter le stack MVP reel et les checks utiles
 - Mise a jour de `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` avec verifications post-deploy web, PDF et session
 
+## [4.1.20] - 2026-04-06
+### Beta — Stabilisation mobile
+
+- Durcissement UX mobile sur erreurs reseau, timeout, 401 et 403
+- Nettoyage du flow login mobile (trim email, dispose des controllers)
+- Alignement du `mobile/README.md` avec le prompt MVP actif et le fonctionnement reel
+
 ---
 
 ## [4.1.11] - 2026-04-05

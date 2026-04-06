@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/features/attendance/providers/attendance_provider.dart';
+import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -70,6 +71,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           ),
         ),
         error: (err, stack) {
+          final errorText = err.toString();
+
+          if (errorText.contains('401') || errorText.contains('UNAUTHENTICATED')) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref.read(authProvider.notifier).logout();
+            });
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (errorText.contains('403') || errorText.contains('FORBIDDEN')) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Text('Compte suspendu ou acces refuse.'),
+              ),
+            );
+          }
+
           if (err.toString().contains('NOT_IMPLEMENTED')) {
             return Center(
               child: Column(
@@ -140,7 +159,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       title: Text('${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}'),
                       subtitle: Text(
                         log.checkIn != null 
-                          ? '${log.checkIn!.hour.toString().padLeft(2,'0')}:${log.checkIn!.minute.toString().padLeft(2,'0')} → '
+                          ? '${log.checkIn!.hour.toString().padLeft(2,'0')}:${log.checkIn!.minute.toString().padLeft(2,'0')} -> '
                             '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2,'0')}:${log.checkOut!.minute.toString().padLeft(2,'0')}" : "En cours"}'
                           : 'Absence'
                       ),

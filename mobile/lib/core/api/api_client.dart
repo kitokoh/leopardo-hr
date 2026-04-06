@@ -56,7 +56,7 @@ class ApiClient {
       message = "Fonction bientôt disponible";
       code = "NOT_IMPLEMENTED";
     } else if (e.response?.statusCode == 403) {
-      message = "Compte suspendu — contactez votre employeur";
+      message = "Compte suspendu - contactez votre employeur";
       code = "FORBIDDEN";
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
@@ -64,7 +64,11 @@ class ApiClient {
         code = e.response?.data['error'];
       }
     } else if (e.type == DioExceptionType.connectionTimeout) {
-      message = "Délai de connexion dépassé";
+      message = "Delai de connexion depasse";
+    } else if (e.type == DioExceptionType.receiveTimeout) {
+      message = "Le serveur met trop de temps a repondre";
+    } else if (e.type == DioExceptionType.connectionError) {
+      message = "Connexion indisponible - verifiez internet ou l'URL API";
     }
 
     throw ApiException(message, statusCode: e.response?.statusCode, code: code);
