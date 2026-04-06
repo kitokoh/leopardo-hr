@@ -169,6 +169,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.21] - 2026-04-06
+### Beta — Ops readiness
+
+- Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` pour preparer l'environnement Beta reel
+- Ajout `docs/GESTION_PROJET/BETA_VALIDATION_REPORT_TEMPLATE.md` pour standardiser les rapports de recette
+- Mise a jour `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour lier setup, execution et trace de validation
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 

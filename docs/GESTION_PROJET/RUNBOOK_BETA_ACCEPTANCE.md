@@ -3,6 +3,10 @@
 
 But: valider le MVP complet sur un environnement reel avant exposition a des prospects.
 
+Documents relies:
+- `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md`
+- `docs/GESTION_PROJET/BETA_VALIDATION_REPORT_TEMPLATE.md`
+
 ## Preconditions
 
 - Branche `main` a jour
@@ -75,3 +79,4 @@ No-Go si:
 - Build/commit teste
 - Nom testeur
 - Liste courte des anomalies
+- Utiliser `docs/GESTION_PROJET/BETA_VALIDATION_REPORT_TEMPLATE.md`
