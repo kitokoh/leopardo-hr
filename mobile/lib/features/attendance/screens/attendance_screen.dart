@@ -69,7 +69,7 @@ class AttendanceScreen extends ConsumerWidget {
             onPressed: () {
               ref.read(authProvider.notifier).logout();
             },
-            child: const Text('Déconnexion', style: TextStyle(color: Colors.red)),
+            child: const Text('Deconnexion', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -86,7 +86,7 @@ class AttendanceScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Bonjour ${state.employee?.firstName ?? ''} 👋',
+          Text('Bonjour ${state.employee?.firstName ?? ''}',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           const Text('Leopardo RH', style: TextStyle(color: Colors.grey)),
@@ -120,7 +120,7 @@ class AttendanceScreen extends ConsumerWidget {
           const SizedBox(height: 32),
           if (state.todayLog?.checkIn != null)
             Text(
-              'Arrivée : ${state.todayLog!.checkIn!.hour.toString().padLeft(2, '0')}:${state.todayLog!.checkIn!.minute.toString().padLeft(2, '0')}',
+              'Arrivee : ${state.todayLog!.checkIn!.hour.toString().padLeft(2, '0')}:${state.todayLog!.checkIn!.minute.toString().padLeft(2, '0')}',
               style: const TextStyle(fontSize: 18),
             ),
         ],
@@ -144,17 +144,17 @@ class AttendanceScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Text('💰 Gain estimé aujourd\'hui', style: TextStyle(fontSize: 16)),
+              const Text('Gain estime aujourd\'hui', style: TextStyle(fontSize: 16)),
               const Spacer(),
               Text(currencyFormat.format(state.summary!.totalEstimated),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
             ],
           ),
           const SizedBox(height: 16),
-          Text('⏱ Heures sup : ${state.summary!.overtimeGain > 0 ? (state.summary!.overtimeGain).toStringAsFixed(0) : "0h"}',
+          Text('Heures sup : ${state.summary!.overtimeGain > 0 ? (state.summary!.overtimeGain).toStringAsFixed(0) : "0h"}',
               style: const TextStyle(color: Colors.grey)),
           const SizedBox(height: 8),
-          const Text('Estimation — net final calculé en fin de mois',
+          const Text('Estimation - net final calcule en fin de mois',
               style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic)),
         ],
       ),
@@ -175,7 +175,7 @@ class AttendanceScreen extends ConsumerWidget {
           onPressed: () {
             ref.read(authProvider.notifier).logout();
           },
-          child: const Text('Déconnexion', style: TextStyle(color: Colors.red)),
+          child: const Text('Deconnexion', style: TextStyle(color: Colors.red)),
         ),
       ],
     );
