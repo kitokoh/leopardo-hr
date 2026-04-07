@@ -35,6 +35,8 @@ class AuthController extends Controller
                 'status' => $employee->status,
             ],
             'token' => $result['token'],
+            'token_type' => $result['token_type'],
+            'token_expires_at' => $result['token_expires_at'],
         ]);
     }
 
@@ -66,4 +68,3 @@ class AuthController extends Controller
         return new JsonResponse(['status' => 'ok']);
     }
 }
-

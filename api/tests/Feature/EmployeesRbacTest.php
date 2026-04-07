@@ -187,6 +187,8 @@ class EmployeesRbacTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
         ]);
+        $employeeA->createToken('tests');
+        $this->assertSame(1, $employeeA->tokens()->count());
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -194,6 +196,7 @@ class EmployeesRbacTest extends TestCase
             ->postJson("/api/v1/employees/{$employeeA->id}/archive");
         $ok->assertOk();
         $ok->assertJsonPath('data.status', 'archived');
+        $this->assertSame(0, $employeeA->fresh()->tokens()->count());
 
         $deny = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson("/api/v1/employees/{$managerA->id}/archive");
@@ -237,6 +240,10 @@ class EmployeesRbacTest extends TestCase
         $this->assertDatabaseHas('employees', [
             'email' => 'john.doe@a.test',
             'company_id' => $companyA->id,
+        ]);
+        $this->assertDatabaseHas('employees', [
+            'email' => 'john.doe@a.test',
+            'contract_start' => now()->toDateString(),
         ]);
     }
 

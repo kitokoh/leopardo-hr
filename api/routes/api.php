@@ -14,9 +14,11 @@ Route::prefix('v1')->group(function (): void {
         ]);
     });
 
-    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::middleware(['throttle:10,1'])->group(function (): void {
+        Route::post('/auth/login', [AuthController::class, 'login']);
+    });
 
-    Route::middleware(['auth:sanctum', 'tenant'])->group(function (): void {
+    Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
 

@@ -187,6 +187,38 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.23] - 2026-04-07
+### Audit v3 — Correctifs critiques batch 1
+
+- CI backend basculee sur PostgreSQL de test avec migrations reelles avant `php artisan test`
+- Auth API branchee sur `user_lookups` avec resynchronisation automatique lors des sauvegardes employees
+- Reductions de N+1 sur dashboard web, fiche employe web et quick estimate
+- Ajout throttle API sur login et routes Sanctum
+- Factories `EmployeeFactory` et `CompanyFactory` alignees sur les namespaces/modeles reels
+- Deploiement durci avec tentative de rollback + sortie du mode maintenance en cas d'echec
+- Ajout expiration explicite des tokens Sanctum et alignement `.env.example`
+
+---
+
+## [4.1.24] - 2026-04-07
+### Audit v4 — Correctifs securite batch 2
+
+- Revoque tous les tokens Sanctum lors de l'archivage d'un employe et bloque les comptes archives dans `TenantMiddleware`
+- Supprime le fallback production `sqlite` au profit de `pgsql` dans `config/database.php`
+- Garantit `contract_start` a la creation employe et l'autorise dans la validation API
+- Met a jour `last_login_at` au login et expose `token_type` + `token_expires_at` dans la reponse auth
+- Renforce le schema de tests pour couvrir `contract_start` et `last_login_at`
+
+---
+
+## [4.1.25] - 2026-04-07
+### Audit v4 — Alignement CI PostgreSQL
+
+- Retire le forçage SQLite de `phpunit.xml` pour laisser la CI backend utiliser PostgreSQL
+- Ajoute un default `CURRENT_DATE` a `contract_start` dans la migration employees et le schema de tests
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 

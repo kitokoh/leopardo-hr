@@ -59,8 +59,12 @@ jobs:
           APP_DEBUG=true
           APP_URL=http://localhost
 
-          DB_CONNECTION=sqlite
-          DB_DATABASE=:memory:
+          DB_CONNECTION=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=leopardo_test
+          DB_USERNAME=leopardo_user
+          DB_PASSWORD=leopardo_pass_test
 
           CACHE_STORE=array
           QUEUE_CONNECTION=sync
@@ -70,6 +74,10 @@ jobs:
       - name: Install Composer dependencies
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run migrations
+        working-directory: ./api
+        run: php artisan migrate --force
 
       - name: Run backend tests
         working-directory: ./api

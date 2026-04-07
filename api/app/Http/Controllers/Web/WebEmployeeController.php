@@ -34,8 +34,9 @@ class WebEmployeeController extends Controller
             ->get();
 
         $history = $historyLogs->map(function (AttendanceLog $log) use ($employee) {
-            $summary = $this->estimationService->dailySummary(
+            $summary = $this->estimationService->dailySummaryFromLog(
                 employee: $employee,
+                log: $log,
                 date: $log->date?->format('Y-m-d'),
             );
 

@@ -53,12 +53,7 @@ class WebAuthController extends Controller
                 ->withErrors(['email' => 'Societe suspendue ou expiree.']);
         }
 
-        if (! Auth::guard('web')->attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
-            return back()
-                ->withInput(['email' => $validated['email']])
-                ->withErrors(['email' => 'Identifiants invalides.']);
-        }
-
+        Auth::guard('web')->login($employee);
         $request->session()->regenerate();
 
         return redirect()->intended('/dashboard');
