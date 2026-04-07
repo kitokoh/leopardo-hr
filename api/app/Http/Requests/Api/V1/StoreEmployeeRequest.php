@@ -18,7 +18,14 @@ class StoreEmployeeRequest extends FormRequest
             ?? (app()->bound('current_company') ? app('current_company')->id : null);
 
         return [
-            'matricule' => ['nullable', 'string', 'max:20'],
+            'matricule' => [
+                'nullable',
+                'string',
+                'max:20',
+                Rule::unique('employees', 'matricule')->where(
+                    fn ($query) => $query->where('company_id', $companyId)
+                ),
+            ],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => [

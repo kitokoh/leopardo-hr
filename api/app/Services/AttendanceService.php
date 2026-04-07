@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\AlreadyCheckedInException;
+use App\Exceptions\MissingCheckInException;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
@@ -24,7 +26,7 @@ class AttendanceService
             ->first();
 
         if ($open) {
-            abort(409, 'ALREADY_CHECKED_IN');
+            throw new AlreadyCheckedInException();
         }
 
         $schedule = $this->resolveSchedule($employee);
@@ -69,7 +71,7 @@ class AttendanceService
             ->first();
 
         if (! $log) {
-            abort(409, 'MISSING_CHECK_IN');
+            throw new MissingCheckInException();
         }
 
         $schedule = $log->schedule_id
@@ -110,4 +112,3 @@ class AttendanceService
         return null;
     }
 }
-

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->uuid('company_id')->nullable()->index();         // NULL en mode schema isolé
 
             // ── Identité ────────────────────────────────────────────────────
-            $table->string('matricule', 20)->unique();              // Unique dans le scope company
+            $table->string('matricule', 20)->nullable();            // Unique dans le scope company
             $table->string('zkteco_id', 50)->nullable();            // ID dans le lecteur biométrique ZKTeco
             $table->string('first_name', 100);
             $table->string('last_name', 100);
@@ -89,6 +89,7 @@ return new class extends Migration
             $table->index('status');
             $table->index(['contract_end']);                        // Pour alertes fin de contrat
             $table->unique(['company_id', 'email']);
+            $table->unique(['company_id', 'matricule']);
         });
 
         DB::statement("COMMENT ON COLUMN employees.salary_base IS 'Salaire de base mensuel fixe. PAS le brut total — voir payrolls.gross_salary (calculé par PayrollService)'");

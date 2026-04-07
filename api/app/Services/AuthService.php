@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use App\Exceptions\AccountSuspendedException;
+use App\Exceptions\CompanyNotFoundException;
+use App\Exceptions\EmployeeNotActiveException;
+use App\Exceptions\InvalidCredentialsException;
 use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -37,20 +41,20 @@ class AuthService
         }
 
         if (! $employee || ! Hash::check($password, $employee->password_hash)) {
-            abort(401, 'INVALID_CREDENTIALS');
+            throw new InvalidCredentialsException();
         }
 
         $company = $employee->company;
         if (! $company) {
-            abort(403, 'COMPANY_NOT_FOUND');
+            throw new CompanyNotFoundException();
         }
 
         if (in_array($company->status, ['suspended', 'expired'], true)) {
-            abort(403, 'ACCOUNT_SUSPENDED');
+            throw new AccountSuspendedException();
         }
 
         if ($employee->status !== 'active') {
-            abort(403, 'EMPLOYEE_NOT_ACTIVE');
+            throw new EmployeeNotActiveException();
         }
 
         $employee->forceFill(['last_login_at' => now()])->saveQuietly();
