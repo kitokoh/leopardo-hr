@@ -66,6 +66,20 @@ jobs:
           script: |
             set -e
 
+            rollback_and_recover() {
+              status=$?
+              if [ $status -ne 0 ]; then
+                echo "❌ Déploiement échoué — tentative de restauration"
+                if [ -n "${BACKUP_FILE:-}" ] && [ -f "$BACKUP_FILE" ]; then
+                  pg_restore -Fc -U leopardo_user -d leopardo_db "$BACKUP_FILE" || true
+                fi
+                php artisan up || true
+              fi
+              exit $status
+            }
+
+            trap rollback_and_recover EXIT
+
             echo "📦 Démarrage déploiement Leopardo RH — $(date)"
 
             # Aller dans le dossier API
@@ -90,8 +104,6 @@ jobs:
             ls -t /var/backups/leopardo/*.dump | tail -n +11 | xargs -r rm
             # ──────────────────────────────────────────────────────────────
 
-            # Exécuter les migrations (--force car on est en production)
-            # En cas d'échec : pg_restore -Fc -U leopardo_user -d leopardo_db $BACKUP_FILE
             php artisan migrate --force
 
             # Vider et reconstruire le cache
@@ -106,11 +118,15 @@ jobs:
             # Vider le cache Redis applicatif (pas les sessions)
             php artisan cache:clear
 
-            # Redémarrer les workers de queue (Horizon)
-            sudo supervisorctl restart leopardo-horizon:*
+            # Redémarrer les workers si Horizon est réellement utilisé
+            if command -v sudo >/dev/null 2>&1 && sudo supervisorctl status leopardo-horizon:* >/dev/null 2>&1; then
+              sudo supervisorctl restart leopardo-horizon:*
+            else
+              echo "ℹ️ Horizon absent ou non utilisé — restart ignoré"
+            fi
 
-            # Désactiver le mode maintenance
             php artisan up
+            trap - EXIT
 
             echo "✅ Déploiement terminé avec succès — $(date)"
 

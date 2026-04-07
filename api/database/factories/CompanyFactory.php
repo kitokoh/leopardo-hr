@@ -1,10 +1,10 @@
 <?php
 
-namespace Database\Factories\Public;
+namespace Database\Factories;
 
-use App\Models\Public\Company;
-use App\Models\Public\Plan;
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -46,7 +46,7 @@ class CompanyFactory extends Factory
             'address'            => $this->faker->address(),
             'email'              => $this->faker->unique()->companyEmail(),
             'phone'              => $this->faker->phoneNumber(),
-            'plan_id'            => Plan::where('name', 'Starter')->value('id') ?? 1,
+            'plan_id'            => DB::table('plans')->where('name', 'Starter')->value('id') ?? 1,
             'schema_name'        => 'shared_tenants', // Par défaut shared
             'tenancy_type'       => 'shared',
             'status'             => 'active',
@@ -66,8 +66,12 @@ class CompanyFactory extends Factory
     public function withPlan(string $planName): static
     {
         return $this->state(function () use ($planName) {
-            $plan = Plan::where('name', ucfirst($planName))->firstOrFail();
-            return ['plan_id' => $plan->id];
+            $planId = DB::table('plans')->where('name', ucfirst($planName))->value('id');
+            if (! $planId) {
+                throw new \RuntimeException("Plan {$planName} introuvable dans la base.");
+            }
+
+            return ['plan_id' => $planId];
         });
     }
 
@@ -77,10 +81,13 @@ class CompanyFactory extends Factory
     public function enterprise(): static
     {
         return $this->state(function () {
-            $plan = Plan::where('name', 'Enterprise')->firstOrFail();
+            $planId = DB::table('plans')->where('name', 'Enterprise')->value('id');
+            if (! $planId) {
+                throw new \RuntimeException('Plan Enterprise introuvable dans la base.');
+            }
             $schemaName = 'company_' . Str::lower(Str::random(8));
             return [
-                'plan_id'      => $plan->id,
+                'plan_id'      => $planId,
                 'schema_name'  => $schemaName,
                 'tenancy_type' => 'schema',
                 'subscription_end' => now()->addYear(),

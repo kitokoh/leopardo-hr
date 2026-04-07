@@ -21,11 +21,19 @@ class EmployeeController extends Controller
     {
         $this->authorize('viewAny', Employee::class);
 
+        $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
+        $paginator = Employee::query()
+            ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
+            ->orderBy('id')
+            ->paginate($perPage);
+
         return new JsonResponse([
-            'data' => Employee::query()
-                ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
-                ->orderBy('id')
-                ->get(),
+            'data' => collect($paginator->items())->values(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace Tests\Support;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 trait CreatesMvpSchema
@@ -10,6 +11,7 @@ trait CreatesMvpSchema
     protected function setUpMvpSchema(): void
     {
         Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('user_lookups');
         Schema::dropIfExists('attendance_logs');
         Schema::dropIfExists('employees');
         Schema::dropIfExists('schedules');
@@ -44,14 +46,26 @@ trait CreatesMvpSchema
             $table->string('last_name', 100)->nullable();
             $table->string('email', 150);
             $table->string('password_hash', 255);
+            $table->string('contract_type', 20)->default('CDI');
+            $table->date('contract_start')->default(DB::raw('CURRENT_DATE'));
+            $table->date('contract_end')->nullable();
             $table->string('salary_type', 20)->default('fixed');
             $table->decimal('salary_base', 10, 2)->default(0);
             $table->decimal('hourly_rate', 10, 2)->default(0);
             $table->string('role', 20)->default('employee');
             $table->string('status', 20)->default('active');
+            $table->timestampTz('last_login_at')->nullable();
             $table->timestamps();
 
             $table->unique(['company_id', 'email']);
+        });
+
+        Schema::create('user_lookups', function (Blueprint $table): void {
+            $table->string('email', 150)->primary();
+            $table->uuid('company_id');
+            $table->string('schema_name', 63);
+            $table->unsignedInteger('employee_id');
+            $table->string('role', 20);
         });
 
         Schema::create('schedules', function (Blueprint $table): void {
@@ -104,6 +118,7 @@ trait CreatesMvpSchema
     {
         app()->forgetInstance('current_company');
         Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('user_lookups');
         Schema::dropIfExists('attendance_logs');
         Schema::dropIfExists('employees');
         Schema::dropIfExists('schedules');

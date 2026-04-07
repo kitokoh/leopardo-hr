@@ -55,7 +55,7 @@ return new class extends Migration
             // ── Contrat ──────────────────────────────────────────────────────
             $table->enum('contract_type', ['CDI', 'CDD', 'Stage', 'Interim', 'Consultant'])
                   ->default('CDI');
-            $table->date('contract_start');
+            $table->date('contract_start')->default(DB::raw('CURRENT_DATE'));
             $table->date('contract_end')->nullable();
             $table->decimal('salary_base', 12, 2)->default(0);     // Salaire de base mensuel fixe
             $table->enum('salary_type', ['fixed', 'hourly', 'daily'])->default('fixed');

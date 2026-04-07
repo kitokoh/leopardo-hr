@@ -12,6 +12,7 @@ class EmployeeService
     {
         $password = Arr::pull($payload, 'password');
         $payload['password_hash'] = Hash::make($password);
+        $payload['contract_start'] = $payload['contract_start'] ?? now()->toDateString();
 
         if (empty($payload['role'])) {
             $payload['role'] = 'employee';
@@ -49,8 +50,8 @@ class EmployeeService
     {
         $employee->status = 'archived';
         $employee->save();
+        $employee->tokens()->delete();
 
         return $employee;
     }
 }
-

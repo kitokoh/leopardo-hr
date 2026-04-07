@@ -28,6 +28,7 @@ class StoreEmployeeRequest extends FormRequest
                 Rule::unique('employees', 'email')->where(fn ($query) => $query->where('company_id', $companyId)),
             ],
             'password' => ['required', 'string', 'min:8', 'max:255'],
+            'contract_start' => ['nullable', 'date_format:Y-m-d'],
             'role' => ['nullable', 'in:employee,manager'],
         ];
     }

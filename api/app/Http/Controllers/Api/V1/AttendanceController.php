@@ -82,11 +82,14 @@ class AttendanceController extends Controller
 
         if ($actor->isManager()) {
             $this->authorize('viewAny', AttendanceLog::class);
+            $perPage = $request->integer('per_page', 50);
 
-            $employees = Employee::query()
+            $paginator = Employee::query()
                 ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
                 ->orderBy('id')
-                ->get();
+                ->paginate(max(1, min(100, $perPage)));
+
+            $employees = collect($paginator->items());
 
             $logsByEmployee = AttendanceLog::query()
                 ->where('date', $today)
@@ -98,7 +101,14 @@ class AttendanceController extends Controller
                 return $this->serializeToday($employee, $logsByEmployee->get($employee->id));
             })->values();
 
-            return new JsonResponse(['data' => $data]);
+            return new JsonResponse([
+                'data' => $data,
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                ],
+            ]);
         }
 
         $this->authorize('viewForEmployee', [AttendanceLog::class, $actor]);

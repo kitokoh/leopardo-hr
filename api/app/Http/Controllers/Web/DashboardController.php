@@ -46,7 +46,7 @@ class DashboardController extends Controller
                 $late++;
             }
 
-            $summary = $this->estimationService->dailySummary($employee, $today);
+            $summary = $this->estimationService->dailySummaryFromLog($employee, $log, $today);
             $totalEstimated += (float) $summary['total_estimated'];
 
             $rows[] = [

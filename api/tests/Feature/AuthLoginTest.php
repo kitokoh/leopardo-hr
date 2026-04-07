@@ -55,6 +55,11 @@ class AuthLoginTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('data.email', 'manager@company.test');
         $response->assertJsonStructure(['token']);
+        $response->assertJsonPath('token_type', 'Bearer');
+        $this->assertNotNull($response->json('token_expires_at'));
+
+        $employee = Employee::query()->where('email', 'manager@company.test')->firstOrFail();
+        $this->assertNotNull($employee->last_login_at);
     }
 
     public function test_login_rejects_invalid_credentials(): void
@@ -88,4 +93,3 @@ class AuthLoginTest extends TestCase
         $response->assertJsonPath('message', 'INVALID_CREDENTIALS');
     }
 }
-

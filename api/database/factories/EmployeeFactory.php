@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories\Tenant;
+namespace Database\Factories;
 
-use App\Models\Tenant\Employee;
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
