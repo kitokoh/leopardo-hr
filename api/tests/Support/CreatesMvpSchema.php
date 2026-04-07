@@ -42,7 +42,7 @@ trait CreatesMvpSchema
             $table->string('matricule', 20)->nullable();
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
-            $table->string('email', 150)->unique();
+            $table->string('email', 150);
             $table->string('password_hash', 255);
             $table->string('salary_type', 20)->default('fixed');
             $table->decimal('salary_base', 10, 2)->default(0);
@@ -50,6 +50,8 @@ trait CreatesMvpSchema
             $table->string('role', 20)->default('employee');
             $table->string('status', 20)->default('active');
             $table->timestamps();
+
+            $table->unique(['company_id', 'email']);
         });
 
         Schema::create('schedules', function (Blueprint $table): void {

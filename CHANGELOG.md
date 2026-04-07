@@ -178,6 +178,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.22] - 2026-04-06
+### Beta — Unicite email multi-tenant
+
+- Validation `email` employees scopee par `company_id` a la creation et a la mise a jour
+- Schema de tests et migration tenant alignes sur une unicite composite `company_id + email`
+- Ajout de tests de regression pour autoriser le meme email entre societes et refuser le doublon dans la meme societe
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 

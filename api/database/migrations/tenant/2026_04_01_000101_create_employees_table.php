@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('zkteco_id', 50)->nullable();            // ID dans le lecteur biométrique ZKTeco
             $table->string('first_name', 100);
             $table->string('last_name', 100);
-            $table->string('email', 150)->unique();                 // Unique dans le scope company
+            $table->string('email', 150);                           // Unique dans le scope company
             $table->string('phone', 30)->nullable();
             $table->string('password_hash', 255);
             $table->date('date_of_birth')->nullable();
@@ -88,6 +88,7 @@ return new class extends Migration
             $table->index(['manager_id', 'status']);
             $table->index('status');
             $table->index(['contract_end']);                        // Pour alertes fin de contrat
+            $table->unique(['company_id', 'email']);
         });
 
         DB::statement("COMMENT ON COLUMN employees.salary_base IS 'Salaire de base mensuel fixe. PAS le brut total — voir payrolls.gross_salary (calculé par PayrollService)'");

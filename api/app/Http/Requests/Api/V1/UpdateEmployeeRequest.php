@@ -15,6 +15,8 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules(): array
     {
         $employeeId = $this->route('employee');
+        $companyId = $this->user()?->company_id
+            ?? (app()->bound('current_company') ? app('current_company')->id : null);
 
         return [
             'matricule' => ['sometimes', 'nullable', 'string', 'max:20'],
@@ -25,7 +27,9 @@ class UpdateEmployeeRequest extends FormRequest
                 'nullable',
                 'email',
                 'max:150',
-                Rule::unique('employees', 'email')->ignore($employeeId),
+                Rule::unique('employees', 'email')
+                    ->where(fn ($query) => $query->where('company_id', $companyId))
+                    ->ignore($employeeId),
             ],
             'password' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
             'role' => ['sometimes', 'nullable', 'in:employee,manager'],
