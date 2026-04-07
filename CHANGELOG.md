@@ -47,6 +47,16 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.28] - 2026-04-07
+### Couverture unitaire des services métier
+
+- Ajout de tests unitaires dédiés pour `AuthService` (login, token metadata, statuts bloqués)
+- Ajout de tests unitaires dédiés pour `AttendanceService` (double check-in, check-out sans session, calcul heures/overtime)
+- Ajout de tests unitaires dédiés pour `EstimationService` (absence, `work_days`, taux de déduction HR template)
+- Alignement du schéma de test `CreatesMvpSchema` avec les colonnes `Schedule` réellement utilisées
+
+---
+
 ## [4.1.5] - 2026-04-04
 ### Hygiene docs + renforcement gouvernance
 
@@ -218,7 +228,24 @@ CODE_VERSION     = Version release applicative (git tag)
 - Ajoute un default `CURRENT_DATE` a `contract_start` dans la migration employees et le schema de tests
 
 ---
+## [4.1.26] - 2026-04-07
+### Batch 1 — Tenant hardening
 
+- Validation `matricule` scopee par `company_id` a la creation et a la mise a jour
+- Migration employees et schema de tests alignes sur une unicite composite `company_id + matricule`
+- Suspension ou expiration d'une company => revocation des tokens Sanctum de tous ses employes
+- Suppression du `User.php` fantome non utilise
+- Ajout de tests de regression pour `matricule` multi-tenant et suspension company
+
+---
+## [4.1.27] - 2026-04-07
+### Batch 2 — Domaine et handler d'erreurs
+
+- Remplacement des `abort()` metier dans `AuthService` et `AttendanceService` par des exceptions domaine
+- Ajout d'un handler global JSON pour erreurs domaine, validation, not found et authorization
+- Normalisation du format `{error, message}` sur les erreurs API les plus courantes
+
+---
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 

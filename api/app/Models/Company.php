@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Employee;
 
 class Company extends Model
 {
@@ -33,6 +34,24 @@ class Company extends Model
         'timezone',
         'currency',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $company): void {
+            if (! $company->wasChanged('status')) {
+                return;
+            }
+
+            if (! in_array($company->status, ['suspended', 'expired'], true)) {
+                return;
+            }
+
+            Employee::withoutGlobalScopes()
+                ->where('company_id', $company->id)
+                ->get()
+                ->each(fn (Employee $employee) => $employee->tokens()->delete());
+        });
+    }
 
     public function employees(): HasMany
     {

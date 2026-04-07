@@ -307,6 +307,68 @@ class EmployeesRbacTest extends TestCase
         ]);
     }
 
+    public function test_manager_can_create_employee_with_matricule_used_by_another_company(): void
+    {
+        $companyA = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $companyB = Company::query()->create([
+            'name' => 'Company B',
+            'slug' => 'company-b',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Oran',
+            'email' => 'b@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $managerA = Employee::query()->create([
+            'company_id' => $companyA->id,
+            'email' => 'manager@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'status' => 'active',
+        ]);
+
+        Employee::withoutGlobalScopes()->create([
+            'company_id' => $companyB->id,
+            'matricule' => 'EMP-001',
+            'email' => 'other@tenant.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        $token = $managerA->createToken('tests')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/v1/employees', [
+                'matricule' => 'EMP-001',
+                'first_name' => 'Leila',
+                'last_name' => 'Ait',
+                'email' => 'matricule@tenant.test',
+                'password' => 'password123',
+                'role' => 'employee',
+            ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('employees', [
+            'company_id' => $companyA->id,
+            'matricule' => 'EMP-001',
+        ]);
+    }
+
     public function test_manager_cannot_update_employee_to_duplicate_email_within_same_company(): void
     {
         $companyA = Company::query()->create([
@@ -354,6 +416,57 @@ class EmployeesRbacTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['email']);
+    }
+
+    public function test_manager_cannot_update_employee_to_duplicate_matricule_within_same_company(): void
+    {
+        $companyA = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $managerA = Employee::query()->create([
+            'company_id' => $companyA->id,
+            'email' => 'manager@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'status' => 'active',
+        ]);
+
+        Employee::query()->create([
+            'company_id' => $companyA->id,
+            'matricule' => 'EMP-001',
+            'email' => 'employee.one@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        $employeeB = Employee::query()->create([
+            'company_id' => $companyA->id,
+            'matricule' => 'EMP-002',
+            'email' => 'employee.two@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        $token = $managerA->createToken('tests')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->patchJson("/api/v1/employees/{$employeeB->id}", [
+                'matricule' => 'EMP-001',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['matricule']);
     }
 
     public function test_employee_can_update_self_profile_but_role_is_ignored(): void

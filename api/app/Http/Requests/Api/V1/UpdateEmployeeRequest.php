@@ -19,7 +19,15 @@ class UpdateEmployeeRequest extends FormRequest
             ?? (app()->bound('current_company') ? app('current_company')->id : null);
 
         return [
-            'matricule' => ['sometimes', 'nullable', 'string', 'max:20'],
+            'matricule' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:20',
+                Rule::unique('employees', 'matricule')
+                    ->where(fn ($query) => $query->where('company_id', $companyId))
+                    ->ignore($employeeId),
+            ],
             'first_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'last_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'email' => [

@@ -58,6 +58,7 @@ trait CreatesMvpSchema
             $table->timestamps();
 
             $table->unique(['company_id', 'email']);
+            $table->unique(['company_id', 'matricule']);
         });
 
         Schema::create('user_lookups', function (Blueprint $table): void {
@@ -74,8 +75,11 @@ trait CreatesMvpSchema
             $table->string('name', 100);
             $table->time('start_time');
             $table->time('end_time');
+            $table->unsignedSmallInteger('break_minutes')->default(60);
+            $table->json('work_days')->nullable();
             $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
             $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);
+            $table->decimal('overtime_threshold_weekly', 5, 2)->default(40.00);
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
