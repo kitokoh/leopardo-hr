@@ -47,6 +47,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.30] - 2026-04-09
+### Gouvernance locale - Docker d'abord pour les tests backend
+
+- Ajout de `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` pour imposer la validation backend locale via Docker avant push
+- Mise à jour de `PILOTAGE.md`, `README.md` et `EXECUTION_BLOCKERS_AND_NEXT.md` pour rendre cette règle visible
+- Trace explicite du constat local : `docker context ls` répond, mais `docker version` / `docker ps` expirent encore sur cette machine
+
+---
+
 ## [4.1.29] - 2026-04-09
 ### Beta finale - Alignement mobile et cohérence API
 
