@@ -1,10 +1,14 @@
 {
   "data": {
-    "id": 5432,
-    "date": "2026-04-15",
-    "check_in": "2026-04-15T07:55:12Z",
-    "check_out": null,
-    "status": "ontime",
-    "method": "mobile"
+    "mode": "single",
+    "item": {
+      "employee_id": 101,
+      "name": "Hamid Djebari",
+      "checked_in": true,
+      "check_in_time": "08:55",
+      "check_out_time": null,
+      "hours_worked": "0.00",
+      "status": "ontime"
+    }
   }
 }

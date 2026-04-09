@@ -9,36 +9,7 @@ class AttendanceRepository {
 
   Future<Map<String, dynamic>> getTodayStatus() async {
     final response = await apiClient.dio.get('/attendance/today');
-    final data = (response.data as Map).cast<String, dynamic>();
-
-    if (data['data'] == null) {
-      return {'log': null, 'context': data['context']};
-    }
-
-    final today = (data['data'] as Map).cast<String, dynamic>();
-    final now = DateTime.now();
-
-    DateTime? parseLocalTime(String? hhmm) {
-      if (hhmm == null || hhmm.isEmpty) return null;
-      final parts = hhmm.split(':');
-      if (parts.length < 2) return null;
-      final hour = int.tryParse(parts[0]) ?? 0;
-      final minute = int.tryParse(parts[1]) ?? 0;
-      return DateTime(now.year, now.month, now.day, hour, minute);
-    }
-
-    return {
-      'log': AttendanceLog(
-        id: (today['id'] ?? 0) as int,
-        employeeId: today['employee_id'] as int,
-        date: DateTime(now.year, now.month, now.day),
-        checkIn: parseLocalTime(today['check_in_time'] as String?),
-        checkOut: parseLocalTime(today['check_out_time'] as String?),
-        status: (today['status'] ?? 'absent') as String,
-        workedHours: today['hours_worked'] != null ? double.tryParse(today['hours_worked'].toString()) : 0.0,
-      ),
-      'context': data['context'],
-    };
+    return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
   Future<AttendanceLog> checkIn() async {
@@ -67,5 +38,68 @@ class AttendanceRepository {
     });
     final items = response.data['data'] as List;
     return items.map((e) => AttendanceLog.fromJson(e)).toList();
+  }
+
+  static Map<String, dynamic> decodeTodayResponse(Map<String, dynamic> responseData) {
+    final payload = responseData['data'];
+
+    if (payload == null) {
+      return {'log': null, 'context': responseData['context']};
+    }
+
+    if (payload is! Map) {
+      throw const FormatException('Invalid attendance/today payload');
+    }
+
+    final data = payload.cast<String, dynamic>();
+    final rawContext = data['context'] ?? responseData['context'];
+    final context = rawContext is Map ? rawContext.cast<String, dynamic>() : null;
+
+    if (data.containsKey('items')) {
+      return {
+        'log': null,
+        'context': {
+          'mode': data['mode'] ?? 'collection',
+          'items': data['items'],
+          'meta': data['meta'] ?? responseData['meta'],
+          ...?context,
+        },
+      };
+    }
+
+    final itemPayload = data['item'];
+    final todayPayload = itemPayload is Map
+        ? itemPayload.cast<String, dynamic>()
+        : (data.containsKey('item') ? null : data);
+
+    if (todayPayload == null) {
+      return {'log': null, 'context': context};
+    }
+
+    final now = DateTime.now();
+    final today = todayPayload.cast<String, dynamic>();
+
+    return {
+      'log': AttendanceLog(
+        id: (today['id'] ?? 0) as int,
+        employeeId: (today['employee_id'] ?? 0) as int,
+        date: DateTime(now.year, now.month, now.day),
+        checkIn: _parseLocalTime(today['check_in_time'] as String?),
+        checkOut: _parseLocalTime(today['check_out_time'] as String?),
+        status: (today['status'] ?? 'absent') as String,
+        workedHours: today['hours_worked'] != null ? double.tryParse(today['hours_worked'].toString()) : 0.0,
+      ),
+      'context': context,
+    };
+  }
+
+  static DateTime? _parseLocalTime(String? hhmm) {
+    if (hhmm == null || hhmm.isEmpty) return null;
+    final parts = hhmm.split(':');
+    if (parts.length < 2) return null;
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final minute = int.tryParse(parts[1]) ?? 0;
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, hour, minute);
   }
 }

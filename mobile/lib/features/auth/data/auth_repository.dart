@@ -16,8 +16,8 @@ class AuthRepository {
     });
 
     final data = response.data as Map<String, dynamic>;
-    final employeeJson = (data['data'] as Map).cast<String, dynamic>();
-    final token = data['token'] as String;
+    final employeeJson = extractEmployeeJson(data);
+    final token = extractToken(data);
 
     await storage.saveToken(token);
 
@@ -50,5 +50,36 @@ class AuthRepository {
       await storage.deleteToken();
       return null;
     }
+  }
+
+  static Map<String, dynamic> extractEmployeeJson(Map<String, dynamic> payload) {
+    final data = payload['data'];
+    if (data is Map) {
+      final user = data['user'];
+      if (user is Map) {
+        return user.cast<String, dynamic>();
+      }
+
+      return data.cast<String, dynamic>();
+    }
+
+    throw const FormatException('Invalid auth payload: missing employee data');
+  }
+
+  static String extractToken(Map<String, dynamic> payload) {
+    final rootToken = payload['token'];
+    if (rootToken is String && rootToken.isNotEmpty) {
+      return rootToken;
+    }
+
+    final data = payload['data'];
+    if (data is Map) {
+      final nestedToken = data['token'];
+      if (nestedToken is String && nestedToken.isNotEmpty) {
+        return nestedToken;
+      }
+    }
+
+    throw const FormatException('Invalid auth payload: missing token');
   }
 }

@@ -1,16 +1,13 @@
 {
   "data": {
-    "token": "mock-token-12345",
-    "user": {
-      "id": 101,
-      "first_name": "Hamid",
-      "last_name": "Djebari",
-      "email": "h.djebari@techcorp.dz",
-      "status": "active"
-    },
-    "company": {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "name": "TechCorp SPA"
-    }
-  }
+    "id": 101,
+    "company_id": "550e8400-e29b-41d4-a716-446655440000",
+    "first_name": "Hamid",
+    "last_name": "Djebari",
+    "email": "h.djebari@techcorp.dz",
+    "role": "employee",
+    "status": "active"
+  },
+  "token": "mock-token-12345",
+  "token_type": "Bearer"
 }
