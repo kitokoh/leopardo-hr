@@ -38,6 +38,7 @@ Code           : ✅ MVP-01 à MVP-06 mergés sur `main`
 Phase active   : MVP — scope verrouillé ci-dessous
 Prochaine action : SPRINT 4 — Beta réelle + déploiement VPS
 Objectif       : Premier utilisateur payant en 8 semaines
+Validation locale backend : Docker d'abord (voir `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`)
 ```
 
 ---
