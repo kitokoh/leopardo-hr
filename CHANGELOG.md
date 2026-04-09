@@ -47,6 +47,17 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.29] - 2026-04-09
+### Beta finale - Alignement mobile et cohérence API
+
+- Mobile : alignement du mock login sur le vrai payload API, extraction de token robuste et enrichissement du modèle `Employee`
+- Mobile : stabilisation du `GoRouter` via un provider Riverpod dédié au lieu d'une recréation à chaque rebuild
+- Attendance API : normalisation de `/attendance/today` pour renvoyer un objet `data` cohérent en mode single ou collection
+- Estimation API : ajout d'une limite de période max (365 jours) sur `quick-estimate`
+- Tests : remplacement des stubs Flutter par des tests utiles de parsing/alignement, et mise à jour des feature tests backend associés
+
+---
+
 ## [4.1.28] - 2026-04-07
 ### Couverture unitaire des services métier
 

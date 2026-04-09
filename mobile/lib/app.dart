@@ -7,38 +7,52 @@ import 'package:leopardo_rh/features/auth/screens/login_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 
+final routerProvider = Provider<GoRouter>((ref) {
+  final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
+
+  ref.listen<AuthState>(authProvider, (_, next) {
+    authListenable.value = next;
+  });
+
+  ref.onDispose(authListenable.dispose);
+
+  return GoRouter(
+    initialLocation: '/',
+    refreshListenable: authListenable,
+    redirect: (context, state) {
+      final authState = authListenable.value;
+      final isAuth = authState.employee != null;
+
+      if (authState.isLoading) return null;
+
+      final loggingIn = state.matchedLocation == '/login';
+      if (!isAuth && !loggingIn) return '/login';
+      if (isAuth && loggingIn) return '/';
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const AttendanceScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const HistoryScreen(),
+      ),
+    ],
+  );
+});
+
 class LeopardoApp extends ConsumerWidget {
   const LeopardoApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final isAuth = authState.employee != null;
-
-    final router = GoRouter(
-      initialLocation: '/',
-      redirect: (context, state) {
-        if (authState.isLoading) return null;
-        final loggingIn = state.matchedLocation == '/login';
-        if (!isAuth && !loggingIn) return '/login';
-        if (isAuth && loggingIn) return '/';
-        return null;
-      },
-      routes: [
-        GoRoute(
-          path: '/login',
-          builder: (context, state) => const LoginScreen(),
-        ),
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const AttendanceScreen(),
-        ),
-        GoRoute(
-          path: '/history',
-          builder: (context, state) => const HistoryScreen(),
-        ),
-      ],
-    );
+    final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
       title: 'Leopardo RH',

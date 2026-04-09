@@ -59,9 +59,10 @@ class TodayAndHistoryTest extends TestCase
         $today = $this->getJson('/api/v1/attendance/today');
 
         $today->assertOk();
-        $today->assertJsonPath('data.employee_id', $employee->id);
-        $today->assertJsonPath('data.checked_in', true);
-        $today->assertJsonPath('data.check_in_time', '08:00');
+        $today->assertJsonPath('data.mode', 'single');
+        $today->assertJsonPath('data.item.employee_id', $employee->id);
+        $today->assertJsonPath('data.item.checked_in', true);
+        $today->assertJsonPath('data.item.check_in_time', '08:00');
     }
 
     public function test_employee_history_returns_only_self(): void
@@ -168,7 +169,8 @@ class TodayAndHistoryTest extends TestCase
         $all = $this->getJson('/api/v1/attendance/today');
 
         $all->assertOk();
-        $all->assertJsonCount(2, 'data');
+        $all->assertJsonPath('data.mode', 'collection');
+        $all->assertJsonCount(2, 'data.items');
 
         Sanctum::actingAs($employee);
         $forbidden = $this->getJson("/api/v1/attendance/today?employee_id={$manager->id}");

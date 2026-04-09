@@ -134,4 +134,48 @@ class QuickEstimateTest extends TestCase
         $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2026-04-01&to=2026-04-05');
         $response->assertForbidden();
     }
+
+    public function test_quick_estimate_rejects_periods_longer_than_365_days(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'timezone' => 'UTC',
+            'currency' => 'DZD',
+        ]);
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'email' => 'manager@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'status' => 'active',
+            'salary_type' => 'fixed',
+            'salary_base' => 0,
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'email' => 'employee@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+            'salary_type' => 'hourly',
+            'hourly_rate' => 50,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2025-01-01&to=2026-04-08');
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['to']);
+    }
 }

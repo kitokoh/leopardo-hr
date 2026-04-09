@@ -76,7 +76,10 @@ class AttendanceController extends Controller
                 ->first();
 
             return new JsonResponse([
-                'data' => $this->serializeToday($target, $log),
+                'data' => [
+                    'mode' => 'single',
+                    'item' => $this->serializeToday($target, $log),
+                ],
             ]);
         }
 
@@ -102,11 +105,14 @@ class AttendanceController extends Controller
             })->values();
 
             return new JsonResponse([
-                'data' => $data,
-                'meta' => [
-                    'current_page' => $paginator->currentPage(),
-                    'per_page' => $paginator->perPage(),
-                    'total' => $paginator->total(),
+                'data' => [
+                    'mode' => 'collection',
+                    'items' => $data,
+                    'meta' => [
+                        'current_page' => $paginator->currentPage(),
+                        'per_page' => $paginator->perPage(),
+                        'total' => $paginator->total(),
+                    ],
                 ],
             ]);
         }
@@ -121,7 +127,10 @@ class AttendanceController extends Controller
             ->first();
 
         return new JsonResponse([
-            'data' => $this->serializeToday($actor, $log),
+            'data' => [
+                'mode' => 'single',
+                'item' => $this->serializeToday($actor, $log),
+            ],
         ]);
     }
 
