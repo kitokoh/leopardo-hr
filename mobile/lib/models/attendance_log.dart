@@ -30,8 +30,8 @@ class AttendanceLog {
       checkIn: json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
       checkOut: json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
       status: (json['status'] ?? 'incomplete') as String,
-      workedHours: hoursRaw != null ? (hoursRaw as num).toDouble() : null,
-      overtimeHours: overtimeRaw != null ? (overtimeRaw as num).toDouble() : null,
+      workedHours: hoursRaw != null ? double.tryParse(hoursRaw.toString()) : null,
+      overtimeHours: overtimeRaw != null ? double.tryParse(overtimeRaw.toString()) : null,
     );
   }
 }

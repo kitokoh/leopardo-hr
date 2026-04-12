@@ -1,4 +1,4 @@
-﻿# CHANGELOG — LEOPARDO RH
+# CHANGELOG — LEOPARDO RH
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
@@ -46,6 +46,37 @@ CODE_VERSION     = Version release applicative (git tag)
 - Blade + Alpine.js (pas Vue.js/Inertia)
 
 ---
+
+## [4.1.33] - 2026-04-11
+### Alignement anti-blocage: PHP 8.4 + Docker local versionné
+
+- Uniformisation des intitulés/versions backend dans la CI: check backend renommé en `PHP 8.4` et étape `Setup PHP 8.4` alignée
+- Workflow de déploiement mis en PHP 8.4 pour rester cohérent avec le lock Composer actuel
+- Ajout d'une stack Docker locale versionnée dans `api/docker-compose.yml` (service `app` + PostgreSQL 16)
+- Ajout d'un Dockerfile minimal `api/docker/php84/Dockerfile` pour éviter la chaîne Sail lourde qui bloquait le build local
+- Ajout d'un script `api/start-local.ps1` pour démarrer l'environnement local en une commande (option seed démo + tests)
+- Mise à jour du runbook local Docker (`RUNBOOK_LOCAL_TESTS.md`) avec commandes officielles et attentes de performance (premier build lent, redémarrages rapides)
+- Mise à jour de `PILOTAGE.md`, `api/README.md` et `.github/BRANCH_PROTECTION_REQUIRED.md` pour supprimer les incohérences 8.3/8.4
+
+---
+
+## [4.1.32] - 2026-04-09
+### Post-rapport v2 - fiabilité tests et modèle settings
+
+- `phpunit.xml` complète désormais la configuration PostgreSQL de test (`DB_CONNECTION`, hôte, port, base, utilisateur, mot de passe)
+- Ajout du modèle Eloquent `CompanySetting` pour la table `company_settings` (clé primaire string, `updated_at` géré, `created_at` absent)
+
+---
+
+## [4.1.31] - 2026-04-09
+### Hardening post-rapport v2
+
+- Optimisation de `GET /attendance/today` manager : chargement des logs filtré sur les employés de la page courante
+- Activation de `Model::preventLazyLoading()` en local dans `AppServiceProvider` pour détecter les N+1 plus tôt
+- Remplacement de la page `welcome.blade.php` Laravel de démonstration par une page backend minimale orientée Beta
+
+---
+
 
 ## [4.1.30] - 2026-04-09
 ### Gouvernance locale - Docker d'abord pour les tests backend

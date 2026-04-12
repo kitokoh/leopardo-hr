@@ -93,10 +93,12 @@ class AttendanceController extends Controller
                 ->paginate(max(1, min(100, $perPage)));
 
             $employees = collect($paginator->items());
+            $employeeIds = $employees->pluck('id')->all();
 
             $logsByEmployee = AttendanceLog::query()
                 ->where('date', $today)
                 ->where('session_number', 1)
+                ->whereIn('employee_id', $employeeIds)
                 ->get()
                 ->keyBy('employee_id');
 

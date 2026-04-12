@@ -8,7 +8,7 @@ on:
 
 jobs:
   backend-tests:
-    name: Backend (PHP 8.3 + PostgreSQL 16 + Redis 7)
+    name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
 
     services:
@@ -40,11 +40,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3
+      - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          # NOTE: composer.lock currently pins Symfony v8 packages requiring PHP >= 8.4.
-          # We run CI on 8.4 to keep backend checks green until dependencies are re-locked for 8.3.
           php-version: '8.4'
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
           coverage: xdebug

@@ -1,5 +1,4 @@
-# RUNBOOK - TESTS LOCAUX (DOCKER D'ABORD)
-# Version 4.1.29 | 09 Avril 2026
+# Version 4.1.33 | 11 Avril 2026
 
 ## Règle d'équipe
 
@@ -8,8 +7,8 @@ La CI GitHub confirme ensuite le résultat ; elle ne doit plus être le premier 
 
 ## Ordre de validation attendu
 
-1. Vérifier que Docker Desktop est réellement opérationnel
-2. Lancer les tests backend dans le conteneur PHP du projet
+1. Vérifier que Docker Desktop est opérationnel
+2. Lancer les tests backend dans le conteneur `app`
 3. Corriger localement
 4. Commit / push
 5. Laisser la CI confirmer
@@ -26,36 +25,43 @@ docker ps
 
 Si `docker version` ou `docker ps` ne répond pas rapidement, considérer Docker comme **non prêt** et corriger d'abord l'environnement local.
 
-## Commande cible backend
-
-Le projet doit exposer une commande Docker stable pour le backend, par exemple :
-
-```powershell
-docker compose exec app php artisan test
-```
-
-ou, si l'équipe utilise Laravel Sail :
+## Commandes officielles backend (local)
 
 ```powershell
 cd api
-./vendor/bin/sail test
+docker compose up -d
+docker compose exec app php -v
+docker compose exec app composer install --no-interaction --prefer-dist
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --force
+docker compose exec -e APP_ENV=testing app php artisan test
 ```
 
-## État constaté le 09 Avril 2026
+> Note: sans `APP_ENV=testing`, certains tests web peuvent retourner `419` (CSRF) en local.
 
-- Le repo contient `laravel/sail` dans `api/composer.json`
-- Aucun `docker-compose.yml` versionné n'est actuellement présent à la racine du repo ni dans `api/`
-- Sur cette machine, `docker context ls` répond, mais `docker version` / `docker ps` ont expiré sans réponse exploitable
+Alternative Windows (1 commande):
 
-## Action obligatoire avant prochain lot backend
+```powershell
+cd api
+.\start-local.ps1 -SeedDemo -RunTests
+```
 
-1. Décider et versionner la méthode Docker officielle du projet
-2. Documenter la commande exacte dans ce fichier si elle change
-3. Utiliser cette commande avant toute PR backend significative
+## État de référence au 11 Avril 2026
+
+- `api/docker-compose.yml` est désormais versionné
+- Runtime local backend aligné sur PHP 8.4 (cohérent avec la CI)
+- Service principal attendu : `app`
+- Base locale : PostgreSQL 16 (`pgsql`)
+
+## Temps de build (important)
+
+- Le **premier** `docker compose up --build` est lent (image PHP à construire)
+- Les démarrages suivants sont rapides (`docker compose up -d`)
+- Rebuild complet requis seulement si le `Dockerfile` change ou si vous forcez `--build`
 
 ## Fallback temporaire
 
-Tant que la commande Docker locale n'est pas stable :
+Si Docker local est indisponible malgré tout :
 
-- continuer à s'appuyer sur la CI GitHub pour confirmation
-- mais traiter l'absence de validation Docker locale comme un **blocage technique à lever**
+- utiliser la CI GitHub comme confirmation finale
+- ouvrir un ticket "blocage environnement Docker local" et le traiter avant le prochain lot backend
