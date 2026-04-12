@@ -77,7 +77,7 @@ Import CSV · Vue.js/Inertia · Mode schema Enterprise · 5 sous-rôles gestionn
 
 ```
 Stack MVP :
-  Backend    : Laravel 11 + PHP 8.3
+  Backend    : Laravel 11 + PHP 8.4
   BDD        : PostgreSQL 16
   Cache      : File driver (pas Redis)
   Queue      : Sync (pas Redis/Horizon)
@@ -161,7 +161,7 @@ Pays MVP :
 
 ## BLOCAGES / POINTS DE VIGILANCE
 
-- CI backend tourne temporairement en PHP 8.4, car `composer.lock` référence des paquets Symfony 8 incompatibles PHP 8.3.
+- Backend local/CI aligné en PHP 8.4 (cohérent avec `composer.lock` actuel).
 - `PILOTAGE.md` avait du retard sur l'état réel du dépôt ; corrigé dans cette version.
 - Le dossier local `bon-fixed/` existe encore sur certaines machines, mais il ne doit plus être utilisé comme source d'instruction.
 

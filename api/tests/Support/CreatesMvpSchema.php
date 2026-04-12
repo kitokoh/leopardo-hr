@@ -10,12 +10,13 @@ trait CreatesMvpSchema
 {
     protected function setUpMvpSchema(): void
     {
-        Schema::dropIfExists('personal_access_tokens');
-        Schema::dropIfExists('user_lookups');
-        Schema::dropIfExists('attendance_logs');
-        Schema::dropIfExists('employees');
-        Schema::dropIfExists('schedules');
-        Schema::dropIfExists('companies');
+        // Sur PostgreSQL, on utilise CASCADE pour s'assurer que les tables dépendantes ne bloquent pas le nettoyage
+        DB::statement('DROP TABLE IF EXISTS "personal_access_tokens" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "user_lookups" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "attendance_logs" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "employees" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "schedules" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "companies" CASCADE');
 
         Schema::create('companies', function (Blueprint $table): void {
             $table->uuid('id')->primary();
@@ -121,11 +122,11 @@ trait CreatesMvpSchema
     protected function tearDownMvpSchema(): void
     {
         app()->forgetInstance('current_company');
-        Schema::dropIfExists('personal_access_tokens');
-        Schema::dropIfExists('user_lookups');
-        Schema::dropIfExists('attendance_logs');
-        Schema::dropIfExists('employees');
-        Schema::dropIfExists('schedules');
-        Schema::dropIfExists('companies');
+        DB::statement('DROP TABLE IF EXISTS "personal_access_tokens" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "user_lookups" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "attendance_logs" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "employees" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "schedules" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "companies" CASCADE');
     }
 }

@@ -8,7 +8,30 @@
 - Queue : sync
 - Web : Blade + Alpine.js
 
-## Setup local developpeur
+## Setup local developpeur (Docker recommande)
+
+```bash
+cd api
+docker compose up -d
+docker compose exec app composer install --no-interaction --prefer-dist
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan test
+```
+
+### Démarrage 1-commande (Windows PowerShell)
+
+```powershell
+cd api
+.\start-local.ps1 -SeedDemo
+```
+
+Options utiles:
+- `-Rebuild` : reconstruit l'image Docker
+- `-SeedDemo` : injecte les comptes de démonstration (manager inclus)
+- `-RunTests` : lance `php artisan test` en fin de script
+
+## Setup local manuel (hors Docker)
 
 ```bash
 composer install

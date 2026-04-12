@@ -377,19 +377,32 @@ class DemoCompanySeeder extends Seeder
         ]);
 
         // ── Paramètres entreprise ──────────────────────────────────────────
-        DB::table('company_settings')->insert([
-            'company_id'            => $company1Id,
-            'onboarding_completed'  => true,
-            'onboarding_step_1_done' => true,
-            'onboarding_step_2_done' => true,
-            'onboarding_step_3_done' => true,
-            'onboarding_step_4_done' => true,
-            'payroll_day'           => 25,
-            'legal_id'              => '123456789',
-            'legal_id_label'        => 'NIF',
-            'created_at'            => now(),
-            'updated_at'            => now(),
-        ]);
+        DB::table('company_settings')->upsert([
+            [
+                'key' => 'onboarding_completed',
+                'value' => 'true',
+                'value_type' => 'boolean',
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'payroll_day',
+                'value' => '25',
+                'value_type' => 'integer',
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'legal_id',
+                'value' => '123456789',
+                'value_type' => 'string',
+                'updated_at' => now(),
+            ],
+            [
+                'key' => 'legal_id_label',
+                'value' => 'NIF',
+                'value_type' => 'string',
+                'updated_at' => now(),
+            ],
+        ], ['key'], ['value', 'value_type', 'updated_at']);
 
         DB::statement("SET search_path TO public");
 

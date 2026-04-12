@@ -1,0 +1,44 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php84/Dockerfile
+    container_name: leopardo-app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: pgsql
+      DB_PORT: "5432"
+      DB_DATABASE: leopardo
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  pgsql:
+    image: postgres:16-alpine
+    container_name: leopardo-pgsql
+    environment:
+      POSTGRES_DB: leopardo
+      POSTGRES_USER: sail
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - leopardo-pgsql:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sail -d leopardo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  leopardo-pgsql:

@@ -34,8 +34,8 @@ return new class extends Migration
             $table->decimal('hours_worked', 5, 2)->nullable();
             $table->decimal('overtime_hours', 5, 2)->default(0);
             $table->unsignedSmallInteger('late_minutes')->default(0);
-            $table->point('gps_check_in')->nullable();              // PostGIS point (lat,lng)
-            $table->point('gps_check_out')->nullable();
+            $table->decimal('gps_lat', 10, 8)->nullable();
+            $table->decimal('gps_lng', 11, 8)->nullable();
             $table->string('photo_check_in', 255)->nullable();      // Chemin stockage local/R2
             $table->unsignedInteger('corrected_by')->nullable();    // Employee qui a corrigé (manager)
             $table->foreign('corrected_by')->references('id')->on('employees')->nullOnDelete();

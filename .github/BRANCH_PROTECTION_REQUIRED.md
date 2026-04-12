@@ -9,7 +9,7 @@ Apply these settings in GitHub repository rules for `main` and `develop`.
 - (Optional) Dismiss stale approvals when new commits are pushed
 - Require status checks to pass before merging
 - Required checks:
-  - `Backend (PHP 8.3 + PostgreSQL 16 + Redis 7)`
+  - `Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)`
   - `Mobile Flutter (Stable Channel)`
   - `Governance Gates (changelog + canonical files)`
 - (Optional) `Notify Result` (redundant; require only if you really want a single "final" check)
