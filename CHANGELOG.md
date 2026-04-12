@@ -690,3 +690,5 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
 
+   
+ 
