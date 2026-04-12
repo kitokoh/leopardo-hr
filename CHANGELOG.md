@@ -3,6 +3,17 @@
 # Versioning : Semantic Versioning (semver.org)
 
 
+## [4.1.34] - 2026-04-12
+### Déploiement Cloud & Alignement Repository
+
+- **Infrastructure Target** : Basculement officiel de o2switch vers le couple **Render (App) + Neon (PostgreSQL)** pour la phase de développement et Beta.
+- **Production Config** : Ajout de `api/Dockerfile.prod` (FrankenPHP) optimisé pour les services Cloud managés.
+- **Nettoyage Automatisé** : Suppression du workflow `deploy.yml` (o2switch) et de toutes ses références obsolètes dans les diagrammes et guides techniques.
+- **Documentation Setup** : Création du guide `RENDER_SETUP.md` pour le déploiement "Zero-Card" sans carte bancaire.
+- **Alignement CI/CD** : Mise à jour de `19_CICD_ET_GIT.md` pour refléter le flux de déploiement automatique sur Render.
+
+---
+
 ## Convention de versioning (active a partir de 4.1.4)
 
 ```

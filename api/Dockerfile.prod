@@ -1,0 +1,61 @@
+# Image de base moderne avec FrankenPHP et PHP 8.4
+FROM dunglas/frankenphp:1.2-php8.4-alpine
+
+# Configuration de l'environnement Laravel
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV LOG_CHANNEL=stderr
+ENV RUN_MIGRATIONS=true
+
+# Installation des extensions PHP nécessaires à Leopardo RH
+RUN install-php-extensions \
+    pcntl \
+    pdo_pgsql \
+    gd \
+    intl \
+    zip \
+    bcmath \
+    opcache \
+    redis
+
+# Nettoyage et préparation du répertoire de travail
+WORKDIR /app
+
+# Copie des fichiers de configuration
+COPY . .
+
+# Installation des dépendances via Composer
+RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+
+# Facultatif : Compilation des assets (si nécessaire pour le dashboard Blade)
+# RUN npm install && npm run build
+
+# Optimisations Laravel
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Réglage des permissions pour Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# Port d'écoute par défaut
+EXPOSE 80 443 2019
+
+# Script d'entrée pour les migrations automatiques
+ENTRYPOINT ["php", "artisan", "migrate", "--force", "&&", "frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
+
+# Note: FrankenPHP gère l'entrée par défaut via son binaire. Pour exécuter les migrations, 
+# nous pouvons utiliser un script personnalisé ou l'ajouter dans l'entrypoint.
+COPY --chmod=755 <<EOF /usr/local/bin/docker-entrypoint.sh
+#!/bin/sh
+set -e
+
+if [ "$RUN_MIGRATIONS" = "true" ]; then
+    echo "Exécutant les migrations..."
+    php artisan migrate --force
+fi
+
+exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
+EOF
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -1,22 +1,25 @@
-# RUNBOOK - BACKUP / RESTORE
-# Version 4.1.3 | 04 Avril 2026
+# RUNBOOK : SAUVEGARDE ET RESTAURATION (Neon.tech)
+# DOCUMENT_VERSION = 1.1.0 | 12 Avril 2026
 
-## Backup standard
-- Commande: `pg_dump -Fc -U leopardo_user leopardo_db > backup.dump`
-- Frequence minimale: quotidien + avant chaque migration prod
-- Retention: 10 backups minimum
+Ce document décrit la procédure de sauvegarde et de restauration de la base de données PostgreSQL sur Neon.
 
-## Verification backup (obligatoire)
-1. Verifier presence fichier + taille non nulle
-2. Executer un restore test sur base de staging
-3. Verifier tables critiques: companies, user_lookups, employees, attendance_logs, payrolls
+## 1. Sauvegardes Automatiques (Neon Managed)
+Neon effectue des sauvegardes automatiques continues (Point-in-Time Recovery - PITR).
+- **Rétention** : 30 jours (Plan Free/Starter).
+- **Restauration** : Via la console Neon, rubrique **"Branches"** > **"Create branch from point in time"**.
 
-## Restore procedure
-1. Maintenance mode ON
-2. `pg_restore -Fc -U leopardo_user -d leopardo_db backup.dump`
-3. Verification integrite (counts de base)
-4. Maintenance mode OFF
+## 2. Sauvegardes Manuelles (DUMP)
+Pour exporter les données localement :
+```bash
+pg_dump -h ep-odd-morning-abt600ow-pooler.eu-west-2.aws.neon.tech -U neondb_owner -d neondb > backup_leopardo_$(date +%Y%m%d).sql
+```
 
-## RPO/RTO cibles
-- RPO: <= 24h
-- RTO: <= 60 min
+## 3. Restauration Manuelle
+Pour restaurer un dump vers Neon :
+```bash
+psql -h ep-odd-morning-abt600ow-pooler.eu-west-2.aws.neon.tech -U neondb_owner -d neondb -f backup_leopardo.sql
+```
+
+---
+> [!IMPORTANT]
+> En cas d'incident majeur sur Neon, contactez le support ou utilisez la fonction de branchement pour repartir d'un état sain.

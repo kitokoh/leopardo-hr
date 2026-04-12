@@ -1,5 +1,5 @@
-﻿# 🐆 LEOPARDO RH — PILOTAGE UNIQUE
-# PROGRAM_VERSION = 4.1.14 | 05 Avril 2026
+# 📑 PILOTAGE — LEOPARDO RH
+# PROGRAM_VERSION = 4.1.34 | 12 Avril 2026
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -85,7 +85,7 @@ Stack MVP :
   Frontend   : Blade + Alpine.js + Tailwind CSS (pas Vue.js/Inertia)
   Mobile     : Flutter (3 écrans)
   PDF        : DomPDF (synchrone)
-  Hébergement: VPS (Hetzner CX22 ou équivalent)
+  Hébergement: Render (Web Service) + Neon.tech (PostgreSQL)
   Tests      : Pest PHP
 
 Multitenancy MVP :
@@ -163,7 +163,7 @@ Pays MVP :
 
 - Backend local/CI aligné en PHP 8.4 (cohérent avec `composer.lock` actuel).
 - `PILOTAGE.md` avait du retard sur l'état réel du dépôt ; corrigé dans cette version.
-- Le dossier local `bon-fixed/` existe encore sur certaines machines, mais il ne doit plus être utilisé comme source d'instruction.
+- L'infrastructure cible a été déplacée de o2switch vers Render + Neon pour plus de stabilité et de gratuité en phase dev.
 
 ---
 
