@@ -1,5 +1,5 @@
 # Image de base moderne avec FrankenPHP et PHP 8.4
-FROM dunglas/frankenphp:latest-php8.4-alpine
+FROM dunglas/frankenphp:php8.4-alpine
 
 # Configuration de l'environnement Laravel
 ENV APP_ENV=production
