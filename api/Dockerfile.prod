@@ -61,6 +61,9 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     php artisan migrate --force
 fi
 
+# Configuration du port pour Render (qui interdit le port 80 en Non-Root)
+export SERVER_NAME=":${PORT:-8080}"
+
 exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
 EOF
 
