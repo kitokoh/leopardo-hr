@@ -24,6 +24,9 @@ WORKDIR /app
 # Copie des fichiers de configuration
 COPY . .
 
+# Installation de Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Installation des dépendances via Composer
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader
 
