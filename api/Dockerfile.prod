@@ -33,10 +33,8 @@ RUN composer install --no-dev --no-interaction --no-progress --optimize-autoload
 # Facultatif : Compilation des assets (si nécessaire pour le dashboard Blade)
 # RUN npm install && npm run build
 
-# Optimisations Laravel
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# On ne lance PAS config:cache pendant le build car les variables Render ne sont pas encore là.
+# Le cache sera généré au démarrage du conteneur dans l'entrypoint.
 
 # Réglage des permissions pour Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
@@ -52,6 +50,11 @@ ENTRYPOINT ["php", "artisan", "migrate", "--force", "&&", "frankenphp", "run", "
 COPY --chmod=755 <<EOF /usr/local/bin/docker-entrypoint.sh
 #!/bin/sh
 set -e
+
+echo "Optimisation de Laravel au démarrage..."
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Exécutant les migrations..."
