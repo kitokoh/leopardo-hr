@@ -39,6 +39,16 @@ RUN composer install --no-dev --no-interaction --no-progress --optimize-autoload
 # Réglage des permissions pour Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+# ==============================================================================
+# HACK RENDER.COM / HEROKU (Unprivileged Containers)
+# Le binaire FrankenPHP officiel possède la capability `cap_net_bind_service=+ep`.
+# Dans un conteneur strictement non-privilégié (NoNewPrivs), le noyau Linux 
+# refuse de lancer le binaire et renvoie "Operation not permitted" (EPERM 126).
+# La copie du fichier le purge de ses 'capabilities' additionnelles.
+# ==============================================================================
+RUN cp /usr/local/bin/frankenphp /usr/local/bin/frankenphp-nocap \
+    && mv /usr/local/bin/frankenphp-nocap /usr/local/bin/frankenphp
+
 # Port d'écoute par défaut
 EXPOSE 80 443 2019
 
