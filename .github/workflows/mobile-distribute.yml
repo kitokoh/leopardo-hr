@@ -1,0 +1,165 @@
+name: Mobile - Build and Firebase Distribution
+
+on:
+  push:
+    tags:
+      - "v*-staging"
+      - "v*-prod"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Cible de deploiement"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - prod
+      release_notes:
+        description: "Notes de version (optionnel)"
+        required: false
+        default: "Build manuel Leopardo RH"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-distribute-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-distribute:
+    name: Mobile Android Build + Distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve target environment
+        id: env_detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME:-}"
+          INPUT_ENV="${{ github.event.inputs.environment }}"
+
+          if [[ "$TAG" == *"-prod" ]]; then
+            TARGET="prod"
+            BUILD_NAME="${TAG%-prod}"
+          elif [[ "$TAG" == *"-staging" ]]; then
+            TARGET="staging"
+            BUILD_NAME="${TAG%-staging}"
+          elif [[ "$INPUT_ENV" == "prod" ]]; then
+            TARGET="prod"
+            BUILD_NAME="manual-$(date +%Y%m%d)"
+          else
+            TARGET="staging"
+            BUILD_NAME="manual-$(date +%Y%m%d)"
+          fi
+
+          echo "TARGET=$TARGET" >> "$GITHUB_ENV"
+          echo "BUILD_NAME=$BUILD_NAME" >> "$GITHUB_ENV"
+          echo "BUILD_NUMBER=${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Validate required secrets for staging distribution
+        if: env.TARGET == 'staging'
+        shell: bash
+        env:
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${FIREBASE_APP_ID}" ]]; then
+            echo "Missing GitHub secret: FIREBASE_APP_ID"
+            exit 1
+          fi
+          if [[ -z "${FIREBASE_TOKEN}" ]]; then
+            echo "Missing GitHub secret: FIREBASE_TOKEN"
+            exit 1
+          fi
+
+      - name: Place google-services.json if provided in repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT_FILE="google-services.json"
+          API_FILE="api/google-services.json"
+          APP_FILE="mobile/android/app/google-services.json"
+          if [[ -f "$ROOT_FILE" && ! -f "$APP_FILE" ]]; then
+            cp "$ROOT_FILE" "$APP_FILE"
+            echo "google-services.json copied from repo root to mobile/android/app/"
+          elif [[ -f "$API_FILE" && ! -f "$APP_FILE" ]]; then
+            cp "$API_FILE" "$APP_FILE"
+            echo "google-services.json copied from api/ to mobile/android/app/"
+          fi
+
+      - name: Flutter pub get
+        working-directory: ./mobile
+        run: flutter pub get
+
+      - name: Flutter analyze
+        working-directory: ./mobile
+        run: flutter analyze --no-fatal-infos
+
+      - name: Build release binary
+        working-directory: ./mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${TARGET}" == "prod" ]]; then
+            echo "API_BASE_URL=https://api.leopardo-rh.com/api/v1" > .env.build
+            flutter build appbundle --release \
+              --dart-define-from-file=.env.build \
+              --build-name="${BUILD_NAME}" \
+              --build-number="${BUILD_NUMBER}"
+            echo "BUILD_FILE=mobile/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
+          else
+            echo "API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1" > .env.build
+            flutter build apk --release \
+              --dart-define-from-file=.env.build \
+              --build-name="${BUILD_NAME}" \
+              --build-number="${BUILD_NUMBER}"
+            echo "BUILD_FILE=mobile/build/app/outputs/flutter-apk/app-release.apk" >> "$GITHUB_ENV"
+          fi
+
+      - name: Verify build output exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "${BUILD_FILE}"
+
+      - name: Upload mobile artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: leopardo-rh-${{ env.TARGET }}-${{ env.BUILD_NAME }}
+          path: ${{ env.BUILD_FILE }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Firebase App Distribution (staging)
+        if: env.TARGET == 'staging'
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testeurs-internes
+          file: ${{ env.BUILD_FILE }}
+          releaseNotes: |
+            Leopardo RH ${{ env.BUILD_NAME }}
+            Ref: ${{ github.ref_name }}
+            Notes: ${{ github.event.inputs.release_notes || 'Tag build' }}
+            Backend: https://gestionemployerbackend.onrender.com

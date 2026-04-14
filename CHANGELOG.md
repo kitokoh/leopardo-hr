@@ -68,6 +68,9 @@ CODE_VERSION     = Version release applicative (git tag)
 - Ajout d'un script `api/start-local.ps1` pour démarrer l'environnement local en une commande (option seed démo + tests)
 - Mise à jour du runbook local Docker (`RUNBOOK_LOCAL_TESTS.md`) avec commandes officielles et attentes de performance (premier build lent, redémarrages rapides)
 - Mise à jour de `PILOTAGE.md`, `api/README.md` et `.github/BRANCH_PROTECTION_REQUIRED.md` pour supprimer les incohérences 8.3/8.4
+- Durcissement du workflow mobile `.github/workflows/mobile-distribute.yml` (détection d'environnement, contrôle des secrets, vérification d'artefact, upload strict, distribution Firebase staging)
+- Ajout d'un fallback workflow pour copier `google-services.json` depuis la racine (ou `api/`) vers `mobile/android/app` si présent
+- Ajout d'une note de démarrage App Distribution dans `README.md`
 
 ---
 
@@ -691,6 +694,11 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Structure initiale des dossiers.
 
    
+    
+    
+    
+    
+    
     
     
     

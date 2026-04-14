@@ -10,3 +10,8 @@ Points d'entrée:
 - `docs/README.md` (index documentation technique)
 - `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` (démarrage exécution MVP)
 
+Distribution mobile (Firebase App Distribution):
+- Workflow: `.github/workflows/mobile-distribute.yml`
+- Trigger staging: `git tag v1.0-staging && git push origin v1.0-staging`
+- Secrets requis (GitHub Actions): `FIREBASE_APP_ID`, `FIREBASE_TOKEN`
+
