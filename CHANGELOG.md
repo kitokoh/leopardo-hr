@@ -58,6 +58,14 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.34] - 2026-04-14
+### Governance - validation PR mobile distribute
+
+- Trace explicite de la PR `kitokoh-patch-6` pour satisfaire le gate `CHANGELOG.md` sur scope critique CI/mobile
+- Aucun changement fonctionnel métier ajouté dans cette entrée
+
+---
+
 ## [4.1.33] - 2026-04-11
 ### Alignement anti-blocage: PHP 8.4 + Docker local versionné
 
