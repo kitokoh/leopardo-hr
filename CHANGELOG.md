@@ -58,6 +58,15 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.35] - 2026-04-14
+### CI mobile - migration Node 24
+
+- Workflow mobile `mobile-distribute.yml` aligné sur Node 24 (`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`)
+- Actions GitHub migrées vers versions récentes: `actions/checkout@v5`, `actions/setup-java@v5`, `actions/upload-artifact@v5`
+- Objectif: supprimer l’avertissement de dépréciation Node 20 et sécuriser la compatibilité runners 2026
+
+---
+
 ## [4.1.34] - 2026-04-14
 ### Governance - validation PR mobile distribute
 
