@@ -1,0 +1,23 @@
+# Git Attributes — Leopardo RH
+# Définit les stratégies de merge par type de fichier
+
+# CHANGELOG : stratégie union = accepte les deux ajouts sans conflit
+CHANGELOG.md merge=union
+
+# Fichiers texte : normalisation des fins de ligne
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf
+*.php   text eol=lf
+*.dart  text eol=lf
+*.sh    text eol=lf
+
+# Fichiers binaires
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.apk   binary
+*.aab   binary
