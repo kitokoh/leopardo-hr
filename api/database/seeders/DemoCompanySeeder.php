@@ -36,7 +36,7 @@ class DemoCompanySeeder extends Seeder
         DB::statement("SET search_path TO public");
 
         // ── Récupérer le plan Starter ──────────────────────────────────────
-        $starterPlan = DB::table('plans')->where('name', 'Starter')->first();
+        $starterPlan = DB::table('public.plans')->where('name', 'Starter')->first();
         if (! $starterPlan) {
             $this->command->error('Plans non trouvés — exécuter DatabaseSeeder d\'abord');
             return;
