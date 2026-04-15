@@ -58,6 +58,14 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
+## [4.1.36] - 2026-04-16
+### Governance - PR codex/ci-node24-mobile-workflow
+
+- Trace de conformité pour la PR `codex/ci-node24-mobile-workflow` (scope critique mobile/api/.github)
+- Correctifs inclus dans la PR: `MainActivity` Android, `DemoCompanySeeder`, et workflow mobile Node24
+
+---
+
 ## [4.1.35] - 2026-04-14
 ### CI mobile - migration Node 24
 
