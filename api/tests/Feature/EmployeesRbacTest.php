@@ -247,7 +247,7 @@ class EmployeesRbacTest extends TestCase
         ]);
     }
 
-    public function test_manager_can_create_employee_with_email_used_by_another_company(): void
+    public function test_manager_cannot_create_employee_with_email_used_by_another_company(): void
     {
         $companyA = Company::query()->create([
             'name' => 'Company A',
@@ -300,11 +300,8 @@ class EmployeesRbacTest extends TestCase
                 'role' => 'employee',
             ]);
 
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('employees', [
-            'company_id' => $companyA->id,
-            'email' => 'shared@tenant.test',
-        ]);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['email']);
     }
 
     public function test_manager_can_create_employee_with_matricule_used_by_another_company(): void

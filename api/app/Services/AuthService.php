@@ -19,7 +19,7 @@ class AuthService
     public function login(string $email, string $password, ?string $deviceName = null): array
     {
         $lookup = null;
-        if (Schema::hasTable('user_lookups')) {
+        if ($this->lookupTableExists()) {
             $lookup = DB::table($this->lookupTable())
                 ->where('email', $email)
                 ->first();
@@ -75,5 +75,16 @@ class AuthService
     private function lookupTable(): string
     {
         return DB::getDriverName() === 'pgsql' ? 'public.user_lookups' : 'user_lookups';
+    }
+
+    private function lookupTableExists(): bool
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return Schema::hasTable('user_lookups');
+        }
+
+        $table = DB::selectOne("select to_regclass('public.user_lookups') as table_name");
+
+        return $table?->table_name !== null;
     }
 }

@@ -10,13 +10,8 @@ trait CreatesMvpSchema
 {
     protected function setUpMvpSchema(): void
     {
-        // Sur PostgreSQL, on utilise CASCADE pour s'assurer que les tables dépendantes ne bloquent pas le nettoyage
-        DB::statement('DROP TABLE IF EXISTS "personal_access_tokens" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "user_lookups" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "attendance_logs" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "employees" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "schedules" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "companies" CASCADE');
+        $this->preparePostgresSchemas();
+        $this->dropMvpTables();
 
         Schema::create('companies', function (Blueprint $table): void {
             $table->uuid('id')->primary();
@@ -35,6 +30,21 @@ trait CreatesMvpSchema
             $table->char('language', 2)->default('fr');
             $table->string('timezone', 50)->default('Africa/Algiers');
             $table->char('currency', 3)->default('DZD');
+            $table->timestamps();
+        });
+
+        Schema::create('schedules', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('name', 100);
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->unsignedSmallInteger('break_minutes')->default(60);
+            $table->json('work_days')->nullable();
+            $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
+            $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);
+            $table->decimal('overtime_threshold_weekly', 5, 2)->default(40.00);
+            $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
 
@@ -58,31 +68,8 @@ trait CreatesMvpSchema
             $table->timestampTz('last_login_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['company_id', 'email']);
+            $table->unique('email');
             $table->unique(['company_id', 'matricule']);
-        });
-
-        Schema::create('user_lookups', function (Blueprint $table): void {
-            $table->string('email', 150)->primary();
-            $table->uuid('company_id');
-            $table->string('schema_name', 63);
-            $table->unsignedInteger('employee_id');
-            $table->string('role', 20);
-        });
-
-        Schema::create('schedules', function (Blueprint $table): void {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('name', 100);
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->unsignedSmallInteger('break_minutes')->default(60);
-            $table->json('work_days')->nullable();
-            $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
-            $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);
-            $table->decimal('overtime_threshold_weekly', 5, 2)->default(40.00);
-            $table->boolean('is_default')->default(false);
-            $table->timestamps();
         });
 
         Schema::create('attendance_logs', function (Blueprint $table): void {
@@ -117,16 +104,67 @@ trait CreatesMvpSchema
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
         });
+
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('CREATE TABLE public.user_lookups (
+                email varchar(150) primary key,
+                company_id uuid not null,
+                schema_name varchar(63) not null,
+                employee_id integer not null,
+                role varchar(20) not null
+            )');
+        } else {
+            Schema::create('user_lookups', function (Blueprint $table): void {
+                $table->string('email', 150)->primary();
+                $table->uuid('company_id');
+                $table->string('schema_name', 63);
+                $table->unsignedInteger('employee_id');
+                $table->string('role', 20);
+            });
+        }
+
+        $this->restoreDefaultSearchPath();
     }
 
     protected function tearDownMvpSchema(): void
     {
         app()->forgetInstance('current_company');
+        $this->dropMvpTables();
+        $this->restoreDefaultSearchPath();
+    }
+
+    private function preparePostgresSchemas(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        DB::statement('CREATE SCHEMA IF NOT EXISTS public');
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+    }
+
+    private function dropMvpTables(): void
+    {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('DROP TABLE IF EXISTS public.user_lookups CASCADE');
+            DB::statement('DROP TABLE IF EXISTS public.hr_model_templates CASCADE');
+        }
+
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens" CASCADE');
         DB::statement('DROP TABLE IF EXISTS "user_lookups" CASCADE');
         DB::statement('DROP TABLE IF EXISTS "attendance_logs" CASCADE');
         DB::statement('DROP TABLE IF EXISTS "employees" CASCADE');
         DB::statement('DROP TABLE IF EXISTS "schedules" CASCADE');
         DB::statement('DROP TABLE IF EXISTS "companies" CASCADE');
+        DB::statement('DROP TABLE IF EXISTS "hr_model_templates" CASCADE');
+    }
+
+    private function restoreDefaultSearchPath(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        DB::statement('SET search_path TO shared_tenants,public');
     }
 }

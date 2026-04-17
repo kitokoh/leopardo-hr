@@ -116,7 +116,13 @@ class Employee extends Authenticatable
             return false;
         }
 
-        return Schema::hasTable('user_lookups');
+        if (DB::getDriverName() !== 'pgsql') {
+            return Schema::hasTable('user_lookups');
+        }
+
+        $table = DB::selectOne("select to_regclass('public.user_lookups') as table_name");
+
+        return $table?->table_name !== null;
     }
 
     private function userLookupTable(): string

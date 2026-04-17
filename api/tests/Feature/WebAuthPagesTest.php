@@ -53,7 +53,11 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->post('/login', [
+        $this->get('/login');
+        $token = session()->token();
+
+        $response = $this->withSession(['_token' => $token])->post('/login', [
+            '_token' => $token,
             'email' => 'manager@company.test',
             'password' => 'password123',
         ]);
@@ -84,7 +88,11 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->from('/login')->post('/login', [
+        $this->get('/login');
+        $token = session()->token();
+
+        $response = $this->from('/login')->withSession(['_token' => $token])->post('/login', [
+            '_token' => $token,
             'email' => 'employee@company.test',
             'password' => 'password123',
         ]);
@@ -116,7 +124,11 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->from('/login')->post('/login', [
+        $this->get('/login');
+        $token = session()->token();
+
+        $response = $this->from('/login')->withSession(['_token' => $token])->post('/login', [
+            '_token' => $token,
             'email' => 'manager@company.test',
             'password' => 'password123',
         ]);
