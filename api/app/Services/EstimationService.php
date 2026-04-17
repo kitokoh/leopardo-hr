@@ -230,7 +230,7 @@ class EstimationService
     {
         $defaultRate = $countryCode === 'DZ' ? 0.09 : 0.0;
 
-        if (! Schema::hasTable('hr_model_templates')) {
+        if (! $this->hrModelTemplatesTableExists()) {
             return $defaultRate;
         }
 
@@ -245,5 +245,16 @@ class EstimationService
         $cotisations = json_decode((string) $row->cotisations, true);
 
         return (float) ($cotisations['total_salarial'] ?? $defaultRate);
+    }
+
+    private function hrModelTemplatesTableExists(): bool
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return Schema::hasTable('hr_model_templates');
+        }
+
+        $table = DB::selectOne("select to_regclass('public.hr_model_templates') as table_name");
+
+        return $table?->table_name !== null;
     }
 }

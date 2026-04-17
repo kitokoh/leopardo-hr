@@ -32,7 +32,7 @@ class StoreEmployeeRequest extends FormRequest
                 'required',
                 'email',
                 'max:150',
-                Rule::unique('employees', 'email')->where(fn ($query) => $query->where('company_id', $companyId)),
+                Rule::unique('employees', 'email'),
             ],
             'password' => ['required', 'string', 'min:8', 'max:255'],
             'contract_start' => ['nullable', 'date_format:Y-m-d'],

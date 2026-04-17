@@ -29,6 +29,7 @@ Ajoutez ces variables une par une dans l'interface de Render :
 | `APP_KEY` | *(Copiez celle de votre .env local)* | Indispensable pour le chiffrement |
 | `DB_CONNECTION` | `pgsql` | |
 | `DB_URL` | *(L'URL complète copiée de Neon)* | Inclure le mot de passe |
+| `DB_SEARCH_PATH` | `shared_tenants,public` | Requis pour le mode shared multi-tenant |
 | `APP_ENV` | `production` | |
 | `APP_DEBUG` | `false` | |
 | `RUN_MIGRATIONS` | `true` | Exécute les tables au premier démarrage |

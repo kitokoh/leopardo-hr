@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.37] - 2026-04-16
+### Hygiene deploy
+
+- Secrets et identifiants sensibles redactes dans `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md`
+- Ajout d'une check-list de diagnostic pour le cas `/login` en erreur 500 avec API health fonctionnelle
+- Correction du `search_path` PostgreSQL pour viser `shared_tenants,public` en environnement shared
+- Decoupage des factories tenant en fichiers PSR-4 dedies pour supprimer les warnings Composer au build Render
+- Ajout de `DB_SEARCH_PATH` dans `docs/GESTION_PROJET/RENDER_SETUP.md` pour aligner la procedure Render sur le runtime reel
+- Alignement complet de l'unicite email sur une regle globale plateforme (schema, validation, tests, auth routing)
+- Ajout d'une migration corrective pour convertir les bases deja deployees vers l'unicite globale de `employees.email`
 
 ## [4.1.34] - 2026-04-12
 ### Déploiement Cloud & Alignement Repository
