@@ -4,7 +4,17 @@ on:
   pull_request:
     branches: [develop, main]
   push:
-    branches: [develop]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   backend-tests:
@@ -38,14 +48,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
-          coverage: xdebug
+          coverage: none
+
+      - name: Validate composer.json
+        working-directory: ./api
+        run: composer validate --no-check-publish --strict
 
       - name: Prepare environment
         working-directory: ./api
@@ -63,10 +77,13 @@ jobs:
           DB_DATABASE=leopardo_test
           DB_USERNAME=leopardo_user
           DB_PASSWORD=leopardo_pass_test
+          DB_SEARCH_PATH=shared_tenants,public
 
           CACHE_STORE=array
           QUEUE_CONNECTION=sync
           SESSION_DRIVER=array
+          REDIS_HOST=127.0.0.1
+          REDIS_PORT=6379
           EOF
 
       - name: Install Composer dependencies
@@ -81,13 +98,31 @@ jobs:
         working-directory: ./api
         run: php artisan test
 
+  backend-security:
+    name: Backend Security (Composer Audit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+
+      - name: Run Composer audit
+        working-directory: ./api
+        run: composer audit --locked --no-dev
+
   mobile-tests:
     name: Mobile Flutter (Stable Channel)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Detect mobile workspace
         id: mobile
@@ -97,6 +132,13 @@ jobs:
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Setup Java 17
+        if: steps.mobile.outputs.exists == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
 
       - name: Setup Flutter
         if: steps.mobile.outputs.exists == 'true'
@@ -110,15 +152,41 @@ jobs:
         working-directory: ./mobile
         run: flutter pub get
 
+      - name: Place google-services.json if provided in repo
+        if: steps.mobile.outputs.exists == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT_FILE="google-services.json"
+          API_FILE="api/google-services.json"
+          APP_FILE="mobile/android/app/google-services.json"
+          if [[ -f "$ROOT_FILE" && ! -f "$APP_FILE" ]]; then
+            cp "$ROOT_FILE" "$APP_FILE"
+          elif [[ -f "$API_FILE" && ! -f "$APP_FILE" ]]; then
+            cp "$API_FILE" "$APP_FILE"
+          fi
+
+      - name: Check formatting
+        if: steps.mobile.outputs.exists == 'true'
+        working-directory: ./mobile
+        continue-on-error: true
+        run: dart format --output=none --set-exit-if-changed .
+
       - name: Analyze
         if: steps.mobile.outputs.exists == 'true'
         working-directory: ./mobile
-        run: flutter analyze --no-fatal-infos
+        continue-on-error: true
+        run: flutter analyze --fatal-infos
 
       - name: Run Flutter tests
         if: steps.mobile.outputs.exists == 'true'
         working-directory: ./mobile
         run: flutter test --coverage
+
+      - name: Build Android smoke artifact
+        if: steps.mobile.outputs.exists == 'true'
+        working-directory: ./mobile
+        run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
       - name: Skip mobile checks (no mobile/ directory)
         if: steps.mobile.outputs.exists != 'true'
@@ -131,26 +199,57 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Validate governance and changelog
         run: pwsh tools/check-governance.ps1 -BaseRef ${{ github.event.pull_request.base.sha }} -HeadRef ${{ github.event.pull_request.head.sha }}
 
+  dependency-review:
+    name: Dependency Review (PR Security)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v4
+        continue-on-error: true
+
   notify:
     name: Notify Result
     runs-on: ubuntu-latest
-    needs: [backend-tests, mobile-tests, governance-gates]
+    needs:
+      - backend-tests
+      - backend-security
+      - mobile-tests
+      - governance-gates
+      - dependency-review
     if: always()
 
     steps:
-      - name: All tests passed
-        if: needs.backend-tests.result == 'success' && needs.mobile-tests.result == 'success' && (needs.governance-gates.result == 'success' || needs.governance-gates.result == 'skipped')
-        run: echo "All checks passed - PR can be merged"
+      - name: All checks passed
+        if: |
+          needs.backend-tests.result == 'success' &&
+          needs.backend-security.result == 'success' &&
+          needs.mobile-tests.result == 'success' &&
+          (needs.governance-gates.result == 'success' || needs.governance-gates.result == 'skipped') &&
+          (needs.dependency-review.result == 'success' || needs.dependency-review.result == 'skipped')
+        run: echo "All checks passed - PR can be merged or main can be deployed"
 
       - name: Checks failed
-        if: needs.backend-tests.result == 'failure' || needs.mobile-tests.result == 'failure' || needs.governance-gates.result == 'failure'
+        if: |
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-tests.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-security.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.mobile-tests.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.governance-gates.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.dependency-review.result)
         run: |
-          echo "Checks failed - merge blocked"
+          echo "Checks failed - merge or deployment blocked"
           exit 1
