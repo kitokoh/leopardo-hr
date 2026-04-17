@@ -42,7 +42,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # ==============================================================================
 # HACK RENDER.COM / HEROKU (Unprivileged Containers)
 # Le binaire FrankenPHP officiel possède la capability `cap_net_bind_service=+ep`.
-# Dans un conteneur strictement non-privilégié (NoNewPrivs), le noyau Linux 
+# Dans un conteneur strictement non-privilégié (NoNewPrivs), le noyau Linux
 # refuse de lancer le binaire et renvoie "Operation not permitted" (EPERM 126).
 # La copie du fichier le purge de ses 'capabilities' additionnelles.
 # ==============================================================================
@@ -53,10 +53,6 @@ RUN cp /usr/local/bin/frankenphp /usr/local/bin/frankenphp-nocap \
 EXPOSE 80 443 2019
 
 # Script d'entrée pour les migrations automatiques
-ENTRYPOINT ["php", "artisan", "migrate", "--force", "&&", "frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
-
-# Note: FrankenPHP gère l'entrée par défaut via son binaire. Pour exécuter les migrations, 
-# nous pouvons utiliser un script personnalisé ou l'ajouter dans l'entrypoint.
 COPY --chmod=755 <<EOF /usr/local/bin/docker-entrypoint.sh
 #!/bin/sh
 set -e
@@ -68,7 +64,29 @@ php artisan view:cache
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Exécutant les migrations..."
-    php artisan migrate --force
+    attempt=1
+    max_attempts=3
+
+    while [ "$attempt" -le "$max_attempts" ]; do
+        if php artisan migrate --force >/tmp/render-migrate.log 2>&1; then
+            cat /tmp/render-migrate.log
+            break
+        fi
+
+        cat /tmp/render-migrate.log
+
+        if grep -Eq 'SQLSTATE\[42P07\]|relation "migrations" already exists' /tmp/render-migrate.log; then
+            echo "Table des migrations créée concurremment, nouvelle tentative..."
+        elif [ "$attempt" -lt "$max_attempts" ]; then
+            echo "Échec des migrations (tentative $attempt/$max_attempts), nouvelle tentative dans 5 secondes..."
+            sleep 5
+        else
+            echo "Échec définitif des migrations."
+            exit 1
+        fi
+
+        attempt=$((attempt + 1))
+    done
 fi
 
 # Configuration du port pour Render (qui interdit le port 80 en Non-Root)

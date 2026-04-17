@@ -1,0 +1,53 @@
+name: CodeQL - Leopardo RH
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * 1"
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+  security-events: write
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL (Backend)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || vars.ENABLE_CODEQL_PR == 'true'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [php]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
+          coverage: none
+
+      - name: Install Composer dependencies
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
