@@ -123,37 +123,68 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-      - name: Detect mobile workspace
+      - name: Detect mobile workspace and changes
         id: mobile
+        shell: bash
         run: |
+          set -euo pipefail
+
           if [ -f "mobile/pubspec.yaml" ]; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
+          CHANGED=false
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="${{ github.event.pull_request.base.ref }}"
+            git fetch --no-tags --prune --depth=1 origin "${BASE_REF}"
+            if git diff --name-only "origin/${BASE_REF}...HEAD" | grep -q '^mobile/'; then
+              CHANGED=true
+            fi
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
+            if [ -n "${BEFORE}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
+              if git diff --name-only "${BEFORE}" "${AFTER}" | grep -q '^mobile/'; then
+                CHANGED=true
+              fi
+            else
+              if git show --name-only --pretty="" "${AFTER}" | grep -q '^mobile/'; then
+                CHANGED=true
+              fi
+            fi
+          fi
+
+          echo "changed=${CHANGED}" >> "$GITHUB_OUTPUT"
+          echo "Mobile changed: ${CHANGED}"
+
       - name: Setup Java 17
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Flutter
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Install dependencies
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         working-directory: ./mobile
         run: flutter pub get
 
       - name: Place google-services.json if provided in repo
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -167,30 +198,30 @@ jobs:
           fi
 
       - name: Check formatting
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         working-directory: ./mobile
         continue-on-error: true
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         working-directory: ./mobile
         continue-on-error: true
         run: flutter analyze --fatal-infos
 
       - name: Run Flutter tests
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         working-directory: ./mobile
         run: flutter test --coverage
 
       - name: Build Android smoke artifact
-        if: steps.mobile.outputs.exists == 'true'
+        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         working-directory: ./mobile
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
-      - name: Skip mobile checks (no mobile/ directory)
-        if: steps.mobile.outputs.exists != 'true'
-        run: echo "Mobile workspace not present in this branch; skipping."
+      - name: Skip mobile checks (no mobile change)
+        if: steps.mobile.outputs.exists != 'true' || steps.mobile.outputs.changed != 'true'
+        run: echo "No mobile changes detected for this push/PR; mobile pipeline skipped."
 
   governance-gates:
     name: Governance Gates (changelog + canonical files)
