@@ -85,11 +85,12 @@ wait_for_db_bootstrap() {
 
 run_migrate_with_retry() {
     path="$1"
+    search_path="$2"
     attempt=1
     max_attempts=3
 
     while [ "$attempt" -le "$max_attempts" ]; do
-        if php artisan migrate --path="$path" --force --isolated >/tmp/render-migrate.log 2>&1; then
+        if DB_SEARCH_PATH="$search_path" php artisan migrate --path="$path" --force --isolated >/tmp/render-migrate.log 2>&1; then
             cat /tmp/render-migrate.log
             return 0
         fi
@@ -103,7 +104,7 @@ run_migrate_with_retry() {
             else
                 echo "Migrations table race persisted for $path after $max_attempts attempts."
                 echo "Running isolated global catch-up migrations..."
-                if php artisan migrate --force --isolated >/tmp/render-migrate-catchup.log 2>&1; then
+                if DB_SEARCH_PATH="$search_path" php artisan migrate --path="$path" --force --isolated >/tmp/render-migrate-catchup.log 2>&1; then
                     cat /tmp/render-migrate-catchup.log
                     return 0
                 fi
@@ -129,10 +130,10 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     wait_for_db_bootstrap
 
     echo "Running public schema migrations..."
-    run_migrate_with_retry "database/migrations/public"
+    run_migrate_with_retry "database/migrations/public" "public"
 
     echo "Running tenant schema migrations..."
-    run_migrate_with_retry "database/migrations/tenant"
+    run_migrate_with_retry "database/migrations/tenant" "shared_tenants"
 
     echo "Running base seeders (idempotent)..."
     php artisan db:seed --class=DatabaseSeeder --force
