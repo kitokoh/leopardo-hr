@@ -5,15 +5,16 @@ import 'package:leopardo_rh/core/api/api_exceptions.dart';
 import 'package:leopardo_rh/core/api/mock_interceptor.dart';
 
 class ApiClient {
+  static const String _defaultRenderBaseUrl = 'https://gestionemployerbackend.onrender.com/api/v1';
   final Dio _dio;
   final SecureStorage _storage;
   final VoidCallback? onUnauthorized;
 
   ApiClient(this._storage, {this.onUnauthorized})
       : _dio = Dio(BaseOptions(
-          baseUrl: const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://10.0.2.2:8000/api/v1'),
-          connectTimeout: const Duration(seconds: 90),
-          receiveTimeout: const Duration(seconds: 90),
+          baseUrl: resolveBaseUrl(),
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 20),
           headers: {'Accept': 'application/json'},
         )) {
     _dio.interceptors.add(
@@ -47,6 +48,15 @@ class ApiClient {
   }
 
   Dio get dio => _dio;
+
+  static String resolveBaseUrl() {
+    const configured = String.fromEnvironment('API_BASE_URL', defaultValue: '');
+    if (configured.isEmpty) {
+      return _defaultRenderBaseUrl;
+    }
+
+    return configured;
+  }
 
   DioException _handleError(DioException e) {
     String message = "Impossible de se connecter au serveur";

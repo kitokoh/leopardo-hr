@@ -2,6 +2,62 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.51] - 2026-04-18
+### Deblocage des checks GitHub Actions de PR
+
+- `.github/workflows/tests.yml` corrige le job `notify` pour ne plus utiliser `secrets.*` directement dans le `if` de l'etape d'email
+- Les secrets SMTP optionnels sont exposes via `env` au niveau du job puis reutilises dans l'action d'envoi de mail
+- Ce correctif vise a eviter l'echec immediat du workflow `Tests - Leopardo RH` avant la creation effective des checks requis sur la PR
+- Le job backend CI bootstrappe maintenant explicitement `public.migrations` et `shared_tenants.migrations`
+- Les migrations CI sont desormais executees avec `DB_SEARCH_PATH=public` puis `DB_SEARCH_PATH=shared_tenants` pour eviter le conflit sur la table `migrations`
+
+## [4.1.50] - 2026-04-18
+### Correctif connexion mobile et validation login
+
+- `mobile/lib/core/api/api_client.dart` pointe maintenant par defaut vers l'API Render au lieu de `10.0.2.2`
+- Timeouts mobile reduits pour eviter l'impression de boucle infinie au login
+- `mobile/lib/features/auth/screens/login_screen.dart` ajoute une validation simple et compatible avec les comptes de test existants
+- `mobile/lib/features/auth/providers/auth_provider.dart` remonte proprement tous les messages `ApiException`
+- `mobile/test/features/auth/login_screen_test.dart` couvre la resolution par defaut de `API_BASE_URL`
+
+## [4.1.49] - 2026-04-18
+### Scenarios mobile exhaustifs par role
+
+- Refonte complete de `docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md`
+- Couverture etendue a tous les profils: Super Admin, Owner/Admin, HR, Manager, Employee, Finance, compte bloque
+- Ajout d'une matrice de test exhaustive par domaine fonctionnel (auth, permissions, employes, presence, conges, paie, notifications, resilience, securite)
+- Ajout des parcours E2E minimaux obligatoires par role
+- Clarification du mapping CI GitHub Actions et des criteres de validation `GO/NO GO`
+- Ajout de `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md` pour formaliser la couverture backend complete par role, domaine metier, securite et contrats API
+- Mise a jour de `.github/workflows/tests.yml` et `docs/GESTION_PROJET/RAPPORT_QA_CI_2026-04-18.md` pour referencer explicitement les scenarios API et les gaps backend a fermer
+- Ajout de tests backend reels pour les garde-fous auth, les contrats JSON critiques consommes par Flutter et l'isolation estimation inter-tenant
+- Ajout de `docs/GESTION_PROJET/DOSSIER_REPONSE_AU_CAHIER_DES_CHARGES.md` comme reponse formelle au cahier des charges avec architecture, deploiement, modules valides et ecarts restants
+- Normalisation des reponses API `404` JSON pour renvoyer `RESOURCE_NOT_FOUND` de maniere stable sur les chemins consommes par la CI et le mobile
+
+## [4.1.48] - 2026-04-18
+### CI report central + scenarios mobile Flutter
+
+- .github/workflows/tests.yml genere maintenant un rapport CI central (ci-report.md) et l'uploade en artefact
+- Ajout d'un envoi email optionnel du rapport CI via SMTP (secrets CI_SMTP_SERVER / CI_SMTP_USERNAME / CI_SMTP_PASSWORD)
+- Ajout de docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md avec scenarios de test mobile Flutter (auth, presence, resilience, securite)
+
+## [4.1.47] - 2026-04-18
+### QA pro: CI scenario coverage + super admin reset flow
+
+- Renforcement de .github/workflows/tests.yml avec execution distincte des tests backend Unit puis Feature
+- Migrations CI executees explicitement par schemas (database/migrations/public puis database/migrations/tenant) avec --isolated
+- Ajout d'artefacts de tests CI (rapports backend JUnit + logs, couverture mobile lcov.info)
+- api/database/seeders/SuperAdminSeeder.php supporte la reinitialisation forcee du mot de passe (FORCE_SUPER_ADMIN_PASSWORD_RESET=true + SUPER_ADMIN_PASSWORD)
+- Ajout de la commande artisan super-admin:reset-password dans api/routes/console.php
+- Ajout du rapport QA dans docs/GESTION_PROJET/RAPPORT_QA_CI_2026-04-18.md
+
+## [4.1.46] - 2026-04-18
+### Silence duplicate plans migration race
+
+- Migration api/database/migrations/public/2026_04_01_000001_create_plans_table.php rendue idempotente et tolerante a SQLSTATE 42P07
+- Ajout d'un garde-fou Schema::hasTable('plans') + capture QueryException sur creation concurrente
+- Objectif: supprimer le bruit d'erreur relation "plans" already exists pendant le boot multi-instance
+
 ## [4.1.45] - 2026-04-18
 ### Bootstrap DB_URL + retry readiness (Render)
 
@@ -804,6 +860,12 @@ docs(erd): unify manager_id and remove supervisor_id from employees
     
     
  
+
+
+
+
+
+
 
 
 

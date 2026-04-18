@@ -44,7 +44,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: false, employee: data['employee']);
       return true;
     } catch (e) {
-      if (e is ApiException && e.statusCode == 403) {
+      if (e is ApiException) {
         state = state.copyWith(isLoading: false, error: e.message);
         return false;
       }

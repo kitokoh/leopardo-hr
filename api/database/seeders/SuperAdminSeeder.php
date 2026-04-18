@@ -20,11 +20,26 @@ class SuperAdminSeeder extends Seeder
         DB::statement("SET search_path TO public");
 
         $email = env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com');
-        $password = env('SUPER_ADMIN_PASSWORD', 'CHANGER_EN_PROD_' . bin2hex(random_bytes(8)));
+        $passwordFromEnv = env('SUPER_ADMIN_PASSWORD');
+        $password = $passwordFromEnv ?: ('CHANGER_EN_PROD_' . bin2hex(random_bytes(8)));
+        $forceReset = filter_var(env('FORCE_SUPER_ADMIN_PASSWORD_RESET', false), FILTER_VALIDATE_BOOLEAN);
 
         $existing = DB::table('super_admins')->where('email', $email)->first();
 
         if ($existing) {
+            if ($forceReset && $passwordFromEnv) {
+                DB::table('super_admins')
+                    ->where('email', $email)
+                    ->update([
+                        'password_hash' => Hash::make($passwordFromEnv),
+                    ]);
+                $this->command->info("✅ Mot de passe Super Admin réinitialisé : {$email}");
+                if (app()->environment('local', 'development')) {
+                    $this->command->warn("   🔑 Nouveau mot de passe : {$passwordFromEnv}");
+                }
+                return;
+            }
+
             $this->command->warn("⚠️  Super Admin déjà existant : {$email} — non modifié");
             return;
         }

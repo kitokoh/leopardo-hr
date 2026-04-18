@@ -1,8 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:leopardo_rh/core/api/api_client.dart';
 import 'package:leopardo_rh/features/auth/data/auth_repository.dart';
 import 'package:leopardo_rh/models/employee.dart';
 
 void main() {
+  test('uses render api as default base url when none is provided', () {
+    expect(ApiClient.resolveBaseUrl(), 'https://gestionemployerbackend.onrender.com/api/v1');
+  });
+
   test('extracts token from root API payload', () {
     final payload = {
       'data': {
