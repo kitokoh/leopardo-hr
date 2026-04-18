@@ -90,13 +90,58 @@ jobs:
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Run migrations
+      - name: Bootstrap migration repositories
         working-directory: ./api
-        run: php artisan migrate --force
+        run: |
+          php <<'PHP'
+          <?php
+          $dsn = 'pgsql:host=127.0.0.1;port=5432;dbname=leopardo_test';
+          $pdo = new PDO($dsn, 'leopardo_user', 'leopardo_pass_test', [
+              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          ]);
 
-      - name: Run backend tests
+          $pdo->exec(<<<'SQL'
+          CREATE SCHEMA IF NOT EXISTS shared_tenants;
+          CREATE TABLE IF NOT EXISTS public.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          SQL);
+
+          echo "Migration repositories ensured for public/shared_tenants.\n";
+          PHP
+
+      - name: Run public migrations
         working-directory: ./api
-        run: php artisan test
+        run: DB_SEARCH_PATH=public php artisan migrate --path=database/migrations/public --force --isolated
+
+      - name: Run tenant migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
+
+      - name: Run backend unit tests
+        working-directory: ./api
+        run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
+
+      - name: Run backend feature tests
+        working-directory: ./api
+        run: php artisan test --testsuite=Feature --log-junit=storage/test-results/feature.xml
+
+      - name: Upload backend test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: |
+            api/storage/test-results/*.xml
+            api/storage/logs/*.log
+          if-no-files-found: ignore
 
   backend-security:
     name: Backend Security (Composer Audit)
@@ -219,6 +264,16 @@ jobs:
         working-directory: ./mobile
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
+      - name: Upload mobile test artifacts
+        if: always() && steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-test-reports
+          path: |
+            mobile/coverage/lcov.info
+            mobile/test/**/*
+          if-no-files-found: ignore
+
       - name: Skip mobile checks (no mobile change)
         if: steps.mobile.outputs.exists != 'true' || steps.mobile.outputs.changed != 'true'
         run: echo "No mobile changes detected for this push/PR; mobile pipeline skipped."
@@ -263,8 +318,69 @@ jobs:
       - governance-gates
       - dependency-review
     if: always()
+    env:
+      CI_SMTP_SERVER: ${{ secrets.CI_SMTP_SERVER }}
+      CI_SMTP_USERNAME: ${{ secrets.CI_SMTP_USERNAME }}
+      CI_SMTP_PASSWORD: ${{ secrets.CI_SMTP_PASSWORD }}
+      CI_REPORT_TO: ${{ vars.CI_REPORT_TO }}
+      CI_REPORT_FROM: ${{ vars.CI_REPORT_FROM }}
 
     steps:
+      - name: Build CI report
+        id: report
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > ci-report.md <<EOF
+          # CI Report — Leopardo RH
+
+          - Workflow: ${{ github.workflow }}
+          - Run ID: ${{ github.run_id }}
+          - Run Number: ${{ github.run_number }}
+          - Branch/Ref: ${{ github.ref }}
+          - Commit: ${{ github.sha }}
+          - Actor: ${{ github.actor }}
+          - URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ## Job Results
+          - Backend Tests: ${{ needs.backend-tests.result }}
+          - Backend Security: ${{ needs.backend-security.result }}
+          - Mobile Tests: ${{ needs.mobile-tests.result }}
+          - Governance Gates: ${{ needs.governance-gates.result }}
+          - Dependency Review: ${{ needs.dependency-review.result }}
+
+          ## Scenario References
+          - Backend API scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md
+          - Mobile Flutter scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md
+
+          ## Backend Coverage Intent
+          - Unit: services et logique metier pure
+          - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile
+          - Gaps prioritaires a fermer: register public, conges, payroll, blocked user dedie
+          EOF
+
+      - name: Upload CI report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-report
+          path: ci-report.md
+          if-no-files-found: error
+
+      - name: Send CI report email (if SMTP configured)
+        if: always() && env.CI_SMTP_SERVER != '' && env.CI_SMTP_USERNAME != '' && env.CI_SMTP_PASSWORD != ''
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ env.CI_SMTP_SERVER }}
+          server_port: 587
+          username: ${{ env.CI_SMTP_USERNAME }}
+          password: ${{ env.CI_SMTP_PASSWORD }}
+          secure: false
+          subject: "Leopardo RH CI Report — Run #${{ github.run_number }}"
+          to: ${{ env.CI_REPORT_TO != '' && env.CI_REPORT_TO || 'nouractu.com@gmail.com' }}
+          from: ${{ env.CI_REPORT_FROM != '' && env.CI_REPORT_FROM || env.CI_SMTP_USERNAME }}
+          body: file://ci-report.md
+
       - name: All checks passed
         if: |
           needs.backend-tests.result == 'success' &&
@@ -284,3 +400,4 @@ jobs:
         run: |
           echo "Checks failed - merge or deployment blocked"
           exit 1
+

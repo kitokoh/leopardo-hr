@@ -76,6 +76,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
+            if ($exception->getStatusCode() === 404) {
+                return new JsonResponse([
+                    'error' => 'RESOURCE_NOT_FOUND',
+                    'message' => 'RESOURCE_NOT_FOUND',
+                ], 404);
+            }
+
             return new JsonResponse([
                 'error' => $exception->getMessage() ?: 'HTTP_ERROR',
                 'message' => $exception->getMessage() ?: 'HTTP_ERROR',
