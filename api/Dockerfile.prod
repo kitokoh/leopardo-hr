@@ -34,62 +34,6 @@ RUN cp /usr/local/bin/frankenphp /usr/local/bin/frankenphp-nocap \
 
 EXPOSE 80 443 2019
 
-COPY --chmod=755 <<EOF /usr/local/bin/docker-entrypoint.sh
-#!/bin/sh
-set -e
-
-echo "Optimizing Laravel at startup..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-run_migrate_with_retry() {
-    path="$1"
-    max_attempts=3
-    last_status=1
-
-    for attempt in 1 2 3; do
-        set +e
-        php artisan migrate --path="$path" --force >/tmp/render-migrate.log 2>&1
-        last_status=$?
-        set -e
-
-        cat /tmp/render-migrate.log
-
-        if [ "$last_status" -eq 0 ]; then
-            return 0
-        fi
-
-        if grep -Eq 'SQLSTATE\[42P07\]|relation "migrations" already exists' /tmp/render-migrate.log; then
-            echo "Migrations table race detected for $path ($attempt/$max_attempts), retrying in 2s..."
-            sleep 2
-        elif [ "$attempt" -lt "$max_attempts" ]; then
-            echo "Migration failed for $path ($attempt/$max_attempts), retry in 5s..."
-            sleep 5
-        else
-            echo "Final migration failure for $path."
-            return "$last_status"
-        fi
-    done
-
-    return "$last_status"
-}
-
-if [ "$RUN_MIGRATIONS" = "true" ]; then
-    echo "Running public schema migrations..."
-    run_migrate_with_retry "/database/migrations/public"
-    echo "Running tenant schema migrations..."
-    run_migrate_with_retry "/database/migrations/tenant"
-
-    echo "Running base seeders (idempotent)..."
-    php artisan db:seed --class=DatabaseSeeder --force
-
-    echo "Running gated demo seed (DEMO_SEED_ONCE)..."
-    php artisan db:seed --class=DemoCompanyOnceSeeder --force
-fi
-
-export SERVER_NAME=":${PORT:-8080}"
-exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
-EOF
+COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.42] - 2026-04-18
+### CI mobile conditionnelle (anti-lenteur)
+
+- Mise a jour de .github/workflows/tests.yml pour detecter les changements mobile/** sur push et pull_request
+- Le job Mobile Flutter (Stable Channel) ne lance plus les etapes lourdes (Flutter setup/test/build) si aucun fichier mobile n'a change
+- Le check reste present et passe rapidement en mode skip explicite pour ne pas bloquer le reste de la pipeline
+## [4.1.41] - 2026-04-18
+### Correctif final entrypoint Render
+
+- Deplacement de la logique de demarrage dans `api/docker-entrypoint.sh` versionne (au lieu du heredoc inline dans `api/Dockerfile.prod`)
+- Suppression du risque de substitution de variables shell pendant le build Docker qui cassait les variables runtime (`$1`, `$attempt`, `$?`)
+- Stabilisation de la boucle retry migration pour eviter les erreurs `sh: out of range` / `Illegal number` au boot Render
+
 ## [4.1.40] - 2026-04-18
 ### Correctif shell startup Render (Alpine)
 
@@ -769,6 +782,7 @@ docs(erd): unify manager_id and remove supervisor_id from employees
     
     
  
+
 
 
 
