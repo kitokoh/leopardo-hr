@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.40] - 2026-04-18
+### Correctif shell startup Render (Alpine)
+
+- Simplification de la boucle de retry des migrations dans `api/Dockerfile.prod` pour supprimer l'arithmetique shell fragile sur Alpine `sh`
+- Passage a une boucle `for attempt in 1 2 3` avec suivi explicite du dernier code retour migration
+- Objectif: eliminer l'erreur `sh: out of range` au demarrage et fiabiliser l'execution des migrations avant seed
+
 ## [4.1.39] - 2026-04-18
 ### Correctif governance + bootstrap Render
 
