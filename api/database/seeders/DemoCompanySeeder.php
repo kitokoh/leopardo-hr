@@ -26,9 +26,11 @@ class DemoCompanySeeder extends Seeder
     public function run(): void
     {
         $allowOutsideLocal = filter_var(env('ALLOW_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
-        if (! app()->environment('local', 'development', 'testing') && ! $allowOutsideLocal) {
+        $allowOnce = filter_var(env('DEMO_SEED_ONCE', false), FILTER_VALIDATE_BOOLEAN);
+
+        if (! app()->environment('local', 'development', 'testing') && ! $allowOutsideLocal && ! $allowOnce) {
             $this->command->error('🚨 DemoCompanySeeder interdit en production !');
-            $this->command->warn('Définir ALLOW_DEMO_SEEDING=true pour un seed exceptionnel de test.');
+            $this->command->warn('Définir ALLOW_DEMO_SEEDING=true ou DEMO_SEED_ONCE=true pour un seed exceptionnel de test.');
             return;
         }
 

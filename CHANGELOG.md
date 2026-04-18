@@ -16,6 +16,7 @@
 - Stabilisation supplementaire CI: `CodeQL` desactive sur PR par defaut (activable via variable `ENABLE_CODEQL_PR`) et `Dependency Review` passe en non bloquant pour eviter les echecs d'integration GitHub non lies au code
 - Correctif Render prod: migrations executees explicitement sur `database/migrations/public` puis `database/migrations/tenant` pour eviter l'erreur `relation "employees" does not exist` en ligne
 - Seeder de test online controle: `DemoCompanySeeder` reste bloque hors local sauf si `ALLOW_DEMO_SEEDING=true`
+- Auto-seed deploy renforce: `DatabaseSeeder` lance au boot, ajout de `DemoCompanyOnceSeeder` avec verrou SQL (`public.seed_locks`) pour executer le seed demo une seule fois via `DEMO_SEED_ONCE=true`
 
 ## [4.1.37] - 2026-04-16
 ### Hygiene deploy

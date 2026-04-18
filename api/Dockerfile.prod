@@ -75,6 +75,12 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     run_migrate_with_retry "database/migrations/public"
     echo "Running tenant schema migrations..."
     run_migrate_with_retry "database/migrations/tenant"
+
+    echo "Running base seeders (idempotent)..."
+    php artisan db:seed --class=DatabaseSeeder --force
+
+    echo "Running gated demo seed (DEMO_SEED_ONCE)..."
+    php artisan db:seed --class=DemoCompanyOnceSeeder --force
 fi
 
 export SERVER_NAME=":${PORT:-8080}"
