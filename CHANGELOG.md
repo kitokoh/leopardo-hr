@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.52] - 2026-04-19
+### Dossier de decision GO / NO-GO MVP
+
+- Ajout de `docs/GESTION_PROJET/GO_NO_GO_MVP.md`
+- Formalisation du perimetre MVP, des criteres de passage, de la grille de decision et de la checklist de validation
+- Ajout d'un cadre de decision reutilisable pour statuer entre `GO MVP`, `GO MVP sous reserve` et `NO-GO MVP`
+
 ## [4.1.51] - 2026-04-18
 ### Deblocage des checks GitHub Actions de PR
 
@@ -15,6 +22,7 @@
 - Les autres migrations publiques critiques (`companies`, tables de support, `personal_access_tokens`, `seed_locks`) tolerent maintenant les reruns partiels de Render apres succes incomplet
 - `mobile/lib/core/storage/secure_storage.dart` ajoute un fallback memoire + Hive et des timeouts courts pour eviter le blocage du login mobile si `flutter_secure_storage` ralentit sur certains appareils/tests IA
 - `mobile/android/app/src/main/AndroidManifest.xml` declare maintenant `INTERNET` et `ACCESS_NETWORK_STATE` aussi en release pour que Firebase/App Distribution puisse joindre l'API Render
+- `mobile/lib/features/attendance/screens/attendance_screen.dart` n'attend plus un chargement complet avant d'afficher l'ecran employe apres connexion et propose un retry inline si `attendance/today` tarde
 
 ## [4.1.50] - 2026-04-18
 ### Correctif connexion mobile et validation login
@@ -854,16 +862,26 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
 
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
  
 
 
