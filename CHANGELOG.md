@@ -14,6 +14,8 @@
 - Durcissement de `api/Dockerfile.prod` pour rendre le bootstrap Render tolerant aux courses de creation de la table `migrations` et aux echecs transitoires de migration au demarrage
 - Stabilisation CI GitHub: permission `pull-requests: read` pour `Dependency Review`, garde-fou PR restreintes pour `CodeQL`, et checks `flutter format/analyze` en mode non bloquant pour eviter les faux rouges rapides
 - Stabilisation supplementaire CI: `CodeQL` desactive sur PR par defaut (activable via variable `ENABLE_CODEQL_PR`) et `Dependency Review` passe en non bloquant pour eviter les echecs d'integration GitHub non lies au code
+- Correctif Render prod: migrations executees explicitement sur `database/migrations/public` puis `database/migrations/tenant` pour eviter l'erreur `relation "employees" does not exist` en ligne
+- Seeder de test online controle: `DemoCompanySeeder` reste bloque hors local sauf si `ALLOW_DEMO_SEEDING=true`
 
 ## [4.1.37] - 2026-04-16
 ### Hygiene deploy
