@@ -2,12 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.43] - 2026-04-18
+### Migration startup anti-race (Render)
+
+- api/docker-entrypoint.sh passe les migrations avec --isolated pour eviter les executions concurrentes au boot multi-instance
+- Ajout d'un fallback de rattrapage (php artisan migrate --force --isolated) quand la course sur la table migrations persiste
+- Objectif: absorber les erreurs PostgreSQL 42P07 relation "migrations" already exists sans casser le demarrage
+
 ## [4.1.42] - 2026-04-18
 ### CI mobile conditionnelle (anti-lenteur)
 
 - Mise a jour de .github/workflows/tests.yml pour detecter les changements mobile/** sur push et pull_request
 - Le job Mobile Flutter (Stable Channel) ne lance plus les etapes lourdes (Flutter setup/test/build) si aucun fichier mobile n'a change
 - Le check reste present et passe rapidement en mode skip explicite pour ne pas bloquer le reste de la pipeline
+
 ## [4.1.41] - 2026-04-18
 ### Correctif final entrypoint Render
 
@@ -782,6 +790,9 @@ docs(erd): unify manager_id and remove supervisor_id from employees
     
     
  
+
+
+
 
 
 

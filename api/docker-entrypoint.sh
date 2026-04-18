@@ -12,7 +12,7 @@ run_migrate_with_retry() {
     max_attempts=3
 
     while [ "$attempt" -le "$max_attempts" ]; do
-        if php artisan migrate --path="$path" --force >/tmp/render-migrate.log 2>&1; then
+        if php artisan migrate --path="$path" --force --isolated >/tmp/render-migrate.log 2>&1; then
             cat /tmp/render-migrate.log
             return 0
         fi
@@ -25,6 +25,12 @@ run_migrate_with_retry() {
                 sleep 2
             else
                 echo "Migrations table race persisted for $path after $max_attempts attempts."
+                echo "Running isolated global catch-up migrations..."
+                if php artisan migrate --force --isolated >/tmp/render-migrate-catchup.log 2>&1; then
+                    cat /tmp/render-migrate-catchup.log
+                    return 0
+                fi
+                cat /tmp/render-migrate-catchup.log
                 return 1
             fi
         elif [ "$attempt" -lt "$max_attempts" ]; then
