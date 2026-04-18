@@ -10,6 +10,8 @@
 - Ce correctif vise a eviter l'echec immediat du workflow `Tests - Leopardo RH` avant la creation effective des checks requis sur la PR
 - Le job backend CI bootstrappe maintenant explicitement `public.migrations` et `shared_tenants.migrations`
 - Les migrations CI sont desormais executees avec `DB_SEARCH_PATH=public` puis `DB_SEARCH_PATH=shared_tenants` pour eviter le conflit sur la table `migrations`
+- `api/docker-entrypoint.sh` isole aussi Render avec `DB_SEARCH_PATH=public` puis `DB_SEARCH_PATH=shared_tenants` pendant le bootstrap de deploiement
+- `api/database/migrations/public/2026_04_01_000001_create_plans_table.php` devient idempotente et sans transaction implicite pour eviter les courses PostgreSQL sur `plans`
 
 ## [4.1.50] - 2026-04-18
 ### Correctif connexion mobile et validation login
