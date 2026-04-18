@@ -1,4 +1,3 @@
-import 'package:leopardo_rh/core/widgets/shimmer_loading.dart';
 import 'package:leopardo_rh/core/widgets/pulse_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -19,32 +18,21 @@ class AttendanceScreen extends ConsumerWidget {
       body: SafeArea(
         child: attState.error != null && attState.error!.contains('NOT_IMPLEMENTED')
             ? _buildStubScreen(context, ref)
-            : attState.isLoading && attState.todayLog == null
-                ? ListView(
-                    padding: const EdgeInsets.all(24.0),
-                    children: [
-                      const ShimmerLoading(width: double.infinity, height: 100, borderRadius: 16),
-                      const SizedBox(height: 32),
-                      const Center(child: ShimmerLoading(width: 200, height: 200, borderRadius: 100)),
-                      const SizedBox(height: 32),
-                      const ShimmerLoading(width: double.infinity, height: 120, borderRadius: 16),
-                    ],
-                  )
-                : RefreshIndicator(
-                    onRefresh: () => ref.read(attendanceProvider.notifier).loadTodayData(),
-                    child: ListView(
-                      padding: const EdgeInsets.all(24.0),
-                      children: [
-                        _buildHeader(context, authState),
-                        const SizedBox(height: 32),
-                        _buildActionCard(context, ref, attState),
-                        const SizedBox(height: 32),
-                        _buildSummaryCard(context, attState),
-                        const SizedBox(height: 32),
-                        _buildActions(context, ref),
-                      ],
-                    ),
-                  ),
+            : RefreshIndicator(
+                onRefresh: () => ref.read(attendanceProvider.notifier).loadTodayData(),
+                child: ListView(
+                  padding: const EdgeInsets.all(24.0),
+                  children: [
+                    _buildHeader(context, authState),
+                    const SizedBox(height: 32),
+                    _buildActionCard(context, ref, attState),
+                    const SizedBox(height: 32),
+                    _buildSummaryCard(context, attState),
+                    const SizedBox(height: 32),
+                    _buildActions(context, ref, attState),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -118,10 +106,39 @@ class AttendanceScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: 32),
-          if (state.todayLog?.checkIn != null)
+          if (state.isLoading && state.todayLog == null) ...[
+            const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Chargement de votre pointage du jour...',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
+            ),
+          ] else if (state.error != null && state.todayLog == null) ...[
+            Text(
+              state.error!,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: () => ref.read(attendanceProvider.notifier).loadTodayData(),
+              child: const Text('Reessayer'),
+            ),
+          ] else if (state.todayLog?.checkIn != null)
             Text(
               'Arrivee : ${state.todayLog!.checkIn!.hour.toString().padLeft(2, '0')}:${state.todayLog!.checkIn!.minute.toString().padLeft(2, '0')}',
               style: const TextStyle(fontSize: 18),
+            )
+          else
+            const Text(
+              'Pret pour le pointage du jour.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
             ),
         ],
       ),
@@ -161,10 +178,18 @@ class AttendanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context, WidgetRef ref) {
+  Widget _buildActions(BuildContext context, WidgetRef ref, AttendanceState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (state.isLoading && state.todayLog == null) ...[
+          const Text(
+            'L ecran est disponible pendant le chargement. Vous pouvez attendre quelques secondes ou tirer pour actualiser.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+        ],
         OutlinedButton(
           onPressed: () => context.push('/history'),
           style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
