@@ -14,6 +14,7 @@
 - `api/database/migrations/public/2026_04_01_000001_create_plans_table.php` devient idempotente et sans transaction implicite pour eviter les courses PostgreSQL sur `plans`
 - Les autres migrations publiques critiques (`companies`, tables de support, `personal_access_tokens`, `seed_locks`) tolerent maintenant les reruns partiels de Render apres succes incomplet
 - `mobile/lib/core/storage/secure_storage.dart` ajoute un fallback memoire + Hive et des timeouts courts pour eviter le blocage du login mobile si `flutter_secure_storage` ralentit sur certains appareils/tests IA
+- `mobile/android/app/src/main/AndroidManifest.xml` declare maintenant `INTERNET` et `ACCESS_NETWORK_STATE` aussi en release pour que Firebase/App Distribution puisse joindre l'API Render
 
 ## [4.1.50] - 2026-04-18
 ### Correctif connexion mobile et validation login
