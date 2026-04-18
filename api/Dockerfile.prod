@@ -49,32 +49,39 @@ run_migrate_with_retry() {
     max_attempts=3
 
     while [ "$attempt" -le "$max_attempts" ]; do
-        if php artisan migrate --path="$path" --force >/tmp/render-migrate.log 2>&1; then
-            cat /tmp/render-migrate.log
-            return 0
-        fi
+        set +e
+        php artisan migrate --path="$path" --force >/tmp/render-migrate.log 2>&1
+        status=$?
+        set -e
 
         cat /tmp/render-migrate.log
 
+        if [ "$status" -eq 0 ]; then
+            return 0
+        fi
+
         if grep -Eq 'SQLSTATE\[42P07\]|relation "migrations" already exists' /tmp/render-migrate.log; then
-            echo "Migrations table race detected for $path, retrying..."
+            echo "Migrations table race detected for $path ($attempt/$max_attempts), retrying in 2s..."
+            sleep 2
         elif [ "$attempt" -lt "$max_attempts" ]; then
             echo "Migration failed for $path ($attempt/$max_attempts), retry in 5s..."
             sleep 5
         else
             echo "Final migration failure for $path."
-            return 1
+            return "$status"
         fi
 
         attempt=$((attempt + 1))
     done
+
+    return 1
 }
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Running public schema migrations..."
-    run_migrate_with_retry "database/migrations/public"
+    run_migrate_with_retry "/database/migrations/public"
     echo "Running tenant schema migrations..."
-    run_migrate_with_retry "database/migrations/tenant"
+    run_migrate_with_retry "/database/migrations/tenant"
 
     echo "Running base seeders (idempotent)..."
     php artisan db:seed --class=DatabaseSeeder --force

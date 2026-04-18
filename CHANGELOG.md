@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.39] - 2026-04-18
+### Correctif governance + bootstrap Render
+
+- Mise a jour de api/Dockerfile.prod pour fiabiliser le retry des migrations au demarrage (capture du code retour reel, echec explicite en fin de retries)
+- Correction des chemins de migration utilises au boot Render avec --path=/database/migrations/public et --path=/database/migrations/tenant
+- Objectif: garantir que les tables publiques (dont plans) sont creees avant l'execution des seeders de base
+
 ## [4.1.38] - 2026-04-17
 ### CI/CD automatisée PR -> main -> deploy
 
@@ -755,3 +762,7 @@ docs(erd): unify manager_id and remove supervisor_id from employees
     
     
  
+
+
+
+
