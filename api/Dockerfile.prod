@@ -45,18 +45,18 @@ php artisan view:cache
 
 run_migrate_with_retry() {
     path="$1"
-    attempt=1
     max_attempts=3
+    last_status=1
 
-    while [ "$attempt" -le "$max_attempts" ]; do
+    for attempt in 1 2 3; do
         set +e
         php artisan migrate --path="$path" --force >/tmp/render-migrate.log 2>&1
-        status=$?
+        last_status=$?
         set -e
 
         cat /tmp/render-migrate.log
 
-        if [ "$status" -eq 0 ]; then
+        if [ "$last_status" -eq 0 ]; then
             return 0
         fi
 
@@ -68,13 +68,11 @@ run_migrate_with_retry() {
             sleep 5
         else
             echo "Final migration failure for $path."
-            return "$status"
+            return "$last_status"
         fi
-
-        attempt=$((attempt + 1))
     done
 
-    return 1
+    return "$last_status"
 }
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
