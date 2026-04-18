@@ -9,18 +9,39 @@ php artisan view:cache
 ensure_migration_repository() {
     php <<'PHP'
 <?php
-$host = getenv('DB_HOST') ?: '127.0.0.1';
-$port = getenv('DB_PORT') ?: '5432';
+$host = getenv('DB_HOST') ?: '';
+$port = getenv('DB_PORT') ?: '';
 $database = getenv('DB_DATABASE') ?: '';
 $username = getenv('DB_USERNAME') ?: '';
 $password = getenv('DB_PASSWORD') ?: '';
+$dbUrl = getenv('DB_URL') ?: '';
 
-$dsn = "pgsql:host={$host};port={$port};dbname={$database}";
-$pdo = new PDO($dsn, $username, $password, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-]);
+if ($dbUrl) {
+    $parts = parse_url($dbUrl);
+    if ($parts !== false) {
+        $host = $host ?: ($parts['host'] ?? '');
+        $port = $port ?: (isset($parts['port']) ? (string)$parts['port'] : '');
+        $database = $database ?: ltrim($parts['path'] ?? '', '/');
+        $username = $username ?: ($parts['user'] ?? '');
+        $password = $password ?: ($parts['pass'] ?? '');
+    }
+}
 
-$ddl = <<<'SQL'
+$host = $host ?: '127.0.0.1';
+$port = $port ?: '5432';
+
+if ($database === '') {
+    fwrite(STDERR, "DB bootstrap error: missing DB_DATABASE/DB_URL database name.\n");
+    exit(1);
+}
+
+try {
+    $dsn = "pgsql:host={$host};port={$port};dbname={$database}";
+    $pdo = new PDO($dsn, $username, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ]);
+
+    $ddl = <<<'SQL'
 CREATE SCHEMA IF NOT EXISTS shared_tenants;
 CREATE TABLE IF NOT EXISTS public.migrations (
     id serial PRIMARY KEY,
@@ -34,9 +55,32 @@ CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
 );
 SQL;
 
-$pdo->exec($ddl);
-echo "Migration repositories ensured (public/shared_tenants).\n";
+    $pdo->exec($ddl);
+    echo "Migration repositories ensured (public/shared_tenants).\n";
+    exit(0);
+} catch (Throwable $e) {
+    fwrite(STDERR, "DB bootstrap error: {$e->getMessage()}\n");
+    exit(1);
+}
 PHP
+}
+
+wait_for_db_bootstrap() {
+    attempt=1
+    max_attempts=30
+
+    while [ "$attempt" -le "$max_attempts" ]; do
+        if ensure_migration_repository; then
+            return 0
+        fi
+
+        echo "Database not ready for bootstrap ($attempt/$max_attempts), retry in 2s..."
+        sleep 2
+        attempt=$((attempt + 1))
+    done
+
+    echo "Database bootstrap failed after $max_attempts attempts."
+    return 1
 }
 
 run_migrate_with_retry() {
@@ -82,7 +126,7 @@ run_migrate_with_retry() {
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Ensuring migration repository tables..."
-    ensure_migration_repository
+    wait_for_db_bootstrap
 
     echo "Running public schema migrations..."
     run_migrate_with_retry "database/migrations/public"
