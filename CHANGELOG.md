@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.45] - 2026-04-18
+### Bootstrap DB_URL + retry readiness (Render)
+
+- api/docker-entrypoint.sh parse maintenant DB_URL (host/port/database/user/password) pour le bootstrap SQL des tables migrations
+- Ajout d'une boucle wait_for_db_bootstrap (30 tentatives, 2s) avant migrations pour absorber les delais de disponibilite PostgreSQL
+- Gestion d'erreur non fatale (catch PDO) pour permettre les retries au lieu d'un crash immediat
+
 ## [4.1.43] - 2026-04-18
 ### Migration startup anti-race (Render)
 
@@ -797,6 +804,9 @@ docs(erd): unify manager_id and remove supervisor_id from employees
     
     
  
+
+
+
 
 
 
