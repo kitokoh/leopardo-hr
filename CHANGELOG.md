@@ -9,6 +9,13 @@
 - Ajout d'un fallback de rattrapage (php artisan migrate --force --isolated) quand la course sur la table migrations persiste
 - Objectif: absorber les erreurs PostgreSQL 42P07 relation "migrations" already exists sans casser le demarrage
 
+## [4.1.44] - 2026-04-18
+### Bootstrap migration repository (Render)
+
+- Ajout dans `api/docker-entrypoint.sh` d'une etape SQL directe (PDO) qui cree `public.migrations` et `shared_tenants.migrations` en `IF NOT EXISTS`
+- Suppression de la dependance a `migrate:install` en situation de concurrence de demarrage
+- Objectif: eliminer les crashs de boot lies a `SQLSTATE[42P07] relation "migrations" already exists`
+
 ## [4.1.42] - 2026-04-18
 ### CI mobile conditionnelle (anti-lenteur)
 

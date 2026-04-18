@@ -6,6 +6,39 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+ensure_migration_repository() {
+    php <<'PHP'
+<?php
+$host = getenv('DB_HOST') ?: '127.0.0.1';
+$port = getenv('DB_PORT') ?: '5432';
+$database = getenv('DB_DATABASE') ?: '';
+$username = getenv('DB_USERNAME') ?: '';
+$password = getenv('DB_PASSWORD') ?: '';
+
+$dsn = "pgsql:host={$host};port={$port};dbname={$database}";
+$pdo = new PDO($dsn, $username, $password, [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+]);
+
+$ddl = <<<'SQL'
+CREATE SCHEMA IF NOT EXISTS shared_tenants;
+CREATE TABLE IF NOT EXISTS public.migrations (
+    id serial PRIMARY KEY,
+    migration varchar(255) NOT NULL,
+    batch integer NOT NULL
+);
+CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
+    id serial PRIMARY KEY,
+    migration varchar(255) NOT NULL,
+    batch integer NOT NULL
+);
+SQL;
+
+$pdo->exec($ddl);
+echo "Migration repositories ensured (public/shared_tenants).\n";
+PHP
+}
+
 run_migrate_with_retry() {
     path="$1"
     attempt=1
@@ -48,6 +81,9 @@ run_migrate_with_retry() {
 }
 
 if [ "$RUN_MIGRATIONS" = "true" ]; then
+    echo "Ensuring migration repository tables..."
+    ensure_migration_repository
+
     echo "Running public schema migrations..."
     run_migrate_with_retry "database/migrations/public"
 
