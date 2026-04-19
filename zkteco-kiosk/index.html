@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leopardo RH - Borne ZKTeco</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020617;
+      --panel: #0f172a;
+      --line: #1e293b;
+      --accent: #10b981;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --danger: #f43f5e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      background: radial-gradient(circle at top, #0f172a, var(--bg) 60%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .app {
+      width: min(960px, 100%);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+    .eyebrow { color: #6ee7b7; text-transform: uppercase; letter-spacing: .28em; font-size: 12px; }
+    h1 { margin: 10px 0 4px; font-size: 34px; }
+    p { color: var(--muted); line-height: 1.5; }
+    .grid { display: grid; gap: 20px; grid-template-columns: 1.4fr 1fr; margin-top: 28px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(2, 6, 23, 0.72);
+      padding: 20px;
+    }
+    label { display: block; margin-bottom: 8px; color: #cbd5e1; font-size: 14px; }
+    input, select, button {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #020617;
+      color: var(--text);
+      padding: 16px;
+      font-size: 18px;
+    }
+    .actions { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; margin-top: 18px; }
+    button.primary { background: var(--accent); color: #022c22; font-weight: 700; border: none; }
+    button.secondary { background: #1e293b; }
+    .status {
+      margin-top: 18px;
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #bbf7d0;
+      min-height: 56px;
+    }
+    .status.error {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #fecdd3;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(2, 6, 23, 0.72);
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 999px; background: #fbbf24; }
+    .dot.ok { background: #34d399; }
+    .dot.bad { background: #fb7185; }
+    .meta dt { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+    .meta dd { margin: 0 0 16px; font-weight: 600; }
+    @media (max-width: 760px) {
+      .grid, .actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="eyebrow">ZKTeco Door Kiosk</div>
+    <h1 id="companyName">Chargement...</h1>
+    <p id="locationLabel">Initialisation de la borne d entree...</p>
+    <div class="pill"><span id="syncDot" class="dot"></span><span id="syncLabel">Verification de l etat reseau...</span></div>
+
+    <div class="grid">
+      <section class="card">
+        <label for="identifier">Identifiant employe / zkteco_id / matricule</label>
+        <input id="identifier" name="identifier" autocomplete="off" placeholder="Scanner le doigt ou le visage, ou saisir l identifiant">
+
+        <label for="biometricType" style="margin-top: 16px;">Type biometrie</label>
+        <select id="biometricType">
+          <option value="fingerprint">Empreinte</option>
+          <option value="face">Visage</option>
+          <option value="mixed">Mixte</option>
+        </select>
+
+        <div class="actions">
+          <button class="primary" id="checkInButton">Pointer entree</button>
+          <button class="secondary" id="checkOutButton">Pointer sortie</button>
+        </div>
+
+        <div id="statusBox" class="status">Pret a recevoir un pointage.</div>
+      </section>
+
+      <aside class="card">
+        <dl class="meta">
+          <dt>Code appareil</dt>
+          <dd id="deviceCode">-</dd>
+          <dt>Mode</dt>
+          <dd>ZKTeco / HID / bridge local offline-first</dd>
+          <dt>File locale</dt>
+          <dd id="queueCount">0 evenement en attente</dd>
+          <dt>Workflow</dt>
+          <dd>Le pointage est accepte localement meme sans internet, puis synchronise des que possible.</dd>
+        </dl>
+      </aside>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Employee;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
@@ -23,7 +23,9 @@ class Company extends Model
         'sector',
         'country',
         'city',
+        'address',
         'email',
+        'phone',
         'plan_id',
         'schema_name',
         'tenancy_type',
@@ -33,6 +35,7 @@ class Company extends Model
         'language',
         'timezone',
         'currency',
+        'notes',
     ];
 
     protected static function booted(): void
@@ -56,5 +59,15 @@ class Company extends Model
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class, 'company_id');
+    }
+
+    public function biometricRequests(): HasMany
+    {
+        return $this->hasMany(BiometricEnrollmentRequest::class, 'company_id');
+    }
+
+    public function attendanceKiosks(): HasMany
+    {
+        return $this->hasMany(AttendanceKiosk::class, 'company_id');
     }
 }

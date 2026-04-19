@@ -41,7 +41,10 @@ class EmployeeController extends Controller
     {
         $this->authorize('create', Employee::class);
 
-        $employee = $this->employeeService->create($request->validated());
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $employee = $this->employeeService->create($request->validated(), $actor);
 
         return new JsonResponse([
             'data' => [
@@ -50,7 +53,13 @@ class EmployeeController extends Controller
                 'last_name' => $employee->last_name,
                 'email' => $employee->email,
                 'role' => $employee->role,
+                'manager_role' => $employee->manager_role,
                 'status' => $employee->status,
+                'phone' => $employee->phone,
+                'personal_email' => $employee->personal_email,
+                'biometric_face_enabled' => $employee->biometric_face_enabled,
+                'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+                'extra_data' => $employee->extra_data ?? [],
             ],
         ], 201);
     }
@@ -68,7 +77,17 @@ class EmployeeController extends Controller
                 'last_name' => $employee->last_name,
                 'email' => $employee->email,
                 'role' => $employee->role,
+                'manager_role' => $employee->manager_role,
                 'status' => $employee->status,
+                'phone' => $employee->phone,
+                'personal_email' => $employee->personal_email,
+                'address_line' => $employee->address_line,
+                'postal_code' => $employee->postal_code,
+                'emergency_contact_name' => $employee->emergency_contact_name,
+                'emergency_contact_phone' => $employee->emergency_contact_phone,
+                'biometric_face_enabled' => $employee->biometric_face_enabled,
+                'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+                'extra_data' => $employee->extra_data ?? [],
             ],
         ]);
     }
@@ -91,7 +110,13 @@ class EmployeeController extends Controller
                 'last_name' => $employee->last_name,
                 'email' => $employee->email,
                 'role' => $employee->role,
+                'manager_role' => $employee->manager_role,
                 'status' => $employee->status,
+                'phone' => $employee->phone,
+                'personal_email' => $employee->personal_email,
+                'biometric_face_enabled' => $employee->biometric_face_enabled,
+                'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+                'extra_data' => $employee->extra_data ?? [],
             ],
         ]);
     }

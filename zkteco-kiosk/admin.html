@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administration locale ZKTeco</title>
+  <style>
+    body { margin: 0; font-family: Inter, Arial, sans-serif; background: #020617; color: #e2e8f0; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .grid { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; }
+    .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 20px; padding: 20px; }
+    button { border: none; border-radius: 14px; padding: 14px 16px; cursor: pointer; background: #10b981; color: #052e2b; font-weight: 700; }
+    button.secondary { background: #334155; color: #e2e8f0; }
+    pre { overflow: auto; white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Administration locale ZKTeco</h1>
+    <p>Utilise cette page quand le client n a pas internet en continu. Les pointages restent en local puis se synchronisent ici des que la connexion revient.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Synchronisation</h2>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+          <button id="syncAll">Sync complete</button>
+          <button id="syncRoster" class="secondary">Mettre a jour le roster</button>
+          <button id="syncEvents" class="secondary">Envoyer les pointages</button>
+        </div>
+        <pre id="syncResult" style="margin-top:16px;">Pret.</pre>
+      </section>
+
+      <section class="card">
+        <h2>Etat local</h2>
+        <pre id="statusResult">Chargement...</pre>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:20px;">
+      <h2>File offline</h2>
+      <pre id="eventsResult">Chargement...</pre>
+    </section>
+  </div>
+
+  <script src="./admin.js"></script>
+</body>
+</html>

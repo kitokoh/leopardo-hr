@@ -40,6 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'employees',
         ],
+        'super_admin_web' => [
+            'driver' => 'session',
+            'provider' => 'super_admins',
+        ],
+        'super_admin_api' => [
+            'driver' => 'sanctum',
+            'provider' => 'super_admins',
+        ],
         'sanctum' => [
             'driver' => 'sanctum',
             'provider' => 'employees',
@@ -67,6 +75,10 @@ return [
         'employees' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\Employee::class),
+        ],
+        'super_admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\SuperAdmin::class,
         ],
 
         // 'users' => [

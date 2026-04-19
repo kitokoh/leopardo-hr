@@ -9,6 +9,14 @@
                 <h1 class="text-2xl font-semibold tracking-tight">Dashboard manager</h1>
                 <div class="mt-1 text-sm text-slate-400">Aujourd'hui : {{ $today }}</div>
             </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('biometrics.index') }}" class="rounded-lg border border-slate-700 px-4 py-3 text-sm font-medium">
+                    Biometrie / bornes
+                </a>
+                <a href="{{ route('employees.create') }}" class="rounded-lg bg-emerald-500 px-4 py-3 text-sm font-medium text-slate-950">
+                    Creer RH / employe
+                </a>
+            </div>
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">

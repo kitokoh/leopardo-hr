@@ -2,6 +2,44 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.57] - 2026-04-19
+### Borne ZKTeco offline-first et synchronisation differee
+
+- Ajout d un mode de synchronisation offline-first pour les bornes d entree entreprise avec file locale, reprise automatique et synchronisation manuelle ou des le retour du reseau
+- `zkteco-kiosk/desktop-bridge/bridge.py` fournit un pont local PC <-> API avec stockage SQLite des evenements, cache roster collaborateurs et endpoints `/local/*` pour une borne exploitable sans internet
+- L API expose maintenant un roster borne et un endpoint de synchronisation batch pour reimporter les pointages visage / empreinte collectes hors ligne sans doublons grace aux `external_event_id`
+- Les journaux de pointage conservent desormais la provenance borne, le type biometrie et le statut de synchronisation offline afin que le mobile et le back-office retrouvent les donnees apres sync
+- Les interfaces web borne / biometrie manager couvrent maintenant la creation de la borne, l affichage des identifiants de synchronisation et le suivi des demandes biometrie approuvees avant activation effective
+- `docs/GESTION_PROJET/RUNBOOK_ZKTECO_CLIENT.md` documente l installation client, le schema reseau, le mode offline, la synchronisation differee et la routine manager / RH
+- `docs/GESTION_PROJET/SCHEMA_DEPLOIEMENT_ZKTECO_CLIENT.md` ajoute un schema visuel Mermaid du deploiement client ZKTeco, du flux metier et du mode offline / connecte
+- `docs/GESTION_PROJET/SUPPORT_COMMERCIAL_ZKTECO_LEOPARDO_RH.md` fournit un support commercial simple pour presenter la solution a un prospect, un client ou un integrateur
+- Le projet Flutter Android aligne maintenant Android Gradle Plugin, Kotlin et le wrapper Gradle sur des versions compatibles avec les dependances AndroidX recentes utilisees en CI GitHub Actions
+
+## [4.1.56] - 2026-04-19
+### Biometrie approuvee et borne d entree entreprise
+
+- Ajout du workflow complet de demande biometrie employe avec validation manager / RH avant activation effective des donnees visage / empreinte
+- Ajout d une borne de pointage entreprise configurable cote manager avec code appareil, interface web dediee et endpoint API de pointage a l entree
+- L application mobile permet maintenant de soumettre une capture visage reelle et une demande d activation biometrie; toute modification ou premiere activation reste en attente d approbation
+- Pour l empreinte mobile, le systeme s appuie sur une verification biometrie locale de l appareil puis laisse l activation effective etre approuvee et exploitee cote borne / lecteur entreprise
+- Ajout d un dossier racine `zkteco-kiosk/` pour servir de socle au poste d entree ZKTeco / HID cote client
+
+## [4.1.55] - 2026-04-19
+### Onboarding plateforme, invitations et profils enrichis
+
+- Le super admin plateforme peut maintenant creer une nouvelle societe depuis le web ou l API, provisionner son manager principal et declencher automatiquement une invitation email personnalisee avec lien d activation
+- Les managers peuvent creer des comptes RH et employes sans saisir de mot de passe initial, le systeme rattachant automatiquement le nouveau compte a la bonne societe et a son manager createur
+- Les invitations sont suivies dans `public.user_invitations`, avec expiration, acceptation, traces d envoi et activation du mot de passe via un ecran web dedie
+- Les profils employes gagnent des donnees metier et RH plus riches: email perso, telephone, adresse, urgence, poste, departement, site, identite, biometrie visage / empreinte et consentement associe
+- Le web dispose maintenant d un espace plateforme pour l onboarding des societes, d un formulaire manager pour creer RH / employes et d une fiche collaborateur enrichie pour preparer les prochaines etapes de pointage modernise
+
+## [4.1.54] - 2026-04-19
+### Stabilisation CodeQL GitHub Actions
+
+- `.github/workflows/codeql.yml` bascule l analyse CodeQL vers le langage `actions`, qui est pris en charge par GitHub CodeQL, au lieu de `php` qui etait rejete
+- Le workflow CodeQL passe de `github/codeql-action@v3` a `@v4` pour supprimer les avertissements de deprecation Node 20 / v3
+- Les etapes PHP inutiles sont retirees du workflow CodeQL afin d eviter un echec d initialisation avant publication du statut
+
 ## [4.1.53] - 2026-04-19
 ### Parametres mobile, acces par role et preparation biometrie
 

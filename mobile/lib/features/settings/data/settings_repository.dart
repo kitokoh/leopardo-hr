@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:leopardo_rh/core/api/api_client.dart';
 import 'package:leopardo_rh/core/storage/app_preferences.dart';
 import 'package:leopardo_rh/models/employee.dart';
+import 'package:leopardo_rh/features/settings/data/biometric_enrollment.dart';
 
 class SettingsRepository {
   SettingsRepository(this._apiClient, this._preferences);
@@ -52,6 +56,40 @@ class SettingsRepository {
       attendanceConsent: settings.attendanceConsent,
       biometricNote: settings.biometricNote,
     );
+  }
+
+  Future<BiometricEnrollment?> loadBiometricEnrollment() async {
+    final response = await _apiClient.dio.get('/auth/biometric-enrollment');
+    final data = response.data['data'];
+    if (data == null) {
+      return null;
+    }
+
+    return BiometricEnrollment.fromJson((data as Map).cast<String, dynamic>());
+  }
+
+  Future<BiometricEnrollment> submitBiometricEnrollment({
+    required bool requestedFaceEnabled,
+    required bool requestedFingerprintEnabled,
+    required String employeeNote,
+    String? requestedFingerprintDeviceId,
+    File? faceImage,
+  }) async {
+    final formData = FormData.fromMap({
+      'requested_face_enabled': requestedFaceEnabled ? '1' : '0',
+      'requested_fingerprint_enabled': requestedFingerprintEnabled ? '1' : '0',
+      'employee_note': employeeNote.trim(),
+      if (requestedFingerprintDeviceId != null && requestedFingerprintDeviceId.trim().isNotEmpty)
+        'requested_fingerprint_device_id': requestedFingerprintDeviceId.trim(),
+      if (faceImage != null)
+        'face_image': await MultipartFile.fromFile(
+          faceImage.path,
+          filename: faceImage.uri.pathSegments.isNotEmpty ? faceImage.uri.pathSegments.last : 'face.jpg',
+        ),
+    });
+
+    final response = await _apiClient.dio.post('/auth/biometric-enrollment', data: formData);
+    return BiometricEnrollment.fromJson((response.data['data'] as Map).cast<String, dynamic>());
   }
 }
 

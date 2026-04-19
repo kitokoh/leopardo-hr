@@ -27,6 +27,12 @@
 
                 <div class="flex items-center gap-3">
                     @auth('web')
+                        <a href="{{ route('dashboard') }}" class="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('biometrics.index') }}" class="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700">
+                            Biometrie
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="rounded-md bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700">
@@ -39,6 +45,9 @@
         </header>
 
         <main class="mx-auto max-w-6xl px-4 py-6">
+            @if (session('status'))
+                <div class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">{{ session('status') }}</div>
+            @endif
             @yield('content')
         </main>
     </body>
