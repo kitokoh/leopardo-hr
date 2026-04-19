@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
+use App\Http\Requests\Api\V1\UpdateProfileRequest;
+use App\Models\Employee;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -46,15 +50,40 @@ class AuthController extends Controller
         $employee = $request->user();
 
         return new JsonResponse([
-            'data' => [
-                'id' => $employee->id,
-                'company_id' => $employee->company_id,
-                'first_name' => $employee->first_name,
-                'last_name' => $employee->last_name,
-                'email' => $employee->email,
-                'role' => $employee->role,
-                'status' => $employee->status,
-            ],
+            'data' => $this->serializeEmployee($employee),
+        ]);
+    }
+
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
+    {
+        /** @var Employee $employee */
+        $employee = $request->user();
+
+        $employee->fill($request->validated());
+        $employee->save();
+
+        return new JsonResponse([
+            'data' => $this->serializeEmployee($employee->fresh()),
+        ]);
+    }
+
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        /** @var Employee $employee */
+        $employee = $request->user();
+
+        if (! Hash::check($request->validated('current_password'), $employee->password_hash)) {
+            return new JsonResponse([
+                'message' => 'Le mot de passe actuel est incorrect.',
+                'error' => 'INVALID_CURRENT_PASSWORD',
+            ], 422);
+        }
+
+        $employee->password_hash = Hash::make($request->validated('new_password'));
+        $employee->save();
+
+        return new JsonResponse([
+            'status' => 'ok',
         ]);
     }
 
@@ -66,5 +95,18 @@ class AuthController extends Controller
         }
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+    private function serializeEmployee(Employee $employee): array
+    {
+        return [
+            'id' => $employee->id,
+            'company_id' => $employee->company_id,
+            'first_name' => $employee->first_name,
+            'last_name' => $employee->last_name,
+            'email' => $employee->email,
+            'role' => $employee->role,
+            'status' => $employee->status,
+        ];
     }
 }

@@ -12,6 +12,7 @@ class AttendanceState {
   final Map<String, dynamic>? context;
   final DailySummary? summary;
   final String? error;
+  final String? notice;
 
   AttendanceState({
     this.isLoading = false,
@@ -19,6 +20,7 @@ class AttendanceState {
     this.context,
     this.summary,
     this.error,
+    this.notice,
   });
 
   AttendanceState copyWith({
@@ -27,7 +29,9 @@ class AttendanceState {
     Map<String, dynamic>? context,
     DailySummary? summary,
     String? error,
+    String? notice,
     bool clearError = false,
+    bool clearNotice = false,
   }) {
     return AttendanceState(
       isLoading: isLoading ?? this.isLoading,
@@ -35,6 +39,7 @@ class AttendanceState {
       context: context ?? this.context,
       summary: summary ?? this.summary,
       error: clearError ? null : (error ?? this.error),
+      notice: clearNotice ? null : (notice ?? this.notice),
     );
   }
 }
@@ -48,7 +53,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }
 
   Future<void> loadTodayData() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isLoading: true, clearError: true, clearNotice: true);
     try {
       final data = await _repository.getTodayStatus();
       state = state.copyWith(
@@ -56,10 +61,24 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         context: data['context'],
         isLoading: false,
       );
-      _loadSummary();
+      final authState = _ref.read(authProvider);
+      if (authState.employee != null && !authState.employee!.isManager) {
+        _loadSummary();
+      }
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
         await _ref.read(authProvider.notifier).logout();
+        return;
+      }
+      if (_isRecoverableLoadError(e)) {
+        state = state.copyWith(
+          isLoading: false,
+          context: {
+            ...?state.context,
+            'load_degraded': true,
+          },
+          notice: 'Les donnees du jour prennent plus de temps que prevu. L\'ecran reste utilisable, vous pouvez actualiser.',
+        );
         return;
       }
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -106,6 +125,20 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       }
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  bool _isRecoverableLoadError(Object error) {
+    if (error is! ApiException) {
+      return false;
+    }
+
+    final message = error.message.toLowerCase();
+
+    return error.statusCode == null ||
+        message.contains('delai') ||
+        message.contains('temps') ||
+        message.contains('connexion indisponible') ||
+        message.contains('impossible de se connecter');
   }
 }
 

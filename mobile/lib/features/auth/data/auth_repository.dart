@@ -52,6 +52,32 @@ class AuthRepository {
     }
   }
 
+  Future<Employee> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) async {
+    final response = await apiClient.dio.patch('/auth/profile', data: {
+      'first_name': firstName.trim(),
+      'last_name': lastName.trim(),
+      'email': email.trim(),
+    });
+
+    return Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmation,
+  }) async {
+    await apiClient.dio.post('/auth/change-password', data: {
+      'current_password': currentPassword,
+      'new_password': newPassword,
+      'new_password_confirmation': confirmation,
+    });
+  }
+
   static Map<String, dynamic> extractEmployeeJson(Map<String, dynamic> payload) {
     final data = payload['data'];
     if (data is Map) {

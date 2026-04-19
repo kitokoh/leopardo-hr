@@ -28,4 +28,6 @@ class Employee {
       status: json['status'],
     );
   }
+
+  bool get isManager => role == 'manager';
 }

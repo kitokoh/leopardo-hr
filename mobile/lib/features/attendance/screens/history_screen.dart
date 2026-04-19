@@ -47,6 +47,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text('Historique'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => context.push('/settings'),
+          ),
+        ],
       ),
       body: historyAsync.when(
         loading: () => ListView.separated(

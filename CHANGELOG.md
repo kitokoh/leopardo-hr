@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.53] - 2026-04-19
+### Parametres mobile, acces par role et preparation biometrie
+
+- `api/routes/api.php` expose maintenant `/auth/profile` et `/auth/change-password` pour permettre au mobile de mettre a jour le profil et le mot de passe en self-service
+- `api/tests/Feature/AuthProfileSettingsTest.php` couvre la mise a jour du profil et la rotation du mot de passe avec verification du mot de passe actuel
+- `mobile/lib/features/attendance/screens/attendance_screen.dart` distingue desormais clairement les usages RH/manager et employe pour n afficher que les actions pertinentes
+- `mobile/lib/features/settings/screens/settings_screen.dart` ajoute un ecran Parametres avec edition du profil, changement de mot de passe et preparation locale des preferences biometrie
+- `mobile/lib/core/storage/app_preferences.dart` stocke localement les preferences de biometrie a reutiliser lors des prochaines etapes du pointage modernise
+
 ## [4.1.52] - 2026-04-19
 ### Dossier de decision GO / NO-GO MVP
 
