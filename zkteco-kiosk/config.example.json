@@ -1,0 +1,12 @@
+{
+  "apiBaseUrl": "https://gestionemployerbackend.onrender.com/api/v1",
+  "deviceCode": "KIOSK001",
+  "kioskToken": "REPLACE_WITH_KIOSK_SYNC_TOKEN",
+  "companyName": "Leopardo RH Client",
+  "locationLabel": "Entree principale",
+  "defaultAction": "check_in",
+  "autoSync": true,
+  "syncIntervalSeconds": 60,
+  "listenHost": "127.0.0.1",
+  "listenPort": 8037
+}

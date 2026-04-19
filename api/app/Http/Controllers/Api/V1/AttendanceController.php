@@ -195,6 +195,8 @@ class AttendanceController extends Controller
             'date' => $log->date?->format('Y-m-d'),
             'check_in' => optional($log->check_in)->toIso8601String(),
             'check_out' => optional($log->check_out)->toIso8601String(),
+            'method' => $log->method,
+            'source_device_code' => $log->source_device_code,
             'hours_worked' => $log->hours_worked,
             'overtime_hours' => $log->overtime_hours,
             'status' => $log->status,

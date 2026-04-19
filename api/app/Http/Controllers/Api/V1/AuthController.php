@@ -103,10 +103,23 @@ class AuthController extends Controller
             'id' => $employee->id,
             'company_id' => $employee->company_id,
             'first_name' => $employee->first_name,
+            'middle_name' => $employee->middle_name,
             'last_name' => $employee->last_name,
+            'preferred_name' => $employee->preferred_name,
             'email' => $employee->email,
+            'personal_email' => $employee->personal_email,
+            'phone' => $employee->phone,
             'role' => $employee->role,
+            'manager_role' => $employee->manager_role,
             'status' => $employee->status,
+            'photo_path' => $employee->photo_path,
+            'biometric_face_enabled' => $employee->biometric_face_enabled,
+            'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+            'address_line' => $employee->address_line,
+            'postal_code' => $employee->postal_code,
+            'emergency_contact_name' => $employee->emergency_contact_name,
+            'emergency_contact_phone' => $employee->emergency_contact_phone,
+            'extra_data' => $employee->extra_data ?? [],
         ];
     }
 }

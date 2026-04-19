@@ -23,6 +23,10 @@ class AttendanceLog extends Model
         'check_in',
         'check_out',
         'method',
+        'source_device_code',
+        'external_event_id',
+        'biometric_type',
+        'synced_from_offline',
         'status',
         'hours_worked',
         'overtime_hours',
@@ -37,6 +41,7 @@ class AttendanceLog extends Model
         'check_out' => 'datetime',
         'hours_worked' => 'decimal:2',
         'overtime_hours' => 'decimal:2',
+        'synced_from_offline' => 'boolean',
         'late_minutes' => 'integer',
         'gps_lat' => 'decimal:8',
         'gps_lng' => 'decimal:8',
@@ -52,4 +57,3 @@ class AttendanceLog extends Model
         return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 }
-

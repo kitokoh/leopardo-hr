@@ -27,27 +27,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [php]
+        language: [actions]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
 
-      - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.4"
-          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
-          coverage: none
-
-      - name: Install Composer dependencies
-        working-directory: ./api
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4

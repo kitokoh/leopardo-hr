@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -22,10 +23,22 @@ class Employee extends Authenticatable
         'company_id',
         'schedule_id',
         'matricule',
+        'zkteco_id',
         'first_name',
+        'middle_name',
         'last_name',
+        'preferred_name',
         'email',
+        'personal_email',
+        'phone',
+        'address_line',
+        'postal_code',
         'password_hash',
+        'date_of_birth',
+        'place_of_birth',
+        'gender',
+        'nationality',
+        'marital_status',
         'contract_type',
         'contract_start',
         'contract_end',
@@ -33,7 +46,20 @@ class Employee extends Authenticatable
         'salary_base',
         'hourly_rate',
         'role',
+        'manager_role',
+        'manager_id',
         'status',
+        'photo_path',
+        'biometric_face_enabled',
+        'biometric_fingerprint_enabled',
+        'biometric_face_reference_path',
+        'biometric_fingerprint_reference_path',
+        'biometric_consent_at',
+        'invitation_accepted_at',
+        'emergency_contact_name',
+        'emergency_contact_phone',
+        'emergency_contact_relation',
+        'extra_data',
     ];
 
     protected $hidden = [
@@ -42,6 +68,14 @@ class Employee extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'date_of_birth' => 'date',
+        'contract_start' => 'date',
+        'contract_end' => 'date',
+        'biometric_face_enabled' => 'boolean',
+        'biometric_fingerprint_enabled' => 'boolean',
+        'biometric_consent_at' => 'datetime',
+        'invitation_accepted_at' => 'datetime',
+        'extra_data' => 'array',
     ];
 
     protected static function booted(): void
@@ -73,6 +107,11 @@ class Employee extends Authenticatable
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    public function biometricEnrollmentRequests(): HasMany
+    {
+        return $this->hasMany(BiometricEnrollmentRequest::class, 'employee_id');
     }
 
     public function syncUserLookup(): void

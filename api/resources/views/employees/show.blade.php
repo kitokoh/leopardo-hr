@@ -46,6 +46,33 @@
             <x-stat-card label="Type salaire" :value="$employee->salary_type ?? '-'" />
         </div>
 
+        <div class="grid gap-4 md:grid-cols-2">
+            <div class="rounded-xl border border-slate-800 bg-slate-950/50 p-4 shadow">
+                <div class="text-sm font-semibold">Profil complet</div>
+                <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-300">
+                    <div><span class="text-slate-500">Telephone:</span> {{ $employee->phone ?? '-' }}</div>
+                    <div><span class="text-slate-500">Email perso:</span> {{ $employee->personal_email ?? '-' }}</div>
+                    <div><span class="text-slate-500">Adresse:</span> {{ $employee->address_line ?? '-' }}</div>
+                    <div><span class="text-slate-500">Date de naissance:</span> {{ optional($employee->date_of_birth)->format('Y-m-d') ?? '-' }}</div>
+                    <div><span class="text-slate-500">Contact urgence:</span> {{ $employee->emergency_contact_name ?? '-' }} {{ $employee->emergency_contact_phone ? '('.$employee->emergency_contact_phone.')' : '' }}</div>
+                    <div><span class="text-slate-500">Departement:</span> {{ data_get($employee->extra_data, 'department', '-') }}</div>
+                    <div><span class="text-slate-500">Poste:</span> {{ data_get($employee->extra_data, 'job_title', '-') }}</div>
+                    <div><span class="text-slate-500">Site:</span> {{ data_get($employee->extra_data, 'work_location', '-') }}</div>
+                    <div><span class="text-slate-500">Identite:</span> {{ data_get($employee->extra_data, 'national_id', '-') }}</div>
+                </dl>
+            </div>
+            <div class="rounded-xl border border-slate-800 bg-slate-950/50 p-4 shadow">
+                <div class="text-sm font-semibold">Preparation biometrie</div>
+                <dl class="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-300">
+                    <div><span class="text-slate-500">Lecteur / doigt:</span> {{ $employee->zkteco_id ?? '-' }}</div>
+                    <div><span class="text-slate-500">Visage active:</span> {{ $employee->biometric_face_enabled ? 'Oui' : 'Non' }}</div>
+                    <div><span class="text-slate-500">Empreinte active:</span> {{ $employee->biometric_fingerprint_enabled ? 'Oui' : 'Non' }}</div>
+                    <div><span class="text-slate-500">Ref visage:</span> {{ $employee->biometric_face_reference_path ?? '-' }}</div>
+                    <div><span class="text-slate-500">Ref empreinte:</span> {{ $employee->biometric_fingerprint_reference_path ?? '-' }}</div>
+                </dl>
+            </div>
+        </div>
+
         <div class="rounded-xl border border-slate-800 bg-slate-950/50 p-4 shadow">
             <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>

@@ -6,6 +6,8 @@ class Employee {
   final String email;
   final String? role;
   final String status;
+  final bool biometricFaceEnabled;
+  final bool biometricFingerprintEnabled;
 
   Employee({
     required this.id,
@@ -15,6 +17,8 @@ class Employee {
     required this.email,
     this.role,
     required this.status,
+    this.biometricFaceEnabled = false,
+    this.biometricFingerprintEnabled = false,
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class Employee {
       email: json['email'],
       role: json['role'] as String?,
       status: json['status'],
+      biometricFaceEnabled: json['biometric_face_enabled'] == true,
+      biometricFingerprintEnabled: json['biometric_fingerprint_enabled'] == true,
     );
   }
 

@@ -3,7 +3,13 @@
 @section('content')
     <div class="mx-auto mt-10 w-full max-w-md rounded-xl border border-slate-800 bg-slate-950/50 p-6 shadow">
         <h1 class="text-xl font-semibold">Connexion manager</h1>
-        <p class="mt-1 text-sm text-slate-400">Accès réservé au rôle <span class="font-medium text-slate-200">manager</span>.</p>
+        <p class="mt-1 text-sm text-slate-400">Acces reserve au role <span class="font-medium text-slate-200">manager</span>.</p>
+
+        @if (session('status'))
+            <div class="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+                {{ session('status') }}
+            </div>
+        @endif
 
         <form method="POST" action="{{ route('login.store') }}" class="mt-6 space-y-4">
             @csrf

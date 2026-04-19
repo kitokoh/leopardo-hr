@@ -79,6 +79,10 @@
                     <strong>Espace Manager</strong>
                     <span>Connexion web et dashboard</span>
                 </a>
+                <a class="tile" href="/platform/login">
+                    <strong>Espace Plateforme</strong>
+                    <span>Super admin: creation societes et onboarding managers</span>
+                </a>
             </div>
 
             <span class="badge">MVP Beta - Laravel 11 + PostgreSQL</span>
