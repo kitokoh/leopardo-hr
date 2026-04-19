@@ -57,6 +57,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _repository.logout();
     state = AuthState(); // reset completely
   }
+
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final employee = await _repository.updateProfile(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      );
+      state = state.copyWith(isLoading: false, employee: employee);
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmation,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _repository.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        confirmation: confirmation,
+      );
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
