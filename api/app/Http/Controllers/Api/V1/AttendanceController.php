@@ -78,7 +78,7 @@ class AttendanceController extends Controller
             return new JsonResponse([
                 'data' => [
                     'mode' => 'single',
-                    'item' => $this->serializeToday($target, $log),
+                    'item' => $this->serializeToday($target, $log, $company->timezone),
                 ],
             ]);
         }
@@ -96,14 +96,17 @@ class AttendanceController extends Controller
             $employeeIds = $employees->pluck('id')->all();
 
             $logsByEmployee = AttendanceLog::query()
+                ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'status'])
                 ->where('date', $today)
                 ->where('session_number', 1)
                 ->whereIn('employee_id', $employeeIds)
                 ->get()
                 ->keyBy('employee_id');
 
-            $data = $employees->map(function (Employee $employee) use ($logsByEmployee) {
-                return $this->serializeToday($employee, $logsByEmployee->get($employee->id));
+            $timezone = $company->timezone;
+
+            $data = $employees->map(function (Employee $employee) use ($logsByEmployee, $timezone) {
+                return $this->serializeToday($employee, $logsByEmployee->get($employee->id), $timezone);
             })->values();
 
             return new JsonResponse([
@@ -131,7 +134,7 @@ class AttendanceController extends Controller
         return new JsonResponse([
             'data' => [
                 'mode' => 'single',
-                'item' => $this->serializeToday($actor, $log),
+                'item' => $this->serializeToday($actor, $log, $company->timezone),
             ],
         ]);
     }
@@ -158,6 +161,7 @@ class AttendanceController extends Controller
         }
 
         $query = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'source_device_code', 'late_minutes'])
             ->orderByDesc('date')
             ->orderByDesc('id');
 
@@ -193,8 +197,8 @@ class AttendanceController extends Controller
             'id' => $log->id,
             'employee_id' => $log->employee_id,
             'date' => $log->date?->format('Y-m-d'),
-            'check_in' => optional($log->check_in)->toIso8601String(),
-            'check_out' => optional($log->check_out)->toIso8601String(),
+            'check_in' => $log->check_in?->toIso8601String(),
+            'check_out' => $log->check_out?->toIso8601String(),
             'method' => $log->method,
             'source_device_code' => $log->source_device_code,
             'hours_worked' => $log->hours_worked,
@@ -204,14 +208,16 @@ class AttendanceController extends Controller
         ];
     }
 
-    private function serializeToday(Employee $employee, ?AttendanceLog $log): array
+    private function serializeToday(Employee $employee, ?AttendanceLog $log, ?string $timezone = null): array
     {
+        $timezone ??= app('current_company')->timezone;
+
         return [
             'employee_id' => $employee->id,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
             'checked_in' => (bool) $log?->check_in,
-            'check_in_time' => $log?->check_in?->setTimezone(app('current_company')->timezone)->format('H:i'),
-            'check_out_time' => $log?->check_out?->setTimezone(app('current_company')->timezone)->format('H:i'),
+            'check_in_time' => $log?->check_in?->setTimezone($timezone)->format('H:i'),
+            'check_out_time' => $log?->check_out?->setTimezone($timezone)->format('H:i'),
             'hours_worked' => $log?->hours_worked ?? '0.00',
             'status' => $log?->status ?? 'absent',
         ];

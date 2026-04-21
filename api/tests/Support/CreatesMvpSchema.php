@@ -298,18 +298,20 @@ trait CreatesMvpSchema
             DB::statement('DROP TABLE IF EXISTS shared_tenants.schedules CASCADE');
         }
 
-        DB::statement('DROP TABLE IF EXISTS "user_invitations" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "super_admins" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "personal_access_tokens" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "attendance_kiosks" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "biometric_enrollment_requests" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "user_lookups" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "attendance_logs" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "employees" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "schedules" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "companies" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "plans" CASCADE');
-        DB::statement('DROP TABLE IF EXISTS "hr_model_templates" CASCADE');
+        $cascade = DB::getDriverName() === 'pgsql' ? ' CASCADE' : '';
+
+        DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_kiosks"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "biometric_enrollment_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "employees"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "schedules"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "companies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "plans"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "hr_model_templates"'.$cascade);
     }
 
     private function restoreDefaultSearchPath(): void

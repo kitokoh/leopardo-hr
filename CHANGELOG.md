@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.59] - 2026-04-21
+### Optimisations backend ciblees
+
+- Optimisation du chemin de connexion API en chargeant la societe avec l employe pour eviter une requete relationnelle tardive
+- Reduction des colonnes lues sur les endpoints de presence utilises par les tableaux de bord et historiques
+- Reutilisation du fuseau horaire courant pendant la serialisation des statuts de presence manager
+- Simplification de la resolution des horaires via les relations Eloquent existantes
+- Correction du helper de schema de test pour eviter la syntaxe `CASCADE` hors PostgreSQL
+
 ## [4.1.58] - 2025-05-14
 ### Amelioration UX et accessibilite mobile
 
@@ -937,7 +946,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
