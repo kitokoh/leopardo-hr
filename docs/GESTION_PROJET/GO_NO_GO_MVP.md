@@ -1,5 +1,42 @@
 # GO / NO-GO MVP — LEOPARDO RH
 
+## DECISION OFFICIELLE MVP - 2026-04-21
+
+Decision:
+
+- **GO MVP**
+
+Motif:
+
+- `main` est propre et synchronise avec `origin/main`.
+- Render est valide cote backend/web.
+- Neon/PostgreSQL est valide cote base de donnees.
+- Firebase est valide cote mobile.
+- Les tests de connexion reels sont positifs.
+- Les parcours coeur MVP sont consideres utilisables pour un pilote client encadre.
+
+Perimetre valide:
+
+- Authentification API/web/mobile.
+- Session utilisateur et logout.
+- Gestion de base des employes.
+- Pointage check-in/check-out/today/historique.
+- Estimation journaliere et estimation rapide.
+- Recu PDF informatif.
+- Dashboard web manager.
+- Application mobile connectee a l API reelle.
+
+Suites autorisees:
+
+- Lancement beta/pilote client encadre.
+- Collecte des retours terrain.
+- Corrections uniquement P0/P1 pendant la periode pilote.
+- Priorisation Phase 2 selon retours clients reels.
+
+Gel de scope:
+
+- Aucune nouvelle feature hors correction bloquante ne doit etre ajoutee avant la premiere boucle de retours beta.
+
 ## 1. Objet du document
 
 Ce document sert de cadre de decision pour statuer si Leopardo RH a atteint un niveau suffisant pour etre considere comme un MVP exploitable.
@@ -223,9 +260,9 @@ Peuvent rester ouverts si encadres:
 
 ## 9. Etat de lecture recommande a date
 
-Sur la base des travaux recents, Leopardo RH semble relever du statut suivant:
+Sur la base des travaux recents et de la validation environnement reelle du 2026-04-21, Leopardo RH releve du statut suivant:
 
-- **GO MVP sous reserve**, avec objectif de passer en **GO MVP** apres validation finale de stabilite `main` + deploy + mobile release
+- **GO MVP**
 
 ### 9.1 Pourquoi on est proche du GO
 
@@ -235,49 +272,49 @@ Sur la base des travaux recents, Leopardo RH semble relever du statut suivant:
 - deploy Render a ete fortement durci
 - mobile Flutter est aligne sur l'API reelle
 
-### 9.2 Pourquoi il reste une reserve avant GO plein
+### 9.2 Reserves restantes
 
-- le flux de merge / conflits recurrent avec `main` montre un besoin de stabilisation de branche
-- les scenarios metier au-dela du coeur MVP ne sont pas tous automatises
-- une derniere verification `main` + deploy + build mobile release est souhaitable pour cloturer proprement la decision
+- aucune reserve P0/P1 ouverte sur le perimetre coeur MVP
+- les defauts UI ou demandes fonctionnelles supplementaires sont reportes a la beta/Phase 2
+- toute nouvelle demande doit etre arbitree par retour client reel
 
 ## 10. Checklist de decision GO / NO-GO
 
 ### 10.1 Produit
 
-- [ ] Login manager OK
-- [ ] Login employe OK
-- [ ] Login web admin/manager OK
-- [ ] Presence du jour OK
-- [ ] Check-in OK
-- [ ] Check-out OK
-- [ ] Historique OK
-- [ ] Logout OK
+- [x] Login manager OK
+- [x] Login employe OK
+- [x] Login web admin/manager OK
+- [x] Presence du jour OK
+- [x] Check-in OK
+- [x] Check-out OK
+- [x] Historique OK
+- [x] Logout OK
 
 ### 10.2 Technique
 
-- [ ] Build backend OK
-- [ ] Deploy Render OK
-- [ ] Healthcheck OK
-- [ ] Migrations OK
-- [ ] Seeders OK
-- [ ] Build mobile release/staging OK
-- [ ] Connexion mobile a l'API reelle OK
+- [x] Build backend OK
+- [x] Deploy Render OK
+- [x] Healthcheck OK
+- [x] Migrations OK
+- [x] Seeders OK
+- [x] Build mobile release/staging OK
+- [x] Connexion mobile a l'API reelle OK
 
 ### 10.3 Qualite
 
-- [ ] Checks GitHub requis OK
-- [ ] Scenarios backend critiques verifies
-- [ ] Scenarios mobile critiques verifies
-- [ ] Aucun bug P0/P1 ouvert sur le perimetre MVP
+- [x] Checks GitHub requis OK
+- [x] Scenarios backend critiques verifies
+- [x] Scenarios mobile critiques verifies
+- [x] Aucun bug P0/P1 ouvert sur le perimetre MVP
 
 ### 10.4 Gouvernance
 
-- [ ] CHANGELOG a jour
-- [ ] Rapport QA disponible
-- [ ] Runbook deploy disponible
-- [ ] Runbook rollback disponible
-- [ ] Decision GO / NO-GO archivee
+- [x] CHANGELOG a jour
+- [x] Rapport QA disponible
+- [x] Runbook deploy disponible
+- [x] Runbook rollback disponible
+- [x] Decision GO / NO-GO archivee
 
 ## 11. Decision type a enregistrer
 
