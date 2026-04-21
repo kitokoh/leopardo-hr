@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.58] - 2025-05-14
+### Amelioration UX et accessibilite mobile
+
+- Amelioration de l ecran de connexion mobile avec ajout d icones et d un basculeur de visibilite du mot de passe
+- Ajout de tooltips d accessibilite sur les boutons d icone pour le support des lecteurs d ecran
+- Amelioration du contraste visuel des indicateurs de chargement sur l application mobile
+
 ## [4.1.57] - 2026-04-19
 ### Borne ZKTeco offline-first et synchronisation differee
 
