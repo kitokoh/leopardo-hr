@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\UserInvitationMail;
 use App\Models\SuperAdmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -82,10 +83,17 @@ class PlatformCompanyProvisioningTest extends TestCase
 
         $this->assertDatabaseHas('user_invitations', [
             'email' => 'salim.kaci@nouvelle-societe.dz',
+            'role' => 'manager',
+            'manager_role' => 'principal',
             'invited_by_type' => 'super_admin',
         ]);
 
-        Mail::assertSentCount(1);
+        Mail::assertSent(UserInvitationMail::class, function (UserInvitationMail $mail): bool {
+            return $mail->employee->email === 'salim.kaci@nouvelle-societe.dz'
+                && $mail->employee->role === 'manager'
+                && $mail->employee->manager_role === 'principal'
+                && str_contains($mail->activationUrl, '/activate/');
+        });
     }
 
     public function test_super_admin_api_login_returns_token(): void

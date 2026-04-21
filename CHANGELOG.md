@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.60] - 2026-04-21
+### Couverture onboarding invitations
+
+- Ajout d assertions feature pour verrouiller la creation d une societe avec manager principal et invitation email depuis le super-admin
+- Verification explicite des invitations RH et employe creees par un manager, avec `role`, `manager_role`, origine d invitation et lien `/activate`
+- Ces tests securisent le parcours pilote: entreprise -> manager principal -> RH/employes -> activation de compte par email
+
 ## [4.1.59] - 2026-04-21
 ### Optimisations backend ciblees
 
@@ -946,7 +953,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
