@@ -23,6 +23,7 @@ Ce journal trace les opérations transverses du repo (structure, documentation, 
 | 2026-04-04 | Codex | Durcissement execution | PR template, branch protection spec, checker local, drills log | Passage de la gouvernance documentaire a un controle operationnel concret (v4.1.4) |
 | 2026-04-04 | Codex | Normalisation finale coherence | Pilotage/OpenAPI/Multitenancy | PROGRAM_VERSION fixe a 4.1.4, retrait propre de /auth/refresh OpenAPI, correction doc trait BelongsToCompany |
 | 2026-04-04 | Antigravity | Restructuration globale (v4.1.4) | `PILOTAGE.md`, `GARDE_FOUS.md`, `v3/prompts` | Source de vérité unique activée, prompts MVP v3, scope verrouillé |
+| 2026-04-21 | Codex | Decision GO MVP | `docs/GESTION_PROJET/GO_NO_GO_MVP.md`, `CHANGELOG.md`, tag `v0.1.0-mvp` | Render, Neon/PostgreSQL, Firebase mobile et tests de connexion reels valides; passage en pilote client encadre |
 
 ## Template d'entrée
 

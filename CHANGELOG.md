@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.61] - 2026-04-21
+### GO MVP officiel
+
+- Decision GO MVP prononcee apres validation de `main`, Render, Neon/PostgreSQL, Firebase mobile et tests de connexion reels positifs
+- `docs/GESTION_PROJET/GO_NO_GO_MVP.md` archive la decision, le perimetre valide et la checklist de passage
+- Le projet passe de construction MVP a pilote client encadre, avec gel des nouvelles features hors corrections P0/P1
+- La release MVP est preparee pour tag Git `v0.1.0-mvp`
+
 ## [4.1.60] - 2026-04-21
 ### Couverture onboarding invitations
 
@@ -953,7 +961,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
