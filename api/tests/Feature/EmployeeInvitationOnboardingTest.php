@@ -100,10 +100,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         $this->assertDatabaseHas('user_invitations', [
             'email' => 'fatima.rh@company.test',
+            'role' => 'manager',
+            'manager_role' => 'rh',
             'invited_by_type' => 'manager',
         ]);
 
-        Mail::assertSentCount(1);
+        Mail::assertSent(UserInvitationMail::class, function (UserInvitationMail $mail): bool {
+            return $mail->employee->email === 'fatima.rh@company.test'
+                && $mail->employee->role === 'manager'
+                && $mail->employee->manager_role === 'rh'
+                && str_contains($mail->activationUrl, '/activate/');
+        });
     }
 
     public function test_invited_employee_can_activate_account_from_link(): void
@@ -158,6 +165,15 @@ class EmployeeInvitationOnboardingTest extends TestCase
         });
 
         $token = basename(parse_url($activationUrl, PHP_URL_PATH));
+
+        DB::statement('SET search_path TO public');
+
+        $this->assertDatabaseHas('user_invitations', [
+            'email' => 'karim.aouad@company.test',
+            'role' => 'employee',
+            'manager_role' => null,
+            'invited_by_type' => 'manager',
+        ]);
 
         $this->withoutMiddleware()
             ->post('/activate/'.$token, [
