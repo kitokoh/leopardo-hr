@@ -76,7 +76,7 @@ class AttendanceService
         }
 
         $schedule = $log->schedule_id
-            ? Schedule::query()->find($log->schedule_id)
+            ? $log->schedule
             : $this->resolveSchedule($employee);
 
         $seconds = $log->check_in?->diffInSeconds($nowUtc) ?? 0;
@@ -135,7 +135,7 @@ class AttendanceService
             }
 
             $schedule = $log->schedule_id
-                ? Schedule::query()->find($log->schedule_id)
+                ? $log->schedule
                 : $this->resolveSchedule($employee);
 
             $seconds = $log->check_in?->diffInSeconds($occurredAt) ?? 0;
@@ -199,10 +199,6 @@ class AttendanceService
 
     private function resolveSchedule(Employee $employee): ?Schedule
     {
-        if ($employee->schedule_id) {
-            return Schedule::query()->find($employee->schedule_id);
-        }
-
-        return null;
+        return $employee->schedule;
     }
 }

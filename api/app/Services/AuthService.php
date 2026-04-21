@@ -30,13 +30,17 @@ class AuthService
 
         if ($lookup) {
             $employee = Employee::withoutGlobalScopes()
+                ->with('company')
                 ->where('company_id', $lookup->company_id)
                 ->where('id', $lookup->employee_id)
                 ->first();
         }
 
         if (! $employee) {
-            $employee = Employee::withoutGlobalScopes()->where('email', $email)->first();
+            $employee = Employee::withoutGlobalScopes()
+                ->with('company')
+                ->where('email', $email)
+                ->first();
             $employee?->syncUserLookup();
         }
 
