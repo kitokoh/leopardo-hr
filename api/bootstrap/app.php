@@ -1,12 +1,15 @@
 <?php
 
+use App\Exceptions\DomainException;
 use App\Http\Middleware\TenantMiddleware;
+use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
+use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -23,10 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
             'manager' => EnsureManagerMiddleware::class,
+            'manager_role' => EnsureManagerRoleMiddleware::class,
+            'employee' => EnsureEmployeeMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (App\Exceptions\DomainException $exception, Request $request) {
+        $exceptions->render(function (DomainException $exception, Request $request) {
             if (! ($request->expectsJson() || $request->is('api/*'))) {
                 return null;
             }

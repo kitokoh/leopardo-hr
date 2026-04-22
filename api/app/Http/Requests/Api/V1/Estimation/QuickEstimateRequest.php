@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Estimation;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 
 class QuickEstimateRequest extends FormRequest
 {
@@ -22,8 +23,8 @@ class QuickEstimateRequest extends FormRequest
                     }
 
                     try {
-                        $fromDate = \Illuminate\Support\Carbon::createFromFormat('Y-m-d', $from)->startOfDay();
-                        $toDate = \Illuminate\Support\Carbon::createFromFormat('Y-m-d', $value)->startOfDay();
+                        $fromDate = Carbon::createFromFormat('Y-m-d', $from)->startOfDay();
+                        $toDate = Carbon::createFromFormat('Y-m-d', $value)->startOfDay();
                     } catch (\Throwable) {
                         return;
                     }

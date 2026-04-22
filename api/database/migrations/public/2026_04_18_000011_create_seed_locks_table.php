@@ -12,7 +12,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         if (Schema::hasTable('seed_locks')) {
             return;
@@ -35,7 +35,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
         Schema::dropIfExists('seed_locks');
     }
 };

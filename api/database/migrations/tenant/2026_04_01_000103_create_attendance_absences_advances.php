@@ -30,7 +30,7 @@ return new class extends Migration
             // CALCULS (retard, HS) se font EN TIMEZONE ENTREPRISE via Carbon::setTimezone()
             $table->enum('method', ['mobile', 'qr', 'biometric', 'manual'])->default('mobile');
             $table->enum('status', ['ontime', 'late', 'absent', 'leave', 'holiday', 'incomplete'])
-                  ->default('incomplete');
+                ->default('incomplete');
             $table->decimal('hours_worked', 5, 2)->nullable();
             $table->decimal('overtime_hours', 5, 2)->default(0);
             $table->unsignedSmallInteger('late_minutes')->default(0);
@@ -120,7 +120,7 @@ return new class extends Migration
             // STATUTS : pending → approved → active → repaid (+rejected)
             // 'active' = avance approuvée EN COURS de remboursement (PayrollService filtre sur 'active')
             $table->enum('status', ['pending', 'approved', 'rejected', 'active', 'repaid'])
-                  ->default('pending');
+                ->default('pending');
 
             $table->unsignedInteger('approved_by')->nullable();
             $table->foreign('approved_by')->references('id')->on('employees')->nullOnDelete();

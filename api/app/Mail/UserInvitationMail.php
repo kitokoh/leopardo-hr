@@ -18,8 +18,7 @@ class UserInvitationMail extends Mailable
         public readonly Employee $employee,
         public readonly string $activationUrl,
         public readonly string $invitedByEmail,
-    ) {
-    }
+    ) {}
 
     public function build(): self
     {

@@ -50,6 +50,7 @@ class WebAuthPagesTest extends TestCase
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -66,7 +67,7 @@ class WebAuthPagesTest extends TestCase
         $this->assertAuthenticated('web');
     }
 
-    public function test_employee_cannot_login_to_web_dashboard(): void
+    public function test_employee_is_redirected_to_personal_space_on_web_login(): void
     {
         $company = Company::query()->create([
             'name' => 'Company A',
@@ -97,9 +98,8 @@ class WebAuthPagesTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect('/login');
-        $response->assertSessionHasErrors(['email']);
-        $this->assertGuest('web');
+        $response->assertRedirect('/me');
+        $this->assertAuthenticated('web');
     }
 
     public function test_suspended_company_is_blocked_from_web_login(): void

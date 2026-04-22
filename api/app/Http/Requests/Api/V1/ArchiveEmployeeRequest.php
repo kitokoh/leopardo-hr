@@ -16,4 +16,3 @@ class ArchiveEmployeeRequest extends FormRequest
         return [];
     }
 }
-

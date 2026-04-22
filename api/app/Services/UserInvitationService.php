@@ -21,13 +21,17 @@ class UserInvitationService
     ): string {
         $plainToken = Str::random(64);
 
+        // Match on (company_id, employee_id) uniquement : si l'email de
+        // l'employe a change apres la premiere invitation, on veut mettre a
+        // jour l'invitation existante (et donc invalider son ancien token),
+        // pas en creer une nouvelle en parallele.
         UserInvitation::query()->updateOrCreate(
             [
                 'company_id' => $company->id,
                 'employee_id' => $employee->id,
-                'email' => $employee->email,
             ],
             [
+                'email' => $employee->email,
                 'schema_name' => $company->schema_name,
                 'role' => $employee->role,
                 'manager_role' => $employee->manager_role,

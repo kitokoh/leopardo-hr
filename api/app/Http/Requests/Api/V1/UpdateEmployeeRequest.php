@@ -73,6 +73,21 @@ class UpdateEmployeeRequest extends FormRequest
         ];
     }
 
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            // Seul le super admin peut promouvoir un employe en manager principal :
+            // meme un RH ne doit pas pouvoir PATCH un employe en manager_role=principal
+            // (idem que la regle deja appliquee cote StoreEmployeeRequest).
+            if ($this->input('manager_role') === 'principal' && $this->user()?->isManager()) {
+                $validator->errors()->add(
+                    'manager_role',
+                    'Seul le super admin peut promouvoir un manager en principal.'
+                );
+            }
+        });
+    }
+
     protected function prepareForValidation(): void
     {
         if (DB::getDriverName() !== 'pgsql') {

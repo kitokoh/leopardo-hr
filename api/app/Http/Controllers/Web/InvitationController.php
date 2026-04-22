@@ -13,8 +13,7 @@ class InvitationController extends Controller
 {
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
-    ) {
-    }
+    ) {}
 
     public function showActivationForm(string $token): View
     {

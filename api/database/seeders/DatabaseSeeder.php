@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // S'assurer qu'on est sur le schéma public pour les seeders de base
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         $this->command->info('');
         $this->command->info('🐆 LEOPARDO RH — Initialisation de la base de données');

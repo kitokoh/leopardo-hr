@@ -21,6 +21,20 @@ class AuthRepository {
 
     await storage.saveToken(token);
 
+    // Hydrate depuis /auth/me pour recuperer manager_role + capabilities
+    // (la reponse /auth/login ne les expose pas).
+    try {
+      final meResponse = await apiClient.dio.get('/auth/me');
+      final meData = meResponse.data['data'];
+      if (meData is Map) {
+        return {
+          'employee': Employee.fromJson(meData.cast<String, dynamic>()),
+        };
+      }
+    } catch (_) {
+      // Si /auth/me echoue on retombe sur la reponse de login.
+    }
+
     return {
       'employee': Employee.fromJson(employeeJson),
     };

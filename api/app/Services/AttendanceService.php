@@ -8,7 +8,6 @@ use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
@@ -27,7 +26,7 @@ class AttendanceService
             ->first();
 
         if ($open) {
-            throw new AlreadyCheckedInException();
+            throw new AlreadyCheckedInException;
         }
 
         $schedule = $this->resolveSchedule($employee);
@@ -72,7 +71,7 @@ class AttendanceService
             ->first();
 
         if (! $log) {
-            throw new MissingCheckInException();
+            throw new MissingCheckInException;
         }
 
         $schedule = $log->schedule_id
@@ -131,7 +130,7 @@ class AttendanceService
                 ->first();
 
             if (! $log) {
-                throw new MissingCheckInException();
+                throw new MissingCheckInException;
             }
 
             $schedule = $log->schedule_id

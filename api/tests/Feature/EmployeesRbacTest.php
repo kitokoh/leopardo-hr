@@ -55,6 +55,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -136,6 +137,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -177,6 +179,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -222,6 +225,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -278,6 +282,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -335,6 +340,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -385,6 +391,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 
@@ -434,6 +441,7 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
             'role' => 'manager',
+            'manager_role' => 'principal',
             'status' => 'active',
         ]);
 

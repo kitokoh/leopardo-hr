@@ -12,8 +12,7 @@ class KioskAttendanceService
 {
     public function __construct(
         private readonly AttendanceService $attendanceService,
-    ) {
-    }
+    ) {}
 
     public function punch(AttendanceKiosk $kiosk, string $identifier, string $action = 'check_in'): AttendanceLog
     {
@@ -33,7 +32,7 @@ class KioskAttendanceService
             ->first();
 
         if (! $employee) {
-            throw (new ModelNotFoundException())->setModel(Employee::class);
+            throw (new ModelNotFoundException)->setModel(Employee::class);
         }
 
         if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {

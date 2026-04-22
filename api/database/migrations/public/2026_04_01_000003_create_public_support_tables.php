@@ -18,7 +18,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         $this->createIfMissing('super_admins', function (Blueprint $table) {
             $table->increments('id');

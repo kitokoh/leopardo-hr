@@ -16,36 +16,36 @@ class LanguageSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         $languages = [
             [
-                'code'        => 'fr',
-                'name_fr'     => 'Français',
+                'code' => 'fr',
+                'name_fr' => 'Français',
                 'name_native' => 'Français',
-                'is_rtl'      => false,
-                'is_active'   => true,
+                'is_rtl' => false,
+                'is_active' => true,
             ],
             [
-                'code'        => 'ar',
-                'name_fr'     => 'Arabe',
+                'code' => 'ar',
+                'name_fr' => 'Arabe',
                 'name_native' => 'العربية',
-                'is_rtl'      => true,   // ← Direction RTL — impact Vue.js + Flutter + PDF
-                'is_active'   => true,
+                'is_rtl' => true,   // ← Direction RTL — impact Vue.js + Flutter + PDF
+                'is_active' => true,
             ],
             [
-                'code'        => 'en',
-                'name_fr'     => 'Anglais',
+                'code' => 'en',
+                'name_fr' => 'Anglais',
                 'name_native' => 'English',
-                'is_rtl'      => false,
-                'is_active'   => true,
+                'is_rtl' => false,
+                'is_active' => true,
             ],
             [
-                'code'        => 'tr',
-                'name_fr'     => 'Turc',
+                'code' => 'tr',
+                'name_fr' => 'Turc',
                 'name_native' => 'Türkçe',
-                'is_rtl'      => false,
-                'is_active'   => true,
+                'is_rtl' => false,
+                'is_active' => true,
             ],
         ];
 

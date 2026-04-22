@@ -78,13 +78,13 @@ class EmployeeRepository {
         .toList();
   }
 
-  Future<void> resendInvitation(int invitationId) async {
+  Future<void> resendInvitation(String invitationId) async {
     await apiClient.dio.post('/invitations/$invitationId/resend');
   }
 }
 
 class Invitation {
-  final int id;
+  final String id;
   final String email;
   final String status;
   final DateTime? expiresAt;
@@ -102,15 +102,17 @@ class Invitation {
 
   factory Invitation.fromJson(Map<String, dynamic> json) {
     return Invitation(
-      id: (json['id'] as num).toInt(),
+      id: json['id'].toString(),
       email: (json['email'] ?? '') as String,
       status: (json['status'] ?? 'pending') as String,
       expiresAt: json['expires_at'] != null
           ? DateTime.tryParse(json['expires_at'].toString())
           : null,
-      sentAt: json['sent_at'] != null
-          ? DateTime.tryParse(json['sent_at'].toString())
-          : null,
+      sentAt: json['last_sent_at'] != null
+          ? DateTime.tryParse(json['last_sent_at'].toString())
+          : (json['sent_at'] != null
+              ? DateTime.tryParse(json['sent_at'].toString())
+              : null),
       employeeId: json['employee_id'] is num
           ? (json['employee_id'] as num).toInt()
           : null,

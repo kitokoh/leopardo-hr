@@ -10,9 +10,7 @@ use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller
 {
-    public function __construct(private readonly EstimationService $estimationService)
-    {
-    }
+    public function __construct(private readonly EstimationService $estimationService) {}
 
     public function index(): View
     {

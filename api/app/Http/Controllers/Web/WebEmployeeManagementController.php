@@ -11,9 +11,7 @@ use Illuminate\Http\RedirectResponse;
 
 class WebEmployeeManagementController extends Controller
 {
-    public function __construct(private readonly EmployeeService $employeeService)
-    {
-    }
+    public function __construct(private readonly EmployeeService $employeeService) {}
 
     public function create(): View
     {

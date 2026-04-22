@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class UserInvitation extends Model
 {
@@ -38,7 +39,7 @@ class UserInvitation extends Model
 
     public function getTable(): string
     {
-        return \Illuminate\Support\Facades\DB::getDriverName() === 'pgsql'
+        return DB::getDriverName() === 'pgsql'
             ? 'public.user_invitations'
             : 'user_invitations';
     }

@@ -12,8 +12,7 @@ class CompanyProvisioningService
 {
     public function __construct(
         private readonly UserInvitationService $invitationService,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{company: Company, manager: Employee}

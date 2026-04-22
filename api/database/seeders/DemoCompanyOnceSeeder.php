@@ -16,10 +16,11 @@ class DemoCompanyOnceSeeder extends Seeder
 
         if ($isProduction && ! $allowOnce) {
             $this->command?->info('DemoCompanyOnceSeeder skipped (production without DEMO_SEED_ONCE=true).');
+
             return;
         }
 
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         $alreadyRan = DB::table('seed_locks')
             ->where('lock_key', self::LOCK_KEY)
@@ -27,6 +28,7 @@ class DemoCompanyOnceSeeder extends Seeder
 
         if ($alreadyRan) {
             $this->command?->info('DemoCompanyOnceSeeder skipped (already executed).');
+
             return;
         }
 
@@ -40,7 +42,7 @@ class DemoCompanyOnceSeeder extends Seeder
         try {
             $this->call(DemoCompanySeeder::class);
 
-            DB::statement("SET search_path TO public");
+            DB::statement('SET search_path TO public');
             DB::table('seed_locks')
                 ->where('lock_key', self::LOCK_KEY)
                 ->update([
@@ -48,7 +50,7 @@ class DemoCompanyOnceSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
         } catch (\Throwable $throwable) {
-            DB::statement("SET search_path TO public");
+            DB::statement('SET search_path TO public');
             DB::table('seed_locks')
                 ->where('lock_key', self::LOCK_KEY)
                 ->delete();

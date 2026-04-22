@@ -17,11 +17,11 @@ class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         $email = env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com');
         $passwordFromEnv = env('SUPER_ADMIN_PASSWORD');
-        $password = $passwordFromEnv ?: ('CHANGER_EN_PROD_' . bin2hex(random_bytes(8)));
+        $password = $passwordFromEnv ?: ('CHANGER_EN_PROD_'.bin2hex(random_bytes(8)));
         $forceReset = filter_var(env('FORCE_SUPER_ADMIN_PASSWORD_RESET', false), FILTER_VALIDATE_BOOLEAN);
 
         $existing = DB::table('super_admins')->where('email', $email)->first();
@@ -37,25 +37,27 @@ class SuperAdminSeeder extends Seeder
                 if (app()->environment('local', 'development')) {
                     $this->command->warn("   🔑 Nouveau mot de passe : {$passwordFromEnv}");
                 }
+
                 return;
             }
 
             $this->command->warn("⚠️  Super Admin déjà existant : {$email} — non modifié");
+
             return;
         }
 
         DB::table('super_admins')->insert([
-            'name'         => 'Super Administrateur',
-            'email'        => $email,
+            'name' => 'Super Administrateur',
+            'email' => $email,
             'password_hash' => Hash::make($password),
-            'created_at'   => now(),
+            'created_at' => now(),
         ]);
 
         $this->command->info("✅ Super Admin créé : {$email}");
 
         if (app()->environment('local', 'development')) {
             $this->command->warn("   🔑 Mot de passe temporaire : {$password}");
-            $this->command->warn("   🚨 Changer ce mot de passe IMMÉDIATEMENT en production !");
+            $this->command->warn('   🚨 Changer ce mot de passe IMMÉDIATEMENT en production !');
         }
     }
 }

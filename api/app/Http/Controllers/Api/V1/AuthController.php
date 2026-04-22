@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function __construct(private readonly AuthService $authService)
-    {
-    }
+    public function __construct(private readonly AuthService $authService) {}
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -29,15 +27,7 @@ class AuthController extends Controller
         $employee = $result['employee'];
 
         return new JsonResponse([
-            'data' => [
-                'id' => $employee->id,
-                'company_id' => $employee->company_id,
-                'first_name' => $employee->first_name,
-                'last_name' => $employee->last_name,
-                'email' => $employee->email,
-                'role' => $employee->role,
-                'status' => $employee->status,
-            ],
+            'data' => $this->serializeEmployee($employee),
             'token' => $result['token'],
             'token_type' => $result['token_type'],
             'token_expires_at' => $result['token_expires_at'],
@@ -46,7 +36,7 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        /** @var \App\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = $request->user();
 
         return new JsonResponse([
@@ -120,6 +110,24 @@ class AuthController extends Controller
             'emergency_contact_name' => $employee->emergency_contact_name,
             'emergency_contact_phone' => $employee->emergency_contact_phone,
             'extra_data' => $employee->extra_data ?? [],
+            'capabilities' => $this->capabilitiesFor($employee),
+            'suggested_home_route' => $employee->homeRoute(),
+        ];
+    }
+
+    /**
+     * Retourne le set de capacites actives pour l'employe (utilisable cote mobile
+     * pour afficher / cacher des fonctionnalites sans redupliquer la logique RBAC).
+     */
+    private function capabilitiesFor(Employee $employee): array
+    {
+        return [
+            'can_view_dashboard' => $employee->isManager(),
+            'can_create_employees' => $employee->hasManagerRole('principal', 'rh'),
+            'can_manage_invitations' => $employee->hasManagerRole('principal', 'rh'),
+            'can_manage_biometrics' => $employee->hasManagerRole('principal', 'superviseur'),
+            'can_view_payroll' => $employee->hasManagerRole('principal', 'comptable'),
+            'is_principal' => $employee->hasManagerRole('principal'),
         ];
     }
 }

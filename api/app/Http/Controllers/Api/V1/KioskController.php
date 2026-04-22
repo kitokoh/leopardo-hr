@@ -17,8 +17,7 @@ class KioskController extends Controller
 {
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
-    ) {
-    }
+    ) {}
 
     public function register(Request $request): JsonResponse
     {

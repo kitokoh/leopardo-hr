@@ -26,4 +26,3 @@ class AttendancePolicy
         return $actor->isManager() || $actor->id === $target->id;
     }
 }
-
