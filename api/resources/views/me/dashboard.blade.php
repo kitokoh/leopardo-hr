@@ -15,7 +15,12 @@
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
-            <x-stat-card label="Statut du jour" :value="$todayLog?->status ?? 'absent'" />
+            <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+                <div class="text-xs uppercase tracking-wider text-slate-400">Statut du jour</div>
+                <div class="mt-2">
+                    <x-attendance-badge :status="$todayLog?->status ?? 'absent'" />
+                </div>
+            </div>
             <x-stat-card label="Jours presents (mois)" :value="$presentDays.' j'" />
             <x-stat-card label="Heures travaillees (mois)" :value="number_format($hoursMonth, 2).' h'" />
         </div>
@@ -30,36 +35,42 @@
                     <div><dt class="text-slate-400">Methode</dt><dd>{{ $todayLog->method }}</dd></div>
                 </dl>
             @else
-                <p class="mt-2 text-sm text-slate-400">Aucun pointage enregistre aujourd'hui.</p>
+                <p class="mt-2 text-sm text-slate-400">Aucun pointage enregistre aujourd'hui. Ouvrez l'app mobile Leopardo RH pour pointer.</p>
             @endif
         </div>
 
         <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
             <h2 class="text-lg font-semibold">Historique du mois</h2>
-            <table class="mt-3 min-w-full text-sm">
-                <thead class="text-left text-slate-400">
-                    <tr>
-                        <th class="py-2 pr-4">Date</th>
-                        <th class="py-2 pr-4">Statut</th>
-                        <th class="py-2 pr-4">Check-in</th>
-                        <th class="py-2 pr-4">Check-out</th>
-                        <th class="py-2 pr-4">Heures</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800">
-                    @forelse ($monthLogs as $log)
+            @if ($monthLogs->isEmpty())
+                <div class="mt-3">
+                    <x-empty-state
+                        title="Aucun pointage ce mois-ci"
+                        description="Vos pointages du mois apparaitront ici automatiquement." />
+                </div>
+            @else
+                <table class="mt-3 min-w-full text-sm">
+                    <thead class="text-left text-slate-400">
                         <tr>
-                            <td class="py-2 pr-4">{{ $log->date }}</td>
-                            <td class="py-2 pr-4">{{ $log->status }}</td>
-                            <td class="py-2 pr-4">{{ $log->check_in?->setTimezone($company?->timezone ?? 'Africa/Algiers')->format('H:i') ?? '-' }}</td>
-                            <td class="py-2 pr-4">{{ $log->check_out?->setTimezone($company?->timezone ?? 'Africa/Algiers')->format('H:i') ?? '-' }}</td>
-                            <td class="py-2 pr-4">{{ number_format((float) ($log->hours_worked ?? 0), 2) }}</td>
+                            <th class="py-2 pr-4">Date</th>
+                            <th class="py-2 pr-4">Statut</th>
+                            <th class="py-2 pr-4">Check-in</th>
+                            <th class="py-2 pr-4">Check-out</th>
+                            <th class="py-2 pr-4">Heures</th>
                         </tr>
-                    @empty
-                        <tr><td colspan="5" class="py-3 text-slate-400">Aucun pointage ce mois-ci.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        @foreach ($monthLogs as $log)
+                            <tr>
+                                <td class="py-2 pr-4">{{ $log->date }}</td>
+                                <td class="py-2 pr-4"><x-attendance-badge :status="$log->status" /></td>
+                                <td class="py-2 pr-4">{{ $log->check_in?->setTimezone($company?->timezone ?? 'Africa/Algiers')->format('H:i') ?? '-' }}</td>
+                                <td class="py-2 pr-4">{{ $log->check_out?->setTimezone($company?->timezone ?? 'Africa/Algiers')->format('H:i') ?? '-' }}</td>
+                                <td class="py-2 pr-4">{{ number_format((float) ($log->hours_worked ?? 0), 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         </div>
     </div>
 @endsection

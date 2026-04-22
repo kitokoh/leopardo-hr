@@ -48,6 +48,8 @@ trait CreatesMvpSchema
             $table->string('timezone', 50)->default('Africa/Algiers');
             $table->char('currency', 3)->default('DZD');
             $table->text('notes')->nullable();
+            $table->jsonb('features')->default(DB::raw("'{}'::jsonb"));
+            $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
             $table->timestamps();
         });
 
@@ -114,6 +116,7 @@ trait CreatesMvpSchema
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('email_verified_at')->nullable();
             $table->json('extra_data')->nullable();
+            $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
             $table->timestamps();
 
             $table->unique('email');

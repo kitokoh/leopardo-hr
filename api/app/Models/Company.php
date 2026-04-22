@@ -35,7 +35,56 @@ class Company extends Model
         'timezone',
         'currency',
         'notes',
+        'features',
+        'metadata',
     ];
+
+    protected $casts = [
+        'features' => 'array',
+        'metadata' => 'array',
+    ];
+
+    protected $attributes = [
+        'features' => '{}',
+        'metadata' => '{}',
+    ];
+
+    /**
+     * Liste des modules connus de la plateforme (APV L.08).
+     * L ajout d un nouveau module passe par cette constante + une entree dans docs/ROADMAP.md.
+     */
+    public const KNOWN_MODULES = [
+        'rh',
+        'finance',
+        'cameras',
+        'muhasebe',
+        'leo_ai',
+    ];
+
+    /**
+     * Indique si un module (ou une sous-feature) est actif pour cette company.
+     * Le module RH est actif par defaut (base de l app).
+     */
+    public function hasFeature(string $key): bool
+    {
+        $features = $this->features ?? [];
+
+        if ($key === 'rh') {
+            return (bool) ($features['rh'] ?? true);
+        }
+
+        return (bool) ($features[$key] ?? false);
+    }
+
+    /**
+     * Toggle explicite d une feature (reserve super-admin / commande console).
+     */
+    public function setFeature(string $key, bool $enabled): void
+    {
+        $features = $this->features ?? [];
+        $features[$key] = $enabled;
+        $this->features = $features;
+    }
 
     protected static function booted(): void
     {

@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Services\AuthService;
+use App\Services\FeatureFlag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -111,8 +113,14 @@ class AuthController extends Controller
             'emergency_contact_phone' => $employee->emergency_contact_phone,
             'extra_data' => $employee->extra_data ?? [],
             'capabilities' => $this->capabilitiesFor($employee),
+            'features' => FeatureFlag::for($this->resolveCompany($employee)),
             'suggested_home_route' => $employee->homeRoute(),
         ];
+    }
+
+    private function resolveCompany(Employee $employee): ?Company
+    {
+        return $employee->company;
     }
 
     /**
