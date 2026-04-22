@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.64] - 2026-04-22
+### Accessibilite et navigation mobile
+
+- Amelioration de la navigation mobile par l ajout de tooltips "Retour" sur les boutons de retour des ecrans Equipe et Mon mois
+- Amelioration du feedback pour les lecteurs d ecran par l ajout de labels `Semantics` sur les indicateurs de chargement (connexion, presence, suivi equipe)
+
 ## [4.1.63] - 2026-04-22
 ### API self-service et parite CRUD mobile
 

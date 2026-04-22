@@ -39,6 +39,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> with SingleTickerProvid
           title: const Text('Equipe'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
+            tooltip: 'Retour',
             onPressed: () => context.pop(),
           ),
         ),
@@ -59,6 +60,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> with SingleTickerProvid
         title: const Text('Equipe'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
         bottom: TabBar(

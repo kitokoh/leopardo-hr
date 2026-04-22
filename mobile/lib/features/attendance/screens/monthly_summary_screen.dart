@@ -44,6 +44,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
         title: const Text('Mon mois'),
