@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PulseButton extends StatefulWidget {
   final bool isCheckedIn;
@@ -35,39 +36,49 @@ class _PulseButtonState extends State<PulseButton> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.isLoading ? null : widget.onTap,
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: widget.isLoading ? 1.0 : _animation.value,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: (widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor).withValues(alpha: 0.3),
-                    blurRadius: 30,
-                    spreadRadius: widget.isLoading ? 5 : 15 * _animation.value,
-                  )
-                ],
+    return Semantics(
+      label: widget.isCheckedIn ? 'Se deconnecter du pointage' : 'Pointer mon arrivee',
+      button: true,
+      enabled: !widget.isLoading,
+      child: GestureDetector(
+        onTap: widget.isLoading
+            ? null
+            : () {
+                HapticFeedback.mediumImpact();
+                widget.onTap?.call();
+              },
+        child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: widget.isLoading ? 1.0 : _animation.value,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: (widget.isCheckedIn ? Theme.of(context).colorScheme.error : Theme.of(context).primaryColor).withValues(alpha: 0.3),
+                      blurRadius: 30,
+                      spreadRadius: widget.isLoading ? 5 : 15 * _animation.value,
+                    )
+                  ],
+                ),
+                child: Center(
+                  child: widget.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          widget.isCheckedIn ? 'CHECK OUT' : 'CHECK IN',
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                ),
               ),
-              child: Center(
-                child: widget.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        widget.isCheckedIn ? 'CHECK OUT' : 'CHECK IN',
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-              ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

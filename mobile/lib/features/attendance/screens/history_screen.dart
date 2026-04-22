@@ -44,12 +44,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
         title: const Text('Historique'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Parametres',
             onPressed: () => context.push('/settings'),
           ),
         ],
