@@ -114,11 +114,14 @@ class AttendanceScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 color: Theme.of(context).primaryColor.withValues(alpha: 0.12),
               ),
-              child: const Center(
-                child: SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+              child: Center(
+                child: Semantics(
+                  label: 'Chargement de votre présence...',
+                  child: SizedBox(
+                    height: 28,
+                    width: 28,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 ),
               ),
             )
@@ -191,12 +194,15 @@ class AttendanceScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           if (state.isLoading && employees.isEmpty) ...[
-            const Row(
+            Row(
               children: [
-                SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                Semantics(
+                  label: 'Chargement du suivi d\'équipe...',
+                  child: SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 ),
                 SizedBox(width: 12),
                 Expanded(
