@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_rh/core/theme/app_colors.dart';
+import 'package:leopardo_rh/core/widgets/empty_state.dart';
+import 'package:leopardo_rh/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/team/data/employee_repository.dart';
 import 'package:leopardo_rh/features/team/providers/team_provider.dart';
@@ -109,7 +112,16 @@ class _EmployeesTab extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Erreur : $err')),
         data: (employees) {
           if (employees.isEmpty) {
-            return const Center(child: Text('Aucun employe enregistre.'));
+            return ListView(
+              children: const [
+                SizedBox(height: 80),
+                EmptyState(
+                  icon: Icons.group_add,
+                  title: 'Aucun collaborateur',
+                  description: 'Commencez par ajouter votre equipe avec le bouton ci-dessous.',
+                ),
+              ],
+            );
           }
           return ListView.separated(
             itemCount: employees.length,
@@ -123,7 +135,7 @@ class _EmployeesTab extends ConsumerWidget {
                 title: Text(e.fullName),
                 subtitle: Text('${e.email}\nRole : ${_roleLabel(e)}'),
                 isThreeLine: true,
-                trailing: _statusChip(e.status),
+                trailing: LeopardoBadge.forStatus(e.status, _statusLabel(e.status)),
                 onTap: () => _showActions(context, ref, e),
               );
             },
@@ -147,19 +159,13 @@ class _EmployeesTab extends ConsumerWidget {
     return 'Employe';
   }
 
-  Widget _statusChip(String status) {
-    final color = switch (status) {
-      'active' => Colors.green,
-      'archived' => Colors.grey,
-      'blocked' => Colors.red,
-      _ => Colors.orange,
-    };
-    return Chip(
-      label: Text(status, style: const TextStyle(fontSize: 12)),
-      backgroundColor: color.withValues(alpha: 0.18),
-      side: BorderSide(color: color),
-    );
-  }
+  String _statusLabel(String status) => switch (status) {
+        'active' => 'Actif',
+        'archived' => 'Archive',
+        'blocked' => 'Bloque',
+        'suspended' => 'Suspendu',
+        _ => status,
+      };
 
   void _showActions(BuildContext context, WidgetRef ref, Employee employee) {
     showModalBottomSheet(
@@ -230,7 +236,16 @@ class _InvitationsTab extends ConsumerWidget {
         error: (err, _) => Center(child: Text('Erreur : $err')),
         data: (invitations) {
           if (invitations.isEmpty) {
-            return const Center(child: Text('Aucune invitation en cours.'));
+            return ListView(
+              children: const [
+                SizedBox(height: 80),
+                EmptyState(
+                  icon: Icons.mark_email_read_outlined,
+                  title: 'Aucune invitation en cours',
+                  description: 'Les invitations envoyees a vos futurs collaborateurs s afficheront ici.',
+                ),
+              ],
+            );
           }
           return ListView.separated(
             itemCount: invitations.length,
@@ -238,9 +253,13 @@ class _InvitationsTab extends ConsumerWidget {
             itemBuilder: (_, index) {
               final inv = invitations[index];
               return ListTile(
-                leading: const Icon(Icons.mail_outline),
+                leading: const Icon(Icons.mail_outline, color: AppColors.ia),
                 title: Text(inv.email),
-                subtitle: Text('Statut : ${inv.status}'),
+                subtitle: Row(
+                  children: [
+                    LeopardoBadge.forStatus(inv.status, _invitationLabel(inv.status)),
+                  ],
+                ),
                 trailing: inv.status == 'pending'
                     ? IconButton(
                         icon: const Icon(Icons.send),
@@ -255,6 +274,15 @@ class _InvitationsTab extends ConsumerWidget {
       ),
     );
   }
+
+  String _invitationLabel(String status) => switch (status) {
+        'pending' => 'En attente',
+        'sent' => 'Envoyee',
+        'accepted' => 'Acceptee',
+        'expired' => 'Expiree',
+        'revoked' => 'Revoquee',
+        _ => status,
+      };
 
   Future<void> _resend(BuildContext context, WidgetRef ref, Invitation inv) async {
     try {

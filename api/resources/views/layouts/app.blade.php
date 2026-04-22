@@ -67,7 +67,7 @@
 
         <main class="mx-auto max-w-6xl px-4 py-6">
             @if (session('status'))
-                <div class="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">{{ session('status') }}</div>
+                <x-alert-banner level="success" class="mb-4">{{ session('status') }}</x-alert-banner>
             @endif
             @yield('content')
         </main>
