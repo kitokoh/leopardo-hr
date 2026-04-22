@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AttendanceController;
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
-use App\Http\Controllers\Api\V1\EstimationController;
 use App\Http\Controllers\Api\V1\EmployeeController;
+use App\Http\Controllers\Api\V1\EstimationController;
 use App\Http\Controllers\Api\V1\KioskController;
+use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/employees/{employee}/daily-summary', [EstimationController::class, 'dailySummary']);
         Route::get('/employees/{employee}/quick-estimate', [EstimationController::class, 'quickEstimate']);
         Route::get('/employees/{employee}/receipt', [EstimationController::class, 'receipt']);
+
+        Route::get('/me/daily-summary', [MeController::class, 'dailySummary']);
+        Route::get('/me/quick-estimate', [MeController::class, 'quickEstimate']);
+        Route::get('/me/monthly-summary', [MeController::class, 'monthlySummary']);
 
         Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
         Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);

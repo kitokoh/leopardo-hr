@@ -297,6 +297,9 @@ class AttendanceScreen extends ConsumerWidget {
   }
 
   Widget _buildActions(BuildContext context, WidgetRef ref, AttendanceState state, bool isManager) {
+    final employee = ref.read(authProvider).employee;
+    final canManageTeam = employee?.canManageTeam == true;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -308,11 +311,27 @@ class AttendanceScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
         ],
+        OutlinedButton.icon(
+          onPressed: () => context.push('/me/monthly'),
+          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+          icon: const Icon(Icons.calendar_month),
+          label: const Text('Mon mois (heures, heures sup, du)'),
+        ),
+        const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () => context.push('/history'),
           style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
           child: const Text('Voir historique'),
         ),
+        if (canManageTeam) ...[
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: () => context.push('/team'),
+            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+            icon: const Icon(Icons.groups),
+            label: const Text('Equipe (ajouter, inviter, archiver)'),
+          ),
+        ],
         const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () => context.push('/settings'),

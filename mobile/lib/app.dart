@@ -6,7 +6,9 @@ import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/auth/screens/login_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
+import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_rh/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_rh/features/team/screens/team_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
@@ -43,6 +45,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/history',
         builder: (context, state) => const HistoryScreen(),
+      ),
+      GoRoute(
+        path: '/me/monthly',
+        builder: (context, state) => const MonthlySummaryScreen(),
+      ),
+      GoRoute(
+        path: '/team',
+        builder: (context, state) => const TeamScreen(),
       ),
       GoRoute(
         path: '/settings',
