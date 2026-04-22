@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.63] - 2026-04-22
+### API self-service et parite CRUD mobile
+
+- Ajout de 3 endpoints self-service sous `auth:sanctum` : `GET /api/v1/me/daily-summary`, `/me/quick-estimate`, `/me/monthly-summary` pour que l employe connecte consulte ses heures, heures sup et son du sans connaitre son identifiant technique
+- `App\Http\Controllers\Api\V1\MeController` reutilise `EstimationService` pour garantir le meme contrat de reponse que les endpoints `/employees/{id}/*` existants (pas de policy viewAny requis cote employe)
+- Couverture Pest : 6 nouveaux tests (`MeEndpointsTest`) couvrant employe sans ID, quick estimate par periode, monthly summary par defaut, acces manager, 401 non authentifie, validation du format de date
+- Mobile : `Employee` expose `manager_role`, `suggested_home_route`, `capabilities`, `salary_type`, `hourly_rate`, `salary_base`, `currency` + getters `isPrincipal`, `isHr`, `canManageTeam`, `canManageInvitations`
+- Mobile : nouveau modele `MonthlySummary` + `MonthlyBreakdownEntry` et methodes `AttendanceRepository::getMyDailySummary|getMyMonthlySummary|getMyQuickEstimate`
+- Mobile : ecran `MonthlySummaryScreen` (route `/me/monthly`) affiche heures travaillees, heures sup, gain brut, deductions, du net et detail par jour, avec selecteur de mois
+- Mobile : ecran `TeamScreen` (route `/team`, manager principal ou RH uniquement) avec onglets Employes et Invitations, creation d employe/manager avec envoi d invitation, archivage, renvoi d invitation
+- Mobile : ecran d accueil pointage propose des boutons `Mon mois` (tous roles) et `Equipe` (managers autorises)
+
 ## [4.1.62] - 2026-04-22
 ### Accessibilite mobile et retour haptique
 

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_rh/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_rh/models/attendance_log.dart';
 import 'package:leopardo_rh/models/daily_summary.dart';
+import 'package:leopardo_rh/models/monthly_summary.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/core/api/api_exceptions.dart';
@@ -89,7 +90,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     final authState = _ref.read(authProvider);
     if (authState.employee != null) {
       try {
-        final summary = await _repository.getDailySummary(authState.employee!.id);
+        final summary = await _repository.getMyDailySummary();
         state = state.copyWith(summary: summary);
       } catch (e) {
         // Ignore summary loading errors, non-blocking
@@ -149,4 +150,9 @@ final attendanceProvider = StateNotifierProvider<AttendanceNotifier, AttendanceS
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((ref, date) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getHistory(date.year, date.month);
+});
+
+final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((ref, date) async {
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return await repo.getMyMonthlySummary(year: date.year, month: date.month);
 });

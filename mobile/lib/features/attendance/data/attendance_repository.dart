@@ -1,6 +1,7 @@
 import 'package:leopardo_rh/core/api/api_client.dart';
 import 'package:leopardo_rh/models/attendance_log.dart';
 import 'package:leopardo_rh/models/daily_summary.dart';
+import 'package:leopardo_rh/models/monthly_summary.dart';
 
 class AttendanceRepository {
   final ApiClient apiClient;
@@ -25,6 +26,32 @@ class AttendanceRepository {
   Future<DailySummary> getDailySummary(int employeeId) async {
     final response = await apiClient.dio.get('/employees/$employeeId/daily-summary');
     return DailySummary.fromJson(response.data['data']);
+  }
+
+  Future<DailySummary> getMyDailySummary({DateTime? date}) async {
+    final qp = <String, dynamic>{};
+    if (date != null) {
+      qp['date'] = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    }
+    final response = await apiClient.dio.get('/me/daily-summary', queryParameters: qp);
+    return DailySummary.fromJson(response.data['data']);
+  }
+
+  Future<MonthlySummary> getMyMonthlySummary({int? year, int? month}) async {
+    final qp = <String, dynamic>{};
+    if (year != null) qp['year'] = year;
+    if (month != null) qp['month'] = month;
+    final response = await apiClient.dio.get('/me/monthly-summary', queryParameters: qp);
+    return MonthlySummary.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+  }
+
+  Future<MonthlySummary> getMyQuickEstimate({required DateTime from, required DateTime to}) async {
+    String fmt(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    final response = await apiClient.dio.get('/me/quick-estimate', queryParameters: {
+      'from': fmt(from),
+      'to': fmt(to),
+    });
+    return MonthlySummary.fromJson((response.data['data'] as Map).cast<String, dynamic>());
   }
 
   Future<List<AttendanceLog>> getHistory(int year, int month) async {
