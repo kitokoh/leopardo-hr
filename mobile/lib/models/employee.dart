@@ -42,6 +42,10 @@ class Employee {
       for (final entry in rawCapabilities) {
         if (entry is String) capabilities.add(entry);
       }
+    } else if (rawCapabilities is Map) {
+      rawCapabilities.forEach((key, value) {
+        if (value == true && key is String) capabilities.add(key);
+      });
     }
 
     return Employee(
@@ -67,8 +71,16 @@ class Employee {
   bool get isManager => role == 'manager';
   bool get isPrincipal => isManager && managerRole == 'principal';
   bool get isHr => isManager && managerRole == 'rh';
-  bool get canManageTeam => isPrincipal || isHr || capabilities.contains('employees.manage');
-  bool get canManageInvitations => isPrincipal || isHr || capabilities.contains('invitations.manage');
+  bool get canManageTeam =>
+      isPrincipal ||
+      isHr ||
+      capabilities.contains('can_create_employees') ||
+      capabilities.contains('employees.manage');
+  bool get canManageInvitations =>
+      isPrincipal ||
+      isHr ||
+      capabilities.contains('can_manage_invitations') ||
+      capabilities.contains('invitations.manage');
 
   String get fullName {
     final full = '$firstName $lastName'.trim();

@@ -177,9 +177,9 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         $this->withoutMiddleware()
             ->post('/activate/'.$token, [
-            'password' => 'password456',
-            'password_confirmation' => 'password456',
-        ])->assertRedirect(route('login'));
+                'password' => 'password456',
+                'password_confirmation' => 'password456',
+            ])->assertRedirect(route('login'));
 
         DB::statement('SET search_path TO shared_tenants,public');
 

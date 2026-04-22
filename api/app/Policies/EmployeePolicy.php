@@ -18,21 +18,29 @@ class EmployeePolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->isManager();
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function update(Employee $actor, Employee $employee): bool
     {
-        return $actor->isManager() || $actor->id === $employee->id;
+        if ($actor->id === $employee->id) {
+            return true;
+        }
+
+        return $actor->hasManagerRole('principal', 'rh');
     }
 
     public function archive(Employee $actor, Employee $employee): bool
     {
-        if (! $actor->isManager()) {
+        if ($actor->id === $employee->id) {
             return false;
         }
 
-        return $actor->id !== $employee->id;
+        return $actor->hasManagerRole('principal', 'rh');
+    }
+
+    public function manageInvitations(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh');
     }
 }
-

@@ -37,24 +37,24 @@ class CompanyFactory extends Factory
         $name = $this->faker->company();
 
         return [
-            'id'                 => (string) Str::uuid(),
-            'name'               => $name,
-            'slug'               => Str::slug($name) . '-' . Str::lower(Str::random(4)),
-            'sector'             => $this->faker->randomElement(['Technologie', 'Commerce', 'Industrie', 'Services', 'Santé']),
-            'country'            => $country,
-            'city'               => $this->faker->city(),
-            'address'            => $this->faker->address(),
-            'email'              => $this->faker->unique()->companyEmail(),
-            'phone'              => $this->faker->phoneNumber(),
-            'plan_id'            => DB::table('plans')->where('name', 'Starter')->value('id') ?? 1,
-            'schema_name'        => 'shared_tenants', // Par défaut shared
-            'tenancy_type'       => 'shared',
-            'status'             => 'active',
+            'id' => (string) Str::uuid(),
+            'name' => $name,
+            'slug' => Str::slug($name).'-'.Str::lower(Str::random(4)),
+            'sector' => $this->faker->randomElement(['Technologie', 'Commerce', 'Industrie', 'Services', 'Santé']),
+            'country' => $country,
+            'city' => $this->faker->city(),
+            'address' => $this->faker->address(),
+            'email' => $this->faker->unique()->companyEmail(),
+            'phone' => $this->faker->phoneNumber(),
+            'plan_id' => DB::table('plans')->where('name', 'Starter')->value('id') ?? 1,
+            'schema_name' => 'shared_tenants', // Par défaut shared
+            'tenancy_type' => 'shared',
+            'status' => 'active',
             'subscription_start' => now()->startOfMonth(),
-            'subscription_end'   => now()->addYear(),
-            'language'           => 'fr',
-            'timezone'           => $timezones[$country],
-            'currency'           => $currencies[$country],
+            'subscription_end' => now()->addYear(),
+            'language' => 'fr',
+            'timezone' => $timezones[$country],
+            'currency' => $currencies[$country],
         ];
     }
 
@@ -85,10 +85,11 @@ class CompanyFactory extends Factory
             if (! $planId) {
                 throw new \RuntimeException('Plan Enterprise introuvable dans la base.');
             }
-            $schemaName = 'company_' . Str::lower(Str::random(8));
+            $schemaName = 'company_'.Str::lower(Str::random(8));
+
             return [
-                'plan_id'      => $planId,
-                'schema_name'  => $schemaName,
+                'plan_id' => $planId,
+                'schema_name' => $schemaName,
                 'tenancy_type' => 'schema',
                 'subscription_end' => now()->addYear(),
             ];
@@ -101,9 +102,9 @@ class CompanyFactory extends Factory
     public function trial(): static
     {
         return $this->state(fn () => [
-            'status'             => 'trial',
+            'status' => 'trial',
             'subscription_start' => now(),
-            'subscription_end'   => now()->addDays(14),
+            'subscription_end' => now()->addDays(14),
         ]);
     }
 
@@ -113,7 +114,7 @@ class CompanyFactory extends Factory
     public function suspended(): static
     {
         return $this->state(fn () => [
-            'status'           => 'suspended',
+            'status' => 'suspended',
             'subscription_end' => now()->subDays(10),
         ]);
     }
@@ -124,7 +125,7 @@ class CompanyFactory extends Factory
     public function inGracePeriod(): static
     {
         return $this->state(fn () => [
-            'status'           => 'active',
+            'status' => 'active',
             'subscription_end' => now()->subDays(2), // 2 jours après expiration = dans la grâce
         ]);
     }
@@ -135,7 +136,7 @@ class CompanyFactory extends Factory
     public function algeria(): static
     {
         return $this->state(fn () => [
-            'country'  => 'DZ',
+            'country' => 'DZ',
             'timezone' => 'Africa/Algiers',
             'currency' => 'DZD',
             'language' => 'fr',

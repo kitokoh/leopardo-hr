@@ -35,12 +35,6 @@ class WebAuthController extends Controller
                 ->withErrors(['email' => 'Identifiants invalides.']);
         }
 
-        if (! $employee->isManager()) {
-            return back()
-                ->withInput(['email' => $validated['email']])
-                ->withErrors(['email' => 'Acces reserve aux managers.']);
-        }
-
         if ($employee->status !== 'active') {
             return back()
                 ->withInput(['email' => $validated['email']])
@@ -56,7 +50,19 @@ class WebAuthController extends Controller
         Auth::guard('web')->login($employee);
         $request->session()->regenerate();
 
-        return redirect()->intended('/dashboard');
+        $home = route($employee->homeRoute());
+
+        // Les managers peuvent reprendre l'URL demandee avant login (intended),
+        // mais un simple employe doit toujours atterrir sur son espace /me :
+        // sinon un /dashboard stocke dans la session provoque un 403 sans
+        // bouton de navigation pour en sortir.
+        if ($employee->isManager()) {
+            return redirect()->intended($home);
+        }
+
+        $request->session()->forget('url.intended');
+
+        return redirect()->to($home);
     }
 
     public function logout(Request $request): RedirectResponse

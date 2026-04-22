@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Schema;
 class EstimationService
 {
     private const EXPECTED_HOURS_PER_DAY = 8.0;
+
     private const DEFAULT_WORKING_DAYS_PER_MONTH = 22;
+
     private const DEFAULT_OVERTIME_RATE_1 = 1.25;
 
     public function dailySummary(Employee $employee, ?string $date = null): array

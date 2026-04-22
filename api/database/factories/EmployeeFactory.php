@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * EmployeeFactory — Génère des employés de test (schéma tenant actif)
@@ -31,21 +30,21 @@ class EmployeeFactory extends Factory
         return [
             // Pas de company_id en mode schema isolé (Enterprise)
             // En mode shared : company_id sera set via for() dans les tests
-            'matricule'      => 'EMP-' . str_pad($this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
-            'first_name'     => $this->faker->firstName(),
-            'last_name'      => $this->faker->lastName(),
-            'email'          => $this->faker->unique()->safeEmail(),
-            'phone'          => $this->faker->phoneNumber(),
-            'password_hash'  => Hash::make(self::$defaultPassword),
-            'role'           => 'employee',
-            'manager_role'   => null,
-            'contract_type'  => $this->faker->randomElement(['CDI', 'CDD', 'Stage']),
+            'matricule' => 'EMP-'.str_pad($this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'phone' => $this->faker->phoneNumber(),
+            'password_hash' => Hash::make(self::$defaultPassword),
+            'role' => 'employee',
+            'manager_role' => null,
+            'contract_type' => $this->faker->randomElement(['CDI', 'CDD', 'Stage']),
             'contract_start' => $this->faker->dateTimeBetween('-3 years', '-1 month')->format('Y-m-d'),
-            'salary_base'    => $this->faker->numberBetween(50000, 200000), // DZD
-            'salary_type'    => 'fixed',
+            'salary_base' => $this->faker->numberBetween(50000, 200000), // DZD
+            'salary_type' => 'fixed',
             'payment_method' => 'bank_transfer',
-            'leave_balance'  => $this->faker->randomFloat(1, 0, 30),
-            'status'         => 'active',
+            'leave_balance' => $this->faker->randomFloat(1, 0, 30),
+            'status' => 'active',
         ];
     }
 
@@ -57,9 +56,9 @@ class EmployeeFactory extends Factory
     public function manager(): static
     {
         return $this->state(fn () => [
-            'role'         => 'manager',
+            'role' => 'manager',
             'manager_role' => 'principal',
-            'salary_base'  => $this->faker->numberBetween(150000, 300000),
+            'salary_base' => $this->faker->numberBetween(150000, 300000),
         ]);
     }
 
@@ -69,7 +68,7 @@ class EmployeeFactory extends Factory
     public function managerRh(): static
     {
         return $this->state(fn () => [
-            'role'         => 'manager',
+            'role' => 'manager',
             'manager_role' => 'rh',
         ]);
     }
@@ -80,7 +79,7 @@ class EmployeeFactory extends Factory
     public function managerDept(): static
     {
         return $this->state(fn () => [
-            'role'         => 'manager',
+            'role' => 'manager',
             'manager_role' => 'dept',
         ]);
     }
@@ -108,7 +107,7 @@ class EmployeeFactory extends Factory
     {
         return $this->state(fn () => [
             'contract_type' => 'CDD',
-            'contract_end'  => now()->addDays(rand(1, 30))->format('Y-m-d'),
+            'contract_end' => now()->addDays(rand(1, 30))->format('Y-m-d'),
         ]);
     }
 
@@ -118,7 +117,7 @@ class EmployeeFactory extends Factory
     public function withBiometric(): static
     {
         return $this->state(fn () => [
-            'zkteco_id' => 'ZK' . $this->faker->unique()->numberBetween(1000, 9999),
+            'zkteco_id' => 'ZK'.$this->faker->unique()->numberBetween(1000, 9999),
         ]);
     }
 

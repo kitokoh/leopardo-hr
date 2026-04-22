@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -21,8 +20,8 @@ return new class extends Migration
         Schema::table('departments', function (Blueprint $table) {
             $table->unsignedInteger('manager_id')->nullable()->after('name');
             $table->foreign('manager_id')
-                  ->references('id')->on('employees')
-                  ->nullOnDelete();
+                ->references('id')->on('employees')
+                ->nullOnDelete();
         });
 
         // ── 2. employee_devices ────────────────────────────────────────────────

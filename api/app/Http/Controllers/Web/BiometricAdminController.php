@@ -19,8 +19,7 @@ class BiometricAdminController extends Controller
 {
     public function __construct(
         private readonly BiometricEnrollmentService $biometricEnrollmentService,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {

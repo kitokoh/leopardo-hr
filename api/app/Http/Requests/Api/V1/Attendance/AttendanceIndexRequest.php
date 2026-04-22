@@ -22,4 +22,3 @@ class AttendanceIndexRequest extends FormRequest
         ];
     }
 }
-

@@ -11,7 +11,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         if (Schema::hasTable('user_invitations')) {
             return;

@@ -15,8 +15,7 @@ class KioskController extends Controller
 {
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
-    ) {
-    }
+    ) {}
 
     public function show(string $deviceCode): View
     {

@@ -19,4 +19,3 @@ class CheckOutRequest extends FormRequest
         ];
     }
 }
-

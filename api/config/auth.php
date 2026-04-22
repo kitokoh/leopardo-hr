@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Employee;
+use App\Models\SuperAdmin;
+
 return [
 
     /*
@@ -74,11 +77,11 @@ return [
     'providers' => [
         'employees' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Employee::class),
+            'model' => env('AUTH_MODEL', Employee::class),
         ],
         'super_admins' => [
             'driver' => 'eloquent',
-            'model' => App\Models\SuperAdmin::class,
+            'model' => SuperAdmin::class,
         ],
 
         // 'users' => [

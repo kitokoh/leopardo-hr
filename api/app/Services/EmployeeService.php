@@ -11,8 +11,7 @@ class EmployeeService
 {
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
-    ) {
-    }
+    ) {}
 
     public function create(array $payload, ?Employee $actor = null): Employee
     {
@@ -63,6 +62,7 @@ class EmployeeService
     public function update(Employee $actor, Employee $employee, array $payload): Employee
     {
         $isManager = $actor->isManager();
+        $isSelfUpdate = $actor->id === $employee->id;
 
         if (! $isManager) {
             $payload = Arr::only($payload, ['first_name', 'last_name', 'email', 'password']);
@@ -75,6 +75,14 @@ class EmployeeService
 
         if (! $isManager) {
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['matricule']);
+        }
+
+        // Les champs sensibles RBAC ne peuvent jamais etre modifies par
+        // l'utilisateur sur lui-meme, meme s'il est manager : cela eviterait
+        // qu'un sous-role (dept / comptable / superviseur) s'auto-promeuve
+        // en principal via PATCH /employees/{self}.
+        if ($isSelfUpdate) {
+            unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['manager_id']);
         }
 
         if (array_key_exists('extra_data', $payload)) {

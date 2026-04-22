@@ -19,69 +19,69 @@ class PlanSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
 
         $plans = [
             [
-                'name'          => 'Starter',
+                'name' => 'Starter',
                 'price_monthly' => 29.00,
-                'price_yearly'  => 290.00,     // -17% vs mensuel
+                'price_yearly' => 290.00,     // -17% vs mensuel
                 'max_employees' => 20,
-                'trial_days'    => 14,
-                'is_active'     => true,
-                'features'      => json_encode([
-                    'biometric'        => false,
-                    'tasks'            => false,
+                'trial_days' => 14,
+                'is_active' => true,
+                'features' => json_encode([
+                    'biometric' => false,
+                    'tasks' => false,
                     'advanced_reports' => false,
-                    'excel_export'     => true,   // ✅ CORRECTION v3.1 — était false
-                    'bank_export'      => false,
-                    'billing_auto'     => false,
-                    'multi_managers'   => false,
+                    'excel_export' => true,   // ✅ CORRECTION v3.1 — était false
+                    'bank_export' => false,
+                    'billing_auto' => false,
+                    'multi_managers' => false,
                     'photo_attendance' => false,
-                    'api_public'       => false,
-                    'evaluations'      => false,
+                    'api_public' => false,
+                    'evaluations' => false,
                     'schema_isolation' => false,
                 ]),
             ],
             [
-                'name'          => 'Business',
+                'name' => 'Business',
                 'price_monthly' => 79.00,
-                'price_yearly'  => 790.00,
+                'price_yearly' => 790.00,
                 'max_employees' => 200,
-                'trial_days'    => 14,
-                'is_active'     => true,
-                'features'      => json_encode([
-                    'biometric'        => true,
-                    'tasks'            => true,
+                'trial_days' => 14,
+                'is_active' => true,
+                'features' => json_encode([
+                    'biometric' => true,
+                    'tasks' => true,
                     'advanced_reports' => true,
-                    'excel_export'     => true,
-                    'bank_export'      => true,
-                    'billing_auto'     => true,
-                    'multi_managers'   => true,
+                    'excel_export' => true,
+                    'bank_export' => true,
+                    'billing_auto' => true,
+                    'multi_managers' => true,
                     'photo_attendance' => true,
-                    'api_public'       => false,
-                    'evaluations'      => true,
+                    'api_public' => false,
+                    'evaluations' => true,
                     'schema_isolation' => false,  // Schéma partagé (shared_tenants)
                 ]),
             ],
             [
-                'name'          => 'Enterprise',
+                'name' => 'Enterprise',
                 'price_monthly' => 199.00,
-                'price_yearly'  => 1990.00,
+                'price_yearly' => 1990.00,
                 'max_employees' => null,         // NULL = illimité
-                'trial_days'    => 30,           // Trial plus long pour Enterprise
-                'is_active'     => true,
-                'features'      => json_encode([
-                    'biometric'        => true,
-                    'tasks'            => true,
+                'trial_days' => 30,           // Trial plus long pour Enterprise
+                'is_active' => true,
+                'features' => json_encode([
+                    'biometric' => true,
+                    'tasks' => true,
                     'advanced_reports' => true,
-                    'excel_export'     => true,
-                    'bank_export'      => true,
-                    'billing_auto'     => true,
-                    'multi_managers'   => true,
+                    'excel_export' => true,
+                    'bank_export' => true,
+                    'billing_auto' => true,
+                    'multi_managers' => true,
                     'photo_attendance' => true,
-                    'api_public'       => true,
-                    'evaluations'      => true,
+                    'api_public' => true,
+                    'evaluations' => true,
                     'schema_isolation' => true,   // Schéma PostgreSQL dédié
                 ]),
             ],

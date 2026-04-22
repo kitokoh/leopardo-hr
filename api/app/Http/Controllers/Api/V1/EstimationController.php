@@ -14,9 +14,7 @@ use Illuminate\Http\Response;
 
 class EstimationController extends Controller
 {
-    public function __construct(private readonly EstimationService $estimationService)
-    {
-    }
+    public function __construct(private readonly EstimationService $estimationService) {}
 
     public function dailySummary(DailySummaryRequest $request, string $employeeId): JsonResponse
     {
@@ -76,4 +74,3 @@ class EstimationController extends Controller
         return $pdf->download($fileName);
     }
 }
-

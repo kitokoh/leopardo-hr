@@ -13,4 +13,3 @@ class DailySummaryRequest extends FormRequest
         ];
     }
 }
-

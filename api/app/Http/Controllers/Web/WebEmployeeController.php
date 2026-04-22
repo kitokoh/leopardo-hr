@@ -14,9 +14,7 @@ use Illuminate\Http\Response;
 
 class WebEmployeeController extends Controller
 {
-    public function __construct(private readonly EstimationService $estimationService)
-    {
-    }
+    public function __construct(private readonly EstimationService $estimationService) {}
 
     public function show(string $employeeId): View
     {

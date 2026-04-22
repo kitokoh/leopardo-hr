@@ -38,7 +38,7 @@ return new class extends Migration
             // ── Rôle et hiérarchie ──────────────────────────────────────────
             $table->enum('role', ['manager', 'employee'])->default('employee');
             $table->enum('manager_role', ['principal', 'rh', 'dept', 'comptable', 'superviseur'])
-                  ->nullable();                                     // NULL si role='employee'
+                ->nullable();                                     // NULL si role='employee'
             $table->unsignedInteger('department_id')->nullable();
             $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
             $table->unsignedInteger('position_id')->nullable();
@@ -54,14 +54,14 @@ return new class extends Migration
 
             // ── Contrat ──────────────────────────────────────────────────────
             $table->enum('contract_type', ['CDI', 'CDD', 'Stage', 'Interim', 'Consultant'])
-                  ->default('CDI');
+                ->default('CDI');
             $table->date('contract_start')->default(DB::raw('CURRENT_DATE'));
             $table->date('contract_end')->nullable();
             $table->decimal('salary_base', 12, 2)->default(0);     // Salaire de base mensuel fixe
             $table->enum('salary_type', ['fixed', 'hourly', 'daily'])->default('fixed');
             $table->decimal('hourly_rate', 10, 2)->nullable();     // Si salary_type='hourly'
             $table->enum('payment_method', ['bank_transfer', 'cash', 'cheque'])
-                  ->default('bank_transfer');
+                ->default('bank_transfer');
 
             // ── Données financières (CHIFFRÉES via EncryptedCast) ──────────
             // Ne jamais stocker en clair — Laravel Crypt::encrypt() automatique via cast

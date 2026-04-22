@@ -14,6 +14,19 @@
 - Mobile : ecran `TeamScreen` (route `/team`, manager principal ou RH uniquement) avec onglets Employes et Invitations, creation d employe/manager avec envoi d invitation, archivage, renvoi d invitation
 - Mobile : ecran d accueil pointage propose des boutons `Mon mois` (tous roles) et `Equipe` (managers autorises)
 
+## [4.1.63] - 2026-04-22
+### Onboarding API complet + RBAC + interfaces par role
+
+- Correction bloquant: plusieurs societes en mode `shared_tenants` ne pouvaient plus etre creees a cause d un index UNIQUE global sur `companies.schema_name`. Nouvelle migration `2026_04_22_000013_relax_companies_schema_name_unique.php` qui remplace l index par un unique partiel `WHERE tenancy_type='schema'`
+- Ajout de la commande Artisan `leopardo:migrate --fresh --seed` qui enchaine migrations publiques + tenant + seeders dans l ordre correct (fix de `php artisan migrate:fresh --seed` qui restait inutilisable)
+- Correction expediteur mail: `config/mail.php` fixe `MAIL_FROM_ADDRESS=noreply@leopardo-rh.com` et `MAIL_FROM_NAME` par defaut
+- RBAC serveur: ajout de `app/Policies/EmployeePolicy.php` (create/update/archive/manageInvitations) et des middlewares `EnsureManagerRoleMiddleware` / `EnsureEmployeeMiddleware`
+- Interfaces dediees par role: redirection post-login web (employe -> `/me`, manager -> `/dashboard`), nouvelle page `/me` (fiche + pointages du mois) et `/hr/invitations` (Principal + RH, avec bouton resend)
+- Nouveaux endpoints API: `GET /api/v1/invitations`, `POST /api/v1/invitations/{id}/resend`. `GET /api/v1/auth/me` retourne desormais `role`, `manager_role`, `suggested_home_route` et un bloc `capabilities`
+- `TenantMiddleware` fixe le `search_path` Postgres au schema du tenant pour que les controllers trouvent `employees` quel que soit l etat anterieur de la connexion
+- Nouveaux tests Pest: `OnboardingE2ETest` (flux complet admin -> manager email -> activation -> login -> creation RH/employe -> login web employe /me, 3 scenarios, 41+ assertions) + correctifs `WebAuthPagesTest` (employe redirige vers /me, pas 403) et `EmployeesRbacTest` (fixtures avec `manager_role='principal'`)
+- Suite: 78 tests passent (355 assertions), Pint vert, aucune regression
+
 ## [4.1.62] - 2026-04-22
 ### Accessibilite mobile et retour haptique
 

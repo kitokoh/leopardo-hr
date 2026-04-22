@@ -45,20 +45,20 @@ class AuthService
         }
 
         if (! $employee || ! Hash::check($password, $employee->password_hash)) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         $company = $employee->company;
         if (! $company) {
-            throw new CompanyNotFoundException();
+            throw new CompanyNotFoundException;
         }
 
         if (in_array($company->status, ['suspended', 'expired'], true)) {
-            throw new AccountSuspendedException();
+            throw new AccountSuspendedException;
         }
 
         if ($employee->status !== 'active') {
-            throw new EmployeeNotActiveException();
+            throw new EmployeeNotActiveException;
         }
 
         $employee->forceFill(['last_login_at' => now()])->saveQuietly();

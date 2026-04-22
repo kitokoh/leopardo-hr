@@ -17,8 +17,7 @@ class PlatformCompanyController extends Controller
 {
     public function __construct(
         private readonly CompanyProvisioningService $companyProvisioningService,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View|JsonResponse
     {
@@ -99,5 +98,4 @@ class PlatformCompanyController extends Controller
             ->route('platform.companies.index')
             ->with('status', 'Societe creee et invitation manager envoyee.');
     }
-
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EstimationController;
+use App\Http\Controllers\Api\V1\InvitationController;
 use App\Http\Controllers\Api\V1\KioskController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
@@ -51,6 +52,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
         Route::get('/attendance/today', [AttendanceController::class, 'today']);
         Route::get('/attendance', [AttendanceController::class, 'index']);
+
+        Route::get('/invitations', [InvitationController::class, 'index']);
+        Route::post('/invitations/{invitation}/resend', [InvitationController::class, 'resend']);
 
         Route::get('/biometric-enrollment-requests', [BiometricEnrollmentController::class, 'index']);
         Route::post('/biometric-enrollment-requests/{id}/approve', [BiometricEnrollmentController::class, 'approve']);
