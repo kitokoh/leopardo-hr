@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.62] - 2026-04-22
+### Accessibilite mobile et retour haptique
+
+- Ajout de tooltips sur les boutons icones des ecrans historique et parametres pour ameliorer la navigation lecteur d ecran
+- Ajout de labels `Semantics` sur le bouton de pointage afin d expliciter l action arrivee / sortie
+- Ajout d un retour haptique au tap du bouton de pointage pour renforcer la confirmation utilisateur
+
 ## [4.1.61] - 2026-04-21
 ### GO MVP officiel
 
@@ -961,7 +968,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
