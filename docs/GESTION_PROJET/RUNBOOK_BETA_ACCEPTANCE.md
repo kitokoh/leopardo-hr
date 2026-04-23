@@ -11,7 +11,7 @@ Documents relies:
 
 - Branche `main` a jour
 - CI verte sur la derniere PR mergee
-- VPS disponible
+- Environnement Render disponible
 - Base PostgreSQL disponible
 - URL backend connue
 - 1 company, 1 manager, 1 employee seeds ou crees manuellement
