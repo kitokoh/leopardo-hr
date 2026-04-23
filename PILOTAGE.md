@@ -1,17 +1,31 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.58 | 14 Mai 2025
+# PROGRAM_VERSION = 4.1.70 | 2026-04-23
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
+
+> ⚠️ **Avertissement — divergence scope vs code livré**
+> La section « SCOPE MVP VERROUILLÉ » ci-dessous décrit le périmètre
+> initialement figé. Le code sur `main` **a dépassé ce périmètre** :
+> multitenancy mode `schema` activé, 6 sous-rôles manager (`principal`,
+> `rh`, `dept`, `comptable`, `superviseur`, `employee`), plusieurs pages
+> Blade, hébergement cible **Render** (voir `.github/workflows/deploy-main.yml`).
+> Tant que la décision produit n'est pas prise pour aligner ce document
+> sur la réalité, se référer à `docs/ROADMAP.md` + `docs/AUDIT_v2_v3_COMPLIANCE.md`
+> pour l'état réel. Voir aussi `docs/GESTION_PROJET/CORRECTIONS.md`.
 
 ---
 
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.14  → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.70   → Version globale du projet/pilotage (ce fichier fait foi)
+                              Doit rester synchrone avec :
+                                - CHANGELOG.md (dernière entrée)
+                                - api/config/app.php → 'version'
+                                - GET /api/v1/health → champ "version"
 DOC_VERSION      = propre   → Chaque doc technique garde sa version interne
                               (ex: ERD v2.0, API v2.1, SQL v1.1)
-CODE_VERSION     = 0.0.0   → Version release applicative (sera 0.1.0 au premier déploiement)
+CODE_VERSION     = 0.0.0    → Version release applicative (sera 0.1.0 au premier déploiement)
 
 Règle :
 - PROGRAM_VERSION est la SEULE version de référence pour l'état du projet
@@ -32,11 +46,13 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 05 Avril 2026
+Date MAJ       : 2026-04-23
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/)
-Code           : ✅ MVP-01 à MVP-06 mergés sur `main`
-Phase active   : MVP — scope verrouillé ci-dessous
-Prochaine action : SPRINT 4 — Beta réelle + déploiement VPS
+Code           : ✅ MVP-01 à MVP-06 mergés sur `main` (voir CHANGELOG.md jusqu'à 4.1.70)
+Phase active   : Phase 1 APV Fondations (voir docs/ROADMAP.md)
+                 Note: la section "SCOPE MVP VERROUILLÉ" plus bas reflète
+                 le scope initial figé, pas l'état actuel du code.
+Prochaine action : Beta réelle + déploiement Render (workflow deploy-main.yml)
 Objectif       : Premier utilisateur payant en 8 semaines
 Validation locale backend : Docker d'abord (voir `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`)
 ```

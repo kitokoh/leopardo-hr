@@ -1,6 +1,8 @@
 # CORRECTIONS DOCUMENTAIRES — Sprint 0
-# Version 5.0 | 04 Avril 2026
-# Ces corrections doivent être appliquées AVANT de commencer le Sprint 1
+# Version 5.1 | 2026-04-22
+# Ces corrections devaient être appliquées AVANT de commencer le Sprint 1.
+# Audit 2026-04-22 : les 7 items sont désormais tous appliqués dans le repo
+# (voir section STATUT en bas de page pour les preuves).
 
 ---
 
@@ -72,12 +74,14 @@ Utiliser `app('current_company')` au lieu d'une variable `static` (risque de fui
 
 ## STATUT
 
-| # | Correction | Appliquée ? |
-|---|-----------|:-----------:|
-| C-1 | `/auth/refresh` OpenAPI | ⬜ |
-| C-2 | `is_active` → `status` | ⬜ |
-| C-3 | `user_lookups` PK | ⬜ |
-| C-4 | Starter prix | ⬜ |
-| C-5 | Trait double boot | ⬜ |
-| C-6 | Audit archive | ⬜ |
-| C-7 | `bon-fixed/` supprimé | ⬜ |
+Audit du 2026-04-22 sur `main` :
+
+| # | Correction | Appliquée ? | Preuve |
+|---|-----------|:-----------:|---|
+| C-1 | `/auth/refresh` OpenAPI | ✅ | Aucune occurrence de `refresh` dans `api/openapi.yaml` |
+| C-2 | `is_active` → `status` | ✅ | `08_MULTITENANCY_STRATEGY.md` ligne 145 : `'status' ... // corrige v4.1.4 : is_active -> status` |
+| C-3 | `user_lookups` PK | ✅ | `08_MULTITENANCY_STRATEGY.md` ligne 321 : `-- CORRIGE v4.1.4 : aligne sur 07_SCHEMA_SQL_COMPLET.sql (email = PK, pas id SERIAL)` |
+| C-4 | Starter prix | ✅ | `18_MARKETING_ET_VENTES.md` ligne 14 : `<!-- CORRIGE v4.1.4 : etait "Gratuit" -->` |
+| C-5 | Trait double boot | ✅ | `api/app/Traits/BelongsToCompany.php` : trait unique avec `bootBelongsToCompany()` unique et `app('current_company')` (pas de `static`) |
+| C-6 | Audit archive | ✅ | Fichier présent uniquement sous `docs/notes/archive/AUDIT_COMPLET_MANQUES.md` |
+| C-7 | `bon-fixed/` supprimé | ✅ | Répertoire absent du repo |
