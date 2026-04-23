@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.69] - 2026-04-22
+### Sprint D - UI super-admin pour toggler les modules + guides utilisateurs
+
+- Super-admin web : nouvelle page `GET /platform/companies/{company}/edit` (controller `PlatformCompanyController@edit/update`) qui permet de (a) cocher / decocher les modules actifs pour une societe (`companies.features` JSONB : `rh`, `finance`, `cameras`, `muhasebe`, `leo_ai`), (b) changer le statut (`active` / `suspended` / `expired`), (c) mettre a jour le plan et les notes internes ; le module `rh` est force a `true` (APV L.08) et les modules hors `Company::KNOWN_MODULES` soumis sont ignores (whitelist stricte)
+- Super-admin web : bouton **Renvoyer l'invitation manager** (`POST /platform/companies/{company}/resend-invitation`) qui regenere le lien d activation du manager principal via `UserInvitationService::createAndSend` (l ancien token est invalide par le `updateOrCreate`)
+- Super-admin web : page `/platform/companies` enrichie (colonne **Modules actifs** en badges + badge statut colore + bouton **Editer**)
+- Fix : `Company::booted` etend le `search_path` au schema tenant avant de revoquer les tokens Sanctum lors d un passage en `suspended` / `expired` (precedemment, un update via super-admin web crashait `relation "employees" does not exist`)
+- Tests : nouveau `PlatformCompanyEditTest` (6 tests) couvrant auth, affichage, update des features/status/notes/plan, force de `rh=true`, rejet des modules inconnus, rejet des statuts invalides, affichage de l index enrichi ; suite backend passe a **98 tests / 505 assertions**
+- Docs utilisateurs : nouveau dossier `docs/GUIDES/` avec `README.md` + 4 guides (`GUIDE_SUPER_ADMIN.md`, `GUIDE_MANAGER.md`, `GUIDE_RH.md`, `GUIDE_EMPLOYEE.md`) pour couvrir les parcours cle par role sans plonger dans l implementation
+
 ## [4.1.68] - 2026-04-22
 ### Sprint C - Ops production-ready (observability + backup + multi-tenant)
 
