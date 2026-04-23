@@ -30,6 +30,9 @@ Route::middleware('auth:super_admin_web')->prefix('platform')->name('platform.')
     Route::get('/companies', [PlatformCompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/create', [PlatformCompanyController::class, 'create'])->name('companies.create');
     Route::post('/companies', [PlatformCompanyController::class, 'store'])->name('companies.store');
+    Route::get('/companies/{company}/edit', [PlatformCompanyController::class, 'edit'])->name('companies.edit');
+    Route::put('/companies/{company}', [PlatformCompanyController::class, 'update'])->name('companies.update');
+    Route::post('/companies/{company}/resend-invitation', [PlatformCompanyController::class, 'resendManagerInvitation'])->name('companies.resend');
 });
 
 Route::middleware('guest:web')->group(function (): void {
