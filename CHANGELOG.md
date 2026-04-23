@@ -3,6 +3,15 @@
 # Versioning : Semantic Versioning (semver.org)
 
 ## [4.1.70] - 2026-04-23
+### Mobile - Page d'accueil (WelcomeScreen) avant la connexion
+
+- Mobile : nouvel ecran `/welcome` (`mobile/lib/features/auth/screens/welcome_screen.dart`) affiche par defaut aux utilisateurs non authentifies a la place du saut direct sur `/login`. L'ecran met en valeur les benefices employe-centres de l'app : pointage + total d'heures, parcours professionnel cumule (meme d'une entreprise a l'autre), coffre-fort de documents personnels (diplomes, contrats), et notifications des entreprises qui ont recrute l'employe. Deux CTA : "Se connecter" -> `/login` et "Creer un compte" -> `/register`
+- Mobile : nouvel ecran `/register` (`mobile/lib/features/auth/screens/register_screen.dart`) qui explique le flow d'onboarding par invitation employeur (3 etapes : invitation RH -> email -> activation) et propose une capture d'email "me prevenir a l'ouverture de l'inscription libre" (UX placeholder, non branche au backend). L'inscription publique libre reste hors scope Phase 1 (pas de route API `/auth/register`, l'onboarding passe toujours par `user_invitations`)
+- Mobile : `mobile/lib/app.dart` - redirection `GoRouter` mise a jour pour autoriser les routes publiques `/welcome`, `/login`, `/register` (les utilisateurs non authentifies sont maintenant rediriges vers `/welcome` au lieu de `/login`, les utilisateurs authentifies sont rediriges hors de ces routes publiques vers `/`)
+- Mobile : `mobile/lib/features/auth/screens/login_screen.dart` - ajout d'un bouton "retour" (IconButton en top-left) pour revenir sur `/welcome` depuis l'ecran de connexion
+- Tests : nouveau `mobile/test/features/auth/welcome_screen_test.dart` (smoke test : rendu de l'ecran, presence des CTA `Se connecter` / `Creer un compte`, presence de la marque `Leopardo RH`)
+- Aucun changement backend, aucune migration. Rollback = `git revert` de la PR
+
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
 - `PILOTAGE.md` : en-tete re-aligne sur `PROGRAM_VERSION = 4.1.70 | 2026-04-23` (precedemment `4.1.58 | 14 Mai 2025`, date erronee), date MAJ corrigee, bloc "CONVENTION DE VERSIONING" precise que la version doit rester synchrone entre CHANGELOG.md, `api/config/app.php` et `/api/v1/health`
