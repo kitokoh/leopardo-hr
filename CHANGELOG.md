@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.68] - 2026-04-22
+### Sprint C - Ops production-ready (observability + backup + multi-tenant)
+
+- API : nouvel endpoint `GET /api/v1/health` servi par `App\Http\Controllers\Api\V1\HealthController` qui expose une matrice `checks` (`database`, `redis`, `storage`) avec latence et statut detaille ; 200 tant que la DB repond, 503 sinon (Redis/storage degrades = warning mais pas de 503) ; test `HealthEndpointTest` verifie le contrat
+- Tests : nouveau `MultiTenantSharedIsolationTest` qui seed 5 compagnies dans `shared_tenants` et verifie strictement (a) qu'aucune compagnie ne voit les employes d'une autre, (b) que la bascule de contexte `current_company` ne fuit jamais de ligne, (c) qu'une compagnie suspendue reste correctement scopee (auth hors sujet) ; suite backend passe a 92 tests / 476 assertions
+- Ops : nouveau script `scripts/backup_drill.sh` qui automatise le drill backup/restore (pg_dump format custom, chiffrement `age` optionnel, restore dans une base scratch, verification des row counts sur 6 tables critiques, nettoyage, log `last-drill.log`)
+- Docs : `RUNBOOK_BACKUP_RESTORE.md` enrichi (secrets requis, drill automatise, tables verifiees, procedure manuelle fallback, retention, en cas d'echec)
+- Docs : `RUNBOOK_ROLLBACK.md` enrichi (declencheurs chiffres, option A code rollback avec checks concrets sur `/health` + `auth/login` + `auth/me` + `me/monthly-summary`, option B code+DB avec maintenance mode + pg_restore + sanity checks SQL, regles de migration, temps cibles 10/45 min)
+- Docs : nouveau `RUNBOOK_OBSERVABILITY.md` qui decrit l'activation Sentry backend (`sentry/sentry-laravel` + tags tenant dans `TenantMiddleware`) et mobile (`sentry_flutter` + `--dart-define=SENTRY_DSN_MOBILE`), scaffold d'alertes, regle RGPD `sendDefaultPii=false`
+
 ## [4.1.66] - 2026-04-22
 ### Sprint A - Cablage des tokens design (APV L.05/L.07)
 

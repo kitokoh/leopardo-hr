@@ -2,17 +2,16 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
+use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (): void {
-    Route::get('/health', function () {
-        return response()->json([
-            'status' => 'ok',
-            'version' => '4.1.4',
-        ]);
-    });
+    // Sonde live+ready : DB + Redis + storage. Consommee par Render (deploy hook)
+    // et la supervision externe. 503 si la DB tombe, 200 sinon (Redis et storage
+    // peuvent etre degrades sans bloquer l'API).
+    Route::get('/health', HealthController::class);
 
     // Auth (core, hors module)
     Route::middleware(['throttle:10,1'])->group(function (): void {
