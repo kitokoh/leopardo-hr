@@ -10,6 +10,10 @@
 - `PILOTAGE.md` : avertissement explicite en tete du document sur la divergence entre la section "SCOPE MVP VERROUILLE" (schema mode interdit, 2 roles, 2 pages Blade, VPS) et le code livre sur main (schema mode actif, 6 sous-roles manager, plusieurs pages Blade, hebergement Render) — la decision produit reste a prendre, mais le document ne peut plus etre lu comme "source de verite" sans cet avertissement
 - `docs/GESTION_PROJET/CORRECTIONS.md` : audit 2026-04-22 des 7 corrections Sprint 0. Toutes sont deja appliquees sur main (C-1 `/auth/refresh` supprime d openapi.yaml, C-2 `is_active` remplace par `status`, C-3 `user_lookups` PK email, C-4 prix Starter 29 EUR, C-5 trait unique `BelongsToCompany`, C-6 archive, C-7 `bon-fixed/`). Tableau STATUT coche avec preuves ligne par ligne. Version du doc passe a `5.1`
 - Aucun changement fonctionnel, aucun schema DB, aucune migration. Rollback = `git revert` de la PR
+### DocKeeper - Alignement documentation infra (GO MVP)
+
+- Docs : alignement de `PILOTAGE.md` et `RUNBOOK_BETA_ACCEPTANCE.md` avec la decision GO MVP du 2026-04-21 ; remplacement des references "VPS" (obsoletes) par "Render" (canonique)
+- Pilotage : mise a jour du statut Sprint 4 (S4-1 et S4-2 marques comme termines sur Render)
 
 ## [4.1.69] - 2026-04-22
 ### Sprint D - UI super-admin pour toggler les modules + guides utilisateurs

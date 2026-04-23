@@ -129,7 +129,7 @@ Pays MVP :
 
 | # | Action | Responsable | Statut |
 |---|--------|-------------|--------|
-| S0-1 | Choisir et commander le VPS | Humain | ⬜ |
+| S0-1 | Valider environnement Render | Humain | ✅ |
 | S0-2 | Corriger les 6 contradictions docs (voir CORRECTIONS.md) | Humain/IA | ⬜ |
 | S0-3 | Créer la landing page (Carrd ou HTML statique) | Humain | ⬜ |
 | S0-4 | Réserver le domaine leopardo-rh.com | Humain | ⬜ |
@@ -142,7 +142,7 @@ Pays MVP :
 | S1-2 | Trait BelongsToCompany + TenantMiddleware simplifié | `MVP-01` | Test isolation company A ≠ company B | ✅ |
 | S1-3 | Auth (login / logout / me) | `MVP-02` | Token valide, company suspendue → 403 | ✅ |
 | S1-4 | CRUD Employés (list/create/show/update/archive) | `MVP-02` | 5 endpoints, RBAC manager/self | ✅ |
-| S1-5 | Premier déploiement VPS | Humain | App en ligne, health check OK | ⬜ |
+| S1-5 | Premier déploiement Render | Humain | App en ligne, health check OK | ✅ |
 
 ### Sprint 2 — Cœur métier (semaines 3-4) ✅ Terminé
 
@@ -167,8 +167,8 @@ Pays MVP :
 
 | # | Ticket | Responsable | Critère de validation | Statut |
 |---|--------|-------------|----------------------|--------|
-| S4-1 | Déployer backend + web sur VPS | Humain | Domaine/VPS répondent, login web OK | ⬜ |
-| S4-2 | Brancher mobile sur environnement beta réel | IA/Humain | Login, check-in/out, history OK sur backend déployé | ⬜ |
+| S4-1 | Déployer backend + web sur Render | Humain | Domaine/Render répondent, login web OK | ✅ |
+| S4-2 | Brancher mobile sur environnement beta réel | IA/Humain | Login, check-in/out, history OK sur backend Render | ✅ |
 | S4-3 | Inviter 3-5 prospects beta | Humain | Retours collectés | ⬜ |
 | S4-4 | Corrections prioritaires | IA | Feedback implémenté | ⬜ |
 | S4-5 | Ouvrir les inscriptions | Humain | Premier client payant | ⬜ |
@@ -191,7 +191,7 @@ Pays MVP :
 
 | Prompt | Contenu | Durée | Prérequis |
 |--------|---------|-------|-----------|
-| `MVP-01` | Init Laravel + multitenancy shared + migrations + seeders | 4-6h | VPS commandé |
+| `MVP-01` | Init Laravel + multitenancy shared + migrations + seeders | 4-6h | Render configuré |
 | `MVP-02` | Auth (3 endpoints) + CRUD Employés (5 endpoints) | 6-8h | MVP-01 vert |
 | `MVP-03` | Pointage (4 endpoints) + schedules basique | 4-6h | MVP-02 vert |
 | `MVP-04` | Daily Summary + Quick Estimate + PDF reçu | 4-6h | MVP-03 vert |
