@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_theme.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/auth/screens/login_screen.dart';
+import 'package:leopardo_rh/features/auth/screens/register_screen.dart';
+import 'package:leopardo_rh/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
@@ -29,15 +31,26 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (authState.isLoading) return null;
 
-      final loggingIn = state.matchedLocation == '/login';
-      if (!isAuth && !loggingIn) return '/login';
-      if (isAuth && loggingIn) return '/';
+      final location = state.matchedLocation;
+      const publicRoutes = {'/welcome', '/login', '/register'};
+      final onPublic = publicRoutes.contains(location);
+
+      if (!isAuth && !onPublic) return '/welcome';
+      if (isAuth && onPublic) return '/';
       return null;
     },
     routes: [
       GoRoute(
+        path: '/welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: '/',
