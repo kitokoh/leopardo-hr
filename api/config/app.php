@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | Version semver exposee par `/api/v1/health` et utile au tagging Sentry.
+    | Idealement injectee au build/deploy depuis le CHANGELOG ou un CI var
+    | (RENDER_GIT_COMMIT), sinon fallback sur la valeur ci-dessous.
+    |
+    */
+
+    'version' => env('APP_VERSION', '4.1.68'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
