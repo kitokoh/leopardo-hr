@@ -2,6 +2,11 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.71] - 2026-04-24
+### Palette - Accessibilite EmptyState mobile
+
+- Mobile : Amelioration de l'accessibilite du widget `EmptyState` par l'ajout de labels `Semantics` regroupant le titre et la description, permettant aux lecteurs d'ecran d'annoncer clairement le contexte des listes vides.
+
 ## [4.1.70] - 2026-04-23
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
