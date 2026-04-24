@@ -2,6 +2,11 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.71] - 2026-04-24
+### DocKeeper - Alignement documentation Sprint 0
+
+- `PILOTAGE.md` : mise a jour du statut S0-2 en "termine" et correction du compte des contradictions (6 -> 7) pour correspondre a `docs/GESTION_PROJET/CORRECTIONS.md`.
+
 ## [4.1.70] - 2026-04-23
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
