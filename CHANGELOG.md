@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.71] - 2026-04-23
+### Janitor: Archivage documentation historique et synchronisation
+
+- Docs : archivage de 8 fichiers marques `📦 HISTORIQUE` dans `PILOTAGE.md` vers `docs/notes/archive/` (`ORCHESTRATION_MAITRE.md`, `INDEX_CANONIQUE.md`, `CONTEXTE_SESSION_IA.md`, `JOURNAL_DE_BORD.md`, `BACKLOG_PHASE1_UNIQUE.md`, `CONTINUE.md`, `SUIVI_PROMPTS.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`)
+- Governance : mise a jour de `tools/check-governance.ps1` pour refleter les nouveaux emplacements des fichiers requis
+- Pilotage : mise a jour de `PILOTAGE.md` (bump version `4.1.71`, mise a jour de la table de statut documentaire, validation C-6)
+- API : bump `APP_VERSION` default de `4.1.70` a `4.1.71` dans `api/config/app.php`
+
 ## [4.1.70] - 2026-04-23
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 

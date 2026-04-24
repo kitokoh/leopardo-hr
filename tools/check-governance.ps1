@@ -26,8 +26,8 @@ $requiredFiles = @(
     "PILOTAGE.md",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/BRANCH_PROTECTION_REQUIRED.md",
-    "docs/GESTION_PROJET/INDEX_CANONIQUE.md",
-    "docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md",
+    "docs/notes/archive/INDEX_CANONIQUE.md",
+    "docs/notes/archive/BACKLOG_PHASE1_UNIQUE.md",
     "docs/GESTION_PROJET/GARDE_FOUS.md",
     "docs/GESTION_PROJET/CORRECTIONS.md",
     "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md",
@@ -35,7 +35,7 @@ $requiredFiles = @(
     "docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md",
     "docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md",
     "docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md",
-    "docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md"
+    "docs/notes/archive/EXECUTION_BLOCKERS_AND_NEXT.md"
 )
 
 foreach ($f in $requiredFiles) {
