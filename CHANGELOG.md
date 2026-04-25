@@ -4,6 +4,14 @@
 
 ## [4.1.72] - 2026-04-25
 
+### Cameras - Correctifs RBAC permissions expirees
+
+- API : `api/app/Policies/Cameras/CameraPolicy.php` verifie desormais `expires_at` dans `update()` et `shareAccess()` afin qu'une permission interne expiree ne puisse plus autoriser la modification d'une camera ni l'emission/revocation d'acces tiers.
+- Tests : `api/tests/Feature/Cameras/CamerasCrudTest.php` et `api/tests/Feature/Cameras/CameraAccessTokensTest.php` couvrent maintenant les cas de permissions `can_manage` / `can_share` expirees.
+
+### Seeder - Alignement schema tenant
+
+- API : `api/database/seeders/DemoCompanySeeder.php` n'envoie plus `updated_at` lors des insertions dans `departments`, `positions`, `schedules` et `sites`, en coherence avec la migration tenant qui ne declare que `created_at` sur ces tables.
 
 ### Documentation - Plan d'Action d'Amelioration
 
@@ -1122,7 +1130,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 

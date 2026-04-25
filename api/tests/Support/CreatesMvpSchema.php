@@ -193,6 +193,70 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create('cameras', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->string('name', 100);
+            $table->text('rtsp_url');
+            $table->string('location', 200)->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->string('thumbnail_path', 255)->nullable();
+            $table->smallInteger('sort_order')->default(0);
+            $table->unsignedInteger('created_by');
+            $table->string('stream_path_override', 100)->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('camera_access_tokens', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('camera_id');
+            $table->string('token', 64)->unique();
+            $table->string('label', 150)->nullable();
+            $table->string('granted_to_email', 150)->nullable();
+            $table->string('granted_to_name', 100)->nullable();
+            $table->unsignedInteger('granted_by');
+            $table->json('permissions')->nullable();
+            $table->timestampTz('expires_at');
+            $table->timestampTz('last_used_at')->nullable();
+            $table->unsignedInteger('use_count')->default(0);
+            $table->boolean('is_revoked')->default(false);
+            $table->json('ip_whitelist')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('camera_permissions', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('camera_id');
+            $table->unsignedInteger('employee_id');
+            $table->boolean('can_view')->default(true);
+            $table->boolean('can_share')->default(false);
+            $table->boolean('can_manage')->default(false);
+            $table->unsignedInteger('granted_by');
+            $table->timestampTz('granted_at')->useCurrent();
+            $table->timestampTz('expires_at')->nullable();
+            $table->timestamps();
+            $table->unique(['camera_id', 'employee_id']);
+        });
+
+        Schema::create('camera_access_logs', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('camera_id');
+            $table->unsignedInteger('employee_id')->nullable();
+            $table->unsignedInteger('access_token_id')->nullable();
+            $table->string('actor_type', 20);
+            $table->string('action', 40);
+            $table->string('reason', 60)->nullable();
+            $table->string('ip_address', 45)->nullable();
+            $table->string('user_agent', 255)->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestampTz('created_at')->useCurrent();
+        });
+
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
             $table->id();
             $table->morphs('tokenable');
@@ -305,6 +369,10 @@ trait CreatesMvpSchema
             DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
             DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.personal_access_tokens CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_logs CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_permissions CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_tokens CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.cameras CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.schedules CASCADE');
@@ -317,6 +385,10 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_kiosks"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "biometric_enrollment_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "camera_access_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "camera_permissions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "camera_access_tokens"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "cameras"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "employees"'.$cascade);
