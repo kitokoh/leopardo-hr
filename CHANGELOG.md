@@ -4,6 +4,12 @@
 
 ## [4.1.72] - 2026-04-25
 
+### Documentation - Infra actuelle officialisee en Markdown
+
+- Docs : `docs/infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` devient la reference principale de l'etat courant infra (Render / Neon / healthcheck / mobile Android actif / backup drill).
+- Docs : `docs/infra/Leopardo_RH_Architecture_Deploiement.pdf` est explicitement requalifie comme archive de vision / projection dans `docs/infra/README.md`.
+- Docs : `docs/README.md` et `docs/infra/README.md` sont realignes pour faire pointer la lecture de l'infrastructure actuelle vers la reference Markdown avant le PDF historique.
+
 ### Cameras - Correctifs RBAC permissions expirees
 
 - API : `api/app/Policies/Cameras/CameraPolicy.php` verifie desormais `expires_at` dans `update()` et `shareAccess()` afin qu'une permission interne expiree ne puisse plus autoriser la modification d'une camera ni l'emission/revocation d'acces tiers.
@@ -12,6 +18,7 @@
 ### Seeder - Alignement schema tenant
 
 - API : `api/database/seeders/DemoCompanySeeder.php` n'envoie plus `updated_at` lors des insertions dans `departments`, `positions`, `schedules` et `sites`, en coherence avec la migration tenant qui ne declare que `created_at` sur ces tables.
+- API : `api/database/seeders/DemoCompanySeeder.php` stocke maintenant les donnees legales de demo dans `companies.metadata`, limite `company_settings` aux cles globales partagees, genere un code `absence_types.code` unique par company et complete `approved_by` sur les insertions d'absences pour eviter les erreurs de seed multi-company.
 
 ### Documentation - Plan d'Action d'Amelioration
 
