@@ -4,6 +4,10 @@
 
 ## [4.1.72] - 2026-04-25
 
+### Migration - Robustesse creation user_invitations
+
+- API : `api/database/migrations/public/2026_04_19_000012_create_user_invitations_table.php` tolere maintenant explicitement l'erreur PostgreSQL `42P07` (`relation already exists`) afin qu'un rebuild/reset complet de la base de test sur Render ne casse pas si la creation de `user_invitations` est rejouee lors d'une relance ou d'une course de migration.
+
 ### Migration - Robustesse ajout colonnes JSONB company
 
 - API : `api/database/migrations/public/2026_04_22_000014_add_metadata_and_features_jsonb.php` n'utilise plus `Schema::hasColumn()` pour ajouter `companies.features` et `companies.metadata`, mais un `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` PostgreSQL, afin de fiabiliser les rebuild/reset complets de base sur Render avant l'execution des seeders de demo.
@@ -1151,7 +1155,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
