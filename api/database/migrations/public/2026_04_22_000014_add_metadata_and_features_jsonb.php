@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * APV - Module boundaries foundation
@@ -22,32 +20,39 @@ return new class extends Migration
     {
         DB::statement('SET search_path TO public');
 
-        if (Schema::hasTable('companies')) {
-            if (! Schema::hasColumn('companies', 'features')) {
-                Schema::table('companies', function (Blueprint $table): void {
-                    $table->jsonb('features')->default(DB::raw("'{}'::jsonb"));
-                });
+        DB::statement(<<<'SQL'
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'companies'
+    ) THEN
+        ALTER TABLE public.companies
+            ADD COLUMN IF NOT EXISTS features jsonb NOT NULL DEFAULT '{}'::jsonb;
 
-                DB::statement("COMMENT ON COLUMN companies.features IS 'Feature flags par module (APV L.08). Ex: {\"rh\":true,\"finance\":false,\"cameras\":false}. Toggle par super-admin, sans redeploiement.'");
-            }
+        ALTER TABLE public.companies
+            ADD COLUMN IF NOT EXISTS metadata jsonb NOT NULL DEFAULT '{}'::jsonb;
 
-            if (! Schema::hasColumn('companies', 'metadata')) {
-                Schema::table('companies', function (Blueprint $table): void {
-                    $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
-                });
+        COMMENT ON COLUMN public.companies.features IS 'Feature flags par module (APV L.08). Ex: {"rh":true,"finance":false,"cameras":false}. Toggle par super-admin, sans redeploiement.';
+        COMMENT ON COLUMN public.companies.metadata IS 'Champs d extension JSONB (APV L.10). Aucune donnee critique ici.';
 
-                DB::statement("COMMENT ON COLUMN companies.metadata IS 'Champs d extension JSONB (APV L.10). Aucune donnee critique ici.'");
-            }
+        CREATE INDEX IF NOT EXISTS companies_features_gin ON public.companies USING GIN (features);
+        CREATE INDEX IF NOT EXISTS companies_metadata_gin ON public.companies USING GIN (metadata);
+    END IF;
 
-            DB::statement('CREATE INDEX IF NOT EXISTS companies_features_gin ON companies USING GIN (features)');
-            DB::statement('CREATE INDEX IF NOT EXISTS companies_metadata_gin ON companies USING GIN (metadata)');
-        }
-
-        if (Schema::hasTable('user_invitations') && ! Schema::hasColumn('user_invitations', 'metadata')) {
-            Schema::table('user_invitations', function (Blueprint $table): void {
-                $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
-            });
-        }
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'user_invitations'
+    ) THEN
+        ALTER TABLE public.user_invitations
+            ADD COLUMN IF NOT EXISTS metadata jsonb NOT NULL DEFAULT '{}'::jsonb;
+    END IF;
+END $$;
+SQL);
     }
 
     public function down(): void
@@ -56,22 +61,8 @@ return new class extends Migration
 
         DB::statement('DROP INDEX IF EXISTS companies_features_gin');
         DB::statement('DROP INDEX IF EXISTS companies_metadata_gin');
-
-        if (Schema::hasTable('companies')) {
-            Schema::table('companies', function (Blueprint $table): void {
-                if (Schema::hasColumn('companies', 'features')) {
-                    $table->dropColumn('features');
-                }
-                if (Schema::hasColumn('companies', 'metadata')) {
-                    $table->dropColumn('metadata');
-                }
-            });
-        }
-
-        if (Schema::hasTable('user_invitations') && Schema::hasColumn('user_invitations', 'metadata')) {
-            Schema::table('user_invitations', function (Blueprint $table): void {
-                $table->dropColumn('metadata');
-            });
-        }
+        DB::statement('ALTER TABLE IF EXISTS public.companies DROP COLUMN IF EXISTS features');
+        DB::statement('ALTER TABLE IF EXISTS public.companies DROP COLUMN IF EXISTS metadata');
+        DB::statement('ALTER TABLE IF EXISTS public.user_invitations DROP COLUMN IF EXISTS metadata');
     }
 };

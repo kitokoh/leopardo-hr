@@ -4,6 +4,10 @@
 
 ## [4.1.72] - 2026-04-25
 
+### Migration - Robustesse ajout colonnes JSONB company
+
+- API : `api/database/migrations/public/2026_04_22_000014_add_metadata_and_features_jsonb.php` n'utilise plus `Schema::hasColumn()` pour ajouter `companies.features` et `companies.metadata`, mais un `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` PostgreSQL, afin de fiabiliser les rebuild/reset complets de base sur Render avant l'execution des seeders de demo.
+
 ### Seeder - Rejeu automatique et jeu de donnees demo enrichi
 
 - API : `api/database/seeders/DemoCompanyOnceSeeder.php` versionne desormais le verrou de seed demo (`demo_company_seed_v2`) afin que le nouveau jeu de donnees de demonstration soit rejoue automatiquement au prochain deploiement avec `DEMO_SEED_ONCE=true`.
@@ -1147,7 +1151,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
