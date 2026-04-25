@@ -595,24 +595,21 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/AttendanceLog"
-        "409":
-          description: "Déjà pointé"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              example:
-                error: "ALREADY_CHECKED_IN"
-                message: "Vous avez déjà pointé votre arrivée aujourd'hui."
         "422":
-          description: "Hors zone GPS ou planning manquant"
+          description: "Déjà pointé, hors zone GPS ou planning manquant"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-              example:
-                error: "GPS_OUTSIDE_ZONE"
-                message: "Vous êtes hors du périmètre géolocalisé du site."
+              examples:
+                AlreadyCheckedIn:
+                  value:
+                    error: "ALREADY_CHECKED_IN"
+                    message: "Vous avez déjà pointé votre arrivée aujourd'hui."
+                GpsOutsideZone:
+                  value:
+                    error: "GPS_OUTSIDE_ZONE"
+                    message: "Vous êtes hors du périmètre géolocalisé du site."
 
   /attendance/check-out:
     post:

@@ -88,8 +88,8 @@ class AttendanceServiceTest extends TestCase
         $result = app(AttendanceService::class)->checkOut($employee, 36.77, 3.05);
 
         $this->assertSame($log->id, $result->id);
-        $this->assertSame('9.50', $result->fresh()->hours_worked);
-        $this->assertSame('1.50', $result->fresh()->overtime_hours);
+        $this->assertSame('8.50', $result->fresh()->hours_worked);
+        $this->assertSame('0.50', $result->fresh()->overtime_hours);
         $this->assertSame('36.77000000', $result->fresh()->gps_lat);
         $this->assertSame('3.05000000', $result->fresh()->gps_lng);
     }

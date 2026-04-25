@@ -8,12 +8,12 @@ class AttendancePolicy
 {
     public function checkIn(Employee $actor): bool
     {
-        return $actor->status === 'active';
+        return $actor->status === 'active' && $actor->role === 'employee';
     }
 
     public function checkOut(Employee $actor): bool
     {
-        return $actor->status === 'active';
+        return $actor->status === 'active' && $actor->role === 'employee';
     }
 
     public function viewAny(Employee $actor): bool
