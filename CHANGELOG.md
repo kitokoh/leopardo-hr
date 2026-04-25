@@ -7,6 +7,11 @@
 
 - `api/app/Http/Controllers/Web/DashboardController.php` : ajout de `select()` sur les requetes `Employee` et `AttendanceLog` pour ne recuperer que les colonnes necessaires, evitant ainsi le chargement des colonnes JSONB lourdes et reduisant la consommation memoire lors de l'hydratation des modeles Eloquent.
 
+## [4.1.71] - 2026-04-24
+### DocKeeper - Alignement documentation Sprint 0
+
+- `PILOTAGE.md` : mise a jour du statut S0-2 en "termine" et correction du compte des contradictions (6 -> 7) pour correspondre a `docs/GESTION_PROJET/CORRECTIONS.md`.
+
 ## [4.1.70] - 2026-04-23
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
