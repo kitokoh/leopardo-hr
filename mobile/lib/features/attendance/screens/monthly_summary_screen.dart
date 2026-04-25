@@ -60,7 +60,9 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               loading: () => const Center(
                 child: Padding(
                   padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    semanticsLabel: 'Chargement du résumé mensuel...',
+                  ),
                 ),
               ),
               error: (err, _) {

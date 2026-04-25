@@ -18,11 +18,13 @@ class DashboardController extends Controller
         $today = now('UTC')->setTimezone($company->timezone)->toDateString();
 
         $employees = Employee::query()
+            ->select(['id', 'first_name', 'last_name', 'email', 'salary_type', 'salary_base', 'hourly_rate'])
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();
 
         $logsByEmployee = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'status', 'check_in', 'check_out', 'hours_worked', 'overtime_hours'])
             ->where('date', $today)
             ->where('session_number', 1)
             ->get()
