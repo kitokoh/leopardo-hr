@@ -4,6 +4,10 @@
 
 ## [4.1.72] - 2026-04-25
 
+### Seeder - Stabilisation demo multi-company
+
+- API : `api/database/seeders/DemoCompanySeeder.php` stocke les identifiants legaux de demo dans `companies.metadata`, limite `company_settings` aux cles globales partagees du tenant commun, rend `absence_types.code` unique par company et complete `approved_by` sur les absences pending afin de fiabiliser le seed local multi-company en mode `shared_tenants`.
+
 ### Documentation - Infra actuelle officialisee en Markdown
 
 - Docs : `docs/infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` devient la reference principale de l'etat courant infra (Render / Neon / healthcheck / mobile Android actif / backup drill).
@@ -1137,7 +1141,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 

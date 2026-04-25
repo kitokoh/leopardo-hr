@@ -96,6 +96,13 @@ class DemoCompanySeeder extends Seeder
                 'language' => $config['language'],
                 'timezone' => $config['timezone'],
                 'currency' => $config['currency'],
+                'features' => json_encode([
+                    'rh' => true,
+                ]),
+                'metadata' => json_encode([
+                    'legal_id' => $config['legal_id'],
+                    'legal_id_label' => $config['legal_label'],
+                ]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -173,7 +180,7 @@ class DemoCompanySeeder extends Seeder
             $this->seedAbsences($companyId, $employeeIds, $absenceTypeId, $managerIds['rh']);
             $this->seedSalaryAdvance($companyId, $employeeIds[0] ?? null, $managerIds['rh'], $config['currency']);
             $this->seedPayroll($companyId, $managerIds['principal'], $config['currency']);
-            $this->seedCompanySettings($config);
+            $this->seedCompanySettings();
         });
     }
 
@@ -365,15 +372,16 @@ class DemoCompanySeeder extends Seeder
 
     private function createAbsenceType(string $companyId): int
     {
+        $companyCodeSuffix = Str::upper(Str::substr(str_replace('-', '', $companyId), 0, 8));
+
         return DB::table('absence_types')->insertGetId([
             'company_id' => $companyId,
             'name' => 'Conge annuel',
-            'code' => 'CONGE_ANNUEL',
+            'code' => "CA_{$companyCodeSuffix}",
             'is_paid' => true,
             'deducts_leave' => true,
             'requires_proof' => false,
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
     }
 
@@ -392,6 +400,7 @@ class DemoCompanySeeder extends Seeder
                 'end_date' => now()->addDays(7)->format('Y-m-d'),
                 'days_count' => 3,
                 'status' => 'pending',
+                'approved_by' => null,
                 'reason' => 'Conge familial',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -476,34 +485,24 @@ class DemoCompanySeeder extends Seeder
         ]);
     }
 
-    private function seedCompanySettings(array $config): void
+    private function seedCompanySettings(): void
     {
-        DB::table('company_settings')->upsert([
-            [
-                'key' => 'onboarding_completed',
-                'value' => 'true',
-                'value_type' => 'boolean',
-                'updated_at' => now(),
-            ],
-            [
-                'key' => 'payroll_day',
-                'value' => '25',
-                'value_type' => 'integer',
-                'updated_at' => now(),
-            ],
-            [
-                'key' => 'legal_id',
-                'value' => $config['legal_id'],
-                'value_type' => 'string',
-                'updated_at' => now(),
-            ],
-            [
-                'key' => 'legal_id_label',
-                'value' => $config['legal_label'],
-                'value_type' => 'string',
-                'updated_at' => now(),
-            ],
-        ], ['key'], ['value', 'value_type', 'updated_at']);
+        $this->withSharedTenantSearchPath(function (): void {
+            DB::table('company_settings')->upsert([
+                [
+                    'key' => 'onboarding_completed',
+                    'value' => 'true',
+                    'value_type' => 'boolean',
+                    'updated_at' => now(),
+                ],
+                [
+                    'key' => 'payroll_day',
+                    'value' => '25',
+                    'value_type' => 'integer',
+                    'updated_at' => now(),
+                ],
+            ], ['key'], ['value', 'value_type', 'updated_at']);
+        });
     }
 
     private function workingDaysThisMonth(): array
