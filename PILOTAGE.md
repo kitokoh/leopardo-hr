@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.70 | 2026-04-23
+# PROGRAM_VERSION = 4.1.71 | 2026-04-24
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.70   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.71   → Version globale du projet/pilotage (ce fichier fait foi)
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
                                 - api/config/app.php → 'version'
@@ -46,9 +46,9 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-04-23
+Date MAJ       : 2026-04-24
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/)
-Code           : ✅ MVP-01 à MVP-06 mergés sur `main` (voir CHANGELOG.md jusqu'à 4.1.70)
+Code           : ✅ MVP-01 à MVP-06 mergés sur `main` (voir CHANGELOG.md jusqu'à 4.1.71)
 Phase active   : Phase 1 APV Fondations (voir docs/ROADMAP.md)
                  Note: la section "SCOPE MVP VERROUILLÉ" plus bas reflète
                  le scope initial figé, pas l'état actuel du code.
@@ -130,7 +130,7 @@ Pays MVP :
 | # | Action | Responsable | Statut |
 |---|--------|-------------|--------|
 | S0-1 | Valider environnement Render | Humain | ✅ |
-| S0-2 | Corriger les 6 contradictions docs (voir CORRECTIONS.md) | Humain/IA | ⬜ |
+| S0-2 | Corriger les 7 contradictions docs (voir CORRECTIONS.md) | Humain/IA | ✅ |
 | S0-3 | Créer la landing page (Carrd ou HTML statique) | Humain | ⬜ |
 | S0-4 | Réserver le domaine leopardo-rh.com | Humain | ⬜ |
 
@@ -256,14 +256,14 @@ LEGACY  : docs/PROMPTS_EXECUTION/ORCHESTRATION/*   (remplacé par PILOTAGE.md)
 | `docs/GESTION_PROJET/CORRECTIONS.md` | ✅ **ACTIF** | Corrections Sprint 0 à appliquer |
 | `CHANGELOG.md` | ✅ **ACTIF** | Continue à recevoir les entrées |
 | `JOURNAL_RACINE.md` | ✅ **ACTIF** | Continue à recevoir les entrées |
-| `ORCHESTRATION_MAITRE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md — lecture seule |
-| `docs/GESTION_PROJET/INDEX_CANONIQUE.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
-| `docs/GESTION_PROJET/CONTEXTE_SESSION_IA.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
-| `docs/GESTION_PROJET/JOURNAL_DE_BORD.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
-| `docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md` | 📦 **HISTORIQUE** | Remplacé par les sprints dans PILOTAGE.md |
-| `docs/PROMPTS_EXECUTION/ORCHESTRATION/CONTINUE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md |
-| `docs/GESTION_PROJET/SUIVI_PROMPTS.md` | 📦 **HISTORIQUE** | Suivi intégré dans PILOTAGE.md |
-| `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md` | 📦 **HISTORIQUE** | Blockers intégrés dans Sprint 0 |
+| `docs/notes/archive/ORCHESTRATION_MAITRE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md — lecture seule |
+| `docs/notes/archive/INDEX_CANONIQUE.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
+| `docs/notes/archive/CONTEXTE_SESSION_IA.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
+| `docs/notes/archive/JOURNAL_DE_BORD.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
+| `docs/notes/archive/BACKLOG_PHASE1_UNIQUE.md` | 📦 **HISTORIQUE** | Remplacé par les sprints dans PILOTAGE.md |
+| `docs/notes/archive/CONTINUE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md |
+| `docs/notes/archive/SUIVI_PROMPTS.md` | 📦 **HISTORIQUE** | Suivi intégré dans PILOTAGE.md |
+| `docs/notes/archive/EXECUTION_BLOCKERS_AND_NEXT.md` | 📦 **HISTORIQUE** | Blockers intégrés dans Sprint 0 |
 
 > **RÈGLE :** Un fichier 📦 HISTORIQUE ne doit JAMAIS être lu comme instruction.
 > Il sert uniquement de traçabilité. Si un agent IA le lit, il doit ignorer ses directives

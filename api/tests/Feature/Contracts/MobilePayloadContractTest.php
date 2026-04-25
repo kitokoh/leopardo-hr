@@ -43,6 +43,7 @@ class MobilePayloadContractTest extends TestCase
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
+            'matricule' => 'EMP-NORA',
             'first_name' => 'Nora',
             'last_name' => 'Ait',
             'email' => 'nora@company.test',
@@ -59,16 +60,26 @@ class MobilePayloadContractTest extends TestCase
         $response->assertJsonStructure([
             'data' => [
                 'id',
+                'matricule',
                 'company_id',
                 'first_name',
                 'last_name',
                 'email',
                 'role',
                 'status',
+                'company' => [
+                    'id',
+                    'name',
+                    'language',
+                    'timezone',
+                    'currency',
+                ],
             ],
         ]);
         $response->assertJsonPath('data.email', 'nora@company.test');
+        $response->assertJsonPath('data.matricule', 'EMP-NORA');
         $response->assertJsonPath('data.role', 'employee');
+        $response->assertJsonPath('data.company.name', 'Company A');
     }
 
     public function test_attendance_today_collection_payload_matches_mobile_contract(): void
