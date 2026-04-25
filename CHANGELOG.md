@@ -3,6 +3,11 @@
 # Versioning : Semantic Versioning (semver.org)
 
 ## [4.1.72] - 2026-04-25
+
+
+### Documentation - Plan d'Action d'Amelioration
+
+- `docs/GESTION_PROJET/PLAN_ACTION_AMELIORATION.md` : ajout du plan d'action detaillant les 15 ameliorations identifiees lors de l'audit technique, organise en 4 phases (Securite, Qualite, Robustesse, Scalabilite) avec instructions d'implementation, code d'exemple et criteres d'acceptation pour chaque action.
 ### Pointage - Corrections CRITIQUES (rapport Leopardo_RH_Pointage_Validation_Finale)
 
 - API : `app/Exceptions/AlreadyCheckedInException.php` et `app/Exceptions/MissingCheckInException.php` renvoient désormais HTTP **422** (au lieu de 409) — alignement avec les règles R-PT-03 / R-PT-04 / PT-08 / PT-17.
