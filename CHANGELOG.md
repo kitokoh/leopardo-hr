@@ -25,6 +25,13 @@
 
 - Mobile : Amelioration de l'accessibilite du widget `EmptyState` par l'ajout de labels `Semantics` regroupant le titre et la description, permettant aux lecteurs d'ecran d'annoncer clairement le contexte des listes vides.
 
+## [4.1.71] - 2026-04-24
+### Contractor - Alignement contrat API/mobile (auth/me)
+
+- API : Mise a jour de `AuthController@serializeEmployee` pour inclure le `matricule` a la racine et un objet `company` imbrique (id, name, language, timezone, currency) conformement au contrat MVP.
+- Mobile : Mise a jour du modele `Employee` pour inclure et parser le champ `matricule`.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la presence de `matricule` et de la structure `company` dans la reponse `/api/v1/auth/me`.
+
 ## [4.1.70] - 2026-04-23
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
