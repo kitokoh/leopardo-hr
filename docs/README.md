@@ -36,12 +36,17 @@ docs/
 
 | Type | Fichier | Statut |
 |------|---------|--------|
-| Architecture infra | `infra/Leopardo_RH_Architecture_Deploiement.pdf` | Reference d'architecture non canonique |
+| Architecture infra actuelle | `infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` | Reference principale de l'etat courant Render / Neon / healthcheck |
+| Architecture infra historique | `infra/Leopardo_RH_Architecture_Deploiement.pdf` | Archive de vision et de projection, non utilisee seule pour l'operationnel courant |
+| Alignement infra | `infra/ALIGNEMENT_PDF_REALITE_2026-04-25.md` | Note d'alignement operationnelle entre le PDF et l'etat reel du depot |
 | Validation module pointage | `validation/Leopardo_RH_Pointage_Validation_Finale.pdf` | Referentiel QA canonique du module pointage |
 
 Lire aussi :
 
 - `infra/README.md`
+- `infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md`
+- `infra/ALIGNEMENT_PDF_REALITE_2026-04-25.md`
+- `GESTION_PROJET/TICKETS_ALIGNEMENT_DOC_INFRA_2026-04-25.md`
 - `validation/README.md`
 
 ---
