@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function (): void {
     // (finance, cameras, muhasebe, leo_ai) seront inclus ici derriere un gate
     // companies.features lors de leur implementation.
     require __DIR__.'/modules/rh.php';
+    require __DIR__.'/modules/cameras.php';
 
     // Platform (super-admin, hors module)
     Route::middleware(['auth:super_admin_api'])->prefix('platform')->group(function (): void {

@@ -230,7 +230,6 @@ class DemoCompanySeeder extends Seeder
                 'company_id' => $companyId,
                 'name' => $name,
                 'created_at' => now(),
-                'updated_at' => now(),
             ]);
         }
 
@@ -247,7 +246,6 @@ class DemoCompanySeeder extends Seeder
                 'name' => $position['name'],
                 'department_id' => $departmentIds[$position['department']],
                 'created_at' => now(),
-                'updated_at' => now(),
             ]);
         }
 
@@ -268,7 +266,6 @@ class DemoCompanySeeder extends Seeder
             'overtime_threshold_weekly' => 40.00,
             'is_default' => true,
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
     }
 
@@ -282,7 +279,6 @@ class DemoCompanySeeder extends Seeder
             'gps_lng' => $config['gps_lng'],
             'gps_radius_m' => 100,
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
     }
 
