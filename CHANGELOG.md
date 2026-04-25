@@ -20,6 +20,11 @@
 - Pilotage : mise a jour de `PILOTAGE.md` (bump version `4.1.71`, mise a jour de la table de statut documentaire, validation C-6)
 - API : bump `APP_VERSION` default de `4.1.70` a `4.1.71` dans `api/config/app.php`
 
+## [4.1.71] - 2026-04-24
+### Palette - Accessibilite EmptyState mobile
+
+- Mobile : Amelioration de l'accessibilite du widget `EmptyState` par l'ajout de labels `Semantics` regroupant le titre et la description, permettant aux lecteurs d'ecran d'annoncer clairement le contexte des listes vides.
+
 ## [4.1.70] - 2026-04-23
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
