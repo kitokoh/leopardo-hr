@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.72] - 2026-04-25
+### Pointage - Corrections CRITIQUES (rapport Leopardo_RH_Pointage_Validation_Finale)
+
+- API : `app/Exceptions/AlreadyCheckedInException.php` et `app/Exceptions/MissingCheckInException.php` renvoient désormais HTTP **422** (au lieu de 409) — alignement avec les règles R-PT-03 / R-PT-04 / PT-08 / PT-17.
+- API : `app/Services/AttendanceService.php` (`checkOut`, `importExternalPunch`) — `hours_worked` soustrait désormais `schedule.break_minutes` (R-PT-06 / PT-13→PT-16). Pour 08:00→17:00 avec pause 60 min, on passe de 9.00 h à 8.00 h.
+- API : `app/Services/AttendanceService.php` (`checkIn`, `checkOut`, `importExternalPunch`) — `late_minutes = max(0, in − start − tolerance)` (R-PT-08 / PT-02). Un check-in à 08:10 avec tolérance 15 min renvoie désormais `late_minutes=0`.
+- API : `app/Policies/AttendancePolicy.php` — `checkIn`/`checkOut` exigent désormais `role='employee'` ; les managers reçoivent **403 FORBIDDEN** (PT-10).
+- API : `app/Http/Controllers/Api/V1/AttendanceController.php` — `today()` (vue manager) filtre `where('status', 'active')` et n'expose plus les employés archivés/suspendus (PT-29 / PT-43).
+- API : `app/Http/Middleware/TenantMiddleware.php` — bloque désormais les employés `suspended` en plus d'`archived` (`EMPLOYEE_SUSPENDED`, 403) — PT-68.
+- Contrat : `openapi.yaml` mis à jour pour le statut 422 sur `/attendance/check-in` (consolidation `ALREADY_CHECKED_IN` + `GPS_OUTSIDE_ZONE`).
+- Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis à jour pour refléter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
+- Suite locale : 11/11 Unit + 87/87 Feature OK.
+
 ## [4.1.71] - 2026-05-20
 ### Performance - Optimisation du dashboard manager
 

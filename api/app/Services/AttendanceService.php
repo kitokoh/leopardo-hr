@@ -38,8 +38,9 @@ class AttendanceService
             $checkInLocal = $nowUtc->copy()->setTimezone($company->timezone);
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $lateMinutes = max(0, $diffMinutes);
-            $status = $diffMinutes > (int) $schedule->late_tolerance_minutes ? 'late' : 'ontime';
+            $tolerance = (int) $schedule->late_tolerance_minutes;
+            $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
+            $status = $lateMinutes > 0 ? 'late' : 'ontime';
         }
 
         return AttendanceLog::query()->create([
@@ -79,7 +80,9 @@ class AttendanceService
             : $this->resolveSchedule($employee);
 
         $seconds = $log->check_in?->diffInSeconds($nowUtc) ?? 0;
-        $hours = round($seconds / 3600, 2);
+        $breakMinutes = (int) ($schedule?->break_minutes ?? 0);
+        $grossHours = $seconds / 3600;
+        $hours = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
 
         $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
         $overtime = max(0.0, round($hours - $threshold, 2));
@@ -95,8 +98,9 @@ class AttendanceService
             $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $log->late_minutes = max(0, $diffMinutes);
-            $log->status = $diffMinutes > (int) $schedule->late_tolerance_minutes ? 'late' : 'ontime';
+            $tolerance = (int) $schedule->late_tolerance_minutes;
+            $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
+            $log->status = $log->late_minutes > 0 ? 'late' : 'ontime';
         }
 
         $log->save();
@@ -138,7 +142,9 @@ class AttendanceService
                 : $this->resolveSchedule($employee);
 
             $seconds = $log->check_in?->diffInSeconds($occurredAt) ?? 0;
-            $hours = round($seconds / 3600, 2);
+            $breakMinutes = (int) ($schedule?->break_minutes ?? 0);
+            $grossHours = $seconds / 3600;
+            $hours = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
             $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
             $overtime = max(0.0, round($hours - $threshold, 2));
 
@@ -175,8 +181,9 @@ class AttendanceService
             $checkInLocal = $occurredAt->copy()->setTimezone($company->timezone);
             $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $lateMinutes = max(0, $diffMinutes);
-            $status = $diffMinutes > (int) $schedule->late_tolerance_minutes ? 'late' : 'ontime';
+            $tolerance = (int) $schedule->late_tolerance_minutes;
+            $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
+            $status = $lateMinutes > 0 ? 'late' : 'ontime';
         }
 
         return AttendanceLog::query()->create([
