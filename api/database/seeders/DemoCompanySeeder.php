@@ -198,7 +198,6 @@ class DemoCompanySeeder extends Seeder
 
         $this->withSharedTenantSearchPath(function () use ($companyId): void {
             $tables = [
-                'company_settings',
                 'payrolls',
                 'salary_advances',
                 'absences',
