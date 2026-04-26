@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
 class DemoCompanySeeder extends Seeder
 {
     private const SHARED_SCHEMA = 'shared_tenants';
+    private const PUBLIC_SCHEMA = 'public';
 
     public function run(): void
     {
@@ -77,7 +78,7 @@ class DemoCompanySeeder extends Seeder
         }
 
         $this->withPublicSearchPath(function () use ($config, $companyId, $planId): void {
-            DB::table('companies')->insert([
+            DB::table($this->publicTable('companies'))->insert([
                 'id' => $companyId,
                 'name' => $config['name'],
                 'slug' => $config['slug'],
@@ -165,7 +166,7 @@ class DemoCompanySeeder extends Seeder
                 $managerKey = $config['department_managers'][$departmentCode] ?? ($departmentCode === $config['principal_manager']['department'] ? 'principal' : 'rh');
                 $managerId = $managerIds[$managerKey] ?? $managerIds['principal'];
 
-                DB::table('departments')
+                DB::table($this->sharedTable('departments'))
                     ->where('id', $departmentId)
                     ->update(['manager_id' => $managerId]);
             }
@@ -208,14 +209,14 @@ class DemoCompanySeeder extends Seeder
     private function planMap(): Collection
     {
         return $this->withPublicSearchPath(function (): Collection {
-            return DB::table('plans')->pluck('id', 'name');
+            return DB::table($this->publicTable('plans'))->pluck('id', 'name');
         });
     }
 
     private function cleanupExistingCompany(string $slug): void
     {
         $company = $this->withPublicSearchPath(function () use ($slug) {
-            return DB::table('companies')->where('slug', $slug)->first();
+            return DB::table($this->publicTable('companies'))->where('slug', $slug)->first();
         });
 
         if (! $company) {
@@ -225,12 +226,12 @@ class DemoCompanySeeder extends Seeder
         $companyId = $company->id;
 
         $this->withSharedTenantSearchPath(function () use ($companyId): void {
-            $batchIds = DB::table('payroll_export_batches')
+            $batchIds = DB::table($this->sharedTable('payroll_export_batches'))
                 ->where('company_id', $companyId)
                 ->pluck('id');
 
             if ($batchIds->isNotEmpty()) {
-                DB::table('payroll_export_items')->whereIn('batch_id', $batchIds)->delete();
+                DB::table($this->sharedTable('payroll_export_items'))->whereIn('batch_id', $batchIds)->delete();
             }
 
             $tables = [
@@ -255,13 +256,13 @@ class DemoCompanySeeder extends Seeder
             ];
 
             foreach ($tables as $table) {
-                DB::table($table)->where('company_id', $companyId)->delete();
+                DB::table($this->sharedTable($table))->where('company_id', $companyId)->delete();
             }
         });
 
         $this->withPublicSearchPath(function () use ($companyId): void {
-            DB::table('user_lookups')->where('company_id', $companyId)->delete();
-            DB::table('companies')->where('id', $companyId)->delete();
+            DB::table($this->publicTable('user_lookups'))->where('company_id', $companyId)->delete();
+            DB::table($this->publicTable('companies'))->where('id', $companyId)->delete();
         });
     }
 
@@ -270,7 +271,7 @@ class DemoCompanySeeder extends Seeder
         $ids = [];
 
         foreach ($departments as $code => $name) {
-            $ids[$code] = DB::table('departments')->insertGetId([
+            $ids[$code] = DB::table($this->sharedTable('departments'))->insertGetId([
                 'company_id' => $companyId,
                 'name' => $name,
                 'created_at' => now(),
@@ -285,7 +286,7 @@ class DemoCompanySeeder extends Seeder
         $ids = [];
 
         foreach ($positions as $code => $position) {
-            $ids[$code] = DB::table('positions')->insertGetId([
+            $ids[$code] = DB::table($this->sharedTable('positions'))->insertGetId([
                 'company_id' => $companyId,
                 'name' => $position['name'],
                 'department_id' => $departmentIds[$position['department']],
@@ -298,7 +299,7 @@ class DemoCompanySeeder extends Seeder
 
     private function createDefaultSchedule(string $companyId, string $name): int
     {
-        return DB::table('schedules')->insertGetId([
+        return DB::table($this->sharedTable('schedules'))->insertGetId([
             'company_id' => $companyId,
             'name' => $name,
             'start_time' => '08:00:00',
@@ -315,7 +316,7 @@ class DemoCompanySeeder extends Seeder
 
     private function createSite(string $companyId, array $config): int
     {
-        return DB::table('sites')->insertGetId([
+        return DB::table($this->sharedTable('sites'))->insertGetId([
             'company_id' => $companyId,
             'name' => $config['site_name'],
             'address' => $config['address'],
@@ -337,7 +338,7 @@ class DemoCompanySeeder extends Seeder
         int $siteId,
         ?int $managerId,
     ): int {
-        return DB::table('employees')->insertGetId([
+        return DB::table($this->sharedTable('employees'))->insertGetId([
             'company_id' => $companyId,
             'matricule' => $employee['matricule'],
             'first_name' => $employee['first_name'],
@@ -369,7 +370,7 @@ class DemoCompanySeeder extends Seeder
     private function createLookup(string $companyId, string $email, int $employeeId, string $role): void
     {
         $this->withPublicSearchPath(function () use ($companyId, $email, $employeeId, $role): void {
-            DB::table('user_lookups')->insert([
+            DB::table($this->publicTable('user_lookups'))->insert([
                 'email' => $email,
                 'company_id' => $companyId,
                 'schema_name' => self::SHARED_SCHEMA,
@@ -391,7 +392,7 @@ class DemoCompanySeeder extends Seeder
                 $checkIn = $day->copy()->setTime(8, $isLate ? 25 : 5, 0);
                 $checkOut = $day->copy()->setTime(17, $index % 4 === 0 ? 45 : 10, 0);
 
-                DB::table('attendance_logs')->insertOrIgnore([
+                DB::table($this->sharedTable('attendance_logs'))->insertOrIgnore([
                     'company_id' => $companyId,
                     'employee_id' => $employeeId,
                     'date' => $day->format('Y-m-d'),
@@ -412,7 +413,7 @@ class DemoCompanySeeder extends Seeder
 
     private function activeEmployeeIds(string $companyId, array $employeeIds): array
     {
-        return DB::table('employees')
+        return DB::table($this->sharedTable('employees'))
             ->where('company_id', $companyId)
             ->whereIn('id', $employeeIds)
             ->where('status', 'active')
@@ -434,7 +435,7 @@ class DemoCompanySeeder extends Seeder
         $ids = [];
 
         foreach ($types as $key => $type) {
-            $ids[$key] = DB::table('absence_types')->insertGetId([
+            $ids[$key] = DB::table($this->sharedTable('absence_types'))->insertGetId([
                 'company_id' => $companyId,
                 'name' => $type['name'],
                 'code' => $type['code'],
@@ -454,7 +455,7 @@ class DemoCompanySeeder extends Seeder
             return;
         }
 
-        DB::table('absences')->insert([
+        DB::table($this->sharedTable('absences'))->insert([
             [
                 'company_id' => $companyId,
                 'employee_id' => $employeeIds[0],
@@ -517,7 +518,7 @@ class DemoCompanySeeder extends Seeder
     private function seedLeaveBalanceLogs(string $companyId, array $employeeIds): void
     {
         foreach (array_slice($employeeIds, 0, 4) as $index => $employeeId) {
-            DB::table('leave_balance_logs')->insert([
+            DB::table($this->sharedTable('leave_balance_logs'))->insert([
                 [
                     'company_id' => $companyId,
                     'employee_id' => $employeeId,
@@ -552,7 +553,7 @@ class DemoCompanySeeder extends Seeder
             default => 30000.00,
         };
 
-        DB::table('salary_advances')->insert([
+        DB::table($this->sharedTable('salary_advances'))->insert([
             'company_id' => $companyId,
             'employee_id' => $employeeId,
             'amount' => $amount,
@@ -591,7 +592,7 @@ class DemoCompanySeeder extends Seeder
             $irAmount = round($grossSalary * 0.07, 2);
             $netSalary = $grossSalary + $overtimeAmount - $advanceDeduction - $absenceDeduction - $irAmount;
 
-            $payrollIds[] = DB::table('payrolls')->insertGetId([
+            $payrollIds[] = DB::table($this->sharedTable('payrolls'))->insertGetId([
                 'company_id' => $companyId,
                 'employee_id' => $employeeId,
                 'period_month' => (int) now()->subMonth()->format('m'),
@@ -618,23 +619,23 @@ class DemoCompanySeeder extends Seeder
             return;
         }
 
-        $batchId = DB::table('payroll_export_batches')->insertGetId([
+        $batchId = DB::table($this->sharedTable('payroll_export_batches'))->insertGetId([
             'company_id' => $companyId,
             'period_month' => (int) now()->subMonth()->format('m'),
             'period_year' => (int) now()->subMonth()->format('Y'),
             'bank_format' => 'DZ_GENERIC',
             'file_path' => 'exports/payroll/demo-batch.csv',
-            'total_amount' => DB::table('payrolls')->whereIn('id', $payrollIds)->sum('net_salary'),
+            'total_amount' => DB::table($this->sharedTable('payrolls'))->whereIn('id', $payrollIds)->sum('net_salary'),
             'employees_count' => count($payrollIds),
             'exported_by' => $validatedBy,
             'created_at' => now()->subDays(4),
         ]);
 
         foreach ($payrollIds as $payrollId) {
-            DB::table('payroll_export_items')->insert([
+            DB::table($this->sharedTable('payroll_export_items'))->insert([
                 'batch_id' => $batchId,
                 'payroll_id' => $payrollId,
-                'amount' => DB::table('payrolls')->where('id', $payrollId)->value('net_salary'),
+                'amount' => DB::table($this->sharedTable('payrolls'))->where('id', $payrollId)->value('net_salary'),
             ]);
         }
     }
@@ -647,7 +648,7 @@ class DemoCompanySeeder extends Seeder
 
         $coreMembers = array_values(array_slice($employeeIds, 0, min(4, count($employeeIds))));
 
-        $projectId = DB::table('projects')->insertGetId([
+        $projectId = DB::table($this->sharedTable('projects'))->insertGetId([
             'company_id' => $companyId,
             'name' => "Projet pilote {$companyName}",
             'description' => 'Projet de demonstration pour tester le module projets/taches.',
@@ -660,7 +661,7 @@ class DemoCompanySeeder extends Seeder
         ]);
 
         $taskIds = [];
-        $taskIds[] = DB::table('tasks')->insertGetId([
+        $taskIds[] = DB::table($this->sharedTable('tasks'))->insertGetId([
             'company_id' => $companyId,
             'title' => 'Configurer les horaires de pointage',
             'description' => 'Verifier les horaires, tolerances et geofencing.',
@@ -679,7 +680,7 @@ class DemoCompanySeeder extends Seeder
             'created_at' => now()->subDays(10),
             'updated_at' => now()->subDay(),
         ]);
-        $taskIds[] = DB::table('tasks')->insertGetId([
+        $taskIds[] = DB::table($this->sharedTable('tasks'))->insertGetId([
             'company_id' => $companyId,
             'title' => 'Cloturer la paie du mois precedent',
             'description' => 'Controler avances et deductions avant validation finale.',
@@ -698,7 +699,7 @@ class DemoCompanySeeder extends Seeder
             'created_at' => now()->subDays(8),
             'updated_at' => now()->subHours(6),
         ]);
-        $taskIds[] = DB::table('tasks')->insertGetId([
+        $taskIds[] = DB::table($this->sharedTable('tasks'))->insertGetId([
             'company_id' => $companyId,
             'title' => 'Onboarding nouveaux employes',
             'description' => 'Preparer badges, contrats et profils applicatifs.',
@@ -719,7 +720,7 @@ class DemoCompanySeeder extends Seeder
         ]);
 
         foreach ($taskIds as $index => $taskId) {
-            DB::table('task_comments')->insert([
+            DB::table($this->sharedTable('task_comments'))->insert([
                 'company_id' => $companyId,
                 'task_id' => $taskId,
                 'author_id' => $index === 1 ? $managerIds['principal'] : $managerIds['rh'],
@@ -732,7 +733,7 @@ class DemoCompanySeeder extends Seeder
     private function seedEvaluations(string $companyId, array $managerIds, array $employeeIds): void
     {
         foreach (array_slice($employeeIds, 0, 3) as $index => $employeeId) {
-            DB::table('evaluations')->insert([
+            DB::table($this->sharedTable('evaluations'))->insert([
                 'company_id' => $companyId,
                 'employee_id' => $employeeId,
                 'evaluator_id' => $managerIds['principal'],
@@ -757,7 +758,7 @@ class DemoCompanySeeder extends Seeder
     private function seedNotifications(string $companyId, array $employeeIds, string $companyName): void
     {
         foreach (array_slice($employeeIds, 0, 6) as $index => $employeeId) {
-            DB::table('notifications')->insert([
+            DB::table($this->sharedTable('notifications'))->insert([
                 'company_id' => $companyId,
                 'employee_id' => $employeeId,
                 'type' => $index % 2 === 0 ? 'payroll' : 'task',
@@ -778,7 +779,7 @@ class DemoCompanySeeder extends Seeder
         $targets = array_slice($employeeIds, 0, 2);
 
         foreach ($targets as $index => $employeeId) {
-            DB::table('audit_logs')->insert([
+            DB::table($this->sharedTable('audit_logs'))->insert([
                 'company_id' => $companyId,
                 'employee_id' => $managerIds['rh'],
                 'action' => $index === 0 ? 'employee.updated' : 'absence.reviewed',
@@ -796,7 +797,7 @@ class DemoCompanySeeder extends Seeder
     private function seedCompanySettings(): void
     {
         $this->withSharedTenantSearchPath(function (): void {
-            DB::table('company_settings')->upsert([
+            DB::table($this->sharedTable('company_settings'))->upsert([
                 [
                     'key' => 'onboarding_completed',
                     'value' => 'true',
@@ -865,6 +866,16 @@ class DemoCompanySeeder extends Seeder
         $result = DB::selectOne('SHOW search_path');
 
         return is_object($result) ? (string) $result->search_path : null;
+    }
+
+    private function publicTable(string $table): string
+    {
+        return self::PUBLIC_SCHEMA.'.'.$table;
+    }
+
+    private function sharedTable(string $table): string
+    {
+        return self::SHARED_SCHEMA.'.'.$table;
     }
 
     private function printSummary(array $companies): void
