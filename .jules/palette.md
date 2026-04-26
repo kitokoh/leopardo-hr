@@ -13,3 +13,7 @@ This journal contains critical UX and accessibility learnings for the Leopardo R
 ## 2026-04-22 - Loading State Accessibility
 **Learning:** `CircularProgressIndicator` doesn't provide feedback to screen readers by default.
 **Action:** Wrap loading indicators in `Semantics` widgets with a descriptive `label` (e.g., 'Connexion en cours...') to inform users that an action is being processed. Avoid `const` on `Semantics` if the child or label might be dynamic, and watch for "const_with_non_const" analyzer errors.
+
+## 2026-05-21 - Grouping UI elements for screen readers
+**Learning:** When multiple related pieces of information are displayed in a layout (like a label and its value in a Row), screen readers may announce them separately, which can be confusing.
+**Action:** Wrap the layout (e.g., `Row`) in a `Semantics` widget with `container: true` and a combined `label` (e.g., `'Label: $value'`). This ensures the screen reader announces the context and the value as a single, coherent statement.

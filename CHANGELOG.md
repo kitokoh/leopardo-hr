@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-05-21
+
+### Palette - Accessibilité Historique mobile
+
+- Mobile : Amélioration de l'accessibilité de l'écran d'historique (`HistoryScreen`) par l'ajout de labels `Semantics` sur les indicateurs de statut (À l'heure, En retard, Absent) et le regroupement des totaux en pied de page pour une meilleure annonce par les lecteurs d'écran.
+- Mobile : Harmonisation de l'état vide de l'historique en utilisant le widget standardisé `EmptyState` au lieu d'un simple texte.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations

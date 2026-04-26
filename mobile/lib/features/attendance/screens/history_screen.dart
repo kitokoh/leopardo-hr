@@ -1,4 +1,5 @@
 import 'package:leopardo_rh/core/widgets/shimmer_loading.dart';
+import 'package:leopardo_rh/core/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -118,7 +119,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         },
         data: (logs) {
           if (logs.isEmpty) {
-            return const Center(child: Text('Aucun historique pour ce mois.'));
+            return const EmptyState(
+              title: 'Aucun historique',
+              description: 'Rien ici pour le moment.',
+              icon: Icons.history,
+            );
           }
           final totalJours = logs.length;
           final totalHeures = logs.fold<double>(0, (sum, log) => sum + (log.workedHours ?? 0));
@@ -159,10 +164,26 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         break;
                     }
                     
+                    String statusLabel = 'Inconnu';
+                    switch (log.status) {
+                      case 'ontime':
+                        statusLabel = 'À l\'heure';
+                        break;
+                      case 'late':
+                        statusLabel = 'En retard';
+                        break;
+                      case 'absent':
+                        statusLabel = 'Absent';
+                        break;
+                    }
+
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: statusColor.withValues(alpha: 0.2),
-                        child: Icon(Icons.circle, color: statusColor, size: 12),
+                      leading: Semantics(
+                        label: statusLabel,
+                        child: CircleAvatar(
+                          backgroundColor: statusColor.withValues(alpha: 0.2),
+                          child: Icon(Icons.circle, color: statusColor, size: 12),
+                        ),
                       ),
                       title: Text('${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}'),
                       subtitle: Text(
@@ -185,28 +206,40 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 child: SafeArea(
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Total jours'),
-                          Text('$totalJours', style: const TextStyle(fontWeight: FontWeight.bold)),
-                        ],
+                      Semantics(
+                        label: 'Total jours: $totalJours',
+                        container: true,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Total jours'),
+                            Text('$totalJours', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Total heures'),
-                          Text('${totalHeures.toStringAsFixed(1)}h', style: const TextStyle(fontWeight: FontWeight.bold)),
-                        ],
+                      Semantics(
+                        label: 'Total heures: ${totalHeures.toStringAsFixed(1)}h',
+                        container: true,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Total heures'),
+                            Text('${totalHeures.toStringAsFixed(1)}h', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Heures supplémentaires', style: TextStyle(color: Colors.grey)),
-                          Text('${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                        ],
+                      Semantics(
+                        label: 'Heures supplémentaires: ${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h',
+                        container: true,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Heures supplémentaires', style: TextStyle(color: Colors.grey)),
+                            Text('${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                          ],
+                        ),
                       ),
                     ],
                   ),
