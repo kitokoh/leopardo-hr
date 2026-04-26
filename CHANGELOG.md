@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-04-26
+
+### Janitor: Hygiène des fichiers d'environnement mobile
+
+- Mobile : les fichiers `.env.local`, `.env.production` et `.env.staging` sont désormais retirés du suivi Git et ignorés via `.gitignore` pour éviter la fuite accidentelle de configurations locales ou de secrets.
+- Mobile : ajout de `mobile/.env.example` comme modèle de configuration pour les nouveaux environnements de développement ou de build.
+- Governance : mise à jour du `.gitignore` racine pour couvrir tous les motifs `mobile/.env*`.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations

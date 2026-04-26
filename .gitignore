@@ -10,7 +10,8 @@ bon-fixed/
 # Environnements
 api/.env
 api/.env.backup
-mobile/.env
+mobile/.env*
+!mobile/.env.example
 
 # Dépendances (générées à l'init)
 api/vendor/
