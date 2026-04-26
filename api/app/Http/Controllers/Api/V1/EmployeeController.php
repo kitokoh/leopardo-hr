@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ArchiveEmployeeRequest;
 use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
-use App\Http\Resources\V1\EmployeeResource;
 use App\Models\Employee;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
@@ -22,10 +21,18 @@ class EmployeeController extends Controller
 
         $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
         $paginator = Employee::query()
+            ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
             ->orderBy('id')
             ->paginate($perPage);
 
-        return EmployeeResource::collection($paginator)->response();
+        return new JsonResponse([
+            'data' => collect($paginator->items())->values(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
     }
 
     public function store(StoreEmployeeRequest $request): JsonResponse
@@ -37,9 +44,22 @@ class EmployeeController extends Controller
 
         $employee = $this->employeeService->create($request->validated(), $actor);
 
-        return (new EmployeeResource($employee))
-            ->response()
-            ->setStatusCode(201);
+        return new JsonResponse([
+            'data' => [
+                'id' => $employee->id,
+                'first_name' => $employee->first_name,
+                'last_name' => $employee->last_name,
+                'email' => $employee->email,
+                'role' => $employee->role,
+                'manager_role' => $employee->manager_role,
+                'status' => $employee->status,
+                'phone' => $employee->phone,
+                'personal_email' => $employee->personal_email,
+                'biometric_face_enabled' => $employee->biometric_face_enabled,
+                'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+                'extra_data' => $employee->extra_data ?? [],
+            ],
+        ], 201);
     }
 
     public function show(string $employeeId, Request $request): JsonResponse
@@ -48,7 +68,26 @@ class EmployeeController extends Controller
 
         $this->authorize('view', $employee);
 
-        return (new EmployeeResource($employee))->response();
+        return new JsonResponse([
+            'data' => [
+                'id' => $employee->id,
+                'first_name' => $employee->first_name,
+                'last_name' => $employee->last_name,
+                'email' => $employee->email,
+                'role' => $employee->role,
+                'manager_role' => $employee->manager_role,
+                'status' => $employee->status,
+                'phone' => $employee->phone,
+                'personal_email' => $employee->personal_email,
+                'address_line' => $employee->address_line,
+                'postal_code' => $employee->postal_code,
+                'emergency_contact_name' => $employee->emergency_contact_name,
+                'emergency_contact_phone' => $employee->emergency_contact_phone,
+                'biometric_face_enabled' => $employee->biometric_face_enabled,
+                'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+                'extra_data' => $employee->extra_data ?? [],
+            ],
+        ]);
     }
 
     public function update(UpdateEmployeeRequest $request, string $employeeId): JsonResponse
@@ -62,7 +101,22 @@ class EmployeeController extends Controller
 
         $employee = $this->employeeService->update($actor, $employee, $request->validated());
 
-        return (new EmployeeResource($employee))->response();
+        return new JsonResponse([
+            'data' => [
+                'id' => $employee->id,
+                'first_name' => $employee->first_name,
+                'last_name' => $employee->last_name,
+                'email' => $employee->email,
+                'role' => $employee->role,
+                'manager_role' => $employee->manager_role,
+                'status' => $employee->status,
+                'phone' => $employee->phone,
+                'personal_email' => $employee->personal_email,
+                'biometric_face_enabled' => $employee->biometric_face_enabled,
+                'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
+                'extra_data' => $employee->extra_data ?? [],
+            ],
+        ]);
     }
 
     public function archive(ArchiveEmployeeRequest $request, string $employeeId): JsonResponse

@@ -33,9 +33,6 @@ class AttendanceLog extends Model
         'late_minutes',
         'gps_lat',
         'gps_lng',
-        'photo_check_in',
-        'corrected_by',
-        'correction_note',
     ];
 
     protected $casts = [

@@ -9,6 +9,7 @@ Points d'entrée:
 - `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` (validation locale backend — Docker d'abord)
 - `docs/README.md` (index documentation technique)
 - `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` (démarrage exécution MVP)
+- `web/` (Application web et site vitrine Next.js)
 
 Distribution mobile (Firebase App Distribution):
 - Workflow: `.github/workflows/mobile-distribute.yml`

@@ -64,7 +64,9 @@ class TenantMiddleware
         app()->instance('current_company', $company);
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+            $rawSchema = $company->schema_name ?: 'shared_tenants';
+            $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $rawSchema) ?: 'shared_tenants';
+            DB::statement('SET search_path TO "'.$schema.'",public');
         }
 
         return $next($request);

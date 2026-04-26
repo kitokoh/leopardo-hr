@@ -59,11 +59,6 @@ class Employee extends Authenticatable
         'emergency_contact_name',
         'emergency_contact_phone',
         'emergency_contact_relation',
-        'iban',
-        'bank_account',
-        'national_id',
-        'failed_login_attempts',
-        'locked_until',
         'extra_data',
     ];
 
@@ -73,7 +68,6 @@ class Employee extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'last_login_at' => 'datetime',
         'date_of_birth' => 'date',
         'contract_start' => 'date',
         'contract_end' => 'date',
@@ -81,10 +75,6 @@ class Employee extends Authenticatable
         'biometric_fingerprint_enabled' => 'boolean',
         'biometric_consent_at' => 'datetime',
         'invitation_accepted_at' => 'datetime',
-        'iban' => 'encrypted',
-        'bank_account' => 'encrypted',
-        'national_id' => 'encrypted',
-        'locked_until' => 'datetime',
         'extra_data' => 'array',
     ];
 

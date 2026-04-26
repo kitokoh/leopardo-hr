@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.72 | 2026-04-25
+# PROGRAM_VERSION = 4.1.73 | 2026-05-27
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -9,8 +9,6 @@
 > multitenancy mode `schema` activé, 6 sous-rôles manager (`principal`,
 > `rh`, `dept`, `comptable`, `superviseur`, `employee`), plusieurs pages
 > Blade, hébergement cible **Render** (voir `.github/workflows/deploy-main.yml`).
-> **Audit 2026-04-25 :** Renforcement sécurité (chiffrement, lockout, CORS),
-> standardisation API (JsonResources) et sécurisation search_path effectués.
 > Tant que la décision produit n'est pas prise pour aligner ce document
 > sur la réalité, se référer à `docs/ROADMAP.md` + `docs/AUDIT_v2_v3_COMPLIANCE.md`
 > pour l'état réel. Voir aussi `docs/GESTION_PROJET/CORRECTIONS.md`.
@@ -20,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.71   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.73   → Version globale du projet/pilotage (ce fichier fait foi)
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
                                 - api/config/app.php → 'version'
@@ -100,7 +98,7 @@ Stack MVP :
   Cache      : File driver (pas Redis)
   Queue      : Sync (pas Redis/Horizon)
   Auth       : Sanctum (tokens opaques)
-  Frontend   : Blade + Alpine.js + Tailwind CSS (pas Vue.js/Inertia)
+  Frontend   : Next.js + Tailwind CSS (App Router)
   Mobile     : Flutter (3 écrans)
   PDF        : DomPDF (synchrone)
   Hébergement: Render (Web Service) + Neon.tech (PostgreSQL)

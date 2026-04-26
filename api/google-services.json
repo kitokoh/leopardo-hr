@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "201283742683",
+    "project_id": "leopardo-rh",
+    "storage_bucket": "leopardo-rh.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201283742683:android:98120a33d1309f03fdd5fe",
+        "android_client_info": {
+          "package_name": "com.leopardo.rh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYauGSBVQw-WUyvNuODkjKreoGyaq8aII"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
