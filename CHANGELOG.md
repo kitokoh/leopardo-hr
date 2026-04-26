@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-05-22
+
+### Performance - Optimisation de l'EstimationService
+
+- API : `api/app/Services/EstimationService.php` : ajout de `select()` sur les requêtes `AttendanceLog` dans `dailySummary` et `quickEstimate` pour éviter l'over-fetching des colonnes JSONB.
+- API : `api/app/Services/EstimationService.php` : pré-résolution des taux de l'employé avant la boucle dans `quickEstimate` pour réduire les calculs redondants.
+- API : `api/app/Services/EstimationService.php` : ajout d'un cache statique au niveau de la requête pour les taux de déduction par pays afin d'éviter les requêtes répétitives sur `public.hr_model_templates`.
+- API : `api/app/Services/EstimationService.php` : correction d'un typo dans `hrModelTemplatesTableExists` qui vérifiait la mauvaise table PostgreSQL.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations
