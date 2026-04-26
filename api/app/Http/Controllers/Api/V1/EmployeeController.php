@@ -127,6 +127,12 @@ class EmployeeController extends Controller
 
         $employee = $this->employeeService->archive($employee);
 
-        return new JsonResponse(['message' => 'EMPLOYEE_ARCHIVED']);
+        return new JsonResponse([
+            'data' => [
+                'id' => $employee->id,
+                'status' => $employee->status,
+            ],
+            'message' => 'EMPLOYEE_ARCHIVED',
+        ]);
     }
 }
