@@ -13,6 +13,7 @@
  *    inter-module passe par le core (evenements / services dedies).
  */
 
+use App\Http\Controllers\Api\V1\AbsenceController;
 use App\Http\Controllers\Api\V1\AttendanceController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
@@ -57,6 +58,14 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
     Route::post('/biometric-enrollment-requests/{id}/approve', [BiometricEnrollmentController::class, 'approve']);
     Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject']);
     Route::post('/kiosks', [KioskController::class, 'register']);
+
+    // Absences
+    Route::get('/absences', [AbsenceController::class, 'index']);
+    Route::post('/absences', [AbsenceController::class, 'store']);
+    Route::get('/absences/{absence}', [AbsenceController::class, 'show'])->whereNumber('absence');
+    Route::put('/absences/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
+    Route::put('/absences/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
+    Route::delete('/absences/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
 });
 
 // Kiosque — auth par X-Kiosk-Token, pas sanctum
