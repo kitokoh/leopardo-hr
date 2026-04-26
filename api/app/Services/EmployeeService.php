@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Employee;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -42,7 +43,11 @@ class EmployeeService
 
         $this->applyBiometricConsent($payload);
 
-        $employee = Employee::query()->create($payload);
+        // syncUserLookup est branche sur l'event `saved` du modele Employee
+        // et peut lever USER_LOOKUP_EMAIL_CONFLICT si l'email est deja mappe
+        // a un autre employe. Sans transaction, l'employe est cree puis la
+        // mise a jour de user_lookups echoue et les deux tables divergent.
+        $employee = DB::transaction(fn () => Employee::query()->create($payload));
 
         if ($sendInvitation || ! $providedPassword) {
             $company = $employee->company;
@@ -64,8 +69,14 @@ class EmployeeService
         $isManager = $actor->isManager();
         $isSelfUpdate = $actor->id === $employee->id;
 
+        // Un employe non-manager ne peut PAS changer son email librement :
+        // - le `user_lookups.email` est PRIMARY KEY et est utilise pour router
+        //   la session au login. Un updateOrInsert sur un email deja utilise
+        //   par un autre employe ecraserait son mapping (prise de controle).
+        // - le changement d'email exige sinon un workflow de confirmation
+        //   (lien envoye a l'ancien et nouveau mail) qui n'est pas implemente.
         if (! $isManager) {
-            $payload = Arr::only($payload, ['first_name', 'last_name', 'email', 'password']);
+            $payload = Arr::only($payload, ['first_name', 'last_name', 'password']);
         }
 
         if (array_key_exists('password', $payload) && $payload['password']) {
@@ -92,7 +103,10 @@ class EmployeeService
         $this->applyBiometricConsent($payload, $employee);
 
         $employee->fill($payload);
-        $employee->save();
+        // Idem que pour create(): on encapsule pour que la levee eventuelle
+        // de USER_LOOKUP_EMAIL_CONFLICT (saved event -> syncUserLookup)
+        // rollback automatiquement le UPDATE sur employees.
+        DB::transaction(fn () => $employee->save());
 
         return $employee;
     }

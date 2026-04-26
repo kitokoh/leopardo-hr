@@ -94,6 +94,23 @@ class AttendanceServiceTest extends TestCase
         $this->assertSame('3.05000000', $result->fresh()->gps_lng);
     }
 
+    public function test_check_in_concurrent_collision_returns_already_checked_in(): void
+    {
+        // Simule un double tap : la premiere requete cree la ligne, la seconde
+        // doit echouer proprement avec AlreadyCheckedInException et non pas
+        // remonter un QueryException brut (qui finirait en HTTP 500).
+        [$company, $employee] = $this->seedEmployeeWithSchedule();
+        app()->instance('current_company', $company);
+
+        Carbon::setTestNow(CarbonImmutable::parse('2026-04-07 08:00:00', 'UTC'));
+
+        $service = app(AttendanceService::class);
+        $service->checkIn($employee);
+
+        $this->expectException(AlreadyCheckedInException::class);
+        $service->checkIn($employee);
+    }
+
     private function seedEmployeeWithSchedule(): array
     {
         $company = Company::query()->create([

@@ -58,7 +58,10 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
     Route::post('/kiosks', [KioskController::class, 'register']);
 });
 
-// Kiosque — auth par X-Kiosk-Token, pas sanctum
-Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
-Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
-Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
+// Kiosque — auth par X-Kiosk-Token, pas sanctum. Le throttle protege contre
+// une enumeration de device_code / brute force du sync_token.
+Route::middleware('throttle:30,1')->group(function (): void {
+    Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
+    Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
+    Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
+});

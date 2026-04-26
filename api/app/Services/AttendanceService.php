@@ -7,7 +7,9 @@ use App\Exceptions\MissingCheckInException;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Models\Schedule;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
@@ -17,17 +19,6 @@ class AttendanceService
 
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
-
-        $open = AttendanceLog::query()
-            ->where('employee_id', $employee->id)
-            ->where('date', $today)
-            ->where('session_number', 1)
-            ->whereNull('check_out')
-            ->first();
-
-        if ($open) {
-            throw new AlreadyCheckedInException;
-        }
 
         $schedule = $this->resolveSchedule($employee);
 
@@ -43,18 +34,41 @@ class AttendanceService
             $status = $lateMinutes > 0 ? 'late' : 'ontime';
         }
 
-        return AttendanceLog::query()->create([
-            'employee_id' => $employee->id,
-            'schedule_id' => $schedule?->id,
-            'date' => $today,
-            'session_number' => 1,
-            'check_in' => $nowUtc,
-            'method' => $method,
-            'status' => $status,
-            'late_minutes' => $lateMinutes,
-            'gps_lat' => $gpsLat,
-            'gps_lng' => $gpsLng,
-        ]);
+        // Le SELECT-puis-INSERT n'est pas atomique : sous double-tap mobile, deux
+        // requetes peuvent simultanement voir aucune session ouverte et tenter
+        // d'inserer. La contrainte unique (employee_id, date, session_number)
+        // garantit l'integrite, on attrape la collision pour rendre une erreur
+        // metier propre (HTTP 422 ALREADY_CHECKED_IN) au lieu d'une 500.
+        return DB::transaction(function () use ($employee, $today, $schedule, $nowUtc, $method, $status, $lateMinutes, $gpsLat, $gpsLng) {
+            $open = AttendanceLog::query()
+                ->where('employee_id', $employee->id)
+                ->where('date', $today)
+                ->where('session_number', 1)
+                ->whereNull('check_out')
+                ->lockForUpdate()
+                ->first();
+
+            if ($open) {
+                throw new AlreadyCheckedInException;
+            }
+
+            try {
+                return AttendanceLog::query()->create([
+                    'employee_id' => $employee->id,
+                    'schedule_id' => $schedule?->id,
+                    'date' => $today,
+                    'session_number' => 1,
+                    'check_in' => $nowUtc,
+                    'method' => $method,
+                    'status' => $status,
+                    'late_minutes' => $lateMinutes,
+                    'gps_lat' => $gpsLat,
+                    'gps_lng' => $gpsLng,
+                ]);
+            } catch (UniqueConstraintViolationException $exception) {
+                throw new AlreadyCheckedInException;
+            }
+        });
     }
 
     public function checkOut(Employee $employee, ?float $gpsLat = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog

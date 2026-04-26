@@ -42,8 +42,12 @@ Route::middleware('guest:web')->group(function (): void {
 
 Route::get('/activate/{token}', [InvitationController::class, 'showActivationForm'])->name('invitation.activate.show');
 Route::post('/activate/{token}', [InvitationController::class, 'activate'])->name('invitation.activate.store');
-Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])->name('kiosk.show');
-Route::post('/kiosk/{deviceCode}/punch', [KioskController::class, 'punch'])->name('kiosk.punch');
+// Borne Web : pairing par sync_token + throttle agressif. Les handlers
+// abortent en 401 tant que la session n'est pas associee au kiosque.
+Route::middleware('throttle:30,1')->group(function (): void {
+    Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])->name('kiosk.show');
+    Route::post('/kiosk/{deviceCode}/punch', [KioskController::class, 'punch'])->name('kiosk.punch');
+});
 
 Route::post('/logout', [WebAuthController::class, 'logout'])
     ->middleware('auth:web')

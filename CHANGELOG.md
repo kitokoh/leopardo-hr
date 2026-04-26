@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-04-25
+
+### Security hardening - kiosque web, race condition check-in, takeover via user_lookups
+
+- **Kiosque Web** : `api/app/Http/Controllers/Web/KioskController.php` exige maintenant une etape de pairing par `?token=<sync_token>` validee avec `Hash::check()` sur `attendance_kiosks.sync_token_hash`. Le hash est ensuite stocke en session sous une clef scopee par `device_code`, et chaque requete `show()` / `punch()` re-verifie via `hash_equals()` (timing-safe). Sans pairing valide, on abort en `401 KIOSK_NOT_PAIRED` au lieu de servir la borne en clair. Les bornes web deja deployees doivent etre re-pairees apres deploiement.
+- **Throttle borne** : `api/routes/web.php` et `api/routes/modules/rh.php` enveloppent les routes kiosque (web + API `X-Kiosk-Token`) dans `throttle:30,1` pour limiter le brute-force du `device_code` et du `sync_token`.
+- **Race condition check-in** : `AttendanceService::checkIn` est maintenant enveloppe dans `DB::transaction()` avec un `lockForUpdate()` sur la session ouverte du jour, et un `catch (UniqueConstraintViolationException)` re-jete proprement en `AlreadyCheckedInException` (HTTP 422). Sous double-tap mobile/borne, la deuxieme requete retourne maintenant l'erreur metier au lieu de remonter une 500. Test associe : `tests/Unit/AttendanceServiceTest::test_check_in_concurrent_collision_returns_already_checked_in`.
+- **Self-update email = takeover** : `EmployeeService::update` retire `email` du payload self-update non-manager (`Arr::only` ne whiteliste plus que `first_name`, `last_name`, `password`). Le `user_lookups.email` est PK et est utilise pour router l'auth ; un employe non-manager ne peut plus ecraser un mapping appartenant a un autre tenant via PATCH `/me/profile`.
+- **Defense en profondeur user_lookups** : `Employee::syncUserLookup` refuse de re-mapper une ligne deja attribuee a un autre `employee_id` (leve `RuntimeException USER_LOOKUP_EMAIL_CONFLICT`). Le `EmployeeService::create` / `update` enveloppe le `save()` dans `DB::transaction(...)` pour que la levee depuis l'event `saved` rollback automatiquement le UPDATE sur `employees` (evite l'etat incoherent ou l'employe a un email change mais user_lookups n'est pas mis a jour).
+- **Migration `attendance_logs.method` ENUM -> VARCHAR(30)** : `api/database/migrations/tenant/2026_04_23_000110_relax_attendance_logs_method_to_varchar.php` aligne la prod sur le schema deja utilise par `tests/Support/CreatesMvpSchema.php` et autorise les valeurs `kiosk_*`, `biometric`, etc. sans nouvelle migration. Reversible.
+- Aucun changement d'OpenAPI (les codes HTTP restent ceux deja documentes en 4.1.72). Rollback : `git revert` + rollback de la migration tenant.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations

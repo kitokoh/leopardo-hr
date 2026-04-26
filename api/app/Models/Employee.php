@@ -160,13 +160,29 @@ class Employee extends Authenticatable
             return;
         }
 
-        DB::table($this->userLookupTable())
+        $table = $this->userLookupTable();
+
+        // Defense en profondeur contre la prise de controle via collision
+        // d'email : la PK de user_lookups est `email`, un updateOrInsert
+        // remplacerait silencieusement un mapping appartenant a un autre
+        // employe. On verifie d'abord que l'email cible n'est pas deja
+        // mappe a un autre employee_id.
+        $existing = DB::table($table)->where('email', $this->email)->first();
+        if ($existing && (int) $existing->employee_id !== (int) $this->id) {
+            throw new \RuntimeException(sprintf(
+                'USER_LOOKUP_EMAIL_CONFLICT: %s deja mappe a employee #%d',
+                $this->email,
+                (int) $existing->employee_id,
+            ));
+        }
+
+        DB::table($table)
             ->where('employee_id', $this->id)
             ->where('company_id', $this->company_id)
             ->where('email', '!=', $this->email)
             ->delete();
 
-        DB::table($this->userLookupTable())->updateOrInsert(
+        DB::table($table)->updateOrInsert(
             ['email' => $this->email],
             [
                 'company_id' => $this->company_id,

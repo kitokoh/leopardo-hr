@@ -135,9 +135,12 @@ class EstimationService
 
         $status = $checkOutUtc ? 'complete' : 'incomplete';
 
+        // Si le log est deja cloture, on respecte la valeur calculee a la sortie
+        // (qui inclut deja la deduction de pause depuis AttendanceService::checkOut).
+        // Sinon on derive une estimation en deduisant la pause planifiee.
         $hoursWorked = $log->hours_worked !== null
             ? (float) $log->hours_worked
-            : round(($checkOutUtc ?? $nowUtc)->diffInMinutes($checkInUtc) / 60, 2);
+            : $this->estimateWorkedHours($checkInUtc, $checkOutUtc ?? $nowUtc, $log->schedule);
 
         $overtimeHours = $log->overtime_hours !== null
             ? (float) $log->overtime_hours
@@ -164,6 +167,20 @@ class EstimationService
             'currency' => $company->currency,
             'status' => $status,
         ];
+    }
+
+    /**
+     * Estime les heures effectives entre deux pointages en deduisant la pause
+     * planifiee. Utilise uniquement quand AttendanceService::checkOut n'a pas
+     * encore stocke `hours_worked` sur le log (cas d'un summary live).
+     */
+    private function estimateWorkedHours(Carbon $checkIn, Carbon $end, ?\App\Models\Schedule $schedule): float
+    {
+        $minutes = (float) $end->diffInMinutes($checkIn);
+        $breakMinutes = $schedule ? max(0, (int) $schedule->break_minutes) : 0;
+        $netMinutes = max(0.0, $minutes - $breakMinutes);
+
+        return round($netMinutes / 60, 2);
     }
 
     private function resolveRates(Employee $employee): array
