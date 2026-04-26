@@ -87,6 +87,7 @@ class AttendanceController extends Controller
 
             $paginator = Employee::query()
                 ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
+                ->where('status', 'active')
                 ->orderBy('id')
                 ->paginate(max(1, min(100, $perPage)));
 

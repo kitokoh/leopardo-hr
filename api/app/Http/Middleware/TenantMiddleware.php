@@ -52,6 +52,14 @@ class TenantMiddleware
             abort(403);
         }
 
+        if ($employee->status === 'suspended') {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return new JsonResponse(['error' => 'EMPLOYEE_SUSPENDED'], 403);
+            }
+
+            abort(403);
+        }
+
         $request->attributes->set('company', $company);
         app()->instance('current_company', $company);
 

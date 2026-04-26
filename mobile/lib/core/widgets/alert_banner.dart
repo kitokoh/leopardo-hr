@@ -64,6 +64,7 @@ class AlertBanner extends StatelessWidget {
           if (onDismiss != null)
             IconButton(
               icon: Icon(Icons.close, color: _color, size: 18),
+              tooltip: 'Fermer',
               onPressed: onDismiss,
               visualDensity: VisualDensity.compact,
             ),

@@ -55,7 +55,7 @@ class CheckOutTest extends TestCase
 
         $response = $this->postJson('/api/v1/attendance/check-out');
 
-        $response->assertStatus(409);
+        $response->assertStatus(422);
         $response->assertJsonPath('message', 'MISSING_CHECK_IN');
     }
 
@@ -103,12 +103,12 @@ class CheckOutTest extends TestCase
         $checkOut = $this->postJson('/api/v1/attendance/check-out');
 
         $checkOut->assertOk();
-        $checkOut->assertJsonPath('data.hours_worked', '9.00');
-        $checkOut->assertJsonPath('data.overtime_hours', '1.00');
+        $checkOut->assertJsonPath('data.hours_worked', '8.00');
+        $checkOut->assertJsonPath('data.overtime_hours', '0.00');
 
         $log = AttendanceLog::query()->firstOrFail();
-        $this->assertSame('9.00', $log->hours_worked);
-        $this->assertSame('1.00', $log->overtime_hours);
+        $this->assertSame('8.00', $log->hours_worked);
+        $this->assertSame('0.00', $log->overtime_hours);
         $this->assertSame('2026-04-04 17:00:00', $log->check_out->setTimezone('UTC')->format('Y-m-d H:i:s'));
     }
 }

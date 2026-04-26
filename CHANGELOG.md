@@ -2,7 +2,101 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.72] - 2026-04-25
+
+### Migration - Robustesse creation user_invitations
+
+- API : `api/database/migrations/public/2026_04_19_000012_create_user_invitations_table.php` utilise maintenant `DB::unprepared()` avec `CREATE TABLE IF NOT EXISTS` et des indexes `IF NOT EXISTS` PostgreSQL, afin qu'un rebuild/reset complet de la base de test sur Render ne casse pas si la creation de `user_invitations` est rejouee lors d'une relance ou d'une course de migration, sans tomber sur la limite PDO des multi-statements prepares.
+- Tests : `api/tests/Support/CreatesMvpSchema.php` emploie maintenant aussi `CREATE TABLE IF NOT EXISTS` pour ses tables publiques creees en SQL brut (`user_lookups`, `super_admins`, `user_invitations`), afin de reduire les faux echecs backend lies a des recreations de schema pendant les tests PostgreSQL.
+
+### Migration - Robustesse ajout colonnes JSONB company
+
+- API : `api/database/migrations/public/2026_04_22_000014_add_metadata_and_features_jsonb.php` n'utilise plus `Schema::hasColumn()` pour ajouter `companies.features` et `companies.metadata`, mais un `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` PostgreSQL, afin de fiabiliser les rebuild/reset complets de base sur Render avant l'execution des seeders de demo.
+
+### Seeder - Rejeu automatique et jeu de donnees demo enrichi
+
+- API : `api/database/seeders/DemoCompanyOnceSeeder.php` versionne desormais le verrou de seed demo (`demo_company_seed_v2`) afin que le nouveau jeu de donnees de demonstration soit rejoue automatiquement au prochain deploiement avec `DEMO_SEED_ONCE=true`.
+- API : `api/database/seeders/DemoCompanySeeder.php` cree desormais un jeu de donnees multi-company beaucoup plus riche pour les tests manuels et E2E : managers `principal` / `rh` / `dept` / `comptable` / `superviseur`, employes `active` / `suspended` / `archived`, plusieurs types d'absences, historiques de conges, paies et exports, projets, taches, commentaires, evaluations, notifications et audit logs.
+- API : `api/database/seeders/DemoCompanySeeder.php` aligne maintenant toutes les insertions groupées dans `absences` sur le meme jeu de colonnes SQL, afin d'eviter l'erreur PostgreSQL `VALUES lists must all be the same length` pendant le seed de demonstration sur Render.
+- API : `api/database/seeders/DemoCompanySeeder.php` cible maintenant explicitement `public.*` et `shared_tenants.*` pour ses lectures/ecritures critiques, afin d'eviter qu'une bascule ou une restauration imparfaite du `search_path` ne fasse echouer le seed avec des erreurs du type `relation "employees" does not exist`.
+- API : `api/database/seeders/DemoCompanySeeder.php` force aussi desormais, au demarrage, la suppression de l'ancienne unicite globale sur `public.companies.schema_name` et la recreation de l'index unique partiel reserve au mode `schema`, afin que plusieurs societes de demo en `shared_tenants` puissent etre recreees meme si un ancien etat de contrainte persiste encore sur Render.
+- Deploy : `api/docker-entrypoint.sh` accepte maintenant un reset complet one-shot de la base de test via `RESET_TEST_DB_ONCE=true`, memorise par un verrou `public.seed_locks` (configurable via `RESET_TEST_DB_LOCK_KEY`) pour qu'un redeploiement suivant ne repete pas le wipe.
+
+### Seeder - Stabilisation demo multi-company
+
+- API : `api/database/seeders/DemoCompanySeeder.php` stocke les identifiants legaux de demo dans `companies.metadata`, limite `company_settings` aux cles globales partagees du tenant commun, rend `absence_types.code` unique par company et complete `approved_by` sur les absences pending afin de fiabiliser le seed local multi-company en mode `shared_tenants`.
+
+### Documentation - Infra actuelle officialisee en Markdown
+
+- Docs : `docs/infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` devient la reference principale de l'etat courant infra (Render / Neon / healthcheck / mobile Android actif / backup drill).
+- Docs : `docs/infra/Leopardo_RH_Architecture_Deploiement.pdf` est explicitement requalifie comme archive de vision / projection dans `docs/infra/README.md`.
+- Docs : `docs/README.md` et `docs/infra/README.md` sont realignes pour faire pointer la lecture de l'infrastructure actuelle vers la reference Markdown avant le PDF historique.
+
+### Cameras - Correctifs RBAC permissions expirees
+
+- API : `api/app/Policies/Cameras/CameraPolicy.php` verifie desormais `expires_at` dans `update()` et `shareAccess()` afin qu'une permission interne expiree ne puisse plus autoriser la modification d'une camera ni l'emission/revocation d'acces tiers.
+- Tests : `api/tests/Feature/Cameras/CamerasCrudTest.php` et `api/tests/Feature/Cameras/CameraAccessTokensTest.php` couvrent maintenant les cas de permissions `can_manage` / `can_share` expirees.
+
+### Seeder - Alignement schema tenant
+
+- API : `api/database/seeders/DemoCompanySeeder.php` n'envoie plus `updated_at` lors des insertions dans `departments`, `positions`, `schedules` et `sites`, en coherence avec la migration tenant qui ne declare que `created_at` sur ces tables.
+- API : `api/database/seeders/DemoCompanySeeder.php` stocke maintenant les donnees legales de demo dans `companies.metadata`, limite `company_settings` aux cles globales partagees, genere un code `absence_types.code` unique par company et complete `approved_by` sur les insertions d'absences pour eviter les erreurs de seed multi-company.
+
+### Documentation - Plan d'Action d'Amelioration
+
+- `docs/GESTION_PROJET/PLAN_ACTION_AMELIORATION.md` : ajout du plan d'action detaillant les 15 ameliorations identifiees lors de l'audit technique, organise en 4 phases (Securite, Qualite, Robustesse, Scalabilite) avec instructions d'implementation, code d'exemple et criteres d'acceptation pour chaque action.
+### Pointage - Corrections CRITIQUES (rapport Leopardo_RH_Pointage_Validation_Finale)
+
+- API : `app/Exceptions/AlreadyCheckedInException.php` et `app/Exceptions/MissingCheckInException.php` renvoient désormais HTTP **422** (au lieu de 409) — alignement avec les règles R-PT-03 / R-PT-04 / PT-08 / PT-17.
+- API : `app/Services/AttendanceService.php` (`checkOut`, `importExternalPunch`) — `hours_worked` soustrait désormais `schedule.break_minutes` (R-PT-06 / PT-13→PT-16). Pour 08:00→17:00 avec pause 60 min, on passe de 9.00 h à 8.00 h.
+- API : `app/Services/AttendanceService.php` (`checkIn`, `checkOut`, `importExternalPunch`) — `late_minutes = max(0, in − start − tolerance)` (R-PT-08 / PT-02). Un check-in à 08:10 avec tolérance 15 min renvoie désormais `late_minutes=0`.
+- API : `app/Policies/AttendancePolicy.php` — `checkIn`/`checkOut` exigent désormais `role='employee'` ; les managers reçoivent **403 FORBIDDEN** (PT-10).
+- API : `app/Http/Controllers/Api/V1/AttendanceController.php` — `today()` (vue manager) filtre `where('status', 'active')` et n'expose plus les employés archivés/suspendus (PT-29 / PT-43).
+- API : `app/Http/Middleware/TenantMiddleware.php` — bloque désormais les employés `suspended` en plus d'`archived` (`EMPLOYEE_SUSPENDED`, 403) — PT-68.
+- Contrat : `openapi.yaml` mis à jour pour le statut 422 sur `/attendance/check-in` (consolidation `ALREADY_CHECKED_IN` + `GPS_OUTSIDE_ZONE`).
+- Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis à jour pour refléter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
+- Suite locale : 11/11 Unit + 87/87 Feature OK.
+
+## [4.1.71] - 2026-05-20
+### Performance - Optimisation du dashboard manager
+
+- `api/app/Http/Controllers/Web/DashboardController.php` : ajout de `select()` sur les requetes `Employee` et `AttendanceLog` pour ne recuperer que les colonnes necessaires, evitant ainsi le chargement des colonnes JSONB lourdes et reduisant la consommation memoire lors de l'hydratation des modeles Eloquent.
+
+## [4.1.71] - 2026-04-24
+### DocKeeper - Alignement documentation Sprint 0
+
+- `PILOTAGE.md` : mise a jour du statut S0-2 en "termine" et correction du compte des contradictions (6 -> 7) pour correspondre a `docs/GESTION_PROJET/CORRECTIONS.md`.
+
+## [4.1.71] - 2026-04-23
+### Janitor: Archivage documentation historique et synchronisation
+
+- Docs : archivage de 8 fichiers marques `📦 HISTORIQUE` dans `PILOTAGE.md` vers `docs/notes/archive/` (`ORCHESTRATION_MAITRE.md`, `INDEX_CANONIQUE.md`, `CONTEXTE_SESSION_IA.md`, `JOURNAL_DE_BORD.md`, `BACKLOG_PHASE1_UNIQUE.md`, `CONTINUE.md`, `SUIVI_PROMPTS.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`)
+- Governance : mise a jour de `tools/check-governance.ps1` pour refleter les nouveaux emplacements des fichiers requis
+- Pilotage : mise a jour de `PILOTAGE.md` (bump version `4.1.71`, mise a jour de la table de statut documentaire, validation C-6)
+- API : bump `APP_VERSION` default de `4.1.70` a `4.1.71` dans `api/config/app.php`
+
+## [4.1.71] - 2026-04-24
+### Palette - Accessibilite EmptyState mobile
+
+- Mobile : Amelioration de l'accessibilite du widget `EmptyState` par l'ajout de labels `Semantics` regroupant le titre et la description, permettant aux lecteurs d'ecran d'annoncer clairement le contexte des listes vides.
+
+## [4.1.71] - 2026-04-24
+### Contractor - Alignement contrat API/mobile (auth/me)
+
+- API : Mise a jour de `AuthController@serializeEmployee` pour inclure le `matricule` a la racine et un objet `company` imbrique (id, name, language, timezone, currency) conformement au contrat MVP.
+- Mobile : Mise a jour du modele `Employee` pour inclure et parser le champ `matricule`.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la presence de `matricule` et de la structure `company` dans la reponse `/api/v1/auth/me`.
+
 ## [4.1.70] - 2026-04-23
+### Mobile - Page d'accueil (WelcomeScreen) avant la connexion
+
+- Mobile : nouvel ecran `/welcome` (`mobile/lib/features/auth/screens/welcome_screen.dart`) affiche par defaut aux utilisateurs non authentifies a la place du saut direct sur `/login`. L'ecran met en valeur les benefices employe-centres de l'app : pointage + total d'heures, parcours professionnel cumule (meme d'une entreprise a l'autre), coffre-fort de documents personnels (diplomes, contrats), et notifications des entreprises qui ont recrute l'employe. Deux CTA : "Se connecter" -> `/login` et "Creer un compte" -> `/register`
+- Mobile : nouvel ecran `/register` (`mobile/lib/features/auth/screens/register_screen.dart`) qui explique le flow d'onboarding par invitation employeur (3 etapes : invitation RH -> email -> activation) et propose une capture d'email "me prevenir a l'ouverture de l'inscription libre" (UX placeholder, non branche au backend). L'inscription publique libre reste hors scope Phase 1 (pas de route API `/auth/register`, l'onboarding passe toujours par `user_invitations`)
+- Mobile : `mobile/lib/app.dart` - redirection `GoRouter` mise a jour pour autoriser les routes publiques `/welcome`, `/login`, `/register` (les utilisateurs non authentifies sont maintenant rediriges vers `/welcome` au lieu de `/login`, les utilisateurs authentifies sont rediriges hors de ces routes publiques vers `/`)
+- Mobile : `mobile/lib/features/auth/screens/login_screen.dart` - ajout d'un bouton "retour" (IconButton en top-left) pour revenir sur `/welcome` depuis l'ecran de connexion
+- Tests : nouveau `mobile/test/features/auth/welcome_screen_test.dart` (smoke test : rendu de l'ecran, presence des CTA `Se connecter` / `Creer un compte`, presence de la marque `Leopardo RH`)
+- Aucun changement backend, aucune migration. Rollback = `git revert` de la PR
+
 ### Audit de coherence PILOTAGE / CORRECTIONS (aucun changement fonctionnel)
 
 - `PILOTAGE.md` : en-tete re-aligne sur `PROGRAM_VERSION = 4.1.70 | 2026-04-23` (precedemment `4.1.58 | 14 Mai 2025`, date erronee), date MAJ corrigee, bloc "CONVENTION DE VERSIONING" precise que la version doit rester synchrone entre CHANGELOG.md, `api/config/app.php` et `/api/v1/health`
@@ -1065,15 +1159,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
-
-
-
-
-
-
-
-
 
 
 

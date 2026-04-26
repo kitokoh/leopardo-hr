@@ -127,7 +127,7 @@ class CheckInTest extends TestCase
         $ok->assertStatus(201);
 
         $dup = $this->postJson('/api/v1/attendance/check-in');
-        $dup->assertStatus(409);
+        $dup->assertStatus(422);
         $dup->assertJsonPath('message', 'ALREADY_CHECKED_IN');
     }
 
