@@ -70,6 +70,10 @@ class KioskController extends Controller
             action: $validated['action'] ?? 'check_in',
         );
 
+        // REST convention: 201 Created for check_in, 200 OK for check_out
+        $action = $validated['action'] ?? 'check_in';
+        $statusCode = $action === 'check_in' ? 201 : 200;
+
         return new JsonResponse([
             'data' => [
                 'employee_id' => $log->employee_id,
@@ -79,7 +83,7 @@ class KioskController extends Controller
                 'method' => $log->method,
                 'status' => $log->status,
             ],
-        ], 201);
+        ], $statusCode);
     }
 
     public function roster(Request $request, string $deviceCode): JsonResponse

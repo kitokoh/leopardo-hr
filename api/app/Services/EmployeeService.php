@@ -85,6 +85,13 @@ class EmployeeService
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['manager_id']);
         }
 
+        // Defense-in-depth: 'archived' must never be set via the update endpoint.
+        // The HTTP layer already blocks it via UpdateEmployeeRequest validation,
+        // but we strip it here as a safety guard in case validation is bypassed.
+        if (isset($payload['status']) && $payload['status'] === 'archived') {
+            unset($payload['status']);
+        }
+
         if (array_key_exists('extra_data', $payload)) {
             $payload['extra_data'] = $this->normalizeExtraData($payload['extra_data'] ?? []);
         }

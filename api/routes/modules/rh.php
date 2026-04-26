@@ -46,6 +46,7 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
     Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
+    Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog');
 
     // Invitations (manager/RH)
     Route::get('/invitations', [InvitationController::class, 'index']);
@@ -59,6 +60,9 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
 });
 
 // Kiosque — auth par X-Kiosk-Token, pas sanctum
-Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
-Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
-Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
+// throttle:60,1 protege contre le brute-force du X-Kiosk-Token
+Route::middleware(['throttle:60,1'])->group(function (): void {
+    Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
+    Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
+    Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
+});

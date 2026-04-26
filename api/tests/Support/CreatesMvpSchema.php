@@ -152,6 +152,8 @@ trait CreatesMvpSchema
             $table->unsignedSmallInteger('late_minutes')->default(0);
             $table->decimal('gps_lat', 10, 8)->nullable();
             $table->decimal('gps_lng', 11, 8)->nullable();
+            $table->unsignedInteger('corrected_by')->nullable();
+            $table->text('correction_note')->nullable();
             $table->timestamps();
 
             $table->unique(['employee_id', 'date', 'session_number']);

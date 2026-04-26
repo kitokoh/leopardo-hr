@@ -6,6 +6,6 @@ class EmployeeNotActiveException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('EMPLOYEE_NOT_ACTIVE', 403, 'EMPLOYEE_NOT_ACTIVE');
+        parent::__construct('Votre compte employé n\'est pas actif.', 403, 'EMPLOYEE_NOT_ACTIVE');
     }
 }

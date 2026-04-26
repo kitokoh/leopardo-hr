@@ -203,6 +203,47 @@ class AttendanceService
         ]);
     }
 
+    public function recalculateLog(AttendanceLog $log): AttendanceLog
+    {
+        $company = app('current_company');
+        $schedule = $log->schedule_id ? $log->schedule : $log->employee?->schedule;
+
+        if ($log->schedule_id === null && $schedule) {
+            $log->schedule_id = $schedule->id;
+        }
+
+        $today = $log->date?->format('Y-m-d')
+            ?? $log->check_in?->copy()->setTimezone($company->timezone)->toDateString();
+
+        $log->hours_worked = null;
+        $log->overtime_hours = 0;
+        $log->late_minutes = 0;
+        $log->status = 'incomplete';
+
+        if ($log->check_in && $schedule && $today) {
+            $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
+            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
+            $tolerance = (int) $schedule->late_tolerance_minutes;
+            $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
+            $log->status = $log->late_minutes > 0 ? 'late' : 'ontime';
+        }
+
+        if ($log->check_in && $log->check_out) {
+            $seconds = $log->check_in->diffInSeconds($log->check_out);
+            $breakMinutes = (int) ($schedule?->break_minutes ?? 0);
+            $grossHours = $seconds / 3600;
+            $log->hours_worked = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
+
+            $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
+            $log->overtime_hours = max(0.0, round(((float) $log->hours_worked) - $threshold, 2));
+        }
+
+        $log->save();
+
+        return $log->fresh();
+    }
+
     private function resolveSchedule(Employee $employee): ?Schedule
     {
         return $employee->schedule;
