@@ -60,6 +60,7 @@ class Employee extends Authenticatable
         'emergency_contact_phone',
         'emergency_contact_relation',
         'extra_data',
+        'preferred_language',
     ];
 
     protected $hidden = [

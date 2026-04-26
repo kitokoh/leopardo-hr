@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\DomainException;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
@@ -23,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->api(prepend: [SetLocale::class]);
+
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
             'manager' => EnsureManagerMiddleware::class,
@@ -36,9 +39,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
+            $errorCode = $exception->errorCode();
+            $translatedMessage = __('errors.'.$errorCode);
+            $message = $translatedMessage !== 'errors.'.$errorCode
+                ? $translatedMessage
+                : $exception->getMessage();
+
             return new JsonResponse([
-                'error' => $exception->errorCode(),
-                'message' => $exception->getMessage(),
+                'error' => $errorCode,
+                'message' => $message,
             ], $exception->statusCode());
         });
 
@@ -49,7 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => 'VALIDATION_ERROR',
-                'message' => 'VALIDATION_ERROR',
+                'message' => __('errors.VALIDATION_ERROR'),
                 'errors' => $exception->errors(),
             ], 422);
         });
@@ -61,7 +70,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => 'RESOURCE_NOT_FOUND',
-                'message' => 'RESOURCE_NOT_FOUND',
+                'message' => __('errors.NOT_FOUND'),
             ], 404);
         });
 
@@ -72,7 +81,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => 'FORBIDDEN',
-                'message' => 'FORBIDDEN',
+                'message' => __('errors.FORBIDDEN'),
             ], 403);
         });
 
@@ -84,7 +93,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($exception->getStatusCode() === 404) {
                 return new JsonResponse([
                     'error' => 'RESOURCE_NOT_FOUND',
-                    'message' => 'RESOURCE_NOT_FOUND',
+                    'message' => __('errors.NOT_FOUND'),
                 ], 404);
             }
 

@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'receipt_title' => 'إيصال الراتب',
+    'invoice_title' => 'فاتورة',
+    'date' => 'التاريخ',
+    'employee' => 'الموظف',
+    'company' => 'الشركة',
+    'period' => 'الفترة',
+    'description' => 'الوصف',
+    'quantity' => 'الكمية',
+    'unit_price' => 'سعر الوحدة',
+    'total' => 'المجموع',
+    'subtotal' => 'المجموع الفرعي',
+    'tax' => 'الضريبة',
+    'grand_total' => 'المجموع الكلي',
+    'payment_method' => 'طريقة الدفع',
+    'signature' => 'التوقيع',
+    'generated_on' => 'تم الإنشاء في :date',
+    'page' => 'صفحة :current / :total',
+    'hours_worked' => 'ساعات العمل',
+    'hourly_rate' => 'أجر الساعة',
+    'overtime_hours' => 'ساعات إضافية',
+    'base_salary' => 'الراتب الأساسي',
+    'deductions' => 'الاستقطاعات',
+    'net_pay' => 'صافي المستحق',
+    'legal_notice' => 'هذا المستند إعلامي ولا يشكل كشف راتب رسمي.',
+];

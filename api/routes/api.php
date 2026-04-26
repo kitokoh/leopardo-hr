@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
+        Route::patch('/auth/language', [AuthController::class, 'updateLanguage']);
         Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
