@@ -41,6 +41,7 @@ class DemoCompanySeeder extends Seeder
 
         $this->withPublicSearchPath(function (): void {
             DB::statement('CREATE SCHEMA IF NOT EXISTS '.self::SHARED_SCHEMA);
+            $this->ensureSharedCompaniesCanReuseSchema();
         });
 
         $plans = $this->planMap();
@@ -204,6 +205,23 @@ class DemoCompanySeeder extends Seeder
             $this->seedAuditLogs($companyId, $managerIds, $employeeIds);
             $this->seedCompanySettings();
         });
+    }
+
+    private function ensureSharedCompaniesCanReuseSchema(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        DB::unprepared(<<<'SQL'
+ALTER TABLE public.companies DROP CONSTRAINT IF EXISTS companies_schema_name_unique;
+DROP INDEX IF EXISTS public.companies_schema_name_unique;
+CREATE UNIQUE INDEX IF NOT EXISTS companies_schema_name_unique_schema_mode
+    ON public.companies (schema_name)
+    WHERE tenancy_type = 'schema';
+CREATE INDEX IF NOT EXISTS companies_schema_name_index
+    ON public.companies (schema_name);
+SQL);
     }
 
     private function planMap(): Collection
