@@ -11,6 +11,9 @@ bon-fixed/
 api/.env
 api/.env.backup
 mobile/.env
+api/google-services.json
+mobile/android/app/google-services.json
+google-services.json
 
 # Dépendances (générées à l'init)
 api/vendor/

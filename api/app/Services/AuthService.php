@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
+use App\Exceptions\AccountLockedException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\Employee;
@@ -44,7 +45,17 @@ class AuthService
             $employee?->syncUserLookup();
         }
 
+        if ($employee && $employee->locked_until && $employee->locked_until->isFuture()) {
+            throw new AccountLockedException($employee->locked_until);
+        }
+
         if (! $employee || ! Hash::check($password, $employee->password_hash)) {
+            if ($employee) {
+                $employee->increment('failed_login_attempts');
+                if ($employee->failed_login_attempts >= 5) {
+                    $employee->update(['locked_until' => now()->addMinutes(15)]);
+                }
+            }
             throw new InvalidCredentialsException;
         }
 
@@ -61,7 +72,11 @@ class AuthService
             throw new EmployeeNotActiveException;
         }
 
-        $employee->forceFill(['last_login_at' => now()])->saveQuietly();
+        $employee->forceFill([
+            'last_login_at' => now(),
+            'failed_login_attempts' => 0,
+            'locked_until' => null,
+        ])->saveQuietly();
 
         $tokenName = $deviceName ?: 'api';
         $expirationMinutes = (int) config('sanctum.expiration', 0);

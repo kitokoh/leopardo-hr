@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceTodayRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckOutRequest;
+use App\Http\Resources\V1\AttendanceLogResource;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Services\AttendanceService;
@@ -29,9 +30,9 @@ class AttendanceController extends Controller
             gpsLng: $request->validated('gps_lng'),
         );
 
-        return new JsonResponse([
-            'data' => $this->serializeLog($log),
-        ], 201);
+        return (new AttendanceLogResource($log))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function checkOut(CheckOutRequest $request): JsonResponse
@@ -47,9 +48,7 @@ class AttendanceController extends Controller
             gpsLng: $request->validated('gps_lng'),
         );
 
-        return new JsonResponse([
-            'data' => $this->serializeLog($log),
-        ]);
+        return (new AttendanceLogResource($log))->response();
     }
 
     public function today(AttendanceTodayRequest $request): JsonResponse
@@ -178,33 +177,8 @@ class AttendanceController extends Controller
         $perPage = $validated['per_page'] ?? 20;
 
         $paginator = $query->paginate($perPage);
-        $data = collect($paginator->items())->map(fn (AttendanceLog $log) => $this->serializeLog($log))->values();
 
-        return new JsonResponse([
-            'data' => $data,
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-            ],
-        ]);
-    }
-
-    private function serializeLog(AttendanceLog $log): array
-    {
-        return [
-            'id' => $log->id,
-            'employee_id' => $log->employee_id,
-            'date' => $log->date?->format('Y-m-d'),
-            'check_in' => $log->check_in?->toIso8601String(),
-            'check_out' => $log->check_out?->toIso8601String(),
-            'method' => $log->method,
-            'source_device_code' => $log->source_device_code,
-            'hours_worked' => $log->hours_worked,
-            'overtime_hours' => $log->overtime_hours,
-            'status' => $log->status,
-            'late_minutes' => $log->late_minutes,
-        ];
+        return AttendanceLogResource::collection($paginator)->response();
     }
 
     private function serializeToday(Employee $employee, ?AttendanceLog $log, ?string $timezone = null): array

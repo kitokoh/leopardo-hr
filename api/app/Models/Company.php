@@ -41,6 +41,8 @@ class Company extends Model
     ];
 
     protected $casts = [
+        'subscription_start' => 'date',
+        'subscription_end' => 'date',
         'features' => 'array',
         'metadata' => 'array',
     ];
@@ -129,5 +131,23 @@ class Company extends Model
     public function attendanceKiosks(): HasMany
     {
         return $this->hasMany(AttendanceKiosk::class, 'company_id');
+    }
+
+    /**
+     * Genere un search_path PostgreSQL securise pour le tenant.
+     * Previent les injections SQL en echappant les noms de schema.
+     */
+    public function getSafeSearchPath(): string
+    {
+        $schema = $this->schema_name ?: 'shared_tenants';
+
+        // Nettoyage : autorise uniquement alphanumeric et underscores
+        $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $schema);
+
+        if (empty($schema)) {
+            $schema = 'shared_tenants';
+        }
+
+        return "\"{$schema}\",public";
     }
 }
