@@ -19,6 +19,7 @@
 - API : `api/database/seeders/DemoCompanySeeder.php` cree desormais un jeu de donnees multi-company beaucoup plus riche pour les tests manuels et E2E : managers `principal` / `rh` / `dept` / `comptable` / `superviseur`, employes `active` / `suspended` / `archived`, plusieurs types d'absences, historiques de conges, paies et exports, projets, taches, commentaires, evaluations, notifications et audit logs.
 - API : `api/database/seeders/DemoCompanySeeder.php` aligne maintenant toutes les insertions groupées dans `absences` sur le meme jeu de colonnes SQL, afin d'eviter l'erreur PostgreSQL `VALUES lists must all be the same length` pendant le seed de demonstration sur Render.
 - API : `api/database/seeders/DemoCompanySeeder.php` cible maintenant explicitement `public.*` et `shared_tenants.*` pour ses lectures/ecritures critiques, afin d'eviter qu'une bascule ou une restauration imparfaite du `search_path` ne fasse echouer le seed avec des erreurs du type `relation "employees" does not exist`.
+- API : `api/database/seeders/DemoCompanySeeder.php` force aussi desormais, au demarrage, la suppression de l'ancienne unicite globale sur `public.companies.schema_name` et la recreation de l'index unique partiel reserve au mode `schema`, afin que plusieurs societes de demo en `shared_tenants` puissent etre recreees meme si un ancien etat de contrainte persiste encore sur Render.
 - Deploy : `api/docker-entrypoint.sh` accepte maintenant un reset complet one-shot de la base de test via `RESET_TEST_DB_ONCE=true`, memorise par un verrou `public.seed_locks` (configurable via `RESET_TEST_DB_LOCK_KEY`) pour qu'un redeploiement suivant ne repete pas le wipe.
 
 ### Seeder - Stabilisation demo multi-company
@@ -1158,7 +1159,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 
