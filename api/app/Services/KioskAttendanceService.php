@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AttendanceKiosk;
 use App\Models\AttendanceLog;
+use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,10 @@ class KioskAttendanceService
 
     public function punch(AttendanceKiosk $kiosk, string $identifier, string $action = 'check_in'): AttendanceLog
     {
-        $searchPath = $kiosk->company?->tenancy_type === 'schema'
-            ? $kiosk->company->schema_name.',public'
-            : 'shared_tenants,public';
-        DB::statement('SET search_path TO '.$searchPath);
+        $schema = ($kiosk->company?->tenancy_type === 'schema' && $kiosk->company->schema_name)
+            ? $kiosk->company->schema_name
+            : 'shared_tenants';
+        DB::statement('SET search_path TO '.Company::getSafeSearchPath([$schema, 'public']));
 
         $employee = Employee::query()
             ->where('company_id', $kiosk->company_id)
@@ -50,10 +51,10 @@ class KioskAttendanceService
 
     public function syncPunches(AttendanceKiosk $kiosk, array $events): array
     {
-        $searchPath = $kiosk->company?->tenancy_type === 'schema'
-            ? $kiosk->company->schema_name.',public'
-            : 'shared_tenants,public';
-        DB::statement('SET search_path TO '.$searchPath);
+        $schema = ($kiosk->company?->tenancy_type === 'schema' && $kiosk->company->schema_name)
+            ? $kiosk->company->schema_name
+            : 'shared_tenants';
+        DB::statement('SET search_path TO '.Company::getSafeSearchPath([$schema, 'public']));
 
         $processed = [];
 

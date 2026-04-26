@@ -148,7 +148,7 @@ class KioskController extends Controller
 
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.Company::getSafeSearchPath(['shared_tenants', 'public']));
 
         $kiosk = AttendanceKiosk::query()
             ->where('device_code', strtoupper($deviceCode))
@@ -163,19 +163,11 @@ class KioskController extends Controller
 
     private function setTenantSearchPath(?Company $company): void
     {
-        if (! $company) {
-            DB::statement('SET search_path TO shared_tenants,public');
+        $schema = ($company?->tenancy_type === 'schema' && $company->schema_name)
+            ? $company->schema_name
+            : 'shared_tenants';
 
-            return;
-        }
-
-        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->schema_name.',public');
-
-            return;
-        }
-
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.Company::getSafeSearchPath([$schema, 'public']));
     }
 
     private function serializeKiosk(AttendanceKiosk $kiosk): array

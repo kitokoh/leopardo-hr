@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Company;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -64,9 +65,8 @@ class TenantMiddleware
         app()->instance('current_company', $company);
 
         if (DB::getDriverName() === 'pgsql') {
-            $rawSchema = $company->schema_name ?: 'shared_tenants';
-            $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $rawSchema) ?: 'shared_tenants';
-            DB::statement('SET search_path TO "'.$schema.'",public');
+            $schema = $company->schema_name ?: 'shared_tenants';
+            DB::statement('SET search_path TO '.Company::getSafeSearchPath([$schema, 'public']));
         }
 
         return $next($request);

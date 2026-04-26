@@ -87,6 +87,22 @@ class Company extends Model
         $this->features = $features;
     }
 
+    /**
+     * Genere une chaine search_path securisee pour PostgreSQL (APV S.02).
+     * Les identifiants dans SET search_path ne peuvent pas etre parametres.
+     * Cette methode echappe les guillemets doubles pour prevenir les injections.
+     */
+    public static function getSafeSearchPath(string|array $schemas): string
+    {
+        $schemas = is_array($schemas) ? $schemas : [$schemas];
+
+        $escapedSchemas = array_map(function ($schema) {
+            return '"'.str_replace('"', '""', $schema).'"';
+        }, $schemas);
+
+        return implode(',', $escapedSchemas);
+    }
+
     protected static function booted(): void
     {
         static::saved(function (self $company): void {
@@ -104,13 +120,15 @@ class Company extends Model
             // pour que la revocation des tokens (Sanctum) voie les relations.
             $schema = $company->schema_name ?: 'shared_tenants';
             $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
-            DB::statement("SET search_path TO {$schema},public");
+            DB::statement('SET search_path TO '.self::getSafeSearchPath([$schema, 'public']));
             try {
                 Employee::withoutGlobalScopes()
                     ->where('company_id', $company->id)
                     ->get()
                     ->each(fn (Employee $employee) => $employee->tokens()->delete());
             } finally {
+                // $previous est deja formatee par PostgreSQL (e.g. '"$user", public'),
+                // on la restaure telle quelle sans la re-echapper.
                 DB::statement("SET search_path TO {$previous}");
             }
         });

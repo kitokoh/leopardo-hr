@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.71 | 2026-04-24
+# PROGRAM_VERSION = 4.1.73 | 2026-05-22
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -46,9 +46,9 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-04-24
+Date MAJ       : 2026-05-22
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/)
-Code           : ✅ MVP-01 à MVP-06 mergés sur `main` (voir CHANGELOG.md jusqu'à 4.1.71)
+Code           : ✅ MVP-01 à MVP-06 mergés sur `main` (voir CHANGELOG.md jusqu'à 4.1.73)
 Phase active   : Phase 1 APV Fondations (voir docs/ROADMAP.md)
                  Note: la section "SCOPE MVP VERROUILLÉ" plus bas reflète
                  le scope initial figé, pas l'état actuel du code.

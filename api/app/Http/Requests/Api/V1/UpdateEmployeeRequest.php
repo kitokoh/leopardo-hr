@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -101,12 +102,10 @@ class UpdateEmployeeRequest extends FormRequest
             return;
         }
 
-        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->schema_name.',public');
+        $schema = ($company->tenancy_type === 'schema' && $company->schema_name)
+            ? $company->schema_name
+            : 'shared_tenants';
 
-            return;
-        }
-
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.Company::getSafeSearchPath([$schema, 'public']));
     }
 }

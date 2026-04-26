@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-05-22
+
+### Sécurité - Protection contre l'injection SQL search_path
+
+- API : Implémentation de `Company::getSafeSearchPath()` pour échapper de manière sécurisée les noms de schémas PostgreSQL dans les instructions `SET search_path`.
+- API : Refactorisation de `TenantMiddleware`, `StoreEmployeeRequest`, `UpdateEmployeeRequest`, `UserInvitationService`, `KioskAttendanceService`, `CompanyProvisioningService` et plusieurs contrôleurs (`KioskController`, `BiometricAdminController`, `PlatformCompanyController`) pour utiliser le helper sécurisé.
+- Sécurité : Suppression des concaténations de chaînes non sécurisées et des nettoyages par expressions régulières insuffisants sur les identifiants de schéma.
+- Tests : Ajout de `api/tests/Unit/CompanySearchPathTest.php` pour valider l'échappement des identifiants et la prévention des injections.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations
