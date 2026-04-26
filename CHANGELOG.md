@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-05-27
+
+### Web - Initialisation de l'application Next.js et site vitrine
+
+- Web : Initialisation d'un projet Next.js 16 dans le dossier `web/` avec TypeScript, Tailwind CSS (v4) et App Router.
+- Web : Mise en place d'un site vitrine (landing page) avec sections Hero, Fonctionnalités et Tarifs conformément à la stratégie marketing.
+- Web : Implémentation d'un squelette d'authentification (page de connexion) et d'un tableau de bord (layout + page d'accueil) pour les futurs développements.
+- Docs : Mise à jour de `ARBORESCENCE_PROJET_COMPLET.md`, `README.md` et `PILOTAGE.md` pour intégrer la nouvelle application web dans l'architecture du monorepo.
+- Pilotage : Transition officielle du frontend web de Blade/Alpine vers Next.js pour le dashboard et la vitrine.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations

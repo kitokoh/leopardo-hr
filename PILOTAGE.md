@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.71 | 2026-04-24
+# PROGRAM_VERSION = 4.1.73 | 2026-05-27
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.71   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.73   → Version globale du projet/pilotage (ce fichier fait foi)
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
                                 - api/config/app.php → 'version'
@@ -98,7 +98,7 @@ Stack MVP :
   Cache      : File driver (pas Redis)
   Queue      : Sync (pas Redis/Horizon)
   Auth       : Sanctum (tokens opaques)
-  Frontend   : Blade + Alpine.js + Tailwind CSS (pas Vue.js/Inertia)
+  Frontend   : Next.js + Tailwind CSS (App Router)
   Mobile     : Flutter (3 écrans)
   PDF        : DomPDF (synchrone)
   Hébergement: Render (Web Service) + Neon.tech (PostgreSQL)
