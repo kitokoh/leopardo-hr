@@ -259,7 +259,46 @@ trait CreatesMvpSchema
             $table->timestampTz('created_at')->useCurrent();
         });
 
-        Schema::create($this->tenantTable('personal_access_tokens'), function (Blueprint $table): void {
+        Schema::create($this->tenantTable('absence_types'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->string('name', 100);
+            $table->string('code', 30);
+            $table->boolean('is_paid')->default(true);
+            $table->boolean('deducts_leave')->default(true);
+            $table->boolean('requires_proof')->default(false);
+            $table->unsignedInteger('max_days_once')->nullable();
+            $table->timestampTz('created_at')->nullable();
+        });
+
+        Schema::create($this->tenantTable('absences'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('absence_type_id');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->unsignedSmallInteger('days_count')->default(1);
+            $table->string('status', 20)->default('pending');
+            $table->text('reason')->nullable();
+            $table->string('proof_path', 255)->nullable();
+            $table->unsignedInteger('approved_by')->nullable();
+            $table->text('rejected_reason')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('leave_balance_logs'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->decimal('delta', 8, 2);
+            $table->string('reason', 60);
+            $table->unsignedInteger('reference_id')->default(0);
+            $table->decimal('balance_after', 8, 2);
+            $table->timestampTz('created_at')->nullable();
+        });
+
+        Schema::create('personal_access_tokens', function (Blueprint $table): void {
             $table->id();
             $table->morphs('tokenable');
             $table->string('name');
@@ -270,76 +309,39 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('CREATE TABLE IF NOT EXISTS public.user_lookups (
-                email varchar(150) primary key,
-                company_id uuid not null,
-                schema_name varchar(63) not null,
-                employee_id integer not null,
-                role varchar(20) not null
-            )');
-            DB::statement('CREATE TABLE IF NOT EXISTS public.super_admins (
-                id serial primary key,
-                name varchar(100) not null,
-                email varchar(150) not null unique,
-                password_hash varchar(255) not null,
-                two_fa_secret varchar(32) null,
-                last_login_at timestamp with time zone null,
-                created_at timestamp with time zone null
-            )');
-            DB::statement('CREATE TABLE IF NOT EXISTS public.user_invitations (
-                id uuid primary key,
-                company_id uuid not null,
-                schema_name varchar(63) not null,
-                employee_id integer not null,
-                email varchar(150) not null,
-                role varchar(20) not null,
-                manager_role varchar(30) null,
-                invited_by_type varchar(20) not null,
-                invited_by_email varchar(150) not null,
-                token_hash varchar(64) not null unique,
-                expires_at timestamp with time zone not null,
-                accepted_at timestamp with time zone null,
-                last_sent_at timestamp with time zone null,
-                metadata jsonb null,
-                created_at timestamp with time zone null,
-                updated_at timestamp with time zone null
-            )');
-        } else {
-            Schema::create('user_lookups', function (Blueprint $table): void {
-                $table->string('email', 150)->primary();
-                $table->uuid('company_id');
-                $table->string('schema_name', 63);
-                $table->unsignedInteger('employee_id');
-                $table->string('role', 20);
-            });
-            Schema::create('super_admins', function (Blueprint $table): void {
-                $table->increments('id');
-                $table->string('name', 100);
-                $table->string('email', 150)->unique();
-                $table->string('password_hash', 255);
-                $table->string('two_fa_secret', 32)->nullable();
-                $table->timestampTz('last_login_at')->nullable();
-                $table->timestampTz('created_at')->nullable();
-            });
-            Schema::create('user_invitations', function (Blueprint $table): void {
-                $table->uuid('id')->primary();
-                $table->uuid('company_id');
-                $table->string('schema_name', 63);
-                $table->unsignedInteger('employee_id');
-                $table->string('email', 150);
-                $table->string('role', 20);
-                $table->string('manager_role', 30)->nullable();
-                $table->string('invited_by_type', 20);
-                $table->string('invited_by_email', 150);
-                $table->string('token_hash', 64)->unique();
-                $table->timestampTz('expires_at');
-                $table->timestampTz('accepted_at')->nullable();
-                $table->timestampTz('last_sent_at')->nullable();
-                $table->json('metadata')->nullable();
-                $table->timestamps();
-            });
-        }
+        Schema::create($this->publicTable('user_lookups'), function (Blueprint $table): void {
+            $table->string('email', 150)->primary();
+            $table->uuid('company_id');
+            $table->string('schema_name', 63);
+            $table->unsignedInteger('employee_id');
+            $table->string('role', 20);
+        });
+        Schema::create($this->publicTable('super_admins'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('name', 100);
+            $table->string('email', 150)->unique();
+            $table->string('password_hash', 255);
+            $table->string('two_fa_secret', 32)->nullable();
+            $table->timestampTz('last_login_at')->nullable();
+            $table->timestampTz('created_at')->nullable();
+        });
+        Schema::create($this->publicTable('user_invitations'), function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->uuid('company_id');
+            $table->string('schema_name', 63);
+            $table->unsignedInteger('employee_id');
+            $table->string('email', 150);
+            $table->string('role', 20);
+            $table->string('manager_role', 30)->nullable();
+            $table->string('invited_by_type', 20);
+            $table->string('invited_by_email', 150);
+            $table->string('token_hash', 64)->unique();
+            $table->timestampTz('expires_at');
+            $table->timestampTz('accepted_at')->nullable();
+            $table->timestampTz('last_sent_at')->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+        });
 
         $this->restoreDefaultSearchPath();
     }
@@ -361,6 +363,13 @@ trait CreatesMvpSchema
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
     }
 
+    private function publicTable(string $table): string
+    {
+        return DB::getDriverName() === 'pgsql'
+            ? 'public.'.$table
+            : $table;
+    }
+
     private function tenantTable(string $table): string
     {
         return DB::getDriverName() === 'pgsql'
@@ -378,11 +387,16 @@ trait CreatesMvpSchema
             DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
             DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.personal_access_tokens CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.attendance_kiosks CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.biometric_enrollment_requests CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_logs CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_permissions CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_tokens CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.cameras CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.leave_balance_logs CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.absences CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.absence_types CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.schedules CASCADE');
         }
@@ -400,6 +414,9 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "cameras"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "absence_types"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "employees"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "schedules"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "companies"'.$cascade);
