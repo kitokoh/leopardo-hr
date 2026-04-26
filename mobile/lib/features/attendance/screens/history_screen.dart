@@ -1,3 +1,4 @@
+import 'package:leopardo_rh/core/widgets/empty_state.dart';
 import 'package:leopardo_rh/core/widgets/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +86,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ref.read(authProvider.notifier).logout();
             });
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: Semantics(
+                label: 'Redirection vers la connexion...',
+                child: const CircularProgressIndicator(),
+              ),
+            );
           }
 
           if (errorText.contains('403') || errorText.contains('FORBIDDEN')) {
@@ -118,7 +124,17 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         },
         data: (logs) {
           if (logs.isEmpty) {
-            return const Center(child: Text('Aucun historique pour ce mois.'));
+            return ListView(
+              children: const [
+                SizedBox(height: 80),
+                EmptyState(
+                  icon: Icons.history,
+                  title: 'Aucun historique',
+                  description:
+                      'Rien à signaler pour ce mois-ci. Vos futurs pointages apparaitront ici.',
+                ),
+              ],
+            );
           }
           final totalJours = logs.length;
           final totalHeures = logs.fold<double>(0, (sum, log) => sum + (log.workedHours ?? 0));
@@ -140,9 +156,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   itemCount: logs.length + (_isLoadingMore ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == logs.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                          child: Semantics(
+                            label: 'Chargement de plus de pointages...',
+                            child: const CircularProgressIndicator(),
+                          ),
+                        ),
                       );
                     }
                     final log = logs[index];

@@ -22,7 +22,7 @@ class PlatformCompanyController extends Controller
 
     public function index(Request $request): View|JsonResponse
     {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         $companies = Company::query()->latest()->limit(50)->get();
 
@@ -39,7 +39,7 @@ class PlatformCompanyController extends Controller
 
     public function create(): View
     {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         return view('platform.companies.create', [
             'plans' => DB::table('plans')->orderBy('id')->get(),
@@ -48,7 +48,7 @@ class PlatformCompanyController extends Controller
 
     public function store(Request $request): RedirectResponse|JsonResponse
     {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -107,7 +107,7 @@ class PlatformCompanyController extends Controller
      */
     public function edit(string $companyId): View
     {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         $company = Company::query()->findOrFail($companyId);
 
@@ -128,7 +128,7 @@ class PlatformCompanyController extends Controller
      */
     public function update(Request $request, string $companyId): RedirectResponse|JsonResponse
     {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         $company = Company::query()->findOrFail($companyId);
 
@@ -183,11 +183,11 @@ class PlatformCompanyController extends Controller
         string $companyId,
         \App\Services\UserInvitationService $invitationService,
     ): RedirectResponse {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         $company = Company::query()->findOrFail($companyId);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
         $managerEmployee = \App\Models\Employee::query()
             ->withoutGlobalScopes()
             ->where('company_id', $company->id)
@@ -196,14 +196,14 @@ class PlatformCompanyController extends Controller
             ->first();
 
         if ($managerEmployee === null) {
-            DB::statement('SET search_path TO public');
+            DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
             return back()->withErrors(['resend' => 'Aucun manager principal trouve pour cette societe.']);
         }
 
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_web') ?? $request->user('super_admin_api');
 
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
         $invitationService->createAndSend(
             company: $company,
             employee: $managerEmployee,

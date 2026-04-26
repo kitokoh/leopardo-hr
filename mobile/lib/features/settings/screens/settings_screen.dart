@@ -196,7 +196,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             FilledButton(
               onPressed: _profileSaving ? null : _saveProfile,
-              child: Text(_profileSaving ? 'Enregistrement...' : 'Enregistrer le profil'),
+              child: _profileSaving
+                  ? Semantics(
+                      label: 'Enregistrement en cours...',
+                      child: const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  : const Text('Enregistrer le profil'),
             ),
           ],
         ),
@@ -261,7 +273,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             FilledButton(
               onPressed: _passwordSaving ? null : _savePassword,
-              child: Text(_passwordSaving ? 'Mise a jour...' : 'Mettre a jour le mot de passe'),
+              child: _passwordSaving
+                  ? Semantics(
+                      label: 'Mise à jour en cours...',
+                      child: const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  : const Text('Mettre a jour le mot de passe'),
             ),
           ],
         ),
@@ -385,12 +409,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 16),
           FilledButton(
             onPressed: _preferencesSaving ? null : _savePreferences,
-            child: Text(_preferencesSaving ? 'Enregistrement...' : 'Enregistrer la preparation'),
+            child: _preferencesSaving
+                ? Semantics(
+                    label: 'Enregistrement en cours...',
+                    child: const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : const Text('Enregistrer la preparation'),
           ),
           const SizedBox(height: 12),
           FilledButton.tonal(
             onPressed: _biometricSubmitting ? null : _submitBiometricEnrollment,
-            child: Text(_biometricSubmitting ? 'Soumission...' : 'Soumettre au manager / RH'),
+            child: _biometricSubmitting
+                ? Semantics(
+                    label: 'Soumission en cours...',
+                    child: const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  )
+                : const Text('Soumettre au manager / RH'),
           ),
           const SizedBox(height: 8),
           const Text(

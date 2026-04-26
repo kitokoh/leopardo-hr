@@ -67,11 +67,11 @@ class UserInvitationService
         abort_if($invitation->expires_at?->isPast(), 410, 'INVITATION_EXPIRED');
 
         $company = Company::query()->findOrFail($invitation->company_id);
-        $searchPath = $company->tenancy_type === 'schema'
-            ? sprintf('"%s",public', str_replace('"', '""', $company->schema_name))
-            : 'shared_tenants,public';
+        $schema = $company->tenancy_type === 'schema'
+            ? $company->schema_name
+            : 'shared_tenants';
 
-        DB::statement("SET search_path TO {$searchPath}");
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath($schema ?: 'shared_tenants'));
 
         /** @var Employee $employee */
         $employee = Employee::query()->findOrFail($invitation->employee_id);
@@ -80,7 +80,7 @@ class UserInvitationService
         $employee->invitation_accepted_at = now();
         $employee->save();
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
 
         $invitation->accepted_at = now();
         $invitation->save();

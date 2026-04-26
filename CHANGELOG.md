@@ -2,6 +2,28 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-05-22
+
+### Sécurité - Protection contre l'injection SQL search_path
+
+- API : Centralisation de la sécurisation du `search_path` PostgreSQL via `Company::getSafeSearchPath()`. Les noms de schémas sont désormais correctement échappés (double-quotes PostgreSQL), empêchant toute injection SQL lors des bascules de tenant.
+- API : Refactorisation de `TenantMiddleware`, `KioskController`, `StoreEmployeeRequest`, `UpdateEmployeeRequest` et des services associés pour utiliser le helper sécurisé.
+- Tests : Ajout de `api/tests/Unit/CompanySearchPathTest.php` pour valider l'échappement des noms de schémas malveillants.
+
+### Performance - Optimisation de l'EstimationService
+
+- API : `api/app/Services/EstimationService.php` : ajout de `select()` sur les requêtes `AttendanceLog` dans `dailySummary` et `quickEstimate` pour éviter l'over-fetching des colonnes JSONB.
+- API : `api/app/Services/EstimationService.php` : pré-résolution des taux de l'employé avant la boucle dans `quickEstimate` pour réduire les calculs redondants.
+- API : `api/app/Services/EstimationService.php` : ajout d'un cache statique au niveau de la requête pour les taux de déduction par pays afin d'éviter les requêtes répétitives sur `public.hr_model_templates`.
+- API : `api/app/Services/EstimationService.php` : correction d'un typo dans `hrModelTemplatesTableExists` qui vérifiait la mauvaise table PostgreSQL.
+
+### Palette - Accessibilite et Feedback Mobile
+
+- Mobile : Amelioration de l'accessibilite et du feedback visuel dans `SettingsScreen` par l'ajout d'indicateurs de chargement et de labels `Semantics` sur les boutons d'action (profil, mot de passe, biometrie).
+- Mobile : Renforcement de l'accessibilite globale par l'ajout de labels `Semantics` sur les indicateurs de chargement dans `TeamScreen` et `HistoryScreen`.
+- Mobile : Optimisation des lecteurs d'ecran dans `TeamScreen` par l'exclusion des elements decoratifs (initiales) de la navigation semantique.
+- Mobile : Amelioration de l'UX de l'historique de pointage par l'ajout d'un `EmptyState` illustre et scrollable en cas de liste vide.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations

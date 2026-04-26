@@ -19,7 +19,7 @@ class KioskController extends Controller
 
     public function show(string $deviceCode): View
     {
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
 
         $kiosk = AttendanceKiosk::query()
             ->where('device_code', strtoupper($deviceCode))
@@ -41,7 +41,7 @@ class KioskController extends Controller
             'action' => ['nullable', 'in:check_in,check_out'],
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
 
         $kiosk = AttendanceKiosk::query()
             ->where('device_code', strtoupper($deviceCode))
@@ -65,17 +65,17 @@ class KioskController extends Controller
     private function setTenantSearchPath(?Company $company): void
     {
         if (! $company) {
-            DB::statement('SET search_path TO shared_tenants,public');
+            DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
 
             return;
         }
 
         if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->schema_name.',public');
+            DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath($company->schema_name));
 
             return;
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
     }
 }

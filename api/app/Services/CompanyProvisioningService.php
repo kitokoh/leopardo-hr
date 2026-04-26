@@ -19,7 +19,7 @@ class CompanyProvisioningService
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
-        DB::statement('SET search_path TO public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
         $result = DB::transaction(function () use ($payload): array {
             $plan = DB::table('plans')->where('id', $payload['plan_id'])->first();
@@ -48,7 +48,7 @@ class CompanyProvisioningService
             ]);
 
             DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
-            DB::statement('SET search_path TO shared_tenants,public');
+            DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
 
             /** @var Employee $manager */
             $manager = Employee::query()->create([
@@ -72,7 +72,7 @@ class CompanyProvisioningService
                 ],
             ]);
 
-            DB::statement('SET search_path TO public');
+            DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('public'));
 
             return [
                 'company' => $company,
@@ -87,7 +87,7 @@ class CompanyProvisioningService
             invitedByEmail: $superAdmin->email,
         );
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath('shared_tenants'));
 
         return $result;
     }

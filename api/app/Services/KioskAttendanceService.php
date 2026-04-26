@@ -16,10 +16,10 @@ class KioskAttendanceService
 
     public function punch(AttendanceKiosk $kiosk, string $identifier, string $action = 'check_in'): AttendanceLog
     {
-        $searchPath = $kiosk->company?->tenancy_type === 'schema'
-            ? $kiosk->company->schema_name.',public'
-            : 'shared_tenants,public';
-        DB::statement('SET search_path TO '.$searchPath);
+        $schema = $kiosk->company?->tenancy_type === 'schema'
+            ? $kiosk->company->schema_name
+            : 'shared_tenants';
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath($schema ?: 'shared_tenants'));
 
         $employee = Employee::query()
             ->where('company_id', $kiosk->company_id)
@@ -50,10 +50,10 @@ class KioskAttendanceService
 
     public function syncPunches(AttendanceKiosk $kiosk, array $events): array
     {
-        $searchPath = $kiosk->company?->tenancy_type === 'schema'
-            ? $kiosk->company->schema_name.',public'
-            : 'shared_tenants,public';
-        DB::statement('SET search_path TO '.$searchPath);
+        $schema = $kiosk->company?->tenancy_type === 'schema'
+            ? $kiosk->company->schema_name
+            : 'shared_tenants';
+        DB::statement('SET search_path TO '.\App\Models\Company::getSafeSearchPath($schema ?: 'shared_tenants'));
 
         $processed = [];
 

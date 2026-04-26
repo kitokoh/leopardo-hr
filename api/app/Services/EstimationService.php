@@ -27,6 +27,7 @@ class EstimationService
         $dateKey = $dateLocal->toDateString();
 
         $log = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
             ->where('employee_id', $employee->id)
             ->where('date', $dateKey)
             ->where('session_number', 1)
@@ -44,6 +45,7 @@ class EstimationService
         $toLocal = Carbon::createFromFormat('Y-m-d', $to, $company->timezone)->startOfDay();
 
         $logs = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
             ->where('employee_id', $employee->id)
             ->where('date', '>=', $fromLocal->toDateString())
             ->where('date', '<=', $toLocal->toDateString())
@@ -59,12 +61,19 @@ class EstimationService
         $gross = 0.0;
         $breakdown = [];
 
+        // Pre-resolve rates to avoid redundant calculations in the loop
+        [$baseHourlyRate, $overtimeRate] = $this->resolveRates($employee);
+
         foreach ($logs as $log) {
             if (! $log->check_in || ! $log->check_out) {
                 continue;
             }
 
-            $daySummary = $this->dailySummaryFromLog($employee, $log, $log->date->format('Y-m-d'));
+            $daySummary = $this->dailySummaryFromLog($employee, $log, $log->date->format('Y-m-d'), [
+                'baseHourlyRate' => $baseHourlyRate,
+                'overtimeRate' => $overtimeRate,
+            ]);
+
             $daysPresent++;
             $totalHours += (float) $daySummary['hours_worked'];
             $totalOvertime += (float) $daySummary['overtime_hours'];
@@ -107,7 +116,7 @@ class EstimationService
         ];
     }
 
-    public function dailySummaryFromLog(Employee $employee, ?AttendanceLog $log, ?string $date = null): array
+    public function dailySummaryFromLog(Employee $employee, ?AttendanceLog $log, ?string $date = null, array $resolvedRates = []): array
     {
         $company = app('current_company');
         $dateKey = $date ?: now('UTC')->setTimezone($company->timezone)->toDateString();
@@ -143,7 +152,12 @@ class EstimationService
             ? (float) $log->overtime_hours
             : max(0.0, round($hoursWorked - self::EXPECTED_HOURS_PER_DAY, 2));
 
-        [$baseHourlyRate, $overtimeRate] = $this->resolveRates($employee);
+        if (! empty($resolvedRates)) {
+            $baseHourlyRate = $resolvedRates['baseHourlyRate'];
+            $overtimeRate = $resolvedRates['overtimeRate'];
+        } else {
+            [$baseHourlyRate, $overtimeRate] = $this->resolveRates($employee);
+        }
 
         $baseHours = min(self::EXPECTED_HOURS_PER_DAY, $hoursWorked);
         $baseGain = round($baseHours * $baseHourlyRate, 2);
@@ -228,12 +242,18 @@ class EstimationService
         return $count;
     }
 
+    private static array $deductionRatesCache = [];
+
     private function resolveEmployeeDeductionRate(string $countryCode): float
     {
+        if (isset(self::$deductionRatesCache[$countryCode])) {
+            return self::$deductionRatesCache[$countryCode];
+        }
+
         $defaultRate = $countryCode === 'DZ' ? 0.09 : 0.0;
 
         if (! $this->hrModelTemplatesTableExists()) {
-            return $defaultRate;
+            return self::$deductionRatesCache[$countryCode] = $defaultRate;
         }
 
         $row = DB::table(DB::getDriverName() === 'pgsql' ? 'public.hr_model_templates' : 'hr_model_templates')
@@ -241,12 +261,12 @@ class EstimationService
             ->first();
 
         if (! $row || empty($row->cotisations)) {
-            return $defaultRate;
+            return self::$deductionRatesCache[$countryCode] = $defaultRate;
         }
 
         $cotisations = json_decode((string) $row->cotisations, true);
 
-        return (float) ($cotisations['total_salarial'] ?? $defaultRate);
+        return self::$deductionRatesCache[$countryCode] = (float) ($cotisations['total_salarial'] ?? $defaultRate);
     }
 
     private function hrModelTemplatesTableExists(): bool

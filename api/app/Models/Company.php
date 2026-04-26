@@ -104,7 +104,7 @@ class Company extends Model
             // pour que la revocation des tokens (Sanctum) voie les relations.
             $schema = $company->schema_name ?: 'shared_tenants';
             $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
-            DB::statement("SET search_path TO {$schema},public");
+            DB::statement('SET search_path TO '.self::getSafeSearchPath($schema));
             try {
                 Employee::withoutGlobalScopes()
                     ->where('company_id', $company->id)
@@ -129,5 +129,18 @@ class Company extends Model
     public function attendanceKiosks(): HasMany
     {
         return $this->hasMany(AttendanceKiosk::class, 'company_id');
+    }
+
+    /**
+     * Retourne une chaine securisee pour un SET search_path PostgreSQL.
+     * Protege contre l'injection SQL dans les identifiants de schema.
+     */
+    public static function getSafeSearchPath(string $schema): string
+    {
+        // En PostgreSQL, pour echapper un identifiant double-quote,
+        // on double les double-quotes internes.
+        $escaped = str_replace('"', '""', $schema);
+
+        return '"'.$escaped.'",public';
     }
 }

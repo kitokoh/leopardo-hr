@@ -108,7 +108,12 @@ class _EmployeesTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(teamListProvider),
       child: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: Semantics(
+            label: 'Chargement des employés...',
+            child: const CircularProgressIndicator(),
+          ),
+        ),
         error: (err, _) => Center(child: Text('Erreur : $err')),
         data: (employees) {
           if (employees.isEmpty) {
@@ -129,8 +134,10 @@ class _EmployeesTab extends ConsumerWidget {
             itemBuilder: (_, index) {
               final e = employees[index];
               return ListTile(
-                leading: CircleAvatar(
-                  child: Text(_initials(e)),
+                leading: ExcludeSemantics(
+                  child: CircleAvatar(
+                    child: Text(_initials(e)),
+                  ),
                 ),
                 title: Text(e.fullName),
                 subtitle: Text('${e.email}\nRole : ${_roleLabel(e)}'),
@@ -232,7 +239,12 @@ class _InvitationsTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(invitationsListProvider),
       child: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: Semantics(
+            label: 'Chargement des invitations...',
+            child: const CircularProgressIndicator(),
+          ),
+        ),
         error: (err, _) => Center(child: Text('Erreur : $err')),
         data: (invitations) {
           if (invitations.isEmpty) {
@@ -404,10 +416,13 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               ElevatedButton(
                 onPressed: _submitting ? null : _submit,
                 child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                    ? Semantics(
+                        label: 'Envoi en cours...',
+                        child: const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       )
                     : const Text('Envoyer l invitation'),
               ),
