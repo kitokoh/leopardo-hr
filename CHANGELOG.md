@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-05-21
+### DocKeeper - Alignement documentation post-MVP
+
+- Docs : Realignement du `README.md` par la suppression des liens vers les fichiers archives (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`).
+- Pilotage : Synchronisation de `PROGRAM_VERSION` a `4.1.73` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations
