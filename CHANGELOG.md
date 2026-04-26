@@ -6,7 +6,7 @@
 
 ### Migration - Robustesse creation user_invitations
 
-- API : `api/database/migrations/public/2026_04_19_000012_create_user_invitations_table.php` utilise maintenant `CREATE TABLE IF NOT EXISTS` et des indexes `IF NOT EXISTS` PostgreSQL, afin qu'un rebuild/reset complet de la base de test sur Render ne casse pas si la creation de `user_invitations` est rejouee lors d'une relance ou d'une course de migration.
+- API : `api/database/migrations/public/2026_04_19_000012_create_user_invitations_table.php` utilise maintenant `DB::unprepared()` avec `CREATE TABLE IF NOT EXISTS` et des indexes `IF NOT EXISTS` PostgreSQL, afin qu'un rebuild/reset complet de la base de test sur Render ne casse pas si la creation de `user_invitations` est rejouee lors d'une relance ou d'une course de migration, sans tomber sur la limite PDO des multi-statements prepares.
 - Tests : `api/tests/Support/CreatesMvpSchema.php` emploie maintenant aussi `CREATE TABLE IF NOT EXISTS` pour ses tables publiques creees en SQL brut (`user_lookups`, `super_admins`, `user_invitations`), afin de reduire les faux echecs backend lies a des recreations de schema pendant les tests PostgreSQL.
 
 ### Migration - Robustesse ajout colonnes JSONB company
@@ -1157,7 +1157,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 
 

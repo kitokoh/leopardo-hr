@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement('SET search_path TO public');
-        DB::statement(<<<'SQL'
+        DB::unprepared(<<<'SQL'
 CREATE TABLE IF NOT EXISTS public.user_invitations (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id uuid NOT NULL,
