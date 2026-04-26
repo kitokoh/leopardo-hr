@@ -143,6 +143,7 @@ class MobilePayloadContractTest extends TestCase
                     '*' => [
                         'employee_id',
                         'name',
+                        'matricule',
                         'checked_in',
                         'check_in_time',
                         'check_out_time',

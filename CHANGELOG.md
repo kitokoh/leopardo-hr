@@ -54,6 +54,8 @@
 - API : `app/Http/Controllers/Api/V1/AttendanceController.php` — `today()` (vue manager) filtre `where('status', 'active')` et n'expose plus les employés archivés/suspendus (PT-29 / PT-43).
 - API : `app/Http/Middleware/TenantMiddleware.php` — bloque désormais les employés `suspended` en plus d'`archived` (`EMPLOYEE_SUSPENDED`, 403) — PT-68.
 - Contrat : `openapi.yaml` mis à jour pour le statut 422 sur `/attendance/check-in` (consolidation `ALREADY_CHECKED_IN` + `GPS_OUTSIDE_ZONE`).
+- Contractor : Alignment du `EmployeeController` (`index`, `show`, `store`, `update`) et `AttendanceController` (`today`, `index`) avec le contrat mobile (ajout `matricule`, `company_id`, et objet `employee` dans l'historique).
+- Tests : `tests/Feature/Contracts/EmployeeContractTest.php` ajouté pour verrouiller le contrat Employee; `tests/Feature/Contracts/MobilePayloadContractTest.php` mis à jour.
 - Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis à jour pour refléter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
 - Suite locale : 11/11 Unit + 87/87 Feature OK.
 

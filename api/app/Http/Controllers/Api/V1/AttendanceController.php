@@ -86,7 +86,7 @@ class AttendanceController extends Controller
             $perPage = $request->integer('per_page', 50);
 
             $paginator = Employee::query()
-                ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
+                ->select(['id', 'matricule', 'first_name', 'last_name', 'email', 'role', 'status'])
                 ->where('status', 'active')
                 ->orderBy('id')
                 ->paginate(max(1, min(100, $perPage)));
@@ -161,6 +161,7 @@ class AttendanceController extends Controller
 
         $query = AttendanceLog::query()
             ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'source_device_code', 'late_minutes'])
+            ->with('employee:id,matricule,first_name,last_name,photo_path')
             ->orderByDesc('date')
             ->orderByDesc('id');
 
@@ -192,7 +193,7 @@ class AttendanceController extends Controller
 
     private function serializeLog(AttendanceLog $log): array
     {
-        return [
+        $data = [
             'id' => $log->id,
             'employee_id' => $log->employee_id,
             'date' => $log->date?->format('Y-m-d'),
@@ -205,6 +206,17 @@ class AttendanceController extends Controller
             'status' => $log->status,
             'late_minutes' => $log->late_minutes,
         ];
+
+        if ($log->relationLoaded('employee')) {
+            $data['employee'] = [
+                'id' => $log->employee->id,
+                'name' => trim(($log->employee->first_name ?? '').' '.($log->employee->last_name ?? '')),
+                'matricule' => $log->employee->matricule,
+                'photo_url' => $log->employee->photo_path,
+            ];
+        }
+
+        return $data;
     }
 
     private function serializeToday(Employee $employee, ?AttendanceLog $log, ?string $timezone = null): array
@@ -214,6 +226,7 @@ class AttendanceController extends Controller
         return [
             'employee_id' => $employee->id,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'matricule' => $employee->matricule,
             'checked_in' => (bool) $log?->check_in,
             'check_in_time' => $log?->check_in?->setTimezone($timezone)->format('H:i'),
             'check_out_time' => $log?->check_out?->setTimezone($timezone)->format('H:i'),

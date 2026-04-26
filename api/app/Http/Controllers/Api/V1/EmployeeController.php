@@ -21,12 +21,21 @@ class EmployeeController extends Controller
 
         $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
         $paginator = Employee::query()
-            ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
+            ->select(['id', 'matricule', 'company_id', 'first_name', 'last_name', 'email', 'role', 'status'])
             ->orderBy('id')
             ->paginate($perPage);
 
         return new JsonResponse([
-            'data' => collect($paginator->items())->values(),
+            'data' => collect($paginator->items())->map(fn (Employee $employee) => [
+                'id' => $employee->id,
+                'matricule' => $employee->matricule,
+                'company_id' => $employee->company_id,
+                'first_name' => $employee->first_name,
+                'last_name' => $employee->last_name,
+                'email' => $employee->email,
+                'role' => $employee->role,
+                'status' => $employee->status,
+            ])->values(),
             'meta' => [
                 'current_page' => $paginator->currentPage(),
                 'per_page' => $paginator->perPage(),
@@ -47,6 +56,8 @@ class EmployeeController extends Controller
         return new JsonResponse([
             'data' => [
                 'id' => $employee->id,
+                'matricule' => $employee->matricule,
+                'company_id' => $employee->company_id,
                 'first_name' => $employee->first_name,
                 'last_name' => $employee->last_name,
                 'email' => $employee->email,
@@ -71,6 +82,8 @@ class EmployeeController extends Controller
         return new JsonResponse([
             'data' => [
                 'id' => $employee->id,
+                'matricule' => $employee->matricule,
+                'company_id' => $employee->company_id,
                 'first_name' => $employee->first_name,
                 'last_name' => $employee->last_name,
                 'email' => $employee->email,
@@ -104,6 +117,8 @@ class EmployeeController extends Controller
         return new JsonResponse([
             'data' => [
                 'id' => $employee->id,
+                'matricule' => $employee->matricule,
+                'company_id' => $employee->company_id,
                 'first_name' => $employee->first_name,
                 'last_name' => $employee->last_name,
                 'email' => $employee->email,
