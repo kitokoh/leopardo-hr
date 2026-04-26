@@ -44,7 +44,9 @@ class TenantMiddleware
             abort(403);
         }
 
-        if ($employee->status === 'archived') {
+        $status = $employee->fresh()?->status ?? $employee->status;
+
+        if ($status === 'archived') {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return new JsonResponse(['error' => 'EMPLOYEE_ARCHIVED'], 403);
             }
@@ -52,7 +54,7 @@ class TenantMiddleware
             abort(403);
         }
 
-        if ($employee->status === 'suspended') {
+        if ($status === 'suspended') {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return new JsonResponse(['error' => 'EMPLOYEE_SUSPENDED'], 403);
             }

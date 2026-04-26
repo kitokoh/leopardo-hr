@@ -102,16 +102,23 @@ class Company extends Model
             // alors que l update d une company via le super-admin web s execute
             // avec search_path=public. On etend le search_path temporairement
             // pour que la revocation des tokens (Sanctum) voie les relations.
-            $schema = $company->schema_name ?: 'shared_tenants';
-            $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
-            DB::statement("SET search_path TO {$schema},public");
-            try {
+            if (DB::getDriverName() === 'pgsql') {
+                $schema = $company->schema_name ?: 'shared_tenants';
+                $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
+                DB::statement("SET search_path TO {$schema},public");
+                try {
+                    Employee::withoutGlobalScopes()
+                        ->where('company_id', $company->id)
+                        ->get()
+                        ->each(fn (Employee $employee) => $employee->tokens()->delete());
+                } finally {
+                    DB::statement("SET search_path TO {$previous}");
+                }
+            } else {
                 Employee::withoutGlobalScopes()
                     ->where('company_id', $company->id)
                     ->get()
                     ->each(fn (Employee $employee) => $employee->tokens()->delete());
-            } finally {
-                DB::statement("SET search_path TO {$previous}");
             }
         });
     }
