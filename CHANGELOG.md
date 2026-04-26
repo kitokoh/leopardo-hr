@@ -2,6 +2,22 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.73] - 2026-04-26
+
+### Multilinguisme - Support complet FR/AR(RTL)/TR/EN
+
+- API : Migration `create_languages_table` — table `public.languages` (code CHAR(2) PK, name_fr, name_native, is_rtl, is_active) avec seeding des 4 langues supportees.
+- API : Migration `add_preferred_language_to_employees` — champ `preferred_language CHAR(2)` nullable sur la table tenant `employees`, permettant un override personnel de la langue entreprise.
+- API : Modele `Language` avec constantes `SUPPORTED` (fr/ar/tr/en) et `DEFAULT` (fr), methodes statiques `isSupported()` et `isRtl()`.
+- API : Middleware `SetLocale` enregistre en prepend sur le stack API — resolution de la locale par priorite : preference utilisateur > langue entreprise > header `Accept-Language` > defaut `fr`. Configure `App::setLocale()` et `Carbon::setLocale()`.
+- API : Integration `bootstrap/app.php` — les handlers DomainException, ValidationException, ModelNotFoundException, AuthorizationException et HttpException utilisent desormais `__('errors.CODE')` pour retourner des messages traduits selon la locale active.
+- API : 36 fichiers de traduction (9 fichiers x 4 langues) dans `lang/{fr,ar,tr,en}/` : errors, auth, attendance, employees, finance, emails, pdf, cameras, validation.
+- API : Endpoint `PATCH /api/v1/auth/language` — permet a l'employe authentifie de changer sa langue preferee (validation `in:fr,ar,tr,en`).
+- API : Champ `language` ajoute au serializer employee (retourne dans login/me), resolu comme `preferred_language ?? company.language ?? 'fr'`.
+- API : Remplacement des messages hardcodes dans AuthController, InvitationController et PlatformAuthController par des appels `__()`.
+- Docs : `api/MULTILANG.md` — guide architecture i18n, usage `__()`, procedure d'ajout de nouvelles langues.
+- Pilotage : `PILOTAGE.md` — statut langues mis a jour de « i18n prepare (1 langue seulement) » a « FR+AR+TR+EN production-ready ».
+
 ## [4.1.72] - 2026-04-25
 
 ### Migration - Robustesse creation user_invitations
