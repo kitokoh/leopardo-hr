@@ -269,14 +269,14 @@ trait CreatesMvpSchema
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('CREATE TABLE public.user_lookups (
+            DB::statement('CREATE TABLE IF NOT EXISTS public.user_lookups (
                 email varchar(150) primary key,
                 company_id uuid not null,
                 schema_name varchar(63) not null,
                 employee_id integer not null,
                 role varchar(20) not null
             )');
-            DB::statement('CREATE TABLE public.super_admins (
+            DB::statement('CREATE TABLE IF NOT EXISTS public.super_admins (
                 id serial primary key,
                 name varchar(100) not null,
                 email varchar(150) not null unique,
@@ -285,7 +285,7 @@ trait CreatesMvpSchema
                 last_login_at timestamp with time zone null,
                 created_at timestamp with time zone null
             )');
-            DB::statement('CREATE TABLE public.user_invitations (
+            DB::statement('CREATE TABLE IF NOT EXISTS public.user_invitations (
                 id uuid primary key,
                 company_id uuid not null,
                 schema_name varchar(63) not null,

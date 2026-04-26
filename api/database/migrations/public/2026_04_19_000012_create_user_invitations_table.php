@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\QueryException;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,42 +10,36 @@ return new class extends Migration
     public function up(): void
     {
         DB::statement('SET search_path TO public');
-
-        if (Schema::hasTable('user_invitations')) {
-            return;
-        }
-
-        try {
-            Schema::create('user_invitations', function (Blueprint $table): void {
-                $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-                $table->uuid('company_id');
-                $table->string('schema_name', 63);
-                $table->unsignedInteger('employee_id');
-                $table->string('email', 150);
-                $table->string('role', 20);
-                $table->string('manager_role', 30)->nullable();
-                $table->string('invited_by_type', 20);
-                $table->string('invited_by_email', 150);
-                $table->string('token_hash', 64)->unique();
-                $table->timestampTz('expires_at');
-                $table->timestampTz('accepted_at')->nullable();
-                $table->timestampTz('last_sent_at')->nullable();
-                $table->jsonb('metadata')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
-
-                $table->index(['company_id', 'email']);
-                $table->index('expires_at');
-            });
-        } catch (QueryException $exception) {
-            if ($exception->getCode() !== '42P07') {
-                throw $exception;
-            }
-        }
+        DB::unprepared(<<<'SQL'
+CREATE TABLE IF NOT EXISTS public.user_invitations (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id uuid NOT NULL,
+    schema_name varchar(63) NOT NULL,
+    employee_id integer NOT NULL,
+    email varchar(150) NOT NULL,
+    role varchar(20) NOT NULL,
+    manager_role varchar(30) NULL,
+    invited_by_type varchar(20) NOT NULL,
+    invited_by_email varchar(150) NOT NULL,
+    token_hash varchar(64) NOT NULL,
+    expires_at timestamp(0) with time zone NOT NULL,
+    accepted_at timestamp(0) with time zone NULL,
+    last_sent_at timestamp(0) with time zone NULL,
+    metadata jsonb NULL,
+    created_at timestamp(0) with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp(0) with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS user_invitations_token_hash_unique
+    ON public.user_invitations (token_hash);
+CREATE INDEX IF NOT EXISTS user_invitations_company_id_email_index
+    ON public.user_invitations (company_id, email);
+CREATE INDEX IF NOT EXISTS user_invitations_expires_at_index
+    ON public.user_invitations (expires_at);
+SQL);
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('user_invitations');
+        DB::statement('DROP TABLE IF EXISTS public.user_invitations');
     }
 };
