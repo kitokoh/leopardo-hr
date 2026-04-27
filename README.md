@@ -5,8 +5,7 @@ Monorepo de conception et d'execution pour Leopardo RH.
 
 Points d'entrée:
 - `PILOTAGE.md` (source de vérité opérationnelle)
-- `docs/GESTION_PROJET/INDEX_CANONIQUE.md` (anti-confusion)
-- `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md` (blocages + actions)
+- `docs/GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md` (reprise + actions)
 - `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` (validation locale backend — Docker d'abord)
 - `docs/README.md` (index documentation technique)
 - `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` (démarrage exécution MVP)
