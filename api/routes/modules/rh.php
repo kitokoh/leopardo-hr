@@ -69,7 +69,6 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
     Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
     Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validate'])->whereNumber('payroll');
     Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->whereNumber('payroll');
-
     // Salary Advances
     Route::get('/salary-advances', [SalaryAdvanceController::class, 'index']);
     Route::post('/salary-advances', [SalaryAdvanceController::class, 'store']);

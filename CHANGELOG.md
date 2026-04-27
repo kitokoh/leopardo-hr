@@ -20,6 +20,7 @@
 - Docs : mise a jour des index et README associes (`docs/README.md`, `docs/GUIDES/README.md`, `docs/infra/README.md`, `docs/vision/README.md`, `docs/dossierdeConception/README.md`) pour reflecter les nouveaux emplacements et l'ordre de lecture attendu.
 - Docs : requalification des references produit, strategie commerciale, infra, validation et vision vers leurs nouveaux emplacements canoniques.
 - Pilotage : synchronisation des references de gouvernance et de pilotage pour que les chemins documentaires exposes au projet restent coherents avec l'arborescence reelle du repo.
+- Docs : reorganisation des references produit, strategie commerciale, infra, validation et vision pour refleter la nouvelle structure documentaire sans s'appuyer sur les anciens emplacements.
 
 ## [4.1.74] - 2026-04-27
 
