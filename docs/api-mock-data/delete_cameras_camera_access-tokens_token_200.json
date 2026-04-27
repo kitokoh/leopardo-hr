@@ -1,0 +1,16 @@
+{
+  "data": {
+    "id": 1,
+    "camera_id": 1,
+    "label": "string",
+    "granted_to_email": "example@leopardo-rh.com",
+    "granted_to_name": "string",
+    "granted_by": 1,
+    "permissions": {},
+    "expires_at": "2026-05-22T10:00:00Z",
+    "last_used_at": "2026-05-22T10:00:00Z",
+    "use_count": 1,
+    "is_revoked": true,
+    "created_at": "2026-05-22T10:00:00Z"
+  }
+}

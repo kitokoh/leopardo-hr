@@ -1,0 +1,15 @@
+{
+  "data": {
+    "camera": {
+      "id": 1,
+      "name": "string",
+      "location": "string"
+    },
+    "stream_url": "string",
+    "stream_token": "string",
+    "expires_at": "2026-05-22T10:00:00Z",
+    "permissions": {},
+    "label": "string",
+    "granted_to_name": "string"
+  }
+}

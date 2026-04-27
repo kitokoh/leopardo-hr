@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "camera_id": 1,
+      "employee_id": 1,
+      "can_view": true,
+      "can_share": true,
+      "can_manage": true,
+      "granted_by": 1,
+      "granted_at": "2026-05-22T10:00:00Z",
+      "expires_at": "2026-05-22T10:00:00Z"
+    }
+  ]
+}
