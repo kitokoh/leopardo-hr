@@ -62,7 +62,7 @@ trait CreatesMvpSchema
             DB::statement('SET search_path TO shared_tenants,public');
         }
 
-        Schema::create('schedules', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('schedules'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 100);
@@ -77,7 +77,7 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        Schema::create('employees', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('employees'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id');
             $table->unsignedInteger('schedule_id')->nullable();
@@ -132,7 +132,7 @@ trait CreatesMvpSchema
             $table->unique(['company_id', 'matricule']);
         });
 
-        Schema::create('attendance_logs', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('attendance_logs'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->unsignedInteger('employee_id');
@@ -160,7 +160,7 @@ trait CreatesMvpSchema
             $table->index(['employee_id', 'date']);
         });
 
-        Schema::create('biometric_enrollment_requests', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('biometric_enrollment_requests'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
             $table->unsignedInteger('employee_id')->index();
@@ -180,7 +180,7 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        Schema::create('attendance_kiosks', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('attendance_kiosks'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
             $table->string('name', 100);
@@ -195,7 +195,7 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        Schema::create('cameras', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('cameras'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
             $table->string('name', 100);
@@ -211,7 +211,7 @@ trait CreatesMvpSchema
             $table->softDeletes();
         });
 
-        Schema::create('camera_access_tokens', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('camera_access_tokens'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
             $table->unsignedInteger('camera_id');
@@ -229,7 +229,7 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        Schema::create('camera_permissions', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('camera_permissions'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
             $table->unsignedInteger('camera_id');
@@ -244,7 +244,7 @@ trait CreatesMvpSchema
             $table->unique(['camera_id', 'employee_id']);
         });
 
-        Schema::create('camera_access_logs', function (Blueprint $table): void {
+        Schema::create($this->tenantTable('camera_access_logs'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
             $table->unsignedInteger('camera_id');
@@ -258,6 +258,7 @@ trait CreatesMvpSchema
             $table->json('metadata')->nullable();
             $table->timestampTz('created_at')->useCurrent();
         });
+
 
         Schema::create('absence_types', function (Blueprint $table): void {
             $table->increments('id');
@@ -363,6 +364,13 @@ trait CreatesMvpSchema
 
         DB::statement('CREATE SCHEMA IF NOT EXISTS public');
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+    }
+
+    private function tenantTable(string $table): string
+    {
+        return DB::getDriverName() === 'pgsql'
+            ? 'shared_tenants.'.$table
+            : $table;
     }
 
     private function dropMvpTables(): void
