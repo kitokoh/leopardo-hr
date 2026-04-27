@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -40,8 +41,24 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => $exception->errorCode(),
-                'message' => $exception->getMessage(),
+                'message' => $exception->errorCode(),
             ], $exception->statusCode());
+        });
+
+        // Handle oversized file uploads gracefully (PHP rejects them before Laravel
+        // validation runs, so we must catch PostTooLargeException explicitly).
+        $exceptions->render(function (PostTooLargeException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => 'VALIDATION_ERROR',
+                'message' => 'Le fichier envoyé dépasse la taille maximale autorisée.',
+                'errors' => [
+                    'file' => ['Le fichier dépasse la taille maximale autorisée.'],
+                ],
+            ], 422);
         });
 
         $exceptions->render(function (ValidationException $exception, Request $request) {

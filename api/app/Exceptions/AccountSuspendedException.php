@@ -6,6 +6,6 @@ class AccountSuspendedException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('ACCOUNT_SUSPENDED', 403, 'ACCOUNT_SUSPENDED');
+        parent::__construct('Votre compte a été suspendu. Contactez votre administrateur.', 403, 'ACCOUNT_SUSPENDED');
     }
 }
