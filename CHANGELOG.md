@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.79] - 2026-04-27
+
+### Palette - Accessibilité Statuts et Équipe mobile
+
+- Mobile : Amélioration de l'accessibilité du widget `LeopardoBadge` par l'ajout de labels `Semantics` explicites (ex: "Statut : Présent") et l'exclusion des icônes décoratives pour les lecteurs d'écran.
+- Mobile : Amélioration de l'accessibilité de l'écran `TeamScreen` par l'ajout d'un tooltip sur le bouton d'ajout et le masquage des initiales redondantes dans la liste des employés.
+
+
 ## [4.1.78] - 2026-04-27
 
 ### API - Public onboarding par invitation
@@ -9,6 +17,13 @@
 - API : ajout de `GET /api/v1/onboarding/invitation/{token}` pour verifier un token d'invitation public et retourner les informations minimales d'activation (`email`, `role`, `manager_role`, `employee_name`, `expires_at`).
 - API : ajout de `POST /api/v1/onboarding/invitation/{token}/activate` pour activer un compte employe invite, valider le mot de passe et emettre un token Sanctum de connexion immediate.
 - API : ajout du controleur `OnboardingController` et des routes publiques throttlees (`10 req/min`) pour l'onboarding sans authentification prealable.
+
+### Docs - Realignement des documents maitres et de la reprise projet
+
+- Docs : creation de `docs/GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md` comme point d'entree canonique pour savoir ce qu'il reste a faire et dans quel ordre reprendre.
+- Pilotage : simplification de `PILOTAGE.md` pour separer clairement la verite operationnelle, la reprise courante et les references canoniques.
+- Docs : realignement de `docs/REFERENTIEL_PRODUIT/APV.md`, `docs/REFERENTIEL_PRODUIT/ROADMAP.md` et `docs/GESTION_PROJET/DOSSIER_REPONSE_AU_CAHIER_DES_CHARGES.md` afin de mieux refleter la realite de `main`.
+- Gouvernance : mise a jour des README d'entree (`docs/README.md`, `docs/GESTION_PROJET/README.md`, `docs/dossierdeConception/README.md`, `docs/notes/README.md`) et requalification de `GARDE_FOUS.md` pour eviter les reprises sur une base obsolete.
 
 ### Contractor - Alignement contract API/mobile (attendance)
 
