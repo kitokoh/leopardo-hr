@@ -223,6 +223,7 @@ export function clearAuthSession() {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
   window.localStorage.removeItem(AUTH_USER_KEY);
+  window.localStorage.removeItem(PREFERRED_LOCALE_KEY);
 }
 
 export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean) {

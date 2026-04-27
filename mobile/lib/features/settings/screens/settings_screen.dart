@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,10 +54,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void initState() {
     super.initState();
     final employee = ref.read(authProvider).employee;
+    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
     _firstNameController = TextEditingController(text: employee?.firstName ?? '');
     _lastNameController = TextEditingController(text: employee?.lastName ?? '');
     _emailController = TextEditingController(text: employee?.email ?? '');
-    _selectedLanguage = employee?.language ?? 'fr';
+    _selectedLanguage = _languageLabels.containsKey(employee?.language)
+        ? employee!.language
+        : (_languageLabels.containsKey(deviceLanguage) ? deviceLanguage : 'fr');
     _loadLocalSettings();
     _loadEnrollmentStatus();
   }

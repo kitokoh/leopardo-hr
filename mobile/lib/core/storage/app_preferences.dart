@@ -17,7 +17,7 @@ class AppPreferences {
   bool get faceEnabled => _box.get(_faceEnabledKey, defaultValue: false) as bool;
   bool get attendanceConsent => _box.get(_attendanceConsentKey, defaultValue: false) as bool;
   String get biometricNote => (_box.get(_biometricNoteKey, defaultValue: '') as String).trim();
-  String get preferredLanguage => (_box.get(_preferredLanguageKey, defaultValue: 'fr') as String).trim();
+  String get preferredLanguage => (_box.get(_preferredLanguageKey, defaultValue: '') as String).trim();
   bool get isRtl => _box.get(_isRtlKey, defaultValue: false) as bool;
 
   Future<void> saveBiometricSettings({
@@ -40,5 +40,10 @@ class AppPreferences {
   }) async {
     await _box.put(_preferredLanguageKey, preferredLanguage.trim().toLowerCase());
     await _box.put(_isRtlKey, isRtl);
+  }
+
+  Future<void> clearLocaleSettings() async {
+    await _box.delete(_preferredLanguageKey);
+    await _box.delete(_isRtlKey);
   }
 }

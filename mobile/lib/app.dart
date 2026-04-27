@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -90,7 +91,9 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final languageCode = authState.employee?.language ?? preferences.preferredLanguage;
+    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    final languageCode = authState.employee?.language ??
+        (preferences.preferredLanguage.isNotEmpty ? preferences.preferredLanguage : deviceLanguage);
     final isRtl = authState.employee?.isRtl ?? preferences.isRtl;
 
     return MaterialApp.router(

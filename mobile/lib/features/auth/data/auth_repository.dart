@@ -54,6 +54,7 @@ class AuthRepository {
       // Ignore errors if token is already invalid
     } finally {
       await storage.deleteToken();
+      await preferences.clearLocaleSettings();
     }
   }
 
@@ -71,6 +72,7 @@ class AuthRepository {
       };
     } catch (e) {
       await storage.deleteToken();
+      await preferences.clearLocaleSettings();
       return null;
     }
   }
