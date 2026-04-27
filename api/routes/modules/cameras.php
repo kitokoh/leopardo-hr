@@ -13,12 +13,12 @@
  * Référence : docs/vision/Leopardo_RH_Camera_Complet+1.pdf, section 6.
  */
 
-use App\Http\Controllers\Api\V1\Cameras\CameraAccessLogController;
-use App\Http\Controllers\Api\V1\Cameras\CameraAccessTokenController;
-use App\Http\Controllers\Api\V1\Cameras\CameraController;
-use App\Http\Controllers\Api\V1\Cameras\CameraPermissionController;
-use App\Http\Controllers\Api\V1\Cameras\InternalCameraTokenController;
-use App\Http\Controllers\Api\V1\Cameras\PublicCameraViewerController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraAccessLogController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraAccessTokenController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraPermissionController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\InternalCameraTokenController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\PublicCameraViewerController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'module.cameras'])
@@ -57,4 +57,4 @@ Route::middleware(['throttle:600,1'])
 
 // Viewer public avec token tiers (?t=<opaque>). Pas d'auth utilisateur.
 Route::middleware(['throttle:api'])
-    ->get('/view/cam', PublicCameraViewerController::class);
+    ->get('/view/cam', [PublicCameraViewerController::class, '__invoke']);
