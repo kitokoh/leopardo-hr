@@ -226,8 +226,8 @@ Langage : **PHP 8.4 / Laravel 11**
     - `test_approved_by_is_set()` : `approved_by` = id du manager
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-- [-] 14. Tests Feature — AbsenceRejectTest
-  - [ ] 14.1 Créer `tests/Feature/Absences/AbsenceRejectTest.php`
+- [x] 14. Tests Feature — AbsenceRejectTest
+  - [x] 14.1 Créer `tests/Feature/Absences/AbsenceRejectTest.php`
     - `test_manager_can_reject_pending_absence()` : PUT /absences/{id}/reject → 200, status rejected
     - `test_reject_approved_absence_restores_balance()` : absence approved → solde restauré, entrée `leave_balance_logs` avec delta positif et reason `absence_rejected`
     - `test_reject_without_reason_returns_422()` : `rejected_reason` absent → 422
@@ -235,15 +235,15 @@ Langage : **PHP 8.4 / Laravel 11**
     - `test_employee_cannot_reject()` : employé non manager → 403
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [~] 15. Tests Feature — AbsenceCancelTest
-  - [ ] 15.1 Créer `tests/Feature/Absences/AbsenceCancelTest.php`
+- [x] 15. Tests Feature — AbsenceCancelTest
+  - [x] 15.1 Créer `tests/Feature/Absences/AbsenceCancelTest.php`
     - `test_employee_can_cancel_own_pending_absence()` : DELETE /absences/{id} → 200, status cancelled
     - `test_cancel_approved_absence_returns_422()` : statut approved → 422 `ABSENCE_NOT_PENDING`
     - `test_employee_cannot_cancel_other_employee_absence()` : autre employé → 403
     - `test_manager_cannot_cancel_employee_absence_via_destroy()` : manager utilisant destroy → 403 (destroy est réservé à l'employé propriétaire)
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [~] 16. Checkpoint — Tous les tests Feature doivent passer
+- [ ] 16. Checkpoint — Tous les tests Feature doivent passer
   - Lancer `php artisan test --filter=Absences` et s'assurer que tous les tests passent.
   - Corriger les éventuelles erreurs de routing, d'autorisation ou de logique métier.
 
@@ -283,7 +283,7 @@ Langage : **PHP 8.4 / Laravel 11**
     - Minimum 100 itérations
     - **Validates: Requirements 1.1, 3.2, 7.3**
 
-- [~] 18. Checkpoint final — Tous les tests passent
+- [ ] 18. Checkpoint final — Tous les tests passent
   - Lancer `php artisan test --filter=Absences` (tests Feature + propriétés non marqués `*`)
   - S'assurer qu'il n'y a aucune régression sur les tests existants (`php artisan test`)
   - Vérifier que les routes sont bien enregistrées : `php artisan route:list --path=absences`
