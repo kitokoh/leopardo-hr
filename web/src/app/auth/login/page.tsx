@@ -10,7 +10,7 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Implementation for API communication would go here
-    console.log('Login attempt:', { email, password });
+    console.log('Login attempt:', { email });
     alert('Connexion simulée. L\'intégration avec l\'API Laravel sera faite ultérieurement.');
   };
 
