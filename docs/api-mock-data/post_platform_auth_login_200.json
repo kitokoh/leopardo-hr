@@ -1,0 +1,9 @@
+{
+  "data": {
+    "id": 1,
+    "name": "string",
+    "email": "example@leopardo-rh.com"
+  },
+  "token": "string",
+  "token_type": "Bearer"
+}
