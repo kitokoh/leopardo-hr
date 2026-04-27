@@ -1,75 +1,102 @@
-# ROADMAP - Leopardo RH
+# ROADMAP — Leopardo RH
 
-> Sequencement des priorites produit et techniques.
-> Ce document donne la direction. Le backlog courant de reprise reste
-> `../GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md`.
+> Séquencement des phases de développement.
+> Ce document consolide les documents `docs/vision/**/*.pdf` et `docs/REFERENTIEL_PRODUIT/APV.md`.
+> Priorité absolue : **stabiliser le MVP RH + pointage + déployer 3 pilotes clients** avant d'ouvrir un module Phase 2.
 
-## Lecture correcte
+## Horizon général
 
-- `PILOTAGE.md` dit ou nous en sommes
-- ce document dit ou nous voulons aller
-- `PROCHAINES_ACTIONS_MAIN_2026-04-27.md` dit quoi faire ensuite
+```
+ MVP actuel   →   APV Fondations   →   Modules Phase 2   →   Enterprise   →   Plateforme ouverte
+ maintenant        1-4 semaines         6-12 mois             12-24 mois         24+ mois
+```
 
-## Phase actuelle
+## Phase 0 — MVP actuel (fait)
 
-### Phase active - Stabilisation beta et verite documentaire
+**Statut** : Livré. Branche `main` stable, CI 7/7 verte.
 
-Le produit a deja depasse le MVP historique dans le code.
-La priorite immediate n'est donc pas d'ouvrir un nouveau grand front,
-mais de :
+- Onboarding admin → manager → RH → employé (avec invitation email + activation)
+- RBAC par rôle (`principal`, `rh`, `dept`, `comptable`, `superviseur`, `employee`)
+- Self-service `/me/*` (pointer, voir heures + heures sup + dû)
+- CRUD équipe + invitations côté mobile (manager/RH)
+- Kiosque biométrique ZKTeco (register → punch → sync → roster)
+- 81 tests Pest, 7 checks CI.
 
-1. rendre les documents maitres coherents avec `main`
-2. remettre la documentation API a niveau
-3. consolider les parcours pilotes
-4. corriger les retours prioritaires avant toute nouvelle derive
+## Phase 1 — APV Fondations (priorité immédiate)
 
-## Etat deja visible sur `main`
+**Objectif** : poser les structures modulaires et le design moderne **sans toucher au fonctionnel existant**.
 
-- coeur MVP RH livre
-- i18n en place
-- hardenings P0/P1/P2
-- onboarding public
-- modules RH etendus visibles dans les routes
-- module cameras visible dans les routes
+### Sprint A — Docs + vision (cette PR)
+- 6 PDFs archivés dans `docs/vision/`
+- `docs/REFERENTIEL_PRODUIT/APV.md` = manifeste 1 page canonical
+- `docs/REFERENTIEL_PRODUIT/ROADMAP.md` = ce fichier
+- `docs/REFERENTIEL_PRODUIT/STATUTS.md` + `docs/REFERENTIEL_PRODUIT/COULEURS.md` = tokens partagés
+- `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md` = état actuel vs vision
 
-## Horizon recommande
+### Sprint B — Module boundaries foundation (PR séparée)
+- `api/routes/modules/rh.php` (extraction des routes existantes, zéro changement de contrat)
+- Migration : JSONB `metadata` sur `employees`, `companies`, `user_invitations`
+- Migration : `companies.features` JSONB (source de vérité des modules actifs par company)
+- Service `FeatureFlag::enabled($feature, $company)` et helper Blade
+- Super-admin : endpoint pour toggle un feature flag par company
+- **Invariant testé en CI** : le core Laravel ne dépend d'aucun controller `Modules/*`
 
-### Horizon 1 - Clarifier et stabiliser
+### Sprint C — Design moderne mobile-first (PR séparée, la plus grosse)
+- Flutter : `AppColors` (rh / finance / security / ia + statuts), Typography Inter, `LeopardoBadge`, `EmptyState`, `AlertBanner`, `ShimmerWidget`
+- Flutter : Home conversationnelle scaffold (chips domaines + `ChatInputBar` désactivé + bannières d'alertes) — l'API Leo n'est PAS branchée
+- Flutter : Personnalisation par rôle (chips ordonnés selon `manager_role`)
+- Web : Tailwind config alignée sur `AppColors.dart`, composants Blade `x-attendance-badge`, `x-alert-banner`, `x-empty-state`, `x-module-chips`
+- Web : Home 2-colonnes (sidebar Leo désactivée + contenu)
+- Web : redirection employé vers "télécharge l'app mobile" (virage v2 assumé : `role=employee` bloqué côté web)
 
-- documents maitres alignes
-- OpenAPI plus proche du code reel
-- reprises de session simplifiees
-- retours pilotes mieux priorises
+## Phase 2 — Modules à la demande
 
-### Horizon 2 - Fiabiliser les contrats
+Les modules sont activés par company via `companies.features`. Chaque client peut en activer certains et pas d'autres selon son besoin et son plan.
 
-- parcours auth / employees / attendance / onboarding documentes proprement
-- tests de non-regression renforces la ou les surfaces bougent
-- zone grise reduite entre "etat courant" et "cible"
+| Module | Spec | Surface | Déclencheur d'activation |
+|---|---|---|---|
+| **Finance & gestion** | `docs/vision/03_modules_phase2/Leopardo_RH_Finance_Complet.pdf` | Mobile (saisie terrain) + Web (reporting) | Demande client (Business / Enterprise) |
+| **Surveillance caméras** | `docs/vision/03_modules_phase2/Leopardo_RH_Camera_Complet_archive.pdf` | Mobile (flux WebRTC) + Web (config) | Demande client (Business / Enterprise) |
+| **Ön Muhasebe** (comptabilité Turquie) | À spec ultérieurement | Web principalement | Demande client marché TR |
+| **Leo IA** (home conversationnelle réelle) | `docs/vision/01_architecture_produit/Leopardo_RH_APV_v2.pdf` Ch.4 | Mobile + Web | Budget IA confirmé + modération testée |
 
-### Horizon 3 - Nouvelles extensions modulees
+### Règles d'activation
+- Un module Phase 2 **ne rentre jamais dans `main`** tant que les 3 pilotes MVP ne sont pas déployés en production.
+- Un module est développé dans son propre package Flutter + son propre route group Laravel (`api/routes/modules/{id}.php`).
+- Le module respecte le contrat `LeopardoModule` (interface posée en Phase 1 Sprint B).
+- Activation par company = toggle dans `companies.features` par le super-admin. Pas de redéploiement.
+- Test d'isolation CI : `dart analyze packages/module_{id}` doit passer sans dépendre d'un autre module.
 
-Seulement apres les deux horizons precedents :
+### Ordre recommandé si plusieurs clients demandent
+1. **Finance** en premier (générateur de revenus directs : envoi de factures, relances).
+2. **Caméras** ensuite (upsell Business/Enterprise, différenciation marché MENA).
+3. **Muhasebe** selon demandes marché Turquie.
+4. **Leo IA réel** quand le budget et la modération sont verrouillés.
 
-- nouvelles extensions RH
-- enrichissements cameras
-- autres modules activables
-- IA conversationnelle plus ambitieuse
+## Phase 3 — Enterprise
 
-## Regles de priorisation
+- Module Federation web (Webpack) pour permettre à un partenaire de développer son propre module
+- Dart deferred imports (lazy loading) si l'APK dépasse 100MB
+- Shorebird code push pour hotfix hors stores
+- API publique Enterprise
+- 5 paliers d'apprentissage `discovery → ambassador` (après collecte métriques réelles)
 
-1. une correction de verite documentaire prioritaire vaut mieux qu'une nouvelle spec de plus
-2. une regression pilote prioritaire vaut mieux qu'une nouvelle feature speculative
-3. une documentation API fausse doit etre corrigee avant de servir de contrat d'integration
-4. on n'ouvre pas un nouveau front si la reprise du projet devient plus confuse
+## Phase 4 — Plateforme ouverte
 
-## Rappel important
+- Marketplace de modules tiers
+- SDK public pour développeurs externes
+- Versioning indépendant des modules
+- CI/CD par module
 
-Les anciennes formulations du type "ce module n'entre jamais dans `main`"
-ne sont plus fiables comme description du depot actuel.
+## Ce qui N'est PAS dans le scope MVP ni Phase 1
 
-La roadmap doit donc rester :
+- Leo IA réel avec appels OpenAI / Claude (coquille vide uniquement)
+- Lazy loading Flutter
+- Shorebird
+- Module Federation
+- Système à 5 paliers d'apprentissage
+- Module Paie complète (uniquement estimateur de dû actuel)
+- Module Congés avancé (uniquement absences simples dans RH)
+- Module Évaluation / tâches
 
-- ambitieuse comme vision
-- sobre comme promesse
-- exacte sur le fait que `main` est deja plus large que le MVP d'origine
+Version 1.0 — Avril 2026.
