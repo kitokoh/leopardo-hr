@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": 1,
+    "name": "string",
+    "location_label": "string",
+    "device_code": "string",
+    "status": "string",
+    "biometric_mode": "string",
+    "trusted_device_label": "string",
+    "sync_token": "string"
+  }
+}
