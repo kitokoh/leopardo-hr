@@ -1,175 +1,200 @@
-# Dossier de reponse au cahier des charges
+# DOSSIER DE REPONSE AU CAHIER DES CHARGES
 
-## Objet
+## Objet du document
 
-Ce document decrit l'etat reel du produit a date, les capacites deja visibles dans le depot, les validations existantes et les ecarts encore ouverts par rapport a une reponse complete au besoin initial.
-
-Ce n'est pas une nouvelle spec cible.
+Ce document sert de reponse operationnelle au cahier des charges initial.
+Il decrit l'etat reel du produit, l'architecture actuellement en place, les fonctionnalites disponibles, les validations deja automatisees, et les ecarts restant a traiter.
 
 ## Nature du document
 
-Ce document sert a :
+Ce n'est pas un nouveau cahier des charges.
+C'est un document de:
 
-- decrire l'etat d'avancement reel
-- donner une lecture de conformite partielle ou complete selon les zones
-- faciliter la decision produit/projet
-- eviter de sur-vendre ou sous-vendre le depot
+- conformite fonctionnelle
+- etat d'avancement produit
+- architecture de deploiement
+- tracabilite de validation
+- aide a la decision pour la suite
 
 ## Vue d'ensemble du produit
 
-Leopardo RH est un monorepo contenant :
+Leopardo RH est actuellement structure comme un monorepo contenant:
 
 - une API Laravel multitenant dans `api/`
-- une interface web manager embarquee
+- une interface web manager incluse dans l'application Laravel
 - une application mobile Flutter dans `mobile/`
-- une CI GitHub Actions
-- une cible de deploiement cloud basee sur Render pour l'API/web
+- une couche CI/CD GitHub Actions
+- une cible de deploiement cloud basee sur Render pour l'API/web et Firebase App Distribution pour le mobile staging
 
 ## Architecture actuelle de deploiement
 
 ### Backend / Web
 
-- runtime : PHP 8.4 + FrankenPHP
-- conteneur : `api/Dockerfile.prod`
-- demarrage : `api/docker-entrypoint.sh`
-- hebergement cible : Render
-- base de donnees : PostgreSQL
+- Runtime: PHP 8.4 + FrankenPHP
+- Conteneur de production: `api/Dockerfile.prod`
+- Entree de demarrage: `api/docker-entrypoint.sh`
+- Hebergement cible: Render
+- Base de donnees: PostgreSQL
+- Cache / sessions techniques: Redis selon environnement
 
 ### Mobile
 
-- Flutter stable
-- build CI via GitHub Actions
-- distribution staging via Firebase App Distribution
+- Framework: Flutter stable
+- Build CI: GitHub Actions
+- Distribution staging: Firebase App Distribution
 
-### CI/CD
+### Orchestration CI/CD
 
-- tests PR/push : `.github/workflows/tests.yml`
-- deploy main : `.github/workflows/deploy-main.yml`
-- distribution mobile : `.github/workflows/mobile-distribute.yml`
+- Tests PR/push: `.github/workflows/tests.yml`
+- Deploy main: `.github/workflows/deploy-main.yml`
+- Distribution mobile: `.github/workflows/mobile-distribute.yml`
 
-## Surface fonctionnelle visible sur `main`
+## Flux de deploiement actuel
 
-### Core API
+1. Une PR est ouverte vers `main`
+2. GitHub Actions execute les checks qualite
+3. La PR est mergee seulement si les checks requis sont verts
+4. Le push sur `main` relance les tests
+5. Si les tests sur `main` sont verts, GitHub declenche le deploy Render
+6. Le healthcheck API est verifie
+7. Le build mobile staging peut etre distribue
 
-- healthcheck
-- auth API
-- auth plateforme
-- onboarding public par invitation
+## Architecture applicative actuelle
 
-### RH
+### API
 
-- employes
-- estimations
-- attendance
-- self-service `me/*`
-- invitations
-- kiosque / biometrie
-- absences
-- salary advances
-- payrolls
-- departements / positions / sites / schedules
-- notifications
-- projects / tasks
+Les modules actuellement visibles dans le code sont:
 
-### Cameras
-
-- CRUD cameras
-- access tokens
-- permissions
-- access logs
-- stream token
-- viewer public
+- authentification API
+- contexte tenant
+- gestion des employes
+- presence / pointage
+- estimation journaliere
+- estimation rapide par periode
+- generation PDF de recu
+- endpoint de sante
 
 ### Web manager
 
-- login / logout
+Les routes web actuellement visibles couvrent:
+
+- login web
+- logout web
 - dashboard manager
-- consultation employes
+- consultation employe
 - estimation rapide
 - recu PDF
 
 ### Mobile
 
-Le mobile consomme deja ou vise directement les parcours relies a :
-
-- auth
-- me
-- employes
-- attendance
-- estimations critiques
-- onboarding / invitations selon l'evolution des ecrans
-
-## Ce qui est valide a date
-
-### Valide dans le code et la CI
+Le mobile est aligne pour consommer:
 
 - auth login / me / logout
-- garde-fous auth
-- isolation tenant
-- attendance du jour et historique
-- estimations
-- recu PDF
-- contrats JSON critiques pour mobile
-- onboarding par invitation
-- plusieurs checks CI backend, mobile, securite et gouvernance
+- listing employes
+- pointage du jour
+- historique presence
+- parcours metiers relies a ces endpoints
 
-### Indices de validation visibles dans les tests
+## Fonctionnalites validees a date
 
-Le depot contient notamment des tests pour :
+### Validees dans le code et deja couvertes en CI
 
-- auth
-- attendance
-- employees / RBAC
-- health
-- onboarding
-- cameras
-- estimations
-- contrats mobile
-- chiffrement employee
+- login API
+- endpoint `me`
+- logout API
+- healthcheck API
+- controle RBAC employes
+- isolation multitenant sur les listes employes
+- check-in / check-out
+- historique et vue du jour attendance
+- estimation journaliere
+- estimation rapide
+- generation PDF de recu
+- contrats JSON critiques consommes par le mobile
+- garde-fous auth:
+- compte archive refuse
+- compte suspendu refuse
+- acces estimation inter-tenant refuse
 
-## Ce qui reste partiel ou a consolider
+### Validees operationnellement par l'architecture
 
-1. la documentation API ne reflete pas encore partout la surface reelle de `main`
-2. la cohesion entre vision, pilotage et CDC/reponse CDC n'est pas totalement refermee
-3. certains modules etendus visibles dans les routes meritent encore une meilleure tracabilite contractuelle
-4. la recette pilote par role reste a consolider
+- migrations publiques puis tenant au boot Render
+- bootstrap de table `migrations` durci pour eviter les courses au demarrage
+- seeders de base idempotents
+- seed demo sous controle
+- pipeline mobile conditionnelle pour ne lancer les etapes lourdes que si `mobile/**` change
 
-## Reponse synthese au CDC
+## Fonctionnalites partiellement couvertes ou a confirmer
+
+Les sujets suivants sont identifies dans la documentation cible mais ne sont pas encore couverts completement dans les tests backend visibles:
+
+- registre public complet / creation tenant par endpoint dedie
+- gestion complete des conges
+- paie / payroll complet avec RBAC finance
+- notifications metier temps reel
+- scenarios d'utilisateur bloque distincts des comptes archives
+- contrats API etendus si de nouveaux ecrans mobile apparaissent
+
+## Traceabilite des validations
+
+### Documentation de reference
+
+- scenarios mobile: `docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md`
+- scenarios API: `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md`
+- rapport QA CI: `docs/GESTION_PROJET/RAPPORT_QA_CI_2026-04-18.md`
+- runbook deploy: `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md`
+
+### Tests backend actuellement presents
+
+- `api/tests/Feature/AuthLoginTest.php`
+- `api/tests/Feature/AuthLoginGuardrailsTest.php`
+- `api/tests/Feature/AuthMeLogoutTest.php`
+- `api/tests/Feature/EmployeesRbacTest.php`
+- `api/tests/Feature/TenantIsolationTest.php`
+- `api/tests/Feature/Attendance/*`
+- `api/tests/Feature/Estimation/*`
+- `api/tests/Feature/Contracts/MobilePayloadContractTest.php`
+- `api/tests/Unit/*`
+
+## Reponse synthese au cahier des charges
 
 ### Ce qui est repondu aujourd'hui
 
-- base SaaS RH multi-tenant deployable
-- coeur RH exploitable
-- attendance exploitable
-- estimations et recu PDF
-- web manager fonctionnel
-- mobile branche sur les parcours coeur
-- pipeline CI/CD actif
+- base SaaS RH multitenant en place
+- authentification et securisation des acces en place
+- gestion employes MVP en place
+- suivi de presence exploitable en place
+- estimation et recu PDF en place
+- deploiement cloud automatise en place
+- CI GitHub Actions active avec verifications backend, mobile, securite et gouvernance
 
-### Ce qui est repondu mais doit etre mieux documente
+### Ce qui est en reponse partielle
 
-- onboarding public
-- modules RH etendus
-- cameras
-- plateforme super-admin
+- couverture metier RH large au-dela du MVP
+- paie complete
+- absences/conges completes
+- notifications et workflows etendus
 
-### Ce qui reste a produire pour une reponse plus complete
+### Ce qui reste a produire pour une reponse complete au CDC initial
 
-- une documentation API current-state plus fiable
-- une recette d'acceptation transverse par role
-- des corrections issues des pilotes beta
-- l'arbitrage sur les evolutions fonctionnelles a poursuivre ou geler
-
-## Documents a croiser
-
-1. `../../PILOTAGE.md`
-2. `PROCHAINES_ACTIONS_MAIN_2026-04-27.md`
-3. `ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
-4. `../../api/routes/api.php`
-5. `../../api/routes/modules/rh.php`
-6. `../../api/routes/modules/cameras.php`
+- finaliser les modules metier manquants
+- automatiser leurs tests backend et mobile
+- consolider les contrats API finaux
+- produire une recette d'acceptation par role complete
 
 ## Conclusion
 
-Le depot n'est plus une simple intention ni un MVP minimal.
-Il contient deja une base plus large, mais cette largeur doit maintenant etre rendue lisible, verifiee et pilotable sans ambiguite.
+Le produit n'est plus au stade de simple intention.
+Il dispose deja d'une base technique coherente, deployable et verifiee en CI sur ses modules coeur actuellement presents.
+
+Le bon intitule pour ce document est:
+
+- dossier de reponse au cahier des charges
+
+ou, si un nom plus formel est prefere:
+
+- dossier de conformite fonctionnelle et technique
+
+ou encore:
+
+- dossier d'etat de realisation et d'architecture

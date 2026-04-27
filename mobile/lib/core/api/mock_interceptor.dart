@@ -11,21 +11,7 @@ class MockInterceptor extends Interceptor {
     if (options.path.contains('/auth/login')) {
       mockFile = 'mock_auth_login.json';
     } else if (options.path.contains('/auth/me')) {
-      // Create a small mock inline or use a file
-      return handler.resolve(Response(
-        requestOptions: options,
-        data: {
-          "data": {
-            "id": 101,
-            "first_name": "Hamid",
-            "last_name": "Djebari",
-            "email": "h.djebari@techcorp.dz",
-            "status": "active",
-            "company": {"id": "1", "name": "Mock Corp"}
-          }
-        },
-        statusCode: 200,
-      ));
+      mockFile = 'mock_auth_me.json';
     } else if (options.path.contains('/attendance/check-in')) {
       mockFile = 'mock_attendance_today_B_checked_in.json';
     } else if (options.path.contains('/attendance/check-out')) {

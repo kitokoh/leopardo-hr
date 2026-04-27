@@ -2,13 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.79] - 2026-04-27
+## [4.1.79] - 2026-05-22
 
-### Palette - Accessibilité Statuts et Équipe mobile
+### Documentation & Outils - Standardisation des Mocks API
 
-- Mobile : Amélioration de l'accessibilité du widget `LeopardoBadge` par l'ajout de labels `Semantics` explicites (ex: "Statut : Présent") et l'exclusion des icônes décoratives pour les lecteurs d'écran.
-- Mobile : Amélioration de l'accessibilité de l'écran `TeamScreen` par l'ajout d'un tooltip sur le bouton d'ajout et le masquage des initiales redondantes dans la liste des employés.
-
+- Docs : Création de `docs/api-mock-data/` contenant des exemples de réponses JSON pour tous les endpoints de l'API, facilitant le développement offline.
+- Outils : Ajout de `tools/generate_api_examples.py`, un utilitaire Python permettant de régénérer les fichiers de mock à partir de la spécification OpenAPI (`api/openapi.yaml`).
+- Mobile : Synchronisation des assets de mock (`mobile/assets/mock/`) avec les nouveaux schémas standardisés.
+- Mobile : Refactorisation de `MockInterceptor` pour charger dynamiquement les fichiers JSON standardisés au lieu d'utiliser des données codées en dur.
+- Docs : Mise à jour du `mobile/README.md` et création d'un `README.md` dans `docs/api-mock-data/` pour documenter la source de vérité des mocks.
 
 ## [4.1.78] - 2026-04-27
 
@@ -17,13 +19,6 @@
 - API : ajout de `GET /api/v1/onboarding/invitation/{token}` pour verifier un token d'invitation public et retourner les informations minimales d'activation (`email`, `role`, `manager_role`, `employee_name`, `expires_at`).
 - API : ajout de `POST /api/v1/onboarding/invitation/{token}/activate` pour activer un compte employe invite, valider le mot de passe et emettre un token Sanctum de connexion immediate.
 - API : ajout du controleur `OnboardingController` et des routes publiques throttlees (`10 req/min`) pour l'onboarding sans authentification prealable.
-
-### Docs - Realignement des documents maitres et de la reprise projet
-
-- Docs : creation de `docs/GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md` comme point d'entree canonique pour savoir ce qu'il reste a faire et dans quel ordre reprendre.
-- Pilotage : simplification de `PILOTAGE.md` pour separer clairement la verite operationnelle, la reprise courante et les references canoniques.
-- Docs : realignement de `docs/REFERENTIEL_PRODUIT/APV.md`, `docs/REFERENTIEL_PRODUIT/ROADMAP.md` et `docs/GESTION_PROJET/DOSSIER_REPONSE_AU_CAHIER_DES_CHARGES.md` afin de mieux refleter la realite de `main`.
-- Gouvernance : mise a jour des README d'entree (`docs/README.md`, `docs/GESTION_PROJET/README.md`, `docs/dossierdeConception/README.md`, `docs/notes/README.md`) et requalification de `GARDE_FOUS.md` pour eviter les reprises sur une base obsolete.
 
 ### Contractor - Alignement contract API/mobile (attendance)
 
