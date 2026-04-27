@@ -117,6 +117,7 @@ class EstimationService
         if (! $log || ! $log->check_in) {
             return [
                 'employee_id' => $employee->id,
+                'matricule' => $employee->matricule,
                 'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
                 'date' => $dateKey,
                 'check_in' => null,
@@ -154,6 +155,7 @@ class EstimationService
 
         return [
             'employee_id' => $employee->id,
+            'matricule' => $employee->matricule,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
             'date' => $dateKey,
             'check_in' => $checkInUtc->copy()->setTimezone($company->timezone)->format('H:i'),
