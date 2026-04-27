@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.75] - 2026-05-21
+
+### Janitor - Hygiène du dépôt
+
+- API : suppression de `api/test-results.xml` (rapport de test accidentellement tracké) et ajout à `.gitignore`.
+
 ## [4.1.74] - 2026-04-27
 
 ### Client - Alignement i18n mobile/web avec l'API
