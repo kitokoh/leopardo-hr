@@ -39,7 +39,7 @@ class EmployeeService
         $payload['status'] = $payload['status'] ?? 'active';
         $payload['extra_data'] = $this->normalizeExtraData($payload['extra_data'] ?? []);
 
-        if ($actor?->isManager() && empty($payload['manager_id']) && $payload['role'] !== 'manager') {
+        if ($actor?->isManager() && empty($payload['manager_id'])) {
             $payload['manager_id'] = $actor->id;
         }
 
