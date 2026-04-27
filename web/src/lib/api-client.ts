@@ -22,6 +22,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   if (response.status === 401 && typeof window !== 'undefined') {
     localStorage.removeItem('auth_token');
     window.location.href = '/auth/login';
+    throw new Error('Unauthorized: redirecting to login');
   }
 
   return response;
