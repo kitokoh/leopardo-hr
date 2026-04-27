@@ -7,10 +7,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\TenantManager;
 use Symfony\Component\HttpFoundation\Response;
 
 class TenantMiddleware
 {
+    public function __construct(private readonly TenantManager $tenantManager) {}
     public function handle(Request $request, Closure $next): Response
     {
         $employee = $request->user();
@@ -61,13 +63,7 @@ class TenantMiddleware
         }
 
         $request->attributes->set('company', $company);
-        app()->instance('current_company', $company);
-
-        if (DB::getDriverName() === 'pgsql') {
-            $rawSchema = $company->schema_name ?: 'shared_tenants';
-            $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $rawSchema) ?: 'shared_tenants';
-            DB::statement('SET search_path TO "'.$schema.'",public');
-        }
+        $this->tenantManager->setTenant($company);
 
         return $next($request);
     }

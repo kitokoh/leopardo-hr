@@ -17,26 +17,25 @@ class DashboardController extends Controller
         $company = app('current_company');
         $today = now('UTC')->setTimezone($company->timezone)->toDateString();
 
-        $employees = Employee::query()
-            ->select(['id', 'first_name', 'last_name', 'email', 'salary_type', 'salary_base', 'hourly_rate'])
-            ->orderBy('last_name')
-            ->orderBy('first_name')
+        // 1. Statistiques globales (sur tous les employés actifs)
+        $allEmployees = Employee::query()
+            ->select(['id', 'salary_type', 'salary_base', 'hourly_rate'])
+            ->where('status', 'active')
             ->get();
 
-        $logsByEmployee = AttendanceLog::query()
+        $logsByEmployeeAll = AttendanceLog::query()
             ->select(['id', 'employee_id', 'status', 'check_in', 'check_out', 'hours_worked', 'overtime_hours'])
             ->where('date', $today)
             ->where('session_number', 1)
             ->get()
             ->keyBy('employee_id');
 
-        $rows = [];
         $present = 0;
         $late = 0;
         $totalEstimated = 0.0;
 
-        foreach ($employees as $employee) {
-            $log = $logsByEmployee->get($employee->id);
+        foreach ($allEmployees as $employee) {
+            $log = $logsByEmployeeAll->get($employee->id);
             $attendanceStatus = $log?->status ?? 'absent';
 
             if ($attendanceStatus !== 'absent') {
@@ -48,6 +47,22 @@ class DashboardController extends Controller
 
             $summary = $this->estimationService->dailySummaryFromLog($employee, $log, $today);
             $totalEstimated += (float) $summary['total_estimated'];
+        }
+
+        // 2. Pagination pour la liste du tableau
+        $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
+        $paginator = Employee::query()
+            ->select(['id', 'first_name', 'last_name', 'email', 'salary_type', 'salary_base', 'hourly_rate'])
+            ->where('status', 'active')
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->paginate($perPage);
+
+        $rows = [];
+        foreach ($paginator->items() as $employee) {
+            $log = $logsByEmployeeAll->get($employee->id);
+            $attendanceStatus = $log?->status ?? 'absent';
+            $summary = $this->estimationService->dailySummaryFromLog($employee, $log, $today);
 
             $rows[] = [
                 'employee' => $employee,
@@ -69,6 +84,7 @@ class DashboardController extends Controller
             'totalEstimated' => round($totalEstimated, 2),
             'currency' => $company->currency,
             'rows' => $rows,
+            'paginator' => $paginator,
         ]);
     }
 }

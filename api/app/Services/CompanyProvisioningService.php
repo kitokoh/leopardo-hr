@@ -12,6 +12,7 @@ class CompanyProvisioningService
 {
     public function __construct(
         private readonly UserInvitationService $invitationService,
+        private readonly TenantManager $tenantManager,
     ) {}
 
     /**
@@ -19,8 +20,6 @@ class CompanyProvisioningService
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
-        DB::statement('SET search_path TO public');
-
         $result = DB::transaction(function () use ($payload): array {
             $plan = DB::table('plans')->where('id', $payload['plan_id'])->first();
             $trialDays = (int) ($plan->trial_days ?? 14);
@@ -48,7 +47,7 @@ class CompanyProvisioningService
             ]);
 
             DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
-            DB::statement('SET search_path TO shared_tenants,public');
+            $this->tenantManager->setTenant($company);
 
             /** @var Employee $manager */
             $manager = Employee::query()->create([
@@ -72,7 +71,7 @@ class CompanyProvisioningService
                 ],
             ]);
 
-            DB::statement('SET search_path TO public');
+            $this->tenantManager->resetToPrevious();
 
             return [
                 'company' => $company,
@@ -87,7 +86,7 @@ class CompanyProvisioningService
             invitedByEmail: $superAdmin->email,
         );
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        $this->tenantManager->setTenant($result['company']);
 
         return $result;
     }

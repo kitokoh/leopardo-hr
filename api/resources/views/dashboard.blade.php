@@ -35,6 +35,10 @@
             </div>
 
             <x-attendance-table :rows="$rows" />
+
+            <div class="mt-4">
+                {{ $paginator->links() }}
+            </div>
         </div>
 
         <div class="hidden lg:block">

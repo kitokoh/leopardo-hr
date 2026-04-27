@@ -390,7 +390,7 @@ return new EmployeeResource($employee);
 
 ---
 
-### [ ] ACTION 7 : Centraliser la gestion du search_path
+### [x] ACTION 7 : Centraliser la gestion du search_path
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 4h
 
@@ -455,7 +455,7 @@ $this->app->singleton(TenantManager::class);
 
 ---
 
-### [ ] ACTION 8 : Ajouter la pagination au DashboardController
+### [x] ACTION 8 : Ajouter la pagination au DashboardController
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 2h
 
