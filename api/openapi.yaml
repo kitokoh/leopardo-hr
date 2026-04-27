@@ -2,7 +2,7 @@ openapi: "3.0.3"
 
 info:
   title: "Leopardo RH API"
-  version: "main-2026-04-27"
+  version: "4.1.81-2026-05-22"
   description: |
     OpenAPI alignee sur la surface API reellement exposee par origin/main.
 
