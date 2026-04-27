@@ -50,7 +50,7 @@ class AttendanceController extends Controller
             dto: CheckInDTO::fromRequest($request),
         );
 
-        return new AttendanceLogResource($log);
+        return (new AttendanceLogResource($log))->response();
     }
 
     public function today(AttendanceTodayRequest $request): JsonResponse
@@ -183,7 +183,8 @@ class AttendanceController extends Controller
         $perPage = $validated['per_page'] ?? 20;
 
         $paginator = $query->paginate($perPage);
-        return AttendanceLogResource::collection($paginator);
+
+        return AttendanceLogResource::collection($paginator)->response();
 
     }
 
@@ -226,7 +227,7 @@ class AttendanceController extends Controller
 
         $attendanceLog = $this->attendanceService->recalculateLog($attendanceLog);
 
-        return new AttendanceLogResource($attendanceLog);
+        return (new AttendanceLogResource($attendanceLog))->response();
     }
 
 }

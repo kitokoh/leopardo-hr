@@ -32,7 +32,7 @@ class InvitationController extends Controller
             ->limit(200)
             ->get();
 
-        return UserInvitationResource::collection($invitations);
+        return UserInvitationResource::collection($invitations)->response();
     }
 
     public function resend(Request $request, string $invitationId): JsonResponse

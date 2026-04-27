@@ -86,8 +86,6 @@ class CompanyProvisioningService
             invitedByEmail: $superAdmin->email,
         );
 
-        $this->tenantManager->setTenant($result['company']);
-
         return $result;
     }
 
