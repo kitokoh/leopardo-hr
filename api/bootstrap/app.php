@@ -37,6 +37,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        \Sentry\Laravel\Integration::handles($exceptions);
+
         $exceptions->render(function (DomainException $exception, Request $request) {
             if (! ($request->expectsJson() || $request->is('api/*'))) {
                 return null;

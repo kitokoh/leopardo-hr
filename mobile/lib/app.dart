@@ -13,6 +13,7 @@ import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_rh/features/home/screens/home_screen.dart';
+import 'package:leopardo_rh/features/modules/screens/modules_screen.dart';
 import 'package:leopardo_rh/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_rh/features/team/screens/team_screen.dart';
 
@@ -74,6 +75,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/team',
         builder: (context, state) => const TeamScreen(),
+      ),
+      GoRoute(
+        path: '/modules',
+        builder: (context, state) => const ModulesScreen(),
       ),
       GoRoute(
         path: '/settings',

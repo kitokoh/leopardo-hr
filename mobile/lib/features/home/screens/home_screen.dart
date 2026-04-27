@@ -134,6 +134,13 @@ class _QuickActionsGrid extends StatelessWidget {
         color: AppColors.textMutedDark,
         onTap: () => context.push('/history'),
       ),
+      _QuickAction(
+        icon: Icons.dashboard_customize_outlined,
+        label: 'Modules RH',
+        subtitle: 'Paie, avances, notif',
+        color: AppColors.finance,
+        onTap: () => context.push('/modules'),
+      ),
       if (canManageTeam)
         _QuickAction(
           icon: Icons.group,
