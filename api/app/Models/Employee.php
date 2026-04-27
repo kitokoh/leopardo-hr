@@ -61,6 +61,11 @@ class Employee extends Authenticatable
         'emergency_contact_relation',
         'extra_data',
         'preferred_language',
+        'iban',
+        'bank_account',
+        'national_id',
+        'failed_login_attempts',
+        'locked_until',
     ];
 
     protected $hidden = [
@@ -77,6 +82,11 @@ class Employee extends Authenticatable
         'biometric_consent_at' => 'datetime',
         'invitation_accepted_at' => 'datetime',
         'extra_data' => 'array',
+        'iban' => 'encrypted',
+        'bank_account' => 'encrypted',
+        'national_id' => 'encrypted',
+        'failed_login_attempts' => 'integer',
+        'locked_until' => 'datetime',
     ];
 
     protected static function booted(): void

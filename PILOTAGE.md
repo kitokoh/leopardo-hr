@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.74 | 2026-04-27
+# PROGRAM_VERSION = 4.1.75 | 2026-04-27
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.73   → Version globale du projet/pilotage (ce fichier fait foi)
+PROGRAM_VERSION  = 4.1.75   → Version globale du projet/pilotage (ce fichier fait foi)
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
                                 - api/config/app.php → 'version'
@@ -173,6 +173,7 @@ Pays MVP :
 | S4-3 | Inviter 3-5 prospects beta | Humain | Retours collectés | ⬜ |
 | S4-4 | Corrections prioritaires | IA | Feedback implémenté | ⬜ |
 | S4-5 | Ouvrir les inscriptions | Humain | Premier client payant | ⬜ |
+| S4-6 | **Plan d'Action d'Amélioration (Phase 1)** | IA | Sécurité P0 : Chiffrement, CORS, Lockout | ✅ |
 
 ---
 

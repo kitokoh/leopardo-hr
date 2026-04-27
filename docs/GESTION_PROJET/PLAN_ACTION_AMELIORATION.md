@@ -60,7 +60,7 @@ Ce document liste les **15 actions d'amelioration** identifiees lors de l'audit 
 
 ## Phase 1 : Securite (avant go-live)
 
-### [ ] ACTION 1 : Activer EncryptedCast sur les donnees sensibles
+### [x] ACTION 1 : Activer EncryptedCast sur les donnees sensibles
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 2h
 
@@ -133,7 +133,7 @@ it('chiffre iban en base', function () {
 
 ---
 
-### [ ] ACTION 2 : Retirer google-services.json du depot
+### [x] ACTION 2 : Retirer google-services.json du depot
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 1h
 
@@ -175,7 +175,7 @@ git rm --cached mobile/android/app/google-services.json 2>/dev/null
 
 ---
 
-### [ ] ACTION 3 : Configurer le middleware CORS
+### [x] ACTION 3 : Configurer le middleware CORS
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 1h
 
@@ -223,7 +223,7 @@ FRONTEND_URL=http://localhost:3000
 
 ---
 
-### [ ] ACTION 4 : Implementer le lockout anti-brute-force
+### [x] ACTION 4 : Implementer le lockout anti-brute-force
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 3h
 

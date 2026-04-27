@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.75] - 2026-04-27
+
+### Sécurité - Plan d'Action Amélioration Phase 1 (P0)
+
+- API : Implémentation du chiffrement `EncryptedCast` sur les colonnes sensibles (`iban`, `bank_account`, `national_id`) dans le modèle `Employee`.
+- API : Migration `encrypt_existing_sensitive_data` pour sécuriser les données existantes en base.
+- API : Configuration explicite du middleware CORS dans `config/cors.php` pour autoriser le frontend web et l'application mobile.
+- API : Système de lockout anti-brute-force — verrouillage du compte après 5 tentatives échouées pendant 15 minutes (`failed_login_attempts`, `locked_until`).
+- API : Nouvelle exception `AccountLockedException` (HTTP 423) et mise à jour d' `AuthService` pour gérer le verrouillage.
+- Mobile/API : Retrait de `google-services.json` du suivi Git et mise à jour du `.gitignore`.
+- Docs : Mise à jour de `PILOTAGE.md` et `PLAN_ACTION_AMELIORATION.md` pour refléter la complétion de la Phase 1.
+
 ## [4.1.74] - 2026-04-27
 
 ### Client - Alignement i18n mobile/web avec l'API

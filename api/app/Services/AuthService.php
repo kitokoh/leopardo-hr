@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\AccountLockedException;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
@@ -44,8 +45,28 @@ class AuthService
             $employee?->syncUserLookup();
         }
 
-        if (! $employee || ! Hash::check($password, $employee->password_hash)) {
+        if (! $employee) {
             throw new InvalidCredentialsException;
+        }
+
+        if ($employee->locked_until && $employee->locked_until->isFuture()) {
+            throw new AccountLockedException($employee->locked_until);
+        }
+
+        if (! Hash::check($password, $employee->password_hash)) {
+            $employee->increment('failed_login_attempts');
+            if ($employee->failed_login_attempts >= 5) {
+                $employee->update(['locked_until' => now()->addMinutes(15)]);
+            }
+            throw new InvalidCredentialsException;
+        }
+
+        // Reset failed attempts on success
+        if ($employee->failed_login_attempts > 0 || $employee->locked_until) {
+            $employee->update([
+                'failed_login_attempts' => 0,
+                'locked_until' => null,
+            ]);
         }
 
         $company = $employee->company;
