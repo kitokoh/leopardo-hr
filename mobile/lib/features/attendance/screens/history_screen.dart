@@ -1,3 +1,4 @@
+import 'package:leopardo_rh/core/widgets/empty_state.dart';
 import 'package:leopardo_rh/core/widgets/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -117,9 +118,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           return Center(child: Text('Erreur : $err'));
         },
         data: (logs) {
-          if (logs.isEmpty) {
-            return const Center(child: Text('Aucun historique pour ce mois.'));
-          }
           final totalJours = logs.length;
           final totalHeures = logs.fold<double>(0, (sum, log) => sum + (log.workedHours ?? 0));
           return Column(
@@ -135,45 +133,61 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               ),
               const Divider(),
               Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: logs.length + (_isLoadingMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == logs.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    final log = logs[index];
-                    Color statusColor = Colors.grey;
-                    switch (log.status) {
-                      case 'ontime':
-                        statusColor = Colors.green;
-                        break;
-                      case 'late':
-                        statusColor = Colors.orange;
-                        break;
-                      case 'absent':
-                        statusColor = Colors.red;
-                        break;
-                    }
-                    
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: statusColor.withValues(alpha: 0.2),
-                        child: Icon(Icons.circle, color: statusColor, size: 12),
-                      ),
-                      title: Text('${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}'),
-                      subtitle: Text(
-                        log.checkIn != null 
-                          ? '${log.checkIn!.hour.toString().padLeft(2,'0')}:${log.checkIn!.minute.toString().padLeft(2,'0')} -> '
-                            '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2,'0')}:${log.checkOut!.minute.toString().padLeft(2,'0')}" : "En cours"}'
-                          : 'Absence'
-                      ),
-                      trailing: Text('${log.workedHours ?? 0}h', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    );
-                  },
+                child: RefreshIndicator(
+                  onRefresh: () async => await ref.refresh(historyProvider(DateTime(now.year, now.month)).future),
+                  child: logs.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 80),
+                            EmptyState(
+                              title: 'Aucun historique',
+                              description: 'Aucun pointage n\'a été enregistré pour ce mois.',
+                              icon: Icons.history_toggle_off,
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          controller: _scrollController,
+                          itemCount: logs.length + (_isLoadingMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == logs.length) {
+                              return const Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Center(child: CircularProgressIndicator()),
+                              );
+                            }
+                            final log = logs[index];
+                            Color statusColor = Colors.grey;
+                            switch (log.status) {
+                              case 'ontime':
+                                statusColor = Colors.green;
+                                break;
+                              case 'late':
+                                statusColor = Colors.orange;
+                                break;
+                              case 'absent':
+                                statusColor = Colors.red;
+                                break;
+                            }
+
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: statusColor.withValues(alpha: 0.2),
+                                child: Icon(Icons.circle, color: statusColor, size: 12),
+                              ),
+                              title: Text(
+                                  '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}'),
+                              subtitle: Text(log.checkIn != null
+                                  ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                  : 'Absence'),
+                              trailing:
+                                  Text('${log.workedHours ?? 0}h', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            );
+                          },
+                        ),
                 ),
               ),
               Container(
