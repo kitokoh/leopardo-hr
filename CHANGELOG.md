@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.81] - 2026-05-22
+
+### API - Super-Admin 2FA & Hardening Cameras
+
+- API : Implémentation du second facteur d'authentification (2FA) pour les Super-Admins (`setup`, `enable`, `disable`) avec génération de secret TOTP et QR Code.
+- API : Renforcement de `CameraPolicy` avec vérification systématique de l'expiration des permissions via le helper `activePermission`.
+- API : Alignement des routes `platform/auth` et correction du binding `PublicCameraViewerController`.
+- Docs : Mise à jour majeure de `api/openapi.yaml` pour refléter les modules `Tasks`, `Evaluations` et `Notifications` (82+ endpoints synchronisés).
+- Tests : Ajout de `PlatformAuthTest` couvrant le workflow 2FA complet.
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)

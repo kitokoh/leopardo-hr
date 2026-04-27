@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Models\AttendanceLog;
+use App\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
-use App\Models\Employee;
 use App\Policies\AttendancePolicy;
 use App\Policies\Cameras\CameraPolicy;
 use App\Policies\EmployeePolicy;
