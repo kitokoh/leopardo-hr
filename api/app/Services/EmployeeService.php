@@ -29,6 +29,7 @@ class EmployeeService
         $payload['password_hash'] = Hash::make($password);
         $payload['contract_type'] = $payload['contract_type'] ?? 'CDI';
         $payload['contract_start'] = $payload['contract_start'] ?? now()->toDateString();
+        $payload['hourly_rate'] = $payload['hourly_rate'] ?? 0.0;
         $payload['company_id'] = $companyId;
 
         if (empty($payload['role'])) {
