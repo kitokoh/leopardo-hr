@@ -6,6 +6,13 @@
 
 ### Documentation - Gouvernance premium et gestion projet
 
+
+### Sécurité & Performance - Stabilisation multi-tenant et standardisation API
+
+- API : Sécurisation des commandes `SET search_path` PostgreSQL via l'introduction de `Company::getSafeSearchPath()` pour prévenir les injections SQL.
+- API : Refactorisation de `MeController` pour utiliser les `JsonResource` standardisées de Laravel (`AttendanceLogResource`, `AttendanceTodayResource`).
+- API : Optimisation des requêtes dans `EstimationService` par l'ajout de clauses `select()` limitant les colonnes récupérées sur `AttendanceLog`.
+
 - Docs : `docs/README.md` est realigne avec la structure canonique actuelle, complete avec `GUIDES/` et `notes/`, et enrichi d'un bloc de standards documentaires.
 - Docs : creation des points d'entree `docs/GESTION_PROJET/README.md`, `docs/notes/README.md` et `docs/PROMPTS_EXECUTION/README.md` pour rendre la navigation plus senior et explicite.
 - Docs : correction des chemins de validation et enrichissement du cadrage QA dans `docs/validation/README.md` et `docs/validation/01_pointage/README.md`.
