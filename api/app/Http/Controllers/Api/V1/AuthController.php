@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Language;
 use App\Services\AuthService;
+use App\Services\EmployeeService;
 use App\Services\FeatureFlag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,10 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function __construct(private readonly AuthService $authService) {}
+    public function __construct(
+        private readonly AuthService $authService,
+        private readonly EmployeeService $employeeService,
+    ) {}
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -49,7 +53,7 @@ class AuthController extends Controller
             throw new \App\Exceptions\CompanyNotFoundException();
         }
 
-        return new EmployeeResource($employee);
+        return (new EmployeeResource($employee))->response();
     }
 
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
@@ -60,7 +64,7 @@ class AuthController extends Controller
 
         $employee = $this->employeeService->update($employee, $employee, $dto);
 
-        return new EmployeeResource($employee->fresh());
+        return (new EmployeeResource($employee->fresh()))->response();
     }
 
     public function updateLanguage(Request $request): JsonResponse
@@ -85,7 +89,7 @@ class AuthController extends Controller
 
         app()->setLocale($employee->preferred_language);
 
-        return new EmployeeResource($employee->fresh());
+        return (new EmployeeResource($employee->fresh()))->response();
     }
 
     public function changePassword(ChangePasswordRequest $request): JsonResponse

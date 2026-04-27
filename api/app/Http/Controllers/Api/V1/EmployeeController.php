@@ -28,7 +28,7 @@ class EmployeeController extends Controller
             ->orderBy('id')
             ->paginate($perPage);
 
-        return EmployeeResource::collection($paginator);
+        return EmployeeResource::collection($paginator)->response();
     }
 
     public function store(StoreEmployeeRequest $request): JsonResponse
@@ -51,7 +51,7 @@ class EmployeeController extends Controller
 
         $this->authorize('view', $employee);
 
-        return new EmployeeResource($employee);
+        return (new EmployeeResource($employee))->response();
     }
 
     public function update(UpdateEmployeeRequest $request, string $employeeId): JsonResponse
@@ -65,7 +65,7 @@ class EmployeeController extends Controller
 
         $employee = $this->employeeService->update($actor, $employee, UpdateEmployeeDTO::fromRequest($request));
 
-        return new EmployeeResource($employee);
+        return (new EmployeeResource($employee))->response();
     }
 
     public function archive(ArchiveEmployeeRequest $request, string $employeeId): JsonResponse

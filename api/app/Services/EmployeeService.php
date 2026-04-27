@@ -27,6 +27,7 @@ class EmployeeService
         
         $password = $providedPassword ?: Str::random(32);
         $payload['password_hash'] = Hash::make($password);
+        $payload['contract_type'] = $payload['contract_type'] ?? 'CDI';
         $payload['contract_start'] = $payload['contract_start'] ?? now()->toDateString();
         $payload['company_id'] = $companyId;
 
