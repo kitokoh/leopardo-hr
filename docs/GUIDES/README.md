@@ -11,7 +11,7 @@ Documentation fonctionnelle orientee **usage quotidien**, par role.
 
 > **Ou va ce que je cherche ?**
 >
-> - **Architecture, lois APV, roadmap** -> [`docs/APV.md`](../APV.md) + [`docs/ROADMAP.md`](../ROADMAP.md)
+> - **Architecture, lois APV, roadmap** -> [`docs/REFERENTIEL_PRODUIT/APV.md`](../REFERENTIEL_PRODUIT/APV.md) + [`docs/REFERENTIEL_PRODUIT/ROADMAP.md`](../REFERENTIEL_PRODUIT/ROADMAP.md)
 > - **Procedures ops (backup, rollback, Sentry)** -> [`docs/GESTION_PROJET/RUNBOOK_*.md`](../GESTION_PROJET/)
 > - **Decisions produit par sprint** -> [`CHANGELOG.md`](../../CHANGELOG.md)
 > - **Vision longue-duree (PDFs)** -> [`docs/vision/`](../vision/)

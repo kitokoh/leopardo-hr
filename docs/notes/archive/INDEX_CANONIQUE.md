@@ -10,5 +10,5 @@ Source de verite active:
 - `docs/README.md`
 
 Documents de reference classes:
-- `docs/infra/Leopardo_RH_Architecture_Deploiement.pdf` -> reference d'architecture non canonique
-- `docs/validation/Leopardo_RH_Pointage_Validation_Finale.pdf` -> referentiel QA canonique du module pointage
+- `docs/infra/03_archives_pdf/Leopardo_RH_Architecture_Deploiement.pdf` -> reference d'architecture non canonique
+- `docs/validation/01_pointage/Leopardo_RH_Pointage_Validation_Finale.pdf` -> referentiel QA canonique du module pointage

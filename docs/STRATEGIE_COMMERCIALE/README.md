@@ -4,6 +4,7 @@ Ce dossier centralise les supports business et go-to-market lies a l'acquisition
 
 ## Contenu
 
+- `Leopardo_RH_GoToMarket.pdf` - PDF source de strategie go-to-market
 - `LEOPARDO_RH_GTM_VERSION_AMELIOREE.md` - strategie go-to-market detaillee
 - `LEOPARDO_RH_PLAN_ACTION_30_JOURS.md` - plan d'execution court terme
 - `LEOPARDO_RH_SCRIPTS_COMMERCIAUX.md` - scripts d'approche et relance
