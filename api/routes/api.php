@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,12 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:10,1'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
+    });
+
+    // Module 6 — Public Onboarding (sans auth, throttle strict)
+    Route::middleware(['throttle:10,1'])->prefix('onboarding')->group(function (): void {
+        Route::get('/invitation/{token}', [OnboardingController::class, 'show']);
+        Route::post('/invitation/{token}/activate', [OnboardingController::class, 'activate']);
     });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
