@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\DepartmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EstimationController;
+use App\Http\Controllers\Api\V1\EvaluationController;
 use App\Http\Controllers\Api\V1\InvitationController;
 use App\Http\Controllers\Api\V1\KioskController;
 use App\Http\Controllers\Api\V1\MeController;
@@ -136,6 +137,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::patch('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->whereNumber('task');
     Route::post('/tasks/{task}/comments', [TaskController::class, 'addComment'])->whereNumber('task');
+
+    // ── Module 7 (complément) — Evaluations ──────────────────────────────────
+    Route::get('/evaluations', [EvaluationController::class, 'index']);
+    Route::post('/evaluations', [EvaluationController::class, 'store']);
+    Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])->whereNumber('evaluation');
+    Route::put('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation');
+    Route::patch('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation');
+    Route::put('/evaluations/{evaluation}/submit', [EvaluationController::class, 'submit'])->whereNumber('evaluation');
+    Route::put('/evaluations/{evaluation}/acknowledge', [EvaluationController::class, 'acknowledge'])->whereNumber('evaluation');
+    Route::delete('/evaluations/{evaluation}', [EvaluationController::class, 'destroy'])->whereNumber('evaluation');
 });
 
 // ── Kiosk — auth par X-Kiosk-Token ────────────────────────────────────────────
