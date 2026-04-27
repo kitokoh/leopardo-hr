@@ -27,6 +27,6 @@ abstract class TestCase extends BaseTestCase
             return;
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
     }
 }

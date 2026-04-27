@@ -14,7 +14,7 @@ trait CreatesMvpSchema
         $this->dropMvpTables();
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
         }
 
         Schema::create('plans', function (Blueprint $table): void {
@@ -69,7 +69,7 @@ trait CreatesMvpSchema
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO shared_tenants,public');
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         }
 
         Schema::create($this->tenantTable('schedules'), function (Blueprint $table): void {
@@ -333,7 +333,7 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
             $table->id();
@@ -464,6 +464,6 @@ trait CreatesMvpSchema
             return;
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
     }
 }

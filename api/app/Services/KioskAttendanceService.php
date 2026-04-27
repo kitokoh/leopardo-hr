@@ -33,6 +33,10 @@ class KioskAttendanceService
                 throw (new ModelNotFoundException)->setModel(Employee::class);
             }
 
+            if ($employee->status !== 'active') {
+                abort(403, 'EMPLOYEE_NOT_ACTIVE');
+            }
+
             if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
                 abort(403, 'BIOMETRIC_NOT_APPROVED');
             }
@@ -69,6 +73,10 @@ class KioskAttendanceService
                     ->first();
 
                 if (! $employee) {
+                    continue;
+                }
+
+                if ($employee->status !== 'active') {
                     continue;
                 }
 

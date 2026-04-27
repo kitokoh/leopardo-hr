@@ -40,7 +40,7 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
@@ -107,7 +107,7 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $employee = Employee::query()->create([
             'company_id' => $company->id,
@@ -134,7 +134,7 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $kioskResponse = $this->actingAs($manager, 'sanctum')
             ->postJson('/api/v1/kiosks', [
@@ -170,7 +170,7 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
@@ -196,7 +196,7 @@ class BiometricWorkflowTest extends TestCase
             'biometric_fingerprint_enabled' => true,
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $kioskResponse = $this->actingAs($manager, 'sanctum')
             ->postJson('/api/v1/kiosks', [
@@ -235,7 +235,7 @@ class BiometricWorkflowTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.processed_count', 2);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $this->assertDatabaseHas('attendance_logs', [
             'employee_id' => $employee->id,

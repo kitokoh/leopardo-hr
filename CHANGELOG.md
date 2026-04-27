@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.77] - 2026-04-27
+
+### Sécurité - Kiosk Attendance Guard
+
+- API : Durcissement de `KioskAttendanceService` pour bloquer explicitement le pointage (`punch`) et ignorer la synchronisation (`sync`) pour les employés dont le statut n'est pas `active`.
+- Tests : Ajout de `KioskEmployeeStatusSecurityTest` pour verrouiller le comportement de rejet des employés suspendus ou archivés via le kiosque.
+
 ## [4.1.76] - 2026-04-27
 
 ### Qualité & Robustesse - Plan d'Action Amélioration Phase 2, 3 & 4
