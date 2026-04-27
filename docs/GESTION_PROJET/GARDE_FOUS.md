@@ -1,233 +1,103 @@
-# 🛡️ GARDE-FOUS — RÈGLES DE SURVIE DU PROJET
-# Version 5.0 | 04 Avril 2026
-# Ce fichier est lu par tous les agents IA et le chef de projet
-# TOUT le monde doit respecter ces règles sans exception
+# GARDE-FOUS - Regles de survie du projet
+# Version 5.1 | 27 Avril 2026
 
----
+Ce fichier reste actif pour eviter la derive, mais il ne decrit pas a lui seul l'etat reel de `main`.
 
-## GARDE-FOU 1 — ANTI SCOPE CREEP (le plus important)
+## Lire dans cet ordre
 
-### La question magique
-Avant d'ajouter quoi que ce soit, poser cette question :
+1. `../../PILOTAGE.md`
+2. `PROCHAINES_ACTIONS_MAIN_2026-04-27.md`
+3. `ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
 
-> **"Est-ce que Murat (restaurateur, 8 employés) a besoin de ça pour savoir
-> ce qu'il doit payer aujourd'hui ?"**
+## Garde-fou 1 - Anti scope creep
 
-- OUI → on le fait
-- NON → Phase 2. Pas de discussion.
+Avant d'ajouter quoi que ce soit, poser la question :
 
-### Liste noire MVP (features INTERDITES en Phase 1)
-```
-❌ Absences / Congés / Workflow approbation
-❌ Paie complète / Bulletins officiels
-❌ Avances sur salaire
-❌ Tâches / Projets / Kanban
-❌ Évaluations de performance
-❌ ZKTeco / Biométrie
-❌ Multi-langue (AR, EN, TR)
-❌ RTL arabe
-❌ Multi-pays (MA, TN, FR, TR, SN, CI)
-❌ SSE / Notifications temps réel
-❌ Notifications push (FCM)
-❌ Export bancaire (SEPA, CIH, etc.)
-❌ Import CSV employés
-❌ Vue.js / Inertia / PrimeVue
-❌ Redis / Horizon
-❌ Mode schema Enterprise (multitenancy)
-❌ 5 sous-rôles gestionnaire (rh, dept, comptable, superviseur)
-❌ Photo pointage
-❌ QR Code pointage
-❌ Onboarding 4 étapes
-❌ API publique
-```
+> Est-ce que cette action aide directement a livrer, stabiliser ou documenter proprement la valeur deja visible sur `main` ?
 
-Si un agent IA tente d'implémenter un de ces items → **STOP immédiat**.
-Répondre : "Hors scope MVP. Réfère-toi à PILOTAGE.md."
+- Oui : on peut continuer.
+- Non : cela doit etre arbitre dans `PILOTAGE.md` avant implementation.
 
----
+### Important
 
-## GARDE-FOU 2 — ANTI SUR-DOCUMENTATION
+L'ancienne blacklist MVP n'est plus suffisante pour lire le projet :
 
-### Symptômes de sur-documentation
-- Tu écris un nouveau fichier .md au lieu de coder → ⚠️
-- Tu crées une nouvelle version d'un document existant → ⚠️
-- Tu passes plus d'1 heure sur un document sans écrire de code → ⚠️
-- Le CHANGELOG a plus de lignes que le code → 🔴
+- `main` contient deja plus que le MVP historique
+- certains modules autrefois consideres "hors scope" existent deja dans le depot
+- on ne deduit donc jamais l'etat reel du produit a partir d'une ancienne checklist MVP
 
-### Règle
-```
-Maximum 30 minutes de documentation par session de code.
-La documentation suit le code, jamais l'inverse.
-Exception : ce fichier et PILOTAGE.md (documents de gouvernance).
-```
+## Garde-fou 2 - Verite documentaire
 
----
+En cas de contradiction :
 
-## GARDE-FOU 3 — PORTE VERTE OBLIGATOIRE
+1. les routes Laravel et les tests priment pour l'etat reel
+2. `PILOTAGE.md` prime pour le pilotage courant
+3. `docs/REFERENTIEL_PRODUIT/` prime pour la vision active
+4. `docs/dossierdeConception/` decrit majoritairement la cible
+5. `docs/notes/` est non canonique
 
-### Règle
-```
-JAMAIS passer au prompt MVP-XX+1 si le prompt MVP-XX a des tests rouges.
+## Garde-fou 3 - Documentation utile seulement
 
-Vérification : php artisan test
-Résultat attendu : 0 failure, 0 error
+La documentation doit :
 
-Si des tests échouent :
-1. Les corriger AVANT de continuer
-2. Ne PAS commenter les tests pour les "faire passer"
-3. Ne PAS créer de TODO/FIXME — corriger maintenant
-```
+- clarifier une decision
+- faciliter la reprise
+- ou eviter une erreur de lecture
 
-### Escalation
-Si un test est impossible à faire passer :
-1. Documenter le blocage dans PILOTAGE.md → section "Blocages"
-2. Demander aide au chef de projet
-3. NE PAS contourner le test
+Elle ne doit pas :
 
----
+- dupliquer une autre source canonique
+- recreer une archive sous un nouveau nom
+- ou devenir un backlog parallele cache
 
-## GARDE-FOU 4 — ISOLATION TENANT (sécurité critique)
+## Garde-fou 4 - Porte verte
 
-### Règle
-```
-Le test TenantIsolationTest ne doit JAMAIS être rouge.
-Un test d'isolation qui échoue = ARRÊT COMPLET du développement.
+On ne passe jamais a l'etape suivante si les verifications precedentes sont rouges.
 
-Si une modification fait échouer TenantIsolationTest :
-1. Revert immédiat (git revert)
-2. Comprendre pourquoi
-3. Corriger
-4. Re-tester
-5. Seulement alors : continuer
-```
+Verification minimale avant de continuer sur une zone code :
 
-### Code interdit dans les controllers tenant
-```php
-// ❌ INTERDIT — écrire ça = bug de sécurité
-Employee::where('company_id', $id)->get();
-DB::table('employees')->where('company_id', $companyId)->get();
-$request->input('company_id'); // dans un controller tenant
+1. tests ou checks pertinents connus
+2. documentation canonique de la zone lue
+3. absence de contradiction non traitee avec `PILOTAGE.md`
 
-// ✅ CORRECT — le scope s'en occupe automatiquement
-Employee::all();
-Employee::where('status', 'active')->get();
-Employee::find($id); // trouvera UNIQUEMENT dans la company du user connecté
-```
+## Garde-fou 5 - Isolation tenant et securite
 
----
+Toute modification backend doit conserver :
 
-## GARDE-FOU 5 — ANTI COMPLEXITÉ PRÉMATURÉE
+- l'isolation tenant
+- les garde-fous d'authentification
+- la coherence des contrats JSON critiques pour mobile/web
 
-### Règle
-```
-Choisir TOUJOURS la solution la plus simple qui fonctionne.
+Si une modification fragilise l'isolation ou la securite :
 
-Simple                          Au lieu de
-──────────────────────────────────────────────
-File cache                      Redis
-Sync queue                      Async + Horizon
-Blade + Alpine.js               Vue.js + Inertia
-2 rôles (manager/employee)      7 rôles RBAC
-DomPDF synchrone                Queue + PDF async
-Session auth (web)              SPA + token
-company_id WHERE (shared)       SET search_path (schema)
-```
+1. stop
+2. documenter le risque
+3. corriger avant toute extension
 
-### Quand upgrader vers la solution complexe
-```
-Redis         → quand > 50 utilisateurs simultanés
-Queue async   → quand un endpoint prend > 3 secondes
-Vue.js        → quand > 5 pages web nécessaires
-7 rôles       → quand les clients le demandent
-Schema mode   → quand un client Enterprise paie pour
-```
+## Garde-fou 6 - Une seule source pour "quoi faire ensuite"
 
----
+Le document canonique de reprise operatoire est :
 
-## GARDE-FOU 6 — VALIDATION MARCHÉ EN PARALLÈLE
+- `PROCHAINES_ACTIONS_MAIN_2026-04-27.md`
 
-### Règle
-```
-Le développement NE DOIT PAS bloquer la validation marché.
-La validation marché NE DOIT PAS bloquer le développement.
-Les deux avancent EN MÊME TEMPS.
-```
+On ne doit pas recreer ailleurs une seconde liste de priorites concurrente sans mettre a jour ce fichier.
 
-### Checklist validation marché (responsable = Chef de projet)
-```
-[ ] Semaine 1 : Landing page en ligne
-[ ] Semaine 2 : LinkedIn Ads lancé (50-100€)
-[ ] Semaine 3 : 5+ inscriptions waiting list
-[ ] Semaine 4 : 3+ interviews prospects (20 min chacune)
-[ ] Semaine 6 : Décision Go/No-Go basée sur les inscriptions
-[ ] Semaine 8 : Premier utilisateur beta
-```
+## Garde-fou 7 - Fin de session obligatoire
 
----
+Avant de terminer une PR ou une session :
 
-## GARDE-FOU 7 — ANTI DETTE TECHNIQUE SILENCIEUSE
+1. mettre a jour `CHANGELOG.md` si une zone critique a change
+2. mettre a jour `PILOTAGE.md` si l'etat reel ou la prochaine action changent
+3. mettre a jour `PROCHAINES_ACTIONS_MAIN_2026-04-27.md` si l'ordre des priorites change
+4. laisser les documents d'archive en archive
 
-### Choses à ne JAMAIS faire
-```
-❌ Copier-coller du code entre controllers (→ extraire dans un Service)
-❌ Mettre de la logique métier dans un Controller (→ Service class)
-❌ Valider des données dans un Controller (→ FormRequest)
-❌ Hardcoder des strings (→ fichier lang/)
-❌ Ignorer un warning PHPStan/Pest (→ corriger)
-❌ Commiter du code avec dd(), dump(), var_dump() (→ supprimer)
-❌ Commiter un .env avec des vrais mots de passe (→ .env.example)
-```
+## Garde-fou 8 - Simplicite de reprise
 
----
+Un nouveau developpeur doit pouvoir comprendre en moins de 5 minutes :
 
-## GARDE-FOU 8 — COMMUNICATION CLAIRE
+- ce qui est deja livre
+- ce qui reste a faire
+- quel document fait foi
+- ou commencer
 
-### Règle scribe (anti-conflits Git)
-```
-Un seul agent IA (désigné “scribe”) a le droit de modifier :
-- PILOTAGE.md
-- CHANGELOG.md
-
-Tous les autres agents IA : interdiction totale d'y toucher.
-
-Process :
-1) Les mises à jour PILOTAGE/CHANGELOG se font uniquement en fin de PR.
-2) Si un agent non-scribe pense qu'un update est nécessaire : il n'édite pas le fichier,
-   il laisse une note claire dans la PR pour que le scribe l'applique.
-```
-
-### Template de fin de session IA
-
-Chaque session IA DOIT finir par mettre à jour `PILOTAGE.md` :
-```
-1. Cocher les tickets terminés (⬜ → ✅)
-2. Noter les blocages éventuels
-3. Commit : "chore: update PILOTAGE.md after MVP-XX"
-```
-
-### Template de commit
-```
-feat(scope): ce qui a été ajouté
-fix(scope): ce qui a été corrigé
-test(scope): tests ajoutés/modifiés
-docs(scope): documentation ajoutée
-
-Scopes valides : init, auth, employees, attendance, estimation, pdf, web, mobile, ci
-```
-
----
-
-## RÉSUMÉ VISUEL
-
-```
-╔══════════════════════════════════════════════╗
-║  AVANT CHAQUE ACTION, VÉRIFIER :            ║
-║                                              ║
-║  1. C'est dans le scope MVP ?     (GF-1)    ║
-║  2. Les tests précédents passent ? (GF-3)    ║
-║  3. L'isolation tenant est OK ?    (GF-4)    ║
-║  4. C'est la solution simple ?     (GF-5)    ║
-║                                              ║
-║  Si une réponse est NON → STOP.              ║
-╚══════════════════════════════════════════════╝
-```
+Si un document empeche cela, il doit etre corrige ou declassifie.
