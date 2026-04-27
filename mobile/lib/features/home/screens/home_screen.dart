@@ -128,6 +128,13 @@ class _QuickActionsGrid extends StatelessWidget {
         onTap: () => context.push('/me/monthly'),
       ),
       _QuickAction(
+        icon: Icons.apps,
+        label: 'Modules',
+        subtitle: 'RH, Avances, Paie...',
+        color: AppColors.finance,
+        onTap: () => context.push('/modules'),
+      ),
+      _QuickAction(
         icon: Icons.history,
         label: 'Historique',
         subtitle: 'Tous mes pointages',

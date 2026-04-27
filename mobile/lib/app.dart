@@ -13,6 +13,12 @@ import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_rh/features/home/screens/home_screen.dart';
+import 'package:leopardo_rh/features/home/screens/modules_hub_screen.dart';
+import 'package:leopardo_rh/features/absences/screens/absence_list_screen.dart';
+import 'package:leopardo_rh/features/salary_advances/screens/salary_advance_list_screen.dart';
+import 'package:leopardo_rh/features/payrolls/screens/payroll_list_screen.dart';
+import 'package:leopardo_rh/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_rh/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_rh/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_rh/features/team/screens/team_screen.dart';
 
@@ -58,6 +64,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/modules',
+        builder: (context, state) => const ModulesHubScreen(),
+      ),
+      GoRoute(
+        path: '/absences',
+        builder: (context, state) => const AbsenceListScreen(),
+      ),
+      GoRoute(
+        path: '/salary-advances',
+        builder: (context, state) => const SalaryAdvanceListScreen(),
+      ),
+      GoRoute(
+        path: '/payrolls',
+        builder: (context, state) => const PayrollListScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: '/evaluations',
+        builder: (context, state) => const EvaluationListScreen(),
       ),
       GoRoute(
         path: '/attendance',
