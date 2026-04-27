@@ -67,6 +67,8 @@ class MobilePayloadContractTest extends TestCase
                 'email',
                 'role',
                 'status',
+                'language',
+                'is_rtl',
                 'company' => [
                     'id',
                     'name',

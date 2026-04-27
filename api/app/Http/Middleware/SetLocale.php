@@ -30,7 +30,7 @@ class SetLocale
                 ?? null;
 
             if ($userLocale && Language::isSupported($userLocale)) {
-                return $userLocale;
+                return strtolower($userLocale);
             }
         }
 

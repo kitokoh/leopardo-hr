@@ -25,6 +25,7 @@ class PublicCameraViewerController extends Controller
             return new JsonResponse([
                 'error' => 'INVALID_TOKEN',
                 'message' => 'INVALID_TOKEN',
+                'localized_message' => __('errors.INVALID_TOKEN'),
             ], 404);
         }
 
@@ -37,6 +38,7 @@ class PublicCameraViewerController extends Controller
             return new JsonResponse([
                 'error' => 'INVALID_TOKEN',
                 'message' => 'INVALID_TOKEN',
+                'localized_message' => __('errors.INVALID_TOKEN'),
             ], 404);
         }
 
@@ -50,6 +52,7 @@ class PublicCameraViewerController extends Controller
             return new JsonResponse([
                 'error' => 'CAMERA_NOT_FOUND',
                 'message' => 'CAMERA_NOT_FOUND',
+                'localized_message' => __('errors.CAMERA_NOT_FOUND'),
             ], 404);
         }
 
