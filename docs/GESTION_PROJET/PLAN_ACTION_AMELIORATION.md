@@ -60,7 +60,7 @@ Ce document liste les **15 actions d'amelioration** identifiees lors de l'audit 
 
 ## Phase 1 : Securite (avant go-live)
 
-### [ ] ACTION 1 : Activer EncryptedCast sur les donnees sensibles
+### [x] ACTION 1 : Activer EncryptedCast sur les donnees sensibles
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 2h
 
@@ -133,7 +133,7 @@ it('chiffre iban en base', function () {
 
 ---
 
-### [ ] ACTION 2 : Retirer google-services.json du depot
+### [x] ACTION 2 : Retirer google-services.json du depot
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 1h
 
@@ -175,7 +175,7 @@ git rm --cached mobile/android/app/google-services.json 2>/dev/null
 
 ---
 
-### [ ] ACTION 3 : Configurer le middleware CORS
+### [x] ACTION 3 : Configurer le middleware CORS
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 1h
 
@@ -223,7 +223,7 @@ FRONTEND_URL=http://localhost:3000
 
 ---
 
-### [ ] ACTION 4 : Implementer le lockout anti-brute-force
+### [x] ACTION 4 : Implementer le lockout anti-brute-force
 
 > **Priorite** : P0 - BLOQUANT | **Effort** : 3h
 
@@ -294,7 +294,7 @@ class AccountLockedException extends DomainException
 
 ## Phase 2 : Qualite du code
 
-### [ ] ACTION 5 : Realigner PILOTAGE.md sur le code reel
+### [x] ACTION 5 : Realigner PILOTAGE.md sur le code reel
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 2h
 
@@ -317,7 +317,7 @@ class AccountLockedException extends DomainException
 
 ---
 
-### [ ] ACTION 6 : Migrer vers des JsonResource Laravel
+### [x] ACTION 6 : Migrer vers des JsonResource Laravel
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 6h
 
@@ -390,7 +390,7 @@ return new EmployeeResource($employee);
 
 ---
 
-### [ ] ACTION 7 : Centraliser la gestion du search_path
+### [x] ACTION 7 : Centraliser la gestion du search_path
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 4h
 
@@ -455,7 +455,7 @@ $this->app->singleton(TenantManager::class);
 
 ---
 
-### [ ] ACTION 8 : Ajouter la pagination au DashboardController
+### [x] ACTION 8 : Ajouter la pagination au DashboardController
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 2h
 
@@ -533,7 +533,7 @@ php artisan superadmin:setup-2fa admin@example.com
 
 ---
 
-### [ ] ACTION 10 : Ajouter un monitoring structure (Sentry)
+### [/] ACTION 10 : Ajouter un monitoring structure (Sentry)
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 3h
 
@@ -572,7 +572,7 @@ Ajouter `SENTRY_LARAVEL_DSN` aux secrets Render.
 
 ---
 
-### [ ] ACTION 11 : Introduire des DTOs pour les services
+### [x] ACTION 11 : Introduire des DTOs pour les services
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 8h
 
@@ -625,7 +625,7 @@ public function create(CreateEmployeeDTO $dto, ?Employee $actor): Employee
 
 ---
 
-### [ ] ACTION 12 : Rollback automatique post-deploiement
+### [x] ACTION 12 : Rollback automatique post-deploiement
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 4h
 
@@ -660,7 +660,7 @@ public function create(CreateEmployeeDTO $dto, ?Employee $actor): Employee
 
 ## Phase 4 : Scalabilite
 
-### [ ] ACTION 13 : Rate limiting par company
+### [x] ACTION 13 : Rate limiting par company
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 4h
 
@@ -685,7 +685,7 @@ RateLimiter::for('api', function (Request $r) {
 
 ---
 
-### [ ] ACTION 14 : Geler le mode schema Enterprise
+### [x] ACTION 14 : Geler le mode schema Enterprise
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 2h
 
@@ -708,7 +708,7 @@ abort_if(
 
 ---
 
-### [ ] ACTION 15 : Preparer l'internationalisation
+### [x] ACTION 15 : Preparer l'internationalisation
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 4h
 

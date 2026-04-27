@@ -7,10 +7,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\TenantManager;
 use Symfony\Component\HttpFoundation\Response;
 
 class TenantMiddleware
 {
+    public function __construct(private readonly TenantManager $tenantManager) {}
     public function handle(Request $request, Closure $next): Response
     {
         $employee = $request->user();
@@ -61,12 +63,13 @@ class TenantMiddleware
         }
 
         $request->attributes->set('company', $company);
-        app()->instance('current_company', $company);
+        $this->tenantManager->setTenant($company);
 
-        if (DB::getDriverName() === 'pgsql') {
-            $rawSchema = $company->schema_name ?: 'shared_tenants';
-            $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $rawSchema) ?: 'shared_tenants';
-            DB::statement('SET search_path TO "'.$schema.'",public');
+        if (class_exists('\Sentry\State\HubAdapter') || class_exists('\Sentry\Laravel\Facade')) {
+            \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($company) {
+                $scope->setTag('company_id', $company->id);
+                $scope->setTag('company_slug', $company->slug);
+            });
         }
 
         return $next($request);

@@ -11,6 +11,10 @@ class SuperAdminService
      */
     public function generateSecret(): string
     {
+        if ($google2fa = $this->google2fa()) {
+            return $google2fa->generateSecretKey();
+        }
+
         return $this->base32Encode(random_bytes(20));
     }
 
@@ -21,6 +25,10 @@ class SuperAdminService
     {
         if (!$superAdmin->two_fa_secret) {
             return true;
+        }
+
+        if ($google2fa = $this->google2fa()) {
+            return $google2fa->verifyKey($superAdmin->two_fa_secret, $code);
         }
 
         $normalizedCode = preg_replace('/\D+/', '', $code) ?? '';
@@ -44,10 +52,27 @@ class SuperAdminService
      */
     public function getQrCodeUrl(SuperAdmin $superAdmin, string $secret): string
     {
+        if ($google2fa = $this->google2fa()) {
+            return $google2fa->getQRCodeUrl(
+                'Leopardo RH Platform',
+                $superAdmin->email,
+                $secret
+            );
+        }
+
         $issuer = rawurlencode('Leopardo RH Platform');
         $label = rawurlencode('Leopardo RH Platform:'.$superAdmin->email);
 
         return "otpauth://totp/{$label}?secret={$secret}&issuer={$issuer}&algorithm=SHA1&digits=6&period=30";
+    }
+
+    private function google2fa(): ?object
+    {
+        if (!class_exists(\PragmaRX\Google2FA\Google2FA::class)) {
+            return null;
+        }
+
+        return new \PragmaRX\Google2FA\Google2FA();
     }
 
     private function totpAt(string $secret, int $timestamp): string

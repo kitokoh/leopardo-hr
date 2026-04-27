@@ -102,6 +102,19 @@ jobs:
           echo "API healthcheck did not become healthy in time."
           exit 1
 
+      - name: Rollback on failure
+        if: failure()
+        shell: bash
+        env:
+          RENDER_ROLLBACK_HOOK_URL: ${{ secrets.RENDER_ROLLBACK_HOOK_URL }}
+        run: |
+          if [[ -n "${RENDER_ROLLBACK_HOOK_URL}" ]]; then
+            echo "Deployment failed. Triggering Render rollback..."
+            curl --fail --silent --show-error --request POST "${RENDER_ROLLBACK_HOOK_URL}"
+          else
+            echo "Deployment failed but RENDER_ROLLBACK_HOOK_URL secret is missing. Cannot auto-rollback."
+          fi
+
   distribute-mobile:
     name: Distribute mobile staging build
     runs-on: ubuntu-latest
