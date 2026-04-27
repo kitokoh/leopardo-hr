@@ -8,6 +8,7 @@ use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Language;
 use App\Services\AuthService;
 use App\Services\FeatureFlag;
 use Illuminate\Http\JsonResponse;
@@ -63,6 +64,24 @@ class AuthController extends Controller
         ]);
     }
 
+    public function updateLanguage(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'language' => ['required', 'string', 'size:2', 'in:'.implode(',', Language::SUPPORTED)],
+        ]);
+
+        /** @var Employee $employee */
+        $employee = $request->user();
+        $employee->preferred_language = $validated['language'];
+        $employee->save();
+
+        app()->setLocale($validated['language']);
+
+        return new JsonResponse([
+            'data' => $this->serializeEmployee($employee->fresh()),
+        ]);
+    }
+
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         /** @var Employee $employee */
@@ -70,7 +89,7 @@ class AuthController extends Controller
 
         if (! Hash::check($request->validated('current_password'), $employee->password_hash)) {
             return new JsonResponse([
-                'message' => 'Le mot de passe actuel est incorrect.',
+                'message' => __('errors.INVALID_CURRENT_PASSWORD'),
                 'error' => 'INVALID_CURRENT_PASSWORD',
             ], 422);
         }
@@ -119,6 +138,7 @@ class AuthController extends Controller
             'emergency_contact_name' => $employee->emergency_contact_name,
             'emergency_contact_phone' => $employee->emergency_contact_phone,
             'extra_data' => $employee->extra_data ?? [],
+            'language' => $employee->preferred_language ?? $employee->company?->language ?? 'fr',
             'capabilities' => $this->capabilitiesFor($employee),
             'features' => FeatureFlag::for($company),
             'suggested_home_route' => $employee->homeRoute(),
