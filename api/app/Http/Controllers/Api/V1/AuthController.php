@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
+use App\DTOs\UpdateEmployeeDTO;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Language;
@@ -55,9 +56,9 @@ class AuthController extends Controller
     {
         /** @var Employee $employee */
         $employee = $request->user();
+        $dto = UpdateEmployeeDTO::fromRequest($request);
 
-        $employee->fill($request->validated());
-        $employee->save();
+        $employee = $this->employeeService->update($employee, $employee, $dto);
 
         return new EmployeeResource($employee->fresh());
     }

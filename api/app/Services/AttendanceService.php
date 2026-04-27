@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\CheckInDTO;
 use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
 use App\Models\AttendanceLog;
@@ -11,7 +12,7 @@ use Illuminate\Support\Carbon;
 
 class AttendanceService
 {
-    public function checkIn(Employee $employee, ?float $gpsLat = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
+    public function checkIn(Employee $employee, CheckInDTO $dto): AttendanceLog
     {
         $company = app('current_company');
 
@@ -49,15 +50,15 @@ class AttendanceService
             'date' => $today,
             'session_number' => 1,
             'check_in' => $nowUtc,
-            'method' => $method,
+            'method' => $dto->method,
             'status' => $status,
             'late_minutes' => $lateMinutes,
-            'gps_lat' => $gpsLat,
-            'gps_lng' => $gpsLng,
+            'gps_lat' => $dto->gps_lat,
+            'gps_lng' => $dto->gps_lng,
         ]);
     }
 
-    public function checkOut(Employee $employee, ?float $gpsLat = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
+    public function checkOut(Employee $employee, CheckInDTO $dto): AttendanceLog
     {
         $company = app('current_company');
 
@@ -90,9 +91,9 @@ class AttendanceService
         $log->check_out = $nowUtc;
         $log->hours_worked = $hours;
         $log->overtime_hours = $overtime;
-        $log->gps_lat = $gpsLat ?? $log->gps_lat;
-        $log->gps_lng = $gpsLng ?? $log->gps_lng;
-        $log->method = $method;
+        $log->gps_lat = $dto->gps_lat ?? $log->gps_lat;
+        $log->gps_lng = $dto->gps_lng ?? $log->gps_lng;
+        $log->method = $dto->method;
 
         if ($log->status === 'incomplete' && $schedule) {
             $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
@@ -110,13 +111,13 @@ class AttendanceService
 
     public function importExternalPunch(
         Employee $employee,
-        array $payload,
+        CheckInDTO $dto,
     ): AttendanceLog {
         $company = app('current_company');
-        $occurredAt = Carbon::parse($payload['occurred_at'] ?? now('UTC'))->utc();
+        $occurredAt = Carbon::parse($dto->occurred_at ?? now('UTC'))->utc();
         $today = $occurredAt->copy()->setTimezone($company->timezone)->toDateString();
-        $action = $payload['action'] ?? 'check_in';
-        $externalEventId = $payload['external_event_id'] ?? null;
+        $action = $dto->action ?? 'check_in';
+        $externalEventId = $dto->external_event_id;
 
         if ($externalEventId) {
             $existing = AttendanceLog::query()->where('external_event_id', $externalEventId)->first();
@@ -152,11 +153,11 @@ class AttendanceService
                 'check_out' => $occurredAt,
                 'hours_worked' => $hours,
                 'overtime_hours' => $overtime,
-                'method' => $payload['method'] ?? 'kiosk_offline',
-                'source_device_code' => $payload['source_device_code'] ?? null,
+                'method' => $dto->method,
+                'source_device_code' => $dto->source_device_code ?? null,
                 'external_event_id' => $externalEventId,
-                'biometric_type' => $payload['biometric_type'] ?? null,
-                'synced_from_offline' => (bool) ($payload['synced_from_offline'] ?? true),
+                'biometric_type' => $dto->biometric_type,
+                'synced_from_offline' => $dto->synced_from_offline,
             ])->save();
 
             return $log;
@@ -193,11 +194,11 @@ class AttendanceService
             'date' => $today,
             'session_number' => 1,
             'check_in' => $occurredAt,
-            'method' => $payload['method'] ?? 'kiosk_offline',
-            'source_device_code' => $payload['source_device_code'] ?? null,
+            'method' => $dto->method,
+            'source_device_code' => $dto->source_device_code ?? null,
             'external_event_id' => $externalEventId,
-            'biometric_type' => $payload['biometric_type'] ?? null,
-            'synced_from_offline' => (bool) ($payload['synced_from_offline'] ?? true),
+            'biometric_type' => $dto->biometric_type,
+            'synced_from_offline' => $dto->synced_from_offline,
             'status' => $status,
             'late_minutes' => $lateMinutes,
         ]);

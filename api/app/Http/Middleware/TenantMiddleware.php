@@ -65,6 +65,13 @@ class TenantMiddleware
         $request->attributes->set('company', $company);
         $this->tenantManager->setTenant($company);
 
+        if (class_exists('\Sentry\State\HubAdapter') || class_exists('\Sentry\Laravel\Facade')) {
+            \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($company) {
+                $scope->setTag('company_id', $company->id);
+                $scope->setTag('company_slug', $company->slug);
+            });
+        }
+
         return $next($request);
     }
 }

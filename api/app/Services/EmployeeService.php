@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\DTOs\CreateEmployeeDTO;
+use App\DTOs\UpdateEmployeeDTO;
 use App\Models\Employee;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
@@ -13,13 +15,16 @@ class EmployeeService
         private readonly UserInvitationService $userInvitationService,
     ) {}
 
-    public function create(array $payload, ?Employee $actor = null): Employee
+    public function create(CreateEmployeeDTO $dto, ?Employee $actor = null): Employee
     {
+        $payload = $dto->toArray();
         $sendInvitation = (bool) Arr::pull($payload, 'send_invitation', false);
         $providedPassword = Arr::pull($payload, 'password');
+        
         $companyId = $payload['company_id']
             ?? $actor?->company_id
             ?? (app()->bound('current_company') ? app('current_company')->id : null);
+        
         $password = $providedPassword ?: Str::random(32);
         $payload['password_hash'] = Hash::make($password);
         $payload['contract_start'] = $payload['contract_start'] ?? now()->toDateString();
@@ -33,10 +38,6 @@ class EmployeeService
         $payload['extra_data'] = $this->normalizeExtraData($payload['extra_data'] ?? []);
 
         if ($actor?->isManager() && empty($payload['manager_id']) && $payload['role'] !== 'manager') {
-            $payload['manager_id'] = $actor->id;
-        }
-
-        if ($actor?->isManager() && empty($payload['manager_id']) && $payload['role'] === 'manager') {
             $payload['manager_id'] = $actor->id;
         }
 
@@ -59,8 +60,9 @@ class EmployeeService
         return $employee;
     }
 
-    public function update(Employee $actor, Employee $employee, array $payload): Employee
+    public function update(Employee $actor, Employee $employee, UpdateEmployeeDTO $dto): Employee
     {
+        $payload = $dto->toArray();
         $isManager = $actor->isManager();
         $isSelfUpdate = $actor->id === $employee->id;
 
@@ -77,17 +79,10 @@ class EmployeeService
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['matricule']);
         }
 
-        // Les champs sensibles RBAC ne peuvent jamais etre modifies par
-        // l'utilisateur sur lui-meme, meme s'il est manager : cela eviterait
-        // qu'un sous-role (dept / comptable / superviseur) s'auto-promeuve
-        // en principal via PATCH /employees/{self}.
         if ($isSelfUpdate) {
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['manager_id']);
         }
 
-        // Defense-in-depth: 'archived' must never be set via the update endpoint.
-        // The HTTP layer already blocks it via UpdateEmployeeRequest validation,
-        // but we strip it here as a safety guard in case validation is bypassed.
         if (isset($payload['status']) && $payload['status'] === 'archived') {
             unset($payload['status']);
         }

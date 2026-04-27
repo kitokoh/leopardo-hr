@@ -7,6 +7,8 @@ use App\Http\Requests\Api\V1\ArchiveEmployeeRequest;
 use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
+use App\DTOs\CreateEmployeeDTO;
+use App\DTOs\UpdateEmployeeDTO;
 use App\Models\Employee;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
@@ -36,7 +38,7 @@ class EmployeeController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $employee = $this->employeeService->create($request->validated(), $actor);
+        $employee = $this->employeeService->create(CreateEmployeeDTO::fromRequest($request), $actor);
 
         return (new EmployeeResource($employee))
             ->response()
@@ -61,7 +63,7 @@ class EmployeeController extends Controller
 
         $this->authorize('update', $employee);
 
-        $employee = $this->employeeService->update($actor, $employee, $request->validated());
+        $employee = $this->employeeService->update($actor, $employee, UpdateEmployeeDTO::fromRequest($request));
 
         return new EmployeeResource($employee);
     }

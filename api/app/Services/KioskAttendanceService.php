@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AttendanceKiosk;
+use App\DTOs\CheckInDTO;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -39,10 +40,10 @@ class KioskAttendanceService
             $kiosk->forceFill(['last_seen_at' => now()])->save();
 
             if ($action === 'check_out') {
-                return $this->attendanceService->checkOut($employee, null, null, 'kiosk_'.$kiosk->biometric_mode);
+                return $this->attendanceService->checkOut($employee, new CheckInDTO(method: 'kiosk_'.$kiosk->biometric_mode));
             }
 
-            return $this->attendanceService->checkIn($employee, null, null, 'kiosk_'.$kiosk->biometric_mode);
+            return $this->attendanceService->checkIn($employee, new CheckInDTO(method: 'kiosk_'.$kiosk->biometric_mode));
         });
     }
 
@@ -75,15 +76,15 @@ class KioskAttendanceService
                     continue;
                 }
 
-                $log = $this->attendanceService->importExternalPunch($employee, [
-                    'action' => $event['action'] ?? 'check_in',
-                    'occurred_at' => $event['occurred_at'] ?? null,
-                    'external_event_id' => $event['external_event_id'] ?? null,
-                    'source_device_code' => $kiosk->device_code,
-                    'method' => 'kiosk_offline',
-                    'biometric_type' => $event['biometric_type'] ?? $kiosk->biometric_mode,
-                    'synced_from_offline' => true,
-                ]);
+                $log = $this->attendanceService->importExternalPunch($employee, new CheckInDTO(
+                    method: 'kiosk_offline',
+                    occurred_at: $event['occurred_at'] ?? null,
+                    external_event_id: $event['external_event_id'] ?? null,
+                    biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
+                    synced_from_offline: true,
+                    action: $event['action'] ?? 'check_in',
+                    source_device_code: $kiosk->device_code
+                ));
 
                 $processed[] = $log->id;
             }

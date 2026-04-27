@@ -533,7 +533,7 @@ php artisan superadmin:setup-2fa admin@example.com
 
 ---
 
-### [ ] ACTION 10 : Ajouter un monitoring structure (Sentry)
+### [/] ACTION 10 : Ajouter un monitoring structure (Sentry)
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 3h
 
@@ -572,7 +572,7 @@ Ajouter `SENTRY_LARAVEL_DSN` aux secrets Render.
 
 ---
 
-### [ ] ACTION 11 : Introduire des DTOs pour les services
+### [x] ACTION 11 : Introduire des DTOs pour les services
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 8h
 

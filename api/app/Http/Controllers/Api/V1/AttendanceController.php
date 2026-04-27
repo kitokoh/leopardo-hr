@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\DTOs\CheckInDTO;
 use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceTodayRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
@@ -29,8 +30,7 @@ class AttendanceController extends Controller
 
         $log = $this->attendanceService->checkIn(
             employee: $employee,
-            gpsLat: $request->validated('gps_lat'),
-            gpsLng: $request->validated('gps_lng'),
+            dto: CheckInDTO::fromRequest($request),
         );
 
         return (new AttendanceLogResource($log))
@@ -47,8 +47,7 @@ class AttendanceController extends Controller
 
         $log = $this->attendanceService->checkOut(
             employee: $employee,
-            gpsLat: $request->validated('gps_lat'),
-            gpsLng: $request->validated('gps_lng'),
+            dto: CheckInDTO::fromRequest($request),
         );
 
         return new AttendanceLogResource($log);
