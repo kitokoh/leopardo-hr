@@ -4,6 +4,12 @@
 
 ## [4.1.78] - 2026-04-27
 
+### API - Public onboarding par invitation
+
+- API : ajout de `GET /api/v1/onboarding/invitation/{token}` pour verifier un token d'invitation public et retourner les informations minimales d'activation (`email`, `role`, `manager_role`, `employee_name`, `expires_at`).
+- API : ajout de `POST /api/v1/onboarding/invitation/{token}/activate` pour activer un compte employe invite, valider le mot de passe et emettre un token Sanctum de connexion immediate.
+- API : ajout du controleur `OnboardingController` et des routes publiques throttlees (`10 req/min`) pour l'onboarding sans authentification prealable.
+
 ### Contractor - Alignement contract API/mobile (attendance)
 
 - API : Mise à jour de `AttendanceTodayResource` pour inclure le `matricule` et les champs d'estimation (`base_gain`, `overtime_gain`, `total_estimated`, `currency`) résolus via `EstimationService`.
