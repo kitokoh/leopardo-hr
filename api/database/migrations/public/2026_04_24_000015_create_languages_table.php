@@ -43,6 +43,7 @@ return new class extends Migration
     }
 
     public function down(): void
+    public function down(): void
     {
         DB::statement('SET search_path TO public');
         Schema::dropIfExists('languages');
