@@ -4,25 +4,32 @@ namespace Tests\Feature;
 
 use App\Models\SuperAdmin;
 use App\Services\SuperAdminService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class PlatformAuthTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private SuperAdmin $superAdmin;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->superAdmin = clone SuperAdmin::query()->create([
             'name' => 'Test Super Admin',
             'email' => 'admin@leopardo.test',
             'password_hash' => Hash::make('password123'),
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     public function test_super_admin_can_login_without_2fa_if_not_enabled(): void
