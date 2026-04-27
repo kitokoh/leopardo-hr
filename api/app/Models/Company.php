@@ -87,6 +87,17 @@ class Company extends Model
         $this->features = $features;
     }
 
+    /**
+     * Retourne une chaine search_path securisee pour PostgreSQL.
+     * Echappe le nom du schema pour eviter les injections SQL.
+     */
+    public function getSafeSearchPath(): string
+    {
+        $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $this->schema_name ?: 'shared_tenants') ?: 'shared_tenants';
+
+        return '"'.$schema.'",public';
+    }
+
     protected static function booted(): void
     {
         static::creating(function (self $company): void {
@@ -108,9 +119,8 @@ class Company extends Model
             // alors que l update d une company via le super-admin web s execute
             // avec search_path=public. On etend le search_path temporairement
             // pour que la revocation des tokens (Sanctum) voie les relations.
-            $schema = $company->schema_name ?: 'shared_tenants';
             $previous = DB::selectOne('SHOW search_path')->search_path ?? 'public';
-            DB::statement("SET search_path TO {$schema},public");
+            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
             try {
                 Employee::withoutGlobalScopes()
                     ->where('company_id', $company->id)
