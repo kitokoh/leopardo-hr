@@ -41,6 +41,7 @@ class AttendanceTodayResource extends JsonResource
             'check_in_time' => $this->log?->check_in?->setTimezone($this->timezone)->format('H:i'),
             'check_out_time' => $this->log?->check_out?->setTimezone($this->timezone)->format('H:i'),
             'hours_worked' => $this->log?->hours_worked ?? '0.00',
+            'overtime_hours' => $this->log?->overtime_hours ?? '0.00',
             'status' => $this->log?->status ?? 'absent',
         ];
     }
