@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Cameras;
+namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\Cameras\CameraService;
+use App\Modules\Cameras\Infrastructure\Services\CameraService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;

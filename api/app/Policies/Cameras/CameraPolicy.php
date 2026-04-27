@@ -2,25 +2,10 @@
 
 namespace App\Policies\Cameras;
 
-use App\Models\Cameras\Camera;
-use App\Models\Cameras\CameraAccessToken;
 use App\Models\Employee;
+use App\Modules\Cameras\Domain\Camera;
+use App\Modules\Cameras\Domain\CameraAccessToken;
 
-/**
- * RBAC Module Surveillance Caméras (cahier des charges, section 5).
- *
- *   Action                      | SuperAdmin | Principal | RH | Dept/Sup | Employé
- *   Voir liste                  |     ✓      |     ✓     | ✓  | zones*   |   ✗
- *   Visualiser flux             |     ✓      |     ✓     | ✓  | zones*   |   ✗
- *   Ajouter / modifier / supprimer   ✓              ✓     | ✗  |    ✗    |   ✗
- *   Tester RTSP                 |     ✓      |     ✓     | ✗  |    ✗    |   ✗
- *   Générer accès tiers         |     ✓      |     ✓     | ✓  |    ✗    |   ✗
- *   Révoquer accès tiers        |     ✓      |     ✓     | ✓  |    ✗    |   ✗
- *   Gérer permissions internes  |     ✓      |     ✓     | ✗  |    ✗    |   ✗
- *
- * Phase 1 Prime : les rôles Dept/Superviseur sont câblés en base mais le
- * middleware les restreint pour l'instant (voir spec, section 5).
- */
 class CameraPolicy
 {
     public function viewAny(Employee $actor): bool
@@ -38,7 +23,6 @@ class CameraPolicy
             return false;
         }
 
-        // Dept/Superviseur : limité par camera_permissions.
         return $camera->permissions()
             ->where('employee_id', $actor->id)
             ->where('can_view', true)

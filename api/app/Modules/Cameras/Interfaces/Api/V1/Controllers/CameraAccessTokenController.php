@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Cameras;
+namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Cameras\StoreCameraAccessTokenRequest;
-use App\Models\Cameras\Camera;
-use App\Models\Cameras\CameraAccessToken;
+use App\Modules\Cameras\Domain\Camera;
+use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Cameras\Infrastructure\Services\CameraService;
+use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraAccessTokenRequest;
 use App\Models\Employee;
-use App\Services\Cameras\CameraService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
