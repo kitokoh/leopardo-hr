@@ -23,7 +23,7 @@
 
 ## Couleurs sémantiques (statuts)
 
-Voir `docs/STATUTS.md` pour l'association statut ↔ couleur.
+Voir `docs/REFERENTIEL_PRODUIT/STATUTS.md` pour l'association statut ↔ couleur.
 
 | Usage | Hex | Flutter | Tailwind |
 |---|---|---|---|

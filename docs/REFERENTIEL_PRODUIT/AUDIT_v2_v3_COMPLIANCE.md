@@ -48,7 +48,7 @@
 | L.04 Modules ne se connaissent pas | Pas encore de modules | — | — |
 | L.05 Couleur = domaine | Hardcodé, pas de tokens domaine | ❌ | Sprint B : `AppColors` Flutter + `tailwind.config.js` étendu |
 | L.06 Leo enseigne, l'interface confirme | Pas de Leo | — | Phase 2 |
-| L.07 Grille partagée | Pas de fichier source-de-vérité unique | ❌ | `docs/COULEURS.md` + `docs/STATUTS.md` créés. Mettre à jour ensemble. |
+| L.07 Grille partagée | Pas de fichier source-de-vérité unique | ❌ | `docs/REFERENTIEL_PRODUIT/COULEURS.md` + `docs/REFERENTIEL_PRODUIT/STATUTS.md` créés. Mettre à jour ensemble. |
 | L.08 Un module = un package | Pas encore | ✅ | Prêt pour Sprint B |
 | L.09 Contrat module immutable | Pas de modules | — | — |
 | L.10 JSONB d'abord | Partiel (`company_settings` existe, mais pas sur `employees`) | ⚠️ | Sprint B : ajouter `metadata` JSONB |
