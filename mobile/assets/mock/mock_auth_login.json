@@ -1,13 +1,38 @@
 {
   "data": {
-    "id": 101,
+    "id": 1,
+    "matricule": "string",
     "company_id": "550e8400-e29b-41d4-a716-446655440000",
-    "first_name": "Hamid",
-    "last_name": "Djebari",
-    "email": "h.djebari@techcorp.dz",
-    "role": "employee",
-    "status": "active"
+    "first_name": "string",
+    "middle_name": "string",
+    "last_name": "string",
+    "preferred_name": "string",
+    "email": "example@leopardo-rh.com",
+    "personal_email": "example@leopardo-rh.com",
+    "phone": "string",
+    "role": "string",
+    "manager_role": "string",
+    "status": "string",
+    "photo_path": "string",
+    "biometric_face_enabled": true,
+    "biometric_fingerprint_enabled": true,
+    "address_line": "string",
+    "postal_code": "string",
+    "emergency_contact_name": "string",
+    "emergency_contact_phone": "string",
+    "extra_data": {},
+    "capabilities": {},
+    "features": {},
+    "suggested_home_route": "string",
+    "company": {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "string",
+      "language": "string",
+      "timezone": "string",
+      "currency": "string"
+    }
   },
-  "token": "mock-token-12345",
-  "token_type": "Bearer"
+  "token": "string",
+  "token_type": "Bearer",
+  "token_expires_at": "2026-05-22T10:00:00Z"
 }

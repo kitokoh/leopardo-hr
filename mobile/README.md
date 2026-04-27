@@ -75,6 +75,17 @@ Le fichier `.aab` se trouve dans : `build/app/outputs/bundle/release/app-release
 - **Nom affiché** : Leopardo RH
 - **Version** : 1.0.0
 
+## 🧪 Mocking & Développement Offline
+
+Pour travailler sans API fonctionnelle, l'application utilise des mocks situés dans `assets/mock/`.
+
+**Important :** La source de vérité pour les structures de données API se trouve dans le dossier racine `/docs/api-mock-data/`. Les fichiers JSON dans `assets/mock/` doivent être maintenus en synchronisation avec ces schémas centraux.
+
+Pour mettre à jour les mocks :
+1. Consulter `/docs/api-mock-data/` pour les derniers schémas.
+2. Utiliser le script `/tools/generate_api_examples.py` pour régénérer les exemples si nécessaire.
+3. Copier les fichiers pertinents dans `mobile/assets/mock/` en suivant la convention `mock_{nom}.json`.
+
 ## ⚠️ Note Cold Start (Staging)
 Le premier appel vers le serveur Render peut prendre **30 à 60 secondes**
 car le serveur se réveille depuis sa mise en veille automatique (plan gratuit).
