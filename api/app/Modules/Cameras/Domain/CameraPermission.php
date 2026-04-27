@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Cameras;
+namespace App\Modules\Cameras\Domain;
 
 use App\Models\Employee;
 use App\Traits\BelongsToCompany;
