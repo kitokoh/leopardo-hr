@@ -8,9 +8,11 @@
 
 ```text
 docs/
+|-- REFERENTIEL_PRODUIT/ Documents canoniques courts (APV, roadmap, statuts, couleurs, audit)
+|-- STRATEGIE_COMMERCIALE/ GTM, CRM, scripts commerciaux et plan d'action
 |-- infra/               References infra et operationnel courant
 |-- validation/          Referentiels QA par module
-|-- dossierdeConception/ Specifications fonctionnelles et techniques cibles
+|-- dossierdeConception/ Conception detaillee cible, structuree par domaine
 |-- GESTION_PROJET/      Runbooks, audits, alignements, pilotage d'execution
 `-- PROMPTS_EXECUTION/   Prompts et filieres d'execution
 ```
@@ -33,6 +35,10 @@ docs/
 
 ### 3. Cible produit / conception
 
+- `REFERENTIEL_PRODUIT/APV.md`
+- `REFERENTIEL_PRODUIT/ROADMAP.md`
+- `REFERENTIEL_PRODUIT/STATUTS.md`
+- `REFERENTIEL_PRODUIT/COULEURS.md`
 - `dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`
 - `dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md`
 - `dossierdeConception/05_regles_metier/05_REGLES_METIER.md`
@@ -62,11 +68,13 @@ Pour toute question de coherence doc/code :
 |------|---------|------------------|
 | Etat reel API/backend sur `main` | `GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` | canonique pour l'etat courant |
 | Contrat API cible | `dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` | cible produit, pas garantie d'implementation complete |
+| APV / architecture produit | `REFERENTIEL_PRODUIT/APV.md` | canonique pour la vision produit active |
+| Roadmap produit | `REFERENTIEL_PRODUIT/ROADMAP.md` | canonique pour l'ordre d'execution et les phases |
 | ERD | `dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md` | cible structurelle |
 | SQL complet | `dossierdeConception/18_schemas_sql/07_SCHEMA_SQL_COMPLET.sql` | reference schema cible |
 | Regles metier | `dossierdeConception/05_regles_metier/05_REGLES_METIER.md` | reference fonctionnelle, a confronter au code |
 | Validation locale backend | `GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` | canonique pour l'execution locale |
-| Architecture infra courante | `infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` | canonique pour l'operationnel infra |
+| Architecture infra courante | `infra/01_etat_courant/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` | canonique pour l'operationnel infra |
 
 ---
 

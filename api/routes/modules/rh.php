@@ -16,6 +16,7 @@
 use App\Http\Controllers\Api\V1\AbsenceController;
 use App\Http\Controllers\Api\V1\AttendanceController;
 use App\Http\Controllers\Api\V1\SalaryAdvanceController;
+use App\Http\Controllers\Api\V1\PayrollController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EstimationController;
@@ -60,6 +61,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject']);
     Route::post('/kiosks', [KioskController::class, 'register']);
 
+    // Payrolls
+    Route::get('/payrolls', [PayrollController::class, 'index']);
+    Route::post('/payrolls', [PayrollController::class, 'store']);
+    Route::get('/payrolls/{payroll}', [PayrollController::class, 'show'])->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
+    Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validate'])->whereNumber('payroll');
+    Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->whereNumber('payroll');
     // Salary Advances
     Route::get('/salary-advances', [SalaryAdvanceController::class, 'index']);
     Route::post('/salary-advances', [SalaryAdvanceController::class, 'store']);
