@@ -2,7 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.79] - 2026-05-22
+## [4.1.79] - 2026-04-27
 
 ### Bolt - Performance & Correctness Optimization
 
