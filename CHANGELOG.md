@@ -4,9 +4,11 @@
 
 ## [4.1.79] - 2026-04-27
 
-### Bolt - Performance & Correctness Optimization
+### Palette - Accessibilité Statuts et Équipe mobile
 
-- API: Optimized `AttendanceController@today` by adding column-limited `select()` clauses to both `Employee` and `AttendanceLog` queries. This reduces hydration overhead and ensures all fields required for daily estimation (matricule, salary info, overtime) are pre-loaded, preventing N+1 queries and potential data inconsistencies in the manager view.
+- Mobile : Amélioration de l'accessibilité du widget `LeopardoBadge` par l'ajout de labels `Semantics` explicites (ex: "Statut : Présent") et l'exclusion des icônes décoratives pour les lecteurs d'écran.
+- Mobile : Amélioration de l'accessibilité de l'écran `TeamScreen` par l'ajout d'un tooltip sur le bouton d'ajout et le masquage des initiales redondantes dans la liste des employés.
+
 
 ## [4.1.78] - 2026-04-27
 

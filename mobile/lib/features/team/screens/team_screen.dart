@@ -85,6 +85,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> with SingleTickerProvid
         onPressed: () => _openCreateEmployeeSheet(context),
         icon: const Icon(Icons.person_add),
         label: const Text('Ajouter'),
+        tooltip: 'Ajouter un employé',
       ),
     );
   }
@@ -129,8 +130,10 @@ class _EmployeesTab extends ConsumerWidget {
             itemBuilder: (_, index) {
               final e = employees[index];
               return ListTile(
-                leading: CircleAvatar(
-                  child: Text(_initials(e)),
+                leading: ExcludeSemantics(
+                  child: CircleAvatar(
+                    child: Text(_initials(e)),
+                  ),
                 ),
                 title: Text(e.fullName),
                 subtitle: Text('${e.email}\nRole : ${_roleLabel(e)}'),
