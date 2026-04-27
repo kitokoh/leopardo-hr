@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "camera_id": 1,
+      "employee_id": 1,
+      "access_token_id": 1,
+      "actor_type": "string",
+      "action": "string",
+      "reason": "string",
+      "ip_address": "string",
+      "metadata": {},
+      "created_at": "2026-05-22T10:00:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 1,
+    "total": 1,
+    "window_days": 1
+  }
+}

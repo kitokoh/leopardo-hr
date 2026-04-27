@@ -1,0 +1,34 @@
+{
+  "data": {
+    "employee_id": 1,
+    "name": "string",
+    "period": {
+      "from": "2026-05-22",
+      "to": "2026-05-22",
+      "working_days": 1,
+      "days_present": 1,
+      "days_absent": 1
+    },
+    "totals": {
+      "hours": 1.5,
+      "overtime_hours": 1.5,
+      "gross": 1.5,
+      "deductions": 1.5,
+      "net": 1.5
+    },
+    "currency": "string",
+    "breakdown": [
+      {
+        "date": "2026-05-22",
+        "hours": 1.5,
+        "overtime_hours": 1.5,
+        "base_gain": 1.5,
+        "overtime_gain": 1.5,
+        "total": 1.5
+      }
+    ],
+    "disclaimer": "string",
+    "year": 1,
+    "month": 1
+  }
+}
