@@ -128,7 +128,7 @@ class CheckInTest extends TestCase
 
         $dup = $this->postJson('/api/v1/attendance/check-in');
         $dup->assertStatus(422);
-        $dup->assertJsonPath('message', 'ALREADY_CHECKED_IN');
+        $dup->assertJsonPath('error', 'ALREADY_CHECKED_IN');
     }
 
     public function test_late_status_when_check_in_after_tolerance(): void
@@ -172,5 +172,47 @@ class CheckInTest extends TestCase
         $response = $this->postJson('/api/v1/attendance/check-in');
         $response->assertStatus(201);
         $response->assertJsonPath('data.status', 'late');
+    }
+
+    public function test_manager_cannot_check_in(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'timezone' => 'UTC',
+        ]);
+
+        $schedule = Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Day',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
+            'overtime_threshold_daily' => 8.0,
+            'is_default' => true,
+        ]);
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'schedule_id' => $schedule->id,
+            'email' => 'manager@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson('/api/v1/attendance/check-in');
+
+        $response->assertStatus(403);
     }
 }

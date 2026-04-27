@@ -11,6 +11,8 @@ use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class AttendanceController extends Controller
 {
@@ -166,6 +168,10 @@ class AttendanceController extends Controller
 
         if ($target) {
             $query->where('employee_id', $target->id);
+        } else {
+            // Manager viewing all employees: scope to own company to prevent cross-tenant data leakage.
+            // AttendanceLog has no global company scope, so we must add the WHERE clause explicitly.
+            $query->where('company_id', $actor->company_id);
         }
 
         if (! empty($validated['date_from'])) {
@@ -187,6 +193,50 @@ class AttendanceController extends Controller
                 'per_page' => $paginator->perPage(),
                 'total' => $paginator->total(),
             ],
+        ]);
+    }
+
+    public function update(Request $request, AttendanceLog $attendanceLog): JsonResponse
+    {
+        $this->authorize('update', $attendanceLog);
+
+        $validated = $request->validate([
+            'check_in' => ['nullable', 'date'],
+            'check_out' => ['nullable', 'date'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $effectiveCheckIn = array_key_exists('check_in', $validated)
+            ? $validated['check_in']
+            : $attendanceLog->check_in;
+        $effectiveCheckOut = array_key_exists('check_out', $validated)
+            ? $validated['check_out']
+            : $attendanceLog->check_out;
+
+        if ($effectiveCheckOut !== null && $effectiveCheckIn === null) {
+            throw ValidationException::withMessages([
+                'check_out' => ['Le départ manuel nécessite une heure d\'arrivée.'],
+            ]);
+        }
+
+        if ($effectiveCheckIn !== null && $effectiveCheckOut !== null && $effectiveCheckOut <= $effectiveCheckIn) {
+            throw ValidationException::withMessages([
+                'check_out' => ['L\'heure de départ doit être postérieure à l\'heure d\'arrivée.'],
+            ]);
+        }
+
+        $attendanceLog->fill([
+            'check_in' => $effectiveCheckIn,
+            'check_out' => $effectiveCheckOut,
+            'method' => 'manual',
+            'corrected_by' => $request->user()->id,
+            'correction_note' => $validated['notes'] ?? $attendanceLog->correction_note,
+        ]);
+
+        $attendanceLog = $this->attendanceService->recalculateLog($attendanceLog);
+
+        return new JsonResponse([
+            'data' => $this->serializeLog($attendanceLog),
         ]);
     }
 

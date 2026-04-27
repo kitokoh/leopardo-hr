@@ -14,6 +14,14 @@
 
 ## [4.1.72] - 2026-04-25
 
+### API - Durcissement attendance/auth et corrections review
+
+- API : `api/app/Policies/AttendancePolicy.php` rebloque explicitement le pointage mobile pour les managers afin d'eviter la regression qui leur permettait de faire `check-in` / `check-out` comme un employe.
+- API : `api/app/Http/Controllers/Api/V1/AttendanceController.php`, `api/app/Services/AttendanceService.php` et `api/app/Models/AttendanceLog.php` recalculent maintenant les champs derives (`status`, `late_minutes`, `hours_worked`, `overtime_hours`) lors d'une correction manuelle de pointage, en s'alignant sur les vraies colonnes `corrected_by` / `correction_note`.
+- API : `api/app/Http/Controllers/Api/V1/EmployeeController.php` conserve le payload `data.id` / `data.status` sur l'archivage employe tout en ajoutant `message=EMPLOYEE_ARCHIVED`, pour rester compatible avec la suite existante.
+- Tests : `api/tests/Feature/Attendance/CheckInTest.php`, `api/tests/Feature/Attendance/CheckOutTest.php`, `api/tests/Feature/Attendance/ManualUpdateTest.php` et `api/tests/Support/CreatesMvpSchema.php` couvrent la fermeture de la regression manager, la correction manuelle et le contrat d'erreur de pointage mis a jour.
+- Tests : `api/tests/Support/CreatesMvpSchema.php` cree maintenant explicitement ses tables tenant dans `shared_tenants.*`, ses tables de support public dans `public.*`, et aligne aussi les fixtures `absence_types` / `absences` / `leave_balance_logs`, afin d'eviter les erreurs PostgreSQL `relation does not exist` pendant la suite backend.
+
 ### Migration - Robustesse creation user_invitations
 
 - API : `api/database/migrations/public/2026_04_19_000012_create_user_invitations_table.php` utilise maintenant `DB::unprepared()` avec `CREATE TABLE IF NOT EXISTS` et des indexes `IF NOT EXISTS` PostgreSQL, afin qu'un rebuild/reset complet de la base de test sur Render ne casse pas si la creation de `user_invitations` est rejouee lors d'une relance ou d'une course de migration, sans tomber sur la limite PDO des multi-statements prepares.
