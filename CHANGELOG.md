@@ -2,7 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.73] - 2026-05-27
+## [4.1.73] - 2026-04-27
 
 ### Web - Initialisation de l'application Next.js et site vitrine
 
@@ -1169,6 +1169,5 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 

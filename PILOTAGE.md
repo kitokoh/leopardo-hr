@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.73 | 2026-05-27
+# PROGRAM_VERSION = 4.1.73 | 2026-04-27
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -345,4 +345,3 @@ Phase 6 (après 100 clients)   → API publique + Export bancaire + 7 pays
 
 > Les 40+ documents de conception sont le PLAN de l'immeuble complet.
 > On construit étage par étage. Chaque phase utilise les specs déjà écrites.
-
