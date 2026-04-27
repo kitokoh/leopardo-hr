@@ -91,5 +91,6 @@ class AuthLoginTest extends TestCase
 
         $response->assertStatus(401);
         $response->assertJsonPath('message', 'INVALID_CREDENTIALS');
+        $this->assertNotNull($response->json('localized_message'));
     }
 }

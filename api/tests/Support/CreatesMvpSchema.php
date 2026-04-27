@@ -58,6 +58,16 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create('languages', function (Blueprint $table): void {
+            $table->char('code', 2)->primary();
+            $table->string('name_fr', 50);
+            $table->string('name_native', 50);
+            $table->boolean('is_rtl')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->timestampTz('created_at')->nullable();
+            $table->timestampTz('updated_at')->nullable();
+        });
+
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('SET search_path TO shared_tenants,public');
         }
@@ -108,6 +118,7 @@ trait CreatesMvpSchema
             $table->string('manager_role', 30)->nullable();
             $table->unsignedInteger('manager_id')->nullable();
             $table->string('status', 20)->default('active');
+            $table->char('preferred_language', 2)->nullable();
             $table->string('photo_path', 255)->nullable();
             $table->boolean('biometric_face_enabled')->default(false);
             $table->boolean('biometric_fingerprint_enabled')->default(false);
@@ -380,6 +391,7 @@ trait CreatesMvpSchema
             DB::statement('DROP TABLE IF EXISTS public.user_invitations CASCADE');
             DB::statement('DROP TABLE IF EXISTS public.super_admins CASCADE');
             DB::statement('DROP TABLE IF EXISTS public.hr_model_templates CASCADE');
+            DB::statement('DROP TABLE IF EXISTS public.languages CASCADE');
             DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
             DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.personal_access_tokens CASCADE');
@@ -416,6 +428,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "employees"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "schedules"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "companies"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "languages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "plans"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "hr_model_templates"'.$cascade);
     }

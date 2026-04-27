@@ -105,6 +105,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return false;
     }
   }
+
+  Future<bool> updatePreferredLanguage(String language) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final employee = await _repository.updatePreferredLanguage(language);
+      state = state.copyWith(isLoading: false, employee: employee);
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
