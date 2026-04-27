@@ -1,0 +1,25 @@
+{
+  "status": "ok",
+  "version": "string",
+  "checks": {
+    "database": {
+      "ok": true,
+      "latency_ms": 1,
+      "status": "string",
+      "error": "string"
+    },
+    "redis": {
+      "ok": true,
+      "latency_ms": 1,
+      "status": "string",
+      "error": "string"
+    },
+    "storage": {
+      "ok": true,
+      "latency_ms": 1,
+      "status": "string",
+      "error": "string"
+    }
+  },
+  "timestamp": "2026-05-22T10:00:00Z"
+}
