@@ -113,9 +113,10 @@ RBAC MVP :
   2 rôles : manager + employé
   PAS de sous-rôles (rh, dept, comptable, superviseur → Phase 2)
 
-Langues MVP :
-  Français uniquement
-  i18n préparé (fichiers lang/) mais 1 langue seulement
+Langues :
+  FR + AR (RTL) + TR + EN — production-ready
+  Middleware SetLocale, endpoint PATCH /auth/language
+  Fichiers lang/ complets (errors, auth, attendance, employees, finance, emails, pdf, cameras, validation)
 
 Pays MVP :
   Algérie uniquement (1 modèle RH : CNAS + IRG)

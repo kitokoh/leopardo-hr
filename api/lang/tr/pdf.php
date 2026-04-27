@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'receipt_title' => 'Maaş makbuzu',
+    'invoice_title' => 'Fatura',
+    'date' => 'Tarih',
+    'employee' => 'Çalışan',
+    'company' => 'Şirket',
+    'period' => 'Dönem',
+    'description' => 'Açıklama',
+    'quantity' => 'Miktar',
+    'unit_price' => 'Birim fiyat',
+    'total' => 'Toplam',
+    'subtotal' => 'Ara toplam',
+    'tax' => 'KDV',
+    'grand_total' => 'Genel toplam',
+    'payment_method' => 'Ödeme yöntemi',
+    'signature' => 'İmza',
+    'generated_on' => ':date tarihinde oluşturuldu',
+    'page' => 'Sayfa :current / :total',
+    'hours_worked' => 'Çalışılan saatler',
+    'hourly_rate' => 'Saat ücreti',
+    'overtime_hours' => 'Fazla mesai',
+    'base_salary' => 'Taban maaş',
+    'deductions' => 'Kesintiler',
+    'net_pay' => 'Net ödeme',
+    'legal_notice' => 'Bu belge bilgilendirme amaçlıdır ve resmi maaş bordrosu niteliğinde değildir.',
+];
