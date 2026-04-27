@@ -10,7 +10,7 @@
 > `rh`, `dept`, `comptable`, `superviseur`, `employee`), plusieurs pages
 > Blade, hébergement cible **Render** (voir `.github/workflows/deploy-main.yml`).
 > Tant que la décision produit n'est pas prise pour aligner ce document
-> sur la réalité, se référer à `docs/ROADMAP.md` + `docs/AUDIT_v2_v3_COMPLIANCE.md`
+> sur la réalité, se référer à `docs/REFERENTIEL_PRODUIT/ROADMAP.md` + `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md`
 > pour l'état réel. Voir aussi `docs/GESTION_PROJET/CORRECTIONS.md`.
 
 ---
@@ -47,9 +47,9 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 
 ```
 Date MAJ       : 2026-04-24
-Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/)
+Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/ + README d'orientation)
 Code           : ✅ MVP-01 à MVP-06 mergés sur `main` (voir CHANGELOG.md jusqu'à 4.1.71)
-Phase active   : Phase 1 APV Fondations (voir docs/ROADMAP.md)
+Phase active   : Phase 1 APV Fondations (voir docs/REFERENTIEL_PRODUIT/ROADMAP.md)
                  Note: la section "SCOPE MVP VERROUILLÉ" plus bas reflète
                  le scope initial figé, pas l'état actuel du code.
 Prochaine action : Beta réelle + déploiement Render (workflow deploy-main.yml)
@@ -276,6 +276,7 @@ Tous les fichiers dans `docs/dossierdeConception/` restent **ACTIFS en lecture**
 - Ils sont la référence technique pour l'implémentation future (Phase 2+)
 - Ils gardent leur propre DOC_VERSION interne
 - Ils ne pilotent PAS le scope du MVP (seul PILOTAGE.md le fait)
+- Le point d'entrée recommandé est `docs/dossierdeConception/README.md`
 
 ---
 
@@ -334,6 +335,7 @@ Tous les fichiers dans `docs/dossierdeConception/` restent **ACTIFS en lecture**
 ## VISION LONG TERME (ce qu'on construira APRÈS le MVP)
 
 La conception complète existe dans `docs/dossierdeConception/` (40+ documents).
+Le chemin de lecture recommandé est : `docs/README.md` -> `docs/REFERENTIEL_PRODUIT/` -> `docs/dossierdeConception/README.md`.
 L'ordre d'ajout des features sera guidé par les retours clients, pas par les specs :
 
 ```

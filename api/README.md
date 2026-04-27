@@ -24,6 +24,7 @@ La branche `main` expose surtout :
 - cameras
 
 Les contrats produits plus larges presents dans `docs/dossierdeConception/` doivent etre lus comme cible tant qu'un endpoint n'existe pas dans `routes/` et dans son controller associe.
+Pour naviguer proprement dans la documentation, commencer par `../docs/README.md`, puis `../docs/REFERENTIEL_PRODUIT/` et `../docs/dossierdeConception/README.md`.
 
 Reference d'alignement :
 
@@ -79,6 +80,8 @@ php artisan serve
 
 ## References
 
+- Vision produit active : `../docs/REFERENTIEL_PRODUIT/APV.md`
+- Roadmap active : `../docs/REFERENTIEL_PRODUIT/ROADMAP.md`
 - Contrat API cible : `../docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`
 - Alignement doc/code : `../docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
 - ERD : `../docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md`

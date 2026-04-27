@@ -33,7 +33,7 @@
 | L.04 | Modules ne se connaissent pas | Finance ne peut pas importer Camera. Communication via événements du core. |
 | L.05 | Couleur = domaine | Vert = RH, Ambre = Finance, Bleu = Sécurité, Violet = IA. Associations immuables. |
 | L.06 | Leo enseigne, l'interface confirme | Leo donne le contexte, l'écran fait l'action. Pas de tutoriels modaux. |
-| L.07 | Grille partagée = source de vérité | `AppColors.dart` + `tailwind.config.js` + `docs/COULEURS.md` bougent ensemble dans la même PR. |
+| L.07 | Grille partagée = source de vérité | `AppColors.dart` + `tailwind.config.js` + `docs/REFERENTIEL_PRODUIT/COULEURS.md` bougent ensemble dans la même PR. |
 | L.08 | Un module = un package | Chaque module est un package Flutter + un route group Laravel. Jamais d'import direct entre modules. |
 | L.09 | Contrat module immutable par release | Une breaking change → major version du contrat. Modules existants ont 6 mois pour migrer. |
 | L.10 | Nouvelles données → JSONB d'abord | Les colonnes dédiées arrivent quand la donnée est stabilisée (après Phase 2). |

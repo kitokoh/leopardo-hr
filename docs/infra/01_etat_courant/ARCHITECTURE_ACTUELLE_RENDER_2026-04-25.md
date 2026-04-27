@@ -134,7 +134,7 @@ Pour operer aujourd'hui, voir d'abord :
 2. `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md`
 3. `docs/GESTION_PROJET/RENDER_SETUP.md`
 4. `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md`
-5. `docs/infra/ALIGNEMENT_PDF_REALITE_2026-04-25.md`
+5. `docs/infra/02_alignement/ALIGNEMENT_PDF_REALITE_2026-04-25.md`
 
 ## Runtime API reel
 
@@ -358,8 +358,8 @@ Quand une doc historique contredit la realite du code sur :
 il faut trancher en faveur de :
 
 1. `PILOTAGE.md`
-2. `docs/ROADMAP.md`
-3. `docs/AUDIT_v2_v3_COMPLIANCE.md`
+2. `docs/REFERENTIEL_PRODUIT/ROADMAP.md`
+3. `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md`
 4. `CHANGELOG.md`
 
 ### Consequence pratique
@@ -379,8 +379,8 @@ Si l'objectif est de deployer, verifier, diagnostiquer ou decider aujourd'hui, i
 3. `docs/GESTION_PROJET/RENDER_SETUP.md`
 4. `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`
 5. `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md`
-6. `docs/ROADMAP.md`
-7. `docs/AUDIT_v2_v3_COMPLIANCE.md`
+6. `docs/REFERENTIEL_PRODUIT/ROADMAP.md`
+7. `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md`
 8. `CHANGELOG.md`
 
 Le PDF d'architecture intervient ensuite comme document de contexte et de projection.

@@ -1,7 +1,7 @@
 # ROADMAP — Leopardo RH
 
 > Séquencement des phases de développement.
-> Ce document consolide les documents `docs/vision/*.pdf` et `docs/APV.md`.
+> Ce document consolide les documents `docs/vision/**/*.pdf` et `docs/REFERENTIEL_PRODUIT/APV.md`.
 > Priorité absolue : **stabiliser le MVP RH + pointage + déployer 3 pilotes clients** avant d'ouvrir un module Phase 2.
 
 ## Horizon général
@@ -28,10 +28,10 @@
 
 ### Sprint A — Docs + vision (cette PR)
 - 6 PDFs archivés dans `docs/vision/`
-- `docs/APV.md` = manifeste 1 page canonical
-- `docs/ROADMAP.md` = ce fichier
-- `docs/STATUTS.md` + `docs/COULEURS.md` = tokens partagés
-- `docs/AUDIT_v2_v3_COMPLIANCE.md` = état actuel vs vision
+- `docs/REFERENTIEL_PRODUIT/APV.md` = manifeste 1 page canonical
+- `docs/REFERENTIEL_PRODUIT/ROADMAP.md` = ce fichier
+- `docs/REFERENTIEL_PRODUIT/STATUTS.md` + `docs/REFERENTIEL_PRODUIT/COULEURS.md` = tokens partagés
+- `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md` = état actuel vs vision
 
 ### Sprint B — Module boundaries foundation (PR séparée)
 - `api/routes/modules/rh.php` (extraction des routes existantes, zéro changement de contrat)
