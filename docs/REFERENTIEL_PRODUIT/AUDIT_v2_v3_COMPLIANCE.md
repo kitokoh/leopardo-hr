@@ -77,8 +77,8 @@
 
 Non implémentés — conforme à la roadmap (activation à la demande, après 3 pilotes MVP déployés).
 
-- `Leopardo_RH_Finance_Complet.pdf` → archivé dans `docs/vision/`
-- `Leopardo_RH_Camera_Complet+1.pdf` → archivé dans `docs/vision/`
+- `Leopardo_RH_Finance_Complet.pdf` → archivé dans `docs/vision/03_modules_phase2/`
+- `Leopardo_RH_Camera_Complet_archive.pdf` → archivé dans `docs/vision/03_modules_phase2/`
 
 ## Résumé priorisé
 
