@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'receipt_title' => 'Reçu de paie',
+    'invoice_title' => 'Facture',
+    'date' => 'Date',
+    'employee' => 'Employé',
+    'company' => 'Entreprise',
+    'period' => 'Période',
+    'description' => 'Description',
+    'quantity' => 'Quantité',
+    'unit_price' => 'Prix unitaire',
+    'total' => 'Total',
+    'subtotal' => 'Sous-total',
+    'tax' => 'TVA',
+    'grand_total' => 'Total TTC',
+    'payment_method' => 'Mode de paiement',
+    'signature' => 'Signature',
+    'generated_on' => 'Généré le :date',
+    'page' => 'Page :current / :total',
+    'hours_worked' => 'Heures travaillées',
+    'hourly_rate' => 'Taux horaire',
+    'overtime_hours' => 'Heures supplémentaires',
+    'base_salary' => 'Salaire de base',
+    'deductions' => 'Déductions',
+    'net_pay' => 'Net à payer',
+    'legal_notice' => 'Ce document est informatif et ne constitue pas un bulletin de paie officiel.',
+];

@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'receipt_title' => 'Pay receipt',
+    'invoice_title' => 'Invoice',
+    'date' => 'Date',
+    'employee' => 'Employee',
+    'company' => 'Company',
+    'period' => 'Period',
+    'description' => 'Description',
+    'quantity' => 'Quantity',
+    'unit_price' => 'Unit price',
+    'total' => 'Total',
+    'subtotal' => 'Subtotal',
+    'tax' => 'Tax',
+    'grand_total' => 'Grand total',
+    'payment_method' => 'Payment method',
+    'signature' => 'Signature',
+    'generated_on' => 'Generated on :date',
+    'page' => 'Page :current / :total',
+    'hours_worked' => 'Hours worked',
+    'hourly_rate' => 'Hourly rate',
+    'overtime_hours' => 'Overtime hours',
+    'base_salary' => 'Base salary',
+    'deductions' => 'Deductions',
+    'net_pay' => 'Net pay',
+    'legal_notice' => 'This document is for informational purposes only and does not constitute an official payslip.',
+];
