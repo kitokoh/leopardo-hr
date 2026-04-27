@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\Cameras;
+namespace App\Modules\Cameras\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

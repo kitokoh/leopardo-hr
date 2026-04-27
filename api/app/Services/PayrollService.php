@@ -12,173 +12,85 @@ use Illuminate\Support\Facades\DB;
 
 class PayrollService
 {
-    /**
-     * Create a draft payroll for an employee for a given period.
-     *
-     * @throws PayrollPeriodConflictException
-     */
     public function create(Employee $manager, array $data): Payroll
     {
-        $employeeId  = $data['employee_id'];
-        $month       = (int) $data['period_month'];
-        $year        = (int) $data['period_year'];
+        $month = (int) $data['period_month'];
+        $year  = (int) $data['period_year'];
 
-        // Check for duplicate period
-        $exists = Payroll::where('employee_id', $employeeId)
-            ->where('period_month', $month)
-            ->where('period_year', $year)
-            ->exists();
-
-        if ($exists) {
+        if (Payroll::where('employee_id', $data['employee_id'])->where('period_month', $month)->where('period_year', $year)->exists()) {
             throw new PayrollPeriodConflictException($month, $year);
         }
 
-        $grossSalary      = (float) $data['gross_salary'];
-        $overtimeAmount   = (float) ($data['overtime_amount'] ?? 0);
-        $irAmount         = (float) ($data['ir_amount'] ?? 0);
-        $advanceDeduction = (float) ($data['advance_deduction'] ?? 0);
-        $absenceDeduction = (float) ($data['absence_deduction'] ?? 0);
-        $penaltyDeduction = (float) ($data['penalty_deduction'] ?? 0);
-        $bonuses          = $data['bonuses'] ?? [];
-        $deductions       = $data['deductions'] ?? [];
-        $cotisations      = $data['cotisations'] ?? [];
-
-        $bonusTotal      = array_sum(array_column($bonuses, 'amount'));
-        $deductionTotal  = array_sum(array_column($deductions, 'amount'));
-        $cotisationTotal = array_sum(array_column($cotisations, 'amount'));
-
-        $netSalary = $grossSalary
-            + $overtimeAmount
-            + $bonusTotal
-            - $deductionTotal
-            - $cotisationTotal
-            - $irAmount
-            - $advanceDeduction
-            - $absenceDeduction
-            - $penaltyDeduction;
+        $net = $this->computeNet($data);
 
         return Payroll::create([
             'company_id'        => $manager->company_id,
-            'employee_id'       => $employeeId,
+            'employee_id'       => $data['employee_id'],
             'period_month'      => $month,
             'period_year'       => $year,
-            'gross_salary'      => $grossSalary,
-            'overtime_amount'   => $overtimeAmount,
-            'bonuses'           => $bonuses,
-            'deductions'        => $deductions,
-            'cotisations'       => $cotisations,
-            'ir_amount'         => $irAmount,
-            'advance_deduction' => $advanceDeduction,
-            'absence_deduction' => $absenceDeduction,
-            'penalty_deduction' => $penaltyDeduction,
-            'net_salary'        => max(0, $netSalary),
+            'gross_salary'      => (float) $data['gross_salary'],
+            'overtime_amount'   => (float) ($data['overtime_amount'] ?? 0),
+            'bonuses'           => $data['bonuses'] ?? [],
+            'deductions'        => $data['deductions'] ?? [],
+            'cotisations'       => $data['cotisations'] ?? [],
+            'ir_amount'         => (float) ($data['ir_amount'] ?? 0),
+            'advance_deduction' => (float) ($data['advance_deduction'] ?? 0),
+            'absence_deduction' => (float) ($data['absence_deduction'] ?? 0),
+            'penalty_deduction' => (float) ($data['penalty_deduction'] ?? 0),
+            'net_salary'        => max(0, $net),
             'status'            => 'draft',
         ]);
     }
 
-    /**
-     * Update a draft payroll. Recalculates net_salary.
-     *
-     * @throws PayrollAlreadyValidatedException
-     */
     public function update(Payroll $payroll, array $data): Payroll
     {
-        if ($payroll->status === 'validated') {
-            throw new PayrollAlreadyValidatedException();
-        }
+        if ($payroll->status === 'validated') throw new PayrollAlreadyValidatedException();
 
         $payroll->fill($data);
-
-        // Recalculate net salary
-        $bonusTotal      = array_sum(array_column($payroll->bonuses ?? [], 'amount'));
-        $deductionTotal  = array_sum(array_column($payroll->deductions ?? [], 'amount'));
-        $cotisationTotal = array_sum(array_column($payroll->cotisations ?? [], 'amount'));
-
-        $netSalary = $payroll->gross_salary
-            + $payroll->overtime_amount
-            + $bonusTotal
-            - $deductionTotal
-            - $cotisationTotal
-            - $payroll->ir_amount
-            - $payroll->advance_deduction
-            - $payroll->absence_deduction
-            - $payroll->penalty_deduction;
-
-        $payroll->net_salary = max(0, $netSalary);
+        $payroll->net_salary = max(0, $this->computeNet($payroll->toArray()));
         $payroll->save();
 
         return $payroll->fresh();
     }
 
-    /**
-     * Validate a draft payroll. Marks active salary advances as repaid if fully deducted.
-     *
-     * @throws PayrollAlreadyValidatedException
-     */
     public function validate(Payroll $payroll, Employee $validator): Payroll
     {
-        if ($payroll->status === 'validated') {
-            throw new PayrollAlreadyValidatedException();
-        }
+        if ($payroll->status === 'validated') throw new PayrollAlreadyValidatedException();
 
         DB::transaction(function () use ($payroll, $validator): void {
-            $payroll->update([
-                'status'       => 'validated',
-                'validated_by' => $validator->id,
-                'validated_at' => Carbon::now(),
-            ]);
+            $payroll->update(['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => Carbon::now()]);
 
-            // If advance_deduction > 0, update active salary advances for this employee
             if ($payroll->advance_deduction > 0) {
-                $this->processAdvanceDeductions($payroll);
+                $remaining = $payroll->advance_deduction;
+                foreach (SalaryAdvance::where('employee_id', $payroll->employee_id)->where('status', 'active')->orderBy('created_at')->lockForUpdate()->get() as $advance) {
+                    if ($remaining <= 0) break;
+                    $deducted = min($remaining, $advance->amount_remaining);
+                    $newRem   = round($advance->amount_remaining - $deducted, 2);
+                    $advance->update(['amount_remaining' => $newRem, 'status' => $newRem <= 0 ? 'repaid' : 'active']);
+                    $remaining -= $deducted;
+                }
             }
         });
 
         return $payroll->fresh();
     }
 
-    /**
-     * Delete a draft payroll.
-     *
-     * @throws PayrollAlreadyValidatedException
-     */
     public function delete(Payroll $payroll): void
     {
-        if ($payroll->status === 'validated') {
-            throw new PayrollAlreadyValidatedException();
-        }
-
+        if ($payroll->status === 'validated') throw new PayrollAlreadyValidatedException();
         $payroll->delete();
     }
 
-    /**
-     * Process advance deductions when a payroll is validated.
-     * Updates amount_remaining on active salary advances.
-     */
-    private function processAdvanceDeductions(Payroll $payroll): void
+    private function computeNet(array $data): float
     {
-        $remaining = $payroll->advance_deduction;
-
-        $advances = SalaryAdvance::where('employee_id', $payroll->employee_id)
-            ->where('status', 'active')
-            ->orderBy('created_at')
-            ->lockForUpdate()
-            ->get();
-
-        foreach ($advances as $advance) {
-            if ($remaining <= 0) {
-                break;
-            }
-
-            $deducted = min($remaining, $advance->amount_remaining);
-            $newRemaining = round($advance->amount_remaining - $deducted, 2);
-
-            $advance->update([
-                'amount_remaining' => $newRemaining,
-                'status'           => $newRemaining <= 0 ? 'repaid' : 'active',
-            ]);
-
-            $remaining -= $deducted;
-        }
+        return (float) ($data['gross_salary'] ?? 0)
+            + (float) ($data['overtime_amount'] ?? 0)
+            + array_sum(array_column($data['bonuses'] ?? [], 'amount'))
+            - array_sum(array_column($data['deductions'] ?? [], 'amount'))
+            - array_sum(array_column($data['cotisations'] ?? [], 'amount'))
+            - (float) ($data['ir_amount'] ?? 0)
+            - (float) ($data['advance_deduction'] ?? 0)
+            - (float) ($data['absence_deduction'] ?? 0)
+            - (float) ($data['penalty_deduction'] ?? 0);
     }
 }

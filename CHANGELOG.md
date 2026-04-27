@@ -51,6 +51,11 @@
 - API : `PlatformAuthController` et `SuperAdminService` introduisent la verification 2FA pour la console super-admin, avec generation de secret, URL `otpauth://` et validation de code TOTP.
 - Tests : `api/tests/Support/CreatesMvpSchema.php` couvre maintenant explicitement `salary_advances` dans le schema MVP afin d'aligner les tests backend avec le nouveau module RH.
 
+### Cameras - Alignement DDD modulaire et autoload
+
+- API : les classes du module Cameras sont maintenant alignees sur leur arborescence `app/Modules/Cameras/...` avec des namespaces PSR-4 coherents pour `Domain`, `Infrastructure`, `Interfaces/Api/V1/Controllers` et `Interfaces/Api/V1/Requests`, afin que Composer puisse les charger correctement apres la migration modulaire.
+- API : `api/routes/modules/cameras.php`, `api/app/Providers/AuthServiceProvider.php` et `api/app/Policies/Cameras/CameraPolicy.php` sont realignes sur les nouveaux namespaces modulaires pour retablir le chargement des routes et des policies Cameras.
+
 ### RH - Payroll module
 
 - API : ajout des endpoints RH `payrolls` dans `api/routes/modules/rh.php` pour exposer la consultation, la creation, la mise a jour, la validation et la suppression des bulletins via `PayrollController`.
