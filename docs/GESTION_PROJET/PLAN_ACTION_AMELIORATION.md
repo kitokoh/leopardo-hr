@@ -1,13 +1,21 @@
 # Plan d'Action d'Amelioration - Leopardo RH Backend
 
-> **Version** : 4.1.70  
-> **Date** : 25/04/2026  
-> **Source** : Rapport d'analyse technique Leopardo RH  
+> **Version** : 4.1.77  
+> **Date de synchronisation** : 27/04/2026  
+> **Source** : `PILOTAGE.md`, `CHANGELOG.md` et rapport d'analyse technique Leopardo RH  
 > **Auteur** : Devin (Cognition AI)
 
 Ce document liste les **15 actions d'amelioration** identifiees lors de l'audit technique du backend. Chaque action est suffisamment detaillee pour etre implementee directement par un developpeur.
 
 **Legende** : `[ ]` = a faire, `[x]` = fait
+
+## Statut de ce document
+
+Les phases 1 a 4 de ce plan sont desormais livrees sur `main` au 27/04/2026.
+Ce document reste utile comme archive d'execution detaillee et comme trace des criteres d'acceptation utilises pendant la montee en qualite.
+
+Les checklists historiques ci-dessous ne doivent donc plus etre lues comme un backlog operatif ouvert,
+mais comme un referentiel de ce qui a ete exige puis ferme.
 
 ---
 
@@ -25,12 +33,12 @@ Ce document liste les **15 actions d'amelioration** identifiees lors de l'audit 
 
 ## 1. Vue d'ensemble et priorisation
 
-| Phase | Theme | Actions | Effort total | Prerequis |
-|-------|-------|---------|-------------|-----------|
-| **Phase 1** | Securite | 4 actions (P0) | ~7h | Aucun - **BLOQUANT avant go-live** |
-| **Phase 2** | Qualite du code | 4 actions (P1) | ~14h | Phase 1 mergee |
-| **Phase 3** | Robustesse & Monitoring | 4 actions (P1/P2) | ~21h | Phase 2 mergee |
-| **Phase 4** | Scalabilite | 3 actions (P2) | ~10h | Phase 3 mergee |
+| Phase | Theme | Actions | Effort total | Prerequis | Statut actuel |
+|-------|-------|---------|-------------|-----------|---------------|
+| **Phase 1** | Securite | 4 actions (P0) | ~7h | Aucun - **BLOQUANT avant go-live** | Livree sur `main` |
+| **Phase 2** | Qualite du code | 4 actions (P1) | ~14h | Phase 1 mergee | Livree sur `main` |
+| **Phase 3** | Robustesse & Monitoring | 4 actions (P1/P2) | ~21h | Phase 2 mergee | Livree sur `main` |
+| **Phase 4** | Scalabilite | 3 actions (P2) | ~10h | Phase 3 mergee | Livree sur `main` |
 
 **Effort total estime** : ~52 heures (~7 jours de travail)
 
