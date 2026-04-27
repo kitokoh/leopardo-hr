@@ -4,6 +4,7 @@
 
 ## [4.1.77] - 2026-04-27
 
+### Documentation - Gouvernance premium et gestion projet
 ### Sécurité & Performance - Stabilisation multi-tenant et standardisation API
 
 - API : Sécurisation des commandes `SET search_path` PostgreSQL via l'introduction de `Company::getSafeSearchPath()` pour prévenir les injections SQL.
