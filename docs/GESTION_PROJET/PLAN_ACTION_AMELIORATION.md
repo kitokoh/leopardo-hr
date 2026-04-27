@@ -625,7 +625,7 @@ public function create(CreateEmployeeDTO $dto, ?Employee $actor): Employee
 
 ---
 
-### [ ] ACTION 12 : Rollback automatique post-deploiement
+### [x] ACTION 12 : Rollback automatique post-deploiement
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 4h
 
@@ -660,7 +660,7 @@ public function create(CreateEmployeeDTO $dto, ?Employee $actor): Employee
 
 ## Phase 4 : Scalabilite
 
-### [ ] ACTION 13 : Rate limiting par company
+### [x] ACTION 13 : Rate limiting par company
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 4h
 
@@ -685,7 +685,7 @@ RateLimiter::for('api', function (Request $r) {
 
 ---
 
-### [ ] ACTION 14 : Geler le mode schema Enterprise
+### [x] ACTION 14 : Geler le mode schema Enterprise
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 2h
 
@@ -708,7 +708,7 @@ abort_if(
 
 ---
 
-### [ ] ACTION 15 : Preparer l'internationalisation
+### [x] ACTION 15 : Preparer l'internationalisation
 
 > **Priorite** : P2 - RECOMMANDE | **Effort** : 4h
 

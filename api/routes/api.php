@@ -19,7 +19,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
     });
 
-    Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (): void {
+    Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
         Route::patch('/auth/language', [AuthController::class, 'updateLanguage']);
