@@ -65,6 +65,10 @@ class AbsenceController extends Controller
     {
         $actor = $request->user();
 
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         if (!$actor->isManager() && $absence->employee_id !== $actor->id) {
             abort(403);
         }
@@ -75,6 +79,10 @@ class AbsenceController extends Controller
     public function approve(Request $request, Absence $absence): JsonResponse
     {
         $actor = $request->user();
+
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
 
         if (!$actor->isManager()) {
             abort(403);
@@ -89,6 +97,10 @@ class AbsenceController extends Controller
     {
         $actor = $request->user();
 
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         if (!$actor->isManager()) {
             abort(403);
         }
@@ -101,6 +113,10 @@ class AbsenceController extends Controller
     public function destroy(Request $request, Absence $absence): JsonResponse
     {
         $actor = $request->user();
+
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
 
         if ($absence->employee_id !== $actor->id) {
             abort(403);
@@ -118,6 +134,12 @@ class AbsenceController extends Controller
             'employee_id'     => $absence->employee_id,
             'absence_type_id' => $absence->absence_type_id,
             'absence_type'    => $absence->relationLoaded('absenceType') ? [
+                'id'            => $absence->absenceType->id,
+                'name'          => $absence->absenceType->name,
+                'code'          => $absence->absenceType->code,
+                'deducts_leave' => $absence->absenceType->deducts_leave,
+            ] : null,
+            'absenceType'     => $absence->relationLoaded('absenceType') ? [
                 'id'            => $absence->absenceType->id,
                 'name'          => $absence->absenceType->name,
                 'code'          => $absence->absenceType->code,

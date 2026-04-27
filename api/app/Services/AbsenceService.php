@@ -18,6 +18,10 @@ class AbsenceService
     {
         $type = AbsenceType::findOrFail($data['absence_type_id']);
 
+        if ($type->company_id !== $employee->company_id) {
+            abort(404);
+        }
+
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
         $daysCount = $startDate->diffInDays($endDate) + 1;
@@ -62,6 +66,11 @@ class AbsenceService
                     ->first();
 
                 $currentBalance = $lastLog ? (float) $lastLog->balance_after : 0.0;
+
+                if ($currentBalance < $absence->days_count) {
+                    throw new InsufficientLeaveBalanceException($currentBalance, (float) $absence->days_count);
+                }
+
                 $newBalance = $currentBalance - $absence->days_count;
 
                 $this->logBalanceChange(
@@ -141,7 +150,7 @@ class AbsenceService
     private function hasDateConflict(Employee $employee, string $startDate, string $endDate, ?int $excludeId = null): bool
     {
         $query = Absence::where('employee_id', $employee->id)
-            ->whereNotIn('status', ['cancelled'])
+            ->whereNotIn('status', ['cancelled', 'rejected'])
             ->where('start_date', '<=', $endDate)
             ->where('end_date', '>=', $startDate);
 

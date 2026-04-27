@@ -502,4 +502,101 @@ class AbsenceApproveTest extends TestCase
             'approved_by' => $manager->id,
         ]);
     }
+
+    public function test_approve_fails_when_balance_was_consumed_by_another_approval(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'timezone' => 'UTC',
+        ]);
+
+        $schedule = Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Day',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
+            'overtime_threshold_daily' => 8.0,
+            'is_default' => true,
+        ]);
+
+        $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
+            'name' => 'CongÃ© payÃ©',
+            'code' => 'CP',
+            'is_paid' => true,
+            'deducts_leave' => true,
+            'requires_proof' => false,
+        ]);
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'schedule_id' => $schedule->id,
+            'email' => 'manager@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'schedule_id' => $schedule->id,
+            'email' => 'employee@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        LeaveBalanceLog::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'delta' => 5.0,
+            'reason' => 'initial_credit',
+            'reference_id' => 0,
+            'balance_after' => 5.0,
+        ]);
+
+        $firstAbsence = Absence::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $absenceType->id,
+            'start_date' => '2026-04-10',
+            'end_date' => '2026-04-12',
+            'days_count' => 3,
+            'status' => 'pending',
+        ]);
+
+        $secondAbsence = Absence::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $absenceType->id,
+            'start_date' => '2026-04-20',
+            'end_date' => '2026-04-22',
+            'days_count' => 3,
+            'status' => 'pending',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->putJson('/api/v1/absences/' . $firstAbsence->id . '/approve')
+            ->assertOk();
+
+        $response = $this->putJson('/api/v1/absences/' . $secondAbsence->id . '/approve');
+
+        $response->assertStatus(422);
+        $response->assertJsonPath('error.code', 'INSUFFICIENT_LEAVE_BALANCE');
+        $this->assertDatabaseHas('absences', [
+            'id' => $secondAbsence->id,
+            'status' => 'pending',
+        ]);
+    }
 }
