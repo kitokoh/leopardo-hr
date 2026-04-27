@@ -15,6 +15,7 @@
 
 use App\Http\Controllers\Api\V1\AbsenceController;
 use App\Http\Controllers\Api\V1\AttendanceController;
+use App\Http\Controllers\Api\V1\PayrollController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EstimationController;
@@ -59,9 +60,17 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
     Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject']);
     Route::post('/kiosks', [KioskController::class, 'register']);
 
+    // Payrolls
+    Route::get('/payrolls', [PayrollController::class, 'index']);
+    Route::post('/payrolls', [PayrollController::class, 'store']);
+    Route::get('/payrolls/{payroll}', [PayrollController::class, 'show'])->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
+    Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validate'])->whereNumber('payroll');
+    Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->whereNumber('payroll');
+
     // Absences
-    Route::get('/absences', [AbsenceController::class, 'index']);
-    Route::post('/absences', [AbsenceController::class, 'store']);
+    Route::get('/absences', [AbsenceController::class, 'index']);    Route::post('/absences', [AbsenceController::class, 'store']);
     Route::get('/absences/{absence}', [AbsenceController::class, 'show'])->whereNumber('absence');
     Route::put('/absences/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
     Route::put('/absences/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
