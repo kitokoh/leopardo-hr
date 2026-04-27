@@ -87,19 +87,7 @@ class AttendanceController extends Controller
             $perPage = $request->integer('per_page', 50);
 
             $paginator = Employee::query()
-                ->select([
-                    'id',
-                    'company_id',
-                    'matricule',
-                    'first_name',
-                    'last_name',
-                    'email',
-                    'role',
-                    'status',
-                    'salary_type',
-                    'salary_base',
-                    'hourly_rate',
-                ])
+                ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
                 ->where('status', 'active')
                 ->orderBy('id')
                 ->paginate(max(1, min(100, $perPage)));
@@ -108,17 +96,7 @@ class AttendanceController extends Controller
             $employeeIds = $employees->pluck('id')->all();
 
             $logsByEmployee = AttendanceLog::query()
-                ->select([
-                    'id',
-                    'company_id',
-                    'employee_id',
-                    'date',
-                    'check_in',
-                    'check_out',
-                    'hours_worked',
-                    'overtime_hours',
-                    'status',
-                ])
+                ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'status'])
                 ->where('date', $today)
                 ->where('session_number', 1)
                 ->whereIn('employee_id', $employeeIds)
