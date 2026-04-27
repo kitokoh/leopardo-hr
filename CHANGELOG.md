@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.79] - 2026-04-27
+
+### Palette - Accessibilité Statuts et Équipe mobile
+
+- Mobile : Amélioration de l'accessibilité du widget `LeopardoBadge` par l'ajout de labels `Semantics` explicites (ex: "Statut : Présent") et l'exclusion des icônes décoratives pour les lecteurs d'écran.
+- Mobile : Amélioration de l'accessibilité de l'écran `TeamScreen` par l'ajout d'un tooltip sur le bouton d'ajout et le masquage des initiales redondantes dans la liste des employés.
+
 ## [4.1.78] - 2026-04-27
 
 ### API - Public onboarding par invitation
