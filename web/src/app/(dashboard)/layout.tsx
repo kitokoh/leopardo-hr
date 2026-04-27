@@ -67,33 +67,85 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
-      <aside className="hidden w-64 bg-slate-900 text-white md:block">
+    <div className="flex min-h-screen bg-app-card">
+      <aside className="hidden w-64 flex-col bg-slate-900 text-white md:flex">
         <div className="p-6">
-          <h1 className="text-2xl font-bold">Leopardo RH</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Leopardo RH</h1>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-slate-400">Back-office Manager</p>
         </div>
-        <nav className="mt-6">
-          <Link href="/dashboard" className="block border-l-4 border-primary bg-slate-800 px-6 py-3 hover:bg-slate-800">
+
+        <nav className="mt-4 flex-1">
+          <div className="mb-2 px-4">
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">General</p>
+          </div>
+          <Link href="/dashboard" className="flex items-center gap-3 border-r-4 border-rh bg-slate-800/50 px-6 py-3 transition-colors hover:bg-slate-800">
+            <span className="h-2 w-2 rounded-full bg-rh"></span>
             {labels.dashboard.heading}
           </Link>
-          <Link href="/employees" className="block px-6 py-3 hover:bg-slate-800">
+
+          <div className="mb-2 mt-6 px-4">
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Module RH</p>
+          </div>
+          <Link href="/employees" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
             {labels.dashboard.team}
           </Link>
-          <Link href="/attendance" className="block px-6 py-3 hover:bg-slate-800">
+          <Link href="/attendance" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
             {labels.dashboard.attendance}
           </Link>
-          <Link href="/payroll" className="block px-6 py-3 hover:bg-slate-800">
-            {labels.dashboard.payroll}
+          <Link href="/absences" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
+            Absences
           </Link>
-          <Link href="/settings" className="block px-6 py-3 hover:bg-slate-800">
-            {labels.dashboard.settings}
-          </Link>
+
+          <div className="mb-2 mt-6 px-4 opacity-40">
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Phase 2</p>
+          </div>
+          <div className="cursor-not-allowed px-6 py-3 text-sm italic text-slate-500">
+            <div className="flex items-center gap-3">
+              <span className="h-2 w-2 rounded-full bg-finance opacity-30"></span>
+              Finance (Bientot)
+            </div>
+          </div>
+          <div className="cursor-not-allowed px-6 py-3 text-sm italic text-slate-500">
+            <div className="flex items-center gap-3">
+              <span className="h-2 w-2 rounded-full bg-security opacity-30"></span>
+              Cameras (Bientot)
+            </div>
+          </div>
         </nav>
+
+        <div className="m-4 rounded-xl border border-ia/20 bg-ia/10 p-4">
+          <div className="mb-2 flex items-center gap-2 text-ia">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            <span className="text-xs font-bold uppercase tracking-wider">Leo IA</span>
+          </div>
+          <p className="text-[10px] leading-relaxed text-slate-400">
+            Leo arrive bientot sur le web pour vous aider a analyser vos donnees RH par simple commande vocale.
+          </p>
+        </div>
+
+        <div className="border-t border-slate-800 p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rh text-xs font-bold">MA</div>
+            <div className="overflow-hidden">
+              <p className="truncate text-xs font-bold">{getDisplayName(user)}</p>
+              <p className="truncate text-[10px] text-slate-500">{user?.email ?? 'Leopardo RH'}</p>
+            </div>
+          </div>
+          <button
+            className="w-full rounded-lg bg-slate-800 px-4 py-2 text-xs font-semibold transition-all hover:bg-red-900/20 hover:text-red-400"
+            onClick={handleLogout}
+          >
+            {labels.dashboard.logout}
+          </button>
+        </div>
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between bg-white px-8 shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-800">{labels.dashboard.heading}</h2>
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-app-border bg-white px-8">
+          <h2 className="text-lg font-bold text-slate-800">{labels.dashboard.heading}</h2>
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 text-sm text-gray-600">
               <span>{labels.dashboard.language}</span>
@@ -108,13 +160,13 @@ export default function DashboardLayout({
                 <option value="en">English</option>
               </select>
             </label>
-            <span className="text-sm text-gray-600">{getDisplayName(user)}</span>
-            <button className="text-sm text-red-600 hover:underline" onClick={handleLogout}>
-              {labels.dashboard.logout}
-            </button>
+            <div className="flex items-center gap-2 rounded-full bg-rh-light px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rh-dark">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-rh"></span>
+              Live: 18 {labels.dashboard.present}
+            </div>
           </div>
         </header>
-        <main className="p-8">
+        <main className="mx-auto w-full max-w-7xl p-8">
           {children}
         </main>
       </div>
