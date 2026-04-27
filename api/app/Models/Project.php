@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use BelongsToCompany;
+    use HasFactory;
 
     protected $table = 'projects';
     public $timestamps = false;
@@ -20,7 +21,18 @@ class Project extends Model
     protected $fillable = ['company_id', 'name', 'description', 'start_date', 'end_date', 'members', 'status', 'created_by'];
     protected $casts = ['start_date' => 'date', 'end_date' => 'date', 'members' => 'array', 'created_at' => 'datetime'];
 
-    public function creator(): BelongsTo { return $this->belongsTo(Employee::class, 'created_by'); }
-    public function tasks(): HasMany { return $this->hasMany(Task::class, 'project_id'); }
-    public function scopeActive(Builder $q): Builder { return $q->where('status', 'active'); }
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'created_by');
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'project_id');
+    }
+
+    public function scopeActive(Builder $q): Builder
+    {
+        return $q->where('status', 'active');
+    }
 }

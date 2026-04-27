@@ -51,6 +51,7 @@ class TaskController extends Controller
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) abort(404);
         if (!$actor->isManager() && !in_array($actor->id, $task->assigned_to ?? []) && $task->created_by !== $actor->id) abort(403);
+
         return response()->json(['data' => $this->serialize($task->load('comments.author'))]);
     }
 
@@ -73,7 +74,9 @@ class TaskController extends Controller
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) abort(404);
         if (!$actor->isManager() && $task->created_by !== $actor->id) abort(403);
+
         $task->delete();
+
         return response()->json(['message' => 'Task deleted successfully']);
     }
 

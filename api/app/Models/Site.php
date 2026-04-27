@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Site extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use BelongsToCompany;
+    use HasFactory;
 
     protected $table = 'sites';
     public $timestamps = false;

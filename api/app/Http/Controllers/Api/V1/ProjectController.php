@@ -43,6 +43,7 @@ class ProjectController extends Controller
         $actor = $request->user();
         if ($project->company_id !== $actor->company_id) abort(404);
         if (!$actor->isManager() && !in_array($actor->id, $project->members ?? [])) abort(403);
+
         return response()->json(['data' => $this->serialize($project)]);
     }
 
@@ -63,7 +64,9 @@ class ProjectController extends Controller
         $actor = $request->user();
         if ($project->company_id !== $actor->company_id) abort(404);
         if (!$actor->isManager()) abort(403);
+
         $project->delete();
+
         return response()->json(['message' => 'Project deleted successfully']);
     }
 

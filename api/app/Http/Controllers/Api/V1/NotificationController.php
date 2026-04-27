@@ -43,6 +43,7 @@ class NotificationController extends Controller
     {
         $actor = $request->user();
         Notification::forEmployee($actor->id)->unread()->update(['is_read' => true, 'read_at' => Carbon::now()]);
+
         return response()->json(['message' => 'All notifications marked as read']);
     }
 
@@ -50,7 +51,9 @@ class NotificationController extends Controller
     {
         $actor = $request->user();
         if ($notification->employee_id !== $actor->id) abort(403);
+
         $notification->delete();
+
         return response()->json(['message' => 'Notification deleted successfully']);
     }
 

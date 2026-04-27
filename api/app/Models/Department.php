@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Department extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use BelongsToCompany;
+    use HasFactory;
 
     protected $table = 'departments';
     public $timestamps = false;
@@ -19,6 +20,13 @@ class Department extends Model
     protected $fillable = ['company_id', 'name', 'manager_id'];
     protected $casts = ['created_at' => 'datetime'];
 
-    public function manager(): BelongsTo { return $this->belongsTo(Employee::class, 'manager_id'); }
-    public function positions(): HasMany { return $this->hasMany(Position::class, 'department_id'); }
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class, 'department_id');
+    }
 }

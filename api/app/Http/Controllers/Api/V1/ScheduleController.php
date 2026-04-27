@@ -12,6 +12,7 @@ class ScheduleController extends Controller
     public function index(Request $request): JsonResponse
     {
         if (!$request->user()->isManager()) abort(403);
+
         return response()->json(['data' => Schedule::orderBy('name')->get()->map(fn ($s) => $this->serialize($s))]);
     }
 
@@ -34,6 +35,7 @@ class ScheduleController extends Controller
     public function show(Request $request, Schedule $schedule): JsonResponse
     {
         if (!$request->user()->isManager()) abort(403);
+
         return response()->json(['data' => $this->serialize($schedule)]);
     }
 
@@ -57,7 +59,9 @@ class ScheduleController extends Controller
     {
         if (!$request->user()->isManager()) abort(403);
         if ($schedule->is_default) abort(422, 'Cannot delete the default schedule.');
+
         $schedule->delete();
+
         return response()->json(['message' => 'Schedule deleted successfully']);
     }
 

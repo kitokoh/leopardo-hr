@@ -8,4 +8,8 @@ Ce sous-dossier contient le referentiel QA du module pointage.
 
 ## Usage
 
-Utiliser ce PDF pour la validation fonctionnelle du module pointage, puis croiser avec le code et les tests executes.
+Utiliser ce PDF pour la validation fonctionnelle du module pointage, puis croiser avec :
+
+- le code sur `main`,
+- les tests executes,
+- et `../../GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` pour la procedure locale.

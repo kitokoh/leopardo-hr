@@ -17,6 +17,13 @@ class TaskComment extends Model
     protected $fillable = ['company_id', 'task_id', 'author_id', 'content'];
     protected $casts = ['created_at' => 'datetime'];
 
-    public function task(): BelongsTo { return $this->belongsTo(Task::class, 'task_id'); }
-    public function author(): BelongsTo { return $this->belongsTo(Employee::class, 'author_id'); }
+    public function task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class, 'task_id');
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'author_id');
+    }
 }

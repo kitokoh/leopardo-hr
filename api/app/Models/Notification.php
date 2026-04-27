@@ -18,8 +18,18 @@ class Notification extends Model
     protected $fillable = ['company_id', 'employee_id', 'type', 'title', 'body', 'data', 'is_read', 'read_at'];
     protected $casts = ['data' => 'array', 'is_read' => 'boolean', 'read_at' => 'datetime', 'created_at' => 'datetime'];
 
-    public function employee(): BelongsTo { return $this->belongsTo(Employee::class, 'employee_id'); }
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
 
-    public function scopeUnread(Builder $q): Builder { return $q->where('is_read', false); }
-    public function scopeForEmployee(Builder $q, int $id): Builder { return $q->where('employee_id', $id); }
+    public function scopeUnread(Builder $q): Builder
+    {
+        return $q->where('is_read', false);
+    }
+
+    public function scopeForEmployee(Builder $q, int $employeeId): Builder
+    {
+        return $q->where('employee_id', $employeeId);
+    }
 }

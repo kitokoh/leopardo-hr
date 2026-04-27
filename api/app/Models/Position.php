@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Position extends Model
 {
-    use BelongsToCompany, HasFactory;
+    use BelongsToCompany;
+    use HasFactory;
 
     protected $table = 'positions';
     public $timestamps = false;
@@ -18,5 +19,8 @@ class Position extends Model
     protected $fillable = ['company_id', 'name', 'department_id'];
     protected $casts = ['created_at' => 'datetime'];
 
-    public function department(): BelongsTo { return $this->belongsTo(Department::class, 'department_id'); }
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
 }
