@@ -2,20 +2,44 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-primary: #3b82f6;
-  --color-ring: #3b82f6;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Domaines Leopardo RH */
+  --color-rh: #10b981;
+  --color-rh-light: #d1fae5;
+  --color-rh-dark: #047857;
+
+  --color-finance: #f59e0b;
+  --color-finance-light: #fef3c7;
+  --color-finance-dark: #b45309;
+
+  --color-security: #3b82f6;
+  --color-security-light: #dbeafe;
+  --color-security-dark: #1d4ed8;
+
+  --color-ia: #7c3aed;
+  --color-ia-light: #ede9fe;
+  --color-ia-dark: #5b21b6;
+
+  /* Sémantique */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Neutres */
+  --color-app-bg: #ffffff;
+  --color-app-card: #f8fafc;
+  --color-app-border: #e2e8f0;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
