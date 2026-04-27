@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.79] - 2026-05-22
+
+### Bolt - Performance & Correctness Optimization
+
+- API: Optimized `AttendanceController@today` by adding column-limited `select()` clauses to both `Employee` and `AttendanceLog` queries. This reduces hydration overhead and ensures all fields required for daily estimation (matricule, salary info, overtime) are pre-loaded, preventing N+1 queries and potential data inconsistencies in the manager view.
+
 ## [4.1.78] - 2026-04-27
 
 ### API - Public onboarding par invitation
