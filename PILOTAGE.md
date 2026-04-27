@@ -18,7 +18,8 @@
 ## CONVENTION DE VERSIONING
 
 ```
-PROGRAM_VERSION  = 4.1.76   → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.1.74   → Version globale du projet/pilotage (ce fichier fait foi)
+
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
                                 - api/config/app.php → 'version'
