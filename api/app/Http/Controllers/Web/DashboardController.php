@@ -78,7 +78,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'company' => $company,
             'today' => $today,
-            'employeesTotal' => $employees->count(),
+            'employeesTotal' => $allEmployees->count(),
             'presentCount' => $present,
             'lateCount' => $late,
             'totalEstimated' => round($totalEstimated, 2),
