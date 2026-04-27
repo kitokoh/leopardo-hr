@@ -2,6 +2,32 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.76] - 2026-04-27
+
+### Qualité & Robustesse - Plan d'Action Amélioration Phase 2, 3 & 4
+
+- API : Centralisation de la gestion multi-tenant via `TenantManager` service (isolation `search_path` robuste avec `withinTenant`).
+- API : Introduction des DTOs (`CreateEmployeeDTO`, `UpdateEmployeeDTO`, `CheckInDTO`) pour typer les échanges entre contrôleurs et services.
+- API : Refactorisation complète des contrôleurs vers `JsonResource` (`EmployeeResource`, `AttendanceLogResource`, etc.) pour une sérialisation standardisée.
+- API : Configuration du Rate Limiting dynamique par entreprise (300 req/min) et par IP (60 req/min) dans `AppServiceProvider`.
+- API : Gel du mode "schema" Enterprise via un observer `creating` sur le modèle `Company` pour sécuriser le MVP.
+- API : Internationalisation complète du Dashboard Blade et création des fichiers `lang/{fr,en}/dashboard.php`.
+- Web : Pagination des employés sur le dashboard manager pour améliorer les performances sur les gros comptes.
+- Ops : Ajout d'un hook de **rollback automatique** dans le workflow GitHub Action `deploy-main.yml` en cas d'échec du smoke test post-déploiement sur Render.
+- Docs : Mise à jour de `PLAN_ACTION_AMELIORATION.md` (Actions 6, 7, 8, 10, 11, 12, 13, 14, 15 marquées terminées).
+
+## [4.1.75] - 2026-04-27
+
+### Sécurité - Plan d'Action Amélioration Phase 1 (P0)
+
+- API : Implémentation du chiffrement `EncryptedCast` sur les colonnes sensibles (`iban`, `bank_account`, `national_id`) dans le modèle `Employee`.
+- API : Migration `encrypt_existing_sensitive_data` pour sécuriser les données existantes en base.
+- API : Configuration explicite du middleware CORS dans `config/cors.php` pour autoriser le frontend web et l'application mobile.
+- API : Système de lockout anti-brute-force — verrouillage du compte après 5 tentatives échouées pendant 15 minutes (`failed_login_attempts`, `locked_until`).
+- API : Nouvelle exception `AccountLockedException` (HTTP 423) et mise à jour d' `AuthService` pour gérer le verrouillage.
+- Mobile/API : Retrait de `google-services.json` du suivi Git et mise à jour du `.gitignore`.
+- Docs : Mise à jour de `PILOTAGE.md` et `PLAN_ACTION_AMELIORATION.md` pour refléter la complétion de la Phase 1.
+
 ## [4.1.75] - 2026-04-27
 
 ### RH - Salary advances et 2FA console super-admin
@@ -31,6 +57,7 @@
 - Mobile : `mobile/lib/app.dart`, `mobile/lib/models/employee.dart`, `mobile/lib/features/auth/data/auth_repository.dart` et `mobile/lib/features/settings/screens/settings_screen.dart` appliquent la langue / direction (`is_rtl`) retournees par l'API et permettent a l'utilisateur de changer sa langue preferee depuis les parametres.
 - Web : `web/src/lib/api-client.ts`, `web/src/lib/i18n.ts`, `web/src/components/locale-sync.tsx`, `web/src/app/auth/login/page.tsx` et `web/src/app/(dashboard)/*` utilisent la langue du navigateur en fallback, propagent `Accept-Language`, affichent les erreurs localisees et basculent le document en RTL quand necessaire.
 - Tests : ajout de couverture mobile pour le parsing `language` / `is_rtl`, et extension des tests API sur les payloads auth/localisation.
+- Pilotage : `PILOTAGE.md` realigne les liens de lecture recommande vers `docs/REFERENTIEL_PRODUIT/` et `docs/dossierdeConception/README.md` pour refleter la structure canonique actuelle de la documentation.
 
 ## [4.1.73] - 2026-04-26
 
