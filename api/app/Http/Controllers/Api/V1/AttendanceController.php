@@ -161,6 +161,7 @@ class AttendanceController extends Controller
         }
 
         $query = AttendanceLog::query()
+            ->with(['employee:id,first_name,last_name,matricule,photo_path'])
             ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'source_device_code', 'late_minutes'])
             ->orderByDesc('date')
             ->orderByDesc('id');

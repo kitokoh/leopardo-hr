@@ -17,6 +17,12 @@ class AttendanceLogResource extends JsonResource
         return [
             'id' => $this->id,
             'employee_id' => $this->employee_id,
+            'employee' => $this->relationLoaded('employee') ? [
+                'id' => $this->employee->id,
+                'name' => trim(($this->employee->first_name ?? '').' '.($this->employee->last_name ?? '')),
+                'matricule' => $this->employee->matricule,
+                'photo_url' => $this->employee->photo_path,
+            ] : null,
             'date' => $this->date?->format('Y-m-d'),
             'check_in' => $this->check_in?->toIso8601String(),
             'check_out' => $this->check_out?->toIso8601String(),
