@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Models\AttendanceLog;
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Models\Cameras\Camera;
+use App\Models\Cameras\CameraAccessToken;
 use App\Models\Employee;
 use App\Policies\AttendancePolicy;
 use App\Policies\Cameras\CameraPolicy;
