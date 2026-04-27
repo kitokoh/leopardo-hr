@@ -1,12 +1,14 @@
 import 'package:leopardo_rh/core/api/api_client.dart';
+import 'package:leopardo_rh/core/storage/app_preferences.dart';
 import 'package:leopardo_rh/models/employee.dart';
 import 'package:leopardo_rh/core/storage/secure_storage.dart';
 
 class AuthRepository {
   final ApiClient apiClient;
   final SecureStorage storage;
+  final AppPreferences preferences;
 
-  AuthRepository(this.apiClient, this.storage);
+  AuthRepository(this.apiClient, this.storage, this.preferences);
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await apiClient.dio.post('/auth/login', data: {
@@ -27,16 +29,21 @@ class AuthRepository {
       final meResponse = await apiClient.dio.get('/auth/me');
       final meData = meResponse.data['data'];
       if (meData is Map) {
+        final employee = Employee.fromJson(meData.cast<String, dynamic>());
+        await _persistEmployeeContext(employee);
         return {
-          'employee': Employee.fromJson(meData.cast<String, dynamic>()),
+          'employee': employee,
         };
       }
     } catch (_) {
       // Si /auth/me echoue on retombe sur la reponse de login.
     }
 
+    final employee = Employee.fromJson(employeeJson);
+    await _persistEmployeeContext(employee);
+
     return {
-      'employee': Employee.fromJson(employeeJson),
+      'employee': employee,
     };
   }
 
@@ -47,6 +54,7 @@ class AuthRepository {
       // Ignore errors if token is already invalid
     } finally {
       await storage.deleteToken();
+      await preferences.clearLocaleSettings();
     }
   }
 
@@ -57,11 +65,14 @@ class AuthRepository {
     try {
       final response = await apiClient.dio.get('/auth/me');
       final data = response.data['data'];
+      final employee = Employee.fromJson(data);
+      await _persistEmployeeContext(employee);
       return {
-        'employee': Employee.fromJson(data),
+        'employee': employee,
       };
     } catch (e) {
       await storage.deleteToken();
+      await preferences.clearLocaleSettings();
       return null;
     }
   }
@@ -77,7 +88,9 @@ class AuthRepository {
       'email': email.trim(),
     });
 
-    return Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    final employee = Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    await _persistEmployeeContext(employee);
+    return employee;
   }
 
   Future<void> changePassword({
@@ -90,6 +103,16 @@ class AuthRepository {
       'new_password': newPassword,
       'new_password_confirmation': confirmation,
     });
+  }
+
+  Future<Employee> updatePreferredLanguage(String language) async {
+    final response = await apiClient.dio.patch('/auth/language', data: {
+      'language': language.trim().toLowerCase(),
+    });
+
+    final employee = Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    await _persistEmployeeContext(employee);
+    return employee;
   }
 
   static Map<String, dynamic> extractEmployeeJson(Map<String, dynamic> payload) {
@@ -121,5 +144,12 @@ class AuthRepository {
     }
 
     throw const FormatException('Invalid auth payload: missing token');
+  }
+
+  Future<void> _persistEmployeeContext(Employee employee) {
+    return preferences.saveLocaleSettings(
+      preferredLanguage: employee.language,
+      isRtl: employee.isRtl,
+    );
   }
 }

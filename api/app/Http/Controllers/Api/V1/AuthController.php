@@ -67,15 +67,24 @@ class AuthController extends Controller
     public function updateLanguage(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'language' => ['required', 'string', 'size:2', 'in:'.implode(',', Language::SUPPORTED)],
+            'language' => [
+                'required',
+                'string',
+                'size:2',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! is_string($value) || ! Language::isSupported($value)) {
+                        $fail(__('validation.in', ['attribute' => $attribute]));
+                    }
+                },
+            ],
         ]);
 
         /** @var Employee $employee */
         $employee = $request->user();
-        $employee->preferred_language = $validated['language'];
+        $employee->preferred_language = strtolower($validated['language']);
         $employee->save();
 
-        app()->setLocale($validated['language']);
+        app()->setLocale($employee->preferred_language);
 
         return new JsonResponse([
             'data' => $this->serializeEmployee($employee->fresh()),
@@ -89,8 +98,9 @@ class AuthController extends Controller
 
         if (! Hash::check($request->validated('current_password'), $employee->password_hash)) {
             return new JsonResponse([
-                'message' => __('errors.INVALID_CURRENT_PASSWORD'),
                 'error' => 'INVALID_CURRENT_PASSWORD',
+                'message' => 'INVALID_CURRENT_PASSWORD',
+                'localized_message' => __('errors.INVALID_CURRENT_PASSWORD'),
             ], 422);
         }
 
@@ -115,6 +125,7 @@ class AuthController extends Controller
     private function serializeEmployee(Employee $employee): array
     {
         $company = $this->resolveCompany($employee);
+        $resolvedLanguage = strtolower($employee->preferred_language ?? $employee->company?->language ?? Language::DEFAULT);
 
         return [
             'id' => $employee->id,
@@ -138,7 +149,8 @@ class AuthController extends Controller
             'emergency_contact_name' => $employee->emergency_contact_name,
             'emergency_contact_phone' => $employee->emergency_contact_phone,
             'extra_data' => $employee->extra_data ?? [],
-            'language' => $employee->preferred_language ?? $employee->company?->language ?? 'fr',
+            'language' => $resolvedLanguage,
+            'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilitiesFor($employee),
             'features' => FeatureFlag::for($company),
             'suggested_home_route' => $employee->homeRoute(),

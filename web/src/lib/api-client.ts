@@ -2,14 +2,34 @@
  * Client API de base pour communiquer avec le backend Laravel.
  */
 
+import {
+  AUTH_TOKEN_KEY,
+  clearAuthSession,
+  getApiErrorMessage,
+  getPreferredLocale,
+} from '@/lib/i18n';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
+export class ApiError extends Error {
+  status: number;
+  code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+  const token = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
 
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Accept-Language': typeof window !== 'undefined' ? getPreferredLocale() : 'fr',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...options.headers,
   };
@@ -20,9 +40,26 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   });
 
   if (response.status === 401 && typeof window !== 'undefined') {
-    localStorage.removeItem('auth_token');
+    clearAuthSession();
     window.location.href = '/auth/login';
     throw new Error('Unauthorized: redirecting to login');
+  }
+
+  if (!response.ok) {
+    let payload: unknown = null;
+
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    const message = getApiErrorMessage(payload, 'Une erreur est survenue.');
+    const code = payload && typeof payload === 'object' && 'error' in payload
+      ? String((payload as Record<string, unknown>).error)
+      : undefined;
+
+    throw new ApiError(message, response.status, code);
   }
 
   return response;

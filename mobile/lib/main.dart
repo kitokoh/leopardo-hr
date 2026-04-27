@@ -9,6 +9,9 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('offlineCache');
   await initializeDateFormatting('fr_FR', null);
+  await initializeDateFormatting('ar', null);
+  await initializeDateFormatting('tr', null);
+  await initializeDateFormatting('en', null);
   runApp(
     const ProviderScope(
       child: LeopardoApp(),

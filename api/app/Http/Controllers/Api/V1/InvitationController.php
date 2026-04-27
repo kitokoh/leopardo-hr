@@ -59,8 +59,9 @@ class InvitationController extends Controller
 
         if ($invitation->accepted_at !== null) {
             return new JsonResponse([
-                'message' => __('errors.INVITATION_ALREADY_ACCEPTED'),
                 'error' => 'INVITATION_ALREADY_ACCEPTED',
+                'message' => 'INVITATION_ALREADY_ACCEPTED',
+                'localized_message' => __('errors.INVITATION_ALREADY_ACCEPTED'),
             ], 410);
         }
 

@@ -46,4 +46,20 @@ void main() {
     expect(employee.companyId, 'company-1');
     expect(employee.role, 'employee');
   });
+
+  test('parses language metadata returned by auth payloads', () {
+    final employee = Employee.fromJson({
+      'id': 7,
+      'first_name': 'Amina',
+      'last_name': 'Bensaid',
+      'email': 'amina@test.dev',
+      'role': 'employee',
+      'status': 'active',
+      'language': 'ar',
+      'is_rtl': true,
+    });
+
+    expect(employee.language, 'ar');
+    expect(employee.isRtl, isTrue);
+  });
 }

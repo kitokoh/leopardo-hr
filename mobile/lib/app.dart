@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show PlatformDispatcher;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:leopardo_rh/core/theme/app_theme.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/auth/screens/login_screen.dart';
@@ -86,12 +89,36 @@ class LeopardoApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final authState = ref.watch(authProvider);
+    final preferences = ref.watch(appPreferencesProvider);
+    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    final languageCode = authState.employee?.language ??
+        (preferences.preferredLanguage.isNotEmpty ? preferences.preferredLanguage : deviceLanguage);
+    final isRtl = authState.employee?.isRtl ?? preferences.isRtl;
 
     return MaterialApp.router(
       title: 'Leopardo RH',
       theme: AppTheme.darkTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
+      locale: Locale(languageCode),
+      supportedLocales: const [
+        Locale('fr'),
+        Locale('ar'),
+        Locale('tr'),
+        Locale('en'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) {
+        return Directionality(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }
