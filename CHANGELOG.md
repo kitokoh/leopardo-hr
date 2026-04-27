@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.75] - 2026-04-27
+
+### Documentation - Reorganisation des referentiels canoniques
+
+- Docs : reorganisation des documents produit, vision, validation, strategie commerciale et infrastructure vers des sous-dossiers canoniques plus explicites afin de reduire les collisions de noms et clarifier les points d'entree documentaires.
+- Docs : mise a jour des index et README associes (`docs/README.md`, `docs/GUIDES/README.md`, `docs/infra/README.md`, `docs/vision/README.md`, `docs/dossierdeConception/README.md`) pour reflecter les nouveaux emplacements et l'ordre de lecture attendu.
+- Pilotage : synchronisation des references de gouvernance et de pilotage pour que les chemins documentaires exposes au projet restent coherents avec l'arborescence reelle du repo.
+
 ## [4.1.74] - 2026-04-27
 
 ### Client - Alignement i18n mobile/web avec l'API
@@ -72,8 +80,8 @@
 
 ### Documentation - Infra actuelle officialisee en Markdown
 
-- Docs : `docs/infra/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` devient la reference principale de l'etat courant infra (Render / Neon / healthcheck / mobile Android actif / backup drill).
-- Docs : `docs/infra/Leopardo_RH_Architecture_Deploiement.pdf` est explicitement requalifie comme archive de vision / projection dans `docs/infra/README.md`.
+- Docs : `docs/infra/01_etat_courant/ARCHITECTURE_ACTUELLE_RENDER_2026-04-25.md` devient la reference principale de l'etat courant infra (Render / Neon / healthcheck / mobile Android actif / backup drill).
+- Docs : `docs/infra/03_archives_pdf/Leopardo_RH_Architecture_Deploiement.pdf` est explicitement requalifie comme archive de vision / projection dans `docs/infra/README.md`.
 - Docs : `docs/README.md` et `docs/infra/README.md` sont realignes pour faire pointer la lecture de l'infrastructure actuelle vers la reference Markdown avant le PDF historique.
 
 ### Cameras - Correctifs RBAC permissions expirees
@@ -188,7 +196,7 @@
 ### APV - Fondations design moderne + frontieres modules
 
 - Vision : 6 PDF vision (APV v1/v2, Design System v2/v3, Finance, Cameras) archives sous `docs/vision/` avec un `README.md` qui etablit la hierarchie (v2/v3 = canonique, v1/v2 = historique, Finance/Cameras = Phase 2)
-- Vision : creation des documents canoniques `docs/APV.md` (manifeste 1 page, 4 piliers, 12 Lois), `docs/ROADMAP.md` (Phase 0 MVP -> Phase 1 fondations -> Phase 2 modules a la demande), `docs/STATUTS.md` (catalogue exhaustif pointage/invitation/employe/features), `docs/COULEURS.md` (tokens couleur domaine + semantique + neutres), `docs/AUDIT_v2_v3_COMPLIANCE.md` (matrice conformite code vs vision)
+- Vision : creation des documents canoniques `docs/REFERENTIEL_PRODUIT/APV.md` (manifeste 1 page, 4 piliers, 12 Lois), `docs/REFERENTIEL_PRODUIT/ROADMAP.md` (Phase 0 MVP -> Phase 1 fondations -> Phase 2 modules a la demande), `docs/REFERENTIEL_PRODUIT/STATUTS.md` (catalogue exhaustif pointage/invitation/employe/features), `docs/REFERENTIEL_PRODUIT/COULEURS.md` (tokens couleur domaine + semantique + neutres), `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md` (matrice conformite code vs vision)
 - Module boundaries (APV L.08) : extraction des routes RH dans `api/routes/modules/rh.php` (contrat URL inchange), charge depuis `routes/api.php` avec directive de preparation Phase 2 pour finance/cameras/muhasebe
 - Module boundaries (APV L.10) : nouvelle migration publique `2026_04_22_000014_add_metadata_and_features_jsonb.php` ajoute `companies.features` (JSONB, defaut `{}`) et `companies.metadata` (JSONB) + index GIN ; migration tenant `2026_04_22_000109_add_metadata_to_employees.php` ajoute `employees.metadata` (JSONB) + index GIN
 - Module boundaries : nouveau service `App\Services\FeatureFlag` (`enabled($key, $company)` et `for($company)`), modele `Company` expose `hasFeature`, `setFeature`, constante `KNOWN_MODULES` (`rh`, `finance`, `cameras`, `muhasebe`, `leo_ai`)
@@ -1203,4 +1211,3 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
