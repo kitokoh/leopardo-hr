@@ -4,10 +4,21 @@
 
 ## [4.1.75] - 2026-04-27
 
+### RH - Salary advances et 2FA console super-admin
+
+- API : ajout du module `salary_advances` avec son modele, son service, ses requetes de validation, son controleur REST et ses routes RH pour permettre la creation, la consultation, l'approbation, le rejet et l'annulation d'avances sur salaire.
+- API : `PlatformAuthController` et `SuperAdminService` introduisent la verification 2FA pour la console super-admin, avec generation de secret, URL `otpauth://` et validation de code TOTP.
+- Tests : `api/tests/Support/CreatesMvpSchema.php` couvre maintenant explicitement `salary_advances` dans le schema MVP afin d'aligner les tests backend avec le nouveau module RH.
+
+### RH - Payroll module
+
+- API : ajout des endpoints RH `payrolls` dans `api/routes/modules/rh.php` pour exposer la consultation, la creation, la mise a jour, la validation et la suppression des bulletins via `PayrollController`.
+
 ### Documentation - Reorganisation des referentiels canoniques
 
 - Docs : reorganisation des documents produit, vision, validation, strategie commerciale et infrastructure vers des sous-dossiers canoniques plus explicites afin de reduire les collisions de noms et clarifier les points d'entree documentaires.
 - Docs : mise a jour des index et README associes (`docs/README.md`, `docs/GUIDES/README.md`, `docs/infra/README.md`, `docs/vision/README.md`, `docs/dossierdeConception/README.md`) pour reflecter les nouveaux emplacements et l'ordre de lecture attendu.
+- Docs : requalification des references produit, strategie commerciale, infra, validation et vision vers leurs nouveaux emplacements canoniques.
 - Pilotage : synchronisation des references de gouvernance et de pilotage pour que les chemins documentaires exposes au projet restent coherents avec l'arborescence reelle du repo.
 
 ## [4.1.74] - 2026-04-27
