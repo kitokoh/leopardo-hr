@@ -46,6 +46,7 @@
 - Mobile : `mobile/lib/app.dart`, `mobile/lib/models/employee.dart`, `mobile/lib/features/auth/data/auth_repository.dart` et `mobile/lib/features/settings/screens/settings_screen.dart` appliquent la langue / direction (`is_rtl`) retournees par l'API et permettent a l'utilisateur de changer sa langue preferee depuis les parametres.
 - Web : `web/src/lib/api-client.ts`, `web/src/lib/i18n.ts`, `web/src/components/locale-sync.tsx`, `web/src/app/auth/login/page.tsx` et `web/src/app/(dashboard)/*` utilisent la langue du navigateur en fallback, propagent `Accept-Language`, affichent les erreurs localisees et basculent le document en RTL quand necessaire.
 - Tests : ajout de couverture mobile pour le parsing `language` / `is_rtl`, et extension des tests API sur les payloads auth/localisation.
+- Pilotage : `PILOTAGE.md` realigne les liens de lecture recommande vers `docs/REFERENTIEL_PRODUIT/` et `docs/dossierdeConception/README.md` pour refleter la structure canonique actuelle de la documentation.
 
 ## [4.1.73] - 2026-04-26
 
