@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:leopardo_rh/core/storage/app_preferences.dart';
 import 'package:leopardo_rh/core/storage/secure_storage.dart';
 import 'package:leopardo_rh/core/api/api_exceptions.dart';
 import 'package:leopardo_rh/core/api/mock_interceptor.dart';
@@ -8,9 +10,10 @@ class ApiClient {
   static const String _defaultRenderBaseUrl = 'https://gestionemployerbackend.onrender.com/api/v1';
   final Dio _dio;
   final SecureStorage _storage;
+  final AppPreferences _preferences;
   final VoidCallback? onUnauthorized;
 
-  ApiClient(this._storage, {this.onUnauthorized})
+  ApiClient(this._storage, this._preferences, {this.onUnauthorized})
       : _dio = Dio(BaseOptions(
           baseUrl: resolveBaseUrl(),
           connectTimeout: const Duration(seconds: 20),
@@ -21,9 +24,16 @@ class ApiClient {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await _storage.getToken();
+          final preferredLanguage = _preferences.preferredLanguage;
+
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+
+          options.headers['Accept-Language'] = preferredLanguage.isNotEmpty
+              ? preferredLanguage
+              : PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
@@ -70,8 +80,9 @@ class ApiClient {
       code = "FORBIDDEN";
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? message;
-        code = e.response?.data['error'];
+        final data = (e.response?.data as Map).cast<dynamic, dynamic>();
+        message = (data['localized_message'] ?? data['message'] ?? message).toString();
+        code = data['error']?.toString();
       }
     } else if (e.type == DioExceptionType.connectionTimeout) {
       message = "Delai de connexion depasse";

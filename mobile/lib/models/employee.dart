@@ -16,6 +16,8 @@ class Employee {
   final double? hourlyRate;
   final double? salaryBase;
   final String? currency;
+  final String language;
+  final bool isRtl;
 
   Employee({
     required this.id,
@@ -35,6 +37,8 @@ class Employee {
     this.hourlyRate,
     this.salaryBase,
     this.currency,
+    this.language = 'fr',
+    this.isRtl = false,
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -68,6 +72,8 @@ class Employee {
       hourlyRate: _parseDouble(json['hourly_rate']),
       salaryBase: _parseDouble(json['salary_base']),
       currency: json['currency'] as String?,
+      language: (json['language'] ?? 'fr') as String,
+      isRtl: json['is_rtl'] == true,
     );
   }
 

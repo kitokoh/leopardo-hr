@@ -29,17 +29,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _biometricNoteController = TextEditingController();
   final TextEditingController _fingerprintDeviceController = TextEditingController();
+  static const Map<String, String> _languageLabels = {
+    'fr': 'Francais',
+    'ar': 'العربية',
+    'tr': 'Turkce',
+    'en': 'English',
+  };
 
   bool _profileSaving = false;
   bool _passwordSaving = false;
   bool _preferencesSaving = false;
   bool _biometricSubmitting = false;
+  bool _languageSaving = false;
   bool _biometricEnabled = false;
   bool _fingerprintEnabled = false;
   bool _faceEnabled = false;
   bool _attendanceConsent = false;
   File? _selectedFaceImage;
   BiometricEnrollment? _latestEnrollment;
+  String _selectedLanguage = 'fr';
 
   @override
   void initState() {
@@ -48,6 +56,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _firstNameController = TextEditingController(text: employee?.firstName ?? '');
     _lastNameController = TextEditingController(text: employee?.lastName ?? '');
     _emailController = TextEditingController(text: employee?.email ?? '');
+    _selectedLanguage = employee?.language ?? 'fr';
     _loadLocalSettings();
     _loadEnrollmentStatus();
   }
@@ -111,6 +120,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildIdentityCard(context, employee?.role),
           const SizedBox(height: 20),
           _buildProfileSection(context, authState),
+          const SizedBox(height: 20),
+          _buildLanguageSection(context, authState),
           const SizedBox(height: 20),
           _buildPasswordSection(context, authState),
           if (!isManager) ...[
@@ -200,6 +211,59 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSection(BuildContext context, AuthState authState) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Langue',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.',
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            value: _selectedLanguage,
+            decoration: const InputDecoration(labelText: 'Langue preferee'),
+            items: _languageLabels.entries
+                .map(
+                  (entry) => DropdownMenuItem<String>(
+                    value: entry.key,
+                    child: Text(entry.value),
+                  ),
+                )
+                .toList(),
+            onChanged: _languageSaving
+                ? null
+                : (value) {
+                    if (value == null) return;
+                    setState(() => _selectedLanguage = value);
+                  },
+          ),
+          const SizedBox(height: 16),
+          if (authState.error != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(authState.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            ),
+          FilledButton(
+            onPressed: _languageSaving ? null : _saveLanguage,
+            child: Text(_languageSaving ? 'Mise a jour...' : 'Mettre a jour la langue'),
+          ),
+        ],
       ),
     );
   }
@@ -441,6 +505,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mot de passe mis a jour.')),
+      );
+    }
+  }
+
+  Future<void> _saveLanguage() async {
+    setState(() => _languageSaving = true);
+    final success = await ref.read(authProvider.notifier).updatePreferredLanguage(_selectedLanguage);
+
+    if (!mounted) return;
+    setState(() => _languageSaving = false);
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Langue mise a jour.')),
       );
     }
   }
