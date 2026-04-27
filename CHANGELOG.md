@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.74] - 2026-04-27
+
+### Client - Alignement i18n mobile/web avec l'API
+
+- API : `Language`, `SetLocale`, `AuthController`, `bootstrap/app.php` et les tests associes sont durcis pour que les langues actives en base gouvernent le runtime, que le contrat d'erreur localise reste coherent (`error` + `message` + `localized_message`) et que `is_rtl` soit expose aux clients.
+- Mobile : `mobile/lib/core/api/api_client.dart` envoie maintenant `Accept-Language`, privilegie `localized_message` sur les erreurs et retombe sur la langue du telephone quand aucune preference compte n'est encore definie.
+- Mobile : `mobile/lib/app.dart`, `mobile/lib/models/employee.dart`, `mobile/lib/features/auth/data/auth_repository.dart` et `mobile/lib/features/settings/screens/settings_screen.dart` appliquent la langue / direction (`is_rtl`) retournees par l'API et permettent a l'utilisateur de changer sa langue preferee depuis les parametres.
+- Web : `web/src/lib/api-client.ts`, `web/src/lib/i18n.ts`, `web/src/components/locale-sync.tsx`, `web/src/app/auth/login/page.tsx` et `web/src/app/(dashboard)/*` utilisent la langue du navigateur en fallback, propagent `Accept-Language`, affichent les erreurs localisees et basculent le document en RTL quand necessaire.
+- Tests : ajout de couverture mobile pour le parsing `language` / `is_rtl`, et extension des tests API sur les payloads auth/localisation.
+
 ## [4.1.73] - 2026-04-26
 
 ### Multilinguisme - Support complet FR/AR(RTL)/TR/EN
@@ -1193,5 +1203,4 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 

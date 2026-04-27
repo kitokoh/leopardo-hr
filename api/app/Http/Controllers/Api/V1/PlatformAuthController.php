@@ -24,7 +24,8 @@ class PlatformAuthController extends Controller
         if (! $superAdmin || ! Hash::check($validated['password'], $superAdmin->password_hash)) {
             return new JsonResponse([
                 'error' => 'INVALID_CREDENTIALS',
-                'message' => __('errors.INVALID_CREDENTIALS'),
+                'message' => 'INVALID_CREDENTIALS',
+                'localized_message' => __('errors.INVALID_CREDENTIALS'),
             ], 401);
         }
 

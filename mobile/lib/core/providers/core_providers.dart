@@ -16,13 +16,15 @@ final appPreferencesProvider = Provider<AppPreferences>((ref) {
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final storage = ref.watch(secureStorageProvider);
-  return ApiClient(storage);
+  final preferences = ref.watch(appPreferencesProvider);
+  return ApiClient(storage, preferences);
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final storage = ref.watch(secureStorageProvider);
-  return AuthRepository(apiClient, storage);
+  final preferences = ref.watch(appPreferencesProvider);
+  return AuthRepository(apiClient, storage, preferences);
 });
 
 final attendanceRepositoryProvider = Provider<AttendanceRepository>((ref) {
