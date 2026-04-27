@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\AttendanceLogResource;
+use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Models\Employee;
 use App\Services\EstimationService;
 use Illuminate\Http\JsonResponse;
@@ -32,12 +34,23 @@ class MeController extends Controller
             'date' => ['nullable', 'date_format:Y-m-d'],
         ]);
 
-        $summary = $this->estimationService->dailySummary(
-            employee: $employee,
-            date: $request->input('date'),
-        );
+        $company = app('current_company');
+        $date = $request->input('date');
+        $dateLocal = $date
+            ? Carbon::createFromFormat('Y-m-d', $date, $company->timezone)->startOfDay()
+            : now('UTC')->setTimezone($company->timezone)->startOfDay();
 
-        return new JsonResponse(['data' => $summary]);
+        $dateKey = $dateLocal->toDateString();
+
+        $log = \App\Models\AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
+            ->where('employee_id', $employee->id)
+            ->where('date', $dateKey)
+            ->where('session_number', 1)
+            ->orderByDesc('id')
+            ->first();
+
+        return (new AttendanceTodayResource($employee, $log, $company->timezone))->response();
     }
 
     public function quickEstimate(Request $request): JsonResponse
