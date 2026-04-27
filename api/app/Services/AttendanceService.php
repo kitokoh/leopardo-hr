@@ -12,8 +12,9 @@ use Illuminate\Support\Carbon;
 
 class AttendanceService
 {
-    public function checkIn(Employee $employee, CheckInDTO $dto): AttendanceLog
+    public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
+        $dto = $this->normalizeDto($dto, $gpsLng, $method);
         $company = app('current_company');
 
         $nowUtc = now('UTC');
@@ -58,8 +59,9 @@ class AttendanceService
         ]);
     }
 
-    public function checkOut(Employee $employee, CheckInDTO $dto): AttendanceLog
+    public function checkOut(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
+        $dto = $this->normalizeDto($dto, $gpsLng, $method);
         $company = app('current_company');
 
         $nowUtc = now('UTC');
@@ -248,5 +250,18 @@ class AttendanceService
     private function resolveSchedule(Employee $employee): ?Schedule
     {
         return $employee->schedule;
+    }
+
+    private function normalizeDto(CheckInDTO|float|null $dto, ?float $gpsLng, string $method): CheckInDTO
+    {
+        if ($dto instanceof CheckInDTO) {
+            return $dto;
+        }
+
+        return new CheckInDTO(
+            gps_lat: is_float($dto) ? $dto : null,
+            gps_lng: $gpsLng,
+            method: $method,
+        );
     }
 }

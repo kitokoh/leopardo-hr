@@ -49,20 +49,22 @@ class AuthService
             throw new InvalidCredentialsException;
         }
 
-        if ($employee->locked_until && $employee->locked_until->isFuture()) {
+        if ($this->supportsLoginLocking($employee) && $employee->locked_until && $employee->locked_until->isFuture()) {
             throw new AccountLockedException($employee->locked_until);
         }
 
         if (! Hash::check($password, $employee->password_hash)) {
-            $employee->increment('failed_login_attempts');
-            if ($employee->failed_login_attempts >= 5) {
-                $employee->update(['locked_until' => now()->addMinutes(15)]);
+            if ($this->supportsLoginLocking($employee)) {
+                $employee->increment('failed_login_attempts');
+                if ($employee->failed_login_attempts >= 5) {
+                    $employee->update(['locked_until' => now()->addMinutes(15)]);
+                }
             }
             throw new InvalidCredentialsException;
         }
 
         // Reset failed attempts on success
-        if ($employee->failed_login_attempts > 0 || $employee->locked_until) {
+        if ($this->supportsLoginLocking($employee) && ($employee->failed_login_attempts > 0 || $employee->locked_until)) {
             $employee->update([
                 'failed_login_attempts' => 0,
                 'locked_until' => null,
@@ -111,5 +113,16 @@ class AuthService
         $table = DB::selectOne("select to_regclass('public.user_lookups') as table_name");
 
         return $table?->table_name !== null;
+    }
+
+    private function supportsLoginLocking(Employee $employee): bool
+    {
+        $connection = $employee->getConnection();
+        $table = $employee->getTable();
+
+        return Schema::connection($connection->getName())->hasColumns($table, [
+            'failed_login_attempts',
+            'locked_until',
+        ]);
     }
 }
