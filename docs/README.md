@@ -1,5 +1,5 @@
 # LEOPARDO RH - Documentation Technique
-## Version documentaire 4.1.77 | Avril 2026
+## Version documentaire 4.1.78 | Avril 2026
 ## Reference programme : `PILOTAGE.md` fait foi
 
 ---
@@ -26,6 +26,7 @@ docs/
 ### 1. Etat reel de `main`
 
 - `../PILOTAGE.md`
+- `GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md`
 - `GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
 - `GESTION_PROJET/README.md`
 - `GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md`
@@ -63,6 +64,16 @@ Pour toute question de coherence doc/code :
 2. verifier les migrations et tests
 3. utiliser `GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
 4. ensuite seulement consulter la spec cible pour les modules non encore livres
+
+## Reprise rapide pour un nouveau developpeur
+
+Si quelqu'un rejoint le projet et demande "qu'est-ce qu'il reste a faire ?",
+l'ordre de lecture recommande est :
+
+1. `../PILOTAGE.md`
+2. `GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md`
+3. `GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
+4. les routes Laravel et les tests concernes par la zone de travail
 
 ---
 
