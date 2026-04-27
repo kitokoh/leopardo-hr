@@ -502,7 +502,7 @@ $totalEmployees = $statsQuery->count();
 
 ## Phase 3 : Robustesse & Monitoring
 
-### [ ] ACTION 9 : Implementer le 2FA super-admin
+### [x] ACTION 9 : Implementer le 2FA super-admin
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 6h
 
