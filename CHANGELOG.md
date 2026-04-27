@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.75] - 2026-04-27
+
+### RH - Salary advances et 2FA console super-admin
+
+- API : ajout du module `salary_advances` avec son modele, son service, ses requetes de validation, son controleur REST et ses routes RH pour permettre la creation, la consultation, l'approbation, le rejet et l'annulation d'avances sur salaire.
+- API : `PlatformAuthController` et `SuperAdminService` introduisent la verification 2FA pour la console super-admin, avec generation de secret, URL `otpauth://` et validation de code TOTP.
+- Tests : `api/tests/Support/CreatesMvpSchema.php` couvre maintenant explicitement `salary_advances` dans le schema MVP afin d'aligner les tests backend avec le nouveau module RH.
+- Docs : reorganisation des references produit, strategie commerciale, infra, validation et vision pour refleter la nouvelle structure documentaire sans s'appuyer sur les anciens emplacements.
+
 ## [4.1.74] - 2026-04-27
 
 ### Client - Alignement i18n mobile/web avec l'API
@@ -1203,4 +1212,3 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-

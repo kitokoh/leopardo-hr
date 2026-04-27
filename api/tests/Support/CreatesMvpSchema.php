@@ -310,6 +310,26 @@ trait CreatesMvpSchema
             $table->timestampTz('created_at')->nullable();
         });
 
+        Schema::create('salary_advances', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->decimal('amount', 12, 2);
+            $table->text('reason')->nullable();
+            $table->string('status', 20)->default('pending');
+            $table->unsignedInteger('approved_by')->nullable();
+            $table->text('decision_comment')->nullable();
+            $table->unsignedSmallInteger('repayment_months')->default(1);
+            $table->decimal('monthly_deduction', 12, 2)->nullable();
+            $table->decimal('amount_remaining', 12, 2)->default(0);
+            if (DB::getDriverName() === 'pgsql') {
+                $table->jsonb('repayment_plan')->nullable();
+            } else {
+                $table->json('repayment_plan')->nullable();
+            }
+            $table->timestamps();
+        });
+
         DB::statement('SET search_path TO public');
 
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
@@ -402,6 +422,7 @@ trait CreatesMvpSchema
             DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_tokens CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.cameras CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.salary_advances CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.leave_balance_logs CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.absences CASCADE');
             DB::statement('DROP TABLE IF EXISTS shared_tenants.absence_types CASCADE');
@@ -422,6 +443,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "cameras"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absence_types"'.$cascade);
