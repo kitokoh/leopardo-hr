@@ -24,7 +24,7 @@ use App\Http\Controllers\Api\V1\KioskController;
 use App\Http\Controllers\Api\V1\MeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
     // Employes — CRUD manager/RH
     Route::get('/employees', [EmployeeController::class, 'index']);
     Route::post('/employees', [EmployeeController::class, 'store']);
@@ -79,7 +79,7 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
 
 // Kiosque — auth par X-Kiosk-Token, pas sanctum
 // throttle:60,1 protege contre le brute-force du X-Kiosk-Token
-Route::middleware(['throttle:60,1'])->group(function (): void {
+Route::middleware(['throttle:api'])->group(function (): void {
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);

@@ -1,4 +1,4 @@
-﻿# Exports et archives — NE JAMAIS commiter dans le repo
+# Exports et archives — NE JAMAIS commiter dans le repo
 *.zip
 *.tar.gz
 gestionemployer_CLEAN/
@@ -11,6 +11,8 @@ bon-fixed/
 api/.env
 api/.env.backup
 mobile/.env
+google-services.json
+**/google-services.json
 
 # Dépendances (générées à l'init)
 api/vendor/

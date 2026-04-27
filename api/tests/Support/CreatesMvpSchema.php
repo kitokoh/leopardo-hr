@@ -120,6 +120,9 @@ trait CreatesMvpSchema
             $table->string('status', 20)->default('active');
             $table->char('preferred_language', 2)->nullable();
             $table->string('photo_path', 255)->nullable();
+            $table->string('iban', 255)->nullable();
+            $table->string('bank_account', 255)->nullable();
+            $table->string('national_id', 255)->nullable();
             $table->boolean('biometric_face_enabled')->default(false);
             $table->boolean('biometric_fingerprint_enabled')->default(false);
             $table->string('biometric_face_reference_path', 255)->nullable();
