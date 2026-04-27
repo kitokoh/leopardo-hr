@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.76] - 2026-04-27
+
+### Qualité & Robustesse - Plan d'Action Amélioration Phase 2, 3 & 4
+
+- API : Centralisation de la gestion multi-tenant via `TenantManager` service (isolation `search_path` robuste avec `withinTenant`).
+- API : Introduction des DTOs (`CreateEmployeeDTO`, `UpdateEmployeeDTO`, `CheckInDTO`) pour typer les échanges entre contrôleurs et services.
+- API : Refactorisation complète des contrôleurs vers `JsonResource` (`EmployeeResource`, `AttendanceLogResource`, etc.) pour une sérialisation standardisée.
+- API : Configuration du Rate Limiting dynamique par entreprise (300 req/min) et par IP (60 req/min) dans `AppServiceProvider`.
+- API : Gel du mode "schema" Enterprise via un observer `creating` sur le modèle `Company` pour sécuriser le MVP.
+- API : Internationalisation complète du Dashboard Blade et création des fichiers `lang/{fr,en}/dashboard.php`.
+- Web : Pagination des employés sur le dashboard manager pour améliorer les performances sur les gros comptes.
+- Ops : Ajout d'un hook de **rollback automatique** dans le workflow GitHub Action `deploy-main.yml` en cas d'échec du smoke test post-déploiement sur Render.
+- Docs : Mise à jour de `PLAN_ACTION_AMELIORATION.md` (Actions 6, 7, 8, 10, 11, 12, 13, 14, 15 marquées terminées).
+
 ## [4.1.75] - 2026-04-27
 
 ### Sécurité - Plan d'Action Amélioration Phase 1 (P0)
