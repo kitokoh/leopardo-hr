@@ -4,11 +4,9 @@ Ce dossier rassemble la conception fonctionnelle et technique cible du projet.
 
 ## Comment le lire
 
-1. Commencer par `../../PILOTAGE.md` pour l'etat reel et le pilotage courant
-2. Lire `../GESTION_PROJET/PROCHAINES_ACTIONS_MAIN_2026-04-27.md` si l'objectif est de reprendre le travail
-3. Utiliser `00_docs/` pour les documents fondateurs exportes
-4. Lire ensuite les references canoniques courtes dans `../REFERENTIEL_PRODUIT/`
-5. Utiliser les sous-dossiers numerotes ci-dessous pour entrer par domaine
+1. Commencer par `00_docs/` pour les documents fondateurs exportes
+2. Lire ensuite les references canoniques courtes dans `../REFERENTIEL_PRODUIT/`
+3. Utiliser les sous-dossiers numerotes ci-dessous pour entrer par domaine
 
 ## Index rapide
 
