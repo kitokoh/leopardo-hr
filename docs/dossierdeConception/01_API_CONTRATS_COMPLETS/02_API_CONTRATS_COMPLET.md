@@ -1553,6 +1553,39 @@ file: employees.csv (colonnes: first_name,last_name,email,department_id,position
 
 ## 13. APPAREILS BIOMÉTRIQUES (ZKTeco / QR)
 
+### Etat courant origin/main - lecture obligatoire
+
+Le bloc `devices/*` ci-dessous decrit une cible produit plus large que l'implementation actuellement exposee sur `origin/main`.
+
+**Endpoints reels confirmes sur `origin/main`**
+- `GET /api/v1/auth/biometric-enrollment`
+- `POST /api/v1/auth/biometric-enrollment`
+- `GET /api/v1/biometric-enrollment-requests`
+- `POST /api/v1/biometric-enrollment-requests/{id}/approve`
+- `POST /api/v1/biometric-enrollment-requests/{id}/reject`
+- `POST /api/v1/kiosks`
+- `GET /api/v1/kiosks/{deviceCode}/roster`
+- `POST /api/v1/kiosks/{deviceCode}/punch`
+- `POST /api/v1/kiosks/{deviceCode}/sync`
+
+**Endpoints documentes dans cette section mais non exposes sur `origin/main`**
+- `GET /devices`
+- `POST /devices`
+- `PUT /devices/{id}`
+- `DELETE /devices/{id}`
+- `POST /devices/{id}/rotate-token`
+- `POST /devices/{id}/test-connection`
+
+**Ecarts de contrat confirmes sur `origin/main`**
+- l'enrolement biometrique est modele autour de `BiometricEnrollmentRequest`, pas autour d'un catalogue generique `devices`
+- la creation de borne se fait par `POST /kiosks` avec retour du `device_code` et du `sync_token` en clair a l'inscription
+- les bornes authentifient leurs appels via l'entete `X-Kiosk-Token`, absent du contrat cible ici
+- le pointage borne attend `identifier` + `action`, et renvoie un payload recentre sur `employee_id`, `date`, `check_in`, `check_out`, `method`, `status`
+
+**Reference implementation**
+- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
+- `api/openapi.yaml`
+
 ### GET /devices
 **Response 200 :**
 ```json
@@ -1632,6 +1665,40 @@ file: employees.csv (colonnes: first_name,last_name,email,department_id,position
 ---
 
 ## 14. SUPER ADMIN
+
+### Etat courant origin/main - lecture obligatoire
+
+Le module platform expose aujourd'hui une surface beaucoup plus reduite que la cible `admin/*` documentee ci-dessous.
+
+**Endpoints reels confirmes sur `origin/main`**
+- `POST /api/v1/platform/auth/login`
+- `GET /api/v1/platform/auth/me`
+- `POST /api/v1/platform/auth/logout`
+- `GET /api/v1/platform/companies`
+- `POST /api/v1/platform/companies`
+
+**Endpoints documentes dans cette section mais non exposes sur `origin/main`**
+- `GET /admin/companies/{id}`
+- `PUT /admin/companies/{id}`
+- `PUT /admin/companies/{id}/suspend`
+- `PUT /admin/companies/{id}/reactivate`
+- `PUT /admin/companies/{id}/extend`
+- `GET /admin/plans`
+- `POST /admin/plans`
+- `PUT /admin/plans/{id}`
+- `GET /admin/invoices`
+- `GET /admin/hr-models`
+- `GET /admin/hr-models/{country_code}`
+
+**Ecarts de contrat confirmes sur `origin/main`**
+- le prefixe reel est `platform/*`, pas `admin/*`
+- `platform/auth/logout` renvoie actuellement `{ "status": "ok" }`
+- la creation de societe attend un payload operationnel (`sector`, `country`, `city`, `manager_*`) et non le contrat cible ci-dessous
+- `GET /platform/companies` et `POST /platform/companies` sont portes par `PlatformCompanyController` et restent centres sur l'onboarding shared-company courant
+
+**Reference implementation**
+- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
+- `api/openapi.yaml`
 
 ### GET /admin/companies
 **Query params :** `?status=active&plan=business&search=TechCorp&page=1`
@@ -1914,6 +1981,29 @@ data: {"ts":"2026-04-15T10:00:30Z"}
 ---
 
 ## 13. EMPLOYES - ESTIMATIONS RAPIDES (2 endpoints)
+
+### Etat courant origin/main - lecture obligatoire
+
+Cette section est globalement plus proche de `origin/main` que d'autres modules, mais il faut noter deux differences importantes.
+
+**Endpoints reels confirmes sur `origin/main`**
+- `GET /api/v1/employees/{employee}/daily-summary`
+- `GET /api/v1/employees/{employee}/quick-estimate`
+- `GET /api/v1/me/daily-summary`
+- `GET /api/v1/me/quick-estimate`
+- `GET /api/v1/me/monthly-summary`
+
+**Ecarts de contrat confirmes sur `origin/main`**
+- la surface employee manager existe bien, mais le libre-service salarie passe aussi par `me/*`, ce que cette spec cible ne couvre pas
+- les payloads reels proviennent de `EstimationService` et des endpoints `MeController`, avec une logique de synthese mensuelle supplementaire absente ici
+
+**Module expose sur `origin/main` mais absent de ce contrat cible**
+- `cameras/*` est deja route dans l'API principale avec gestion camera, tokens de stream, permissions, journaux d'acces, endpoint interne MediaMTX et vue publique
+- ce module doit etre documente dans une section dediee ou dans un contrat separe, sinon la documentation produit reste incomplete par rapport a `main`
+
+**Reference implementation**
+- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
+- `api/openapi.yaml`
 
 ### GET /employees/{id}/daily-summary?date=2026-04-04
 **Description :** Resume journalier d'un employe avec estimation du montant du jour.

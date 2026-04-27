@@ -74,9 +74,13 @@ class InvitationController extends Controller
             invitedByEmail: $actor->email,
         );
 
+        // Refresh to get the record as it exists after createAndSend (updateOrCreate
+        // may have updated the row, changing updated_at and last_sent_at).
+        $invitation->refresh();
+
         return new JsonResponse([
             'data' => [
-                'id' => $invitation->fresh()->id,
+                'id' => $invitation->id,
                 'email' => $employee->email,
                 'resent_at' => now()->toIso8601String(),
             ],

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -49,8 +50,25 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => $errorCode,
-                'message' => $message,
+                'message' => $errorCode,
+                'localized_message' => $message,
             ], $exception->statusCode());
+        });
+
+        // Handle oversized file uploads gracefully (PHP rejects them before Laravel
+        // validation runs, so we must catch PostTooLargeException explicitly).
+        $exceptions->render(function (PostTooLargeException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => 'VALIDATION_ERROR',
+                'message' => 'Le fichier envoyé dépasse la taille maximale autorisée.',
+                'errors' => [
+                    'file' => ['Le fichier dépasse la taille maximale autorisée.'],
+                ],
+            ], 422);
         });
 
         $exceptions->render(function (ValidationException $exception, Request $request) {
@@ -60,7 +78,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => 'VALIDATION_ERROR',
-                'message' => __('errors.VALIDATION_ERROR'),
+                'message' => 'VALIDATION_ERROR',
+                'localized_message' => __('errors.VALIDATION_ERROR'),
                 'errors' => $exception->errors(),
             ], 422);
         });
@@ -72,7 +91,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => 'RESOURCE_NOT_FOUND',
-                'message' => __('errors.NOT_FOUND'),
+                'message' => 'RESOURCE_NOT_FOUND',
+                'localized_message' => __('errors.NOT_FOUND'),
             ], 404);
         });
 
@@ -83,7 +103,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return new JsonResponse([
                 'error' => 'FORBIDDEN',
-                'message' => __('errors.FORBIDDEN'),
+                'message' => 'FORBIDDEN',
+                'localized_message' => __('errors.FORBIDDEN'),
             ], 403);
         });
 
@@ -95,7 +116,8 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($exception->getStatusCode() === 404) {
                 return new JsonResponse([
                     'error' => 'RESOURCE_NOT_FOUND',
-                    'message' => __('errors.NOT_FOUND'),
+                    'message' => 'RESOURCE_NOT_FOUND',
+                    'localized_message' => __('errors.NOT_FOUND'),
                 ], 404);
             }
 

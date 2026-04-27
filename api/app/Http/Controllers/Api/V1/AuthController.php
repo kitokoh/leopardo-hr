@@ -42,6 +42,10 @@ class AuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
+        if ($this->resolveCompany($employee) === null) {
+            throw new \App\Exceptions\CompanyNotFoundException();
+        }
+
         return new JsonResponse([
             'data' => $this->serializeEmployee($employee),
         ]);
@@ -105,7 +109,7 @@ class AuthController extends Controller
             $token->delete();
         }
 
-        return new JsonResponse(['status' => 'ok']);
+        return new JsonResponse(['message' => 'LOGGED_OUT']);
     }
 
     private function serializeEmployee(Employee $employee): array

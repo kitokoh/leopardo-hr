@@ -56,7 +56,7 @@ class CheckOutTest extends TestCase
         $response = $this->postJson('/api/v1/attendance/check-out');
 
         $response->assertStatus(422);
-        $response->assertJsonPath('message', 'MISSING_CHECK_IN');
+        $response->assertJsonPath('error', 'MISSING_CHECK_IN');
     }
 
     public function test_employee_can_check_out_and_hours_are_calculated(): void

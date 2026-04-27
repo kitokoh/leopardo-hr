@@ -49,4 +49,14 @@ class AbsenceFactory extends Factory
             ];
         });
     }
+
+    public function cancelled(): static
+    {
+        return $this->state(fn () => ['status' => 'cancelled']);
+    }
+
+    public function withType(\App\Models\AbsenceType $type): static
+    {
+        return $this->state(fn () => ['absence_type_id' => $type->id]);
+    }
 }

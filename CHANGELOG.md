@@ -17,8 +17,26 @@
 - API : Remplacement des messages hardcodes dans AuthController, InvitationController et PlatformAuthController par des appels `__()`.
 - Docs : `api/MULTILANG.md` — guide architecture i18n, usage `__()`, procedure d'ajout de nouvelles langues.
 - Pilotage : `PILOTAGE.md` — statut langues mis a jour de « i18n prepare (1 langue seulement) » a « FR+AR+TR+EN production-ready ».
+## [4.1.73] - 2026-04-27
+
+### Web - Initialisation de l'application Next.js et site vitrine
+
+- Web : Initialisation d'un projet Next.js 16 dans le dossier `web/` avec TypeScript, Tailwind CSS (v4) et App Router.
+- Web : Mise en place d'un site vitrine (landing page) avec sections Hero, Fonctionnalités et Tarifs conformément à la stratégie marketing.
+- Web : Implémentation d'un squelette d'authentification (page de connexion) et d'un tableau de bord (layout + page d'accueil) pour les futurs développements.
+- Docs : Mise à jour de `ARBORESCENCE_PROJET_COMPLET.md`, `README.md` et `PILOTAGE.md` pour intégrer la nouvelle application web dans l'architecture du monorepo.
+- Pilotage : Transition officielle du frontend web de Blade/Alpine vers Next.js pour le dashboard et la vitrine.
 
 ## [4.1.72] - 2026-04-25
+
+### API - Durcissement attendance/auth et corrections review
+
+- API : `api/app/Policies/AttendancePolicy.php` rebloque explicitement le pointage mobile pour les managers afin d'eviter la regression qui leur permettait de faire `check-in` / `check-out` comme un employe.
+- API : `api/app/Http/Controllers/Api/V1/AttendanceController.php`, `api/app/Services/AttendanceService.php` et `api/app/Models/AttendanceLog.php` recalculent maintenant les champs derives (`status`, `late_minutes`, `hours_worked`, `overtime_hours`) lors d'une correction manuelle de pointage, en s'alignant sur les vraies colonnes `corrected_by` / `correction_note`.
+- API : `api/app/Http/Controllers/Api/V1/EmployeeController.php` conserve le payload `data.id` / `data.status` sur l'archivage employe tout en ajoutant `message=EMPLOYEE_ARCHIVED`, pour rester compatible avec la suite existante.
+- Tests : `api/tests/Feature/Attendance/CheckInTest.php`, `api/tests/Feature/Attendance/CheckOutTest.php`, `api/tests/Feature/Attendance/ManualUpdateTest.php` et `api/tests/Support/CreatesMvpSchema.php` couvrent la fermeture de la regression manager, la correction manuelle et le contrat d'erreur de pointage mis a jour.
+
+- Tests : `api/tests/Support/CreatesMvpSchema.php` cree maintenant explicitement ses tables tenant dans `shared_tenants.*`, ses tables de support public dans `public.*`, et aligne aussi les fixtures `absence_types` / `absences` / `leave_balance_logs`, afin d'eviter les erreurs PostgreSQL `relation does not exist` pendant la suite backend.
 
 ### Migration - Robustesse creation user_invitations
 
@@ -1175,6 +1193,5 @@ docs(erd): unify manager_id and remove supervisor_id from employees
    
  
  
-
 
 

@@ -29,6 +29,13 @@ leopardo-rh/                          ← Racine du monorepo (Gestion Employer)
 │   │   └── models/                   ← Modèles de données désérialisables
 │   ├── test/                         ← Tests unitaires et widget Dart
 │   └── pubspec.yaml                  ← Dépendances Flutter
+├── web/                              ← WEB Next.js (Vitrine + App)
+│   ├── src/
+│   │   ├── app/                      ← Pages et Layouts (App Router)
+│   │   ├── components/               ← Composants React réutilisables
+│   │   └── lib/                      ← Utilitaires et clients API
+│   ├── public/                       ← Assets statiques
+│   └── package.json                  ← Dépendances Node.js
 ├── docs/                             ← DOCUMENTATION (Source de Vérité)
 │   ├── dossierdeConception/          ← Specs détaillées (par module 01 à 20)
 │   ├── GESTION_PROJET/               ← Guides, Index, Garde-fous, Setup

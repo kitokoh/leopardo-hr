@@ -6,6 +6,6 @@ class CompanyNotFoundException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('COMPANY_NOT_FOUND', 403, 'COMPANY_NOT_FOUND');
+        parent::__construct('Entreprise introuvable ou accès non autorisé.', 403, 'COMPANY_NOT_FOUND');
     }
 }

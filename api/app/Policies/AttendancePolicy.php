@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\AttendanceLog;
 use App\Models\Employee;
 
 class AttendancePolicy
@@ -24,5 +25,10 @@ class AttendancePolicy
     public function viewForEmployee(Employee $actor, Employee $target): bool
     {
         return $actor->isManager() || $actor->id === $target->id;
+    }
+
+    public function update(Employee $actor, AttendanceLog $log): bool
+    {
+        return $actor->isManager();
     }
 }
