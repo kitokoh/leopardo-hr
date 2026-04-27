@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 class TenantMiddleware
 {
     public function __construct(private readonly TenantManager $tenantManager) {}
+
     public function handle(Request $request, Closure $next): Response
     {
         $employee = $request->user();
@@ -72,6 +73,10 @@ class TenantMiddleware
             });
         }
 
-        return $next($request);
+        try {
+            return $next($request);
+        } finally {
+            $this->tenantManager->resetToPrevious();
+        }
     }
 }
