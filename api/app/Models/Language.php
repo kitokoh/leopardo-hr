@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class Language extends Model
 {
@@ -42,8 +42,14 @@ class Language extends Model
 
     public static function isRtl(string $code): bool
     {
-        return static::query()
-            ->where('code', strtolower($code))
+        $code = strtolower($code);
+
+        if (! self::publicLanguagesTableExists()) {
+            return $code === 'ar';
+        }
+
+        return self::publicLanguagesQuery()
+            ->where('code', $code)
             ->where('is_rtl', true)
             ->exists();
     }
@@ -51,11 +57,11 @@ class Language extends Model
     public static function activeCodes(): array
     {
         return Cache::remember(self::ACTIVE_CODES_CACHE_KEY, now()->addMinutes(10), function (): array {
-            if (! Schema::hasTable('languages')) {
+            if (! self::publicLanguagesTableExists()) {
                 return self::SUPPORTED;
             }
 
-            $codes = static::query()
+            $codes = self::publicLanguagesQuery()
                 ->where('is_active', true)
                 ->pluck('code')
                 ->map(fn (string $code) => strtolower($code))
@@ -64,6 +70,27 @@ class Language extends Model
 
             return $codes !== [] ? $codes : self::SUPPORTED;
         });
+    }
+
+    private static function publicLanguagesTableExists(): bool
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return self::query()->getModel()->getConnection()->getSchemaBuilder()->hasTable('languages');
+        }
+
+        return DB::table('information_schema.tables')
+            ->where('table_schema', 'public')
+            ->where('table_name', 'languages')
+            ->exists();
+    }
+
+    private static function publicLanguagesQuery()
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return static::query();
+        }
+
+        return DB::table('public.languages');
     }
 
     protected static function booted(): void
