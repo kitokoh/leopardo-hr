@@ -24,8 +24,7 @@ class TenantManager
             $currentPath = DB::selectOne('SHOW search_path');
             $this->previousPath = $currentPath->search_path ?? 'public';
 
-            $schema = preg_replace('/[^a-zA-Z0-9_]/', '', $company->schema_name ?: 'shared_tenants') ?: 'shared_tenants';
-            DB::statement('SET search_path TO "' . $schema . '",public');
+            DB::statement('SET search_path TO ' . $company->getSafeSearchPath());
         }
 
         app()->instance('current_company', $company);

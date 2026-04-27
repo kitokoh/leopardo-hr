@@ -27,6 +27,7 @@ class EstimationService
         $dateKey = $dateLocal->toDateString();
 
         $log = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
             ->where('employee_id', $employee->id)
             ->where('date', $dateKey)
             ->where('session_number', 1)
@@ -44,6 +45,7 @@ class EstimationService
         $toLocal = Carbon::createFromFormat('Y-m-d', $to, $company->timezone)->startOfDay();
 
         $logs = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
             ->where('employee_id', $employee->id)
             ->where('date', '>=', $fromLocal->toDateString())
             ->where('date', '<=', $toLocal->toDateString())

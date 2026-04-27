@@ -61,28 +61,35 @@ class UserInvitationService
 
     public function accept(string $plainToken, string $password): Employee
     {
-        $invitation = UserInvitation::query()
-            ->where('token_hash', hash('sha256', $plainToken))
-            ->firstOrFail();
+        return DB::transaction(function () use ($plainToken, $password): Employee {
+            $invitation = UserInvitation::query()
+                ->where('token_hash', hash('sha256', $plainToken))
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        abort_if($invitation->accepted_at !== null, 410, 'INVITATION_ALREADY_ACCEPTED');
-        abort_if($invitation->expires_at?->isPast(), 410, 'INVITATION_EXPIRED');
+            abort_if($invitation->accepted_at !== null, 410, 'INVITATION_ALREADY_ACCEPTED');
+            abort_if($invitation->expires_at?->isPast(), 410, 'INVITATION_EXPIRED');
 
-        $company = Company::query()->findOrFail($invitation->company_id);
-        $this->tenantManager->setTenant($company);
+            $company = Company::query()->findOrFail($invitation->company_id);
+            $this->tenantManager->setTenant($company);
 
-        /** @var Employee $employee */
-        $employee = Employee::query()->findOrFail($invitation->employee_id);
-        $employee->password_hash = Hash::make($password);
-        $employee->email_verified_at = now();
-        $employee->invitation_accepted_at = now();
-        $employee->save();
+            try {
+                /** @var Employee $employee */
+                $employee = Employee::query()->findOrFail($invitation->employee_id);
+                $acceptedAt = now();
 
-        $this->tenantManager->resetToPrevious();
+                $employee->password_hash = Hash::make($password);
+                $employee->email_verified_at = $acceptedAt;
+                $employee->invitation_accepted_at = $acceptedAt;
+                $employee->save();
+            } finally {
+                $this->tenantManager->resetToPrevious();
+            }
 
-        $invitation->accepted_at = now();
-        $invitation->save();
+            $invitation->accepted_at = $acceptedAt;
+            $invitation->save();
 
-        return $employee;
+            return $employee;
+        });
     }
 }

@@ -10,6 +10,7 @@ use App\Models\Absence;
 use App\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class AbsenceController extends Controller
 {
@@ -33,10 +34,13 @@ class AbsenceController extends Controller
 
         if ($request->filled('month') && $request->filled('year')) {
             $month = $request->integer('month');
-            $year  = $request->integer('year');
-            $from  = sprintf('%04d-%02d-01', $year, $month);
-            $to    = sprintf('%04d-%02d-%02d', $year, $month, cal_days_in_month(CAL_GREGORIAN, $month, $year));
-            $query->where('start_date', '<=', $to)->where('end_date', '>=', $from);
+            $year = $request->integer('year');
+            $periodStart = Carbon::createFromDate($year, $month, 1)->startOfDay();
+            $periodEnd = $periodStart->copy()->endOfMonth();
+
+            $query
+                ->where('start_date', '<=', $periodEnd->toDateString())
+                ->where('end_date', '>=', $periodStart->toDateString());
         }
 
         $perPage = $request->integer('per_page', 15);

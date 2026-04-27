@@ -6,7 +6,7 @@ Ce dossier contient les referentiels de validation fonctionnelle et QA utilises 
 
 | Fichier | Statut | Usage autorise | Source canonique qui prime |
 |---|---|---|---|
-| `Leopardo_RH_Pointage_Validation_Finale.pdf` | Referentiel QA canonique du module pointage | Executer les scenarios de test, verifier la readiness du module, documenter PASS/FAIL/BLOCK | Le code sur `main` pour le comportement final, puis `PILOTAGE.md` pour le statut programme |
+| `01_pointage/Leopardo_RH_Pointage_Validation_Finale.pdf` | Referentiel QA canonique du module pointage | Executer les scenarios de test, verifier la readiness du module, documenter PASS/FAIL/BLOCK | Le code sur `main` pour le comportement final, puis `PILOTAGE.md` pour le statut programme |
 
 ## Regle
 

@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.77] - 2026-04-27
+
+### Documentation - Gouvernance premium et gestion projet
+
+
+### Sécurité & Performance - Stabilisation multi-tenant et standardisation API
+
+- API : Sécurisation des commandes `SET search_path` PostgreSQL via l'introduction de `Company::getSafeSearchPath()` pour prévenir les injections SQL.
+- API : Refactorisation de `MeController` pour utiliser les `JsonResource` standardisées de Laravel (`AttendanceLogResource`, `AttendanceTodayResource`).
+- API : Optimisation des requêtes dans `EstimationService` par l'ajout de clauses `select()` limitant les colonnes récupérées sur `AttendanceLog`.
+
+- Docs : `docs/README.md` est realigne avec la structure canonique actuelle, complete avec `GUIDES/` et `notes/`, et enrichi d'un bloc de standards documentaires.
+- Docs : creation des points d'entree `docs/GESTION_PROJET/README.md`, `docs/notes/README.md` et `docs/PROMPTS_EXECUTION/README.md` pour rendre la navigation plus senior et explicite.
+- Docs : correction des chemins de validation et enrichissement du cadrage QA dans `docs/validation/README.md` et `docs/validation/01_pointage/README.md`.
+- Vision : nettoyage des references PDF archivees, renommage des suffixes `+1` en noms d'archive lisibles, et realignement des chemins dans `docs/vision/README.md`, `docs/REFERENTIEL_PRODUIT/ROADMAP.md` et `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md`.
+- Pilotage : `PILOTAGE.md`, `PLAN_ACTION_AMELIORATION.md` et `api/config/app.php` sont remis en coherence sur `PROGRAM_VERSION 4.1.77`.
+
 ## [4.1.76] - 2026-04-27
 
 ### Qualité & Robustesse - Plan d'Action Amélioration Phase 2, 3 & 4
