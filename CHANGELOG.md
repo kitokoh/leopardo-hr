@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.80] - 2026-04-27
+
+### API - Module Evaluations (module 7 complément)
+
+- API : ajout du modèle `Evaluation` avec trait `BelongsToCompany`, scopes (`draft`, `submitted`, `forEmployee`) et relations `employee`/`evaluator`.
+- API : ajout de `EvaluationController` avec 8 endpoints REST couvrant le workflow complet `draft → submitted → acknowledged`.
+- API : `GET /api/v1/evaluations` — manager voit toutes les évaluations, employé voit uniquement les siennes.
+- API : `POST /api/v1/evaluations` — manager crée une évaluation en statut `draft` (validation doublon employee+evaluator+period).
+- API : `PUT /api/v1/evaluations/{id}/submit` — manager soumet une évaluation (`draft → submitted`).
+- API : `PUT /api/v1/evaluations/{id}/acknowledge` — employé accuse réception (`submitted → acknowledged`).
+- API : `DELETE /api/v1/evaluations/{id}` — manager supprime uniquement les évaluations `draft`.
+- API : protection contre modification après `acknowledged` et contre suppression si non-`draft`.
+
 ## [4.1.79] - 2026-05-22
 
 ### Documentation & Outils - Standardisation des Mocks API
@@ -1277,24 +1290,4 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
 
-  
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
- 
+ 
