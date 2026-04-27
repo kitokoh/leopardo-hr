@@ -21,7 +21,7 @@ use App\Http\Controllers\Api\V1\Cameras\InternalCameraTokenController;
 use App\Http\Controllers\Api\V1\Cameras\PublicCameraViewerController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant', 'module.cameras'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'module.cameras'])
     ->prefix('cameras')
     ->group(function (): void {
         Route::get('/', [CameraController::class, 'index']);
@@ -56,5 +56,5 @@ Route::middleware(['throttle:600,1'])
     ->get('/internal/camera-token/verify', [InternalCameraTokenController::class, 'verify']);
 
 // Viewer public avec token tiers (?t=<opaque>). Pas d'auth utilisateur.
-Route::middleware(['throttle:60,1'])
+Route::middleware(['throttle:api'])
     ->get('/view/cam', PublicCameraViewerController::class);

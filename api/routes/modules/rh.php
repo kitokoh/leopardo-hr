@@ -15,6 +15,7 @@
 
 use App\Http\Controllers\Api\V1\AbsenceController;
 use App\Http\Controllers\Api\V1\AttendanceController;
+use App\Http\Controllers\Api\V1\SalaryAdvanceController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EstimationController;
@@ -23,7 +24,7 @@ use App\Http\Controllers\Api\V1\KioskController;
 use App\Http\Controllers\Api\V1\MeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
     // Employes — CRUD manager/RH
     Route::get('/employees', [EmployeeController::class, 'index']);
     Route::post('/employees', [EmployeeController::class, 'store']);
@@ -59,6 +60,14 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
     Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject']);
     Route::post('/kiosks', [KioskController::class, 'register']);
 
+    // Salary Advances
+    Route::get('/salary-advances', [SalaryAdvanceController::class, 'index']);
+    Route::post('/salary-advances', [SalaryAdvanceController::class, 'store']);
+    Route::get('/salary-advances/{salaryAdvance}', [SalaryAdvanceController::class, 'show'])->whereNumber('salaryAdvance');
+    Route::put('/salary-advances/{salaryAdvance}/approve', [SalaryAdvanceController::class, 'approve'])->whereNumber('salaryAdvance');
+    Route::put('/salary-advances/{salaryAdvance}/reject', [SalaryAdvanceController::class, 'reject'])->whereNumber('salaryAdvance');
+    Route::delete('/salary-advances/{salaryAdvance}', [SalaryAdvanceController::class, 'destroy'])->whereNumber('salaryAdvance');
+
     // Absences
     Route::get('/absences', [AbsenceController::class, 'index']);
     Route::post('/absences', [AbsenceController::class, 'store']);
@@ -70,7 +79,7 @@ Route::middleware(['throttle:60,1', 'auth:sanctum', 'tenant'])->group(function (
 
 // Kiosque — auth par X-Kiosk-Token, pas sanctum
 // throttle:60,1 protege contre le brute-force du X-Kiosk-Token
-Route::middleware(['throttle:60,1'])->group(function (): void {
+Route::middleware(['throttle:api'])->group(function (): void {
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);

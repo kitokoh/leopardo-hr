@@ -89,6 +89,12 @@ class Company extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (self $company): void {
+            if ($company->tenancy_type === 'schema') {
+                abort(422, 'Mode schema Enterprise gele. Contactez le support.');
+            }
+        });
+
         static::saved(function (self $company): void {
             if (! $company->wasChanged('status')) {
                 return;

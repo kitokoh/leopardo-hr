@@ -10,12 +10,17 @@ use Illuminate\Support\Facades\Hash;
 
 class PlatformAuthController extends Controller
 {
+    public function __construct(
+        private readonly \App\Services\SuperAdminService $superAdminService,
+    ) {}
+
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
             'device_name' => ['nullable', 'string', 'max:255'],
+            'two_fa_code' => ['nullable', 'string'],
         ]);
 
         /** @var SuperAdmin|null $superAdmin */
@@ -27,6 +32,23 @@ class PlatformAuthController extends Controller
                 'message' => 'INVALID_CREDENTIALS',
                 'localized_message' => __('errors.INVALID_CREDENTIALS'),
             ], 401);
+        }
+
+        // Check 2FA if enabled
+        if ($superAdmin->two_fa_secret) {
+            if (! isset($validated['two_fa_code'])) {
+                return new JsonResponse([
+                    'error' => 'TWO_FA_REQUIRED',
+                    'message' => 'Un code 2FA est requis pour ce compte.',
+                ], 202); // 202 Accepted but further action needed
+            }
+
+            if (! $this->superAdminService->verifyCode($superAdmin, $validated['two_fa_code'])) {
+                return new JsonResponse([
+                    'error' => 'INVALID_2FA_CODE',
+                    'message' => 'Le code 2FA est invalide ou a expire.',
+                ], 401);
+            }
         }
 
         $token = $superAdmin->createToken($validated['device_name'] ?? 'platform-api')->plainTextToken;
