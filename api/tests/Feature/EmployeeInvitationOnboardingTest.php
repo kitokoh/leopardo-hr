@@ -188,4 +188,70 @@ class EmployeeInvitationOnboardingTest extends TestCase
         $this->assertNotNull($employee->invitation_accepted_at);
         $this->assertNotNull($employee->email_verified_at);
     }
+
+    public function test_activation_link_cannot_be_used_twice(): void
+    {
+        Mail::fake();
+
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'plan_id' => 1,
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Manager',
+            'last_name' => 'Principal',
+            'email' => 'manager@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+
+        DB::statement('SET search_path TO public');
+
+        $this
+            ->actingAs($manager, 'sanctum')
+            ->postJson('/api/v1/employees', [
+                'first_name' => 'Karim',
+                'last_name' => 'Aouad',
+                'email' => 'karim.twice@company.test',
+                'role' => 'employee',
+                'send_invitation' => true,
+            ])
+            ->assertCreated();
+
+        $activationUrl = null;
+
+        Mail::assertSent(UserInvitationMail::class, function (UserInvitationMail $mail) use (&$activationUrl): bool {
+            $activationUrl = $mail->activationUrl;
+
+            return $mail->employee->email === 'karim.twice@company.test';
+        });
+
+        $token = basename(parse_url($activationUrl, PHP_URL_PATH));
+
+        $this->withoutMiddleware()
+            ->post('/activate/'.$token, [
+                'password' => 'password456',
+                'password_confirmation' => 'password456',
+            ])->assertRedirect(route('login'));
+
+        $this->withoutMiddleware()
+            ->post('/activate/'.$token, [
+                'password' => 'password789',
+                'password_confirmation' => 'password789',
+            ])->assertStatus(410);
+    }
 }
