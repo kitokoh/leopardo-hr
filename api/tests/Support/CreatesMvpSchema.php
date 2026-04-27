@@ -333,7 +333,9 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
 
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
             $table->id();

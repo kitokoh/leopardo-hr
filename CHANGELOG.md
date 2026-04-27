@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.78] - 2026-04-27
+
+### Contractor - Alignement contract API/mobile (attendance)
+
+- API : Mise à jour de `AttendanceTodayResource` pour inclure le `matricule` et les champs d'estimation (`base_gain`, `overtime_gain`, `total_estimated`, `currency`) résolus via `EstimationService`.
+- API : Mise à jour de `AttendanceLogResource` pour inclure un objet `employee` imbriqué (id, name, matricule, photo_url) dans l'historique des pointages.
+- API : Optimisation de `AttendanceController@index` par le chargement lié (`with`) de la relation `employee` pour éviter les requêtes N+1.
+- API : Standardisation des types de retour pour `hours_worked` et `overtime_hours` (float) dans les ressources de présence.
+- Mobile : Mise à jour du modèle `DailySummary` pour inclure et parser `hoursWorked` et `overtimeHours`.
+- Tests : Renforcement de `MobilePayloadContractTest` avec une couverture explicite de `/api/v1/me/daily-summary` et verrouillage des nouveaux champs du contrat.
+- Tests : Sécurisation de `CreatesMvpSchema` pour la compatibilité SQLite (garde `SET search_path`).
+
 ## [4.1.77] - 2026-04-27
 
 ### Documentation - Gouvernance premium et gestion projet
