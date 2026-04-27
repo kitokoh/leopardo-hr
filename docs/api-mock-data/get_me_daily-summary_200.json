@@ -1,0 +1,16 @@
+{
+  "data": {
+    "employee_id": 1,
+    "name": "string",
+    "date": "2026-05-22",
+    "check_in": "string",
+    "check_out": "string",
+    "hours_worked": 1.5,
+    "overtime_hours": 1.5,
+    "base_gain": 1.5,
+    "overtime_gain": 1.5,
+    "total_estimated": 1.5,
+    "currency": "string",
+    "status": "string"
+  }
+}

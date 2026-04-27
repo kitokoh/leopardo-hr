@@ -1,0 +1,18 @@
+{
+  "data": {
+    "device_code": "string",
+    "company_id": "550e8400-e29b-41d4-a716-446655440000",
+    "company_name": "string",
+    "employees": [
+      {
+        "employee_id": 1,
+        "name": "string",
+        "email": "example@leopardo-rh.com",
+        "matricule": "string",
+        "zkteco_id": "string",
+        "face_enabled": true,
+        "fingerprint_enabled": true
+      }
+    ]
+  }
+}
