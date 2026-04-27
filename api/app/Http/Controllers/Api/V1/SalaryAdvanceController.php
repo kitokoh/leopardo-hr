@@ -15,10 +15,6 @@ class SalaryAdvanceController extends Controller
 {
     public function __construct(private readonly SalaryAdvanceService $salaryAdvanceService) {}
 
-    /**
-     * GET /salary-advances
-     * Employee: own advances only. Manager: all company advances.
-     */
     public function index(SalaryAdvanceIndexRequest $request): JsonResponse
     {
         $actor = $request->user();
@@ -30,137 +26,68 @@ class SalaryAdvanceController extends Controller
             $query->where('employee_id', $request->integer('employee_id'));
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
+        if ($request->filled('status')) $query->where('status', $request->input('status'));
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage   = $request->integer('per_page', 15);
         $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
         return response()->json([
             'data' => $paginated->map(fn ($a) => $this->serialize($a)),
-            'meta' => [
-                'current_page' => $paginated->currentPage(),
-                'last_page'    => $paginated->lastPage(),
-                'per_page'     => $paginated->perPage(),
-                'total'        => $paginated->total(),
-            ],
+            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
         ]);
     }
 
-    /**
-     * POST /salary-advances
-     * Employee creates a new advance request.
-     */
     public function store(StoreSalaryAdvanceRequest $request): JsonResponse
     {
-        $actor   = $request->user();
-        $advance = $this->salaryAdvanceService->create($actor, $request->validated());
+        $advance = $this->salaryAdvanceService->create($request->user(), $request->validated());
 
         return response()->json(['data' => $this->serialize($advance)], 201);
     }
 
-    /**
-     * GET /salary-advances/{id}
-     */
     public function show(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-
-        if ($salaryAdvance->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        if (!$actor->isManager() && $salaryAdvance->employee_id !== $actor->id) {
-            abort(403);
-        }
+        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
+        if (!$actor->isManager() && $salaryAdvance->employee_id !== $actor->id) abort(403);
 
         return response()->json(['data' => $this->serialize($salaryAdvance)]);
     }
 
-    /**
-     * PUT /salary-advances/{id}/approve
-     * Manager approves a pending advance.
-     */
     public function approve(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-
-        if ($salaryAdvance->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        if (!$actor->isManager()) {
-            abort(403);
-        }
+        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
+        if (!$actor->isManager()) abort(403);
 
         $advance = $this->salaryAdvanceService->approve($salaryAdvance, $actor, $request->validated());
 
         return response()->json(['data' => $this->serialize($advance)]);
     }
 
-    /**
-     * PUT /salary-advances/{id}/reject
-     * Manager rejects a pending advance.
-     */
     public function reject(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
+        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
+        if (!$actor->isManager()) abort(403);
 
-        if ($salaryAdvance->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        if (!$actor->isManager()) {
-            abort(403);
-        }
-
-        $advance = $this->salaryAdvanceService->reject(
-            $salaryAdvance,
-            $actor,
-            $request->validated('decision_comment')
-        );
+        $advance = $this->salaryAdvanceService->reject($salaryAdvance, $actor, $request->validated('decision_comment'));
 
         return response()->json(['data' => $this->serialize($advance)]);
     }
 
-    /**
-     * DELETE /salary-advances/{id}
-     * Employee cancels their own pending advance.
-     */
     public function destroy(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-
-        if ($salaryAdvance->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        if ($salaryAdvance->employee_id !== $actor->id) {
-            abort(403);
-        }
+        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
+        if ($salaryAdvance->employee_id !== $actor->id) abort(403);
 
         $advance = $this->salaryAdvanceService->cancel($salaryAdvance);
 
         return response()->json(['data' => $this->serialize($advance)]);
     }
 
-    private function serialize(SalaryAdvance $advance): array
+    private function serialize(SalaryAdvance $a): array
     {
-        return [
-            'id'                => $advance->id,
-            'employee_id'       => $advance->employee_id,
-            'amount'            => $advance->amount,
-            'reason'            => $advance->reason,
-            'status'            => $advance->status,
-            'approved_by'       => $advance->approved_by,
-            'decision_comment'  => $advance->decision_comment,
-            'repayment_months'  => $advance->repayment_months,
-            'monthly_deduction' => $advance->monthly_deduction,
-            'amount_remaining'  => $advance->amount_remaining,
-            'repayment_plan'    => $advance->repayment_plan,
-            'created_at'        => $advance->created_at?->toIso8601String(),
-            'updated_at'        => $advance->updated_at?->toIso8601String(),
-        ];
+        return ['id' => $a->id, 'employee_id' => $a->employee_id, 'amount' => $a->amount, 'reason' => $a->reason, 'status' => $a->status, 'approved_by' => $a->approved_by, 'decision_comment' => $a->decision_comment, 'repayment_months' => $a->repayment_months, 'monthly_deduction' => $a->monthly_deduction, 'amount_remaining' => $a->amount_remaining, 'repayment_plan' => $a->repayment_plan, 'created_at' => $a->created_at?->toIso8601String(), 'updated_at' => $a->updated_at?->toIso8601String()];
     }
 }
