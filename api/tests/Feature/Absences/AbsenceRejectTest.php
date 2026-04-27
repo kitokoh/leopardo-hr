@@ -361,7 +361,7 @@ class AbsenceRejectTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error.code', 'ABSENCE_NOT_PENDING');
+        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING');
     }
 
     public function test_employee_cannot_reject(): void

@@ -353,7 +353,7 @@ class AbsenceApproveTest extends TestCase
         $response = $this->putJson('/api/v1/absences/' . $absence->id . '/approve');
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error.code', 'ABSENCE_NOT_PENDING');
+        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING');
     }
 
     public function test_employee_cannot_approve(): void
@@ -593,7 +593,7 @@ class AbsenceApproveTest extends TestCase
         $response = $this->putJson('/api/v1/absences/' . $secondAbsence->id . '/approve');
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error.code', 'INSUFFICIENT_LEAVE_BALANCE');
+        $response->assertJsonPath('error', 'INSUFFICIENT_LEAVE_BALANCE');
         $this->assertDatabaseHas('absences', [
             'id' => $secondAbsence->id,
             'status' => 'pending',

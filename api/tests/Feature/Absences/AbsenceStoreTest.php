@@ -236,13 +236,7 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error.code', 'INSUFFICIENT_LEAVE_BALANCE');
-        $response->assertJsonStructure([
-            'error' => [
-                'code',
-                'message',
-            ],
-        ]);
+        $response->assertJsonPath('error', 'INSUFFICIENT_LEAVE_BALANCE');
     }
 
     public function test_date_conflict_returns_422(): void
@@ -319,7 +313,7 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error.code', 'ABSENCE_DATE_CONFLICT');
+        $response->assertJsonPath('error', 'ABSENCE_DATE_CONFLICT');
     }
 
     public function test_end_date_before_start_date_returns_422(): void
