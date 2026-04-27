@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "employee_id": 1,
+      "status": "string",
+      "requested_face_enabled": true,
+      "requested_fingerprint_enabled": true,
+      "requested_face_reference_path": "string",
+      "requested_fingerprint_reference_path": "string",
+      "requested_fingerprint_device_id": "string",
+      "employee_note": "string",
+      "manager_note": "string",
+      "submitted_at": "2026-05-22T10:00:00Z",
+      "approved_at": "2026-05-22T10:00:00Z",
+      "rejected_at": "2026-05-22T10:00:00Z"
+    }
+  ]
+}
