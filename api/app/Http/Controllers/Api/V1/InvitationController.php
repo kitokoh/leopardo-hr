@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\UserInvitationResource;
 use App\Models\Employee;
 use App\Models\UserInvitation;
 use App\Services\UserInvitationService;
@@ -29,20 +30,9 @@ class InvitationController extends Controller
             ->where('company_id', $actor->company_id)
             ->orderByDesc('last_sent_at')
             ->limit(200)
-            ->get()
-            ->map(fn (UserInvitation $invitation) => [
-                'id' => $invitation->id,
-                'email' => $invitation->email,
-                'role' => $invitation->role,
-                'manager_role' => $invitation->manager_role,
-                'employee_id' => $invitation->employee_id,
-                'expires_at' => optional($invitation->expires_at)->toIso8601String(),
-                'accepted_at' => optional($invitation->accepted_at)->toIso8601String(),
-                'last_sent_at' => optional($invitation->last_sent_at)->toIso8601String(),
-                'status' => $this->statusFor($invitation),
-            ]);
+            ->get();
 
-        return new JsonResponse(['data' => $invitations->values()]);
+        return UserInvitationResource::collection($invitations);
     }
 
     public function resend(Request $request, string $invitationId): JsonResponse
@@ -88,16 +78,4 @@ class InvitationController extends Controller
         ]);
     }
 
-    private function statusFor(UserInvitation $invitation): string
-    {
-        if ($invitation->accepted_at !== null) {
-            return 'accepted';
-        }
-
-        if ($invitation->expires_at && $invitation->expires_at->isPast()) {
-            return 'expired';
-        }
-
-        return 'pending';
-    }
 }

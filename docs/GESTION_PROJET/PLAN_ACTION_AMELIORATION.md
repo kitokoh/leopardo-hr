@@ -294,7 +294,7 @@ class AccountLockedException extends DomainException
 
 ## Phase 2 : Qualite du code
 
-### [ ] ACTION 5 : Realigner PILOTAGE.md sur le code reel
+### [x] ACTION 5 : Realigner PILOTAGE.md sur le code reel
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 2h
 
@@ -317,7 +317,7 @@ class AccountLockedException extends DomainException
 
 ---
 
-### [ ] ACTION 6 : Migrer vers des JsonResource Laravel
+### [x] ACTION 6 : Migrer vers des JsonResource Laravel
 
 > **Priorite** : P1 - IMPORTANT | **Effort** : 6h
 

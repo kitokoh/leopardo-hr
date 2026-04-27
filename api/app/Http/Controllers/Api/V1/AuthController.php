@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
+use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Language;
@@ -29,12 +30,13 @@ class AuthController extends Controller
 
         $employee = $result['employee'];
 
-        return new JsonResponse([
-            'data' => $this->serializeEmployee($employee),
-            'token' => $result['token'],
-            'token_type' => $result['token_type'],
-            'token_expires_at' => $result['token_expires_at'],
-        ]);
+        return (new EmployeeResource($employee))
+            ->additional([
+                'token' => $result['token'],
+                'token_type' => $result['token_type'],
+                'token_expires_at' => $result['token_expires_at'],
+            ])
+            ->response();
     }
 
     public function me(Request $request): JsonResponse
@@ -42,13 +44,11 @@ class AuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        if ($this->resolveCompany($employee) === null) {
+        if ($employee->company === null) {
             throw new \App\Exceptions\CompanyNotFoundException();
         }
 
-        return new JsonResponse([
-            'data' => $this->serializeEmployee($employee),
-        ]);
+        return new EmployeeResource($employee);
     }
 
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
@@ -59,9 +59,7 @@ class AuthController extends Controller
         $employee->fill($request->validated());
         $employee->save();
 
-        return new JsonResponse([
-            'data' => $this->serializeEmployee($employee->fresh()),
-        ]);
+        return new EmployeeResource($employee->fresh());
     }
 
     public function updateLanguage(Request $request): JsonResponse
@@ -86,9 +84,7 @@ class AuthController extends Controller
 
         app()->setLocale($employee->preferred_language);
 
-        return new JsonResponse([
-            'data' => $this->serializeEmployee($employee->fresh()),
-        ]);
+        return new EmployeeResource($employee->fresh());
     }
 
     public function changePassword(ChangePasswordRequest $request): JsonResponse
@@ -122,66 +118,4 @@ class AuthController extends Controller
         return new JsonResponse(['message' => 'LOGGED_OUT']);
     }
 
-    private function serializeEmployee(Employee $employee): array
-    {
-        $company = $this->resolveCompany($employee);
-        $resolvedLanguage = strtolower($employee->preferred_language ?? $employee->company?->language ?? Language::DEFAULT);
-
-        return [
-            'id' => $employee->id,
-            'matricule' => $employee->matricule,
-            'company_id' => $employee->company_id,
-            'first_name' => $employee->first_name,
-            'middle_name' => $employee->middle_name,
-            'last_name' => $employee->last_name,
-            'preferred_name' => $employee->preferred_name,
-            'email' => $employee->email,
-            'personal_email' => $employee->personal_email,
-            'phone' => $employee->phone,
-            'role' => $employee->role,
-            'manager_role' => $employee->manager_role,
-            'status' => $employee->status,
-            'photo_path' => $employee->photo_path,
-            'biometric_face_enabled' => $employee->biometric_face_enabled,
-            'biometric_fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
-            'address_line' => $employee->address_line,
-            'postal_code' => $employee->postal_code,
-            'emergency_contact_name' => $employee->emergency_contact_name,
-            'emergency_contact_phone' => $employee->emergency_contact_phone,
-            'extra_data' => $employee->extra_data ?? [],
-            'language' => $resolvedLanguage,
-            'is_rtl' => Language::isRtl($resolvedLanguage),
-            'capabilities' => $this->capabilitiesFor($employee),
-            'features' => FeatureFlag::for($company),
-            'suggested_home_route' => $employee->homeRoute(),
-            'company' => $company ? [
-                'id' => $company->id,
-                'name' => $company->name,
-                'language' => $company->language,
-                'timezone' => $company->timezone,
-                'currency' => $company->currency,
-            ] : null,
-        ];
-    }
-
-    private function resolveCompany(Employee $employee): ?Company
-    {
-        return $employee->company;
-    }
-
-    /**
-     * Retourne le set de capacites actives pour l'employe (utilisable cote mobile
-     * pour afficher / cacher des fonctionnalites sans redupliquer la logique RBAC).
-     */
-    private function capabilitiesFor(Employee $employee): array
-    {
-        return [
-            'can_view_dashboard' => $employee->isManager(),
-            'can_create_employees' => $employee->hasManagerRole('principal', 'rh'),
-            'can_manage_invitations' => $employee->hasManagerRole('principal', 'rh'),
-            'can_manage_biometrics' => $employee->hasManagerRole('principal', 'superviseur'),
-            'can_view_payroll' => $employee->hasManagerRole('principal', 'comptable'),
-            'is_principal' => $employee->hasManagerRole('principal'),
-        ];
-    }
 }

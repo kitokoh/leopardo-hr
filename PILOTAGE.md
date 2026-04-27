@@ -71,15 +71,17 @@ Validation locale backend : Docker d'abord (voir `docs/GESTION_PROJET/RUNBOOK_LO
 | Daily Summary ("ce que je dois") | 1 | Sprint 2 |
 | Quick Estimate (période libre) | 1 | Sprint 3 |
 | Reçu PDF informatif | 1 | Sprint 3 |
-| Dashboard web (Blade) | 2 pages | Sprint 3 |
-| App Flutter (login + pointage + historique) | 3 écrans | Sprint 3 |
-| **TOTAL** | **~15 endpoints** | **6 semaines** |
+| Dashboard web (Next.js) | 5+ pages | Sprint 3 |
+| App Flutter (login + pointage + historique + équipe) | 5 écrans | Sprint 3 |
+| Biométrie (visage/empreinte) | 3 endpoints | Sprint 4 |
+| Borne Kiosque ZKTeco | - | Sprint 4 |
+| **TOTAL** | **~25 endpoints** | **8 semaines** |
 
 ### ❌ EXCLU DU MVP (tout ça existe dans les specs, sera fait plus tard)
 
-Absences/Congés · Paie complète · Avances · Tâches · Évaluations · ZKTeco biométrie ·
-Multi-langue · RTL arabe · Multi-pays · SSE · Notifications push · Export bancaire ·
-Import CSV · Vue.js/Inertia · Mode schema Enterprise · 5 sous-rôles gestionnaire
+Absences/Congés · Paie complète · Avances · Tâches · Évaluations ·
+Multi-pays · SSE · Notifications push · Export bancaire ·
+Import CSV · Vue.js/Inertia
 
 ### 🛡️ GARDE-FOU SCOPE
 
@@ -105,13 +107,13 @@ Stack MVP :
   Tests      : Pest PHP
 
 Multitenancy MVP :
-  Mode SHARED uniquement (Global Scope company_id)
-  PAS de mode schema (Enterprise → Phase 2+)
-  PAS de search_path PostgreSQL switching
+  Mode SHARED par défaut (Global Scope company_id)
+  Support mode SCHEMA inclus (mais gelé/réservé Enterprise)
+  Bascule automatique via search_path PostgreSQL
 
 RBAC MVP :
   2 rôles : manager + employé
-  PAS de sous-rôles (rh, dept, comptable, superviseur → Phase 2)
+  6 sous-rôles manager : principal, rh, dept, comptable, superviseur, employee (managerial)
 
 Langues :
   FR + AR (RTL) + TR + EN — production-ready
