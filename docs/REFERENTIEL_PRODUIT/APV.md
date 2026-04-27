@@ -1,7 +1,7 @@
 # APV — Architecture Produit Vivante (manifeste 1 page)
 
 > Source de vérité architecturale de Leopardo RH. Valide avril 2026.
-> Consolidation de `docs/vision/Leopardo_RH_APV_v2.pdf` + `docs/vision/Leopardo_RH_Design_System_v3.pdf`.
+> Consolidation de `docs/vision/01_architecture_produit/Leopardo_RH_APV_v2.pdf` + `docs/vision/02_design_system/Leopardo_RH_Design_System_v3.pdf`.
 > Toute décision de développement qui contredit ce document doit d'abord modifier ce document, jamais l'inverse.
 
 ## Le pitch en une phrase

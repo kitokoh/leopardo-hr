@@ -15,9 +15,9 @@ Les PDFs sont conserves **tels qu'ils ont ete rediges** a des fins d'archive et 
 | `01_architecture_produit/Leopardo_RH_APV_v2.pdf` | **Canonical architecture** (reference) | `docs/REFERENTIEL_PRODUIT/APV.md` |
 | `99_historique/Leopardo_RH_Architecture_Vivante.pdf` | **Historique** (v1 de l'APV, supplante par v2) | `01_architecture_produit/Leopardo_RH_APV_v2.pdf` |
 | `02_design_system/Leopardo_RH_Design_System_v3.pdf` | **Canonical design** (reference) | `docs/REFERENTIEL_PRODUIT/APV.md` (section Design) + `docs/REFERENTIEL_PRODUIT/COULEURS.md` |
-| `99_historique/Leopardo_RH_Design_System_Complet+1.pdf` | **Historique** (v2 Design, paradigme "dashboard" remplace par Home conversationnelle en v3) | `02_design_system/Leopardo_RH_Design_System_v3.pdf` |
+| `99_historique/Leopardo_RH_Design_System_Complet_archive.pdf` | **Historique** (v2 Design, paradigme "dashboard" remplace par Home conversationnelle en v3) | `02_design_system/Leopardo_RH_Design_System_v3.pdf` |
 | `03_modules_phase2/Leopardo_RH_Finance_Complet.pdf` | **Archive Phase 2** (non implemente) | A activer a la demande client |
-| `03_modules_phase2/Leopardo_RH_Camera_Complet+1.pdf` | **Archive Phase 2** (non implemente) | A activer a la demande client |
+| `03_modules_phase2/Leopardo_RH_Camera_Complet_archive.pdf` | **Archive Phase 2** (non implemente) | A activer a la demande client |
 
 ## Regle
 
