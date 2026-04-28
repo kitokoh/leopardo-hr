@@ -41,7 +41,8 @@ final readonly class UpdateEmployeeDTO
         public ?string $biometric_face_reference_path = null,
         public ?string $biometric_fingerprint_reference_path = null,
         public ?array $extra_data = null,
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(UpdateEmployeeRequest|UpdateProfileRequest|Request $request): self
     {

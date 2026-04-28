@@ -47,7 +47,8 @@ final readonly class CreateEmployeeDTO
         public ?string $photo_path = null,
         public ?string $zkteco_id = null,
         public array $extra_data = [],
-    ) {}
+    ) {
+    }
 
     public static function fromRequest(StoreEmployeeRequest $request): self
     {

@@ -160,12 +160,11 @@ class PayrollService
     }
 
     /**
-     * @param mixed $items
      * @return array<int, array<string, mixed>>
      */
     private function toLineItems(mixed $items): array
     {
-        if (! is_array($items)) {
+        if (!is_array($items)) {
             return [];
         }
 

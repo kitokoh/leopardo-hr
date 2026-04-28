@@ -13,7 +13,8 @@ class EmployeeService
 {
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
-    ) {}
+    ) {
+    }
 
     public function create(CreateEmployeeDTO $dto, ?Employee $actor = null): Employee
     {
@@ -71,7 +72,7 @@ class EmployeeService
         $isManager = $actor->isManager();
         $isSelfUpdate = $actor->id === $employee->id;
 
-        if (! $isManager) {
+        if (!$isManager) {
             $payload = Arr::only($payload, ['first_name', 'last_name', 'email', 'password']);
         }
 
@@ -80,7 +81,7 @@ class EmployeeService
         }
         unset($payload['password']);
 
-        if (! $isManager) {
+        if (!$isManager) {
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['matricule']);
         }
 
