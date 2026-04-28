@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\CreateEmployeeDTO;
+use App\DTOs\UpdateEmployeeDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ArchiveEmployeeRequest;
 use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\DTOs\CreateEmployeeDTO;
-use App\DTOs\UpdateEmployeeDTO;
 use App\Models\Employee;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;

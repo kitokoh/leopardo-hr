@@ -16,6 +16,7 @@ class AbsenceType extends Model
     public $timestamps = false;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = null;
 
     protected $fillable = [
@@ -29,9 +30,9 @@ class AbsenceType extends Model
     ];
 
     protected $casts = [
-        'is_paid'        => 'boolean',
-        'deducts_leave'  => 'boolean',
+        'is_paid' => 'boolean',
+        'deducts_leave' => 'boolean',
         'requires_proof' => 'boolean',
-        'max_days_once'  => 'integer',
+        'max_days_once' => 'integer',
     ];
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SuperAdmin;
+use PragmaRX\Google2FA\Google2FA;
 
 class SuperAdminService
 {
@@ -23,7 +24,7 @@ class SuperAdminService
      */
     public function verifyCode(SuperAdmin $superAdmin, string $code): bool
     {
-        if (!$superAdmin->two_fa_secret) {
+        if (! $superAdmin->two_fa_secret) {
             return true;
         }
 
@@ -68,11 +69,11 @@ class SuperAdminService
 
     private function google2fa(): ?object
     {
-        if (!class_exists(\PragmaRX\Google2FA\Google2FA::class)) {
+        if (! class_exists(Google2FA::class)) {
             return null;
         }
 
-        return new \PragmaRX\Google2FA\Google2FA();
+        return new Google2FA;
     }
 
     private function totpAt(string $secret, int $timestamp): string
@@ -113,7 +114,7 @@ class SuperAdminService
         $bits = '';
 
         foreach (str_split($normalized) as $char) {
-            if (!array_key_exists($char, $alphabet)) {
+            if (! array_key_exists($char, $alphabet)) {
                 continue;
             }
 

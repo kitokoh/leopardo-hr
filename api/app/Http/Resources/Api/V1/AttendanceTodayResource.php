@@ -16,8 +16,6 @@ class AttendanceTodayResource extends JsonResource
 
     /**
      * @param  Employee  $resource
-     * @param  AttendanceLog|null  $log
-     * @param  string|null  $timezone
      */
     public function __construct($resource, ?AttendanceLog $log = null, ?string $timezone = null)
     {

@@ -77,5 +77,4 @@ class InvitationController extends Controller
             ],
         ]);
     }
-
 }

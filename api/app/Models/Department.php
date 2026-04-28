@@ -14,10 +14,13 @@ class Department extends Model
     use HasFactory;
 
     protected $table = 'departments';
+
     public $timestamps = false;
+
     const CREATED_AT = 'created_at';
 
     protected $fillable = ['company_id', 'name', 'manager_id'];
+
     protected $casts = ['created_at' => 'datetime'];
 
     public function manager(): BelongsTo

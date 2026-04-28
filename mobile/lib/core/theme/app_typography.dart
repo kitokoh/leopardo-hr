@@ -58,10 +58,14 @@ class AppTypography {
   static TextTheme buildTextTheme(Color baseColor) {
     return TextTheme(
       displaySmall: display.copyWith(color: baseColor),
+      headlineSmall: title.copyWith(color: baseColor),
       titleLarge: title.copyWith(color: baseColor),
       titleMedium: subtitle.copyWith(color: baseColor),
       bodyLarge: body.copyWith(color: baseColor),
       bodyMedium: bodySmall.copyWith(color: baseColor),
+      bodySmall: caption.copyWith(color: baseColor),
+      labelLarge: subtitle.copyWith(color: baseColor, fontSize: 15),
+      labelMedium: bodySmall.copyWith(color: baseColor),
       labelSmall: caption.copyWith(color: baseColor),
     );
   }

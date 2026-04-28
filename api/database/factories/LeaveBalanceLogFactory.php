@@ -11,9 +11,9 @@ class LeaveBalanceLogFactory extends Factory
         $balance = $this->faker->randomFloat(2, 5, 30);
 
         return [
-            'delta'         => $balance,
-            'reason'        => 'initial_credit',
-            'reference_id'  => 0,
+            'delta' => $balance,
+            'reason' => 'initial_credit',
+            'reference_id' => 0,
             'balance_after' => $balance,
         ];
     }

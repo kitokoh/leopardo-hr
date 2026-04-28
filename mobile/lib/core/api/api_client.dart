@@ -7,19 +7,22 @@ import 'package:leopardo_rh/core/api/api_exceptions.dart';
 import 'package:leopardo_rh/core/api/mock_interceptor.dart';
 
 class ApiClient {
-  static const String _defaultRenderBaseUrl = 'https://gestionemployerbackend.onrender.com/api/v1';
+  static const String _defaultRenderBaseUrl =
+      'https://gestionemployerbackend.onrender.com/api/v1';
   final Dio _dio;
   final SecureStorage _storage;
   final AppPreferences _preferences;
   final VoidCallback? onUnauthorized;
 
   ApiClient(this._storage, this._preferences, {this.onUnauthorized})
-      : _dio = Dio(BaseOptions(
-          baseUrl: resolveBaseUrl(),
-          connectTimeout: const Duration(seconds: 20),
-          receiveTimeout: const Duration(seconds: 20),
-          headers: {'Accept': 'application/json'},
-        )) {
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: resolveBaseUrl(),
+            connectTimeout: const Duration(seconds: 20),
+            receiveTimeout: const Duration(seconds: 20),
+            headers: {'Accept': 'application/json'},
+          ),
+        ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -71,7 +74,7 @@ class ApiClient {
   DioException _handleError(DioException e) {
     String message = "Impossible de se connecter au serveur";
     String? code;
-    
+
     if (e.response?.statusCode == 404 || e.response?.statusCode == 501) {
       message = "Fonction bientôt disponible";
       code = "NOT_IMPLEMENTED";
@@ -81,7 +84,8 @@ class ApiClient {
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
         final data = (e.response?.data as Map).cast<dynamic, dynamic>();
-        message = (data['localized_message'] ?? data['message'] ?? message).toString();
+        message = (data['localized_message'] ?? data['message'] ?? message)
+            .toString();
         code = data['error']?.toString();
       }
     } else if (e.type == DioExceptionType.connectionTimeout) {
