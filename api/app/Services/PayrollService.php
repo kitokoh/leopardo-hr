@@ -51,7 +51,8 @@ class PayrollService
         }
 
         $payroll->fill($this->normalizePayrollData($data));
-        $payrollData = $this->normalizePayrollData($payroll->toArray());
+        /** @var array<string, mixed> $payrollData */
+        $payrollData = $this->normalizePayrollData($this->stringKeyedArray($payroll->toArray()));
         $payroll->net_salary = max(0, $this->computeNet($payrollData));
         $payroll->save();
 
@@ -193,5 +194,22 @@ class PayrollService
         }
 
         return $total;
+    }
+
+    /**
+     * @param  array<mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function stringKeyedArray(array $data): array
+    {
+        $normalized = [];
+
+        foreach ($data as $key => $value) {
+            if (is_string($key)) {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
     }
 }

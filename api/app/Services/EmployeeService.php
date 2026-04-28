@@ -162,18 +162,30 @@ class EmployeeService
     }
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param  array<mixed>  $payload
      * @return array<string, mixed>
      */
     private function arrayValue(array $payload, string $key): array
     {
         $value = $payload[$key] ?? [];
 
-        return is_array($value) ? $value : [];
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($value as $nestedKey => $nestedValue) {
+            if (is_string($nestedKey)) {
+                $normalized[$nestedKey] = $nestedValue;
+            }
+        }
+
+        return $normalized;
     }
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param  array<mixed>  $payload
      */
     private function stringValue(array $payload, string $key): ?string
     {

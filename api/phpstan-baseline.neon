@@ -4315,12 +4315,6 @@ parameters:
 			path: app/Services/EmployeeService.php
 
 		-
-			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash\:\:make\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/EmployeeService.php
-
-		-
 			message: '#^Parameter \$company of method App\\Services\\UserInvitationService\:\:createAndSend\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
 			count: 1
