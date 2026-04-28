@@ -13,8 +13,7 @@ class EmployeeService
 {
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
-    ) {
-    }
+    ) {}
 
     public function create(CreateEmployeeDTO $dto, ?Employee $actor = null): Employee
     {
@@ -72,7 +71,7 @@ class EmployeeService
         $isManager = $actor->isManager();
         $isSelfUpdate = $actor->id === $employee->id;
 
-        if (!$isManager) {
+        if (! $isManager) {
             $payload = Arr::only($payload, ['first_name', 'last_name', 'email', 'password']);
         }
 
@@ -81,7 +80,7 @@ class EmployeeService
         }
         unset($payload['password']);
 
-        if (!$isManager) {
+        if (! $isManager) {
             unset($payload['role'], $payload['manager_role'], $payload['status'], $payload['matricule']);
         }
 
@@ -114,9 +113,7 @@ class EmployeeService
         return $employee;
     }
 
-    /**
-     * @param array<string, mixed> $payload
-     */
+    /** @param array<string, mixed> $payload */
     private function applyBiometricConsent(array &$payload, ?Employee $employee = null): void
     {
         $faceEnabled = array_key_exists('biometric_face_enabled', $payload)
@@ -134,7 +131,7 @@ class EmployeeService
     }
 
     /**
-     * @param array<string, mixed> $extraData
+     * @param  array<string, mixed>  $extraData
      * @return array<string, mixed>
      */
     private function normalizeExtraData(array $extraData): array

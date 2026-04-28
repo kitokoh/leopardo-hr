@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 
 final readonly class UpdateEmployeeDTO
 {
-    /**
-     * @param array<string, mixed>|null $extra_data
-     */
+    /** @param array<string, mixed>|null $extra_data */
     public function __construct(
         public ?string $first_name = null,
         public ?string $last_name = null,
@@ -41,8 +39,7 @@ final readonly class UpdateEmployeeDTO
         public ?string $biometric_face_reference_path = null,
         public ?string $biometric_fingerprint_reference_path = null,
         public ?array $extra_data = null,
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(UpdateEmployeeRequest|UpdateProfileRequest|Request $request): self
     {
@@ -51,9 +48,7 @@ final readonly class UpdateEmployeeDTO
         return new self(...$validated);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(): array
     {
         return array_filter([

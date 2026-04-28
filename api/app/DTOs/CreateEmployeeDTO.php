@@ -6,9 +6,7 @@ use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 
 final readonly class CreateEmployeeDTO
 {
-    /**
-     * @param array<string, mixed> $extra_data
-     */
+    /** @param array<string, mixed> $extra_data */
     public function __construct(
         public string $first_name,
         public string $last_name,
@@ -47,17 +45,14 @@ final readonly class CreateEmployeeDTO
         public ?string $photo_path = null,
         public ?string $zkteco_id = null,
         public array $extra_data = [],
-    ) {
-    }
+    ) {}
 
     public static function fromRequest(StoreEmployeeRequest $request): self
     {
         return new self(...$request->validated());
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(): array
     {
         return [

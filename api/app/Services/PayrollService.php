@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class PayrollService
 {
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function create(Employee $manager, array $data): Payroll
     {
         $month = $this->toInt($data['period_month'] ?? null);
@@ -45,9 +43,7 @@ class PayrollService
         ]);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function update(Payroll $payroll, array $data): Payroll
     {
         if ($payroll->status === 'validated') {
@@ -99,9 +95,7 @@ class PayrollService
         $payroll->delete();
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     private function computeNet(array $data): float
     {
         return $this->toFloat($data['gross_salary'] ?? null)
@@ -116,7 +110,7 @@ class PayrollService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     private function normalizePayrollData(array $data): array
@@ -164,7 +158,7 @@ class PayrollService
      */
     private function toLineItems(mixed $items): array
     {
-        if (!is_array($items)) {
+        if (! is_array($items)) {
             return [];
         }
 
