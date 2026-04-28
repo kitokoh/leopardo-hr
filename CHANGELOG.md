@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.81] - 2026-04-27
+
+### DocKeeper - Alignement documentaire et synchronisation des versions
+
+- Pilotage : Synchronisation de `PROGRAM_VERSION` à `4.1.81` dans `PILOTAGE.md` et `api/config/app.php`.
+- README : Suppression des liens morts vers les fichiers archivés (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`) et mise à jour des points d'entrée vers l'état post-MVP.
+- Changelog : Correction de la date de la version `4.1.79` (2026-05-22 -> 2026-04-27).
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)
@@ -15,7 +23,7 @@
 - API : `DELETE /api/v1/evaluations/{id}` — manager supprime uniquement les évaluations `draft`.
 - API : protection contre modification après `acknowledged` et contre suppression si non-`draft`.
 
-## [4.1.79] - 2026-05-22
+## [4.1.79] - 2026-04-27
 
 ### Documentation & Outils - Standardisation des Mocks API
 

@@ -2,22 +2,15 @@
 
 Monorepo de conception et d'execution pour Leopardo RH.
 
+## Points d'entrée
 
-Points d'entrée:
-- `PILOTAGE.md` (source de vérité opérationnelle)
-- `docs/GESTION_PROJET/INDEX_CANONIQUE.md` (anti-confusion)
-- `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md` (blocages + actions)
-- `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` (validation locale backend — Docker d'abord)
-- `docs/README.md` (index documentation technique)
-- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` (démarrage exécution MVP)
-- `web/` (Application web et site vitrine Next.js)
-
-- `PILOTAGE.md` : source de verite operationnelle du programme
-- `docs/README.md` : index documentaire avec distinction entre cible et etat courant
-- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` : etat reel de `main` et ecarts doc/implementation
-- `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` : validation backend locale, Docker d'abord
-- `api/README.md` : bootstrap backend Laravel et commandes de verification
-- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` : contexte d'execution MVP
+- `PILOTAGE.md` : Source de vérité opérationnelle du programme.
+- `docs/README.md` : Index documentaire (cible vs état courant).
+- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` : État réel de `main` et écarts doc/implémentation.
+- `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` : Validation backend locale (Docker d'abord).
+- `api/README.md` : Bootstrap backend Laravel et commandes de vérification.
+- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` : Contexte d'exécution MVP.
+- `web/` : Application web et site vitrine Next.js.
 
 ## Important
 
