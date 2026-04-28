@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [Unreleased]
+
+### Mobile - Maintenance dependances
+
+- Mobile : mise a jour du groupe de dependances Flutter dans `mobile/` via Dependabot (`cupertino_icons`, `flutter_riverpod`, `go_router`, `image_picker`, `local_auth`, `flutter_lints` et mises a jour transitives associees).
+
 ## [4.1.81] - 2026-04-28
 
 ### Janitor - Hygiène du dépôt et synchronisation
