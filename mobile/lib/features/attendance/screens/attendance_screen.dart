@@ -14,14 +14,12 @@ class AttendanceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final attState = ref.watch(attendanceProvider);
-    final isManager =
-        authState.employee?.isManager == true ||
+    final isManager = authState.employee?.isManager == true ||
         attState.context?['mode'] == 'collection';
 
     return Scaffold(
       body: SafeArea(
-        child:
-            attState.error != null &&
+        child: attState.error != null &&
                 attState.error!.contains('NOT_IMPLEMENTED')
             ? _buildStubScreen(context, ref)
             : RefreshIndicator(

@@ -123,8 +123,8 @@ class Invitation {
       sentAt: json['last_sent_at'] != null
           ? DateTime.tryParse(json['last_sent_at'].toString())
           : (json['sent_at'] != null
-                ? DateTime.tryParse(json['sent_at'].toString())
-                : null),
+              ? DateTime.tryParse(json['sent_at'].toString())
+              : null),
       employeeId: json['employee_id'] is num
           ? (json['employee_id'] as num).toInt()
           : null,

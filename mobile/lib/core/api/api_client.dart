@@ -15,14 +15,14 @@ class ApiClient {
   final VoidCallback? onUnauthorized;
 
   ApiClient(this._storage, this._preferences, {this.onUnauthorized})
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: resolveBaseUrl(),
-          connectTimeout: const Duration(seconds: 20),
-          receiveTimeout: const Duration(seconds: 20),
-          headers: {'Accept': 'application/json'},
-        ),
-      ) {
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: resolveBaseUrl(),
+            connectTimeout: const Duration(seconds: 20),
+            receiveTimeout: const Duration(seconds: 20),
+            headers: {'Accept': 'application/json'},
+          ),
+        ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

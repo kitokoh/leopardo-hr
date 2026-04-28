@@ -47,8 +47,7 @@ class CameraPolicy
 
     public function delete(Employee $actor, Camera $camera): bool
     {
-        return $actor->hasManagerRole('principal')
-            && $camera->company_id === $actor->company_id;
+        return $actor->hasManagerRole('principal') && $camera->company_id === $actor->company_id;
     }
 
     public function testRtsp(Employee $actor): bool

@@ -28,12 +28,12 @@ class BiometricEnrollment {
       requestedFaceEnabled: json['requested_face_enabled'] == true,
       requestedFingerprintEnabled:
           json['requested_fingerprint_enabled'] == true,
-      requestedFaceReferencePath: json['requested_face_reference_path']
-          ?.toString(),
+      requestedFaceReferencePath:
+          json['requested_face_reference_path']?.toString(),
       requestedFingerprintReferencePath:
           json['requested_fingerprint_reference_path']?.toString(),
-      requestedFingerprintDeviceId: json['requested_fingerprint_device_id']
-          ?.toString(),
+      requestedFingerprintDeviceId:
+          json['requested_fingerprint_device_id']?.toString(),
       employeeNote: json['employee_note']?.toString(),
       managerNote: json['manager_note']?.toString(),
     );

@@ -74,15 +74,13 @@ class _PulseButtonState extends State<PulseButton>
                       : Theme.of(context).primaryColor,
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          (widget.isCheckedIn
-                                  ? Theme.of(context).colorScheme.error
-                                  : Theme.of(context).primaryColor)
-                              .withValues(alpha: 0.3),
+                      color: (widget.isCheckedIn
+                              ? Theme.of(context).colorScheme.error
+                              : Theme.of(context).primaryColor)
+                          .withValues(alpha: 0.3),
                       blurRadius: 30,
-                      spreadRadius: widget.isLoading
-                          ? 5
-                          : 15 * _animation.value,
+                      spreadRadius:
+                          widget.isLoading ? 5 : 15 * _animation.value,
                     ),
                   ],
                 ),

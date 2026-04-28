@@ -107,9 +107,8 @@ class AttendanceRepository {
 
     final data = payload.cast<String, dynamic>();
     final rawContext = data['context'] ?? responseData['context'];
-    final context = rawContext is Map
-        ? rawContext.cast<String, dynamic>()
-        : null;
+    final context =
+        rawContext is Map ? rawContext.cast<String, dynamic>() : null;
 
     if (data.containsKey('items')) {
       return {
