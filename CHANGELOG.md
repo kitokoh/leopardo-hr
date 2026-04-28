@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.81] - 2026-04-28
+
+### Scout - Tests de régression (sécurité)
+
+- Tests : Ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation multi-tenant au niveau des modèles Eloquent.
+- Sécurité : Identification d'une vulnérabilité potentielle sur `UserInvitation`, `AttendanceKiosk` et `BiometricEnrollmentRequest` (manque du trait `BelongsToCompany`).
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)
