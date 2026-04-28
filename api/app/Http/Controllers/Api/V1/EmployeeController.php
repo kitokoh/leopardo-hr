@@ -24,7 +24,11 @@ class EmployeeController extends Controller
 
         $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
         $paginator = Employee::query()
-            ->select(['id', 'first_name', 'last_name', 'email', 'role', 'manager_role', 'status'])
+            ->with('company:id,name,language,timezone,currency,features')
+            ->select([
+                'id', 'company_id', 'first_name', 'last_name', 'email',
+                'role', 'manager_role', 'status', 'matricule', 'preferred_language',
+            ])
             ->orderBy('id')
             ->paginate($perPage);
 

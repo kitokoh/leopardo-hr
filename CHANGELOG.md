@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.81] - 2026-05-22
+
+### API - Performance
+
+- API : Optimisation de `EmployeeController@index` par l'ajout du chargement lié (`with`) de la relation `company` et l'utilisation de `select()` pour limiter les colonnes récupérées, évitant les requêtes N+1 et le surchargement de données.
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)
