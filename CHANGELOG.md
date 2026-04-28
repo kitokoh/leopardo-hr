@@ -10,7 +10,6 @@
 - Dépôt : Ajout de `test-results.xml` au fichier `api/.gitignore`.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.81` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 - Gouvernance : Correction d'une anomalie de date dans l'entrée `4.1.79` du CHANGELOG (2026-05-22 → 2026-04-27).
-## [4.1.81] - 2026-05-22
 
 ### API - Super-Admin 2FA & Hardening Cameras
 
@@ -1318,36 +1317,3 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
-
- 
-  
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
-   
- 
- 
-
-
-
-
-
-
-
-
-
-

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\SuperAdmin;
 use App\Services\SuperAdminService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -66,20 +67,29 @@ class PlatformAuthTest extends TestCase
         $service = app(SuperAdminService::class);
         $secret = $service->generateSecret();
 
-        // Generate a valid code for the secret to simulate the user entering it
-        // We use a little trick: the service can verify, but we need to generate one.
-        // For testing, since we don't have a public generateCode, we can test with a fixed mock or just
-        // trust the failure case to prove the logic. Let's do the failure case first.
+        Cache::put("2fa_setup:{$this->superAdmin->id}", $secret, now()->addMinutes(10));
 
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/enable', [
-                'secret' => $secret,
                 'code' => '000000', // Invalid code
             ]);
 
         $response->assertStatus(400);
         $response->assertJsonPath('error', 'INVALID_2FA_CODE');
         $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+    }
+
+    public function test_enable_2fa_requires_setup_first(): void
+    {
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->postJson('/api/v1/platform/auth/2fa/enable', [
+                'code' => '000000',
+            ]);
+
+        $response->assertStatus(400);
+        $response->assertJsonPath('error', 'SETUP_REQUIRED');
     }
 
     public function test_login_requires_2fa_code_when_enabled(): void

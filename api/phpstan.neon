@@ -11,5 +11,4 @@ parameters:
     excludePaths:
         - bootstrap/cache
         - storage
-    checkMissingIterableValueType: false
     reportUnmatchedIgnoredErrors: true

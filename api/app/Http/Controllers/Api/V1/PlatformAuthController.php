@@ -7,6 +7,7 @@ use App\Models\SuperAdmin;
 use App\Services\SuperAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 class PlatformAuthController extends Controller
@@ -101,6 +102,8 @@ class PlatformAuthController extends Controller
         $secret = $this->superAdminService->generateSecret();
         $qrCodeUrl = $this->superAdminService->getQrCodeUrl($superAdmin, $secret);
 
+        Cache::put("2fa_setup:{$superAdmin->id}", $secret, now()->addMinutes(10));
+
         return new JsonResponse([
             'data' => [
                 'secret' => $secret,
@@ -112,7 +115,6 @@ class PlatformAuthController extends Controller
     public function enable2fa(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'secret' => ['required', 'string'],
             'code' => ['required', 'string'],
         ]);
 
@@ -126,17 +128,28 @@ class PlatformAuthController extends Controller
             ], 400);
         }
 
-        // We temporarily set the secret on the model without saving to use the service verification
-        $superAdmin->two_fa_secret = $validated['secret'];
+        /** @var string|null $secret */
+        $secret = Cache::pull("2fa_setup:{$superAdmin->id}");
+
+        if (! $secret) {
+            return new JsonResponse([
+                'error' => 'SETUP_REQUIRED',
+                'message' => 'Veuillez d\'abord appeler setup2fa pour générer un secret.',
+            ], 400);
+        }
+
+        $superAdmin->two_fa_secret = $secret;
 
         if (! $this->superAdminService->verifyCode($superAdmin, $validated['code'])) {
+            $superAdmin->two_fa_secret = null;
+
             return new JsonResponse([
                 'error' => 'INVALID_2FA_CODE',
                 'message' => 'Le code 2FA fourni est invalide.',
             ], 400);
         }
 
-        $superAdmin->save(); // Save the validated secret
+        $superAdmin->save();
 
         return new JsonResponse(['status' => 'ok']);
     }
