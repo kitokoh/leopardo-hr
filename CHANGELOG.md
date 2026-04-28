@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.81] - 2026-05-22
+
+### Sécurité — 2FA Super-Admin
+
+- API : Ajout de `setup2fa`, `enable2fa` et `disable2fa` dans `PlatformAuthController` pour la gestion sécurisée du 2FA.
+- API : Le secret 2FA est généré côté serveur et stocké temporairement en cache pendant lenrôlement.
+- API : Validation du code TOTP avant persistance du secret en base de données.
+- API : Désactivation du 2FA nécessite une confirmation par mot de passe.
+- Sécurité : Correction dune vulnérabilité critique où le client pouvait fournir son propre secret 2FA.
+
+### Janitor - Hygiène du dépôt et synchronisation
+
+- Dépôt : Suppression du fichier généré accidentellement `api/test-results.xml` du suivi Git.
+- Dépôt : Ajout de `test-results.xml` au fichier `api/.gitignore`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.81` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Correction dune anomalie de date dans lentrée `4.1.79` du CHANGELOG (2026-05-22 → 2026-04-27).
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)
@@ -15,7 +32,7 @@
 - API : `DELETE /api/v1/evaluations/{id}` — manager supprime uniquement les évaluations `draft`.
 - API : protection contre modification après `acknowledged` et contre suppression si non-`draft`.
 
-## [4.1.79] - 2026-05-22
+## [4.1.79] - 2026-04-27
 
 ### Documentation & Outils - Standardisation des Mocks API
 
@@ -1290,4 +1307,4 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
 
- 
+

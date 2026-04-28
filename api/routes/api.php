@@ -47,6 +47,12 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['auth:super_admin_api'])->prefix('platform')->group(function (): void {
         Route::get('/auth/me', [PlatformAuthController::class, 'me']);
         Route::post('/auth/logout', [PlatformAuthController::class, 'logout']);
+        
+        // 2FA Management for Super-Admin
+        Route::post('/auth/2fa/setup', [PlatformAuthController::class, 'setup2fa']);
+        Route::post('/auth/2fa/enable', [PlatformAuthController::class, 'enable2fa']);
+        Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
+        
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
     });
