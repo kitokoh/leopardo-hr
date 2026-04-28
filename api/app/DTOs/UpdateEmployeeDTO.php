@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 final readonly class UpdateEmployeeDTO
 {
+    /**
+     * @param array<string, mixed>|null $extra_data
+     */
     public function __construct(
         public ?string $first_name = null,
         public ?string $last_name = null,
@@ -47,6 +50,9 @@ final readonly class UpdateEmployeeDTO
         return new self(...$validated);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return array_filter([

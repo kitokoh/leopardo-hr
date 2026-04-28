@@ -12,10 +12,13 @@ use Illuminate\Support\Facades\DB;
 
 class PayrollService
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     public function create(Employee $manager, array $data): Payroll
     {
-        $month = (int) $data['period_month'];
-        $year = (int) $data['period_year'];
+        $month = $this->toInt($data['period_month'] ?? null);
+        $year = $this->toInt($data['period_year'] ?? null);
 
         if (Payroll::where('employee_id', $data['employee_id'])->where('period_month', $month)->where('period_year', $year)->exists()) {
             throw new PayrollPeriodConflictException($month, $year);
@@ -28,31 +31,36 @@ class PayrollService
             'employee_id' => $data['employee_id'],
             'period_month' => $month,
             'period_year' => $year,
-            'gross_salary' => (float) $data['gross_salary'],
-            'overtime_amount' => (float) ($data['overtime_amount'] ?? 0),
-            'bonuses' => $data['bonuses'] ?? [],
-            'deductions' => $data['deductions'] ?? [],
-            'cotisations' => $data['cotisations'] ?? [],
-            'ir_amount' => (float) ($data['ir_amount'] ?? 0),
-            'advance_deduction' => (float) ($data['advance_deduction'] ?? 0),
-            'absence_deduction' => (float) ($data['absence_deduction'] ?? 0),
-            'penalty_deduction' => (float) ($data['penalty_deduction'] ?? 0),
+            'gross_salary' => $this->toFloat($data['gross_salary'] ?? null),
+            'overtime_amount' => $this->toFloat($data['overtime_amount'] ?? null),
+            'bonuses' => $this->toLineItems($data['bonuses'] ?? []),
+            'deductions' => $this->toLineItems($data['deductions'] ?? []),
+            'cotisations' => $this->toLineItems($data['cotisations'] ?? []),
+            'ir_amount' => $this->toFloat($data['ir_amount'] ?? null),
+            'advance_deduction' => $this->toFloat($data['advance_deduction'] ?? null),
+            'absence_deduction' => $this->toFloat($data['absence_deduction'] ?? null),
+            'penalty_deduction' => $this->toFloat($data['penalty_deduction'] ?? null),
             'net_salary' => max(0, $net),
             'status' => 'draft',
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function update(Payroll $payroll, array $data): Payroll
     {
         if ($payroll->status === 'validated') {
             throw new PayrollAlreadyValidatedException;
         }
 
-        $payroll->fill($data);
+        $payroll->fill($this->normalizePayrollData($data));
         $payroll->net_salary = max(0, $this->computeNet($payroll->toArray()));
         $payroll->save();
 
-        return $payroll->fresh();
+        $payroll->refresh();
+
+        return $payroll;
     }
 
     public function validate(Payroll $payroll, Employee $validator): Payroll
@@ -78,7 +86,9 @@ class PayrollService
             }
         });
 
-        return $payroll->fresh();
+        $payroll->refresh();
+
+        return $payroll;
     }
 
     public function delete(Payroll $payroll): void
@@ -89,16 +99,90 @@ class PayrollService
         $payroll->delete();
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function computeNet(array $data): float
     {
-        return (float) ($data['gross_salary'] ?? 0)
-            + (float) ($data['overtime_amount'] ?? 0)
-            + array_sum(array_column($data['bonuses'] ?? [], 'amount'))
-            - array_sum(array_column($data['deductions'] ?? [], 'amount'))
-            - array_sum(array_column($data['cotisations'] ?? [], 'amount'))
-            - (float) ($data['ir_amount'] ?? 0)
-            - (float) ($data['advance_deduction'] ?? 0)
-            - (float) ($data['absence_deduction'] ?? 0)
-            - (float) ($data['penalty_deduction'] ?? 0);
+        return $this->toFloat($data['gross_salary'] ?? null)
+            + $this->toFloat($data['overtime_amount'] ?? null)
+            + $this->sumLineItems($data['bonuses'] ?? [])
+            - $this->sumLineItems($data['deductions'] ?? [])
+            - $this->sumLineItems($data['cotisations'] ?? [])
+            - $this->toFloat($data['ir_amount'] ?? null)
+            - $this->toFloat($data['advance_deduction'] ?? null)
+            - $this->toFloat($data['absence_deduction'] ?? null)
+            - $this->toFloat($data['penalty_deduction'] ?? null);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function normalizePayrollData(array $data): array
+    {
+        foreach (['period_month', 'period_year'] as $key) {
+            if (array_key_exists($key, $data)) {
+                $data[$key] = $this->toInt($data[$key]);
+            }
+        }
+
+        foreach ([
+            'gross_salary',
+            'overtime_amount',
+            'ir_amount',
+            'advance_deduction',
+            'absence_deduction',
+            'penalty_deduction',
+        ] as $key) {
+            if (array_key_exists($key, $data)) {
+                $data[$key] = $this->toFloat($data[$key]);
+            }
+        }
+
+        foreach (['bonuses', 'deductions', 'cotisations'] as $key) {
+            if (array_key_exists($key, $data)) {
+                $data[$key] = $this->toLineItems($data[$key]);
+            }
+        }
+
+        return $data;
+    }
+
+    private function toFloat(mixed $value): float
+    {
+        return is_numeric($value) ? (float) $value : 0.0;
+    }
+
+    private function toInt(mixed $value): int
+    {
+        return is_numeric($value) ? (int) $value : 0;
+    }
+
+    /**
+     * @param mixed $items
+     * @return array<int, array<string, mixed>>
+     */
+    private function toLineItems(mixed $items): array
+    {
+        if (! is_array($items)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $items,
+            static fn (mixed $item): bool => is_array($item)
+        ));
+    }
+
+    private function sumLineItems(mixed $items): float
+    {
+        $total = 0.0;
+
+        foreach ($this->toLineItems($items) as $item) {
+            $total += $this->toFloat($item['amount'] ?? null);
+        }
+
+        return $total;
     }
 }

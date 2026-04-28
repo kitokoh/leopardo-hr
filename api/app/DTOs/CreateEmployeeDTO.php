@@ -6,6 +6,9 @@ use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 
 final readonly class CreateEmployeeDTO
 {
+    /**
+     * @param array<string, mixed> $extra_data
+     */
     public function __construct(
         public string $first_name,
         public string $last_name,
@@ -51,6 +54,9 @@ final readonly class CreateEmployeeDTO
         return new self(...$request->validated());
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
+use UnitEnum;
 
 /**
  * Endpoint /api/v1/health : sonde "live + ready" consommee par :
@@ -28,7 +29,7 @@ class HealthController extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        $version = (string) config('app.version');
+        $version = $this->stringConfigValue(config('app.version'));
 
         $database = $this->checkDatabase();
         $redis = $this->checkRedis();
@@ -121,7 +122,7 @@ class HealthController extends Controller
     private function checkStorage(): array
     {
         try {
-            $disk = Storage::disk(config('filesystems.default', 'local'));
+            $disk = Storage::disk($this->filesystemDiskName());
             // Laravel 11 : les disques sont en `throw => false` par defaut,
             // donc `put()` retourne `false` au lieu de lever. On verifie
             // explicitement la valeur de retour pour vraiment detecter un
@@ -136,5 +137,25 @@ class HealthController extends Controller
                 'error' => class_basename($e),
             ];
         }
+    }
+
+    private function filesystemDiskName(): string|UnitEnum|null
+    {
+        $disk = config('filesystems.default', 'local');
+
+        return is_string($disk) || $disk instanceof UnitEnum ? $disk : 'local';
+    }
+
+    private function stringConfigValue(mixed $value): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_scalar($value)) {
+            return (string) $value;
+        }
+
+        return '';
     }
 }

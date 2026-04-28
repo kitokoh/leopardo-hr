@@ -17,9 +17,11 @@ class EmployeeService
 
     public function create(CreateEmployeeDTO $dto, ?Employee $actor = null): Employee
     {
+        /** @var array<string, mixed> $payload */
         $payload = $dto->toArray();
         $sendInvitation = (bool) Arr::pull($payload, 'send_invitation', false);
         $providedPassword = Arr::pull($payload, 'password');
+        $providedPassword = is_string($providedPassword) && $providedPassword !== '' ? $providedPassword : null;
 
         $companyId = $payload['company_id']
             ?? $actor?->company_id
@@ -64,6 +66,7 @@ class EmployeeService
 
     public function update(Employee $actor, Employee $employee, UpdateEmployeeDTO $dto): Employee
     {
+        /** @var array<string, mixed> $payload */
         $payload = $dto->toArray();
         $isManager = $actor->isManager();
         $isSelfUpdate = $actor->id === $employee->id;
@@ -110,6 +113,9 @@ class EmployeeService
         return $employee;
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     */
     private function applyBiometricConsent(array &$payload, ?Employee $employee = null): void
     {
         $faceEnabled = array_key_exists('biometric_face_enabled', $payload)
@@ -126,6 +132,10 @@ class EmployeeService
         }
     }
 
+    /**
+     * @param array<string, mixed> $extraData
+     * @return array<string, mixed>
+     */
     private function normalizeExtraData(array $extraData): array
     {
         $allowedKeys = [
