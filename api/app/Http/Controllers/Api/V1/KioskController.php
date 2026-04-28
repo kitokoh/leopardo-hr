@@ -165,6 +165,10 @@ class KioskController extends Controller
         return $kiosk;
     }
 
+    /**
+     * Secures the search_path for PostgreSQL to prevent SQL injection.
+     * Uses a validated/escaped schema name from the Company model.
+     */
     private function setTenantSearchPath(?Company $company): void
     {
         if (! $company) {
@@ -173,13 +177,7 @@ class KioskController extends Controller
             return;
         }
 
-        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->schema_name.',public');
-
-            return;
-        }
-
-        DB::statement('SET search_path TO shared_tenants,public');
+        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
     }
 
     private function serializeKiosk(AttendanceKiosk $kiosk): array

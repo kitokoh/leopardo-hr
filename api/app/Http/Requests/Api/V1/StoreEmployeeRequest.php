@@ -105,12 +105,7 @@ class StoreEmployeeRequest extends FormRequest
             return;
         }
 
-        if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->schema_name.',public');
-
-            return;
-        }
-
-        DB::statement('SET search_path TO shared_tenants,public');
+        // Security: Use getSafeSearchPath() to prevent SQL injection in search_path switching.
+        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
     }
 }

@@ -2,7 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.80] - 2026-04-27
+## [4.1.82] - 2026-05-22
+
+### Sécurité - Protection injection SQL search_path
+
+- API : Durcissement des commandes `SET search_path` PostgreSQL via l'utilisation systématique de `Company::getSafeSearchPath()` dans tous les contrôleurs et FormRequests.
+- API : Ajout de commentaires de sécurité explicites pour justifier l'usage du helper sécurisé.
+- Docs : Création du journal de sécurité `.jules/sentinel.md` pour le suivi des vulnérabilités critiques.
+
+## [4.1.81] - 2026-05-22
 
 ### API - Module Evaluations (module 7 complément)
 
