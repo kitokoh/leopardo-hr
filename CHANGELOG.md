@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.81] - 2026-04-28
+
+### Janitor - Hygiène du dépôt et synchronisation
+
+- Dépôt : Suppression du fichier généré accidentellement `api/test-results.xml` du suivi Git.
+- Dépôt : Ajout de `test-results.xml` au fichier `api/.gitignore`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.81` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Correction d'une anomalie de date dans l'entrée `4.1.79` du CHANGELOG (2026-05-22 → 2026-04-27).
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)
@@ -15,7 +24,7 @@
 - API : `DELETE /api/v1/evaluations/{id}` — manager supprime uniquement les évaluations `draft`.
 - API : protection contre modification après `acknowledged` et contre suppression si non-`draft`.
 
-## [4.1.79] - 2026-05-22
+## [4.1.79] - 2026-04-27
 
 ### Documentation & Outils - Standardisation des Mocks API
 
