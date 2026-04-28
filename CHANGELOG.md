@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### API - Maintenance dependances frontend
+
+- API : mise a jour du groupe de dependances frontend dans `api/` via Dependabot (`laravel-vite-plugin`, `tailwindcss` et `vite`) pour rester aligne avec la toolchain front embarquee.
+
 ### Mobile - Maintenance dependances
 
 - Mobile : mise a jour du groupe de dependances Flutter dans `mobile/` via Dependabot (`cupertino_icons`, `flutter_riverpod`, `go_router`, `image_picker`, `local_auth`, `flutter_lints` et mises a jour transitives associees).
