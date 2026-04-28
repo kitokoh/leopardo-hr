@@ -108,7 +108,11 @@ class _EmployeesTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(teamListProvider),
       child: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: 'Chargement des employés...',
+          ),
+        ),
         error: (err, _) => Center(child: Text('Erreur : $err')),
         data: (employees) {
           if (employees.isEmpty) {
@@ -130,7 +134,9 @@ class _EmployeesTab extends ConsumerWidget {
               final e = employees[index];
               return ListTile(
                 leading: CircleAvatar(
-                  child: Text(_initials(e)),
+                  child: ExcludeSemantics(
+                    child: Text(_initials(e)),
+                  ),
                 ),
                 title: Text(e.fullName),
                 subtitle: Text('${e.email}\nRole : ${_roleLabel(e)}'),
@@ -232,7 +238,11 @@ class _InvitationsTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(invitationsListProvider),
       child: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: 'Chargement des invitations...',
+          ),
+        ),
         error: (err, _) => Center(child: Text('Erreur : $err')),
         data: (invitations) {
           if (invitations.isEmpty) {
@@ -407,7 +417,10 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          semanticsLabel: 'Envoi en cours...',
+                        ),
                       )
                     : const Text('Envoyer l invitation'),
               ),

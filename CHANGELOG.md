@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.83] - 2026-05-23
+
+### Palette - Accessibilité Team et Badges
+
+- Mobile : Amélioration de l'accessibilité du widget `LeopardoBadge` par l'ajout de labels `Semantics` regroupant l'icône et le texte, évitant les annonces fragmentées pour les lecteurs d'écran.
+- Mobile : Amélioration de l'accessibilité de l'écran `TeamScreen` par l'exclusion des initiales redondantes dans les avatars et l'ajout de labels `Semantics` explicites sur tous les indicateurs de chargement (`CircularProgressIndicator`).
+- Mobile : Amélioration de l'accessibilité de l'écran `HistoryScreen` par l'ajout de labels `Semantics` sur les indicateurs de chargement.
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)
