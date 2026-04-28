@@ -179,6 +179,6 @@ class PlatformAuthController extends Controller
 
     private function pendingTwoFaSecretCacheKey(SuperAdmin $superAdmin): string
     {
-        return '2fa_setup:'.$superAdmin->getKey();
+        return '2fa_setup:'.(string) $superAdmin->id;
     }
 }
