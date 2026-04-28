@@ -5,6 +5,7 @@ namespace App\Policies\Cameras;
 use App\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Cameras\Domain\CameraPermission;
 
 class CameraPolicy
 {
@@ -15,21 +16,15 @@ class CameraPolicy
 
     public function view(Employee $actor, Camera $camera): bool
     {
+        if (! $actor->isManager() || $camera->company_id !== $actor->company_id) {
+            return false;
+        }
+
         if ($actor->hasManagerRole('principal', 'rh')) {
             return true;
         }
 
-        if (! $actor->isManager()) {
-            return false;
-        }
-
-        return $camera->permissions()
-            ->where('employee_id', $actor->id)
-            ->where('can_view', true)
-            ->where(function ($query): void {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->exists();
+        return $this->activePermission($actor, $camera)?->can_view === true;
     }
 
     public function create(Employee $actor): bool
@@ -39,26 +34,20 @@ class CameraPolicy
 
     public function update(Employee $actor, Camera $camera): bool
     {
+        if (! $actor->isManager() || $camera->company_id !== $actor->company_id) {
+            return false;
+        }
+
         if ($actor->hasManagerRole('principal')) {
             return true;
         }
 
-        if (! $actor->isManager()) {
-            return false;
-        }
-
-        return $camera->permissions()
-            ->where('employee_id', $actor->id)
-            ->where('can_manage', true)
-            ->where(function ($query): void {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->exists();
+        return $this->activePermission($actor, $camera)?->can_manage === true;
     }
 
     public function delete(Employee $actor, Camera $camera): bool
     {
-        return $actor->hasManagerRole('principal');
+        return $this->update($actor, $camera);
     }
 
     public function testRtsp(Employee $actor): bool
@@ -73,35 +62,32 @@ class CameraPolicy
 
     public function shareAccess(Employee $actor, Camera $camera): bool
     {
-        if ($actor->hasManagerRole('principal', 'rh')) {
-            return true;
-        }
-
-        if (! $actor->isManager()) {
+        if (! $actor->isManager() || $camera->company_id !== $actor->company_id) {
             return false;
         }
 
-        return $camera->permissions()
-            ->where('employee_id', $actor->id)
-            ->where('can_share', true)
-            ->where(function ($query): void {
-                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
-            })
-            ->exists();
+        if ($actor->hasManagerRole('principal')) {
+            return true;
+        }
+
+        return $this->activePermission($actor, $camera)?->can_share === true;
     }
 
     public function revokeAccess(Employee $actor, CameraAccessToken $token): bool
     {
-        return $this->shareAccess($actor, $token->camera);
+        $camera = $token->camera;
+
+        return $camera instanceof Camera && $this->shareAccess($actor, $camera);
     }
 
-    public function viewLogs(Employee $actor, Camera $camera): bool
+    private function activePermission(Employee $actor, Camera $camera): ?CameraPermission
     {
-        return $this->view($actor, $camera);
-    }
-
-    public function managePermissions(Employee $actor): bool
-    {
-        return $actor->hasManagerRole('principal');
+        return CameraPermission::query()
+            ->where('camera_id', $camera->id)
+            ->where('employee_id', $actor->id)
+            ->where(function ($query): void {
+                $query->whereNull('expires_at')->orWhere('expires_at', '>', now());
+            })
+            ->first();
     }
 }

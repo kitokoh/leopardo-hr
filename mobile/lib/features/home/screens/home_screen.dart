@@ -392,11 +392,25 @@ class _QuickActionsGrid extends StatelessWidget {
         onTap: () => context.push('/me/monthly'),
       ),
       _QuickAction(
+        icon: Icons.apps,
+        label: 'Modules',
+        subtitle: 'RH, Avances, Paie...',
+        color: AppColors.finance,
+        onTap: () => context.push('/modules'),
+      ),
+      _QuickAction(
         icon: Icons.history,
         label: 'Historique',
         subtitle: 'Revoir tous mes pointages',
         color: AppColors.warning,
         onTap: () => context.push('/history'),
+      ),
+      _QuickAction(
+        icon: Icons.dashboard_customize_outlined,
+        label: 'Modules RH',
+        subtitle: 'Evaluations, paie, notifications',
+        color: AppColors.finance,
+        onTap: () => context.push('/modules/rh'),
       ),
       if (canManageTeam)
         _QuickAction(
