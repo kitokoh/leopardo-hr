@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
+  analyze-actions:
     name: CodeQL (Actions)
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || vars.ENABLE_CODEQL_PR == 'true'
@@ -37,6 +37,22 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+
+  analyze-backend:
+    name: CodeQL (Backend)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: php
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
