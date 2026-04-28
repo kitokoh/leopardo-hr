@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
+import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_rh/features/settings/data/settings_repository.dart';
@@ -156,7 +157,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             role == 'manager'
                 ? 'Profil RH / manager: acces au suivi de l equipe et a l historique.'
                 : 'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
         ],
       ),
@@ -236,7 +237,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           const Text(
             'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
@@ -291,7 +292,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 8),
             const Text(
               'Changez votre mot de passe avant les prochaines etapes de modernisation.',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: AppColors.textMuted),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -355,13 +356,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           Text(
             'Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.',
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 12),
           if (employee != null)
             Text(
               'Actif aujourd hui - visage: ${employee.biometricFaceEnabled ? "oui" : "non"} | empreinte: ${employee.biometricFingerprintEnabled ? "oui" : "non"}',
-              style: const TextStyle(color: Colors.white70),
+              style: const TextStyle(color: AppColors.textMuted),
             ),
           if (_latestEnrollment != null) ...[
             const SizedBox(height: 8),
@@ -369,10 +370,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               'Derniere demande: ${_latestEnrollment!.status.toUpperCase()}',
               style: TextStyle(
                 color: _latestEnrollment!.status == 'approved'
-                    ? Colors.greenAccent
+                    ? AppColors.success
                     : _latestEnrollment!.status == 'rejected'
-                        ? Colors.orangeAccent
-                        : Colors.amberAccent,
+                        ? AppColors.danger
+                        : AppColors.warning,
               ),
             ),
             if ((_latestEnrollment!.managerNote ?? '').isNotEmpty)
@@ -380,7 +381,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   'Retour manager/RH: ${_latestEnrollment!.managerNote}',
-                  style: const TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: AppColors.textMuted),
                 ),
               ),
           ],
@@ -463,7 +464,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           const Text(
             'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
-            style: TextStyle(color: Colors.grey, fontSize: 12),
+            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
           ),
         ],
       ),

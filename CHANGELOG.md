@@ -260,6 +260,17 @@
 
 - Docs : alignement de `PILOTAGE.md` et `RUNBOOK_BETA_ACCEPTANCE.md` avec la decision GO MVP du 2026-04-21 ; remplacement des references "VPS" (obsoletes) par "Render" (canonique)
 - Pilotage : mise a jour du statut Sprint 4 (S4-1 et S4-2 marques comme termines sur Render)
+### Durcissement CI backend + mobile
+
+- CI backend : ajout du gate `Backend Quality (Pint + PHP Syntax + PHPStan/Larastan)` dans `.github/workflows/tests.yml` avec `composer validate`, `composer install`, `pint --test`, lint syntaxique PHP et analyse statique `PHPStan + Larastan`
+- Backend quality : ajout des fichiers `api/phpstan.neon` et `api/phpstan-baseline.neon` pour versionner la configuration et preparer une baseline propre sans desactiver les futurs ecarts
+- Backend quality : ajout du workflow manuel `.github/workflows/phpstan-baseline.yml` pour generer un candidat de baseline `phpstan-generated-baseline.neon` en artifact depuis GitHub Actions quand de nouveaux ecarts statiques apparaissent
+- Gouvernance : `tools/check-governance.ps1` verifie maintenant la presence de la configuration PHPStan, des redirections historiques vers `PILOTAGE.md` et l alignement des noms de checks documentes
+- Branche/protection : `.github/BRANCH_PROTECTION_REQUIRED.md` aligne les checks requis sur les vrais noms GitHub (`Backend Quality ...`, `CodeQL (Actions)`)
+- Dependances : ajout de `.github/dependabot.yml` pour `composer`, `npm` et `pub`
+- Mobile CI : les checks `dart format`, `flutter analyze` et `Dependency Review` sont desormais bloquants ; les tests Flutter produisent aussi un artifact machine-readable `test-results.json`, un resume de couverture `coverage/summary.txt` et un gate de couverture base sur `MOBILE_COVERAGE_MIN` (defaut 25%)
+- Mobile linting : `mobile/analysis_options.yaml` active `avoid_print: true`
+- Reporting CI : le job `Notify Result` telecharge maintenant les syntheses backend/mobile, les injecte dans `ci-report.md` et les publie aussi dans le Step Summary GitHub Actions pour accelerer le triage
 
 ## [4.1.69] - 2026-04-22
 ### Sprint D - UI super-admin pour toggler les modules + guides utilisateurs
@@ -1291,3 +1302,34 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Structure initiale des dossiers.
 
  
+  
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+   
+ 
+ 
+
+
+
+
+
+
+
+
+
+

@@ -24,6 +24,7 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final muted = AppColors.textSecondaryFor(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -38,20 +39,20 @@ class EmptyState extends StatelessWidget {
                 child: Icon(
                   icon ?? Icons.inbox_outlined,
                   size: 56,
-                  color: AppColors.textMuted,
+                  color: muted,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 title,
-                style: AppTypography.title.copyWith(color: AppColors.textMuted),
+                style: AppTypography.title.copyWith(color: muted),
                 textAlign: TextAlign.center,
               ),
               if (description != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   description!,
-                  style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+                  style: AppTypography.bodySmall.copyWith(color: muted),
                   textAlign: TextAlign.center,
                 ),
               ],

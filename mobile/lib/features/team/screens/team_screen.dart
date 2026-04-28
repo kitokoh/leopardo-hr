@@ -176,7 +176,7 @@ class _EmployeesTab extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(employee.fullName, style: Theme.of(context).textTheme.titleLarge),
-            Text(employee.email, style: const TextStyle(color: Colors.grey)),
+            Text(employee.email, style: const TextStyle(color: AppColors.textMuted)),
             const SizedBox(height: 16),
             if (employee.status != 'archived')
               ListTile(

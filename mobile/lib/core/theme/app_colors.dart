@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 ///
 /// Source de verite cote mobile des couleurs Leopardo RH.
 /// Toute modification doit etre repercutee dans :
-///   - api/tailwind.config.js (web)
-///   - docs/COULEURS.md (doc)
+///   - la couche de tokens web
+///   - docs/REFERENTIEL_PRODUIT/COULEURS.md (doc)
 ///
 /// Jamais de valeur hex hardcodee dans les ecrans : toujours passer par
 /// AppColors.* pour garder l'alignement mobile <-> web.
@@ -57,6 +57,33 @@ class AppColors {
 
   /// @Deprecated Utilisez [textDark]. Conserve pour compat avec [AppTheme.textPrimary].
   static const Color textOnDark = textDark;
+
+  static bool isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static Color backgroundFor(BuildContext context) =>
+      isDark(context) ? bgDark : bgLight;
+
+  static Color surfaceFor(BuildContext context) =>
+      isDark(context) ? cardDark : cardLight;
+
+  static Color borderFor(BuildContext context) =>
+      isDark(context) ? borderDark : borderLight;
+
+  static Color textPrimaryFor(BuildContext context) =>
+      isDark(context) ? textDark : textLight;
+
+  static Color textSecondaryFor(BuildContext context) =>
+      isDark(context) ? textMutedDark : textMuted;
+
+  static Color tint(
+    BuildContext context,
+    Color color, {
+    double lightAlpha = 0.12,
+    double darkAlpha = 0.18,
+  }) {
+    return color.withValues(alpha: isDark(context) ? darkAlpha : lightAlpha);
+  }
 
   // ─── Helpers domaine ────────────────────────────────────────────────────
   /// Retourne la couleur principale d'un domaine module.

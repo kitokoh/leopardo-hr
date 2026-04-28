@@ -11,10 +11,11 @@ Apply these settings in GitHub repository rules for `main` and `develop`.
 - Required checks:
   - `Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)`
   - `Backend Security (Composer Audit)`
+  - `Backend Quality (Pint + PHP Syntax + PHPStan/Larastan)`
   - `Mobile Flutter (Stable Channel)`
   - `Governance Gates (changelog + canonical files)`
   - `Dependency Review (PR Security)`
-  - `CodeQL (Backend)`
+  - `CodeQL (Actions)`
 - (Optional) `Notify Result` (redundant; require only if you really want a single "final" check)
 - Require branches to be up to date before merging
 - Include administrators
@@ -23,7 +24,8 @@ Apply these settings in GitHub repository rules for `main` and `develop`.
 
 ## Critical note (avoid "Expected" checks)
 - Do NOT require old/deleted check names like `Mobile Flutter (stable)`.
-- Required check names MUST match `.github/workflows/tests.yml` job names exactly.
+- Required check names MUST match the actual GitHub check names emitted by the workflows.
+- `CodeQL (Actions)` scans GitHub Actions workflow security, not PHP application code.
 
 ## Merge policy
 - Squash merge only
@@ -42,4 +44,4 @@ Apply these settings in GitHub repository rules for `main` and `develop`.
 - Enforces changelog/governance discipline
 - Blocks regressions without tests
 - Bloque aussi les dependances vulnerables et les regressions de qualite avant deploiement
-- Ajoute une analyse statique de securite du code backend avant merge
+- Ajoute une analyse statique de securite des workflows avant merge

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/app_typography.dart';
+
 class PulseButton extends StatefulWidget {
   final bool isCheckedIn;
   final bool isLoading;
@@ -71,8 +73,13 @@ class _PulseButtonState extends State<PulseButton> with SingleTickerProviderStat
                   child: widget.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          widget.isCheckedIn ? 'CHECK OUT' : 'CHECK IN',
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                          widget.isCheckedIn ? 'TERMINER' : 'POINTER',
+                          style: AppTypography.subtitle.copyWith(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.6,
+                          ),
                         ),
                 ),
               ),

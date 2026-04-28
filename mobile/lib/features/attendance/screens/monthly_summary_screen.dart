@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
@@ -141,7 +142,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           label: 'Heures supplementaires',
           value: '${summary.overtimeHours.toStringAsFixed(2)} h',
           sub: 'Incluses dans le gain brut',
-          accent: Colors.orangeAccent,
+          accent: AppColors.warning,
         ),
         const SizedBox(height: 12),
         _metricCard(
@@ -187,7 +188,11 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               ? 'Estimation non officielle - le bulletin de paie fait foi.'
               : summary.disclaimer,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textMuted,
+            fontStyle: FontStyle.italic,
+          ),
         ),
       ],
     );
@@ -219,7 +224,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: Colors.grey)),
+                Text(label, style: const TextStyle(color: AppColors.textMuted)),
                 const SizedBox(height: 4),
                 Text(value,
                     style: TextStyle(
@@ -229,7 +234,13 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                     )),
                 if (sub != null) ...[
                   const SizedBox(height: 2),
-                  Text(sub, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(
+                    sub,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -244,7 +255,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
+          const Icon(Icons.error_outline, size: 56, color: AppColors.danger),
           const SizedBox(height: 12),
           Text('Impossible de charger les donnees : $err',
               textAlign: TextAlign.center),

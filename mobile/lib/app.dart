@@ -98,7 +98,9 @@ class LeopardoApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Leopardo RH',
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.light,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: Locale(languageCode),

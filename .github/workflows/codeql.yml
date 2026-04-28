@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   analyze:
-    name: CodeQL (Backend)
+    name: CodeQL (Actions)
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || vars.ENABLE_CODEQL_PR == 'true'
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
@@ -49,7 +50,11 @@ class AttendanceScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.build_circle_outlined, size: 64, color: Colors.grey),
+          const Icon(
+            Icons.build_circle_outlined,
+            size: 64,
+            color: AppColors.textMuted,
+          ),
           const SizedBox(height: 16),
           const Text('Fonction bientot disponible', style: TextStyle(fontSize: 20)),
           const SizedBox(height: 16),
@@ -64,7 +69,10 @@ class AttendanceScreen extends ConsumerWidget {
             onPressed: () {
               ref.read(authProvider.notifier).logout();
             },
-            child: const Text('Deconnexion', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Deconnexion',
+              style: TextStyle(color: AppColors.danger),
+            ),
           ),
         ],
       ),
@@ -88,7 +96,7 @@ class AttendanceScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             isManager ? 'Espace RH / manager' : 'Espace employe',
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
         ],
       ),
@@ -142,7 +150,7 @@ class AttendanceScreen extends ConsumerWidget {
             const Text(
               'Chargement de votre presence du jour...',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: AppColors.textMuted),
             ),
           ] else if (state.error != null && state.todayLog == null) ...[
             Text(
@@ -164,7 +172,7 @@ class AttendanceScreen extends ConsumerWidget {
             const Text(
               'Pret pour le pointage du jour.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: AppColors.textMuted),
             ),
         ],
       ),
@@ -208,7 +216,7 @@ class AttendanceScreen extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     'Chargement du suivi d equipe...',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: AppColors.textMuted),
                   ),
                 ),
               ],
@@ -218,7 +226,7 @@ class AttendanceScreen extends ConsumerWidget {
               employees.isEmpty
                   ? 'Le suivi du jour sera disponible apres actualisation.'
                   : '${employees.length} collaborateurs charges, $checkedInCount deja pointes aujourd hui.',
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(color: AppColors.textMuted),
             ),
             const SizedBox(height: 16),
             OutlinedButton(
@@ -266,12 +274,16 @@ class AttendanceScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             'Heures sup : ${state.summary!.overtimeGain > 0 ? (state.summary!.overtimeGain).toStringAsFixed(0) : "0h"}',
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 8),
           const Text(
             'Estimation - net final calcule en fin de mois',
-            style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.textMuted,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ],
       ),
@@ -282,19 +294,19 @@ class AttendanceScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: 0.12),
+        color: AppColors.warning.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.amber.withValues(alpha: 0.35)),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline, color: Colors.amber),
+          const Icon(Icons.info_outline, color: AppColors.warning),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               notice,
-              style: const TextStyle(color: Colors.white70),
+              style: const TextStyle(color: AppColors.textLight),
             ),
           ),
         ],
@@ -313,7 +325,7 @@ class AttendanceScreen extends ConsumerWidget {
           const Text(
             'L ecran est disponible pendant le chargement. Vous pouvez attendre quelques secondes ou tirer pour actualiser.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 16),
         ],
@@ -349,7 +361,10 @@ class AttendanceScreen extends ConsumerWidget {
           onPressed: () {
             ref.read(authProvider.notifier).logout();
           },
-          child: const Text('Deconnexion', style: TextStyle(color: Colors.red)),
+          child: const Text(
+            'Deconnexion',
+            style: TextStyle(color: AppColors.danger),
+          ),
         ),
       ],
     );

@@ -1,0 +1,15 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: max
+    paths:
+        - app
+        - routes
+        - tests
+    tmpDir: storage/phpstan
+    excludePaths:
+        - bootstrap/cache
+        - storage
+    checkMissingIterableValueType: false
+    reportUnmatchedIgnoredErrors: true

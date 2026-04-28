@@ -2,6 +2,7 @@ import 'package:leopardo_rh/core/widgets/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
@@ -102,7 +103,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.build_circle_outlined, size: 64, color: Colors.grey),
+                  const Icon(
+                    Icons.build_circle_outlined,
+                    size: 64,
+                    color: AppColors.textMuted,
+                  ),
                   const SizedBox(height: 16),
                   const Text('Fonction bientôt disponible', style: TextStyle(fontSize: 20)),
                   const SizedBox(height: 16),
@@ -146,16 +151,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       );
                     }
                     final log = logs[index];
-                    Color statusColor = Colors.grey;
+                    Color statusColor = AppColors.textMuted;
                     switch (log.status) {
                       case 'ontime':
-                        statusColor = Colors.green;
+                        statusColor = AppColors.success;
                         break;
                       case 'late':
-                        statusColor = Colors.orange;
+                        statusColor = AppColors.warning;
                         break;
                       case 'absent':
-                        statusColor = Colors.red;
+                        statusColor = AppColors.danger;
                         break;
                     }
                     
@@ -204,8 +209,17 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Heures supplémentaires', style: TextStyle(color: Colors.grey)),
-                          Text('${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                          const Text(
+                            'Heures supplémentaires',
+                            style: TextStyle(color: AppColors.textMuted),
+                          ),
+                          Text(
+                            '${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textMuted,
+                            ),
+                          ),
                         ],
                       ),
                     ],
