@@ -399,9 +399,7 @@ class _CallToAction extends StatelessWidget {
         Text(
           'Invite par votre employeur ? Utilisez le lien recu par email.',
           textAlign: TextAlign.center,
-          style: AppTypography.caption.copyWith(
-            color: AppColors.textMutedDark,
-          ),
+          style: AppTypography.caption.copyWith(color: AppColors.textMutedDark),
         ),
       ],
     );

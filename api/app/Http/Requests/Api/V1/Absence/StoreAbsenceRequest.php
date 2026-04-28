@@ -16,9 +16,9 @@ class StoreAbsenceRequest extends FormRequest
     {
         return [
             'absence_type_id' => ['required', 'integer', 'exists:absence_types,id'],
-            'start_date'      => ['required', 'date_format:Y-m-d'],
-            'end_date'        => ['required', 'date_format:Y-m-d'],
-            'reason'          => ['nullable', 'string', 'max:1000'],
+            'start_date' => ['required', 'date_format:Y-m-d'],
+            'end_date' => ['required', 'date_format:Y-m-d'],
+            'reason' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -33,7 +33,7 @@ class StoreAbsenceRequest extends FormRequest
             }
 
             if ($endDate < $startDate) {
-                $validator->errors()->add('end_date', "La date de fin doit être postérieure ou égale à la date de début.");
+                $validator->errors()->add('end_date', 'La date de fin doit être postérieure ou égale à la date de début.');
             }
         });
     }

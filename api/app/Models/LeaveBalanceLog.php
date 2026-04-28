@@ -15,6 +15,7 @@ class LeaveBalanceLog extends Model
     public $timestamps = false;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = null;
 
     protected $fillable = [
@@ -27,9 +28,9 @@ class LeaveBalanceLog extends Model
     ];
 
     protected $casts = [
-        'delta'        => 'float',
+        'delta' => 'float',
         'balance_after' => 'float',
-        'created_at'   => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function employee(): BelongsTo

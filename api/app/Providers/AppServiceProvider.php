@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\TenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(\App\Services\TenantManager::class);
+        $this->app->singleton(TenantManager::class);
     }
 
     /**
@@ -34,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
             $employee = $request->user();
             if ($employee && $employee->company_id) {
                 // 300 requêtes par minute par entreprise
-                return Limit::perMinute(300)->by('company:' . $employee->company_id);
+                return Limit::perMinute(300)->by('company:'.$employee->company_id);
             }
 
             // 60 requêtes par minute par IP pour les non-authentifiés

@@ -3,12 +3,12 @@
 namespace App\Modules\Cameras\Infrastructure\Services;
 
 use App\Exceptions\DomainException;
+use App\Models\Company;
+use App\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessLog;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Streaming\CameraStreamTokenService;
-use App\Models\Company;
-use App\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;

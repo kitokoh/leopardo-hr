@@ -133,8 +133,9 @@ class _RegisterHero extends StatelessWidget {
         Text(
           'Le compte est cree par votre employeur via une invitation.',
           textAlign: TextAlign.center,
-          style:
-              AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.textMutedDark,
+          ),
         ),
       ],
     );
@@ -162,8 +163,9 @@ class _InvitationExplainerCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 'Comment acceder a l\'application',
-                style:
-                    AppTypography.subtitle.copyWith(color: AppColors.textDark),
+                style: AppTypography.subtitle.copyWith(
+                  color: AppColors.textDark,
+                ),
               ),
             ],
           ),
@@ -263,8 +265,9 @@ class _RequestAccessCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Pas encore d\'entreprise ? Inscrivez-vous a la liste',
-                  style: AppTypography.subtitle
-                      .copyWith(color: AppColors.textDark),
+                  style: AppTypography.subtitle.copyWith(
+                    color: AppColors.textDark,
+                  ),
                 ),
               ),
             ],
@@ -272,8 +275,9 @@ class _RequestAccessCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'L\'inscription libre pour les employes independants arrive. Laissez votre email pour etre prevenu des son ouverture.',
-            style: AppTypography.bodySmall
-                .copyWith(color: AppColors.textMutedDark),
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textMutedDark,
+            ),
           ),
           const SizedBox(height: 14),
           if (submitted)
@@ -358,8 +362,9 @@ class _SuccessTile extends StatelessWidget {
               email.isEmpty
                   ? 'Merci, vous etes dans la liste.'
                   : 'Merci, nous contacterons $email des l\'ouverture.',
-              style:
-                  AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
           ),
         ],

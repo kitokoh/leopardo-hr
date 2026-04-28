@@ -20,15 +20,17 @@ class SalaryAdvanceController extends Controller
         $actor = $request->user();
         $query = SalaryAdvance::query();
 
-        if (!$actor->isManager()) {
+        if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
         }
 
-        if ($request->filled('status')) $query->where('status', $request->input('status'));
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
 
-        $perPage   = $request->integer('per_page', 15);
+        $perPage = $request->integer('per_page', 15);
         $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
         return response()->json([
@@ -47,8 +49,12 @@ class SalaryAdvanceController extends Controller
     public function show(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager() && $salaryAdvance->employee_id !== $actor->id) abort(403);
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager() && $salaryAdvance->employee_id !== $actor->id) {
+            abort(403);
+        }
 
         return response()->json(['data' => $this->serialize($salaryAdvance)]);
     }
@@ -56,8 +62,12 @@ class SalaryAdvanceController extends Controller
     public function approve(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager()) abort(403);
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $advance = $this->salaryAdvanceService->approve($salaryAdvance, $actor, $request->validated());
 
@@ -67,8 +77,12 @@ class SalaryAdvanceController extends Controller
     public function reject(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager()) abort(403);
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $advance = $this->salaryAdvanceService->reject($salaryAdvance, $actor, $request->validated('decision_comment'));
 
@@ -78,8 +92,12 @@ class SalaryAdvanceController extends Controller
     public function destroy(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
         $actor = $request->user();
-        if ($salaryAdvance->company_id !== $actor->company_id) abort(404);
-        if ($salaryAdvance->employee_id !== $actor->id) abort(403);
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($salaryAdvance->employee_id !== $actor->id) {
+            abort(403);
+        }
 
         $advance = $this->salaryAdvanceService->cancel($salaryAdvance);
 

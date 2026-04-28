@@ -24,23 +24,32 @@ class LeopardoBadge extends StatelessWidget {
   final IconData? icon;
 
   factory LeopardoBadge.forStatus(String status, String label) {
-    return LeopardoBadge(
-      label: label,
-      color: AppColors.forStatus(status),
-    );
+    return LeopardoBadge(label: label, color: AppColors.forStatus(status));
   }
 
-  factory LeopardoBadge.present({String label = 'Présent'}) =>
-      LeopardoBadge(label: label, color: AppColors.success, icon: Icons.check_circle);
+  factory LeopardoBadge.present({String label = 'Présent'}) => LeopardoBadge(
+        label: label,
+        color: AppColors.success,
+        icon: Icons.check_circle,
+      );
 
-  factory LeopardoBadge.late({String label = 'En retard'}) =>
-      LeopardoBadge(label: label, color: AppColors.warning, icon: Icons.schedule);
+  factory LeopardoBadge.late({String label = 'En retard'}) => LeopardoBadge(
+        label: label,
+        color: AppColors.warning,
+        icon: Icons.schedule,
+      );
 
-  factory LeopardoBadge.absent({String label = 'Absent'}) =>
-      LeopardoBadge(label: label, color: AppColors.danger, icon: Icons.error_outline);
+  factory LeopardoBadge.absent({String label = 'Absent'}) => LeopardoBadge(
+        label: label,
+        color: AppColors.danger,
+        icon: Icons.error_outline,
+      );
 
-  factory LeopardoBadge.onLeave({String label = 'En congé'}) =>
-      LeopardoBadge(label: label, color: AppColors.info, icon: Icons.beach_access);
+  factory LeopardoBadge.onLeave({String label = 'En congé'}) => LeopardoBadge(
+        label: label,
+        color: AppColors.info,
+        icon: Icons.beach_access,
+      );
 
   factory LeopardoBadge.domain(String domain, String label, {IconData? icon}) {
     return LeopardoBadge(

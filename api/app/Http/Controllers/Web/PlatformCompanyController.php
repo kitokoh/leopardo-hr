@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Employee;
 use App\Models\SuperAdmin;
 use App\Services\CompanyProvisioningService;
+use App\Services\UserInvitationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class PlatformCompanyController extends Controller
@@ -152,6 +153,7 @@ class PlatformCompanyController extends Controller
         foreach (Company::KNOWN_MODULES as $module) {
             if ($module === 'rh') {
                 $features['rh'] = true;
+
                 continue;
             }
             $features[$module] = (bool) ($submitted[$module] ?? false);
@@ -181,14 +183,14 @@ class PlatformCompanyController extends Controller
     public function resendManagerInvitation(
         Request $request,
         string $companyId,
-        \App\Services\UserInvitationService $invitationService,
+        UserInvitationService $invitationService,
     ): RedirectResponse {
         DB::statement('SET search_path TO public');
 
         $company = Company::query()->findOrFail($companyId);
 
         DB::statement('SET search_path TO shared_tenants,public');
-        $managerEmployee = \App\Models\Employee::query()
+        $managerEmployee = Employee::query()
             ->withoutGlobalScopes()
             ->where('company_id', $company->id)
             ->where('role', 'manager')
@@ -197,6 +199,7 @@ class PlatformCompanyController extends Controller
 
         if ($managerEmployee === null) {
             DB::statement('SET search_path TO public');
+
             return back()->withErrors(['resend' => 'Aucun manager principal trouve pour cette societe.']);
         }
 

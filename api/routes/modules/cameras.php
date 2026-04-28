@@ -57,4 +57,4 @@ Route::middleware(['throttle:600,1'])
 
 // Viewer public avec token tiers (?t=<opaque>). Pas d'auth utilisateur.
 Route::middleware(['throttle:api'])
-    ->get('/view/cam', PublicCameraViewerController::class);
+    ->get('/view/cam', [PublicCameraViewerController::class, '__invoke']);

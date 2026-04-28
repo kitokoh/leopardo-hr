@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 ///
 /// Source de verite cote mobile des couleurs Leopardo RH.
 /// Toute modification doit etre repercutee dans :
-///   - api/tailwind.config.js (web)
-///   - docs/COULEURS.md (doc)
+///   - la couche de tokens web
+///   - docs/REFERENTIEL_PRODUIT/COULEURS.md (doc)
 ///
 /// Jamais de valeur hex hardcodee dans les ecrans : toujours passer par
 /// AppColors.* pour garder l'alignement mobile <-> web.
@@ -44,7 +44,9 @@ class AppColors {
   static const Color cardLight = Color(0xFFF8FAFC); // slate-50
   static const Color borderLight = Color(0xFFE2E8F0); // slate-200
 
-  static const Color border = Color(0xFFE2E8F0); // slate-200 (alias de borderLight)
+  static const Color border = Color(
+    0xFFE2E8F0,
+  ); // slate-200 (alias de borderLight)
 
   static const Color bgDark = Color(0xFF0F172A); // slate-900
   static const Color cardDark = Color(0xFF1E293B); // slate-800
@@ -53,10 +55,39 @@ class AppColors {
   static const Color textLight = Color(0xFF0F172A); // slate-900 sur bg clair
   static const Color textMuted = Color(0xFF64748B); // slate-500 (muted clair)
   static const Color textDark = Color(0xFFF1F5F9); // slate-100 sur bg sombre
-  static const Color textMutedDark = Color(0xFF94A3B8); // slate-400 (muted sombre)
+  static const Color textMutedDark = Color(
+    0xFF94A3B8,
+  ); // slate-400 (muted sombre)
 
   /// @Deprecated Utilisez [textDark]. Conserve pour compat avec [AppTheme.textPrimary].
   static const Color textOnDark = textDark;
+
+  static bool isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static Color backgroundFor(BuildContext context) =>
+      isDark(context) ? bgDark : bgLight;
+
+  static Color surfaceFor(BuildContext context) =>
+      isDark(context) ? cardDark : cardLight;
+
+  static Color borderFor(BuildContext context) =>
+      isDark(context) ? borderDark : borderLight;
+
+  static Color textPrimaryFor(BuildContext context) =>
+      isDark(context) ? textDark : textLight;
+
+  static Color textSecondaryFor(BuildContext context) =>
+      isDark(context) ? textMutedDark : textMuted;
+
+  static Color tint(
+    BuildContext context,
+    Color color, {
+    double lightAlpha = 0.12,
+    double darkAlpha = 0.18,
+  }) {
+    return color.withValues(alpha: isDark(context) ? darkAlpha : lightAlpha);
+  }
 
   // ─── Helpers domaine ────────────────────────────────────────────────────
   /// Retourne la couleur principale d'un domaine module.

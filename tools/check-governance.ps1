@@ -14,6 +14,20 @@ function Pass([string]$Message) {
     Write-Host "OK: $Message" -ForegroundColor Green
 }
 
+function Assert-Contains([string]$Path, [string]$Pattern, [string]$FailureMessage) {
+    $content = Get-Content $Path -Raw
+    if ($content -notmatch $Pattern) {
+        Fail $FailureMessage
+    }
+}
+
+function Assert-NotContains([string]$Path, [string]$Pattern, [string]$FailureMessage) {
+    $content = Get-Content $Path -Raw
+    if ($content -match $Pattern) {
+        Fail $FailureMessage
+    }
+}
+
 Write-Host "Running governance checks on diff $BaseRef..$HeadRef"
 
 $changed = git diff --name-only $BaseRef $HeadRef
@@ -26,6 +40,9 @@ $requiredFiles = @(
     "PILOTAGE.md",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/BRANCH_PROTECTION_REQUIRED.md",
+    ".github/workflows/phpstan-baseline.yml",
+    "api/phpstan.neon",
+    "api/phpstan-baseline.neon",
     "docs/notes/archive/INDEX_CANONIQUE.md",
     "docs/notes/archive/BACKLOG_PHASE1_UNIQUE.md",
     "docs/GESTION_PROJET/GARDE_FOUS.md",
@@ -45,7 +62,25 @@ foreach ($f in $requiredFiles) {
 }
 Pass "All required governance files exist."
 
-$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1|ORCHESTRATION_MAITRE\.md|08_FEUILLE_DE_ROUTE\.md)'
+$historicalFiles = @{
+    "docs/notes/archive/BACKLOG_PHASE1_UNIQUE.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/INDEX_CANONIQUE.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/CONTEXTE_SESSION_IA.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/JOURNAL_DE_BORD.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/SUIVI_PROMPTS.md" = "REMPLACE PAR PILOTAGE\.md"
+}
+
+foreach ($entry in $historicalFiles.GetEnumerator()) {
+    Assert-Contains $entry.Key $entry.Value "Historical marker missing in $($entry.Key)"
+}
+Pass "Historical canonical redirects are intact."
+
+Assert-Contains ".github/BRANCH_PROTECTION_REQUIRED.md" 'CodeQL \(Actions\)' 'Branch protection doc must reference CodeQL (Actions).'
+Assert-NotContains ".github/BRANCH_PROTECTION_REQUIRED.md" 'CodeQL \(Backend\)' 'Branch protection doc still references the obsolete CodeQL (Backend) label.'
+Assert-Contains ".github/BRANCH_PROTECTION_REQUIRED.md" 'Backend Quality \(Pint \+ PHP Syntax \+ PHPStan/Larastan\)' 'Branch protection doc must reference the PHPStan/Larastan quality gate.'
+Pass "Branch protection guidance matches the active checks."
+
+$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1|08_FEUILLE_DE_ROUTE\.md)'
 $requiresChangelog = $false
 foreach ($line in $changed) {
     if ($line -match $criticalPattern) {

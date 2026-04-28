@@ -84,7 +84,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::get('/payrolls/{payroll}', [PayrollController::class, 'show'])->whereNumber('payroll');
     Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
     Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
-    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validate'])->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validatePayroll'])->whereNumber('payroll');
     Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->whereNumber('payroll');
 
     // ── Module 4 — HR Referentials ────────────────────────────────────────────

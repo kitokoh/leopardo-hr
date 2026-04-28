@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\DTOs\CheckInDTO;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceTodayRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
@@ -230,5 +230,4 @@ class AttendanceController extends Controller
 
         return (new AttendanceLogResource($attendanceLog))->response();
     }
-
 }

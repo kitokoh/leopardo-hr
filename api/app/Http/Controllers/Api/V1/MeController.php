@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
+use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Services\EstimationService;
 use Illuminate\Http\JsonResponse;
@@ -42,7 +42,7 @@ class MeController extends Controller
 
         $dateKey = $dateLocal->toDateString();
 
-        $log = \App\Models\AttendanceLog::query()
+        $log = AttendanceLog::query()
             ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
             ->where('employee_id', $employee->id)
             ->where('date', $dateKey)

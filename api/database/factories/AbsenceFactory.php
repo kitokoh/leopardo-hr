@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\AbsenceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AbsenceFactory extends Factory
@@ -55,7 +56,7 @@ class AbsenceFactory extends Factory
         return $this->state(fn () => ['status' => 'cancelled']);
     }
 
-    public function withType(\App\Models\AbsenceType $type): static
+    public function withType(AbsenceType $type): static
     {
         return $this->state(fn () => ['absence_type_id' => $type->id]);
     }

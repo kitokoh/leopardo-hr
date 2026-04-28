@@ -11,15 +11,77 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DEFAULT_MOBILE_COVERAGE_MIN: "25"
 
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Detect Changed Areas
+    runs-on: ubuntu-latest
+    outputs:
+      api_changed: ${{ steps.changes.outputs.api_changed }}
+      mobile_changed: ${{ steps.changes.outputs.mobile_changed }}
+      web_changed: ${{ steps.changes.outputs.web_changed }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed directories
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          changed_files=""
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            changed_files="$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")"
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
+            if [ -n "${BEFORE}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
+              changed_files="$(git diff --name-only "${BEFORE}" "${AFTER}")"
+            else
+              changed_files="$(git show --name-only --pretty='' "${AFTER}")"
+            fi
+          fi
+
+          api_changed=false
+          mobile_changed=false
+          web_changed=false
+
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(api/|\.github/workflows/tests\.yml|\.github/workflows/phpstan-baseline\.yml)'; then
+            api_changed=true
+          fi
+
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(mobile/|\.github/workflows/tests\.yml)'; then
+            mobile_changed=true
+          fi
+
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(web/|\.github/workflows/tests\.yml)'; then
+            web_changed=true
+          fi
+
+          echo "api_changed=${api_changed}" >> "$GITHUB_OUTPUT"
+          echo "mobile_changed=${mobile_changed}" >> "$GITHUB_OUTPUT"
+          echo "web_changed=${web_changed}" >> "$GITHUB_OUTPUT"
+          echo "API changed: ${api_changed}"
+          echo "Mobile changed: ${mobile_changed}"
+          echo "Web changed: ${web_changed}"
+
   backend-tests:
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
 
     services:
       postgres:
@@ -146,6 +208,8 @@ jobs:
   backend-security:
     name: Backend Security (Composer Audit)
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
 
     steps:
       - name: Checkout code
@@ -161,9 +225,111 @@ jobs:
         working-directory: ./api
         run: composer audit --locked --no-dev
 
+  backend-quality:
+    name: Backend Quality (Pint + PHP Syntax + PHPStan/Larastan)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: phpstan, larastan/larastan
+          coverage: none
+
+      - name: Validate composer.json
+        id: validate_composer
+        working-directory: ./api
+        run: composer validate --no-check-publish --strict
+
+      - name: Install Composer dependencies
+        id: install_composer
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run Pint in test mode
+        id: pint
+        working-directory: ./api
+        run: ./vendor/bin/pint --test
+
+      - name: Lint PHP source files
+        id: php_lint
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t php_files < <(find app bootstrap config database public routes tests -type f -name '*.php' | sort)
+          for file in "${php_files[@]}"; do
+            php -l "$file" >/dev/null
+          done
+
+      - name: Run PHPStan + Larastan
+        id: phpstan
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer_home="$(composer global config home --quiet)"
+          cat > phpstan.ci.neon <<EOF
+          includes:
+              - phpstan.neon
+              - ${composer_home}/vendor/larastan/larastan/extension.neon
+          EOF
+          mkdir -p storage/test-results
+          phpstan analyse -c phpstan.ci.neon --no-progress --error-format=raw | tee storage/test-results/phpstan.txt
+
+      - name: Build backend quality summary
+        if: always()
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p storage/test-results
+          findings="0"
+          if [[ -f storage/test-results/phpstan.txt ]]; then
+            findings="$(awk 'END { print NR }' storage/test-results/phpstan.txt)"
+          fi
+          cat > storage/test-results/backend-quality-summary.md <<EOF
+          - Composer validate: ${{ steps.validate_composer.outcome }}
+          - Composer install: ${{ steps.install_composer.outcome }}
+          - Pint: ${{ steps.pint.outcome }}
+          - PHP syntax lint: ${{ steps.php_lint.outcome }}
+          - PHPStan/Larastan: ${{ steps.phpstan.outcome }}
+          - PHPStan findings captured: ${findings}
+          - Baseline support: api/phpstan.neon + api/phpstan-baseline.neon
+          EOF
+
+      - name: Upload backend quality summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-quality-summary
+          path: api/storage/test-results/backend-quality-summary.md
+          if-no-files-found: error
+
+      - name: Upload backend quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-quality-reports
+          path: |
+            api/storage/test-results/phpstan.txt
+            api/storage/test-results/backend-quality-summary.md
+            api/phpstan.neon
+            api/phpstan-baseline.neon
+          if-no-files-found: ignore
+
   mobile-tests:
     name: Mobile Flutter (Stable Channel)
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.mobile_changed == 'true'
 
     steps:
       - name: Checkout code
@@ -171,65 +337,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Detect mobile workspace and changes
-        id: mobile
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [ -f "mobile/pubspec.yaml" ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          CHANGED=false
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE_REF="${{ github.event.pull_request.base.ref }}"
-            git fetch --no-tags --prune --depth=1 origin "${BASE_REF}"
-            if git diff --name-only "origin/${BASE_REF}...HEAD" | grep -q '^mobile/'; then
-              CHANGED=true
-            fi
-          else
-            BEFORE="${{ github.event.before }}"
-            AFTER="${{ github.sha }}"
-            if [ -n "${BEFORE}" ] && [ "${BEFORE}" != "0000000000000000000000000000000000000000" ]; then
-              if git diff --name-only "${BEFORE}" "${AFTER}" | grep -q '^mobile/'; then
-                CHANGED=true
-              fi
-            else
-              if git show --name-only --pretty="" "${AFTER}" | grep -q '^mobile/'; then
-                CHANGED=true
-              fi
-            fi
-          fi
-
-          echo "changed=${CHANGED}" >> "$GITHUB_OUTPUT"
-          echo "Mobile changed: ${CHANGED}"
-
       - name: Setup Java 17
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Flutter
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Install dependencies
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         working-directory: ./mobile
         run: flutter pub get
 
       - name: Place google-services.json if provided in repo
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -243,40 +367,131 @@ jobs:
           fi
 
       - name: Check formatting
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
+        id: mobile_format
         working-directory: ./mobile
-        continue-on-error: true
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
+        id: mobile_analyze
         working-directory: ./mobile
-        continue-on-error: true
         run: flutter analyze --fatal-infos
 
       - name: Run Flutter tests
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
+        id: mobile_tests
         working-directory: ./mobile
-        run: flutter test --coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter test --coverage --machine > test-results.json
+
+      - name: Build mobile coverage summary
+        id: mobile_coverage_summary
+        working-directory: ./mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f coverage/lcov.info ]]; then
+            COVERAGE_LINE="$(awk '
+              /^LF:/ { lf += substr($0, 4) }
+              /^LH:/ { lh += substr($0, 4) }
+              END {
+                if (lf > 0) {
+                  printf "Mobile line coverage: %.2f%% (%d/%d)\n", (lh / lf) * 100, lh, lf;
+                } else {
+                  print "Mobile line coverage: unavailable";
+                }
+              }
+            ' coverage/lcov.info)"
+            printf "%s\n" "$COVERAGE_LINE" > coverage/summary.txt
+            printf "%s\n" "$COVERAGE_LINE"
+          fi
+
+      - name: Enforce mobile coverage threshold
+        id: mobile_coverage_gate
+        working-directory: ./mobile
+        shell: bash
+        env:
+          MOBILE_COVERAGE_MIN: ${{ vars.MOBILE_COVERAGE_MIN }}
+        run: |
+          set -euo pipefail
+          threshold="${MOBILE_COVERAGE_MIN:-${DEFAULT_MOBILE_COVERAGE_MIN}}"
+          if [[ ! -f coverage/lcov.info ]]; then
+            echo "Missing coverage/lcov.info"
+            exit 1
+          fi
+
+          read -r covered total percent <<< "$(awk '
+            BEGIN { lh = 0; lf = 0 }
+            /^LH:/ { lh += substr($0, 4) }
+            /^LF:/ { lf += substr($0, 4) }
+            END {
+              if (lf > 0) {
+                printf "%d %d %.2f", lh, lf, (lh / lf) * 100;
+              } else {
+                printf "0 0 0.00";
+              }
+            }
+          ' coverage/lcov.info)"
+
+          cat > coverage/threshold.txt <<EOF
+          Threshold: ${threshold}%
+          Result: ${percent}% (${covered}/${total})
+          EOF
+
+          awk -v percent="${percent}" -v threshold="${threshold}" 'BEGIN { exit ((percent + 0) < (threshold + 0)) ? 1 : 0 }'
 
       - name: Build Android smoke artifact
-        if: steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
+        id: mobile_smoke_build
         working-directory: ./mobile
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
+      - name: Build mobile quality summary
+        if: always()
+        working-directory: ./mobile
+        shell: bash
+        env:
+          MOBILE_COVERAGE_MIN: ${{ vars.MOBILE_COVERAGE_MIN }}
+        run: |
+          set -euo pipefail
+          threshold="${MOBILE_COVERAGE_MIN:-${DEFAULT_MOBILE_COVERAGE_MIN}}"
+          summary_file="quality-summary.md"
+          {
+            echo "- Workspace detected: true"
+            echo "- Mobile changes detected: true"
+            echo "- Format: ${{ steps.mobile_format.outcome }}"
+            echo "- Analyze: ${{ steps.mobile_analyze.outcome }}"
+            echo "- Tests: ${{ steps.mobile_tests.outcome }}"
+            echo "- Coverage gate: ${{ steps.mobile_coverage_gate.outcome }}"
+            echo "- Coverage threshold: ${threshold}%"
+            if [[ -f coverage/summary.txt ]]; then
+              echo "- $(cat coverage/summary.txt)"
+            else
+              echo "- Mobile line coverage: unavailable"
+            fi
+            echo "- Smoke build: ${{ steps.mobile_smoke_build.outcome }}"
+          } > "${summary_file}"
+
+      - name: Upload mobile quality summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-quality-summary
+          path: mobile/quality-summary.md
+          if-no-files-found: error
+
       - name: Upload mobile test artifacts
-        if: always() && steps.mobile.outputs.exists == 'true' && steps.mobile.outputs.changed == 'true'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mobile-test-reports
           path: |
             mobile/coverage/lcov.info
+            mobile/coverage/summary.txt
+            mobile/coverage/threshold.txt
+            mobile/test-results.json
+            mobile/quality-summary.md
             mobile/test/**/*
           if-no-files-found: ignore
-
-      - name: Skip mobile checks (no mobile change)
-        if: steps.mobile.outputs.exists != 'true' || steps.mobile.outputs.changed != 'true'
-        run: echo "No mobile changes detected for this push/PR; mobile pipeline skipped."
 
   governance-gates:
     name: Governance Gates (changelog + canonical files)
@@ -305,15 +520,23 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Review dependency changes
-        uses: actions/dependency-review-action@v4
+        id: dependency_review
         continue-on-error: true
+        uses: actions/dependency-review-action@v4
+
+      - name: Note dependency review unavailability
+        if: steps.dependency_review.outcome == 'failure'
+        run: |
+          echo "Dependency review unavailable on this repository. Enable GitHub Dependency Graph/security analysis to enforce this gate."
 
   notify:
     name: Notify Result
     runs-on: ubuntu-latest
     needs:
+      - detect-changes
       - backend-tests
       - backend-security
+      - backend-quality
       - mobile-tests
       - governance-gates
       - dependency-review
@@ -326,11 +549,27 @@ jobs:
       CI_REPORT_FROM: ${{ vars.CI_REPORT_FROM }}
 
     steps:
+      - name: Download backend quality summary
+        if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.backend-quality.result)
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-quality-summary
+          path: artifacts/backend-quality-summary
+
+      - name: Download mobile quality summary
+        if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.mobile-tests.result)
+        uses: actions/download-artifact@v4
+        with:
+          name: mobile-quality-summary
+          path: artifacts/mobile-quality-summary
+
       - name: Build CI report
         id: report
         shell: bash
         run: |
           set -euo pipefail
+          BACKEND_SUMMARY="artifacts/backend-quality-summary/backend-quality-summary.md"
+          MOBILE_SUMMARY="artifacts/mobile-quality-summary/quality-summary.md"
           cat > ci-report.md <<EOF
           # CI Report — Leopardo RH
 
@@ -345,6 +584,7 @@ jobs:
           ## Job Results
           - Backend Tests: ${{ needs.backend-tests.result }}
           - Backend Security: ${{ needs.backend-security.result }}
+          - Backend Quality: ${{ needs.backend-quality.result }}
           - Mobile Tests: ${{ needs.mobile-tests.result }}
           - Governance Gates: ${{ needs.governance-gates.result }}
           - Dependency Review: ${{ needs.dependency-review.result }}
@@ -352,12 +592,38 @@ jobs:
           ## Scenario References
           - Backend API scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md
           - Mobile Flutter scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md
+          - Backend quality artifacts: backend-quality-reports
+          - Backend quality summary artifact: backend-quality-summary
+          - Mobile quality artifacts: mobile-test-reports
+          - Mobile quality summary artifact: mobile-quality-summary
 
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
           - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile
           - Gaps prioritaires a fermer: register public, conges, payroll, blocked user dedie
+
+          ## Quality Notes
+          - PHP static analysis: PHPStan + Larastan with versioned baseline support
+          - Mobile tests: machine-readable output + coverage summary artifact
           EOF
+
+          if [[ -f "${BACKEND_SUMMARY}" ]]; then
+            {
+              echo
+              echo "## Backend Quality Summary"
+              cat "${BACKEND_SUMMARY}"
+            } >> ci-report.md
+          fi
+
+          if [[ -f "${MOBILE_SUMMARY}" ]]; then
+            {
+              echo
+              echo "## Mobile Quality Summary"
+              cat "${MOBILE_SUMMARY}"
+            } >> ci-report.md
+          fi
+
+          cat ci-report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload CI report artifact
         if: always()
@@ -383,9 +649,10 @@ jobs:
 
       - name: All checks passed
         if: |
-          needs.backend-tests.result == 'success' &&
-          needs.backend-security.result == 'success' &&
-          needs.mobile-tests.result == 'success' &&
+          (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') &&
+          (needs.backend-security.result == 'success' || needs.backend-security.result == 'skipped') &&
+          (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') &&
+          (needs.mobile-tests.result == 'success' || needs.mobile-tests.result == 'skipped') &&
           (needs.governance-gates.result == 'success' || needs.governance-gates.result == 'skipped') &&
           (needs.dependency-review.result == 'success' || needs.dependency-review.result == 'skipped')
         run: echo "All checks passed - PR can be merged or main can be deployed"
@@ -394,10 +661,10 @@ jobs:
         if: |
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-tests.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-security.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-quality.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.mobile-tests.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.governance-gates.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.dependency-review.result)
         run: |
           echo "Checks failed - merge or deployment blocked"
           exit 1
-

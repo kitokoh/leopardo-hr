@@ -15,10 +15,10 @@ class AbsenceIndexRequest extends FormRequest
     {
         return [
             'employee_id' => ['nullable', 'integer', 'min:1'],
-            'status'      => ['nullable', 'in:pending,approved,rejected,cancelled'],
-            'month'       => ['nullable', 'integer', 'between:1,12'],
-            'year'        => ['nullable', 'integer', 'min:2000'],
-            'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
+            'status' => ['nullable', 'in:pending,approved,rejected,cancelled'],
+            'month' => ['nullable', 'integer', 'between:1,12'],
+            'year' => ['nullable', 'integer', 'min:2000'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
 }

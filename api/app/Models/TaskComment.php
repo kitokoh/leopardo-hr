@@ -11,10 +11,13 @@ class TaskComment extends Model
     use BelongsToCompany;
 
     protected $table = 'task_comments';
+
     public $timestamps = false;
+
     const CREATED_AT = 'created_at';
 
     protected $fillable = ['company_id', 'task_id', 'author_id', 'content'];
+
     protected $casts = ['created_at' => 'datetime'];
 
     public function task(): BelongsTo

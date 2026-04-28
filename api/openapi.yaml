@@ -2,7 +2,7 @@ openapi: "3.0.3"
 
 info:
   title: "Leopardo RH API"
-  version: "main-2026-04-26"
+  version: "4.1.81-2026-04-28"
   description: |
     OpenAPI alignee sur la surface API reellement exposee par origin/main.
 
@@ -31,6 +31,12 @@ security:
 tags:
   - name: "Health"
   - name: "Auth"
+  - name: "Payrolls"
+  - name: "HR Referentials"
+  - name: "Notifications"
+  - name: "Projects"
+  - name: "Tasks"
+  - name: "Evaluations"
   - name: "Platform"
   - name: "Employees"
   - name: "Attendance"
@@ -1330,6 +1336,685 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /projects:
+    get:
+      tags: ["Projects"]
+      summary: "Lister les projets"
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["active", "completed", "archived"]
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des projets"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    post:
+      tags: ["Projects"]
+      summary: "Creer un projet"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreProjectRequest"
+      responses:
+        "201":
+          description: "Projet cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /projects/{project}:
+    get:
+      tags: ["Projects"]
+      summary: "Voir un projet"
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: "Detail du projet"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Projects"]
+      summary: "Mettre a jour un projet"
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectRequest"
+      responses:
+        "200":
+          description: "Projet mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["Projects"]
+      summary: "Mettre a jour partiellement un projet"
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectRequest"
+      responses:
+        "200":
+          description: "Projet mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Project"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Projects"]
+      summary: "Supprimer un projet"
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: "Projet supprime"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Project deleted successfully"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /tasks:
+    get:
+      tags: ["Tasks"]
+      summary: "Lister les taches"
+      parameters:
+        - name: project_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: ["low", "normal", "high", "urgent"]
+        - name: assigned_to
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des taches"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    post:
+      tags: ["Tasks"]
+      summary: "Creer une tache"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreTaskRequest"
+      responses:
+        "201":
+          description: "Tache creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /tasks/{task}:
+    get:
+      tags: ["Tasks"]
+      summary: "Voir une tache"
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: "Detail de la tache"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Tasks"]
+      summary: "Mettre a jour une tache"
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: "Tache mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["Tasks"]
+      summary: "Mettre a jour partiellement une tache"
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+      responses:
+        "200":
+          description: "Tache mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Tasks"]
+      summary: "Supprimer une tache"
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: "Tache supprimee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Task deleted successfully"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /tasks/{task}/comments:
+    post:
+      tags: ["Tasks"]
+      summary: "Ajouter un commentaire sur une tache"
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreTaskCommentRequest"
+      responses:
+        "201":
+          description: "Commentaire cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TaskComment"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /evaluations:
+    get:
+      tags: ["Evaluations"]
+      summary: "Lister les evaluations"
+      parameters:
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: evaluator_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: period
+          in: query
+          schema:
+            type: string
+            maxLength: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["draft", "submitted", "acknowledged"]
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des evaluations"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    post:
+      tags: ["Evaluations"]
+      summary: "Creer une evaluation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreEvaluationRequest"
+      responses:
+        "201":
+          description: "Evaluation creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Evaluation"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Validation ou conflit metier"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /evaluations/{evaluation}:
+    get:
+      tags: ["Evaluations"]
+      summary: "Voir une evaluation"
+      parameters:
+        - $ref: "#/components/parameters/EvaluationId"
+      responses:
+        "200":
+          description: "Detail de l'evaluation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Evaluation"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Evaluations"]
+      summary: "Mettre a jour une evaluation"
+      parameters:
+        - $ref: "#/components/parameters/EvaluationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEvaluationRequest"
+      responses:
+        "200":
+          description: "Evaluation mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Evaluation"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Validation ou regle metier"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+    patch:
+      tags: ["Evaluations"]
+      summary: "Mettre a jour partiellement une evaluation"
+      parameters:
+        - $ref: "#/components/parameters/EvaluationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEvaluationRequest"
+      responses:
+        "200":
+          description: "Evaluation mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Evaluation"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Validation ou regle metier"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+    delete:
+      tags: ["Evaluations"]
+      summary: "Supprimer une evaluation"
+      parameters:
+        - $ref: "#/components/parameters/EvaluationId"
+      responses:
+        "200":
+          description: "Evaluation supprimee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Evaluation deleted successfully"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Seule une evaluation draft est supprimable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /evaluations/{evaluation}/submit:
+    put:
+      tags: ["Evaluations"]
+      summary: "Soumettre une evaluation"
+      parameters:
+        - $ref: "#/components/parameters/EvaluationId"
+      responses:
+        "200":
+          description: "Evaluation soumise"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Evaluation"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Seule une evaluation draft peut etre soumise"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /evaluations/{evaluation}/acknowledge:
+    put:
+      tags: ["Evaluations"]
+      summary: "Accuser reception d'une evaluation"
+      parameters:
+        - $ref: "#/components/parameters/EvaluationId"
+      responses:
+        "200":
+          description: "Evaluation accusee de reception"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Evaluation"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Seule une evaluation submitted peut etre accusee de reception"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /notifications:
+    get:
+      tags: ["Notifications"]
+      summary: "Lister les notifications de l'utilisateur courant"
+      parameters:
+        - name: unread_only
+          in: query
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des notifications"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /notifications/read-all:
+    put:
+      tags: ["Notifications"]
+      summary: "Marquer toutes les notifications comme lues"
+      responses:
+        "200":
+          description: "Notifications marquees comme lues"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "All notifications marked as read"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/{notification}/read:
+    put:
+      tags: ["Notifications"]
+      summary: "Marquer une notification comme lue"
+      parameters:
+        - $ref: "#/components/parameters/NotificationId"
+      responses:
+        "200":
+          description: "Notification mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Notification"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /notifications/{notification}:
+    delete:
+      tags: ["Notifications"]
+      summary: "Supprimer une notification"
+      parameters:
+        - $ref: "#/components/parameters/NotificationId"
+      responses:
+        "200":
+          description: "Notification supprimee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Notification deleted successfully"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -1342,6 +2027,30 @@ components:
       bearerFormat: Sanctum
 
   parameters:
+    ProjectId:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: integer
+    NotificationId:
+      name: notification
+      in: path
+      required: true
+      schema:
+        type: integer
+    TaskId:
+      name: task
+      in: path
+      required: true
+      schema:
+        type: integer
+    EvaluationId:
+      name: evaluation
+      in: path
+      required: true
+      schema:
+        type: integer
     EmployeeId:
       name: employee
       in: path
@@ -1879,10 +2588,505 @@ components:
         meta:
           $ref: "#/components/schemas/PaginationMeta"
 
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        members:
+          type: array
+          nullable: true
+          items:
+            type: integer
+        status:
+          type: string
+          enum: ["active", "completed", "archived"]
+        created_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    ProjectIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    StoreProjectRequest:
+      type: object
+      required: ["name"]
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        members:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            minimum: 1
+        status:
+          type: string
+          nullable: true
+          enum: ["active", "completed", "archived"]
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        description:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        members:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            minimum: 1
+        status:
+          type: string
+          nullable: true
+          enum: ["active", "completed", "archived"]
+
+    TaskCommentAuthorMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+
+    TaskComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        task_id:
+          type: integer
+        author_id:
+          type: integer
+        author:
+          allOf:
+            - $ref: "#/components/schemas/TaskCommentAuthorMini"
+          nullable: true
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+        assigned_to:
+          type: array
+          nullable: true
+          items:
+            type: integer
+        project_id:
+          type: integer
+          nullable: true
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+        priority:
+          type: string
+          enum: ["low", "normal", "high", "urgent"]
+        status:
+          type: string
+          enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+        category:
+          type: string
+          nullable: true
+        visibility:
+          type: string
+          enum: ["private", "visible"]
+        checklist:
+          type: array
+          nullable: true
+          items: {}
+        comments:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/TaskComment"
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaskIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    StoreTaskRequest:
+      type: object
+      required: ["title", "due_date"]
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        assigned_to:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            minimum: 1
+        project_id:
+          type: integer
+          nullable: true
+          minimum: 1
+        due_date:
+          type: string
+          format: date
+        priority:
+          type: string
+          nullable: true
+          enum: ["low", "normal", "high", "urgent"]
+        category:
+          type: string
+          nullable: true
+          maxLength: 100
+        visibility:
+          type: string
+          nullable: true
+          enum: ["private", "visible"]
+        checklist:
+          type: array
+          nullable: true
+          items: {}
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        assigned_to:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+        project_id:
+          type: integer
+          nullable: true
+          minimum: 1
+        due_date:
+          type: string
+          format: date
+        priority:
+          type: string
+          enum: ["low", "normal", "high", "urgent"]
+        status:
+          type: string
+          enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+        category:
+          type: string
+          nullable: true
+          maxLength: 100
+        visibility:
+          type: string
+          enum: ["private", "visible"]
+        checklist:
+          type: array
+          nullable: true
+          items: {}
+
+    StoreTaskCommentRequest:
+      type: object
+      required: ["content"]
+      properties:
+        content:
+          type: string
+          maxLength: 5000
+
+    EvaluationEmployeeMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    EvaluationEvaluatorMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+
+    EvaluationCriterion:
+      type: object
+      required: ["label", "score"]
+      properties:
+        label:
+          type: string
+        score:
+          type: number
+          format: float
+
+    Evaluation:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee:
+          allOf:
+            - $ref: "#/components/schemas/EvaluationEmployeeMini"
+          nullable: true
+        evaluator_id:
+          type: integer
+        evaluator:
+          allOf:
+            - $ref: "#/components/schemas/EvaluationEvaluatorMini"
+          nullable: true
+        period:
+          type: string
+        score:
+          type: number
+          format: float
+          nullable: true
+        criteria:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/EvaluationCriterion"
+        strengths:
+          type: string
+          nullable: true
+        improvements:
+          type: string
+          nullable: true
+        overall_comment:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ["draft", "submitted", "acknowledged"]
+        acknowledged_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    EvaluationIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Evaluation"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    StoreEvaluationRequest:
+      type: object
+      required: ["employee_id", "period"]
+      properties:
+        employee_id:
+          type: integer
+          minimum: 1
+        period:
+          type: string
+          maxLength: 20
+        score:
+          type: number
+          format: float
+          nullable: true
+          minimum: 0
+          maximum: 5
+        criteria:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/EvaluationCriterion"
+        strengths:
+          type: string
+          nullable: true
+          maxLength: 2000
+        improvements:
+          type: string
+          nullable: true
+          maxLength: 2000
+        overall_comment:
+          type: string
+          nullable: true
+          maxLength: 2000
+
+    UpdateEvaluationRequest:
+      type: object
+      properties:
+        score:
+          type: number
+          format: float
+          nullable: true
+          minimum: 0
+          maximum: 5
+        criteria:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/EvaluationCriterion"
+        strengths:
+          type: string
+          nullable: true
+          maxLength: 2000
+        improvements:
+          type: string
+          nullable: true
+          maxLength: 2000
+        overall_comment:
+          type: string
+          nullable: true
+          maxLength: 2000
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+          nullable: true
+        data:
+          type: object
+          nullable: true
+          additionalProperties: true
+        is_read:
+          type: boolean
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    NotificationIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
+        meta:
+          type: object
+          properties:
+            current_page:
+              type: integer
+            last_page:
+              type: integer
+            per_page:
+              type: integer
+            total:
+              type: integer
+            unread_count:
+              type: integer
+
     PaginationMeta:
       type: object
       properties:
         current_page:
+          type: integer
+        last_page:
           type: integer
         per_page:
           type: integer

@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\AttendanceKiosk;
 use App\DTOs\CheckInDTO;
+use App\Models\AttendanceKiosk;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\DB;
 
 class KioskAttendanceService
 {

@@ -22,6 +22,7 @@ final readonly class CheckInDTO
     public static function fromRequest(CheckInRequest|CheckOutRequest $request): self
     {
         $validated = $request->validated();
+
         return new self(
             gps_lat: $validated['gps_lat'] ?? null,
             gps_lng: $validated['gps_lng'] ?? null,

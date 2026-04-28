@@ -3,11 +3,11 @@
 namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Services\CameraService;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraAccessTokenRequest;
-use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

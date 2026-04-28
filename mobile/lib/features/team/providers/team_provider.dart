@@ -8,12 +8,16 @@ final employeeRepositoryProvider = Provider<EmployeeRepository>((ref) {
   return EmployeeRepository(apiClient);
 });
 
-final teamListProvider = FutureProvider.autoDispose<List<Employee>>((ref) async {
+final teamListProvider = FutureProvider.autoDispose<List<Employee>>((
+  ref,
+) async {
   final repo = ref.watch(employeeRepositoryProvider);
   return repo.list();
 });
 
-final invitationsListProvider = FutureProvider.autoDispose<List<Invitation>>((ref) async {
+final invitationsListProvider = FutureProvider.autoDispose<List<Invitation>>((
+  ref,
+) async {
   final repo = ref.watch(employeeRepositoryProvider);
   return repo.listInvitations();
 });

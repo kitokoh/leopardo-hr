@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class TenantManager
 {
     private string $previousPath = 'public';
+
     private ?Company $previousCompany = null;
 
     /**
@@ -24,7 +25,7 @@ class TenantManager
             $currentPath = DB::selectOne('SHOW search_path');
             $this->previousPath = $currentPath->search_path ?? 'public';
 
-            DB::statement('SET search_path TO ' . $company->getSafeSearchPath());
+            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
         }
 
         app()->instance('current_company', $company);
@@ -36,7 +37,7 @@ class TenantManager
     public function resetToPrevious(): void
     {
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO ' . $this->previousPath);
+            DB::statement('SET search_path TO '.$this->previousPath);
         }
 
         $this->restoreCompanyContext($this->previousCompany);
@@ -64,7 +65,7 @@ class TenantManager
             return $cb();
         } finally {
             if (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET search_path TO ' . $oldPath);
+                DB::statement('SET search_path TO '.$oldPath);
             }
 
             $this->restoreCompanyContext($oldCompany);

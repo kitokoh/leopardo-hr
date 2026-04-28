@@ -11,10 +11,10 @@ class EmployeeRepository {
   EmployeeRepository(this.apiClient);
 
   Future<List<Employee>> list({int page = 1, int perPage = 50}) async {
-    final response = await apiClient.dio.get('/employees', queryParameters: {
-      'page': page,
-      'per_page': perPage,
-    });
+    final response = await apiClient.dio.get(
+      '/employees',
+      queryParameters: {'page': page, 'per_page': perPage},
+    );
     final items = response.data['data'] as List;
     return items
         .map((e) => Employee.fromJson((e as Map).cast<String, dynamic>()))
@@ -23,7 +23,9 @@ class EmployeeRepository {
 
   Future<Employee> show(int employeeId) async {
     final response = await apiClient.dio.get('/employees/$employeeId');
-    return Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    return Employee.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
   }
 
   Future<Employee> create({
@@ -56,18 +58,28 @@ class EmployeeRepository {
     }
 
     final response = await apiClient.dio.post('/employees', data: data);
-    return Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    return Employee.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
   }
 
   Future<Employee> update(int employeeId, Map<String, dynamic> patch) async {
-    final response = await apiClient.dio.patch('/employees/$employeeId', data: patch);
-    return Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    final response = await apiClient.dio.patch(
+      '/employees/$employeeId',
+      data: patch,
+    );
+    return Employee.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
   }
 
   Future<void> archive(int employeeId, {String? reason}) async {
-    await apiClient.dio.post('/employees/$employeeId/archive', data: {
-      if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
-    });
+    await apiClient.dio.post(
+      '/employees/$employeeId/archive',
+      data: {
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+      },
+    );
   }
 
   Future<List<Invitation>> listInvitations() async {

@@ -1,0 +1,88 @@
+name: Backend - PHPStan Baseline
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  generate-baseline:
+    name: Generate PHPStan/Larastan baseline artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: phpstan, larastan/larastan
+          coverage: none
+
+      - name: Validate composer.json
+        working-directory: ./api
+        run: composer validate --no-check-publish --strict
+
+      - name: Install Composer dependencies
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Generate baseline candidate
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer_home="$(composer global config home --quiet)"
+          cat > phpstan.ci.neon <<EOF
+          includes:
+              - phpstan.neon
+              - ${composer_home}/vendor/larastan/larastan/extension.neon
+          EOF
+
+          phpstan analyse -c phpstan.ci.neon --no-progress --generate-baseline=phpstan-generated-baseline.neon || true
+
+          if [[ ! -f phpstan-generated-baseline.neon ]]; then
+            cat > phpstan-generated-baseline.neon <<'EOF'
+          parameters:
+              ignoreErrors: []
+          EOF
+          fi
+
+      - name: Build baseline review note
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > phpstan-baseline-review.md <<EOF
+          # PHPStan Baseline Review
+
+          - Workflow: ${{ github.workflow }}
+          - Run ID: ${{ github.run_id }}
+          - Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Candidate file: api/phpstan-generated-baseline.neon
+          - Current baseline file: api/phpstan-baseline.neon
+
+          ## Review checklist
+          1. Compare the generated candidate with the current baseline.
+          2. Keep only framework-dynamic or currently unavoidable findings.
+          3. Prefer fixing code over adding new ignored errors.
+          4. If the candidate is valid, replace api/phpstan-baseline.neon in a dedicated PR.
+          EOF
+
+      - name: Upload PHPStan baseline candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-generated-baseline
+          path: |
+            api/phpstan-generated-baseline.neon
+            api/phpstan-baseline.neon
+            api/phpstan.neon
+            api/phpstan-baseline-review.md
+          if-no-files-found: error

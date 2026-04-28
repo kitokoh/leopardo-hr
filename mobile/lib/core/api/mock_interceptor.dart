@@ -4,7 +4,10 @@ import 'package:flutter/services.dart';
 
 class MockInterceptor extends Interceptor {
   @override
-  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     // Determine the path to return mock data for
     String mockFile = '';
 
@@ -15,15 +18,21 @@ class MockInterceptor extends Interceptor {
     } else if (options.path.contains('/attendance/check-in')) {
       mockFile = 'mock_attendance_today_B_checked_in.json';
     } else if (options.path.contains('/attendance/check-out')) {
-      return handler.resolve(Response(
-        requestOptions: options,
-        data: {
-          "data": {
-            "id": 5432, "date": "2026-04-15", "check_in": "2026-04-15T07:55:12Z", "check_out": "2026-04-15T17:05:00Z", "status": "ontime"
-          }
-        },
-        statusCode: 200,
-      ));
+      return handler.resolve(
+        Response(
+          requestOptions: options,
+          data: {
+            "data": {
+              "id": 5432,
+              "date": "2026-04-15",
+              "check_in": "2026-04-15T07:55:12Z",
+              "check_out": "2026-04-15T17:05:00Z",
+              "status": "ontime",
+            },
+          },
+          statusCode: 200,
+        ),
+      );
     } else if (options.path.contains('/attendance/today')) {
       // Toggle logic or just return checked in for demonstration
       mockFile = 'mock_attendance_today_A_not_checked.json';
@@ -40,20 +49,18 @@ class MockInterceptor extends Interceptor {
       final data = json.decode(jsonString);
       // Simulate network delay
       await Future.delayed(const Duration(seconds: 1));
-      
+
       return handler.resolve(
-        Response(
-          requestOptions: options,
-          data: data,
-          statusCode: 200,
-        ),
+        Response(requestOptions: options, data: data, statusCode: 200),
       );
     } catch (_) {
-      // If file not found, let it fail 
-      return handler.reject(DioException(
-        requestOptions: options,
-        response: Response(requestOptions: options, statusCode: 404),
-      ));
+      // If file not found, let it fail
+      return handler.reject(
+        DioException(
+          requestOptions: options,
+          response: Response(requestOptions: options, statusCode: 404),
+        ),
+      );
     }
   }
 }

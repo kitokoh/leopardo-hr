@@ -5,7 +5,10 @@ import 'package:leopardo_rh/models/employee.dart';
 
 void main() {
   test('uses render api as default base url when none is provided', () {
-    expect(ApiClient.resolveBaseUrl(), 'https://gestionemployerbackend.onrender.com/api/v1');
+    expect(
+      ApiClient.resolveBaseUrl(),
+      'https://gestionemployerbackend.onrender.com/api/v1',
+    );
   });
 
   test('extracts token from root API payload', () {
@@ -40,7 +43,9 @@ void main() {
       },
     };
 
-    final employee = Employee.fromJson(AuthRepository.extractEmployeeJson(payload));
+    final employee = Employee.fromJson(
+      AuthRepository.extractEmployeeJson(payload),
+    );
 
     expect(AuthRepository.extractToken(payload), 'nested-token');
     expect(employee.companyId, 'company-1');

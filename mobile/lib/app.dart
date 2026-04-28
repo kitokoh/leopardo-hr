@@ -13,6 +13,13 @@ import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_rh/features/home/screens/home_screen.dart';
+import 'package:leopardo_rh/features/modules/screens/modules_screen.dart';
+import 'package:leopardo_rh/features/home/screens/modules_hub_screen.dart';
+import 'package:leopardo_rh/features/absences/screens/absence_list_screen.dart';
+import 'package:leopardo_rh/features/salary_advances/screens/salary_advance_list_screen.dart';
+import 'package:leopardo_rh/features/payrolls/screens/payroll_list_screen.dart';
+import 'package:leopardo_rh/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_rh/features/evaluations/screens/evaluation_list_screen.dart';
 import 'package:leopardo_rh/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_rh/features/team/screens/team_screen.dart';
 
@@ -47,17 +54,35 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
       ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
+        path: '/modules',
+        builder: (context, state) => const ModulesHubScreen(),
+      ),
+      GoRoute(
+        path: '/absences',
+        builder: (context, state) => const AbsenceListScreen(),
+      ),
+      GoRoute(
+        path: '/salary-advances',
+        builder: (context, state) => const SalaryAdvanceListScreen(),
+      ),
+      GoRoute(
+        path: '/payrolls',
+        builder: (context, state) => const PayrollListScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: '/evaluations',
+        builder: (context, state) => const EvaluationListScreen(),
       ),
       GoRoute(
         path: '/attendance',
@@ -71,9 +96,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/me/monthly',
         builder: (context, state) => const MonthlySummaryScreen(),
       ),
+      GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
       GoRoute(
-        path: '/team',
-        builder: (context, state) => const TeamScreen(),
+        path: '/modules/rh',
+        builder: (context, state) => const ModulesScreen(),
       ),
       GoRoute(
         path: '/settings',
@@ -91,14 +117,19 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.languageCode.toLowerCase();
     final languageCode = authState.employee?.language ??
-        (preferences.preferredLanguage.isNotEmpty ? preferences.preferredLanguage : deviceLanguage);
+        (preferences.preferredLanguage.isNotEmpty
+            ? preferences.preferredLanguage
+            : deviceLanguage);
     final isRtl = authState.employee?.isRtl ?? preferences.isRtl;
 
     return MaterialApp.router(
       title: 'Leopardo RH',
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.light,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: Locale(languageCode),

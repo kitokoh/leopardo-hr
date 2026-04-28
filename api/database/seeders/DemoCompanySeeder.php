@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
 class DemoCompanySeeder extends Seeder
 {
     private const SHARED_SCHEMA = 'shared_tenants';
+
     private const PUBLIC_SCHEMA = 'public';
 
     public function run(): void
