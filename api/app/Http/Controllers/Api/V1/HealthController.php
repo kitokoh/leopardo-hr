@@ -139,7 +139,7 @@ class HealthController extends Controller
         }
     }
 
-    private function filesystemDiskName(): string|UnitEnum|null
+    private function filesystemDiskName(): string|UnitEnum
     {
         $disk = config('filesystems.default', 'local');
 

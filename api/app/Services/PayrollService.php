@@ -51,7 +51,8 @@ class PayrollService
         }
 
         $payroll->fill($this->normalizePayrollData($data));
-        $payroll->net_salary = max(0, $this->computeNet($payroll->toArray()));
+        $payrollData = $this->normalizePayrollData($payroll->toArray());
+        $payroll->net_salary = max(0, $this->computeNet($payrollData));
         $payroll->save();
 
         $payroll->refresh();
@@ -162,10 +163,25 @@ class PayrollService
             return [];
         }
 
-        return array_values(array_filter(
-            $items,
-            static fn (mixed $item): bool => is_array($item)
-        ));
+        $lineItems = [];
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $lineItem = [];
+
+            foreach ($item as $key => $value) {
+                if (is_string($key)) {
+                    $lineItem[$key] = $value;
+                }
+            }
+
+            $lineItems[] = $lineItem;
+        }
+
+        return $lineItems;
     }
 
     private function sumLineItems(mixed $items): float

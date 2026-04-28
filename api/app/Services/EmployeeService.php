@@ -39,12 +39,13 @@ class EmployeeService
         }
 
         $payload['status'] = $payload['status'] ?? 'active';
-        $payload['extra_data'] = $this->normalizeExtraData($payload['extra_data'] ?? []);
+        $payload['extra_data'] = $this->normalizeExtraData($this->arrayValue($payload, 'extra_data'));
 
         if ($actor?->isManager() && empty($payload['manager_id'])) {
             $payload['manager_id'] = $actor->id;
         }
 
+        /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
         $employee = Employee::query()->create($payload);
@@ -72,11 +73,13 @@ class EmployeeService
         $isSelfUpdate = $actor->id === $employee->id;
 
         if (! $isManager) {
+            /** @var array<string, mixed> $payload */
             $payload = Arr::only($payload, ['first_name', 'last_name', 'email', 'password']);
         }
 
-        if (array_key_exists('password', $payload) && $payload['password']) {
-            $employee->password_hash = Hash::make($payload['password']);
+        $password = $this->stringValue($payload, 'password');
+        if ($password !== null) {
+            $employee->password_hash = Hash::make($password);
         }
         unset($payload['password']);
 
@@ -93,9 +96,10 @@ class EmployeeService
         }
 
         if (array_key_exists('extra_data', $payload)) {
-            $payload['extra_data'] = $this->normalizeExtraData($payload['extra_data'] ?? []);
+            $payload['extra_data'] = $this->normalizeExtraData($this->arrayValue($payload, 'extra_data'));
         }
 
+        /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload, $employee);
 
         $employee->fill($payload);
@@ -146,9 +150,35 @@ class EmployeeService
             'education_level',
         ];
 
-        return array_filter(
-            Arr::only($extraData, $allowedKeys),
-            static fn ($value): bool => $value !== null && $value !== ''
-        );
+        $normalized = [];
+
+        foreach (Arr::only($extraData, $allowedKeys) as $key => $value) {
+            if (is_string($key) && $value !== null && $value !== '') {
+                $normalized[$key] = $value;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function arrayValue(array $payload, string $key): array
+    {
+        $value = $payload[$key] ?? [];
+
+        return is_array($value) ? $value : [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function stringValue(array $payload, string $key): ?string
+    {
+        $value = $payload[$key] ?? null;
+
+        return is_string($value) && $value !== '' ? $value : null;
     }
 }
