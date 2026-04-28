@@ -9,7 +9,7 @@ class AccountLockedException extends DomainException
     public function __construct(Carbon $until)
     {
         parent::__construct(
-            "Compte verrouillé jusqu'à " . $until->toIso8601String(),
+            "Compte verrouillé jusqu'à ".$until->toIso8601String(),
             423,
             'ACCOUNT_LOCKED'
         );

@@ -3,7 +3,6 @@
 namespace App\Modules\Cameras\Application\DTOs;
 
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraRequest;
-use App\Modules\Cameras\Interfaces\Api\V1\Requests\UpdateCameraRequest;
 
 class CreateCameraDTO
 {

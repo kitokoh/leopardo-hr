@@ -84,7 +84,7 @@ class AbsenceShowTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/absences/' . $absence->id);
+        $response = $this->getJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.id', $absence->id);
@@ -183,7 +183,7 @@ class AbsenceShowTest extends TestCase
 
         Sanctum::actingAs($employeeA); // Employee A trying to view employee B's absence
 
-        $response = $this->getJson('/api/v1/absences/' . $absence->id);
+        $response = $this->getJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(403);
     }
@@ -254,7 +254,7 @@ class AbsenceShowTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences/' . $absence->id);
+        $response = $this->getJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.id', $absence->id);
@@ -403,7 +403,7 @@ class AbsenceShowTest extends TestCase
         // Employee from Company A trying to access absence from Company B
         Sanctum::actingAs($employeeA);
 
-        $response = $this->getJson('/api/v1/absences/' . $absenceB->id);
+        $response = $this->getJson('/api/v1/absences/'.$absenceB->id);
 
         $response->assertStatus(404); // Should return 404 to prevent information leakage
     }

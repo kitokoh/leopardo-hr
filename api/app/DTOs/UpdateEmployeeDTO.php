@@ -43,6 +43,7 @@ final readonly class UpdateEmployeeDTO
     public static function fromRequest(UpdateEmployeeRequest|UpdateProfileRequest|Request $request): self
     {
         $validated = method_exists($request, 'validated') ? $request->validated() : $request->all();
+
         return new self(...$validated);
     }
 
@@ -78,6 +79,6 @@ final readonly class UpdateEmployeeDTO
             'biometric_face_reference_path' => $this->biometric_face_reference_path,
             'biometric_fingerprint_reference_path' => $this->biometric_fingerprint_reference_path,
             'extra_data' => $this->extra_data,
-        ], fn($value) => $value !== null);
+        ], fn ($value) => $value !== null);
     }
 }

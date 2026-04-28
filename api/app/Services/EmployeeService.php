@@ -20,11 +20,11 @@ class EmployeeService
         $payload = $dto->toArray();
         $sendInvitation = (bool) Arr::pull($payload, 'send_invitation', false);
         $providedPassword = Arr::pull($payload, 'password');
-        
+
         $companyId = $payload['company_id']
             ?? $actor?->company_id
             ?? (app()->bound('current_company') ? app('current_company')->id : null);
-        
+
         $password = $providedPassword ?: Str::random(32);
         $payload['password_hash'] = Hash::make($password);
         $payload['contract_type'] = $payload['contract_type'] ?? 'CDI';

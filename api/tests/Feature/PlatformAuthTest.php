@@ -47,15 +47,15 @@ class PlatformAuthTest extends TestCase
     {
         $token = $this->superAdmin->createToken('test')->plainTextToken;
 
-        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/setup');
 
         $response->assertOk();
         $response->assertJsonStructure(['data' => ['secret', 'qr_code_url']]);
-        
+
         $secret = $response->json('data.secret');
         $this->assertNotEmpty($secret);
-        
+
         // Secret should not be saved yet
         $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
     }
@@ -65,13 +65,13 @@ class PlatformAuthTest extends TestCase
         $token = $this->superAdmin->createToken('test')->plainTextToken;
         $service = app(SuperAdminService::class);
         $secret = $service->generateSecret();
-        
+
         // Generate a valid code for the secret to simulate the user entering it
         // We use a little trick: the service can verify, but we need to generate one.
-        // For testing, since we don't have a public generateCode, we can test with a fixed mock or just 
+        // For testing, since we don't have a public generateCode, we can test with a fixed mock or just
         // trust the failure case to prove the logic. Let's do the failure case first.
-        
-        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/enable', [
                 'secret' => $secret,
                 'code' => '000000', // Invalid code
@@ -118,7 +118,7 @@ class PlatformAuthTest extends TestCase
 
         $token = $this->superAdmin->createToken('test')->plainTextToken;
 
-        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/disable', [
                 'password' => 'wrongpassword',
             ]);
@@ -127,7 +127,7 @@ class PlatformAuthTest extends TestCase
         $response->assertJsonPath('error', 'INVALID_PASSWORD');
         $this->assertNotNull($this->superAdmin->fresh()->two_fa_secret);
 
-        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/disable', [
                 'password' => 'password123',
             ]);

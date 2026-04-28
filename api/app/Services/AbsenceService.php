@@ -34,25 +34,25 @@ class AbsenceService
         }
 
         if ($this->hasDateConflict($employee, $data['start_date'], $data['end_date'])) {
-            throw new AbsenceDateConflictException();
+            throw new AbsenceDateConflictException;
         }
 
         return Absence::create([
-            'company_id'      => $employee->company_id,
-            'employee_id'     => $employee->id,
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
             'absence_type_id' => $type->id,
-            'start_date'      => $data['start_date'],
-            'end_date'        => $data['end_date'],
-            'days_count'      => $daysCount,
-            'status'          => 'pending',
-            'reason'          => $data['reason'] ?? null,
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'days_count' => $daysCount,
+            'status' => 'pending',
+            'reason' => $data['reason'] ?? null,
         ]);
     }
 
     public function approve(Absence $absence, Employee $approver): Absence
     {
         if ($absence->status !== 'pending') {
-            throw new AbsenceNotPendingException();
+            throw new AbsenceNotPendingException;
         }
 
         DB::transaction(function () use ($absence, $approver) {
@@ -84,7 +84,7 @@ class AbsenceService
             }
 
             $absence->update([
-                'status'      => 'approved',
+                'status' => 'approved',
                 'approved_by' => $approver->id,
             ]);
         });
@@ -94,8 +94,8 @@ class AbsenceService
 
     public function reject(Absence $absence, string $reason): Absence
     {
-        if (!in_array($absence->status, ['pending', 'approved'])) {
-            throw new AbsenceNotPendingException();
+        if (! in_array($absence->status, ['pending', 'approved'])) {
+            throw new AbsenceNotPendingException;
         }
 
         DB::transaction(function () use ($absence, $reason) {
@@ -119,7 +119,7 @@ class AbsenceService
             }
 
             $absence->update([
-                'status'          => 'rejected',
+                'status' => 'rejected',
                 'rejected_reason' => $reason,
             ]);
         });
@@ -130,7 +130,7 @@ class AbsenceService
     public function cancel(Absence $absence): Absence
     {
         if ($absence->status !== 'pending') {
-            throw new AbsenceNotPendingException();
+            throw new AbsenceNotPendingException;
         }
 
         $absence->update(['status' => 'cancelled']);
@@ -164,11 +164,11 @@ class AbsenceService
     private function logBalanceChange(int $employeeId, string $companyId, float $delta, string $reason, int $referenceId, float $balanceAfter): LeaveBalanceLog
     {
         return LeaveBalanceLog::create([
-            'company_id'    => $companyId,
-            'employee_id'   => $employeeId,
-            'delta'         => $delta,
-            'reason'        => $reason,
-            'reference_id'  => $referenceId,
+            'company_id' => $companyId,
+            'employee_id' => $employeeId,
+            'delta' => $delta,
+            'reason' => $reason,
+            'reference_id' => $referenceId,
             'balance_after' => $balanceAfter,
         ]);
     }

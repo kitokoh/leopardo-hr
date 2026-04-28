@@ -273,7 +273,6 @@ trait CreatesMvpSchema
             $table->timestampTz('created_at')->useCurrent();
         });
 
-
         Schema::create('absence_types', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();

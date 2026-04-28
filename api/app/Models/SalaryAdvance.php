@@ -25,10 +25,28 @@ class SalaryAdvance extends Model
         'amount_remaining' => 'float', 'repayment_plan' => 'array',
     ];
 
-    public function employee(): BelongsTo { return $this->belongsTo(Employee::class, 'employee_id'); }
-    public function approver(): BelongsTo { return $this->belongsTo(Employee::class, 'approved_by'); }
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
 
-    public function scopePending(Builder $q): Builder { return $q->where('status', 'pending'); }
-    public function scopeActive(Builder $q): Builder { return $q->where('status', 'active'); }
-    public function scopeForEmployee(Builder $q, int $id): Builder { return $q->where('employee_id', $id); }
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'approved_by');
+    }
+
+    public function scopePending(Builder $q): Builder
+    {
+        return $q->where('status', 'pending');
+    }
+
+    public function scopeActive(Builder $q): Builder
+    {
+        return $q->where('status', 'active');
+    }
+
+    public function scopeForEmployee(Builder $q, int $id): Builder
+    {
+        return $q->where('employee_id', $id);
+    }
 }

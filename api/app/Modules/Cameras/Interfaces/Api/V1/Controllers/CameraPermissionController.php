@@ -3,10 +3,10 @@
 namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraPermission;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraPermissionRequest;
-use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

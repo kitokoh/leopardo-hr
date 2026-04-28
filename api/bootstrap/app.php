@@ -16,6 +16,7 @@ use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -37,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        \Sentry\Laravel\Integration::handles($exceptions);
+        Integration::handles($exceptions);
 
         $exceptions->render(function (DomainException $exception, Request $request) {
             if (! ($request->expectsJson() || $request->is('api/*'))) {

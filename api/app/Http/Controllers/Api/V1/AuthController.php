@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\DTOs\UpdateEmployeeDTO;
+use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\DTOs\UpdateEmployeeDTO;
-use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Language;
 use App\Services\AuthService;
 use App\Services\EmployeeService;
-use App\Services\FeatureFlag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -50,7 +49,7 @@ class AuthController extends Controller
         $employee = $request->user();
 
         if ($employee->company === null) {
-            throw new \App\Exceptions\CompanyNotFoundException();
+            throw new CompanyNotFoundException;
         }
 
         return (new EmployeeResource($employee))->response();
@@ -122,5 +121,4 @@ class AuthController extends Controller
 
         return new JsonResponse(['message' => 'LOGGED_OUT']);
     }
-
 }

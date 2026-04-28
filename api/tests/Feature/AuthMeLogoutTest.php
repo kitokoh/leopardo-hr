@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Language;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Language;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;

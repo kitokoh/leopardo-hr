@@ -15,10 +15,13 @@ class Project extends Model
     use HasFactory;
 
     protected $table = 'projects';
+
     public $timestamps = false;
+
     const CREATED_AT = 'created_at';
 
     protected $fillable = ['company_id', 'name', 'description', 'start_date', 'end_date', 'members', 'status', 'created_by'];
+
     protected $casts = ['start_date' => 'date', 'end_date' => 'date', 'members' => 'array', 'created_at' => 'datetime'];
 
     public function creator(): BelongsTo

@@ -20,7 +20,7 @@ class PayrollController extends Controller
         $actor = $request->user();
         $query = Payroll::with('employee');
 
-        if (!$actor->isManager()) {
+        if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
@@ -30,9 +30,11 @@ class PayrollController extends Controller
             $query->forPeriod($request->integer('month'), $request->integer('year'));
         }
 
-        if ($request->filled('status')) $query->where('status', $request->input('status'));
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
 
-        $perPage   = $request->integer('per_page', 15);
+        $perPage = $request->integer('per_page', 15);
         $paginated = $query->orderByDesc('period_year')->orderByDesc('period_month')->paginate($perPage);
 
         return response()->json([
@@ -44,7 +46,9 @@ class PayrollController extends Controller
     public function store(StorePayrollRequest $request): JsonResponse
     {
         $actor = $request->user();
-        if (!$actor->isManager()) abort(403);
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $payroll = $this->payrollService->create($actor, $request->validated());
 
@@ -54,8 +58,12 @@ class PayrollController extends Controller
     public function show(Request $request, Payroll $payroll): JsonResponse
     {
         $actor = $request->user();
-        if ($payroll->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager() && $payroll->employee_id !== $actor->id) abort(403);
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager() && $payroll->employee_id !== $actor->id) {
+            abort(403);
+        }
 
         return response()->json(['data' => $this->serialize($payroll->load('employee'))]);
     }
@@ -63,8 +71,12 @@ class PayrollController extends Controller
     public function update(UpdatePayrollRequest $request, Payroll $payroll): JsonResponse
     {
         $actor = $request->user();
-        if ($payroll->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager()) abort(403);
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $payroll = $this->payrollService->update($payroll, $request->validated());
 
@@ -74,8 +86,12 @@ class PayrollController extends Controller
     public function validate(Request $request, Payroll $payroll): JsonResponse
     {
         $actor = $request->user();
-        if ($payroll->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager()) abort(403);
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $payroll = $this->payrollService->validate($payroll, $actor);
 
@@ -85,8 +101,12 @@ class PayrollController extends Controller
     public function destroy(Request $request, Payroll $payroll): JsonResponse
     {
         $actor = $request->user();
-        if ($payroll->company_id !== $actor->company_id) abort(404);
-        if (!$actor->isManager()) abort(403);
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $this->payrollService->delete($payroll);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\SuperAdmin;
+use App\Services\SuperAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 class PlatformAuthController extends Controller
 {
     public function __construct(
-        private readonly \App\Services\SuperAdminService $superAdminService,
+        private readonly SuperAdminService $superAdminService,
     ) {}
 
     public function login(Request $request): JsonResponse

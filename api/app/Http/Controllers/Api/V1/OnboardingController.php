@@ -36,7 +36,7 @@ class OnboardingController extends Controller
         if (! $invitation) {
             return new JsonResponse([
                 'error' => [
-                    'code'    => 'INVITATION_NOT_FOUND',
+                    'code' => 'INVITATION_NOT_FOUND',
                     'message' => 'Token d\'invitation invalide ou introuvable.',
                 ],
             ], 404);
@@ -45,7 +45,7 @@ class OnboardingController extends Controller
         if ($invitation->accepted_at !== null) {
             return new JsonResponse([
                 'error' => [
-                    'code'    => 'INVITATION_ALREADY_ACCEPTED',
+                    'code' => 'INVITATION_ALREADY_ACCEPTED',
                     'message' => 'Cette invitation a déjà été acceptée.',
                 ],
             ], 410);
@@ -54,7 +54,7 @@ class OnboardingController extends Controller
         if ($invitation->expires_at?->isPast()) {
             return new JsonResponse([
                 'error' => [
-                    'code'    => 'INVITATION_EXPIRED',
+                    'code' => 'INVITATION_EXPIRED',
                     'message' => 'Cette invitation a expiré.',
                 ],
             ], 410);
@@ -62,10 +62,10 @@ class OnboardingController extends Controller
 
         return new JsonResponse([
             'data' => [
-                'email'        => $invitation->email,
-                'role'         => $invitation->role,
+                'email' => $invitation->email,
+                'role' => $invitation->role,
                 'manager_role' => $invitation->manager_role,
-                'expires_at'   => $invitation->expires_at?->toIso8601String(),
+                'expires_at' => $invitation->expires_at?->toIso8601String(),
                 'employee_name' => $invitation->metadata['employee_name'] ?? null,
             ],
         ]);
@@ -91,7 +91,7 @@ class OnboardingController extends Controller
         if (! $invitation) {
             return new JsonResponse([
                 'error' => [
-                    'code'    => 'INVITATION_NOT_FOUND',
+                    'code' => 'INVITATION_NOT_FOUND',
                     'message' => 'Token d\'invitation invalide ou introuvable.',
                 ],
             ], 404);
@@ -100,7 +100,7 @@ class OnboardingController extends Controller
         if ($invitation->accepted_at !== null) {
             return new JsonResponse([
                 'error' => [
-                    'code'    => 'INVITATION_ALREADY_ACCEPTED',
+                    'code' => 'INVITATION_ALREADY_ACCEPTED',
                     'message' => 'Cette invitation a déjà été acceptée.',
                 ],
             ], 410);
@@ -109,7 +109,7 @@ class OnboardingController extends Controller
         if ($invitation->expires_at?->isPast()) {
             return new JsonResponse([
                 'error' => [
-                    'code'    => 'INVITATION_EXPIRED',
+                    'code' => 'INVITATION_EXPIRED',
                     'message' => 'Cette invitation a expiré.',
                 ],
             ], 410);
@@ -124,14 +124,14 @@ class OnboardingController extends Controller
         return new JsonResponse([
             'data' => [
                 'employee' => [
-                    'id'         => $employee->id,
-                    'email'      => $employee->email,
+                    'id' => $employee->id,
+                    'email' => $employee->email,
                     'first_name' => $employee->first_name,
-                    'last_name'  => $employee->last_name,
-                    'role'       => $employee->role,
+                    'last_name' => $employee->last_name,
+                    'role' => $employee->role,
                 ],
-                'token'            => $sanctumToken->plainTextToken,
-                'token_type'       => 'Bearer',
+                'token' => $sanctumToken->plainTextToken,
+                'token_type' => 'Bearer',
                 'token_expires_at' => null,
             ],
             'message' => 'ACCOUNT_ACTIVATED',

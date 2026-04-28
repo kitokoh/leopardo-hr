@@ -9,12 +9,12 @@ use App\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use App\Services\TenantManager;
 use Illuminate\Support\Str;
 
 class UserInvitationService
 {
     public function __construct(private readonly TenantManager $tenantManager) {}
+
     public function createAndSend(
         Company $company,
         Employee $employee,

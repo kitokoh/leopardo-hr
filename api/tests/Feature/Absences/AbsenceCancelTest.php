@@ -84,7 +84,7 @@ class AbsenceCancelTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->deleteJson('/api/v1/absences/' . $absence->id);
+        $response = $this->deleteJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.status', 'cancelled');
@@ -161,7 +161,7 @@ class AbsenceCancelTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->deleteJson('/api/v1/absences/' . $absence->id);
+        $response = $this->deleteJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(422);
         $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING');
@@ -233,7 +233,7 @@ class AbsenceCancelTest extends TestCase
         // Employee A trying to cancel employee B's absence
         Sanctum::actingAs($employeeA);
 
-        $response = $this->deleteJson('/api/v1/absences/' . $absence->id);
+        $response = $this->deleteJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(403);
     }
@@ -305,7 +305,7 @@ class AbsenceCancelTest extends TestCase
         // Manager trying to cancel via destroy (reserved for employee owner only)
         Sanctum::actingAs($manager);
 
-        $response = $this->deleteJson('/api/v1/absences/' . $absence->id);
+        $response = $this->deleteJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(403);
     }

@@ -11,7 +11,9 @@ class ScheduleController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (!$request->user()->isManager()) abort(403);
+        if (! $request->user()->isManager()) {
+            abort(403);
+        }
 
         return response()->json(['data' => Schedule::orderBy('name')->get()->map(fn ($s) => $this->serialize($s))]);
     }
@@ -19,11 +21,13 @@ class ScheduleController extends Controller
     public function store(Request $request): JsonResponse
     {
         $actor = $request->user();
-        if (!$actor->isManager()) abort(403);
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $data = $request->validate(['name' => ['required', 'string', 'max:100'], 'start_time' => ['required', 'date_format:H:i'], 'end_time' => ['required', 'date_format:H:i'], 'break_minutes' => ['nullable', 'integer', 'min:0', 'max:480'], 'work_days' => ['nullable', 'array'], 'work_days.*' => ['integer', 'between:1,7'], 'late_tolerance_minutes' => ['nullable', 'integer', 'min:0', 'max:120'], 'overtime_threshold_daily' => ['nullable', 'numeric', 'min:0'], 'overtime_threshold_weekly' => ['nullable', 'numeric', 'min:0'], 'is_default' => ['nullable', 'boolean']]);
 
-        if (!empty($data['is_default'])) {
+        if (! empty($data['is_default'])) {
             Schedule::where('company_id', $actor->company_id)->where('is_default', true)->update(['is_default' => false]);
         }
 
@@ -34,7 +38,9 @@ class ScheduleController extends Controller
 
     public function show(Request $request, Schedule $schedule): JsonResponse
     {
-        if (!$request->user()->isManager()) abort(403);
+        if (! $request->user()->isManager()) {
+            abort(403);
+        }
 
         return response()->json(['data' => $this->serialize($schedule)]);
     }
@@ -42,11 +48,13 @@ class ScheduleController extends Controller
     public function update(Request $request, Schedule $schedule): JsonResponse
     {
         $actor = $request->user();
-        if (!$actor->isManager()) abort(403);
+        if (! $actor->isManager()) {
+            abort(403);
+        }
 
         $data = $request->validate(['name' => ['sometimes', 'string', 'max:100'], 'start_time' => ['sometimes', 'date_format:H:i'], 'end_time' => ['sometimes', 'date_format:H:i'], 'break_minutes' => ['nullable', 'integer', 'min:0', 'max:480'], 'work_days' => ['nullable', 'array'], 'work_days.*' => ['integer', 'between:1,7'], 'late_tolerance_minutes' => ['nullable', 'integer', 'min:0', 'max:120'], 'overtime_threshold_daily' => ['nullable', 'numeric', 'min:0'], 'overtime_threshold_weekly' => ['nullable', 'numeric', 'min:0'], 'is_default' => ['nullable', 'boolean']]);
 
-        if (!empty($data['is_default'])) {
+        if (! empty($data['is_default'])) {
             Schedule::where('company_id', $actor->company_id)->where('id', '!=', $schedule->id)->where('is_default', true)->update(['is_default' => false]);
         }
 
@@ -57,8 +65,12 @@ class ScheduleController extends Controller
 
     public function destroy(Request $request, Schedule $schedule): JsonResponse
     {
-        if (!$request->user()->isManager()) abort(403);
-        if ($schedule->is_default) abort(422, 'Cannot delete the default schedule.');
+        if (! $request->user()->isManager()) {
+            abort(403);
+        }
+        if ($schedule->is_default) {
+            abort(422, 'Cannot delete the default schedule.');
+        }
 
         $schedule->delete();
 

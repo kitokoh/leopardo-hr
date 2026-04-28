@@ -17,6 +17,7 @@ class Task extends Model
     protected $table = 'tasks';
 
     protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'status', 'category', 'checklist', 'visibility'];
+
     protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function creator(): BelongsTo
