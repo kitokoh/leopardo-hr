@@ -18,12 +18,15 @@ class AbsenceRepository {
     required DateTime endDate,
     String? reason,
   }) async {
-    final response = await apiClient.dio.post('/absences', data: {
-      'absence_type_id': absenceTypeId,
-      'start_date': startDate.toIso8601String().split('T')[0],
-      'end_date': endDate.toIso8601String().split('T')[0],
-      'reason': reason,
-    });
+    final response = await apiClient.dio.post(
+      '/absences',
+      data: {
+        'absence_type_id': absenceTypeId,
+        'start_date': startDate.toIso8601String().split('T')[0],
+        'end_date': endDate.toIso8601String().split('T')[0],
+        'reason': reason,
+      },
+    );
     return Absence.fromJson(response.data['data']);
   }
 }

@@ -17,7 +17,10 @@ class NotificationListScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bgDark,
         elevation: 0,
-        title: Text('Notifications', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
+        title: Text(
+          'Notifications',
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.of(context).pop(),
@@ -40,20 +43,36 @@ class NotificationListScreen extends ConsumerWidget {
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       leading: Icon(
-                        notification.isRead ? Icons.notifications_none : Icons.notifications_active,
-                        color: notification.isRead ? AppColors.textMutedDark : AppColors.info,
+                        notification.isRead
+                            ? Icons.notifications_none
+                            : Icons.notifications_active,
+                        color: notification.isRead
+                            ? AppColors.textMutedDark
+                            : AppColors.info,
                       ),
-                      title: Text(notification.title, style: AppTypography.subtitle.copyWith(
-                        color: AppColors.textDark,
-                        fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
-                      )),
-                      subtitle: Text(notification.body, style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark)),
+                      title: Text(
+                        notification.title,
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.textDark,
+                          fontWeight: notification.isRead
+                              ? FontWeight.normal
+                              : FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        notification.body,
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textMutedDark,
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e.toString(), style: const TextStyle(color: Colors.red))),
+        error: (e, _) => Center(
+          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
+        ),
       ),
     );
   }

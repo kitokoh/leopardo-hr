@@ -14,14 +14,19 @@ class AttendanceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final attState = ref.watch(attendanceProvider);
-    final isManager = authState.employee?.isManager == true || attState.context?['mode'] == 'collection';
+    final isManager =
+        authState.employee?.isManager == true ||
+        attState.context?['mode'] == 'collection';
 
     return Scaffold(
       body: SafeArea(
-        child: attState.error != null && attState.error!.contains('NOT_IMPLEMENTED')
+        child:
+            attState.error != null &&
+                attState.error!.contains('NOT_IMPLEMENTED')
             ? _buildStubScreen(context, ref)
             : RefreshIndicator(
-                onRefresh: () => ref.read(attendanceProvider.notifier).loadTodayData(),
+                onRefresh: () =>
+                    ref.read(attendanceProvider.notifier).loadTodayData(),
                 child: ListView(
                   padding: const EdgeInsets.all(24.0),
                   children: [
@@ -56,7 +61,10 @@ class AttendanceScreen extends ConsumerWidget {
             color: AppColors.textMuted,
           ),
           const SizedBox(height: 16),
-          const Text('Fonction bientot disponible', style: TextStyle(fontSize: 20)),
+          const Text(
+            'Fonction bientot disponible',
+            style: TextStyle(fontSize: 20),
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
@@ -103,8 +111,13 @@ class AttendanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionCard(BuildContext context, WidgetRef ref, AttendanceState state) {
-    final isCheckedIn = state.todayLog?.checkIn != null && state.todayLog?.checkOut == null;
+  Widget _buildActionCard(
+    BuildContext context,
+    WidgetRef ref,
+    AttendanceState state,
+  ) {
+    final isCheckedIn =
+        state.todayLog?.checkIn != null && state.todayLog?.checkOut == null;
 
     return Container(
       padding: const EdgeInsets.all(32),
@@ -160,7 +173,8 @@ class AttendanceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             OutlinedButton(
-              onPressed: () => ref.read(attendanceProvider.notifier).loadTodayData(),
+              onPressed: () =>
+                  ref.read(attendanceProvider.notifier).loadTodayData(),
               child: const Text('Reessayer'),
             ),
           ] else if (state.todayLog?.checkIn != null)
@@ -179,7 +193,11 @@ class AttendanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildManagerOverviewCard(BuildContext context, WidgetRef ref, AttendanceState state) {
+  Widget _buildManagerOverviewCard(
+    BuildContext context,
+    WidgetRef ref,
+    AttendanceState state,
+  ) {
     final items = state.context?['items'];
     final employees = items is List ? items : const [];
     final checkedInCount = employees.whereType<Map>().where((item) {
@@ -230,7 +248,8 @@ class AttendanceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             OutlinedButton(
-              onPressed: () => ref.read(attendanceProvider.notifier).loadTodayData(),
+              onPressed: () =>
+                  ref.read(attendanceProvider.notifier).loadTodayData(),
               child: const Text('Actualiser le suivi'),
             ),
           ],
@@ -259,7 +278,10 @@ class AttendanceScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Text('Gain estime aujourd\'hui', style: TextStyle(fontSize: 16)),
+              const Text(
+                'Gain estime aujourd\'hui',
+                style: TextStyle(fontSize: 16),
+              ),
               const Spacer(),
               Text(
                 currencyFormat.format(state.summary!.totalEstimated),
@@ -314,7 +336,12 @@ class AttendanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions(BuildContext context, WidgetRef ref, AttendanceState state, bool isManager) {
+  Widget _buildActions(
+    BuildContext context,
+    WidgetRef ref,
+    AttendanceState state,
+    bool isManager,
+  ) {
     final employee = ref.read(authProvider).employee;
     final canManageTeam = employee?.canManageTeam == true;
 
@@ -331,21 +358,27 @@ class AttendanceScreen extends ConsumerWidget {
         ],
         OutlinedButton.icon(
           onPressed: () => context.push('/me/monthly'),
-          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
           icon: const Icon(Icons.calendar_month),
           label: const Text('Mon mois (heures, heures sup, du)'),
         ),
         const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () => context.push('/history'),
-          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
           child: const Text('Voir historique'),
         ),
         if (canManageTeam) ...[
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: () => context.push('/team'),
-            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
             icon: const Icon(Icons.groups),
             label: const Text('Equipe (ajouter, inviter, archiver)'),
           ),
@@ -353,7 +386,9 @@ class AttendanceScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () => context.push('/settings'),
-          style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
           child: const Text('Parametres'),
         ),
         const SizedBox(height: 16),

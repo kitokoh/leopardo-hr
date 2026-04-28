@@ -54,18 +54,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
       ),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/modules',
         builder: (context, state) => const ModulesHubScreen(),
@@ -102,10 +96,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/me/monthly',
         builder: (context, state) => const MonthlySummaryScreen(),
       ),
-      GoRoute(
-        path: '/team',
-        builder: (context, state) => const TeamScreen(),
-      ),
+      GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
       GoRoute(
         path: '/modules/rh',
         builder: (context, state) => const ModulesScreen(),
@@ -126,9 +117,13 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
-    final languageCode = authState.employee?.language ??
-        (preferences.preferredLanguage.isNotEmpty ? preferences.preferredLanguage : deviceLanguage);
+    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
+        (preferences.preferredLanguage.isNotEmpty
+            ? preferences.preferredLanguage
+            : deviceLanguage);
     final isRtl = authState.employee?.isRtl ?? preferences.isRtl;
 
     return MaterialApp.router(

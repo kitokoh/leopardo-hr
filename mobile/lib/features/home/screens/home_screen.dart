@@ -88,10 +88,7 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _HomeHeader extends StatelessWidget {
-  const _HomeHeader({
-    required this.firstName,
-    required this.canManageTeam,
-  });
+  const _HomeHeader({required this.firstName, required this.canManageTeam});
 
   final String firstName;
   final bool canManageTeam;
@@ -99,10 +96,9 @@ class _HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final greeting = _greetingForHour(DateTime.now().hour);
-    final dateLabel = DateFormat.EEEE('fr_FR')
-        .add_d()
-        .add_MMMM()
-        .format(DateTime.now());
+    final dateLabel = DateFormat.EEEE(
+      'fr_FR',
+    ).add_d().add_MMMM().format(DateTime.now());
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
 
@@ -239,7 +235,8 @@ class _HomeAlerts extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         const AlertBanner(
-          message: 'Finance, cameras et Leo complet sont deja presents dans la vision produit mais restent en attente d activation.',
+          message:
+              'Finance, cameras et Leo complet sont deja presents dans la vision produit mais restent en attente d activation.',
           level: AlertLevel.warning,
           icon: Icons.upcoming_outlined,
         ),
@@ -614,10 +611,7 @@ class _DigestTile extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            value,
-            style: AppTypography.title.copyWith(color: text),
-          ),
+          Text(value, style: AppTypography.title.copyWith(color: text)),
           const SizedBox(height: 4),
           Text(
             label,
@@ -646,9 +640,7 @@ class _ChatInputBar extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.backgroundFor(context),
-        border: Border(
-          top: BorderSide(color: AppColors.borderFor(context)),
-        ),
+        border: Border(top: BorderSide(color: AppColors.borderFor(context))),
       ),
       child: Row(
         children: [

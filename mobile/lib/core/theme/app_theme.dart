@@ -61,10 +61,9 @@ class AppTheme {
       cardColor: surface,
       colorScheme: scheme,
       fontFamily: AppTypography.fontFamily,
-      textTheme: AppTypography.buildTextTheme(text).apply(
-        bodyColor: text,
-        displayColor: text,
-      ),
+      textTheme: AppTypography.buildTextTheme(
+        text,
+      ).apply(bodyColor: text, displayColor: text),
       dividerColor: border,
       appBarTheme: AppBarTheme(
         backgroundColor: scaffold,
@@ -74,7 +73,7 @@ class AppTheme {
         titleTextStyle: AppTypography.title.copyWith(color: text),
         iconTheme: IconThemeData(color: text),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surface,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -83,17 +82,16 @@ class AppTheme {
           side: BorderSide(color: border),
         ),
       ),
-      dividerTheme: DividerThemeData(
-        color: border,
-        thickness: 1,
-        space: 1,
-      ),
+      dividerTheme: DividerThemeData(color: border, thickness: 1, space: 1),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: fieldFill,
         labelStyle: AppTypography.bodySmall.copyWith(color: muted),
         hintStyle: AppTypography.bodySmall.copyWith(color: muted),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         enabledBorder: borderStyle(border),
         focusedBorder: borderStyle(AppColors.rh),
         errorBorder: borderStyle(AppColors.danger),
@@ -161,7 +159,7 @@ class AppTheme {
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: AppColors.rh,
         unselectedLabelColor: muted,
         indicator: BoxDecoration(
@@ -183,9 +181,7 @@ class AppTheme {
         iconColor: muted,
         textColor: text,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: AppColors.rh,

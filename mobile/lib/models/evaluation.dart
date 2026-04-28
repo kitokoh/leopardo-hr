@@ -41,7 +41,9 @@ class Evaluation {
     if (rawCriteria is List) {
       for (final item in rawCriteria) {
         if (item is Map) {
-          criteria.add(EvaluationCriterion.fromJson(item.cast<String, dynamic>()));
+          criteria.add(
+            EvaluationCriterion.fromJson(item.cast<String, dynamic>()),
+          );
         }
       }
     }
@@ -59,7 +61,9 @@ class Evaluation {
       strengths: json['strengths'] as String?,
       improvements: json['improvements'] as String?,
       overallComment: json['overall_comment'] as String?,
-      acknowledgedAt: DateTime.tryParse(json['acknowledged_at']?.toString() ?? ''),
+      acknowledgedAt: DateTime.tryParse(
+        json['acknowledged_at']?.toString() ?? '',
+      ),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
       updatedAt: DateTime.tryParse(json['updated_at']?.toString() ?? ''),
     );
@@ -86,10 +90,7 @@ class Evaluation {
 }
 
 class EvaluationCriterion {
-  const EvaluationCriterion({
-    required this.label,
-    required this.score,
-  });
+  const EvaluationCriterion({required this.label, required this.score});
 
   final String label;
   final double score;
@@ -101,8 +102,5 @@ class EvaluationCriterion {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'label': label,
-        'score': score,
-      };
+  Map<String, dynamic> toJson() => {'label': label, 'score': score};
 }

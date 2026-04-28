@@ -11,18 +11,26 @@ final modulesRepositoryProvider = Provider<ModulesRepository>((ref) {
   return ModulesRepository(apiClient);
 });
 
-final evaluationsProvider = FutureProvider.autoDispose<List<Evaluation>>((ref) async {
+final evaluationsProvider = FutureProvider.autoDispose<List<Evaluation>>((
+  ref,
+) async {
   return ref.watch(modulesRepositoryProvider).listEvaluations();
 });
 
-final salaryAdvancesProvider = FutureProvider.autoDispose<List<SalaryAdvance>>((ref) async {
+final salaryAdvancesProvider = FutureProvider.autoDispose<List<SalaryAdvance>>((
+  ref,
+) async {
   return ref.watch(modulesRepositoryProvider).listSalaryAdvances();
 });
 
-final payrollsProvider = FutureProvider.autoDispose<List<PayrollRecord>>((ref) async {
+final payrollsProvider = FutureProvider.autoDispose<List<PayrollRecord>>((
+  ref,
+) async {
   return ref.watch(modulesRepositoryProvider).listPayrolls();
 });
 
-final notificationsProvider = FutureProvider.autoDispose<List<AppNotification>>((ref) async {
-  return ref.watch(modulesRepositoryProvider).listNotifications();
-});
+final notificationsProvider = FutureProvider.autoDispose<List<AppNotification>>(
+  (ref) async {
+    return ref.watch(modulesRepositoryProvider).listNotifications();
+  },
+);

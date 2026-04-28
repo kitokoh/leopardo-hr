@@ -16,7 +16,8 @@ class MonthlySummaryScreen extends ConsumerStatefulWidget {
   const MonthlySummaryScreen({super.key});
 
   @override
-  ConsumerState<MonthlySummaryScreen> createState() => _MonthlySummaryScreenState();
+  ConsumerState<MonthlySummaryScreen> createState() =>
+      _MonthlySummaryScreenState();
 }
 
 class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
@@ -76,7 +77,8 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                 }
                 return _buildError(context, err);
               },
-              data: (summary) => _buildSummary(context, summary, employee?.fullName),
+              data: (summary) =>
+                  _buildSummary(context, summary, employee?.fullName),
             ),
           ],
         ),
@@ -105,10 +107,15 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
 
   bool _isCurrentOrFutureMonth() {
     final now = DateTime.now();
-    return _month.year > now.year || (_month.year == now.year && _month.month >= now.month);
+    return _month.year > now.year ||
+        (_month.year == now.year && _month.month >= now.month);
   }
 
-  Widget _buildSummary(BuildContext context, dynamic summary, String? employeeName) {
+  Widget _buildSummary(
+    BuildContext context,
+    dynamic summary,
+    String? employeeName,
+  ) {
     final currencyFormat = NumberFormat.currency(
       locale: 'fr_FR',
       symbol: summary.currency,
@@ -133,7 +140,8 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           icon: Icons.schedule,
           label: 'Heures travaillees',
           value: '${summary.hours.toStringAsFixed(2)} h',
-          sub: '${summary.daysPresent} jours presents / ${summary.workingDays} ouvres',
+          sub:
+              '${summary.daysPresent} jours presents / ${summary.workingDays} ouvres',
         ),
         const SizedBox(height: 12),
         _metricCard(
@@ -163,24 +171,31 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         ),
         const SizedBox(height: 24),
         if (summary.breakdown.isNotEmpty) ...[
-          Text('Detail par jour', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Detail par jour',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
-          ...summary.breakdown.map<Widget>((entry) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 56,
-                      child: Text(dateFormat.format(entry.date)),
+          ...summary.breakdown.map<Widget>(
+            (entry) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 56,
+                    child: Text(dateFormat.format(entry.date)),
+                  ),
+                  Expanded(
+                    child: Text(
+                      '${entry.hours.toStringAsFixed(2)} h'
+                      '${entry.overtimeHours > 0 ? ' (+${entry.overtimeHours.toStringAsFixed(2)} sup)' : ''}',
                     ),
-                    Expanded(
-                      child: Text('${entry.hours.toStringAsFixed(2)} h'
-                          '${entry.overtimeHours > 0 ? ' (+${entry.overtimeHours.toStringAsFixed(2)} sup)' : ''}'),
-                    ),
-                    Text(currencyFormat.format(entry.total)),
-                  ],
-                ),
-              )),
+                  ),
+                  Text(currencyFormat.format(entry.total)),
+                ],
+              ),
+            ),
+          ),
         ],
         const SizedBox(height: 24),
         Text(
@@ -226,12 +241,14 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
               children: [
                 Text(label, style: const TextStyle(color: AppColors.textMuted)),
                 const SizedBox(height: 4),
-                Text(value,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    )),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
                 if (sub != null) ...[
                   const SizedBox(height: 2),
                   Text(
@@ -257,8 +274,10 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         children: [
           const Icon(Icons.error_outline, size: 56, color: AppColors.danger),
           const SizedBox(height: 12),
-          Text('Impossible de charger les donnees : $err',
-              textAlign: TextAlign.center),
+          Text(
+            'Impossible de charger les donnees : $err',
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => ref.refresh(monthlySummaryProvider(_month)),

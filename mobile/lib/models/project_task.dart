@@ -22,10 +22,15 @@ class Project {
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,
-      startDate: json['start_date'] != null ? DateTime.parse(json['start_date'] as String) : null,
-      endDate: json['end_date'] != null ? DateTime.parse(json['end_date'] as String) : null,
+      startDate: json['start_date'] != null
+          ? DateTime.parse(json['start_date'] as String)
+          : null,
+      endDate: json['end_date'] != null
+          ? DateTime.parse(json['end_date'] as String)
+          : null,
       status: json['status'] as String,
-      memberIds: (json['members'] as List?)?.map((e) => e as int).toList() ?? [],
+      memberIds:
+          (json['members'] as List?)?.map((e) => e as int).toList() ?? [],
     );
   }
 }
@@ -56,9 +61,12 @@ class Task {
       id: json['id'] as int,
       title: json['title'] as String,
       description: json['description'] as String?,
-      assignedTo: (json['assigned_to'] as List?)?.map((e) => e as int).toList() ?? [],
+      assignedTo:
+          (json['assigned_to'] as List?)?.map((e) => e as int).toList() ?? [],
       projectId: json['project_id'] as int?,
-      dueDate: json['due_date'] != null ? DateTime.parse(json['due_date'] as String) : null,
+      dueDate: json['due_date'] != null
+          ? DateTime.parse(json['due_date'] as String)
+          : null,
       priority: json['priority'] as String,
       status: json['status'] as String,
     );

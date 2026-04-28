@@ -6,7 +6,6 @@ import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
 import 'package:leopardo_rh/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_rh/features/modules/data/modules_repository.dart';
 import 'package:leopardo_rh/features/modules/providers/modules_provider.dart';
 import 'package:leopardo_rh/features/team/providers/team_provider.dart';
 import 'package:leopardo_rh/models/app_notification.dart';
@@ -21,7 +20,8 @@ class ModulesScreen extends ConsumerStatefulWidget {
   ConsumerState<ModulesScreen> createState() => _ModulesScreenState();
 }
 
-class _ModulesScreenState extends ConsumerState<ModulesScreen> with SingleTickerProviderStateMixin {
+class _ModulesScreenState extends ConsumerState<ModulesScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -108,7 +108,8 @@ class _EvaluationsTab extends ConsumerWidget {
                 const EmptyState(
                   icon: Icons.insights_outlined,
                   title: 'Aucune evaluation',
-                  description: 'Les evaluations manager/employe disponibles sur l API apparaitront ici.',
+                  description:
+                      'Les evaluations manager/employe disponibles sur l API apparaitront ici.',
                 ),
               ],
             );
@@ -148,7 +149,11 @@ class _EvaluationsTab extends ConsumerWidget {
     );
   }
 
-  void _showEvaluationActions(BuildContext context, WidgetRef ref, Evaluation evaluation) {
+  void _showEvaluationActions(
+    BuildContext context,
+    WidgetRef ref,
+    Evaluation evaluation,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -166,7 +171,9 @@ class _EvaluationsTab extends ConsumerWidget {
                     await _runAction(
                       context,
                       ref,
-                      () => ref.read(modulesRepositoryProvider).submitEvaluation(evaluation.id),
+                      () => ref
+                          .read(modulesRepositoryProvider)
+                          .submitEvaluation(evaluation.id),
                       successMessage: 'Evaluation soumise.',
                     );
                   },
@@ -180,7 +187,9 @@ class _EvaluationsTab extends ConsumerWidget {
                     await _runAction(
                       context,
                       ref,
-                      () => ref.read(modulesRepositoryProvider).deleteEvaluation(evaluation.id),
+                      () => ref
+                          .read(modulesRepositoryProvider)
+                          .deleteEvaluation(evaluation.id),
                       successMessage: 'Evaluation supprimee.',
                     );
                   },
@@ -194,7 +203,9 @@ class _EvaluationsTab extends ConsumerWidget {
                     await _runAction(
                       context,
                       ref,
-                      () => ref.read(modulesRepositoryProvider).acknowledgeEvaluation(evaluation.id),
+                      () => ref
+                          .read(modulesRepositoryProvider)
+                          .acknowledgeEvaluation(evaluation.id),
                       successMessage: 'Evaluation accusee reception.',
                     );
                   },
@@ -216,11 +227,15 @@ class _EvaluationsTab extends ConsumerWidget {
       await action();
       ref.invalidate(evaluationsProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(successMessage)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(successMessage)));
       }
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Echec : $error')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $error')));
       }
     }
   }
@@ -239,7 +254,9 @@ class _EvaluationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final person = isManager ? item.employee?.fullName ?? 'Collaborateur' : item.evaluator?.fullName ?? 'Manager';
+    final person = isManager
+        ? item.employee?.fullName ?? 'Collaborateur'
+        : item.evaluator?.fullName ?? 'Manager';
     final score = item.score != null ? item.score!.toStringAsFixed(1) : '-';
 
     return Card(
@@ -324,7 +341,8 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                 return const EmptyState(
                   icon: Icons.payments_outlined,
                   title: 'Aucune avance',
-                  description: 'Les demandes d avances sur salaire remonteront ici.',
+                  description:
+                      'Les demandes d avances sur salaire remonteront ici.',
                 );
               }
 
@@ -340,17 +358,22 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                       children: [
                         Text(item.reason ?? 'Sans motif'),
                         Text('Mensualites : ${item.repaymentMonths ?? '-'}'),
-                        if ((item.decisionComment ?? '').isNotEmpty) Text(item.decisionComment!),
+                        if ((item.decisionComment ?? '').isNotEmpty)
+                          Text(item.decisionComment!),
                       ],
                     ),
                   ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      LeopardoBadge.forStatus(item.status, _advanceLabel(item.status)),
+                      LeopardoBadge.forStatus(
+                        item.status,
+                        _advanceLabel(item.status),
+                      ),
                       const SizedBox(height: 8),
                       IconButton(
-                        onPressed: () => _showAdvanceActions(context, ref, item),
+                        onPressed: () =>
+                            _showAdvanceActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
                       ),
                     ],
@@ -372,7 +395,11 @@ class _SalaryAdvancesTab extends ConsumerWidget {
     );
   }
 
-  void _showAdvanceActions(BuildContext context, WidgetRef ref, SalaryAdvance item) {
+  void _showAdvanceActions(
+    BuildContext context,
+    WidgetRef ref,
+    SalaryAdvance item,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -390,7 +417,9 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                     await _decisionDialog(
                       context,
                       title: 'Approuver cette avance',
-                      onSubmit: (comment) => ref.read(modulesRepositoryProvider).approveSalaryAdvance(
+                      onSubmit: (comment) => ref
+                          .read(modulesRepositoryProvider)
+                          .approveSalaryAdvance(
                             item.id,
                             decisionComment: comment,
                           ),
@@ -407,7 +436,9 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                     await _decisionDialog(
                       context,
                       title: 'Rejeter cette avance',
-                      onSubmit: (comment) => ref.read(modulesRepositoryProvider).rejectSalaryAdvance(
+                      onSubmit: (comment) => ref
+                          .read(modulesRepositoryProvider)
+                          .rejectSalaryAdvance(
                             item.id,
                             decisionComment: comment,
                           ),
@@ -422,7 +453,9 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                   onTap: () async {
                     Navigator.of(context).pop();
                     try {
-                      await ref.read(modulesRepositoryProvider).cancelSalaryAdvance(item.id);
+                      await ref
+                          .read(modulesRepositoryProvider)
+                          .cancelSalaryAdvance(item.id);
                       ref.invalidate(salaryAdvancesProvider);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -462,8 +495,14 @@ class _SalaryAdvancesTab extends ConsumerWidget {
           decoration: const InputDecoration(labelText: 'Commentaire'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Annuler')),
-          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Valider')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Valider'),
+          ),
         ],
       ),
     );
@@ -473,13 +512,15 @@ class _SalaryAdvancesTab extends ConsumerWidget {
       await onSubmit(controller.text);
       ref.invalidate(salaryAdvancesProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Decision enregistree.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Decision enregistree.')));
       }
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Echec : $error')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $error')));
       }
     }
   }
@@ -530,7 +571,8 @@ class _PayrollsTab extends ConsumerWidget {
                 return const EmptyState(
                   icon: Icons.request_page_outlined,
                   title: 'Aucun bulletin',
-                  description: 'Les bulletins exposes par l API seront visibles ici.',
+                  description:
+                      'Les bulletins exposes par l API seront visibles ici.',
                 );
               }
 
@@ -538,25 +580,35 @@ class _PayrollsTab extends ConsumerWidget {
               return Card(
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  title: Text('${_monthName(item.periodMonth)} ${item.periodYear}'),
+                  title: Text(
+                    '${_monthName(item.periodMonth)} ${item.periodYear}',
+                  ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(item.employee?.fullName ?? 'Mon bulletin'),
-                        Text('Brut : ${item.grossSalary?.toStringAsFixed(0) ?? '-'}'),
-                        Text('Net : ${item.netSalary?.toStringAsFixed(0) ?? '-'}'),
+                        Text(
+                          'Brut : ${item.grossSalary?.toStringAsFixed(0) ?? '-'}',
+                        ),
+                        Text(
+                          'Net : ${item.netSalary?.toStringAsFixed(0) ?? '-'}',
+                        ),
                       ],
                     ),
                   ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      LeopardoBadge.forStatus(item.status, _payrollLabel(item.status)),
+                      LeopardoBadge.forStatus(
+                        item.status,
+                        _payrollLabel(item.status),
+                      ),
                       const SizedBox(height: 8),
                       IconButton(
-                        onPressed: () => _showPayrollActions(context, ref, item),
+                        onPressed: () =>
+                            _showPayrollActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
                       ),
                     ],
@@ -578,7 +630,11 @@ class _PayrollsTab extends ConsumerWidget {
     );
   }
 
-  void _showPayrollActions(BuildContext context, WidgetRef ref, PayrollRecord item) {
+  void _showPayrollActions(
+    BuildContext context,
+    WidgetRef ref,
+    PayrollRecord item,
+  ) {
     if (!isManager) return;
 
     showModalBottomSheet(
@@ -596,7 +652,9 @@ class _PayrollsTab extends ConsumerWidget {
                   onTap: () async {
                     Navigator.of(context).pop();
                     try {
-                      await ref.read(modulesRepositoryProvider).validatePayroll(item.id);
+                      await ref
+                          .read(modulesRepositoryProvider)
+                          .validatePayroll(item.id);
                       ref.invalidate(payrollsProvider);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -618,7 +676,9 @@ class _PayrollsTab extends ConsumerWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                   try {
-                    await ref.read(modulesRepositoryProvider).deletePayroll(item.id);
+                    await ref
+                        .read(modulesRepositoryProvider)
+                        .deletePayroll(item.id);
                     ref.invalidate(payrollsProvider);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -627,9 +687,9 @@ class _PayrollsTab extends ConsumerWidget {
                     }
                   } catch (error) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Echec : $error')),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
                     }
                   }
                 },
@@ -681,11 +741,17 @@ class _NotificationsTab extends ConsumerWidget {
                 return OutlinedButton.icon(
                   onPressed: () async {
                     try {
-                      await ref.read(modulesRepositoryProvider).markAllNotificationsRead();
+                      await ref
+                          .read(modulesRepositoryProvider)
+                          .markAllNotificationsRead();
                       ref.invalidate(notificationsProvider);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Toutes les notifications sont lues.')),
+                          const SnackBar(
+                            content: Text(
+                              'Toutes les notifications sont lues.',
+                            ),
+                          ),
                         );
                       }
                     } catch (error) {
@@ -705,7 +771,8 @@ class _NotificationsTab extends ConsumerWidget {
                 return const EmptyState(
                   icon: Icons.notifications_none,
                   title: 'Aucune notification',
-                  description: 'Les notifications RH exposees par l API remonteront ici.',
+                  description:
+                      'Les notifications RH exposees par l API remonteront ici.',
                 );
               }
 
@@ -721,7 +788,11 @@ class _NotificationsTab extends ConsumerWidget {
     );
   }
 
-  void _showNotificationActions(BuildContext context, WidgetRef ref, AppNotification item) {
+  void _showNotificationActions(
+    BuildContext context,
+    WidgetRef ref,
+    AppNotification item,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -737,7 +808,9 @@ class _NotificationsTab extends ConsumerWidget {
                   onTap: () async {
                     Navigator.of(context).pop();
                     try {
-                      await ref.read(modulesRepositoryProvider).markNotificationRead(item.id);
+                      await ref
+                          .read(modulesRepositoryProvider)
+                          .markNotificationRead(item.id);
                       ref.invalidate(notificationsProvider);
                     } catch (error) {
                       if (context.mounted) {
@@ -754,13 +827,15 @@ class _NotificationsTab extends ConsumerWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                   try {
-                    await ref.read(modulesRepositoryProvider).deleteNotification(item.id);
+                    await ref
+                        .read(modulesRepositoryProvider)
+                        .deleteNotification(item.id);
                     ref.invalidate(notificationsProvider);
                   } catch (error) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Echec : $error')),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
                     }
                   }
                 },
@@ -774,10 +849,7 @@ class _NotificationsTab extends ConsumerWidget {
 }
 
 class _NotificationCard extends StatelessWidget {
-  const _NotificationCard({
-    required this.item,
-    required this.onTap,
-  });
+  const _NotificationCard({required this.item, required this.onTap});
 
   final AppNotification item;
   final VoidCallback onTap;
@@ -807,12 +879,16 @@ class _CreateEvaluationSheet extends ConsumerStatefulWidget {
   const _CreateEvaluationSheet();
 
   @override
-  ConsumerState<_CreateEvaluationSheet> createState() => _CreateEvaluationSheetState();
+  ConsumerState<_CreateEvaluationSheet> createState() =>
+      _CreateEvaluationSheetState();
 }
 
-class _CreateEvaluationSheetState extends ConsumerState<_CreateEvaluationSheet> {
+class _CreateEvaluationSheetState
+    extends ConsumerState<_CreateEvaluationSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _periodController = TextEditingController(text: DateFormat('yyyy-MM').format(DateTime.now()));
+  final _periodController = TextEditingController(
+    text: DateFormat('yyyy-MM').format(DateTime.now()),
+  );
   final _scoreController = TextEditingController();
   final _strengthsController = TextEditingController();
   final _improvementsController = TextEditingController();
@@ -845,7 +921,10 @@ class _CreateEvaluationSheetState extends ConsumerState<_CreateEvaluationSheet> 
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Nouvelle evaluation', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Nouvelle evaluation',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               team.when(
                 loading: () => const Padding(
@@ -854,15 +933,18 @@ class _CreateEvaluationSheetState extends ConsumerState<_CreateEvaluationSheet> 
                 ),
                 error: (error, _) => Text('Equipe indisponible : $error'),
                 data: (employees) => DropdownButtonFormField<int>(
-                  value: _employeeId,
+                  initialValue: _employeeId,
                   decoration: const InputDecoration(labelText: 'Collaborateur'),
                   items: employees
-                      .map((employee) => DropdownMenuItem<int>(
-                            value: employee.id,
-                            child: Text(employee.fullName),
-                          ))
+                      .map(
+                        (employee) => DropdownMenuItem<int>(
+                          value: employee.id,
+                          child: Text(employee.fullName),
+                        ),
+                      )
                       .toList(),
-                  validator: (value) => value == null ? 'Choisissez un collaborateur' : null,
+                  validator: (value) =>
+                      value == null ? 'Choisissez un collaborateur' : null,
                   onChanged: (value) => setState(() => _employeeId = value),
                 ),
               ),
@@ -870,12 +952,16 @@ class _CreateEvaluationSheetState extends ConsumerState<_CreateEvaluationSheet> 
               TextFormField(
                 controller: _periodController,
                 decoration: const InputDecoration(labelText: 'Periode'),
-                validator: (value) => (value == null || value.trim().isEmpty) ? 'Periode requise' : null,
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Periode requise'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _scoreController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(labelText: 'Score / 5'),
               ),
               const SizedBox(height: 12),
@@ -887,13 +973,17 @@ class _CreateEvaluationSheetState extends ConsumerState<_CreateEvaluationSheet> 
               const SizedBox(height: 12),
               TextFormField(
                 controller: _improvementsController,
-                decoration: const InputDecoration(labelText: 'Axes d amelioration'),
+                decoration: const InputDecoration(
+                  labelText: 'Axes d amelioration',
+                ),
                 maxLines: 2,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _commentController,
-                decoration: const InputDecoration(labelText: 'Commentaire global'),
+                decoration: const InputDecoration(
+                  labelText: 'Commentaire global',
+                ),
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
@@ -924,15 +1014,15 @@ class _CreateEvaluationSheetState extends ConsumerState<_CreateEvaluationSheet> 
       ref.invalidate(evaluationsProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Evaluation creee.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Evaluation creee.')));
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Echec : $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 }
@@ -941,7 +1031,8 @@ class _CreateAdvanceSheet extends ConsumerStatefulWidget {
   const _CreateAdvanceSheet();
 
   @override
-  ConsumerState<_CreateAdvanceSheet> createState() => _CreateAdvanceSheetState();
+  ConsumerState<_CreateAdvanceSheet> createState() =>
+      _CreateAdvanceSheetState();
 }
 
 class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
@@ -972,29 +1063,42 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Demande d avance', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Demande d avance',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(labelText: 'Montant'),
-                validator: (value) => (double.tryParse((value ?? '').replaceAll(',', '.')) == null)
-                    ? 'Montant invalide'
-                    : null,
+                validator: (value) =>
+                    (double.tryParse((value ?? '').replaceAll(',', '.')) ==
+                            null)
+                        ? 'Montant invalide'
+                        : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _monthsController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Nombre de mensualites'),
-                validator: (value) => (int.tryParse(value ?? '') == null) ? 'Valeur invalide' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre de mensualites',
+                ),
+                validator: (value) => (int.tryParse(value ?? '') == null)
+                    ? 'Valeur invalide'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _reasonController,
                 decoration: const InputDecoration(labelText: 'Motif'),
                 maxLines: 3,
-                validator: (value) => (value == null || value.trim().isEmpty) ? 'Motif requis' : null,
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Motif requis'
+                    : null,
               ),
               const SizedBox(height: 20),
               FilledButton(
@@ -1021,15 +1125,15 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
       ref.invalidate(salaryAdvancesProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande envoyee.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Demande envoyee.')));
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Echec : $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 }
@@ -1038,7 +1142,8 @@ class _CreatePayrollSheet extends ConsumerStatefulWidget {
   const _CreatePayrollSheet();
 
   @override
-  ConsumerState<_CreatePayrollSheet> createState() => _CreatePayrollSheetState();
+  ConsumerState<_CreatePayrollSheet> createState() =>
+      _CreatePayrollSheetState();
 }
 
 class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
@@ -1086,21 +1191,27 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Creer un bulletin', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Creer un bulletin',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               team.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => Text('Equipe indisponible : $error'),
                 data: (employees) => DropdownButtonFormField<int>(
-                  value: _employeeId,
+                  initialValue: _employeeId,
                   decoration: const InputDecoration(labelText: 'Collaborateur'),
                   items: employees
-                      .map((employee) => DropdownMenuItem<int>(
-                            value: employee.id,
-                            child: Text(employee.fullName),
-                          ))
+                      .map(
+                        (employee) => DropdownMenuItem<int>(
+                          value: employee.id,
+                          child: Text(employee.fullName),
+                        ),
+                      )
                       .toList(),
-                  validator: (value) => value == null ? 'Choisissez un collaborateur' : null,
+                  validator: (value) =>
+                      value == null ? 'Choisissez un collaborateur' : null,
                   onChanged: (value) => setState(() => _employeeId = value),
                 ),
               ),
@@ -1109,7 +1220,7 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<int>(
-                      value: _month,
+                      initialValue: _month,
                       decoration: const InputDecoration(labelText: 'Mois'),
                       items: List.generate(
                         12,
@@ -1118,25 +1229,24 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
                           child: Text('${index + 1}'),
                         ),
                       ),
-                      onChanged: (value) => setState(() => _month = value ?? _month),
+                      onChanged: (value) =>
+                          setState(() => _month = value ?? _month),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<int>(
-                      value: _year,
+                      initialValue: _year,
                       decoration: const InputDecoration(labelText: 'Annee'),
-                      items: List.generate(
-                        5,
-                        (index) {
-                          final year = DateTime.now().year - 2 + index;
-                          return DropdownMenuItem<int>(
-                            value: year,
-                            child: Text('$year'),
-                          );
-                        },
-                      ),
-                      onChanged: (value) => setState(() => _year = value ?? _year),
+                      items: List.generate(5, (index) {
+                        final year = DateTime.now().year - 2 + index;
+                        return DropdownMenuItem<int>(
+                          value: year,
+                          child: Text('$year'),
+                        );
+                      }),
+                      onChanged: (value) =>
+                          setState(() => _year = value ?? _year),
                     ),
                   ),
                 ],
@@ -1171,14 +1281,20 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
     );
   }
 
-  Widget _moneyField(TextEditingController controller, String label, {bool required = false}) {
+  Widget _moneyField(
+    TextEditingController controller,
+    String label, {
+    bool required = false,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(labelText: label),
       validator: (value) {
         if (!required && (value == null || value.trim().isEmpty)) return null;
-        return double.tryParse((value ?? '').replaceAll(',', '.')) == null ? 'Valeur invalide' : null;
+        return double.tryParse((value ?? '').replaceAll(',', '.')) == null
+            ? 'Valeur invalide'
+            : null;
       },
     );
   }
@@ -1186,7 +1302,8 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate() || _employeeId == null) return;
 
-    double parse(TextEditingController controller) => double.parse(controller.text.replaceAll(',', '.'));
+    double parse(TextEditingController controller) =>
+        double.parse(controller.text.replaceAll(',', '.'));
 
     setState(() => _submitting = true);
     try {
@@ -1207,15 +1324,15 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
       ref.invalidate(payrollsProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bulletin cree.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Bulletin cree.')));
     } catch (error) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Echec : $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
   }
 }

@@ -32,9 +32,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.error!)));
       }
     });
 
@@ -109,7 +109,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             validator: (value) {
                               final email = value?.trim() ?? '';
                               if (email.isEmpty) return 'Email obligatoire';
-                              if (!email.contains('@') || !email.contains('.')) {
+                              if (!email.contains('@') ||
+                                  !email.contains('.')) {
                                 return 'Email invalide';
                               }
                               return null;
@@ -183,7 +184,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const SizedBox(height: 10),
                           TextButton(
                             onPressed: () => context.go('/register'),
-                            child: const Text('Je n ai pas encore d invitation'),
+                            child: const Text(
+                              'Je n ai pas encore d invitation',
+                            ),
                           ),
                         ],
                       ),
@@ -240,10 +243,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     FocusScope.of(context).unfocus();
-    ref.read(authProvider.notifier).login(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
+    ref
+        .read(authProvider.notifier)
+        .login(_emailController.text.trim(), _passwordController.text);
   }
 }
 
@@ -305,9 +307,7 @@ class _GlowOrb extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color, color.withValues(alpha: 0)],
-          ),
+          gradient: RadialGradient(colors: [color, color.withValues(alpha: 0)]),
         ),
       ),
     );

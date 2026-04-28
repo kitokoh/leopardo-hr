@@ -54,7 +54,11 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }
 
   Future<void> loadTodayData() async {
-    state = state.copyWith(isLoading: true, clearError: true, clearNotice: true);
+    state = state.copyWith(
+      isLoading: true,
+      clearError: true,
+      clearNotice: true,
+    );
     try {
       final data = await _repository.getTodayStatus();
       state = state.copyWith(
@@ -74,11 +78,9 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       if (_isRecoverableLoadError(e)) {
         state = state.copyWith(
           isLoading: false,
-          context: {
-            ...?state.context,
-            'load_degraded': true,
-          },
-          notice: 'Les donnees du jour prennent plus de temps que prevu. L\'ecran reste utilisable, vous pouvez actualiser.',
+          context: {...?state.context, 'load_degraded': true},
+          notice:
+              'Les donnees du jour prennent plus de temps que prevu. L\'ecran reste utilisable, vous pouvez actualiser.',
         );
         return;
       }
@@ -143,16 +145,23 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }
 }
 
-final attendanceProvider = StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-});
+final attendanceProvider =
+    StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
+      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+    });
 
-final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((ref, date) async {
+final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
+  ref,
+  date,
+) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getHistory(date.year, date.month);
 });
 
-final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((ref, date) async {
+final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((
+  ref,
+  date,
+) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getMyMonthlySummary(year: date.year, month: date.month);
 });

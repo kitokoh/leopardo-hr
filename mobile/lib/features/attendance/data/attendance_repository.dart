@@ -19,21 +19,30 @@ class AttendanceRepository {
   }
 
   Future<AttendanceLog> checkOut() async {
-    final response = await apiClient.dio.post('/attendance/check-out', data: {});
+    final response = await apiClient.dio.post(
+      '/attendance/check-out',
+      data: {},
+    );
     return AttendanceLog.fromJson(response.data['data']);
   }
 
   Future<DailySummary> getDailySummary(int employeeId) async {
-    final response = await apiClient.dio.get('/employees/$employeeId/daily-summary');
+    final response = await apiClient.dio.get(
+      '/employees/$employeeId/daily-summary',
+    );
     return DailySummary.fromJson(response.data['data']);
   }
 
   Future<DailySummary> getMyDailySummary({DateTime? date}) async {
     final qp = <String, dynamic>{};
     if (date != null) {
-      qp['date'] = '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      qp['date'] =
+          '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     }
-    final response = await apiClient.dio.get('/me/daily-summary', queryParameters: qp);
+    final response = await apiClient.dio.get(
+      '/me/daily-summary',
+      queryParameters: qp,
+    );
     return DailySummary.fromJson(response.data['data']);
   }
 
@@ -41,33 +50,51 @@ class AttendanceRepository {
     final qp = <String, dynamic>{};
     if (year != null) qp['year'] = year;
     if (month != null) qp['month'] = month;
-    final response = await apiClient.dio.get('/me/monthly-summary', queryParameters: qp);
-    return MonthlySummary.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    final response = await apiClient.dio.get(
+      '/me/monthly-summary',
+      queryParameters: qp,
+    );
+    return MonthlySummary.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
   }
 
-  Future<MonthlySummary> getMyQuickEstimate({required DateTime from, required DateTime to}) async {
-    String fmt(DateTime d) => '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-    final response = await apiClient.dio.get('/me/quick-estimate', queryParameters: {
-      'from': fmt(from),
-      'to': fmt(to),
-    });
-    return MonthlySummary.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+  Future<MonthlySummary> getMyQuickEstimate({
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    String fmt(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    final response = await apiClient.dio.get(
+      '/me/quick-estimate',
+      queryParameters: {'from': fmt(from), 'to': fmt(to)},
+    );
+    return MonthlySummary.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
   }
 
   Future<List<AttendanceLog>> getHistory(int year, int month) async {
     final from = DateTime(year, month, 1);
     final to = DateTime(year, month + 1, 0);
 
-    final response = await apiClient.dio.get('/attendance', queryParameters: {
-      'date_from': '${from.year.toString().padLeft(4, '0')}-${from.month.toString().padLeft(2, '0')}-${from.day.toString().padLeft(2, '0')}',
-      'date_to': '${to.year.toString().padLeft(4, '0')}-${to.month.toString().padLeft(2, '0')}-${to.day.toString().padLeft(2, '0')}',
-      'per_page': 50
-    });
+    final response = await apiClient.dio.get(
+      '/attendance',
+      queryParameters: {
+        'date_from':
+            '${from.year.toString().padLeft(4, '0')}-${from.month.toString().padLeft(2, '0')}-${from.day.toString().padLeft(2, '0')}',
+        'date_to':
+            '${to.year.toString().padLeft(4, '0')}-${to.month.toString().padLeft(2, '0')}-${to.day.toString().padLeft(2, '0')}',
+        'per_page': 50,
+      },
+    );
     final items = response.data['data'] as List;
     return items.map((e) => AttendanceLog.fromJson(e)).toList();
   }
 
-  static Map<String, dynamic> decodeTodayResponse(Map<String, dynamic> responseData) {
+  static Map<String, dynamic> decodeTodayResponse(
+    Map<String, dynamic> responseData,
+  ) {
     final payload = responseData['data'];
 
     if (payload == null) {
@@ -80,7 +107,9 @@ class AttendanceRepository {
 
     final data = payload.cast<String, dynamic>();
     final rawContext = data['context'] ?? responseData['context'];
-    final context = rawContext is Map ? rawContext.cast<String, dynamic>() : null;
+    final context = rawContext is Map
+        ? rawContext.cast<String, dynamic>()
+        : null;
 
     if (data.containsKey('items')) {
       return {
@@ -114,7 +143,9 @@ class AttendanceRepository {
         checkIn: _parseLocalTime(today['check_in_time'] as String?),
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
-        workedHours: today['hours_worked'] != null ? double.tryParse(today['hours_worked'].toString()) : 0.0,
+        workedHours: today['hours_worked'] != null
+            ? double.tryParse(today['hours_worked'].toString())
+            : 0.0,
       ),
       'context': context,
     };

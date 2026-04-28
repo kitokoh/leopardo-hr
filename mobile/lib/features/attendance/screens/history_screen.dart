@@ -43,7 +43,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final historyAsync = ref.watch(historyProvider(DateTime(now.year, now.month)));
+    final historyAsync = ref.watch(
+      historyProvider(DateTime(now.year, now.month)),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -89,7 +91,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           error: (err, stack) {
             final errorText = err.toString();
 
-            if (errorText.contains('401') || errorText.contains('UNAUTHENTICATED')) {
+            if (errorText.contains('401') ||
+                errorText.contains('UNAUTHENTICATED')) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ref.read(authProvider.notifier).logout();
               });
@@ -169,8 +172,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             }
 
             final totalJours = logs.length;
-            final totalHeures =
-                logs.fold<double>(0, (sum, log) => sum + (log.workedHours ?? 0));
+            final totalHeures = logs.fold<double>(
+              0,
+              (sum, log) => sum + (log.workedHours ?? 0),
+            );
 
             return Column(
               children: [
@@ -216,7 +221,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor: statusColor.withValues(alpha: 0.2),
-                          child: Icon(Icons.circle, color: statusColor, size: 12),
+                          child: Icon(
+                            Icons.circle,
+                            color: statusColor,
+                            size: 12,
+                          ),
                         ),
                         title: Text(
                           '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
@@ -224,7 +233,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         subtitle: Text(
                           log.checkIn != null
                               ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                  '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                    '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
                               : 'Absence',
                         ),
                         trailing: Text(
@@ -252,7 +261,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             const Text('Total jours'),
                             Text(
                               '$totalJours',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -263,7 +274,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             const Text('Total heures'),
                             Text(
                               '${totalHeures.toStringAsFixed(1)}h',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),

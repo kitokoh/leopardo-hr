@@ -47,7 +47,8 @@ class CameraPolicy
 
     public function delete(Employee $actor, Camera $camera): bool
     {
-        return $this->update($actor, $camera);
+        return $actor->hasManagerRole('principal')
+            && $camera->company_id === $actor->company_id;
     }
 
     public function testRtsp(Employee $actor): bool
@@ -66,7 +67,7 @@ class CameraPolicy
             return false;
         }
 
-        if ($actor->hasManagerRole('principal')) {
+        if ($actor->hasManagerRole('principal', 'rh')) {
             return true;
         }
 
@@ -78,6 +79,16 @@ class CameraPolicy
         $camera = $token->camera;
 
         return $camera instanceof Camera && $this->shareAccess($actor, $camera);
+    }
+
+    public function viewLogs(Employee $actor, Camera $camera): bool
+    {
+        return $this->view($actor, $camera);
+    }
+
+    public function managePermissions(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal');
     }
 
     private function activePermission(Employee $actor, Camera $camera): ?CameraPermission

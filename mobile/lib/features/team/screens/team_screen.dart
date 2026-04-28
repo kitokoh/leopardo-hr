@@ -18,7 +18,8 @@ class TeamScreen extends ConsumerStatefulWidget {
   ConsumerState<TeamScreen> createState() => _TeamScreenState();
 }
 
-class _TeamScreenState extends ConsumerState<TeamScreen> with SingleTickerProviderStateMixin {
+class _TeamScreenState extends ConsumerState<TeamScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -76,10 +77,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen> with SingleTickerProvid
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          _EmployeesTab(),
-          _InvitationsTab(),
-        ],
+        children: const [_EmployeesTab(), _InvitationsTab()],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openCreateEmployeeSheet(context),
@@ -118,7 +116,8 @@ class _EmployeesTab extends ConsumerWidget {
                 EmptyState(
                   icon: Icons.group_add,
                   title: 'Aucun collaborateur',
-                  description: 'Commencez par ajouter votre equipe avec le bouton ci-dessous.',
+                  description:
+                      'Commencez par ajouter votre equipe avec le bouton ci-dessous.',
                 ),
               ],
             );
@@ -129,13 +128,14 @@ class _EmployeesTab extends ConsumerWidget {
             itemBuilder: (_, index) {
               final e = employees[index];
               return ListTile(
-                leading: CircleAvatar(
-                  child: Text(_initials(e)),
-                ),
+                leading: CircleAvatar(child: Text(_initials(e))),
                 title: Text(e.fullName),
                 subtitle: Text('${e.email}\nRole : ${_roleLabel(e)}'),
                 isThreeLine: true,
-                trailing: LeopardoBadge.forStatus(e.status, _statusLabel(e.status)),
+                trailing: LeopardoBadge.forStatus(
+                  e.status,
+                  _statusLabel(e.status),
+                ),
                 onTap: () => _showActions(context, ref, e),
               );
             },
@@ -146,9 +146,10 @@ class _EmployeesTab extends ConsumerWidget {
   }
 
   String _initials(Employee e) {
-    final parts = [e.firstName, e.lastName]
-        .where((p) => p.isNotEmpty)
-        .map((p) => p.substring(0, 1).toUpperCase());
+    final parts = [
+      e.firstName,
+      e.lastName,
+    ].where((p) => p.isNotEmpty).map((p) => p.substring(0, 1).toUpperCase());
     return parts.join();
   }
 
@@ -175,8 +176,14 @@ class _EmployeesTab extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(employee.fullName, style: Theme.of(context).textTheme.titleLarge),
-            Text(employee.email, style: const TextStyle(color: AppColors.textMuted)),
+            Text(
+              employee.fullName,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Text(
+              employee.email,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
             const SizedBox(height: 16),
             if (employee.status != 'archived')
               ListTile(
@@ -193,15 +200,27 @@ class _EmployeesTab extends ConsumerWidget {
     );
   }
 
-  Future<void> _archive(BuildContext context, WidgetRef ref, Employee employee) async {
+  Future<void> _archive(
+    BuildContext context,
+    WidgetRef ref,
+    Employee employee,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Archiver cet employe ?'),
-        content: Text('${employee.fullName} n aura plus acces a l application.'),
+        content: Text(
+          '${employee.fullName} n aura plus acces a l application.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Annuler')),
-          TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Archiver')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Archiver'),
+          ),
         ],
       ),
     );
@@ -210,13 +229,15 @@ class _EmployeesTab extends ConsumerWidget {
       await ref.read(employeeRepositoryProvider).archive(employee.id);
       ref.invalidate(teamListProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Employe archive.')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Employe archive.')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     }
   }
@@ -242,7 +263,8 @@ class _InvitationsTab extends ConsumerWidget {
                 EmptyState(
                   icon: Icons.mark_email_read_outlined,
                   title: 'Aucune invitation en cours',
-                  description: 'Les invitations envoyees a vos futurs collaborateurs s afficheront ici.',
+                  description:
+                      'Les invitations envoyees a vos futurs collaborateurs s afficheront ici.',
                 ),
               ],
             );
@@ -257,7 +279,10 @@ class _InvitationsTab extends ConsumerWidget {
                 title: Text(inv.email),
                 subtitle: Row(
                   children: [
-                    LeopardoBadge.forStatus(inv.status, _invitationLabel(inv.status)),
+                    LeopardoBadge.forStatus(
+                      inv.status,
+                      _invitationLabel(inv.status),
+                    ),
                   ],
                 ),
                 trailing: inv.status == 'pending'
@@ -284,18 +309,24 @@ class _InvitationsTab extends ConsumerWidget {
         _ => status,
       };
 
-  Future<void> _resend(BuildContext context, WidgetRef ref, Invitation inv) async {
+  Future<void> _resend(
+    BuildContext context,
+    WidgetRef ref,
+    Invitation inv,
+  ) async {
     try {
       await ref.read(employeeRepositoryProvider).resendInvitation(inv.id);
       ref.invalidate(invitationsListProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Invitation renvoyee.')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invitation renvoyee.')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     }
   }
@@ -305,7 +336,8 @@ class _CreateEmployeeForm extends ConsumerStatefulWidget {
   const _CreateEmployeeForm();
 
   @override
-  ConsumerState<_CreateEmployeeForm> createState() => _CreateEmployeeFormState();
+  ConsumerState<_CreateEmployeeForm> createState() =>
+      _CreateEmployeeFormState();
 }
 
 class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
@@ -340,23 +372,30 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Nouvel employe', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Nouvel employe',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _firstName,
                 decoration: const InputDecoration(labelText: 'Prenom'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _lastName,
                 decoration: const InputDecoration(labelText: 'Nom'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _email,
-                decoration: const InputDecoration(labelText: 'Email professionnel'),
+                decoration: const InputDecoration(
+                  labelText: 'Email professionnel',
+                ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Obligatoire';
@@ -367,12 +406,14 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _phone,
-                decoration: const InputDecoration(labelText: 'Telephone (optionnel)'),
+                decoration: const InputDecoration(
+                  labelText: 'Telephone (optionnel)',
+                ),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _role,
+                initialValue: _role,
                 decoration: const InputDecoration(labelText: 'Role'),
                 items: const [
                   DropdownMenuItem(value: 'employee', child: Text('Employe')),
@@ -386,17 +427,26 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               if (_role == 'manager') ...[
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _managerRole,
-                  decoration: const InputDecoration(labelText: 'Type de manager'),
+                  initialValue: _managerRole,
+                  decoration: const InputDecoration(
+                    labelText: 'Type de manager',
+                  ),
                   items: const [
                     DropdownMenuItem(value: 'rh', child: Text('RH')),
                     DropdownMenuItem(value: 'dept', child: Text('Departement')),
-                    DropdownMenuItem(value: 'comptable', child: Text('Comptable')),
-                    DropdownMenuItem(value: 'superviseur', child: Text('Superviseur')),
+                    DropdownMenuItem(
+                      value: 'comptable',
+                      child: Text('Comptable'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'superviseur',
+                      child: Text('Superviseur'),
+                    ),
                   ],
-                  validator: (v) => (_role == 'manager' && (v == null || v.isEmpty))
-                      ? 'Selectionnez un type'
-                      : null,
+                  validator: (v) =>
+                      (_role == 'manager' && (v == null || v.isEmpty))
+                          ? 'Selectionnez un type'
+                          : null,
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
@@ -435,16 +485,16 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
       ref.invalidate(invitationsListProvider);
       if (mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invitation envoyee.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invitation envoyee.')));
       }
     } catch (e) {
       if (mounted) {
         setState(() => _submitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Echec : $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     }
   }

@@ -45,7 +45,9 @@ class ModulesHubScreen extends StatelessWidget {
         color: AppColors.ia,
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Module Projets & Tâches bientôt disponible')),
+            const SnackBar(
+              content: Text('Module Projets & Tâches bientôt disponible'),
+            ),
           );
         },
       ),

@@ -17,7 +17,10 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bgDark,
         elevation: 0,
-        title: Text('Mes Avances', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
+        title: Text(
+          'Mes Avances',
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.of(context).pop(),
@@ -28,7 +31,8 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
             ? const EmptyState(
                 icon: Icons.payments,
                 title: 'Aucune avance',
-                description: 'Vous n\'avez pas encore demandé d\'avance de salaire.',
+                description:
+                    'Vous n\'avez pas encore demandé d\'avance de salaire.',
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -39,15 +43,32 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                     color: AppColors.cardDark,
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      title: Text('${advance.amount} DZD', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
-                      subtitle: Text(advance.reason ?? 'Aucun motif', style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark)),
-                      trailing: Text(advance.status, style: TextStyle(color: _getStatusColor(advance.status))),
+                      title: Text(
+                        '${advance.amount} DZD',
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      subtitle: Text(
+                        advance.reason ?? 'Aucun motif',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textMutedDark,
+                        ),
+                      ),
+                      trailing: Text(
+                        advance.status,
+                        style: TextStyle(
+                          color: _getStatusColor(advance.status),
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e.toString(), style: const TextStyle(color: Colors.red))),
+        error: (e, _) => Center(
+          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
+        ),
       ),
     );
   }
@@ -55,10 +76,14 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'active':
-      case 'approved': return AppColors.rh;
-      case 'pending': return AppColors.info;
-      case 'rejected': return Colors.red;
-      default: return AppColors.textMutedDark;
+      case 'approved':
+        return AppColors.rh;
+      case 'pending':
+        return AppColors.info;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return AppColors.textMutedDark;
     }
   }
 }

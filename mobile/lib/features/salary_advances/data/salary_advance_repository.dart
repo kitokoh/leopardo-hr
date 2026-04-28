@@ -16,10 +16,10 @@ class SalaryAdvanceRepository {
     required double amount,
     String? reason,
   }) async {
-    final response = await apiClient.dio.post('/salary-advances', data: {
-      'amount': amount,
-      'reason': reason,
-    });
+    final response = await apiClient.dio.post(
+      '/salary-advances',
+      data: {'amount': amount, 'reason': reason},
+    );
     return SalaryAdvance.fromJson(response.data['data']);
   }
 }

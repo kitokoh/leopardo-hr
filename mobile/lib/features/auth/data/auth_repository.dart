@@ -11,11 +11,10 @@ class AuthRepository {
   AuthRepository(this.apiClient, this.storage, this.preferences);
 
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final response = await apiClient.dio.post('/auth/login', data: {
-      'email': email,
-      'password': password,
-      'device_name': 'Mobile App',
-    });
+    final response = await apiClient.dio.post(
+      '/auth/login',
+      data: {'email': email, 'password': password, 'device_name': 'Mobile App'},
+    );
 
     final data = response.data as Map<String, dynamic>;
     final employeeJson = extractEmployeeJson(data);
@@ -31,9 +30,7 @@ class AuthRepository {
       if (meData is Map) {
         final employee = Employee.fromJson(meData.cast<String, dynamic>());
         await _persistEmployeeContext(employee);
-        return {
-          'employee': employee,
-        };
+        return {'employee': employee};
       }
     } catch (_) {
       // Si /auth/me echoue on retombe sur la reponse de login.
@@ -42,9 +39,7 @@ class AuthRepository {
     final employee = Employee.fromJson(employeeJson);
     await _persistEmployeeContext(employee);
 
-    return {
-      'employee': employee,
-    };
+    return {'employee': employee};
   }
 
   Future<void> logout() async {
@@ -67,9 +62,7 @@ class AuthRepository {
       final data = response.data['data'];
       final employee = Employee.fromJson(data);
       await _persistEmployeeContext(employee);
-      return {
-        'employee': employee,
-      };
+      return {'employee': employee};
     } catch (e) {
       await storage.deleteToken();
       await preferences.clearLocaleSettings();
@@ -82,13 +75,18 @@ class AuthRepository {
     required String lastName,
     required String email,
   }) async {
-    final response = await apiClient.dio.patch('/auth/profile', data: {
-      'first_name': firstName.trim(),
-      'last_name': lastName.trim(),
-      'email': email.trim(),
-    });
+    final response = await apiClient.dio.patch(
+      '/auth/profile',
+      data: {
+        'first_name': firstName.trim(),
+        'last_name': lastName.trim(),
+        'email': email.trim(),
+      },
+    );
 
-    final employee = Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    final employee = Employee.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
     await _persistEmployeeContext(employee);
     return employee;
   }
@@ -98,24 +96,32 @@ class AuthRepository {
     required String newPassword,
     required String confirmation,
   }) async {
-    await apiClient.dio.post('/auth/change-password', data: {
-      'current_password': currentPassword,
-      'new_password': newPassword,
-      'new_password_confirmation': confirmation,
-    });
+    await apiClient.dio.post(
+      '/auth/change-password',
+      data: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'new_password_confirmation': confirmation,
+      },
+    );
   }
 
   Future<Employee> updatePreferredLanguage(String language) async {
-    final response = await apiClient.dio.patch('/auth/language', data: {
-      'language': language.trim().toLowerCase(),
-    });
+    final response = await apiClient.dio.patch(
+      '/auth/language',
+      data: {'language': language.trim().toLowerCase()},
+    );
 
-    final employee = Employee.fromJson((response.data['data'] as Map).cast<String, dynamic>());
+    final employee = Employee.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
     await _persistEmployeeContext(employee);
     return employee;
   }
 
-  static Map<String, dynamic> extractEmployeeJson(Map<String, dynamic> payload) {
+  static Map<String, dynamic> extractEmployeeJson(
+    Map<String, dynamic> payload,
+  ) {
     final data = payload['data'];
     if (data is Map) {
       final user = data['user'];

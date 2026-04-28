@@ -17,7 +17,10 @@ class PayrollListScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bgDark,
         elevation: 0,
-        title: Text('Mes Fiches de Paie', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
+        title: Text(
+          'Mes Fiches de Paie',
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.of(context).pop(),
@@ -28,7 +31,8 @@ class PayrollListScreen extends ConsumerWidget {
             ? const EmptyState(
                 icon: Icons.description,
                 title: 'Aucune fiche de paie',
-                description: 'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.',
+                description:
+                    'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.',
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -39,15 +43,30 @@ class PayrollListScreen extends ConsumerWidget {
                     color: AppColors.cardDark,
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      title: Text('Mois: ${payroll.month}/${payroll.year}', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
-                      subtitle: Text('Salaire Net: ${payroll.netSalary} DZD', style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark)),
-                      trailing: const Icon(Icons.download, color: AppColors.info),
+                      title: Text(
+                        'Mois: ${payroll.month}/${payroll.year}',
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Salaire Net: ${payroll.netSalary} DZD',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textMutedDark,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.download,
+                        color: AppColors.info,
+                      ),
                     ),
                   );
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e.toString(), style: const TextStyle(color: Colors.red))),
+        error: (e, _) => Center(
+          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
+        ),
       ),
     );
   }

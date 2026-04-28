@@ -49,7 +49,9 @@ final absenceRepositoryProvider = Provider<AbsenceRepository>((ref) {
   return AbsenceRepository(apiClient);
 });
 
-final salaryAdvanceRepositoryProvider = Provider<SalaryAdvanceRepository>((ref) {
+final salaryAdvanceRepositoryProvider = Provider<SalaryAdvanceRepository>((
+  ref,
+) {
   final apiClient = ref.watch(apiClientProvider);
   return SalaryAdvanceRepository(apiClient);
 });

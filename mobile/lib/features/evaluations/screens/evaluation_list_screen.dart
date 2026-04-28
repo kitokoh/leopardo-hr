@@ -17,7 +17,10 @@ class EvaluationListScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bgDark,
         elevation: 0,
-        title: Text('Mes Évaluations', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
+        title: Text(
+          'Mes Évaluations',
+          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.of(context).pop(),
@@ -28,7 +31,8 @@ class EvaluationListScreen extends ConsumerWidget {
             ? const EmptyState(
                 icon: Icons.assignment_turned_in,
                 title: 'Aucune évaluation',
-                description: 'Vous n\'avez pas encore d\'évaluation enregistrée.',
+                description:
+                    'Vous n\'avez pas encore d\'évaluation enregistrée.',
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -39,25 +43,46 @@ class EvaluationListScreen extends ConsumerWidget {
                     color: AppColors.cardDark,
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      title: Text('Période: ${evaluation.period}', style: AppTypography.subtitle.copyWith(color: AppColors.textDark)),
-                      subtitle: Text('Score: ${evaluation.score ?? "N/A"}', style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark)),
-                      trailing: Text(evaluation.status, style: TextStyle(color: _getStatusColor(evaluation.status))),
+                      title: Text(
+                        'Période: ${evaluation.period}',
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Score: ${evaluation.score ?? "N/A"}',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textMutedDark,
+                        ),
+                      ),
+                      trailing: Text(
+                        evaluation.status,
+                        style: TextStyle(
+                          color: _getStatusColor(evaluation.status),
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e.toString(), style: const TextStyle(color: Colors.red))),
+        error: (e, _) => Center(
+          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
+        ),
       ),
     );
   }
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'acknowledged': return AppColors.rh;
-      case 'submitted': return AppColors.info;
-      case 'draft': return AppColors.textMutedDark;
-      default: return AppColors.textMutedDark;
+      case 'acknowledged':
+        return AppColors.rh;
+      case 'submitted':
+        return AppColors.info;
+      case 'draft':
+        return AppColors.textMutedDark;
+      default:
+        return AppColors.textMutedDark;
     }
   }
 }

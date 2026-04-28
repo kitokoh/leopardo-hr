@@ -27,18 +27,18 @@ class AlertBanner extends StatelessWidget {
   final Widget? action;
 
   Color get _color => switch (level) {
-        AlertLevel.success => AppColors.success,
-        AlertLevel.warning => AppColors.warning,
-        AlertLevel.danger => AppColors.danger,
-        AlertLevel.info => AppColors.info,
-      };
+    AlertLevel.success => AppColors.success,
+    AlertLevel.warning => AppColors.warning,
+    AlertLevel.danger => AppColors.danger,
+    AlertLevel.info => AppColors.info,
+  };
 
   IconData get _defaultIcon => switch (level) {
-        AlertLevel.success => Icons.check_circle_outline,
-        AlertLevel.warning => Icons.warning_amber_outlined,
-        AlertLevel.danger => Icons.error_outline,
-        AlertLevel.info => Icons.info_outline,
-      };
+    AlertLevel.success => Icons.check_circle_outline,
+    AlertLevel.warning => Icons.warning_amber_outlined,
+    AlertLevel.danger => Icons.error_outline,
+    AlertLevel.info => Icons.info_outline,
+  };
 
   @override
   Widget build(BuildContext context) {

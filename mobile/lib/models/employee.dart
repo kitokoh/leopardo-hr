@@ -65,7 +65,8 @@ class Employee {
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,
       biometricFaceEnabled: json['biometric_face_enabled'] == true,
-      biometricFingerprintEnabled: json['biometric_fingerprint_enabled'] == true,
+      biometricFingerprintEnabled:
+          json['biometric_fingerprint_enabled'] == true,
       suggestedHomeRoute: json['suggested_home_route'] as String?,
       capabilities: capabilities,
       salaryType: json['salary_type'] as String?,
