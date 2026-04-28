@@ -102,7 +102,7 @@ class PlatformAuthController extends Controller
         $secret = $this->superAdminService->generateSecret();
         $qrCodeUrl = $this->superAdminService->getQrCodeUrl($superAdmin, $secret);
 
-        Cache::put("2fa_setup:{$superAdmin->id}", $secret, now()->addMinutes(10));
+        Cache::put($this->pendingTwoFaSecretCacheKey($superAdmin), $secret, now()->addMinutes(10));
 
         return new JsonResponse([
             'data' => [
@@ -129,7 +129,7 @@ class PlatformAuthController extends Controller
         }
 
         /** @var string|null $secret */
-        $secret = Cache::pull("2fa_setup:{$superAdmin->id}");
+        $secret = Cache::get($this->pendingTwoFaSecretCacheKey($superAdmin));
 
         if (! $secret) {
             return new JsonResponse([
@@ -150,6 +150,7 @@ class PlatformAuthController extends Controller
         }
 
         $superAdmin->save();
+        Cache::forget($this->pendingTwoFaSecretCacheKey($superAdmin));
 
         return new JsonResponse(['status' => 'ok']);
     }
@@ -174,5 +175,10 @@ class PlatformAuthController extends Controller
         $superAdmin->save();
 
         return new JsonResponse(['status' => 'ok']);
+    }
+
+    private function pendingTwoFaSecretCacheKey(SuperAdmin $superAdmin): string
+    {
+        return '2fa_setup:'.$superAdmin->getKey();
     }
 }

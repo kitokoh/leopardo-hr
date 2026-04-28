@@ -77,6 +77,7 @@ class PlatformAuthTest extends TestCase
         $response->assertStatus(400);
         $response->assertJsonPath('error', 'INVALID_2FA_CODE');
         $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertSame($secret, Cache::get("2fa_setup:{$this->superAdmin->id}"));
     }
 
     public function test_enable_2fa_requires_setup_first(): void

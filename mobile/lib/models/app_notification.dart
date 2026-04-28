@@ -19,6 +19,8 @@ class AppNotification {
   final DateTime? readAt;
   final DateTime? createdAt;
 
+  Map<String, dynamic> get data => payload;
+
   factory AppNotification.fromJson(Map<String, dynamic> json) {
     final rawPayload = json['data'];
     return AppNotification(
