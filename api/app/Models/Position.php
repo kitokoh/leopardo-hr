@@ -13,10 +13,13 @@ class Position extends Model
     use HasFactory;
 
     protected $table = 'positions';
+
     public $timestamps = false;
+
     const CREATED_AT = 'created_at';
 
     protected $fillable = ['company_id', 'name', 'department_id'];
+
     protected $casts = ['created_at' => 'datetime'];
 
     public function department(): BelongsTo

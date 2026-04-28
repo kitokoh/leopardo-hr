@@ -3,13 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_rh/features/auth/screens/welcome_screen.dart';
 
 void main() {
-  testWidgets('WelcomeScreen renders brand, feature slide and CTAs',
-      (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: WelcomeScreen(),
-      ),
-    );
+  testWidgets('WelcomeScreen renders brand, feature slide and CTAs', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen()));
 
     // Brand header.
     expect(find.text('Leopardo RH'), findsOneWidget);
@@ -21,6 +18,8 @@ void main() {
     // Both CTAs are present.
     expect(find.widgetWithText(ElevatedButton, 'Se connecter'), findsOneWidget);
     expect(
-        find.widgetWithText(OutlinedButton, 'Creer un compte'), findsOneWidget);
+      find.widgetWithText(OutlinedButton, 'Creer un compte'),
+      findsOneWidget,
+    );
   });
 }

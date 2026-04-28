@@ -51,7 +51,7 @@ class SecureStorage {
       // Ignore secure storage cleanup failures when fallback storage is already cleared.
     }
   }
-  
+
   Future<void> clearAll() async {
     _cachedToken = null;
     await _box.delete(_tokenKey);

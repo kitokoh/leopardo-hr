@@ -22,17 +22,35 @@ class Evaluation extends Model
     ];
 
     protected $casts = [
-        'score'           => 'float',
-        'criteria'        => 'array',
+        'score' => 'float',
+        'criteria' => 'array',
         'acknowledged_at' => 'datetime',
-        'created_at'      => 'datetime',
-        'updated_at'      => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    public function employee(): BelongsTo { return $this->belongsTo(Employee::class, 'employee_id'); }
-    public function evaluator(): BelongsTo { return $this->belongsTo(Employee::class, 'evaluator_id'); }
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
 
-    public function scopeDraft(Builder $q): Builder { return $q->where('status', 'draft'); }
-    public function scopeSubmitted(Builder $q): Builder { return $q->where('status', 'submitted'); }
-    public function scopeForEmployee(Builder $q, int $id): Builder { return $q->where('employee_id', $id); }
+    public function evaluator(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'evaluator_id');
+    }
+
+    public function scopeDraft(Builder $q): Builder
+    {
+        return $q->where('status', 'draft');
+    }
+
+    public function scopeSubmitted(Builder $q): Builder
+    {
+        return $q->where('status', 'submitted');
+    }
+
+    public function scopeForEmployee(Builder $q, int $id): Builder
+    {
+        return $q->where('employee_id', $id);
+    }
 }

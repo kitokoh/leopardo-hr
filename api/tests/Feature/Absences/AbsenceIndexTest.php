@@ -7,7 +7,6 @@ use App\Models\AbsenceType;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Schedule;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -292,7 +291,7 @@ class AbsenceIndexTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences?employee_id=' . $employee1->id);
+        $response = $this->getJson('/api/v1/absences?employee_id='.$employee1->id);
 
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
@@ -516,8 +515,8 @@ class AbsenceIndexTest extends TestCase
                 'company_id' => $company->id,
                 'employee_id' => $employee->id,
                 'absence_type_id' => $absenceType->id,
-                'start_date' => '2026-04-' . str_pad($i * 2, 2, '0', STR_PAD_LEFT),
-                'end_date' => '2026-04-' . str_pad($i * 2 + 1, 2, '0', STR_PAD_LEFT),
+                'start_date' => '2026-04-'.str_pad($i * 2, 2, '0', STR_PAD_LEFT),
+                'end_date' => '2026-04-'.str_pad($i * 2 + 1, 2, '0', STR_PAD_LEFT),
                 'days_count' => 2,
                 'status' => 'pending',
             ]);

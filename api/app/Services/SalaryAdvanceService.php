@@ -23,11 +23,13 @@ class SalaryAdvanceService
 
     public function approve(SalaryAdvance $advance, Employee $approver, array $data = []): SalaryAdvance
     {
-        if ($advance->status !== 'pending') throw new SalaryAdvanceNotPendingException();
+        if ($advance->status !== 'pending') {
+            throw new SalaryAdvanceNotPendingException;
+        }
 
-        $months  = (int) ($data['repayment_months'] ?? $advance->repayment_months ?? 1);
+        $months = (int) ($data['repayment_months'] ?? $advance->repayment_months ?? 1);
         $monthly = round($advance->amount / $months, 2);
-        $plan    = $this->buildPlan($advance->amount, $months, $monthly);
+        $plan = $this->buildPlan($advance->amount, $months, $monthly);
 
         $advance->update(['status' => 'active', 'approved_by' => $approver->id, 'decision_comment' => $data['decision_comment'] ?? null, 'repayment_months' => $months, 'monthly_deduction' => $monthly, 'amount_remaining' => $advance->amount, 'repayment_plan' => $plan]);
 
@@ -36,7 +38,9 @@ class SalaryAdvanceService
 
     public function reject(SalaryAdvance $advance, Employee $approver, ?string $comment = null): SalaryAdvance
     {
-        if ($advance->status !== 'pending') throw new SalaryAdvanceNotPendingException();
+        if ($advance->status !== 'pending') {
+            throw new SalaryAdvanceNotPendingException;
+        }
 
         $advance->update(['status' => 'rejected', 'approved_by' => $approver->id, 'decision_comment' => $comment]);
 
@@ -45,7 +49,9 @@ class SalaryAdvanceService
 
     public function cancel(SalaryAdvance $advance): SalaryAdvance
     {
-        if ($advance->status !== 'pending') throw new SalaryAdvanceNotPendingException();
+        if ($advance->status !== 'pending') {
+            throw new SalaryAdvanceNotPendingException;
+        }
 
         $advance->update(['status' => 'rejected']);
 
@@ -54,12 +60,13 @@ class SalaryAdvanceService
 
     private function buildPlan(float $total, int $months, float $monthly): array
     {
-        $plan = []; $remaining = $total;
+        $plan = [];
+        $remaining = $total;
         $start = Carbon::now()->addMonth()->startOfMonth();
 
         for ($i = 0; $i < $months; $i++) {
-            $amount    = ($i === $months - 1) ? round($remaining, 2) : $monthly;
-            $plan[]    = ['month' => $start->copy()->addMonths($i)->format('Y-m'), 'amount' => $amount, 'paid' => false];
+            $amount = ($i === $months - 1) ? round($remaining, 2) : $monthly;
+            $plan[] = ['month' => $start->copy()->addMonths($i)->format('Y-m'), 'amount' => $amount, 'paid' => false];
             $remaining -= $amount;
         }
 

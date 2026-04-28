@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\TenantManager;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Services\TenantManager;
+use Sentry\State\Scope;
 use Symfony\Component\HttpFoundation\Response;
 
 class TenantMiddleware
@@ -67,7 +67,7 @@ class TenantMiddleware
         $this->tenantManager->setTenant($company);
 
         if (class_exists('\Sentry\State\HubAdapter') || class_exists('\Sentry\Laravel\Facade')) {
-            \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($company) {
+            \Sentry\configureScope(function (Scope $scope) use ($company) {
                 $scope->setTag('company_id', $company->id);
                 $scope->setTag('company_slug', $company->slug);
             });

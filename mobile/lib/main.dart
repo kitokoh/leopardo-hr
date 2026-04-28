@@ -12,9 +12,5 @@ void main() async {
   await initializeDateFormatting('ar', null);
   await initializeDateFormatting('tr', null);
   await initializeDateFormatting('en', null);
-  runApp(
-    const ProviderScope(
-      child: LeopardoApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: LeopardoApp()));
 }

@@ -22,7 +22,7 @@ class AbsenceController extends Controller
         $query = Absence::with('absenceType');
 
         // RBAC: employee sees only own absences
-        if (!$actor->isManager()) {
+        if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
@@ -50,16 +50,16 @@ class AbsenceController extends Controller
             'data' => $paginated->map(fn ($a) => $this->serialize($a)),
             'meta' => [
                 'current_page' => $paginated->currentPage(),
-                'last_page'    => $paginated->lastPage(),
-                'per_page'     => $paginated->perPage(),
-                'total'        => $paginated->total(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
             ],
         ]);
     }
 
     public function store(StoreAbsenceRequest $request): JsonResponse
     {
-        $actor   = $request->user();
+        $actor = $request->user();
         $absence = $this->absenceService->create($actor, $request->validated());
 
         return response()->json(['data' => $this->serialize($absence->load('absenceType'))], 201);
@@ -73,7 +73,7 @@ class AbsenceController extends Controller
             abort(404);
         }
 
-        if (!$actor->isManager() && $absence->employee_id !== $actor->id) {
+        if (! $actor->isManager() && $absence->employee_id !== $actor->id) {
             abort(403);
         }
 
@@ -88,7 +88,7 @@ class AbsenceController extends Controller
             abort(404);
         }
 
-        if (!$actor->isManager()) {
+        if (! $actor->isManager()) {
             abort(403);
         }
 
@@ -105,7 +105,7 @@ class AbsenceController extends Controller
             abort(404);
         }
 
-        if (!$actor->isManager()) {
+        if (! $actor->isManager()) {
             abort(403);
         }
 
@@ -134,30 +134,30 @@ class AbsenceController extends Controller
     private function serialize(Absence $absence): array
     {
         return [
-            'id'              => $absence->id,
-            'employee_id'     => $absence->employee_id,
+            'id' => $absence->id,
+            'employee_id' => $absence->employee_id,
             'absence_type_id' => $absence->absence_type_id,
-            'absence_type'    => $absence->relationLoaded('absenceType') ? [
-                'id'            => $absence->absenceType->id,
-                'name'          => $absence->absenceType->name,
-                'code'          => $absence->absenceType->code,
+            'absence_type' => $absence->relationLoaded('absenceType') ? [
+                'id' => $absence->absenceType->id,
+                'name' => $absence->absenceType->name,
+                'code' => $absence->absenceType->code,
                 'deducts_leave' => $absence->absenceType->deducts_leave,
             ] : null,
-            'absenceType'     => $absence->relationLoaded('absenceType') ? [
-                'id'            => $absence->absenceType->id,
-                'name'          => $absence->absenceType->name,
-                'code'          => $absence->absenceType->code,
+            'absenceType' => $absence->relationLoaded('absenceType') ? [
+                'id' => $absence->absenceType->id,
+                'name' => $absence->absenceType->name,
+                'code' => $absence->absenceType->code,
                 'deducts_leave' => $absence->absenceType->deducts_leave,
             ] : null,
-            'start_date'      => $absence->start_date?->toDateString(),
-            'end_date'        => $absence->end_date?->toDateString(),
-            'days_count'      => $absence->days_count,
-            'status'          => $absence->status,
-            'reason'          => $absence->reason,
-            'approved_by'     => $absence->approved_by,
+            'start_date' => $absence->start_date?->toDateString(),
+            'end_date' => $absence->end_date?->toDateString(),
+            'days_count' => $absence->days_count,
+            'status' => $absence->status,
+            'reason' => $absence->reason,
+            'approved_by' => $absence->approved_by,
             'rejected_reason' => $absence->rejected_reason,
-            'created_at'      => $absence->created_at?->toIso8601String(),
-            'updated_at'      => $absence->updated_at?->toIso8601String(),
+            'created_at' => $absence->created_at?->toIso8601String(),
+            'updated_at' => $absence->updated_at?->toIso8601String(),
         ];
     }
 }

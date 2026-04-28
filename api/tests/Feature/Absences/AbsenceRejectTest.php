@@ -95,7 +95,7 @@ class AbsenceRejectTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/' . $absence->id . '/reject', [
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
             'rejected_reason' => 'Période trop chargée pour l\'équipe',
         ]);
 
@@ -196,7 +196,7 @@ class AbsenceRejectTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/' . $absence->id . '/reject', [
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
             'rejected_reason' => 'Changement de planning',
         ]);
 
@@ -278,7 +278,7 @@ class AbsenceRejectTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/' . $absence->id . '/reject', [
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
             // Missing rejected_reason
         ]);
 
@@ -356,7 +356,7 @@ class AbsenceRejectTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/' . $absence->id . '/reject', [
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
             'rejected_reason' => 'Raison de rejet',
         ]);
 
@@ -419,7 +419,7 @@ class AbsenceRejectTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->putJson('/api/v1/absences/' . $absence->id . '/reject', [
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
             'rejected_reason' => 'Je veux rejeter ma propre absence',
         ]);
 

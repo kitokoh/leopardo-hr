@@ -3,14 +3,14 @@
 namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraPermission;
 use App\Modules\Cameras\Infrastructure\Services\CameraService;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraRequest;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\TestRtspRequest;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\UpdateCameraRequest;
-use App\Models\Company;
-use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

@@ -12,12 +12,18 @@ class AppPreferences {
 
   Box<dynamic> get _box => Hive.box(_boxName);
 
-  bool get biometricEnabled => _box.get(_biometricEnabledKey, defaultValue: false) as bool;
-  bool get fingerprintEnabled => _box.get(_fingerprintEnabledKey, defaultValue: false) as bool;
-  bool get faceEnabled => _box.get(_faceEnabledKey, defaultValue: false) as bool;
-  bool get attendanceConsent => _box.get(_attendanceConsentKey, defaultValue: false) as bool;
-  String get biometricNote => (_box.get(_biometricNoteKey, defaultValue: '') as String).trim();
-  String get preferredLanguage => (_box.get(_preferredLanguageKey, defaultValue: '') as String).trim();
+  bool get biometricEnabled =>
+      _box.get(_biometricEnabledKey, defaultValue: false) as bool;
+  bool get fingerprintEnabled =>
+      _box.get(_fingerprintEnabledKey, defaultValue: false) as bool;
+  bool get faceEnabled =>
+      _box.get(_faceEnabledKey, defaultValue: false) as bool;
+  bool get attendanceConsent =>
+      _box.get(_attendanceConsentKey, defaultValue: false) as bool;
+  String get biometricNote =>
+      (_box.get(_biometricNoteKey, defaultValue: '') as String).trim();
+  String get preferredLanguage =>
+      (_box.get(_preferredLanguageKey, defaultValue: '') as String).trim();
   bool get isRtl => _box.get(_isRtlKey, defaultValue: false) as bool;
 
   Future<void> saveBiometricSettings({
@@ -38,7 +44,10 @@ class AppPreferences {
     required String preferredLanguage,
     required bool isRtl,
   }) async {
-    await _box.put(_preferredLanguageKey, preferredLanguage.trim().toLowerCase());
+    await _box.put(
+      _preferredLanguageKey,
+      preferredLanguage.trim().toLowerCase(),
+    );
     await _box.put(_isRtlKey, isRtl);
   }
 

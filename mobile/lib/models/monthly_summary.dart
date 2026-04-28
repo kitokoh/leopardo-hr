@@ -45,7 +45,9 @@ class MonthlySummary {
     if (rawBreakdown is List) {
       for (final entry in rawBreakdown) {
         if (entry is Map) {
-          breakdown.add(MonthlyBreakdownEntry.fromJson(entry.cast<String, dynamic>()));
+          breakdown.add(
+            MonthlyBreakdownEntry.fromJson(entry.cast<String, dynamic>()),
+          );
         }
       }
     }

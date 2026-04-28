@@ -16,9 +16,11 @@ class NotificationController extends Controller
         $request->validate(['unread_only' => ['nullable', 'boolean'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
 
         $query = Notification::forEmployee($actor->id);
-        if ($request->boolean('unread_only')) $query->unread();
+        if ($request->boolean('unread_only')) {
+            $query->unread();
+        }
 
-        $perPage   = $request->integer('per_page', 20);
+        $perPage = $request->integer('per_page', 20);
         $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
         return response()->json([
@@ -30,9 +32,11 @@ class NotificationController extends Controller
     public function markRead(Request $request, Notification $notification): JsonResponse
     {
         $actor = $request->user();
-        if ($notification->employee_id !== $actor->id) abort(403);
+        if ($notification->employee_id !== $actor->id) {
+            abort(403);
+        }
 
-        if (!$notification->is_read) {
+        if (! $notification->is_read) {
             $notification->update(['is_read' => true, 'read_at' => Carbon::now()]);
         }
 
@@ -50,7 +54,9 @@ class NotificationController extends Controller
     public function destroy(Request $request, Notification $notification): JsonResponse
     {
         $actor = $request->user();
-        if ($notification->employee_id !== $actor->id) abort(403);
+        if ($notification->employee_id !== $actor->id) {
+            abort(403);
+        }
 
         $notification->delete();
 
