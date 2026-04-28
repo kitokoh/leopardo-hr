@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.82] - 2026-04-28
+
+### Sécurité - Renforcement de l'isolation multi-tenant
+
+- API : Ajout du trait `BelongsToCompany` aux modèles `AttendanceKiosk`, `BiometricEnrollmentRequest` et `UserInvitation` pour garantir une isolation stricte au niveau Eloquent.
+- Tests : Ajout de `tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation de ces modèles secondaires.
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)

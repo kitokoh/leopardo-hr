@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class UserInvitation extends Model
 {
-    use HasUuids;
+    use BelongsToCompany, HasUuids;
 
     public $incrementing = false;
 
