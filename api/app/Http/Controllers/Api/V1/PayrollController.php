@@ -83,7 +83,7 @@ class PayrollController extends Controller
         return response()->json(['data' => $this->serialize($payroll->load('employee'))]);
     }
 
-    public function validate(Request $request, Payroll $payroll): JsonResponse
+    public function validatePayroll(Request $request, Payroll $payroll): JsonResponse
     {
         $actor = $request->user();
         if ($payroll->company_id !== $actor->company_id) {
