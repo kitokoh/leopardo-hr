@@ -4,6 +4,8 @@ class Employee {
   final String? companyId;
   final String firstName;
   final String lastName;
+  final String? photoUrl;
+  final DateTime? hireDate;
   final String email;
   final String? role;
   final String? managerRole;
@@ -25,6 +27,8 @@ class Employee {
     this.companyId,
     required this.firstName,
     required this.lastName,
+    this.photoUrl,
+    this.hireDate,
     required this.email,
     this.role,
     this.managerRole,
@@ -60,6 +64,8 @@ class Employee {
       companyId: json['company_id'] as String?,
       firstName: (json['first_name'] ?? '') as String,
       lastName: (json['last_name'] ?? '') as String,
+      photoUrl: (json['photo_url'] ?? json['photo_path']) as String?,
+      hireDate: json['hire_date'] != null ? DateTime.tryParse(json['hire_date']) : null,
       email: (json['email'] ?? '') as String,
       role: json['role'] as String?,
       managerRole: json['manager_role'] as String?,

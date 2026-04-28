@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.78 | 2026-04-27
+# PROGRAM_VERSION = 4.1.82 | 2026-04-28
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.1.78   → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.1.82   → Version globale du projet/pilotage (ce fichier fait foi)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
@@ -47,7 +47,7 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-04-27
+Date MAJ       : 2026-04-28
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/ + README d'orientation)
 Code           : ✅ `main` inclut le MVP livré + i18n + hardening P0/P1/P2 + salary advances + payroll RH (voir CHANGELOG.md jusqu'à 4.1.76)
 Phase active   : Stabilisation beta + gouvernance documentaire + durcissement progressif (voir docs/REFERENTIEL_PRODUIT/ROADMAP.md)

@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.82] - 2026-04-28
+
+### Contractor - API/mobile contract guard
+
+- API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (aliasing `photo_path`) et `hire_date` conformément au contrat mobile.
+- API : Mise à jour de `EmployeeController@index` pour inclure `matricule`, `photo_path` et `contract_start` dans la sélection, assurant la complétude des payloads de liste.
+- Mobile : Mise à jour du modèle `Employee` pour parser `photoUrl` et `hireDate` depuis l'API.
+- Mobile : Correction d'un bug dans `AttendanceRepository@decodeTodayResponse` où le champ `overtime_hours` n'était pas passé au modèle `AttendanceLog`.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller les nouveaux champs du contrat `auth/me`.
+
+## [4.1.81] - 2026-04-27
+
+### Scout - Sécurité multi-tenant (isolation Eloquent)
+
+- Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour détecter les fuites de données inter-tenant.
+- API : Identification des modèles `AttendanceKiosk`, `BiometricEnrollmentRequest` et `UserInvitation` manquant le trait `BelongsToCompany`.
+
 ## [4.1.80] - 2026-04-27
 
 ### API - Module Evaluations (module 7 complément)

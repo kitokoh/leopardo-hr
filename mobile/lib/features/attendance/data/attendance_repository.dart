@@ -115,6 +115,7 @@ class AttendanceRepository {
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
         workedHours: today['hours_worked'] != null ? double.tryParse(today['hours_worked'].toString()) : 0.0,
+        overtimeHours: today['overtime_hours'] != null ? double.tryParse(today['overtime_hours'].toString()) : 0.0,
       ),
       'context': context,
     };
