@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### API - Stabilisation seed demo / deploiement
+
+- API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
+
 ### Mobile - Maintenance dependances
 
 - Mobile : mise a jour du groupe de dependances Flutter dans `mobile/` via Dependabot (`cupertino_icons`, `flutter_riverpod`, `go_router`, `image_picker`, `local_auth`, `flutter_lints` et mises a jour transitives associees).
