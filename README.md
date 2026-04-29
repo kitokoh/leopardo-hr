@@ -2,29 +2,21 @@
 
 Monorepo de conception et d'execution pour Leopardo RH.
 
-
-Points d'entrée:
-- `PILOTAGE.md` (source de vérité opérationnelle)
-- `docs/GESTION_PROJET/INDEX_CANONIQUE.md` (anti-confusion)
-- `docs/GESTION_PROJET/EXECUTION_BLOCKERS_AND_NEXT.md` (blocages + actions)
-- `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` (validation locale backend — Docker d'abord)
-- `docs/README.md` (index documentation technique)
-- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` (démarrage exécution MVP)
-- `web/` (Application web et site vitrine Next.js)
-
-- `PILOTAGE.md` : source de verite operationnelle du programme
-- `docs/README.md` : index documentaire avec distinction entre cible et etat courant
-- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` : etat reel de `main` et ecarts doc/implementation
+Points d'entrée :
+- `PILOTAGE.md` : source de vérité opérationnelle du programme
+- `docs/README.md` : index documentaire avec distinction entre cible et état courant
+- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` : état réel de `main` et écarts doc/implémentation
 - `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` : validation backend locale, Docker d'abord
-- `api/README.md` : bootstrap backend Laravel et commandes de verification
-- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` : contexte d'execution MVP
+- `api/README.md` : bootstrap backend Laravel et commandes de vérification
+- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` : contexte d'exécution MVP
+- `web/` : application web et site vitrine Next.js
 
 ## Important
 
-La documentation produit et API contient a la fois :
+La documentation produit et API contient à la fois :
 
 - une cible fonctionnelle large
-- un etat d'implementation plus restreint sur `main`
+- un état d'implémentation plus restreint sur `main`
 
 Avant de brancher un client mobile/web sur l'API, lire d'abord :
 
