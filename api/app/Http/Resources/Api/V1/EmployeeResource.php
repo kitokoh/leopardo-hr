@@ -34,6 +34,8 @@ class EmployeeResource extends JsonResource
             'manager_role' => $this->manager_role,
             'status' => $this->status,
             'photo_path' => $this->photo_path,
+            'photo_url' => $this->photo_path,
+            'hire_date' => $this->contract_start?->format('Y-m-d'),
             'biometric_face_enabled' => $this->biometric_face_enabled,
             'biometric_fingerprint_enabled' => $this->biometric_fingerprint_enabled,
             'address_line' => $this->address_line,
