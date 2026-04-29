@@ -15,6 +15,12 @@
 ### API - Stabilisation seed demo / deploiement
 
 - API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
+
+### Palette - UX et Accessibilité (Absences & Avances)
+
+- Mobile : Amélioration de l'accessibilité des écrans `Mes Absences` et `Mes Avances` par l'ajout de labels `Semantics` sur les indicateurs de chargement et de tooltips sur les boutons de retour.
+- Mobile : Ajout de la fonctionnalité de rafraîchissement (`RefreshIndicator`) sur les listes d'absences et d'avances de salaire.
+- Mobile : Durcissement des états vides et d'erreur pour garantir la disponibilité du rafraîchissement tactile même sans données affichées.
 ## [4.1.82] - 2026-04-29
 
 ### Janitor - Hygiène du dépôt et sécurité
