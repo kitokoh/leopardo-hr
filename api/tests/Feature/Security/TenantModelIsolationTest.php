@@ -116,7 +116,7 @@ class TenantModelIsolationTest extends TestCase
             'sector' => 'restaurant',
             'country' => 'DZ',
             'city' => 'Alger',
-            'email' => strtolower(str_replace(' ', '', $name)) . '@company.test',
+            'email' => strtolower(str_replace(' ', '', $name)).'@company.test',
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
