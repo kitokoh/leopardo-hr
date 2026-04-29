@@ -23,6 +23,7 @@ class PayrollListScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          tooltip: 'Retour',
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -63,7 +64,11 @@ class PayrollListScreen extends ConsumerWidget {
                   );
                 },
               ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: 'Chargement des fiches de paie...',
+          ),
+        ),
         error: (e, _) => Center(
           child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
         ),

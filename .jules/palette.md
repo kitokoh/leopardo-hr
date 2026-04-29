@@ -12,7 +12,7 @@ This journal contains critical UX and accessibility learnings for the Leopardo R
 
 ## 2026-04-22 - Loading State Accessibility
 **Learning:** `CircularProgressIndicator` doesn't provide feedback to screen readers by default.
-**Action:** Wrap loading indicators in `Semantics` widgets with a descriptive `label` (e.g., 'Connexion en cours...') to inform users that an action is being processed. Avoid `const` on `Semantics` if the child or label might be dynamic, and watch for "const_with_non_const" analyzer errors.
+**Action:** Use the `semanticsLabel` property of `CircularProgressIndicator` directly (e.g., `semanticsLabel: 'Chargement...'`) for accessibility labels. This is cleaner than wrapping in a `Semantics` widget and avoids `const` related analyzer errors.
 
 ## 2026-05-20 - Pull-to-Refresh in Empty States
 **Learning:** In Flutter, `RefreshIndicator` only works with scrollable widgets. When a screen is in an empty or error state, it often loses its scrollability, making it impossible for users to refresh.

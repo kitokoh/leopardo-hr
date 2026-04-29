@@ -23,6 +23,7 @@ class NotificationListScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          tooltip: 'Retour',
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -69,7 +70,11 @@ class NotificationListScreen extends ConsumerWidget {
                   );
                 },
               ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: 'Chargement des notifications...',
+          ),
+        ),
         error: (e, _) => Center(
           child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
         ),
