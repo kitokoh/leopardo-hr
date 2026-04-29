@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### API - Stabilisation seed demo / deploiement
+
+- API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
 ## [4.1.82] - 2026-04-29
 
 ### Janitor - Hygiène du dépôt et sécurité
@@ -16,6 +19,7 @@
 ### API - Maintenance dependances frontend
 
 - API : mise a jour du groupe de dependances frontend dans `api/` via Dependabot (`laravel-vite-plugin`, `tailwindcss` et `vite`) pour rester aligne avec la toolchain front embarquee.
+
 
 ### Mobile - Maintenance dependances
 
