@@ -2,7 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [Unreleased]
+## [4.1.83] - 2026-05-01
+
+### DocKeeper - Alignement documentation et maintenance
+
+- Dépôt : Nettoyage du `README.md` racine pour supprimer les liens morts vers les documents archivés (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`) et consolidation des points d'entrée.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.83` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ### Scout - Tests de régression MVP
 
