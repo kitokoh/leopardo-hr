@@ -9,6 +9,8 @@ class DemoCompanyOnceSeeder extends Seeder
 {
     private const LOCK_KEY = 'demo_company_seed_v2';
 
+    private const SHARED_SCHEMA = 'shared_tenants';
+
     public function run(): void
     {
         $isProduction = app()->environment('production');
@@ -28,6 +30,25 @@ class DemoCompanyOnceSeeder extends Seeder
 
         if ($alreadyRan) {
             $this->command?->info('DemoCompanyOnceSeeder skipped (already executed).');
+
+            return;
+        }
+
+        $sharedCompanyAlreadyExists = DB::table('companies')
+            ->where('schema_name', self::SHARED_SCHEMA)
+            ->exists();
+
+        if ($sharedCompanyAlreadyExists) {
+            DB::table('seed_locks')->updateOrInsert(
+                ['lock_key' => self::LOCK_KEY],
+                [
+                    'ran_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+
+            $this->command?->warn('DemoCompanyOnceSeeder skipped (shared_tenants company already exists).');
 
             return;
         }
