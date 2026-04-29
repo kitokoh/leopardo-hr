@@ -2431,12 +2431,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/EmployeeResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$photo_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$postal_code\.$#'
 			identifier: property.notFound
 			count: 1
