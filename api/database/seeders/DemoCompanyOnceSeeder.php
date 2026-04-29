@@ -2,12 +2,14 @@
 
 namespace Database\Seeders;
 
+use Throwable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class DemoCompanyOnceSeeder extends Seeder
 {
     private const LOCK_KEY = 'demo_company_seed_v2';
+
     private const SHARED_SCHEMA = 'shared_tenants';
 
     public function run(): void
@@ -69,7 +71,7 @@ class DemoCompanyOnceSeeder extends Seeder
                     'ran_at' => now(),
                     'updated_at' => now(),
                 ]);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             DB::statement('SET search_path TO public');
             DB::table('seed_locks')
                 ->where('lock_key', self::LOCK_KEY)
