@@ -4,6 +4,7 @@ namespace App\Http\Resources\Api\V1;
 
 use App\Models\Language;
 use App\Services\FeatureFlag;
+use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,8 @@ class EmployeeResource extends JsonResource
     {
         $resolvedLanguage = strtolower($this->preferred_language ?? $this->company?->language ?? Language::DEFAULT);
         $company = $this->company;
+        $photoPath = data_get($this->resource, 'photo_path');
+        $contractStart = data_get($this->resource, 'contract_start');
 
         return [
             'id' => $this->id,
@@ -33,9 +36,9 @@ class EmployeeResource extends JsonResource
             'role' => $this->role,
             'manager_role' => $this->manager_role,
             'status' => $this->status,
-            'photo_path' => $this->photo_path,
-            'photo_url' => $this->photo_path,
-            'hire_date' => $this->contract_start?->format('Y-m-d'),
+            'photo_path' => $photoPath,
+            'photo_url' => $photoPath,
+            'hire_date' => $contractStart instanceof DateTimeInterface ? $contractStart->format('Y-m-d') : null,
             'biometric_face_enabled' => $this->biometric_face_enabled,
             'biometric_fingerprint_enabled' => $this->biometric_fingerprint_enabled,
             'address_line' => $this->address_line,
