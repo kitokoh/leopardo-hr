@@ -2,7 +2,9 @@
 
 namespace App\Traits;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 trait BelongsToCompany
 {
@@ -10,20 +12,26 @@ trait BelongsToCompany
     {
         static::addGlobalScope('company', function (Builder $builder): void {
             if (app()->bound('current_company')) {
+                /** @var Company $company */
+                $company = app('current_company');
+
                 $builder->where(
                     $builder->getModel()->qualifyColumn('company_id'),
-                    app('current_company')->id
+                    $company->id
                 );
             }
         });
 
-        static::creating(function ($model): void {
+        static::creating(function (Model $model): void {
             if (! app()->bound('current_company')) {
                 return;
             }
 
+            /** @var Company $company */
+            $company = app('current_company');
+
             if (empty($model->company_id)) {
-                $model->company_id = app('current_company')->id;
+                $model->company_id = $company->id;
             }
         });
     }
