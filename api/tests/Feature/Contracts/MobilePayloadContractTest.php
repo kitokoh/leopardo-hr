@@ -67,6 +67,8 @@ class MobilePayloadContractTest extends TestCase
                 'email',
                 'role',
                 'status',
+                'photo_url',
+                'hire_date',
                 'language',
                 'is_rtl',
                 'company' => [
@@ -280,11 +282,14 @@ class MobilePayloadContractTest extends TestCase
                 '*' => [
                     'id',
                     'matricule',
+                    'company_id',
                     'first_name',
                     'last_name',
                     'email',
                     'role',
                     'status',
+                    'photo_url',
+                    'hire_date',
                 ],
             ],
             'meta' => [
