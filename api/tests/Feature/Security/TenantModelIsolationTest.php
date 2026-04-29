@@ -46,10 +46,11 @@ class TenantModelIsolationTest extends TestCase
         app()->instance('current_company', $companyA);
 
         $kiosks = AttendanceKiosk::all();
+        $kiosk = $kiosks->first();
 
         $this->assertCount(1, $kiosks, 'AttendanceKiosk should be isolated by company_id');
-        $this->assertNotNull($kiosks->first());
-        $this->assertEquals('Kiosk A', $kiosks->first()?->name);
+        $this->assertNotNull($kiosk);
+        $this->assertEquals('Kiosk A', $kiosk->name);
     }
 
     public function test_biometric_enrollment_request_is_isolated(): void
