@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Scout - Tests de régression MVP
+
+- Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation inter-tenant des modèles de kiosque, d'enrôlement biométrique et d'invitation.
+
 ### API - Maintenance dependances frontend
 
 - API : mise a jour du groupe de dependances frontend dans `api/` via Dependabot (`laravel-vite-plugin`, `tailwindcss` et `vite`) pour rester aligne avec la toolchain front embarquee.
