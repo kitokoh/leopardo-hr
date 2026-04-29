@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Contractor - Alignement contrat API/mobile (employee)
+
+- API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (alias de `photo_path`) et `hire_date` (alias de `contract_start` formaté en Y-m-d) pour la compatibilité avec les modèles mobiles.
+- API : Mise à jour de `EmployeeController@index` pour inclure `matricule`, `company_id`, `photo_path` et `contract_start` dans la sélection, garantissant ainsi que le `EmployeeResource` est complet.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces nouveaux champs dans les payloads `/auth/me` et `/employees`.
+
 ### API - Maintenance dependances frontend
 
 - API : mise a jour du groupe de dependances frontend dans `api/` via Dependabot (`laravel-vite-plugin`, `tailwindcss` et `vite`) pour rester aligne avec la toolchain front embarquee.
