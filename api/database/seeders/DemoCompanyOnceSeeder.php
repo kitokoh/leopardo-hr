@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class DemoCompanyOnceSeeder extends Seeder
 {
     private const LOCK_KEY = 'demo_company_seed_v2';
+
     private const SHARED_SCHEMA = 'shared_tenants';
 
     public function run(): void
