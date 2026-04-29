@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Scout - Tests de régression MVP
+
+- Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation inter-tenant des modèles de kiosque, d'enrôlement biométrique et d'invitation.
 ### Contractor - Alignement contrat API/mobile (employee)
 
 - API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (alias de `photo_path`) et `hire_date` (alias de `contract_start` formaté en Y-m-d) pour la compatibilité avec les modèles mobiles.
