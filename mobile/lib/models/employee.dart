@@ -8,6 +8,8 @@ class Employee {
   final String? role;
   final String? managerRole;
   final String status;
+  final String? photoUrl;
+  final DateTime? hireDate;
   final bool biometricFaceEnabled;
   final bool biometricFingerprintEnabled;
   final String? suggestedHomeRoute;
@@ -29,6 +31,8 @@ class Employee {
     this.role,
     this.managerRole,
     required this.status,
+    this.photoUrl,
+    this.hireDate,
     this.biometricFaceEnabled = false,
     this.biometricFingerprintEnabled = false,
     this.suggestedHomeRoute,
@@ -54,6 +58,8 @@ class Employee {
       });
     }
 
+    final hireDateRaw = json['hire_date'];
+
     return Employee(
       id: json['id'],
       matricule: json['matricule'] as String?,
@@ -64,6 +70,10 @@ class Employee {
       role: json['role'] as String?,
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,
+      photoUrl: json['photo_url']?.toString(),
+      hireDate: hireDateRaw != null
+          ? DateTime.tryParse(hireDateRaw.toString())
+          : null,
       biometricFaceEnabled: json['biometric_face_enabled'] == true,
       biometricFingerprintEnabled:
           json['biometric_fingerprint_enabled'] == true,
