@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.83 | 2026-05-01
+# PROGRAM_VERSION = 4.1.84 | 2026-05-02
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.1.83   → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.1.84   → Version globale du projet/pilotage (ce fichier fait foi)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
@@ -47,7 +47,7 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-05-01
+Date MAJ       : 2026-05-02
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/ + README d'orientation)
 Code           : ✅ `main` inclut le MVP livré + i18n + hardening P0/P1/P2 + salary advances + payroll RH (voir CHANGELOG.md jusqu'à 4.1.81)
 Phase active   : Stabilisation beta + gouvernance documentaire + durcissement progressif (voir docs/REFERENTIEL_PRODUIT/ROADMAP.md)
@@ -269,6 +269,9 @@ LEGACY  : docs/PROMPTS_EXECUTION/ORCHESTRATION/*   (remplacé par PILOTAGE.md)
 | `docs/notes/archive/CONTINUE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md |
 | `docs/notes/archive/SUIVI_PROMPTS.md` | 📦 **HISTORIQUE** | Suivi intégré dans PILOTAGE.md |
 | `docs/notes/archive/EXECUTION_BLOCKERS_AND_NEXT.md` | 📦 **HISTORIQUE** | Blockers intégrés dans Sprint 0 |
+| `docs/notes/archive/08_FEUILLE_DE_ROUTE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md |
+| `docs/notes/archive/ARBORESCENCE_PROJET_COMPLET.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md |
+| `docs/notes/archive/CU-01_ET_AGENTS.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md |
 
 > **RÈGLE :** Un fichier 📦 HISTORIQUE ne doit JAMAIS être lu comme instruction.
 > Il sert uniquement de traçabilité. Si un agent IA le lit, il doit ignorer ses directives

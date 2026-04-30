@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.84] - 2026-05-02
+
+### Janitor - Hygiène du dépôt
+
+- Dépôt : Archivage des fichiers de documentation historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `ARBORESCENCE_PROJET_COMPLET.md`, `CU-01_ET_AGENTS.md`) vers `docs/notes/archive/` car ils sont obsolètes et remplacés par `PILOTAGE.md`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.83] - 2026-05-01
 
 ### DocKeeper - Alignement documentation et maintenance
