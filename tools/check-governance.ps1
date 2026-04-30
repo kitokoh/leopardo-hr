@@ -52,7 +52,10 @@ $requiredFiles = @(
     "docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md",
     "docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md",
     "docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md",
-    "docs/notes/archive/EXECUTION_BLOCKERS_AND_NEXT.md"
+    "docs/notes/archive/EXECUTION_BLOCKERS_AND_NEXT.md",
+    "docs/notes/archive/08_FEUILLE_DE_ROUTE.md",
+    "docs/notes/archive/CU-01_ET_AGENTS.md",
+    "docs/notes/archive/ARBORESCENCE_PROJET_COMPLET.md"
 )
 
 foreach ($f in $requiredFiles) {
@@ -68,6 +71,9 @@ $historicalFiles = @{
     "docs/notes/archive/CONTEXTE_SESSION_IA.md" = "REMPLACE PAR PILOTAGE\.md"
     "docs/notes/archive/JOURNAL_DE_BORD.md" = "REMPLACE PAR PILOTAGE\.md"
     "docs/notes/archive/SUIVI_PROMPTS.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/08_FEUILLE_DE_ROUTE.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/CU-01_ET_AGENTS.md" = "REMPLACE PAR PILOTAGE\.md"
+    "docs/notes/archive/ARBORESCENCE_PROJET_COMPLET.md" = "REMPLACE PAR PILOTAGE\.md"
 }
 
 foreach ($entry in $historicalFiles.GetEnumerator()) {
@@ -80,7 +86,7 @@ Assert-NotContains ".github/BRANCH_PROTECTION_REQUIRED.md" 'CodeQL \(Backend\)' 
 Assert-Contains ".github/BRANCH_PROTECTION_REQUIRED.md" 'Backend Quality \(Pint \+ PHP Syntax \+ PHPStan/Larastan\)' 'Branch protection doc must reference the PHPStan/Larastan quality gate.'
 Pass "Branch protection guidance matches the active checks."
 
-$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1|08_FEUILLE_DE_ROUTE\.md)'
+$criticalPattern = '^(api/|mobile/|docs/dossierdeConception/|docs/GESTION_PROJET/|docs/REFERENTIEL_PRODUIT/|docs/notes/archive/|PILOTAGE\.md|\.github/|tools/check-governance\.ps1)'
 $requiresChangelog = $false
 foreach ($line in $changed) {
     if ($line -match $criticalPattern) {
