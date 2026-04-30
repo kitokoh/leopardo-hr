@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Models\Employee;
 use App\Models\Language;
 use App\Services\FeatureFlag;
 use App\Services\MobileExperienceService;
@@ -18,7 +19,7 @@ class EmployeeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /** @var \App\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = $this->resource;
         $resolvedLanguage = strtolower($this->preferred_language ?? $this->company?->language ?? Language::DEFAULT);
         $company = $this->company;

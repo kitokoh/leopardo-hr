@@ -165,9 +165,8 @@ class _HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
-    final dateLabel = DateFormat.EEEE(
-      'fr_FR',
-    ).add_d().add_MMMM().format(DateTime.now());
+    final dateLabel =
+        DateFormat.EEEE('fr_FR').add_d().add_MMMM().format(DateTime.now());
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -212,7 +211,10 @@ class _HeroHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(dateLabel, style: AppTypography.bodySmall.copyWith(color: muted)),
+          Text(
+            dateLabel,
+            style: AppTypography.bodySmall.copyWith(color: muted),
+          ),
         ],
       ),
     );
@@ -550,7 +552,10 @@ class _ModuleCard extends StatelessWidget {
                   darkAlpha: 0.24,
                 ),
               ),
-              child: Icon(MobileExperienceIcons.forModule(module.key), color: color),
+              child: Icon(
+                MobileExperienceIcons.forModule(module.key),
+                color: color,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
@@ -581,7 +586,9 @@ class _UpcomingModules extends StatelessWidget {
     return Wrap(
       spacing: 10,
       runSpacing: 10,
-      children: modules.map((module) => _UpcomingModulePill(module: module)).toList(),
+      children: modules
+          .map((module) => _UpcomingModulePill(module: module))
+          .toList(),
     );
   }
 }
@@ -620,7 +627,11 @@ class _UpcomingModulePill extends StatelessWidget {
               ),
               shape: BoxShape.circle,
             ),
-            child: Icon(MobileExperienceIcons.forModule(module.key), size: 18, color: color),
+            child: Icon(
+              MobileExperienceIcons.forModule(module.key),
+              size: 18,
+              color: color,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -784,7 +795,11 @@ class _ChatInputBar extends StatelessWidget {
                 darkAlpha: 0.24,
               ),
             ),
-            child: const Icon(Icons.auto_awesome, color: AppColors.ia, size: 18),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: AppColors.ia,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
