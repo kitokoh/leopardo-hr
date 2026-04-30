@@ -9,7 +9,8 @@ import {
   getPreferredLocale,
 } from '@/lib/i18n';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const DEFAULT_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
 
 export class ApiError extends Error {
   status: number;

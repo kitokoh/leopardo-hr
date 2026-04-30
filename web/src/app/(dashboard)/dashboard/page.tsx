@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
+const emptySubscribe = () => () => {};
+
 export default function DashboardPage() {
-  const [locale, setLocale] = useState<AppLocale>('fr');
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const labels = useMemo(() => getCopy(locale), [locale]);
 
   useEffect(() => {
-    setLocale(getPreferredLocale());
-  }, []);
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   return (
     <div className="space-y-8">
