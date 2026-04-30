@@ -16,7 +16,8 @@ class ModulesHubScreen extends ConsumerWidget {
     final employee = ref.watch(authProvider).employee;
     final experience = employee?.mobileExperience;
     final activeModules = experience?.activeModules ?? const <MobileModule>[];
-    final upcomingModules = experience?.upcomingModules ?? const <MobileModule>[];
+    final upcomingModules =
+        experience?.upcomingModules ?? const <MobileModule>[];
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
     final background = AppColors.backgroundFor(context);
@@ -92,7 +93,9 @@ class ModulesHubScreen extends ConsumerWidget {
                 final module = activeModules[index];
                 return _ModuleCard(
                   module: module,
-                  onTap: module.isActive ? () => context.push(module.route!) : null,
+                  onTap: module.isActive
+                      ? () => context.push(module.route!)
+                      : null,
                 );
               },
             ),
@@ -218,7 +221,10 @@ class _UpcomingRow extends StatelessWidget {
               ),
               shape: BoxShape.circle,
             ),
-            child: Icon(MobileExperienceIcons.forModule(module.key), color: color),
+            child: Icon(
+              MobileExperienceIcons.forModule(module.key),
+              color: color,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
