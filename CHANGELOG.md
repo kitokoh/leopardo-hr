@@ -43,6 +43,15 @@
 - API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
 
 ## [4.1.83] - 2026-05-01
+## [4.1.84] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (employee & attendance)
+
+- Mobile : Mise à jour du modèle `Employee` pour inclure et parser `photo_url` et `hire_date`.
+- Mobile : Mise à jour du modèle `AttendanceLog` pour inclure et parser `late_minutes`.
+- Mobile : Correction de `AttendanceRepository.decodeTodayResponse` pour mapper correctement `overtime_hours` et `late_minutes` dans l'objet `AttendanceLog`.
+- Tests : Renforcement de `widget_test.dart` pour verrouiller le parsing des nouveaux champs de contrat.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ### Janitor - Hygiène du dépôt
 
