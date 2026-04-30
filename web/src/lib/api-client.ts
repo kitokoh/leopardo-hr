@@ -9,8 +9,12 @@ import {
   getPreferredLocale,
 } from '@/lib/i18n';
 
-const DEFAULT_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, '');
+const LOCAL_API_BASE_URL = 'http://localhost:8000/api/v1';
+const DEPLOYED_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === 'production' ? DEPLOYED_API_BASE_URL : LOCAL_API_BASE_URL);
 
 export class ApiError extends Error {
   status: number;
