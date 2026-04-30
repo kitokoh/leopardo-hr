@@ -580,7 +580,9 @@ class _UpcomingModules extends StatelessWidget {
     return Wrap(
       spacing: 10,
       runSpacing: 10,
-      children: modules.map((module) => _UpcomingModulePill(module: module)).toList(),
+      children: modules
+          .map((module) => _UpcomingModulePill(module: module))
+          .toList(),
     );
   }
 }
@@ -619,7 +621,11 @@ class _UpcomingModulePill extends StatelessWidget {
               ),
               shape: BoxShape.circle,
             ),
-            child: Icon(MobileExperienceIcons.forModule(module.key), size: 18, color: color),
+            child: Icon(
+              MobileExperienceIcons.forModule(module.key),
+              size: 18,
+              color: color,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
