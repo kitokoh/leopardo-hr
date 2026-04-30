@@ -139,7 +139,7 @@ maybe_reset_test_database_once() {
     reset_once=$(php -r "echo filter_var(getenv('RESET_TEST_DB_ONCE') ?: false, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';")
 
     if [ "$reset_once" != "true" ]; then
-        return 1
+        return 0
     fi
 
     reset_key="${RESET_TEST_DB_LOCK_KEY:-render_test_db_reset_v1}"
@@ -169,7 +169,13 @@ try {
 PHP
     then
         echo "One-shot test DB reset already applied for lock ${reset_key}, skipping destructive reset."
-        return 1
+        return 0
+    else
+        status=$?
+        if [ "$status" -ne 1 ]; then
+            echo "Reset check failed with unexpected status ${status}."
+            return 1
+        fi
     fi
 
     echo "RESET_TEST_DB_ONCE=true detected. Performing one-shot full reset of test database..."
