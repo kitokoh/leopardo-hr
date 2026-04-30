@@ -12,6 +12,12 @@
 ### Scout - Tests de régression MVP
 
 - Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation inter-tenant des modèles de kiosque, d'enrôlement biométrique et d'invitation.
+
+### Sentinel - Sécurisation des validations et tests d'isolation
+
+- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empêcher les attaques par IDOR (Insecure Direct Object Reference) en vérifiant systématiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifié.
+- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modèles supplémentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
+- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 ### Contractor - Alignement contrat API/mobile (employee)
 
 - API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (alias de `photo_path`) et `hire_date` (alias de `contract_start` formaté en Y-m-d) pour la compatibilité avec les modèles mobiles.
