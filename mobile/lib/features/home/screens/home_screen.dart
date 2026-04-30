@@ -211,7 +211,10 @@ class _HeroHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(dateLabel, style: AppTypography.bodySmall.copyWith(color: muted)),
+          Text(
+            dateLabel,
+            style: AppTypography.bodySmall.copyWith(color: muted),
+          ),
         ],
       ),
     );
@@ -549,7 +552,10 @@ class _ModuleCard extends StatelessWidget {
                   darkAlpha: 0.24,
                 ),
               ),
-              child: Icon(MobileExperienceIcons.forModule(module.key), color: color),
+              child: Icon(
+                MobileExperienceIcons.forModule(module.key),
+                color: color,
+              ),
             ),
             const SizedBox(height: 14),
             Text(
@@ -789,7 +795,11 @@ class _ChatInputBar extends StatelessWidget {
                 darkAlpha: 0.24,
               ),
             ),
-            child: const Icon(Icons.auto_awesome, color: AppColors.ia, size: 18),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: AppColors.ia,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
