@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_rh/models/attendance_log.dart';
 import 'package:leopardo_rh/models/employee.dart';
+import 'package:leopardo_rh/models/attendance_log.dart';
 
 void main() {
   test('employee model maps optional beta fields', () {
