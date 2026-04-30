@@ -35,6 +35,12 @@
 - Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
 - Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+## [4.1.84] - 2026-05-01
+
+### Performance - Optimisation des index Absence et Evaluation
+
+- API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
+- API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
 
 ## [4.1.83] - 2026-05-01
 
