@@ -106,7 +106,8 @@ class StoreEmployeeRequest extends FormRequest
         }
 
         if ($company->tenancy_type === 'schema' && $company->schema_name) {
-            DB::statement('SET search_path TO '.$company->schema_name.',public');
+            // Security: Use getSafeSearchPath() to prevent SQL injection via schema_name
+            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
 
             return;
         }
