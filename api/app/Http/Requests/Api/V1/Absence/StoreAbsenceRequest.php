@@ -14,8 +14,15 @@ class StoreAbsenceRequest extends FormRequest
 
     public function rules(): array
     {
+        $companyId = $this->user()?->company_id;
+
         return [
-            'absence_type_id' => ['required', 'integer', 'exists:absence_types,id'],
+            'absence_type_id' => [
+                'required',
+                'integer',
+                'exists:absence_types,id',
+                \Illuminate\Validation\Rule::exists('absence_types', 'id')->where('company_id', $companyId),
+            ],
             'start_date' => ['required', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date_format:Y-m-d'],
             'reason' => ['nullable', 'string', 'max:1000'],

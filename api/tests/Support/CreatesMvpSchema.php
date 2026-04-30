@@ -354,6 +354,67 @@ trait CreatesMvpSchema
             $table->unique(['employee_id', 'period', 'evaluator_id']);
         });
 
+        Schema::create($this->tenantTable('payrolls'), function (Blueprint $table): void {
+            $table->bigIncrements('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('employee_id');
+            $table->unsignedSmallInteger('period_month');
+            $table->unsignedSmallInteger('period_year');
+            $table->decimal('gross_salary', 12, 2)->default(0);
+            $table->decimal('net_salary', 12, 2)->default(0);
+            $table->string('status', 20)->default('draft');
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('projects'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('name', 150);
+            $table->unsignedInteger('created_by');
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('tasks'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('title', 200);
+            $table->unsignedInteger('created_by');
+            $table->timestampTz('due_date');
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('notifications'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('employee_id');
+            $table->string('type', 100);
+            $table->string('title', 200);
+            $table->text('body');
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('departments'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('name', 150);
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('positions'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('name', 150);
+            $table->unsignedInteger('department_id');
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('sites'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('name', 150);
+            $table->timestamps();
+        });
+
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('SET search_path TO public');
         }
