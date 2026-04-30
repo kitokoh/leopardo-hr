@@ -35,7 +35,7 @@ class AbsenceController extends Controller
                 'created_at',
                 'updated_at',
             ])
-            ->with('absenceType:id,company_id,name,code,deducts_leave');
+            ->with('absenceType:id,name,code,deducts_leave');
 
         // RBAC: employee sees only own absences
         if (! $actor->isManager()) {
