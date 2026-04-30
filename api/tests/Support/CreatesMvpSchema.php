@@ -10,11 +10,19 @@ trait CreatesMvpSchema
 {
     protected function setUpMvpSchema(): void
     {
+        if (DB::getDriverName() === 'pgsql') {
+            $this->preparePostgresSchemas();
+            $this->loadPostgresFixtureSchema();
+            $this->restoreDefaultSearchPath();
+
+            return;
+        }
+
         $this->preparePostgresSchemas();
         $this->dropMvpTables();
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
+            $this->setPostgresSearchPath('public');
         }
 
         Schema::create('plans', function (Blueprint $table): void {
@@ -69,7 +77,7 @@ trait CreatesMvpSchema
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO shared_tenants,public');
+            $this->setPostgresSearchPath('shared_tenants,public');
         }
 
         Schema::create($this->tenantTable('schedules'), function (Blueprint $table): void {
@@ -114,8 +122,6 @@ trait CreatesMvpSchema
             $table->string('salary_type', 20)->default('fixed');
             $table->decimal('salary_base', 10, 2)->default(0);
             $table->decimal('hourly_rate', 10, 2)->default(0);
-            $table->string('payment_method', 50)->default('bank_transfer');
-            $table->decimal('leave_balance', 8, 2)->default(0);
             $table->string('role', 20)->default('employee');
             $table->string('manager_role', 30)->nullable();
             $table->unsignedInteger('manager_id')->nullable();
@@ -356,39 +362,8 @@ trait CreatesMvpSchema
             $table->unique(['employee_id', 'period', 'evaluator_id']);
         });
 
-        Schema::create('payrolls', function (Blueprint $table): void {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id')->index();
-            $table->unsignedSmallInteger('period_month');
-            $table->unsignedSmallInteger('period_year');
-            $table->decimal('gross_salary', 12, 2);
-            $table->decimal('overtime_amount', 12, 2)->default(0);
-            if (DB::getDriverName() === 'pgsql') {
-                $table->jsonb('bonuses')->default(DB::raw("'[]'::jsonb"));
-                $table->jsonb('deductions')->default(DB::raw("'[]'::jsonb"));
-                $table->jsonb('cotisations')->default(DB::raw("'[]'::jsonb"));
-            } else {
-                $table->json('bonuses')->default('[]');
-                $table->json('deductions')->default('[]');
-                $table->json('cotisations')->default('[]');
-            }
-            $table->decimal('ir_amount', 12, 2)->default(0);
-            $table->decimal('advance_deduction', 12, 2)->default(0);
-            $table->decimal('absence_deduction', 12, 2)->default(0);
-            $table->decimal('penalty_deduction', 12, 2)->default(0);
-            $table->decimal('net_salary', 12, 2);
-            $table->string('pdf_path', 255)->nullable();
-            $table->string('status', 20)->default('draft');
-            $table->unsignedInteger('validated_by')->nullable();
-            $table->timestampTz('validated_at')->nullable();
-            $table->timestamps();
-
-            $table->unique(['employee_id', 'period_month', 'period_year']);
-        });
-
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
+            $this->setPostgresSearchPath('public');
         }
 
         Schema::create('personal_access_tokens', function (Blueprint $table): void {
@@ -442,6 +417,13 @@ trait CreatesMvpSchema
     protected function tearDownMvpSchema(): void
     {
         app()->forgetInstance('current_company');
+
+        if (DB::getDriverName() === 'pgsql') {
+            $this->restoreDefaultSearchPath();
+
+            return;
+        }
+
         $this->dropMvpTables();
         $this->restoreDefaultSearchPath();
     }
@@ -452,43 +434,68 @@ trait CreatesMvpSchema
             return;
         }
 
-        DB::statement('CREATE SCHEMA IF NOT EXISTS public');
+        $this->setPostgresSearchPath('public');
+        $this->dropPostgresPublicTables();
+
+        DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+    }
+
+    private function loadPostgresFixtureSchema(): void
+    {
+        $sql = file_get_contents(__DIR__.'/sql/mvp_schema.pgsql.sql');
+
+        if ($sql === false) {
+            throw new \RuntimeException('Unable to load PostgreSQL test schema fixture.');
+        }
+
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
+        foreach ($this->splitPostgresStatements($sql) as $statement) {
+            DB::statement($statement);
+        }
+    }
+
+    private function dropPostgresPublicTables(): void
+    {
+        DB::statement('DROP TABLE IF EXISTS public.user_invitations CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.super_admins CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.user_lookups CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.personal_access_tokens CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.languages CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
+    }
+
+    /**
+     * Execute fixture SQL statement-by-statement to avoid PostgreSQL rolling
+     * back an entire multi-statement batch when one DDL statement fails.
+     *
+     * @return list<string>
+     */
+    private function splitPostgresStatements(string $sql): array
+    {
+        $statements = preg_split('/;\s*(?:\r?\n|$)/', $sql);
+
+        if ($statements === false) {
+            throw new \RuntimeException('Unable to split PostgreSQL test schema fixture.');
+        }
+
+        return array_values(array_filter(array_map(
+            static fn (string $statement): string => trim($statement),
+            $statements
+        )));
     }
 
     private function tenantTable(string $table): string
     {
-        return DB::getDriverName() === 'pgsql'
-            ? 'shared_tenants.'.$table
-            : $table;
+        return $table;
     }
 
     private function dropMvpTables(): void
     {
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('DROP TABLE IF EXISTS public.user_lookups CASCADE');
-            DB::statement('DROP TABLE IF EXISTS public.user_invitations CASCADE');
-            DB::statement('DROP TABLE IF EXISTS public.super_admins CASCADE');
-            DB::statement('DROP TABLE IF EXISTS public.hr_model_templates CASCADE');
-            DB::statement('DROP TABLE IF EXISTS public.languages CASCADE');
-            DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
-            DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.personal_access_tokens CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.attendance_kiosks CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.biometric_enrollment_requests CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_logs CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_permissions CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.camera_access_tokens CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.cameras CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.salary_advances CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.payrolls CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.evaluations CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.leave_balance_logs CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.absences CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.absence_types CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
-            DB::statement('DROP TABLE IF EXISTS shared_tenants.schedules CASCADE');
+            return;
         }
 
         $cascade = DB::getDriverName() === 'pgsql' ? ' CASCADE' : '';
@@ -505,7 +512,6 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "payrolls"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "evaluations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
@@ -524,6 +530,17 @@ trait CreatesMvpSchema
             return;
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        $this->setPostgresSearchPath('shared_tenants,public');
+    }
+
+    private function setPostgresSearchPath(string $path): void
+    {
+        $connection = config('database.default', 'pgsql');
+
+        config(["database.connections.{$connection}.search_path" => $path]);
+
+        DB::purge($connection);
+        DB::reconnect($connection);
+        DB::statement("SET search_path TO {$path}");
     }
 }
