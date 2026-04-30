@@ -85,7 +85,11 @@ class _EvaluationsTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(evaluationsProvider.future),
       child: asyncValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: "Chargement des évaluations...",
+          ),
+        ),
         error: (error, _) => ListView(
           children: [
             const SizedBox(height: 80),
@@ -316,7 +320,11 @@ class _SalaryAdvancesTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(salaryAdvancesProvider.future),
       child: asyncValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: "Chargement des demandes d'avances...",
+          ),
+        ),
         error: (error, _) => ListView(
           children: [
             const SizedBox(height: 80),
@@ -375,6 +383,7 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                         onPressed: () =>
                             _showAdvanceActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
+                        tooltip: 'Actions',
                       ),
                     ],
                   ),
@@ -546,7 +555,11 @@ class _PayrollsTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(payrollsProvider.future),
       child: asyncValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: "Chargement des bulletins de paie...",
+          ),
+        ),
         error: (error, _) => ListView(
           children: [
             const SizedBox(height: 80),
@@ -610,6 +623,7 @@ class _PayrollsTab extends ConsumerWidget {
                         onPressed: () =>
                             _showPayrollActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
+                        tooltip: 'Actions',
                       ),
                     ],
                   ),
@@ -724,7 +738,11 @@ class _NotificationsTab extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async => ref.refresh(notificationsProvider.future),
       child: asyncValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: "Chargement des notifications...",
+          ),
+        ),
         error: (error, _) => ListView(
           children: [
             const SizedBox(height: 80),
@@ -929,7 +947,11 @@ class _CreateEvaluationSheetState
               team.when(
                 loading: () => const Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(child: CircularProgressIndicator()),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      semanticsLabel: "Chargement de l'équipe...",
+                    ),
+                  ),
                 ),
                 error: (error, _) => Text('Equipe indisponible : $error'),
                 data: (employees) => DropdownButtonFormField<int>(
@@ -1197,7 +1219,11 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
               ),
               const SizedBox(height: 16),
               team.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(
+                    semanticsLabel: "Chargement de l'équipe...",
+                  ),
+                ),
                 error: (error, _) => Text('Equipe indisponible : $error'),
                 data: (employees) => DropdownButtonFormField<int>(
                   initialValue: _employeeId,
