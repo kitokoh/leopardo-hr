@@ -2431,12 +2431,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/EmployeeResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$photo_path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$postal_code\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2686,6 +2680,18 @@ parameters:
 			message: '#^Cannot access property \$company_id on mixed\.$#'
 			identifier: property.nonObject
 			count: 2
+			path: app/Models/AttendanceKiosk.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/AttendanceKiosk.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
 			path: app/Models/AttendanceLog.php
 
 		-
@@ -2728,6 +2734,18 @@ parameters:
 			message: '#^Method App\\Models\\BiometricEnrollmentRequest\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
+			path: app/Models/BiometricEnrollmentRequest.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/BiometricEnrollmentRequest.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
 			path: app/Models/BiometricEnrollmentRequest.php
 
 		-
@@ -5285,3 +5303,15 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Unit/ExampleTest.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/UserInvitation.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/UserInvitation.php

@@ -2,11 +2,33 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [Unreleased]
+## [4.1.83] - 2026-05-01
 
+### DocKeeper - Alignement documentation et maintenance
+
+- Dépôt : Nettoyage du `README.md` racine pour supprimer les liens morts vers les documents archivés (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`) et consolidation des points d'entrée.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.83` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
+### Scout - Tests de régression MVP
+
+- Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation inter-tenant des modèles de kiosque, d'enrôlement biométrique et d'invitation.
+### Contractor - Alignement contrat API/mobile (employee)
+
+- API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (alias de `photo_path`) et `hire_date` (alias de `contract_start` formaté en Y-m-d) pour la compatibilité avec les modèles mobiles.
+- API : Mise à jour de `EmployeeController@index` pour inclure `matricule`, `company_id`, `photo_path` et `contract_start` dans la sélection, garantissant ainsi que le `EmployeeResource` est complet.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces nouveaux champs dans les payloads `/auth/me` et `/employees`.
 ### API - Stabilisation seed demo / deploiement
 
 - API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
+## [4.1.82] - 2026-04-29
+
+### Janitor - Hygiène du dépôt et sécurité
+
+- Mobile : Retrait des fichiers d'environnement (`.env.local`, `.env.production`, `.env.staging`) du suivi Git pour éviter la fuite de configurations locales ou sensibles.
+- Mobile : Création de `mobile/.env.example` comme modèle de configuration.
+- Dépôt : Mise à jour du `.gitignore` racine pour ignorer systématiquement les fichiers d'environnement mobile tout en autorisant le modèle `.env.example`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.82` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ### API - Maintenance dependances frontend
 
 - API : mise a jour du groupe de dependances frontend dans `api/` via Dependabot (`laravel-vite-plugin`, `tailwindcss` et `vite`) pour rester aligne avec la toolchain front embarquee.
