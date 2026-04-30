@@ -7,8 +7,12 @@ import 'package:leopardo_rh/core/api/api_exceptions.dart';
 import 'package:leopardo_rh/core/api/mock_interceptor.dart';
 
 class ApiClient {
-  static const String _defaultRenderBaseUrl =
+  static const String _defaultRemoteBaseUrl =
       'https://gestionemployerbackend.onrender.com/api/v1';
+  static const String _defaultLocalAndroidBaseUrl =
+      'http://10.0.2.2:8000/api/v1';
+  static const String _defaultLocalLoopbackBaseUrl =
+      'http://127.0.0.1:8000/api/v1';
   final Dio _dio;
   final SecureStorage _storage;
   final AppPreferences _preferences;
@@ -64,11 +68,29 @@ class ApiClient {
 
   static String resolveBaseUrl() {
     const configured = String.fromEnvironment('API_BASE_URL', defaultValue: '');
-    if (configured.isEmpty) {
-      return _defaultRenderBaseUrl;
+
+    if (configured.isNotEmpty) {
+      return configured;
     }
 
-    return configured;
+    if (kReleaseMode) {
+      return _defaultRemoteBaseUrl;
+    }
+
+    if (kIsWeb) {
+      return _defaultLocalLoopbackBaseUrl;
+    }
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return _defaultLocalAndroidBaseUrl;
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+      case TargetPlatform.linux:
+      case TargetPlatform.fuchsia:
+        return _defaultLocalLoopbackBaseUrl;
+    }
   }
 
   DioException _handleError(DioException e) {
