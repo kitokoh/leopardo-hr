@@ -1,0 +1,9 @@
+{
+    frankenphp
+}
+
+{$SERVER_NAME:localhost} {
+    root * /app/public
+    encode zstd br gzip
+    php_server
+}
