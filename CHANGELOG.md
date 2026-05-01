@@ -18,6 +18,13 @@
 - Mobile : ajout des modeles `MobileExperience`, `MobileModule`, `MobileQuickAction` et du mapping d'icones associe pour garder une navigation coherente avec les routes reelles de l'application.
 - Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
 - Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
+## [4.1.84] - 2026-05-02
+
+### DocKeeper - Alignement documentation
+
+- Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
+- Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.83] - 2026-05-01
 ## [4.1.84] - 2026-05-02
