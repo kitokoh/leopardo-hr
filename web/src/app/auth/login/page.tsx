@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ApiError, apiFetch } from '@/lib/api-client';
@@ -15,24 +15,26 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 
+const emptySubscribe = () => () => {};
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [locale, setLocale] = useState<AppLocale>('fr');
+  const storedLocale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const locale: AppLocale = localeOverride ?? storedLocale;
   const labels = useMemo(() => getCopy(locale), [locale]);
 
   useEffect(() => {
-    const resolvedLocale = getPreferredLocale();
-    setLocale(resolvedLocale);
-    applyDocumentLocale(resolvedLocale);
-  }, []);
+    applyDocumentLocale(locale);
+  }, [locale]);
 
   const handleLocaleChange = (value: string) => {
     const nextLocale = normalizeLocale(value);
-    setLocale(nextLocale);
+    setLocaleOverride(nextLocale);
     storePreferredLocale(nextLocale);
     applyDocumentLocale(nextLocale);
   };
