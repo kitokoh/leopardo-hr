@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.85] - 2026-05-01
+
+### Bolt - Performance optimizations
+
+- API: Optimized `AbsenceController@index` and `EvaluationController@index` by implementing targeted `select()` statements and column-limited eager loading for related models (`absenceType`, `employee`, `evaluator`) to eliminate data over-fetching while preserving multi-tenant isolation.
+- Gouvernance: Synchronisation de `PROGRAM_VERSION` à `4.1.85` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.84] - 2026-04-30
 
 ### API / Mobile / Web - Experience client alignee et modernisee

@@ -31,7 +31,27 @@ class EvaluationController extends Controller
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $query = Evaluation::with(['employee', 'evaluator']);
+        $query = Evaluation::query()
+            ->select([
+                'id',
+                'company_id',
+                'employee_id',
+                'evaluator_id',
+                'period',
+                'score',
+                'criteria',
+                'strengths',
+                'improvements',
+                'overall_comment',
+                'status',
+                'acknowledged_at',
+                'created_at',
+                'updated_at',
+            ])
+            ->with([
+                'employee:id,first_name,last_name,email',
+                'evaluator:id,first_name,last_name',
+            ]);
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
