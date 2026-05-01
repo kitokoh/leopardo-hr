@@ -603,7 +603,10 @@ trait CreatesMvpSchema
 
     private function setPostgresSearchPath(string $path): void
     {
-        $connection = config('database.default', 'pgsql');
+        $defaultConnection = config('database.default', 'pgsql');
+        $connection = is_string($defaultConnection) && $defaultConnection !== ''
+            ? $defaultConnection
+            : 'pgsql';
 
         config(["database.connections.{$connection}.search_path" => $path]);
 

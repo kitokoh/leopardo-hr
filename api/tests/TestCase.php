@@ -37,7 +37,10 @@ abstract class TestCase extends BaseTestCase
             return;
         }
 
-        $connection = config('database.default', 'pgsql');
+        $defaultConnection = config('database.default', 'pgsql');
+        $connection = is_string($defaultConnection) && $defaultConnection !== ''
+            ? $defaultConnection
+            : 'pgsql';
         $driver = config("database.connections.{$connection}.driver");
 
         if ($driver !== 'pgsql') {
@@ -67,11 +70,11 @@ abstract class TestCase extends BaseTestCase
     {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
 
-        if ($value === false || $value === null || $value === '') {
+        if (! is_string($value) || $value === '') {
             return $fallback;
         }
 
-        return (string) $value;
+        return $value;
     }
 
     private function isRunningInsideDocker(): bool
