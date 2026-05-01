@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Payroll;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePayrollRequest extends FormRequest
 {
@@ -20,7 +21,7 @@ class StorePayrollRequest extends FormRequest
                 'required',
                 'integer',
                 'min:1',
-                \Illuminate\Validation\Rule::exists('employees', 'id')->where('company_id', $companyId),
+                Rule::exists('employees', 'id')->where('company_id', $companyId),
             ],
             'period_month' => ['required', 'integer', 'between:1,12'],
             'period_year' => ['required', 'integer', 'min:2000'],
