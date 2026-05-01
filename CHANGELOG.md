@@ -4,6 +4,10 @@
 
 ## [4.1.84] - 2026-04-30
 
+### Scout - Tests de régression MVP
+
+- Tests : ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC des avances sur salaire.
+
 ### API / Mobile / Web - Experience client alignee et modernisee
 
 - API : ajout de `mobile_experience` dans le payload `/api/v1/auth/me` via `MobileExperienceService`, avec modules exposes, quick actions et stade d'usage pour les clients mobiles.
