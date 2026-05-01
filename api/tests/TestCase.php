@@ -33,7 +33,7 @@ abstract class TestCase extends BaseTestCase
 
     private function configureTestingDatabaseConnection(): void
     {
-        if (!app()->environment('testing')) {
+        if (! app()->environment('testing')) {
             return;
         }
 
@@ -44,7 +44,7 @@ abstract class TestCase extends BaseTestCase
             return;
         }
 
-        $host = $this->testEnvValue('DB_HOST', (string) config("database.connections.{$connection}.host", '127.0.0.1'));
+        $host = $this->testingEnvValue('DB_HOST', (string) config("database.connections.{$connection}.host", '127.0.0.1'));
 
         if ($this->isRunningInsideDocker() && in_array($host, ['127.0.0.1', 'localhost'], true)) {
             $host = 'pgsql';
@@ -52,18 +52,18 @@ abstract class TestCase extends BaseTestCase
 
         config([
             "database.connections.{$connection}.host" => $host,
-            "database.connections.{$connection}.port" => $this->testEnvValue('DB_PORT', (string) config("database.connections.{$connection}.port", '5432')),
-            "database.connections.{$connection}.database" => $this->testEnvValue('DB_DATABASE', (string) config("database.connections.{$connection}.database", 'leopardo_test')),
-            "database.connections.{$connection}.username" => $this->testEnvValue('DB_USERNAME', (string) config("database.connections.{$connection}.username", 'leopardo_user')),
-            "database.connections.{$connection}.password" => $this->testEnvValue('DB_PASSWORD', (string) config("database.connections.{$connection}.password", 'leopardo_pass_test')),
-            "database.connections.{$connection}.search_path" => $this->testEnvValue('DB_SEARCH_PATH', (string) config("database.connections.{$connection}.search_path", 'shared_tenants,public')),
+            "database.connections.{$connection}.port" => $this->testingEnvValue('DB_PORT', (string) config("database.connections.{$connection}.port", '5432')),
+            "database.connections.{$connection}.database" => $this->testingEnvValue('DB_DATABASE', (string) config("database.connections.{$connection}.database", 'leopardo_test')),
+            "database.connections.{$connection}.username" => $this->testingEnvValue('DB_USERNAME', (string) config("database.connections.{$connection}.username", 'leopardo_user')),
+            "database.connections.{$connection}.password" => $this->testingEnvValue('DB_PASSWORD', (string) config("database.connections.{$connection}.password", 'leopardo_pass_test')),
+            "database.connections.{$connection}.search_path" => $this->testingEnvValue('DB_SEARCH_PATH', (string) config("database.connections.{$connection}.search_path", 'shared_tenants,public')),
         ]);
 
         DB::purge($connection);
         DB::reconnect($connection);
     }
 
-    private function testEnvValue(string $key, string $fallback): string
+    private function testingEnvValue(string $key, string $fallback): string
     {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
 
