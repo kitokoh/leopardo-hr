@@ -2,7 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.84] - 2026-04-30
+## [4.1.84] - 2026-05-02
+
+### Sentinel - Protection IDOR et durcissement validation
+
+- API : protection contre les vulnérabilités IDOR dans `StoreAbsenceRequest` et `StorePayrollRequest` par l'ajout d'une validation `exists` explicitement scopée au `company_id` du tenant.
+- API : correction d'un plantage 500 dans `PayrollController` lors de la création d'un bulletin pour un employé d'un autre tenant (fix de l'accès null sur employé hors scope).
+- Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` pour verrouiller l'étanchéité des créations d'absences et de bulletins de paie.
+- Tests : renforcement de `CreatesMvpSchema.php` pour inclure la table `payrolls` et les colonnes manquantes dans `employees`.
 
 ### API / Mobile / Web - Experience client alignee et modernisee
 
