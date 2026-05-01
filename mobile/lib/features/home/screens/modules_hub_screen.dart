@@ -1,144 +1,254 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/core/theme/mobile_experience_icons.dart';
+import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_rh/models/mobile_experience.dart';
 
-class ModulesHubScreen extends StatelessWidget {
+class ModulesHubScreen extends ConsumerWidget {
   const ModulesHubScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final modules = [
-      _ModuleItem(
-        title: 'Absences',
-        icon: Icons.calendar_today,
-        color: AppColors.rh,
-        onTap: () => context.push('/absences'),
-      ),
-      _ModuleItem(
-        title: 'Avances',
-        icon: Icons.payments,
-        color: AppColors.finance,
-        onTap: () => context.push('/salary-advances'),
-      ),
-      _ModuleItem(
-        title: 'Fiches de paie',
-        icon: Icons.description,
-        color: AppColors.finance,
-        onTap: () => context.push('/payrolls'),
-      ),
-      _ModuleItem(
-        title: 'Évaluations',
-        icon: Icons.assignment_turned_in,
-        color: AppColors.ia,
-        onTap: () => context.push('/evaluations'),
-      ),
-      _ModuleItem(
-        title: 'Notifications',
-        icon: Icons.notifications,
-        color: AppColors.info,
-        onTap: () => context.push('/notifications'),
-      ),
-      _ModuleItem(
-        title: 'Projets & Tâches',
-        icon: Icons.assignment,
-        color: AppColors.ia,
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Module Projets & Tâches bientôt disponible'),
-            ),
-          );
-        },
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final employee = ref.watch(authProvider).employee;
+    final experience = employee?.mobileExperience;
+    final activeModules = experience?.activeModules ?? const <MobileModule>[];
+    final upcomingModules =
+        experience?.upcomingModules ?? const <MobileModule>[];
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+    final background = AppColors.backgroundFor(context);
 
     return Scaffold(
-      backgroundColor: AppColors.bgDark,
+      backgroundColor: background,
       appBar: AppBar(
-        backgroundColor: AppColors.bgDark,
-        elevation: 0,
-        title: Text(
-          'Modules RH',
-          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
-        ),
+        title: const Text('Modules RH'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Retour',
+          onPressed: () => context.pop(),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.1,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.tint(context, AppColors.rh, lightAlpha: 0.08),
+              background,
+            ],
           ),
-          itemCount: modules.length,
-          itemBuilder: (context, index) {
-            final module = modules[index];
-            return _ModuleCard(module: module);
-          },
+        ),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceFor(context),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: AppColors.borderFor(context)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Experience modulaire',
+                    style: AppTypography.title.copyWith(color: text),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Leopardo RH ouvre d abord les modules utiles a votre role, puis garde la feuille de route visible sans brouiller l usage quotidien.',
+                    style: AppTypography.bodySmall.copyWith(color: muted),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Modules actifs',
+              style: AppTypography.title.copyWith(color: text),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Disponibles maintenant pour votre entreprise et votre role.',
+              style: AppTypography.bodySmall.copyWith(color: muted),
+            ),
+            const SizedBox(height: 14),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 14,
+                mainAxisSpacing: 14,
+                childAspectRatio: 0.92,
+              ),
+              itemCount: activeModules.length,
+              itemBuilder: (context, index) {
+                final module = activeModules[index];
+                return _ModuleCard(
+                  module: module,
+                  onTap: module.isActive
+                      ? () => context.push(module.route!)
+                      : null,
+                );
+              },
+            ),
+            if (upcomingModules.isNotEmpty) ...[
+              const SizedBox(height: 26),
+              Text(
+                'Roadmap visible',
+                style: AppTypography.title.copyWith(color: text),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Ces modules restent dans la vision produit, sans casser la priorite MVP actuelle.',
+                style: AppTypography.bodySmall.copyWith(color: muted),
+              ),
+              const SizedBox(height: 14),
+              ...upcomingModules.map(
+                (module) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _UpcomingRow(module: module),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 }
 
-class _ModuleItem {
-  final String title;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  _ModuleItem({
-    required this.title,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-}
-
 class _ModuleCard extends StatelessWidget {
-  final _ModuleItem module;
+  const _ModuleCard({required this.module, required this.onTap});
 
-  const _ModuleCard({required this.module});
+  final MobileModule module;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final color = AppColors.forDomain(module.domain);
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+
     return Material(
-      color: AppColors.cardDark,
-      borderRadius: BorderRadius.circular(16),
+      color: AppColors.surfaceFor(context),
+      borderRadius: BorderRadius.circular(24),
       child: InkWell(
-        onTap: module.onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
           padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.borderFor(context)),
+          ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: module.color.withValues(alpha: 0.1),
+                  color: AppColors.tint(
+                    context,
+                    color,
+                    lightAlpha: 0.16,
+                    darkAlpha: 0.24,
+                  ),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(module.icon, color: module.color, size: 32),
+                child: Icon(
+                  MobileExperienceIcons.forModule(module.key),
+                  color: color,
+                ),
               ),
-              const SizedBox(height: 12),
+              const Spacer(),
               Text(
                 module.title,
-                style: AppTypography.subtitle.copyWith(
-                  color: AppColors.textDark,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
+                style: AppTypography.subtitle.copyWith(color: text),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                module.description,
+                style: AppTypography.bodySmall.copyWith(color: muted),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _UpcomingRow extends StatelessWidget {
+  const _UpcomingRow({required this.module});
+
+  final MobileModule module;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColors.forDomain(module.domain);
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceFor(context),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderFor(context)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.tint(
+                context,
+                color,
+                lightAlpha: 0.16,
+                darkAlpha: 0.24,
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              MobileExperienceIcons.forModule(module.key),
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  module.title,
+                  style: AppTypography.subtitle.copyWith(color: text),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  module.description,
+                  style: AppTypography.bodySmall.copyWith(color: muted),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            'Bientot',
+            style: AppTypography.caption.copyWith(color: color),
+          ),
+        ],
       ),
     );
   }

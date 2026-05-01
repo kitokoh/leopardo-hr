@@ -856,8 +856,16 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final unreadTint = AppColors.tint(
+      context,
+      AppColors.info,
+      lightAlpha: 0.10,
+      darkAlpha: 0.22,
+    );
+    final muted = AppColors.textSecondaryFor(context);
+
     return Card(
-      color: item.isRead ? null : AppColors.cardDark.withValues(alpha: 0.9),
+      color: item.isRead ? null : unreadTint,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         onTap: onTap,
@@ -868,7 +876,7 @@ class _NotificationCard extends StatelessWidget {
         ),
         trailing: Icon(
           item.isRead ? Icons.drafts_outlined : Icons.markunread_outlined,
-          color: item.isRead ? AppColors.textMutedDark : AppColors.info,
+          color: item.isRead ? muted : AppColors.info,
         ),
       ),
     );
