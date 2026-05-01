@@ -20,6 +20,15 @@
 - Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
 
 ## [4.1.83] - 2026-05-01
+## [4.1.84] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (employee & attendance)
+
+- Mobile : Mise à jour du modèle `Employee` pour inclure et parser `photo_url` et `hire_date`.
+- Mobile : Mise à jour du modèle `AttendanceLog` pour inclure et parser `late_minutes`.
+- Mobile : Correction de `AttendanceRepository.decodeTodayResponse` pour mapper correctement `overtime_hours` et `late_minutes` dans l'objet `AttendanceLog`.
+- Tests : Renforcement de `widget_test.dart` pour verrouiller le parsing des nouveaux champs de contrat.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ### DocKeeper - Alignement documentation et maintenance
 
