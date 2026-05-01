@@ -586,9 +586,8 @@ class _UpcomingModules extends StatelessWidget {
     return Wrap(
       spacing: 10,
       runSpacing: 10,
-      children: modules
-          .map((module) => _UpcomingModulePill(module: module))
-          .toList(),
+      children:
+          modules.map((module) => _UpcomingModulePill(module: module)).toList(),
     );
   }
 }
