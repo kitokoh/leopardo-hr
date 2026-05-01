@@ -7,6 +7,7 @@ class AttendanceLog {
   final String status;
   final double? workedHours;
   final double? overtimeHours;
+  final int? lateMinutes;
 
   AttendanceLog({
     required this.id,
@@ -17,12 +18,14 @@ class AttendanceLog {
     required this.status,
     this.workedHours,
     this.overtimeHours,
+    this.lateMinutes,
   });
 
   factory AttendanceLog.fromJson(Map<String, dynamic> json) {
     final hoursRaw =
         json['hours_worked'] ?? json['worked_hours'] ?? json['workedHours'];
     final overtimeRaw = json['overtime_hours'] ?? json['overtimeHours'];
+    final lateRaw = json['late_minutes'];
 
     return AttendanceLog(
       id: (json['id'] ?? 0) as int,
@@ -39,6 +42,7 @@ class AttendanceLog {
           hoursRaw != null ? double.tryParse(hoursRaw.toString()) : null,
       overtimeHours:
           overtimeRaw != null ? double.tryParse(overtimeRaw.toString()) : null,
+      lateMinutes: lateRaw != null ? int.tryParse(lateRaw.toString()) : null,
     );
   }
 }

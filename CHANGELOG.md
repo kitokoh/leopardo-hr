@@ -13,6 +13,22 @@
 - Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
 - Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
 
+### API - Performance et durcissement multi-tenant
+
+- API : optimisation de `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
+- API : elimination des concatenations directes de `schema_name` dans plusieurs `SET search_path` sensibles au profit de `Company::getSafeSearchPath()`.
+- API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
+- Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
+
+### Mobile - Contrat attendance et UX absences
+
+- Mobile : parsing de `photo_url`, `hire_date`, `overtime_hours` et `late_minutes` aligne sur les payloads backend actuels.
+- Mobile : `AbsenceListScreen` gagne le pull-to-refresh, un meilleur etat vide scrollable et de petites ameliorations d'accessibilite.
+
+### Depot - Hygiene
+
+- Depot : suppression du gitlink fantome `.codex-pr-140` reste d'une branche bot obsolete.
+
 ## [4.1.83] - 2026-05-01
 
 ### DocKeeper - Alignement documentation et maintenance
