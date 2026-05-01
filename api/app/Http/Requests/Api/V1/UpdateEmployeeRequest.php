@@ -104,7 +104,7 @@ class UpdateEmployeeRequest extends FormRequest
 
         $schemaName = $company->schema_name;
 
-        if ($company->tenancy_type === 'schema' && is_string($schemaName) && $schemaName !== '') {
+        if ($company->tenancy_type === 'schema' && $schemaName !== '') {
             DB::statement('SET search_path TO '.$company->getSafeSearchPath());
 
             return;

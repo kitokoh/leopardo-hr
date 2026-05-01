@@ -2005,12 +2005,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
 
 		-
-			message: '#^Cannot access property \$tenancy_type on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
 			message: '#^Cannot call method add\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 3
@@ -2078,12 +2072,6 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$tenancy_type on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
