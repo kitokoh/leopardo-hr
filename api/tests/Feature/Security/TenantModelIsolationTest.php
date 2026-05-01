@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Security;
 
-use App\Models\AttendanceKiosk;
-use App\Models\AttendanceLog;
 use App\Models\Absence;
 use App\Models\AbsenceType;
+use App\Models\AttendanceKiosk;
+use App\Models\AttendanceLog;
 use App\Models\BiometricEnrollmentRequest;
 use App\Models\Company;
 use App\Models\Department;
