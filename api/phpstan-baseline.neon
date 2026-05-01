@@ -2005,12 +2005,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
 
 		-
-			message: '#^Cannot access property \$schema_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
 			message: '#^Cannot access property \$tenancy_type on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -2086,12 +2080,6 @@ parameters:
 			message: '#^Cannot access property \$id on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$schema_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
 			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
 
 		-
