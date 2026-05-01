@@ -88,7 +88,8 @@ class CrossTenantValidationTest extends TestCase
 
     private function createEmployee(Company $company, string $role, ?string $managerRole = null): Employee
     {
-        return Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => $role,
             'manager_role' => $managerRole,
@@ -96,5 +97,7 @@ class CrossTenantValidationTest extends TestCase
             'password_hash' => bcrypt('password'),
             'status' => 'active',
         ]);
+
+        return $employee;
     }
 }

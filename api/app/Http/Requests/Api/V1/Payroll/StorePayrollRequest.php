@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api\V1\Payroll;
 
+use App\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 
 class StorePayrollRequest extends FormRequest
@@ -14,14 +16,16 @@ class StorePayrollRequest extends FormRequest
 
     public function rules(): array
     {
-        $companyId = $this->user()?->company_id;
+        /** @var Employee|null $actor */
+        $actor = $this->user();
+        $companyId = $actor?->company_id;
 
         return [
             'employee_id' => [
                 'required',
                 'integer',
                 Rule::exists('employees', 'id')->where(
-                    fn ($query) => $query->where('company_id', $companyId)
+                    fn (Builder $query): Builder => $query->where('company_id', $companyId)
                 ),
             ],
             'period_month' => ['required', 'integer', 'between:1,12'],

@@ -105,7 +105,12 @@ class StoreEmployeeRequest extends FormRequest
             return;
         }
 
-        if ($company->tenancy_type === 'schema' && $company->schema_name) {
+        if (
+            $company->tenancy_type === 'schema'
+            && $company->schema_name
+            && $company->schema_name !== ''
+        ) {
+            /** @phpstan-ignore-next-line */
             DB::statement('SET search_path TO '.$company->getSafeSearchPath());
 
             return;

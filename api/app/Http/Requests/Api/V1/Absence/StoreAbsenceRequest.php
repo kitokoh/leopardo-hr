@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api\V1\Absence;
 
+use App\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
@@ -15,14 +17,16 @@ class StoreAbsenceRequest extends FormRequest
 
     public function rules(): array
     {
-        $companyId = $this->user()?->company_id;
+        /** @var Employee|null $actor */
+        $actor = $this->user();
+        $companyId = $actor?->company_id;
 
         return [
             'absence_type_id' => [
                 'required',
                 'integer',
                 Rule::exists('absence_types', 'id')->where(
-                    fn ($query) => $query->where('company_id', $companyId)
+                    fn (Builder $query): Builder => $query->where('company_id', $companyId)
                 ),
             ],
             'start_date' => ['required', 'date_format:Y-m-d'],
