@@ -10,15 +10,21 @@ void main() {
 
     // Brand header.
     expect(find.text('Leopardo RH'), findsOneWidget);
-    expect(find.text('Votre carriere, a portee de main'), findsOneWidget);
+    expect(
+      find.text('Votre journee commence ici, pas dans un back-office.'),
+      findsOneWidget,
+    );
 
-    // First feature slide is visible (pointage).
-    expect(find.text('Pointez en un geste'), findsOneWidget);
+    // First feature slide is visible.
+    expect(
+      find.text('Une home qui vous parle avant de vous noyer'),
+      findsOneWidget,
+    );
 
     // Both CTAs are present.
     expect(find.widgetWithText(ElevatedButton, 'Se connecter'), findsOneWidget);
     expect(
-      find.widgetWithText(OutlinedButton, 'Creer un compte'),
+      find.widgetWithText(OutlinedButton, 'Demander un acces'),
       findsOneWidget,
     );
   });
