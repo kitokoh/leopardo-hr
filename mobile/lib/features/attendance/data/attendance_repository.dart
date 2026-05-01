@@ -145,6 +145,9 @@ class AttendanceRepository {
         workedHours: today['hours_worked'] != null
             ? double.tryParse(today['hours_worked'].toString())
             : 0.0,
+        overtimeHours: today['overtime_hours'] != null
+            ? double.tryParse(today['overtime_hours'].toString())
+            : 0.0,
       ),
       'context': context,
     };
