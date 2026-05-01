@@ -1993,12 +1993,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
 
 		-
-			message: '#^Binary operation "\." between ''SET search_path TO '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
 			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2006,18 +2000,6 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$schema_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$tenancy_type on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
@@ -2083,12 +2065,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
 
 		-
-			message: '#^Binary operation "\." between ''SET search_path TO '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
 			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2096,18 +2072,6 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$schema_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$tenancy_type on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
