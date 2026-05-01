@@ -70,6 +70,11 @@
 ### API - Stabilisation seed demo / deploiement
 
 - API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
+
+### Sentinel - Renforcement de la sécurité multi-tenant
+
+- API : Élimination des risques d'injection SQL dans les commandes `SET search_path` par l'application systématique de `Company::getSafeSearchPath()` sur tous les points d'entrée critiques (`StoreEmployeeRequest`, `UpdateEmployeeRequest`, `BiometricAdminController`, `KioskController`).
+
 ## [4.1.82] - 2026-04-29
 
 ### Janitor - Hygiène du dépôt et sécurité

@@ -89,7 +89,8 @@ class Company extends Model
 
     /**
      * Retourne une chaine search_path securisee pour PostgreSQL.
-     * Echappe le nom du schema pour eviter les injections SQL.
+     * Echappe le nom du schema (whitelist alphanumeric/underscore) pour eviter les injections SQL.
+     * Les identifiants sont entoures de doubles quotes pour supporter les mots-cles reserves.
      */
     public function getSafeSearchPath(): string
     {
