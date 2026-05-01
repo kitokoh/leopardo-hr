@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -97,7 +98,7 @@ class UpdateEmployeeRequest extends FormRequest
         $company = $this->user()?->company
             ?? (app()->bound('current_company') ? app('current_company') : null);
 
-        if (! $company) {
+        if (! $company instanceof Company) {
             return;
         }
 
