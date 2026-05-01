@@ -38,6 +38,10 @@
 
 ## [4.1.83] - 2026-05-01
 
+### Janitor - Hygiène du dépôt
+
+- Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
+
 ### DocKeeper - Alignement documentation et maintenance
 
 - Dépôt : Nettoyage du `README.md` racine pour supprimer les liens morts vers les documents archivés (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`) et consolidation des points d'entrée.
