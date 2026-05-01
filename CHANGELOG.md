@@ -4,6 +4,12 @@
 
 ## [4.1.84] - 2026-04-30
 
+### Palette - Renforcement de l'accessibilité mobile
+
+- Mobile : Amélioration de l'accessibilité du widget `LeopardoBadge` via des labels `Semantics` explicites et l'exclusion des icônes redondantes pour les lecteurs d'écran.
+- Mobile : Durcissement de l'accessibilité dans l'historique de présence (`HistoryScreen`) avec des labels vocaux en français pour les indicateurs de statut (À l'heure, En retard, Absent).
+- Mobile : Amélioration du résumé journalier dans `AttendanceScreen` en regroupant les gains et heures supplémentaires dans une unité sémantique logique unique.
+
 ### API / Mobile / Web - Experience client alignee et modernisee
 
 - API : ajout de `mobile_experience` dans le payload `/api/v1/auth/me` via `MobileExperienceService`, avec modules exposes, quick actions et stade d'usage pour les clients mobiles.

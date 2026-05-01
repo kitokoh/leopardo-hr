@@ -265,47 +265,57 @@ class AttendanceScreen extends ConsumerWidget {
       decimalDigits: 2,
     );
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final totalGain = currencyFormat.format(state.summary!.totalEstimated);
+    final overtimeLabel =
+        'Heures sup : ${state.summary!.overtimeGain > 0 ? (state.summary!.overtimeGain).toStringAsFixed(0) : "0h"}';
+
+    return Semantics(
+      label: 'Gain estimé aujourd\'hui : $totalGain. $overtimeLabel.',
+      container: true,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: ExcludeSemantics(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Gain estime aujourd\'hui',
-                style: TextStyle(fontSize: 16),
+              Row(
+                children: [
+                  const Text(
+                    'Gain estime aujourd\'hui',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const Spacer(),
+                  Text(
+                    totalGain,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
               ),
-              const Spacer(),
+              const SizedBox(height: 16),
               Text(
-                currencyFormat.format(state.summary!.totalEstimated),
+                overtimeLabel,
+                style: const TextStyle(color: AppColors.textMuted),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Estimation - net final calcule en fin de mois',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                  fontSize: 12,
+                  color: AppColors.textMuted,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Heures sup : ${state.summary!.overtimeGain > 0 ? (state.summary!.overtimeGain).toStringAsFixed(0) : "0h"}',
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Estimation - net final calcule en fin de mois',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textMuted,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

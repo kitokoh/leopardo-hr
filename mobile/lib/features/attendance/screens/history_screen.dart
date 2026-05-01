@@ -218,13 +218,29 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           break;
                       }
 
+                      String statusLabel = 'Statut inconnu';
+                      switch (log.status) {
+                        case 'ontime':
+                          statusLabel = 'À l\'heure';
+                          break;
+                        case 'late':
+                          statusLabel = 'En retard';
+                          break;
+                        case 'absent':
+                          statusLabel = 'Absent';
+                          break;
+                      }
+
                       return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: statusColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.circle,
-                            color: statusColor,
-                            size: 12,
+                        leading: Semantics(
+                          label: statusLabel,
+                          child: CircleAvatar(
+                            backgroundColor: statusColor.withValues(alpha: 0.2),
+                            child: Icon(
+                              Icons.circle,
+                              color: statusColor,
+                              size: 12,
+                            ),
                           ),
                         ),
                         title: Text(
