@@ -6,6 +6,13 @@ DROP TABLE IF EXISTS public.languages CASCADE;
 DROP TABLE IF EXISTS public.companies CASCADE;
 DROP TABLE IF EXISTS public.plans CASCADE;
 DROP TABLE IF EXISTS shared_tenants.evaluations CASCADE;
+DROP TABLE IF EXISTS shared_tenants.payrolls CASCADE;
+DROP TABLE IF EXISTS shared_tenants.projects CASCADE;
+DROP TABLE IF EXISTS shared_tenants.tasks CASCADE;
+DROP TABLE IF EXISTS shared_tenants.notifications CASCADE;
+DROP TABLE IF EXISTS shared_tenants.departments CASCADE;
+DROP TABLE IF EXISTS shared_tenants.positions CASCADE;
+DROP TABLE IF EXISTS shared_tenants.sites CASCADE;
 DROP TABLE IF EXISTS shared_tenants.salary_advances CASCADE;
 DROP TABLE IF EXISTS shared_tenants.leave_balance_logs CASCADE;
 DROP TABLE IF EXISTS shared_tenants.absences CASCADE;
@@ -376,6 +383,88 @@ CREATE TABLE shared_tenants.evaluations (
 
 CREATE UNIQUE INDEX evaluations_employee_id_period_evaluator_id_unique
     ON shared_tenants.evaluations (employee_id, period, evaluator_id);
+
+CREATE TABLE shared_tenants.payrolls (
+    id bigserial PRIMARY KEY,
+    company_id uuid NULL,
+    employee_id integer NOT NULL,
+    period_month smallint NOT NULL,
+    period_year smallint NOT NULL,
+    gross_salary numeric(12, 2) NOT NULL DEFAULT 0,
+    net_salary numeric(12, 2) NOT NULL DEFAULT 0,
+    status varchar(20) NOT NULL DEFAULT 'draft',
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX payrolls_company_id_index ON shared_tenants.payrolls (company_id);
+
+CREATE TABLE shared_tenants.projects (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    name varchar(150) NOT NULL,
+    created_by integer NOT NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX projects_company_id_index ON shared_tenants.projects (company_id);
+
+CREATE TABLE shared_tenants.tasks (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    title varchar(200) NOT NULL,
+    created_by integer NOT NULL,
+    due_date timestamptz NOT NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX tasks_company_id_index ON shared_tenants.tasks (company_id);
+
+CREATE TABLE shared_tenants.notifications (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    employee_id integer NOT NULL,
+    type varchar(100) NOT NULL,
+    title varchar(200) NOT NULL,
+    body text NOT NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX notifications_company_id_index ON shared_tenants.notifications (company_id);
+
+CREATE TABLE shared_tenants.departments (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    name varchar(150) NOT NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX departments_company_id_index ON shared_tenants.departments (company_id);
+
+CREATE TABLE shared_tenants.positions (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    name varchar(150) NOT NULL,
+    department_id integer NOT NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX positions_company_id_index ON shared_tenants.positions (company_id);
+
+CREATE TABLE shared_tenants.sites (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    name varchar(150) NOT NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX sites_company_id_index ON shared_tenants.sites (company_id);
 
 CREATE TABLE public.personal_access_tokens (
     id bigserial PRIMARY KEY,
