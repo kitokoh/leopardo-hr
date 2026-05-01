@@ -183,7 +183,7 @@ class Employee extends Authenticatable
                 'company_id' => $this->company_id,
                 'schema_name' => $this->company?->schema_name ?? 'shared_tenants',
                 'employee_id' => $this->id,
-                'role' => $this->role,
+                'role' => $this->role ?: 'employee',
             ]
         );
     }
