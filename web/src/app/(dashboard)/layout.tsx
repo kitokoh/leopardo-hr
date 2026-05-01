@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api-client';
 import {
@@ -16,28 +16,28 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 
+const emptySubscribe = () => () => {};
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [user, setUser] = useState<StoredAuthUser | null>(null);
-  const [locale, setLocale] = useState<AppLocale>('fr');
+  const storedUser = useSyncExternalStore<StoredAuthUser | null>(emptySubscribe, getStoredUser, () => null);
+  const [userOverride, setUserOverride] = useState<StoredAuthUser | null>(null);
+  const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
+  const user = userOverride ?? storedUser;
+  const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
 
   useEffect(() => {
-    const storedUser = getStoredUser();
-    if (!storedUser) {
+    if (!user) {
       router.replace('/auth/login');
       return;
     }
-
-    const resolvedLocale = normalizeLocale(storedUser.language);
-    setUser(storedUser);
-    setLocale(resolvedLocale);
-    applyDocumentLocale(resolvedLocale, storedUser.is_rtl);
-  }, [router]);
+    applyDocumentLocale(locale, user.is_rtl);
+  }, [locale, router, user]);
 
   const handleLogout = () => {
     clearAuthSession();
@@ -61,8 +61,8 @@ export default function DashboardLayout({
       storeAuthSession(token, payload.data);
     }
 
-    setUser(payload.data);
-    setLocale(normalizeLocale(payload.data.language));
+    setUserOverride(payload.data);
+    setLocaleOverride(normalizeLocale(payload.data.language));
     applyDocumentLocale(normalizeLocale(payload.data.language), payload.data.is_rtl);
   };
 

@@ -5,126 +5,210 @@ import 'package:intl/intl.dart';
 
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_rh/core/widgets/alert_banner.dart';
 import 'package:leopardo_rh/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_rh/models/mobile_experience.dart';
 
-/// APV Design v3 — Home conversationnelle.
-///
-/// La home accueille l'utilisateur avec Leo, les modules visibles et des
-/// actions rapides. Le chat reste desactive tant que l'IA n'est pas branchee.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
+    final experience = employee?.mobileExperience ??
+        const MobileExperience(
+          stage: 'regular',
+          modules: <MobileModule>[],
+          quickActions: <MobileQuickAction>[],
+        );
+    final stage = experience.stage;
+    final quickActions = stage == 'new'
+        ? experience.quickActions.take(3).toList()
+        : experience.quickActions;
+    final activeModules = experience.activeModules;
+    final upcomingModules = experience.upcomingModules;
     final firstName = employee?.firstName.isNotEmpty == true
         ? employee!.firstName
         : employee?.email.split('@').first ?? '';
     final canManageTeam = employee?.canManageTeam == true;
-    final text = AppColors.textPrimaryFor(context);
+    final background = AppColors.backgroundFor(context);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundFor(context),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _HomeHeader(
-                          firstName: firstName,
-                          canManageTeam: canManageTeam,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      IconButton.filledTonal(
-                        onPressed: () => context.push('/settings'),
-                        icon: const Icon(Icons.tune),
-                        tooltip: 'Parametres',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  _LeoConversationCard(
-                    firstName: firstName,
-                    canManageTeam: canManageTeam,
-                  ),
-                  const SizedBox(height: 16),
-                  _HomeAlerts(canManageTeam: canManageTeam),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Modules visibles',
-                    style: AppTypography.subtitle.copyWith(color: text),
-                  ),
-                  const SizedBox(height: 12),
-                  _ModuleRow(canManageTeam: canManageTeam),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Actions recommandees',
-                    style: AppTypography.subtitle.copyWith(color: text),
-                  ),
-                  const SizedBox(height: 12),
-                  _QuickActionsGrid(canManageTeam: canManageTeam),
-                  if (canManageTeam) ...[
+      backgroundColor: background,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.tint(context, AppColors.rh, lightAlpha: 0.08),
+              background,
+              AppColors.tint(context, AppColors.ia, lightAlpha: 0.04),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                  children: [
+                    _HeaderRow(
+                      firstName: firstName,
+                      stage: stage,
+                      canManageTeam: canManageTeam,
+                    ),
+                    const SizedBox(height: 18),
+                    _LeoCard(
+                      firstName: firstName,
+                      stage: stage,
+                      canManageTeam: canManageTeam,
+                    ),
+                    const SizedBox(height: 14),
+                    _AlertStack(
+                      stage: stage,
+                      canManageTeam: canManageTeam,
+                      upcomingModules: upcomingModules,
+                    ),
                     const SizedBox(height: 24),
-                    const _ManagerDigestCard(),
+                    _SectionTitle(
+                      title: 'Actions rapides',
+                      subtitle: stage == 'new'
+                          ? 'Leo vous montre l essentiel pour bien commencer.'
+                          : 'Vos raccourcis les plus utiles sont regroupes ici.',
+                    ),
+                    const SizedBox(height: 12),
+                    _QuickActionsGrid(actions: quickActions),
+                    const SizedBox(height: 24),
+                    _SectionTitle(
+                      title: 'Modules actifs',
+                      subtitle:
+                          'Votre entreprise et votre role determinent ce que vous voyez.',
+                    ),
+                    const SizedBox(height: 12),
+                    _ModulesScroller(modules: activeModules),
+                    if (upcomingModules.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      const _SectionTitle(
+                        title: 'Bientot dans Leopardo',
+                        subtitle:
+                            'La feuille de route reste visible, sans polluer les actions du jour.',
+                      ),
+                      const SizedBox(height: 12),
+                      _UpcomingModules(modules: upcomingModules),
+                    ],
+                    if (canManageTeam) ...[
+                      const SizedBox(height: 24),
+                      const _ManagerDigestCard(),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            const _ChatInputBar(),
-          ],
+              _ChatInputBar(stage: stage),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _HomeHeader extends StatelessWidget {
-  const _HomeHeader({required this.firstName, required this.canManageTeam});
+class _HeaderRow extends StatelessWidget {
+  const _HeaderRow({
+    required this.firstName,
+    required this.stage,
+    required this.canManageTeam,
+  });
 
   final String firstName;
+  final String stage;
   final bool canManageTeam;
 
   @override
   Widget build(BuildContext context) {
-    final greeting = _greetingForHour(DateTime.now().hour);
-    final dateLabel = DateFormat.EEEE(
-      'fr_FR',
-    ).add_d().add_MMMM().format(DateTime.now());
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: _HeroHeader(
+            firstName: firstName,
+            stage: stage,
+            canManageTeam: canManageTeam,
+          ),
+        ),
+        const SizedBox(width: 12),
+        IconButton.filledTonal(
+          onPressed: () => context.push('/settings'),
+          icon: const Icon(Icons.tune),
+          tooltip: 'Parametres',
+        ),
+      ],
+    );
+  }
+}
+
+class _HeroHeader extends StatelessWidget {
+  const _HeroHeader({
+    required this.firstName,
+    required this.stage,
+    required this.canManageTeam,
+  });
+
+  final String firstName;
+  final String stage;
+  final bool canManageTeam;
+
+  @override
+  Widget build(BuildContext context) {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
+    final dateLabel =
+        DateFormat.EEEE('fr_FR').add_d().add_MMMM().format(DateTime.now());
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(color: AppColors.borderFor(context)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.rh.withValues(alpha: 0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
               LeopardoBadge.domain(
                 'rh',
-                canManageTeam ? 'RH / Manager' : 'Employe mobile',
+                canManageTeam ? 'RH / manager' : 'Experience employe',
                 icon: canManageTeam ? Icons.group : Icons.smartphone,
+              ),
+              LeopardoBadge.forStatus(
+                stage == 'new' ? 'pending' : 'active',
+                stage == 'new' ? 'Nouveau parcours' : 'Flux complet',
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Text(
-            firstName.isEmpty ? greeting : '$greeting, $firstName',
-            style: AppTypography.display.copyWith(color: text),
+            firstName.isEmpty
+                ? _greetingForHour(DateTime.now().hour)
+                : '${_greetingForHour(DateTime.now().hour)}, $firstName',
+            style: AppTypography.display.copyWith(
+              color: text,
+              fontSize: 30,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -143,32 +227,42 @@ class _HomeHeader extends StatelessWidget {
   }
 }
 
-class _LeoConversationCard extends StatelessWidget {
-  const _LeoConversationCard({
+class _LeoCard extends StatelessWidget {
+  const _LeoCard({
     required this.firstName,
+    required this.stage,
     required this.canManageTeam,
   });
 
   final String firstName;
+  final String stage;
   final bool canManageTeam;
 
   @override
   Widget build(BuildContext context) {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
+    final shortName = firstName.isEmpty ? 'vous' : firstName;
+    final guidance = stage == 'new'
+        ? 'On commence simple: Leo met en avant quelques actions utiles et laisse l interface s ouvrir progressivement.'
+        : 'Leo garde le contexte, puis vous bascule vers la bonne action sans vous perdre dans un dashboard massif.';
+    final focus = canManageTeam
+        ? 'Aujourd hui, gardez l oeil sur le pointage, les validations RH et l activite de votre equipe.'
+        : 'Aujourd hui, tout part du pointage, puis de la consultation de votre mois et de vos documents RH.';
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.tint(context, AppColors.ia, lightAlpha: 0.13),
+            AppColors.tint(context, AppColors.ia, lightAlpha: 0.15),
             AppColors.surfaceFor(context),
+            AppColors.tint(context, AppColors.rh, lightAlpha: 0.06),
           ],
         ),
-        borderRadius: BorderRadius.circular(26),
         border: Border.all(color: AppColors.borderFor(context)),
       ),
       child: Column(
@@ -177,8 +271,8 @@ class _LeoConversationCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 42,
-                height: 42,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.tint(
@@ -192,248 +286,133 @@ class _LeoConversationCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  'Leo vous ouvre la journee',
-                  style: AppTypography.subtitle.copyWith(color: text),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Leo vous ouvre la journee',
+                      style: AppTypography.subtitle.copyWith(color: text),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Conversationnelle, mobile-first et guidee.',
+                      style: AppTypography.caption.copyWith(color: muted),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           Text(
-            canManageTeam
-                ? 'Bonjour ${firstName.isEmpty ? "manager" : firstName}. Commencez par le suivi du pointage, puis utilisez les actions RH pour piloter votre equipe.'
-                : 'Bonjour ${firstName.isEmpty ? "a vous" : firstName}. Vous pouvez pointer, suivre votre mois et retrouver votre historique sans quitter cet ecran.',
+            'Bonjour $shortName. $focus',
             style: AppTypography.body.copyWith(color: text),
           ),
           const SizedBox(height: 10),
-          Text(
-            'Le chat vocal et textuel arrive bientot. En attendant, la home vous guide avec des actions simples et visibles.',
-            style: AppTypography.bodySmall.copyWith(color: muted),
-          ),
+          Text(guidance, style: AppTypography.bodySmall.copyWith(color: muted)),
         ],
       ),
     );
   }
 }
 
-class _HomeAlerts extends StatelessWidget {
-  const _HomeAlerts({required this.canManageTeam});
+class _AlertStack extends StatelessWidget {
+  const _AlertStack({
+    required this.stage,
+    required this.canManageTeam,
+    required this.upcomingModules,
+  });
 
+  final String stage;
   final bool canManageTeam;
+  final List<MobileModule> upcomingModules;
 
   @override
   Widget build(BuildContext context) {
+    final alerts = <Widget>[
+      AlertBanner(
+        message: stage == 'new'
+            ? 'Leo garde une home volontairement simple pour vos premiers usages.'
+            : 'Votre mobile reste la surface principale: RH, pointage et suivi personnel vivent ici.',
+        level: AlertLevel.info,
+        icon: Icons.phone_iphone,
+      ),
+    ];
+
+    if (canManageTeam) {
+      alerts.add(
+        const Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: AlertBanner(
+            message:
+                'Les workflows equipe et invitations restent disponibles sans quitter l experience mobile.',
+            level: AlertLevel.success,
+            icon: Icons.groups_2_outlined,
+          ),
+        ),
+      );
+    }
+
+    if (upcomingModules.isNotEmpty) {
+      alerts.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: AlertBanner(
+            message:
+                '${upcomingModules.length} modules restent visibles dans la feuille de route, sans se melanger aux actions critiques du jour.',
+            level: AlertLevel.warning,
+            icon: Icons.upcoming_outlined,
+          ),
+        ),
+      );
+    }
+
+    return Column(children: alerts);
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AlertBanner(
-          message: canManageTeam
-              ? 'Leopardo RH reste mobile-first: le suivi d equipe est ici, et le back-office web n arrive qu en support.'
-              : 'Votre application reste la source de verite pour le pointage et le suivi de vos heures.',
-          level: AlertLevel.info,
-          icon: Icons.phone_iphone,
-        ),
-        const SizedBox(height: 10),
-        const AlertBanner(
-          message:
-              'Finance, cameras et Leo complet sont deja presents dans la vision produit mais restent en attente d activation.',
-          level: AlertLevel.warning,
-          icon: Icons.upcoming_outlined,
-        ),
+        Text(title, style: AppTypography.title.copyWith(color: text)),
+        const SizedBox(height: 4),
+        Text(subtitle, style: AppTypography.bodySmall.copyWith(color: muted)),
       ],
     );
   }
 }
 
-class _ModuleRow extends StatelessWidget {
-  const _ModuleRow({required this.canManageTeam});
-
-  final bool canManageTeam;
-
-  @override
-  Widget build(BuildContext context) {
-    final modules = <_ModuleChipData>[
-      _ModuleChipData(
-        domain: 'rh',
-        title: canManageTeam ? 'RH & equipe' : 'RH & pointage',
-        subtitle: 'Actif maintenant',
-        icon: canManageTeam ? Icons.groups : Icons.fingerprint,
-        onTap: () => context.push(canManageTeam ? '/team' : '/attendance'),
-      ),
-      const _ModuleChipData(
-        domain: 'finance',
-        title: 'Finance',
-        subtitle: 'Activable bientot',
-        icon: Icons.account_balance_wallet_outlined,
-      ),
-      const _ModuleChipData(
-        domain: 'security',
-        title: 'Securite',
-        subtitle: 'Cameras Phase 2',
-        icon: Icons.shield_outlined,
-      ),
-      const _ModuleChipData(
-        domain: 'ia',
-        title: 'Leo IA',
-        subtitle: 'Chat a venir',
-        icon: Icons.auto_awesome,
-      ),
-    ];
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (final module in modules) ...[
-            _ModuleChip(data: module),
-            const SizedBox(width: 10),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ModuleChipData {
-  const _ModuleChipData({
-    required this.domain,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    this.onTap,
-  });
-
-  final String domain;
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final VoidCallback? onTap;
-}
-
-class _ModuleChip extends StatelessWidget {
-  const _ModuleChip({required this.data});
-
-  final _ModuleChipData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.forDomain(data.domain);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
-
-    return InkWell(
-      onTap: data.onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Ink(
-        width: 180,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.tint(
-                  context,
-                  color,
-                  lightAlpha: 0.16,
-                  darkAlpha: 0.24,
-                ),
-              ),
-              child: Icon(data.icon, color: color),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              data.title,
-              style: AppTypography.subtitle.copyWith(color: text),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              data.subtitle,
-              style: AppTypography.caption.copyWith(color: muted),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _QuickActionsGrid extends StatelessWidget {
-  const _QuickActionsGrid({required this.canManageTeam});
+  const _QuickActionsGrid({required this.actions});
 
-  final bool canManageTeam;
+  final List<MobileQuickAction> actions;
 
   @override
   Widget build(BuildContext context) {
-    final actions = <_QuickAction>[
-      _QuickAction(
-        icon: Icons.fingerprint,
-        label: 'Pointer',
-        subtitle: 'Demarrer ou terminer votre journee',
-        color: AppColors.rh,
-        onTap: () => context.push('/attendance'),
-      ),
-      _QuickAction(
-        icon: Icons.stacked_bar_chart,
-        label: 'Mon mois',
-        subtitle: 'Heures, supplementaires et estime',
-        color: AppColors.info,
-        onTap: () => context.push('/me/monthly'),
-      ),
-      _QuickAction(
-        icon: Icons.apps,
-        label: 'Modules',
-        subtitle: 'RH, Avances, Paie...',
-        color: AppColors.finance,
-        onTap: () => context.push('/modules'),
-      ),
-      _QuickAction(
-        icon: Icons.history,
-        label: 'Historique',
-        subtitle: 'Revoir tous mes pointages',
-        color: AppColors.warning,
-        onTap: () => context.push('/history'),
-      ),
-      _QuickAction(
-        icon: Icons.dashboard_customize_outlined,
-        label: 'Modules RH',
-        subtitle: 'Evaluations, paie, notifications',
-        color: AppColors.finance,
-        onTap: () => context.push('/modules/rh'),
-      ),
-      if (canManageTeam)
-        _QuickAction(
-          icon: Icons.group,
-          label: 'Equipe',
-          subtitle: 'Employes et invitations',
-          color: AppColors.ia,
-          onTap: () => context.push('/team'),
-        ),
-      _QuickAction(
-        icon: Icons.settings,
-        label: 'Parametres',
-        subtitle: 'Profil, securite et langue',
-        color: AppColors.textMuted,
-        onTap: () => context.push('/settings'),
-      ),
-    ];
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns = constraints.maxWidth > 540 ? 3 : 2;
+
         return GridView.count(
           crossAxisCount: columns,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.08,
+          childAspectRatio: 1.04,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: actions
@@ -445,35 +424,20 @@ class _QuickActionsGrid extends StatelessWidget {
   }
 }
 
-class _QuickAction {
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.color,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final Color color;
-  final VoidCallback onTap;
-}
-
 class _QuickActionCard extends StatelessWidget {
   const _QuickActionCard({required this.action});
 
-  final _QuickAction action;
+  final MobileQuickAction action;
 
   @override
   Widget build(BuildContext context) {
+    final color = AppColors.forDomain(action.domain);
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
 
     return InkWell(
       borderRadius: BorderRadius.circular(24),
-      onTap: action.onTap,
+      onTap: () => context.push(action.route),
       child: Ink(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -487,18 +451,21 @@ class _QuickActionCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 42,
-                  height: 42,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.tint(
                       context,
-                      action.color,
+                      color,
                       lightAlpha: 0.16,
                       darkAlpha: 0.24,
                     ),
                   ),
-                  child: Icon(action.icon, color: action.color),
+                  child: Icon(
+                    MobileExperienceIcons.forAction(action.key, action.icon),
+                    color: color,
+                  ),
                 ),
                 const Spacer(),
                 Icon(Icons.arrow_outward, color: muted, size: 18),
@@ -506,18 +473,186 @@ class _QuickActionCard extends StatelessWidget {
             ),
             const Spacer(),
             Text(
-              action.label,
+              action.title,
               style: AppTypography.subtitle.copyWith(color: text),
             ),
             const SizedBox(height: 6),
             Text(
-              action.subtitle,
+              action.description,
               style: AppTypography.bodySmall.copyWith(color: muted),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ModulesScroller extends StatelessWidget {
+  const _ModulesScroller({required this.modules});
+
+  final List<MobileModule> modules;
+
+  @override
+  Widget build(BuildContext context) {
+    if (modules.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final module in modules) ...[
+            _ModuleCard(module: module),
+            const SizedBox(width: 10),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ModuleCard extends StatelessWidget {
+  const _ModuleCard({required this.module});
+
+  final MobileModule module;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColors.forDomain(module.domain);
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+
+    return InkWell(
+      onTap: module.isActive ? () => context.push(module.route!) : null,
+      borderRadius: BorderRadius.circular(24),
+      child: Ink(
+        width: 206,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceFor(context),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.borderFor(context)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.tint(
+                  context,
+                  color,
+                  lightAlpha: 0.16,
+                  darkAlpha: 0.24,
+                ),
+              ),
+              child: Icon(
+                MobileExperienceIcons.forModule(module.key),
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              module.title,
+              style: AppTypography.subtitle.copyWith(color: text),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              module.description,
+              style: AppTypography.bodySmall.copyWith(color: muted),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _UpcomingModules extends StatelessWidget {
+  const _UpcomingModules({required this.modules});
+
+  final List<MobileModule> modules;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children:
+          modules.map((module) => _UpcomingModulePill(module: module)).toList(),
+    );
+  }
+}
+
+class _UpcomingModulePill extends StatelessWidget {
+  const _UpcomingModulePill({required this.module});
+
+  final MobileModule module;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColors.forDomain(module.domain);
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+
+    return Container(
+      width: 170,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceFor(context),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderFor(context)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppColors.tint(
+                context,
+                color,
+                lightAlpha: 0.16,
+                darkAlpha: 0.22,
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              MobileExperienceIcons.forModule(module.key),
+              size: 18,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  module.title,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: text,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Bientot disponible',
+                  style: AppTypography.caption.copyWith(color: muted),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -535,7 +670,7 @@ class _ManagerDigestCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(color: AppColors.borderFor(context)),
       ),
       child: Column(
@@ -575,7 +710,7 @@ class _ManagerDigestCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Le detail complet vit dans les ecrans RH, mais la home garde ici les signaux les plus utiles.',
+            'La home reste legere: elle montre les signaux utiles, puis renvoie vers les modules pour agir.',
             style: AppTypography.bodySmall.copyWith(color: muted),
           ),
         ],
@@ -598,6 +733,7 @@ class _DigestTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = AppColors.textPrimaryFor(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
@@ -625,7 +761,9 @@ class _DigestTile extends StatelessWidget {
 }
 
 class _ChatInputBar extends StatelessWidget {
-  const _ChatInputBar();
+  const _ChatInputBar({required this.stage});
+
+  final String stage;
 
   @override
   Widget build(BuildContext context) {
@@ -644,16 +782,35 @@ class _ChatInputBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.auto_awesome, color: AppColors.ia.withValues(alpha: 0.75)),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.tint(
+                context,
+                AppColors.ia,
+                lightAlpha: 0.14,
+                darkAlpha: 0.24,
+              ),
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: AppColors.ia,
+              size: 18,
+            ),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Opacity(
-              opacity: 0.75,
+              opacity: 0.82,
               child: TextField(
                 enabled: false,
                 decoration: InputDecoration(
                   isDense: true,
-                  hintText: 'Leo arrive bientot...',
+                  hintText: stage == 'new'
+                      ? 'Leo commencera bientot par vous guider pas a pas...'
+                      : 'Leo arrive bientot dans cette conversation...',
                   hintStyle: AppTypography.bodySmall.copyWith(color: muted),
                   filled: true,
                   fillColor: AppColors.surfaceFor(context),
