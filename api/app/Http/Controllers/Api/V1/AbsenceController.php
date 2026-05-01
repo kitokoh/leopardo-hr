@@ -19,7 +19,23 @@ class AbsenceController extends Controller
     public function index(AbsenceIndexRequest $request): JsonResponse
     {
         $actor = $request->user();
-        $query = Absence::with('absenceType');
+        $query = Absence::query()
+            ->select([
+                'id',
+                'company_id',
+                'employee_id',
+                'absence_type_id',
+                'start_date',
+                'end_date',
+                'days_count',
+                'status',
+                'reason',
+                'approved_by',
+                'rejected_reason',
+                'created_at',
+                'updated_at',
+            ])
+            ->with('absenceType:id,name,code,deducts_leave');
 
         // RBAC: employee sees only own absences
         if (! $actor->isManager()) {
