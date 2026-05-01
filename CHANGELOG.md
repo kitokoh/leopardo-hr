@@ -24,6 +24,13 @@
 
 - Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
 - Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
+## [4.1.84] - 2026-05-02
+
+### Sentinel - Sécurisation des validations et tests d'isolation
+
+- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empêcher les attaques par IDOR (Insecure Direct Object Reference) en vérifiant systématiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifié.
+- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modèles supplémentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
+- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.83] - 2026-05-01
