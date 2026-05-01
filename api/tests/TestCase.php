@@ -33,7 +33,7 @@ abstract class TestCase extends BaseTestCase
 
     private function configureTestingDatabaseConnection(): void
     {
-        if (!app()->environment('testing')) {
+        if (! app()->environment('testing')) {
             return;
         }
 
