@@ -4,10 +4,10 @@ import 'package:leopardo_rh/features/auth/data/auth_repository.dart';
 import 'package:leopardo_rh/models/employee.dart';
 
 void main() {
-  test('uses render api as default base url when none is provided', () {
+  test('uses local debug api as default base url when none is provided', () {
     expect(
       ApiClient.resolveBaseUrl(),
-      'https://gestionemployerbackend.onrender.com/api/v1',
+      'http://10.0.2.2:8000/api/v1',
     );
   });
 
