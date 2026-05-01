@@ -1,3 +1,5 @@
+import 'package:leopardo_rh/models/mobile_experience.dart';
+
 class Employee {
   final int id;
   final String? matricule;
@@ -18,6 +20,8 @@ class Employee {
   final String? currency;
   final String language;
   final bool isRtl;
+  final Map<String, bool> features;
+  final MobileExperience mobileExperience;
 
   Employee({
     required this.id,
@@ -39,6 +43,12 @@ class Employee {
     this.currency,
     this.language = 'fr',
     this.isRtl = false,
+    this.features = const <String, bool>{},
+    this.mobileExperience = const MobileExperience(
+      stage: 'regular',
+      modules: <MobileModule>[],
+      quickActions: <MobileQuickAction>[],
+    ),
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -51,6 +61,16 @@ class Employee {
     } else if (rawCapabilities is Map) {
       rawCapabilities.forEach((key, value) {
         if (value == true && key is String) capabilities.add(key);
+      });
+    }
+
+    final features = <String, bool>{};
+    final rawFeatures = json['features'];
+    if (rawFeatures is Map) {
+      rawFeatures.forEach((key, value) {
+        if (key is String) {
+          features[key] = value == true;
+        }
       });
     }
 
@@ -75,6 +95,12 @@ class Employee {
       currency: json['currency'] as String?,
       language: (json['language'] ?? 'fr') as String,
       isRtl: json['is_rtl'] == true,
+      features: features,
+      mobileExperience: MobileExperience.fromJson(
+        json['mobile_experience'] is Map
+            ? (json['mobile_experience'] as Map).cast<String, dynamic>()
+            : null,
+      ),
     );
   }
 
@@ -91,6 +117,9 @@ class Employee {
       isHr ||
       capabilities.contains('can_manage_invitations') ||
       capabilities.contains('invitations.manage');
+  bool get hasRhModule => features['rh'] ?? true;
+  bool get hasFinanceModule => features['finance'] == true;
+  bool get hasCamerasModule => features['cameras'] == true;
 
   String get fullName {
     final full = '$firstName $lastName'.trim();

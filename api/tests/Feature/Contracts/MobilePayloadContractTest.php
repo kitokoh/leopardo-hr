@@ -71,6 +71,30 @@ class MobilePayloadContractTest extends TestCase
                 'hire_date',
                 'language',
                 'is_rtl',
+                'features',
+                'mobile_experience' => [
+                    'stage',
+                    'modules' => [
+                        '*' => [
+                            'key',
+                            'title',
+                            'description',
+                            'domain',
+                            'route',
+                            'status',
+                        ],
+                    ],
+                    'quick_actions' => [
+                        '*' => [
+                            'key',
+                            'title',
+                            'description',
+                            'domain',
+                            'icon',
+                            'route',
+                        ],
+                    ],
+                ],
                 'company' => [
                     'id',
                     'name',
@@ -84,6 +108,16 @@ class MobilePayloadContractTest extends TestCase
         $response->assertJsonPath('data.matricule', 'EMP-NORA');
         $response->assertJsonPath('data.role', 'employee');
         $response->assertJsonPath('data.company.name', 'Company A');
+        $response->assertJsonPath('data.features.rh', true);
+        $response->assertJsonPath('data.mobile_experience.stage', 'regular');
+        $modules = $response->json('data.mobile_experience.modules');
+        $quickActions = $response->json('data.mobile_experience.quick_actions');
+
+        $this->assertIsArray($modules);
+        $this->assertIsArray($quickActions);
+        $this->assertContains('attendance', array_column($modules, 'key'));
+        $this->assertContains('finance', array_column($modules, 'key'));
+        $this->assertContains('settings', array_column($quickActions, 'key'));
     }
 
     public function test_me_daily_summary_payload_matches_mobile_contract(): void

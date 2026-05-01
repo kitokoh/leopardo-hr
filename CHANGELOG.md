@@ -8,6 +8,16 @@
 
 - API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
 - API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
+## [4.1.84] - 2026-04-30
+
+### API / Mobile / Web - Experience client alignee et modernisee
+
+- API : ajout de `mobile_experience` dans le payload `/api/v1/auth/me` via `MobileExperienceService`, avec modules exposes, quick actions et stade d'usage pour les clients mobiles.
+- API : renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` pour verrouiller ce nouveau contrat mobile.
+- Mobile : realignement de `welcome`, `login`, `home` et `modules hub` sur l'experience mobile-first documentee, avec consommation directe du payload backend (`features` + `mobile_experience`).
+- Mobile : ajout des modeles `MobileExperience`, `MobileModule`, `MobileQuickAction` et du mapping d'icones associe pour garder une navigation coherente avec les routes reelles de l'application.
+- Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
+- Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
 
 ## [4.1.83] - 2026-05-01
 
