@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Api\V1\Absence;
 
 use App\Models\Employee;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 

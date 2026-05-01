@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Api\V1\Payroll;
 
 use App\Models\Employee;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StorePayrollRequest extends FormRequest
