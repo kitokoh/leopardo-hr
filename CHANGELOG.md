@@ -2,7 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.84] - 2026-04-30
+## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
 
@@ -41,7 +41,7 @@
 
 - API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
 - API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
-## [4.1.84] - 2026-05-02
+## [4.1.84] - 2026-05-02 module placard 
 
 ### Sentinel - Sécurisation des validations et tests d'isolation
 
@@ -64,6 +64,7 @@
 ### Janitor - Hygiène du dépôt
 
 - Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
+- Dépôt : Suppression du répertoire `.kiro/` contenant des spécifications d'implémentation obsolètes déjà fusionnées.
 
 ### DocKeeper - Alignement documentation et maintenance
 
