@@ -64,6 +64,7 @@
 ### Janitor - Hygiène du dépôt
 
 - Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
+- Dépôt : Suppression du répertoire `.kiro/` contenant des spécifications d'implémentation obsolètes déjà fusionnées.
 
 ### DocKeeper - Alignement documentation et maintenance
 
