@@ -3,12 +3,12 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class FeatureTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     /** @test */
     public function it_can_create_a_feature_with_all_required_fields()

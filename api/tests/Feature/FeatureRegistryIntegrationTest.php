@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Contracts\FeatureRegistryInterface;
 use App\Models\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
@@ -13,7 +13,7 @@ use Tests\TestCase;
  */
 class FeatureRegistryIntegrationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     private FeatureRegistryInterface $registry;
 
