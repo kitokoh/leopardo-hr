@@ -70,6 +70,25 @@ class CrossTenantValidationTest extends TestCase
         $response->assertJsonValidationErrors(['employee_id']);
     }
 
+    public function test_manager_cannot_create_evaluation_for_another_tenant_employee(): void
+    {
+        $companyA = $this->createCompany('Company A');
+        $companyB = $this->createCompany('Company B');
+
+        $managerA = $this->createEmployee($companyA, 'manager', 'principal');
+        $employeeB = $this->createEmployee($companyB, 'employee');
+
+        $response = $this->actingAs($managerA, 'sanctum')
+            ->postJson('/api/v1/evaluations', [
+                'employee_id' => $employeeB->id,
+                'period' => '2026-Q1',
+                'score' => 4.5,
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['employee_id']);
+    }
+
     private function createCompany(string $name): Company
     {
         return Company::query()->create([

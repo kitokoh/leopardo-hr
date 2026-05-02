@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Evaluation\StoreEvaluationRequest;
 use App\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -80,24 +81,14 @@ class EvaluationController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreEvaluationRequest $request): JsonResponse
     {
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
         }
 
-        $data = $request->validate([
-            'employee_id' => ['required', 'integer', 'min:1'],
-            'period' => ['required', 'string', 'max:20'],
-            'score' => ['nullable', 'numeric', 'min:0', 'max:5'],
-            'criteria' => ['nullable', 'array'],
-            'criteria.*.label' => ['required_with:criteria', 'string', 'max:100'],
-            'criteria.*.score' => ['required_with:criteria', 'numeric', 'min:0', 'max:5'],
-            'strengths' => ['nullable', 'string', 'max:2000'],
-            'improvements' => ['nullable', 'string', 'max:2000'],
-            'overall_comment' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $data = $request->validated();
 
         if (Evaluation::where('employee_id', $data['employee_id'])->where('evaluator_id', $actor->id)->where('period', $data['period'])->exists()) {
             return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);
