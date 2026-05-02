@@ -23,6 +23,10 @@ class CabinetFolder extends Model
         'icon',
     ];
 
+    protected $casts = [
+        'company_id' => 'integer',
+    ];
+
     /**
      * @return BelongsTo<Employee, $this>
      */

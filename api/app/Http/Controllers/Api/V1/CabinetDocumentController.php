@@ -33,7 +33,7 @@ class CabinetDocumentController extends Controller
         }
 
         if ($request->filled('search')) {
-            $search = (string) $request->input('search');
+            $search = $request->string('search')->value();
             $query->where(function ($q) use ($search): void {
                 $q->where('name', 'ilike', "%{$search}%")
                     ->orWhere('original_name', 'ilike', "%{$search}%");
