@@ -13,8 +13,10 @@ class CabinetRepository {
   Future<List<CabinetFolder>> getFolders({int? parentId}) async {
     final params = <String, dynamic>{};
     if (parentId != null) params['parent_id'] = parentId;
-    final response =
-        await apiClient.dio.get('/cabinet/folders', queryParameters: params);
+    final response = await apiClient.dio.get(
+      '/cabinet/folders',
+      queryParameters: params,
+    );
     final items = response.data['data'] as List;
     return items
         .map((e) => CabinetFolder.fromJson(e as Map<String, dynamic>))
@@ -27,21 +29,30 @@ class CabinetRepository {
     String? color,
     String? icon,
   }) async {
-    final response = await apiClient.dio.post('/cabinet/folders', data: {
-      'name': name,
-      if (parentId != null) 'parent_id': parentId,
-      if (color != null) 'color': color,
-      if (icon != null) 'icon': icon,
-    });
+    final response = await apiClient.dio.post(
+      '/cabinet/folders',
+      data: {
+        'name': name,
+        if (parentId != null) 'parent_id': parentId,
+        if (color != null) 'color': color,
+        if (icon != null) 'icon': icon,
+      },
+    );
     return CabinetFolder.fromJson(response.data['data']);
   }
 
-  Future<CabinetFolder> updateFolder(int id, {String? name, int? parentId}) async {
+  Future<CabinetFolder> updateFolder(
+    int id, {
+    String? name,
+    int? parentId,
+  }) async {
     final data = <String, dynamic>{};
     if (name != null) data['name'] = name;
     if (parentId != null) data['parent_id'] = parentId;
-    final response =
-        await apiClient.dio.put('/cabinet/folders/$id', data: data);
+    final response = await apiClient.dio.put(
+      '/cabinet/folders/$id',
+      data: data,
+    );
     return CabinetFolder.fromJson(response.data['data']);
   }
 
@@ -54,8 +65,10 @@ class CabinetRepository {
   Future<List<CabinetDocument>> getDocuments({int? folderId}) async {
     final params = <String, dynamic>{};
     if (folderId != null) params['folder_id'] = folderId;
-    final response =
-        await apiClient.dio.get('/cabinet/documents', queryParameters: params);
+    final response = await apiClient.dio.get(
+      '/cabinet/documents',
+      queryParameters: params,
+    );
     final items = response.data['data'] as List;
     return items
         .map((e) => CabinetDocument.fromJson(e as Map<String, dynamic>))
@@ -75,8 +88,10 @@ class CabinetRepository {
       if (name != null) 'name': name,
       if (notes != null) 'notes': notes,
     });
-    final response =
-        await apiClient.dio.post('/cabinet/documents', data: formData);
+    final response = await apiClient.dio.post(
+      '/cabinet/documents',
+      data: formData,
+    );
     return CabinetDocument.fromJson(response.data['data']);
   }
 
@@ -92,13 +107,16 @@ class CabinetRepository {
     required String email,
     String? expiresAt,
   }) async {
-    await apiClient.dio.post('/cabinet/shares', data: {
-      'shareable_type': shareableType,
-      'shareable_id': shareableId,
-      'shared_via': 'email',
-      'shared_with_email': email,
-      if (expiresAt != null) 'expires_at': expiresAt,
-    });
+    await apiClient.dio.post(
+      '/cabinet/shares',
+      data: {
+        'shareable_type': shareableType,
+        'shareable_id': shareableId,
+        'shared_via': 'email',
+        'shared_with_email': email,
+        if (expiresAt != null) 'expires_at': expiresAt,
+      },
+    );
   }
 
   Future<Map<String, dynamic>> shareViaLink({
@@ -106,12 +124,15 @@ class CabinetRepository {
     required int shareableId,
     String? expiresAt,
   }) async {
-    final response = await apiClient.dio.post('/cabinet/shares', data: {
-      'shareable_type': shareableType,
-      'shareable_id': shareableId,
-      'shared_via': 'link',
-      if (expiresAt != null) 'expires_at': expiresAt,
-    });
+    final response = await apiClient.dio.post(
+      '/cabinet/shares',
+      data: {
+        'shareable_type': shareableType,
+        'shareable_id': shareableId,
+        'shared_via': 'link',
+        if (expiresAt != null) 'expires_at': expiresAt,
+      },
+    );
     return response.data['data'] as Map<String, dynamic>;
   }
 
