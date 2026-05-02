@@ -8,7 +8,7 @@ Ce plan d'implémentation couvre le développement complet du système de synchr
 
 ### Phase 1: Infrastructure Backend (API Laravel)
 
-- [-] 1. Créer les modèles et migrations de base
+- [x] 1. Créer les modèles et migrations de base
   - Créer le modèle `Feature` avec tous les champs requis (key, title, description, endpoint, etc.)
   - Créer la migration pour la table `features` avec index appropriés
   - Implémenter les relations et accesseurs nécessaires
@@ -21,7 +21,7 @@ Ce plan d'implémentation couvre le développement complet du système de synchr
   - _Requirements: 1.4_
 
 - [ ] 2. Implémenter le Feature Detector
-  - [~] 2.1 Créer l'interface `FeatureDetectorInterface` et l'implémentation
+  - [-] 2.1 Créer l'interface `FeatureDetectorInterface` et l'implémentation
     - Implémenter la méthode `detectNewFeatures()` avec reflection des contrôleurs
     - Implémenter `extractMetadata()` pour extraire les annotations/attributs
     - Implémenter `scanRoutes()` pour analyser les routes Laravel
