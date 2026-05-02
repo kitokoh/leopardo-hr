@@ -108,6 +108,14 @@ class MobileExperienceService
                 route: '/notifications',
                 status: 'active',
             ),
+            $this->module(
+                key: 'cabinet',
+                title: 'Placard',
+                description: 'Rangez et partagez vos documents importants : diplomes, CV et plus.',
+                domain: 'rh',
+                route: '/cabinet',
+                status: 'active',
+            ),
         ];
 
         if ($employee->hasManagerRole('principal', 'rh') || $employee->isPrincipal() || $employee->isHr()) {
