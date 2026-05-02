@@ -165,6 +165,22 @@ class Employee extends Authenticatable
         return $this->hasMany(BiometricEnrollmentRequest::class, 'employee_id');
     }
 
+    /**
+     * @return HasMany<CabinetFolder, $this>
+     */
+    public function cabinetFolders(): HasMany
+    {
+        return $this->hasMany(CabinetFolder::class, 'employee_id');
+    }
+
+    /**
+     * @return HasMany<CabinetDocument, $this>
+     */
+    public function cabinetDocuments(): HasMany
+    {
+        return $this->hasMany(CabinetDocument::class, 'employee_id');
+    }
+
     public function syncUserLookup(): void
     {
         if (! $this->canSyncUserLookup()) {
