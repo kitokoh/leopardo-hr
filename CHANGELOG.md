@@ -2,6 +2,30 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.85] - 2026-05-02
+
+### Mobile-API Synchronization - Système de synchronisation automatique des fonctionnalités
+
+- API : Implémentation complète du système de synchronisation mobile-API avec détection automatique des nouvelles fonctionnalités
+- API : Nouveau modèle `Feature` avec table `features` pour l'inventaire centralisé des fonctionnalités API
+- API : Service `FeatureRegistry` pour la gestion du registre des fonctionnalités avec cache intelligent
+- API : Service `FeatureDetector` utilisant la réflexion PHP pour détecter automatiquement les nouvelles routes API
+- API : Contrôleur `FeatureManifestController` avec endpoints `/api/v1/features/manifest`, `/api/v1/features/compatible/{version}`, `/api/v1/features/{key}`
+- API : Endpoints d'administration `/api/v1/features/admin/statistics` et `/api/v1/features/admin/synchronize` pour les super-admins
+- API : Attributs PHP `#[ApiFeature]`, `#[MobileCompatible]`, `#[RequiresPermission]` pour l'annotation des contrôleurs
+- API : Services `AnnotationReader` et `ReflectionService` pour l'analyse des métadonnées des contrôleurs
+- Mobile : Modèles `Feature`, `FeatureManifest`, `FormSchema`, `ListSchema` pour la synchronisation
+- Mobile : Service `SynchronizationEngine` avec synchronisation intelligente et gestion des versions
+- Mobile : Générateur d'interface `DynamicUIGenerator` pour créer automatiquement les écrans mobiles
+- Mobile : Cache local avec `Hive` et signatures cryptographiques pour l'intégrité des données
+- Mobile : Support complet des formulaires dynamiques, listes et actions avec validation
+- Tests : Suite complète de tests unitaires et d'intégration pour tous les composants
+- Tests : Tests de propriétés (Property-Based Testing) pour la validation des invariants
+- Docs : Documentation technique complète du système de synchronisation
+- Sécurité : Signatures cryptographiques des manifestes et gestion des permissions par fonctionnalité
+- Performance : Cache intelligent avec invalidation automatique et synchronisation < 5 secondes
+- Compatibilité : Support des 3 dernières versions mobiles majeures avec migration automatique
+
 ## [4.1.84] - 2026-04-30
 
 ### API / Mobile / Web - Experience client alignee et modernisee
