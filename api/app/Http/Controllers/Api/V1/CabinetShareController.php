@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Cabinet\ShareRequest;
 use App\Models\CabinetDocument;
 use App\Models\CabinetFolder;
 use App\Models\CabinetShare;
+use App\Models\Employee;
 use App\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CabinetShareController extends Controller
 {
+    /** @var array<string, class-string<CabinetFolder|CabinetDocument>> */
     private const SHAREABLE_MAP = [
         'folder' => CabinetFolder::class,
         'document' => CabinetDocument::class,
@@ -24,7 +26,7 @@ class CabinetShareController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
 
         $shares = CabinetShare::where('employee_id', $actor->id)
             ->with('shareable')
@@ -38,12 +40,16 @@ class CabinetShareController extends Controller
 
     public function store(ShareRequest $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
         $data = $request->validated();
 
-        $shareableClass = self::SHAREABLE_MAP[$data['shareable_type']];
+        /** @var string $shareableType */
+        $shareableType = $data['shareable_type'];
+        $shareableClass = self::SHAREABLE_MAP[$shareableType];
+
+        /** @var CabinetFolder|CabinetDocument $shareable */
         $shareable = $shareableClass::where('employee_id', $actor->id)
-            ->findOrFail($data['shareable_id']);
+            ->findOrFail((int) $data['shareable_id']);
 
         $share = $this->cabinetService->share(
             $actor,
@@ -61,7 +67,7 @@ class CabinetShareController extends Controller
 
     public function destroy(Request $request, CabinetShare $cabinetShare): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
 
         if ($cabinetShare->company_id !== $actor->company_id) {
             abort(404);
@@ -133,15 +139,31 @@ class CabinetShareController extends Controller
 
     public function stats(Request $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
         $stats = $this->cabinetService->storageStats($actor);
 
         return response()->json(['data' => $stats]);
     }
 
+    private function employee(Request $request): Employee
+    {
+        $user = $request->user();
+        assert($user instanceof Employee);
+
+        return $user;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     private function serialize(CabinetShare $share): array
     {
         $shareable = $share->shareable;
+        $shareableName = null;
+
+        if ($shareable instanceof CabinetFolder || $shareable instanceof CabinetDocument) {
+            $shareableName = $shareable->name;
+        }
 
         return [
             'id' => $share->id,
@@ -151,7 +173,7 @@ class CabinetShareController extends Controller
                 default => $share->shareable_type,
             },
             'shareable_id' => $share->shareable_id,
-            'shareable_name' => $shareable?->name ?? null,
+            'shareable_name' => $shareableName,
             'share_token' => $share->share_token,
             'shared_via' => $share->shared_via,
             'shared_with_email' => $share->shared_with_email,
