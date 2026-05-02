@@ -79,8 +79,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isDark, setIsDark] = useState(false);
+
   const storedLocale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -150,6 +156,8 @@ export default function LoginPage() {
       setSubmitting(false);
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <div className={`min-h-screen flex transition-colors duration-500 ${isDark ? 'dark' : ''}`}>
