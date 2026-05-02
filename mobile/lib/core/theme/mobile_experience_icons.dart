@@ -23,6 +23,8 @@ class MobileExperienceIcons {
         return Icons.account_balance_wallet_outlined;
       case 'cameras':
         return Icons.shield_outlined;
+      case 'cabinet':
+        return Icons.door_sliding_outlined;
       case 'leo_ai':
         return Icons.auto_awesome;
       default:
