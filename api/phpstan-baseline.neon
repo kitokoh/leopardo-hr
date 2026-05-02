@@ -5269,6 +5269,78 @@ parameters:
 			path: tests/Unit/ExampleTest.php
 
 		-
+			message: '#^Strict comparison using \!\=\= between int and string\|null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Controllers/Api/V1/CabinetDocumentController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between int and string\|null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Controllers/Api/V1/CabinetFolderController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between int and string\|null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/V1/CabinetShareController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: app/Http/Controllers/Api/V1/CabinetShareController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetDocument.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetDocument.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetFolder.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetFolder.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetShare.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetShare.php
+
+		-
 			message: '#^Cannot access property \$company_id on mixed\.$#'
 			identifier: property.nonObject
 			count: 2

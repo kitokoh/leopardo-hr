@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { 
-  Clock, Users, Wallet, Shield, Sparkles, ArrowRight, 
-  CheckCircle2, Zap, Globe, TrendingUp, BarChart3, 
-  ChevronDown, Play, Star, Menu, X, Moon, Sun 
+import {
+  Clock, Users, Wallet, Shield, Sparkles, ArrowRight,
+  CheckCircle2, Zap, Globe, TrendingUp, BarChart3,
+  ChevronDown, Play, Star, Menu, X, Moon, Sun
 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -16,17 +16,17 @@ gsap.registerPlugin(ScrollTrigger);
 // Composant Particle Background
 const ParticleBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    
+
     const particles: Array<{
       x: number;
       y: number;
@@ -35,7 +35,7 @@ const ParticleBackground = () => {
       speedY: number;
       opacity: number;
     }> = [];
-    
+
     for (let i = 0; i < 50; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -46,24 +46,24 @@ const ParticleBackground = () => {
         opacity: Math.random() * 0.5 + 0.2,
       });
     }
-    
+
     let animationId: number;
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       particles.forEach((particle) => {
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        
+
         if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
         if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
-        
+
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(16, 185, 129, ${particle.opacity})`;
         ctx.fill();
       });
-      
+
       // Draw connections
       particles.forEach((p1, i) => {
         particles.slice(i + 1).forEach((p2) => {
@@ -77,24 +77,24 @@ const ParticleBackground = () => {
           }
         });
       });
-      
+
       animationId = requestAnimationFrame(animate);
     };
-    
+
     animate();
-    
+
     const handleResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  
+
   return (
     <canvas
       ref={canvasRef}
@@ -125,7 +125,7 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -134,7 +134,7 @@ const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: strin
           const end = value;
           const duration = 2000;
           const increment = end / (duration / 16);
-          
+
           const timer = setInterval(() => {
             start += increment;
             if (start >= end) {
@@ -144,17 +144,17 @@ const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: strin
               setCount(Math.floor(start));
             }
           }, 16);
-          
+
           observer.disconnect();
         }
       },
       { threshold: 0.5 }
     );
-    
+
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [value]);
-  
+
   return (
     <span ref={ref} className="tabular-nums">
       {count.toLocaleString()}{suffix}
@@ -165,7 +165,7 @@ const AnimatedCounter = ({ value, suffix = '' }: { value: number; suffix?: strin
 // Composant 3D Tilt Card
 const TiltCard = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
@@ -175,15 +175,15 @@ const TiltCard = ({ children, className = '' }: { children: React.ReactNode; cla
     const centerY = rect.height / 2;
     const rotateX = (y - centerY) / 20;
     const rotateY = (centerX - x) / 20;
-    
+
     cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
   };
-  
+
   const handleMouseLeave = () => {
     if (!cardRef.current) return;
     cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
   };
-  
+
   return (
     <div
       ref={cardRef}
@@ -271,20 +271,20 @@ export default function LandingPage() {
   const y = useTransform(scrollYProgress, [0, 1], [0, -500]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
-  
+
   const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
   const ySpring = useSpring(y, springConfig);
-  
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   useEffect(() => {
     // GSAP ScrollTrigger animations
     gsap.utils.toArray<HTMLElement>('.gsap-reveal').forEach((elem) => {
-      gsap.fromTo(elem, 
+      gsap.fromTo(elem,
         { opacity: 0, y: 100 },
         {
           opacity: 1,
@@ -308,8 +308,8 @@ export default function LandingPage() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled 
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg' 
+          scrolled
+            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-lg'
             : 'bg-transparent'
         }`}
       >
@@ -324,10 +324,10 @@ export default function LandingPage() {
               </div>
               <span className="font-bold text-xl text-slate-900 dark:text-white">Leopardo RH</span>
             </Link>
-            
+
             <nav className="hidden lg:flex items-center gap-8">
               {['Fonctionnalités', 'Tarifs', 'Témoignages', 'FAQ'].map((item) => (
-                <Link 
+                <Link
                   key={item}
                   href={`#${item.toLowerCase()}`}
                   className="relative text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors group"
@@ -337,7 +337,7 @@ export default function LandingPage() {
                 </Link>
               ))}
             </nav>
-            
+
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsDark(!isDark)}
@@ -345,16 +345,16 @@ export default function LandingPage() {
               >
                 {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-              
-              <Link 
+
+              <Link
                 href="/auth/login"
                 className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-semibold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
               >
                 Essai gratuit
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              
-              <button 
+
+              <button
                 className="lg:hidden p-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
@@ -363,7 +363,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Mobile Menu */}
         <AnimatePresence>
           {mobileMenuOpen && (
@@ -375,7 +375,7 @@ export default function LandingPage() {
             >
               <div className="px-4 py-6 space-y-4">
                 {['Fonctionnalités', 'Tarifs', 'Témoignages', 'FAQ'].map((item) => (
-                  <Link 
+                  <Link
                     key={item}
                     href={`#${item.toLowerCase()}`}
                     className="block text-lg font-medium text-slate-900 dark:text-white"
@@ -384,7 +384,7 @@ export default function LandingPage() {
                     {item}
                   </Link>
                 ))}
-                <Link 
+                <Link
                   href="/auth/login"
                   className="block w-full text-center py-3 bg-emerald-500 text-white font-semibold rounded-xl"
                 >
@@ -401,13 +401,13 @@ export default function LandingPage() {
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30" />
         <ParticleBackground />
-        
+
         {/* Gradient Orbs */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-full blur-3xl" />
-        
-        <motion.div 
+
+        <motion.div
           style={{ y: ySpring, opacity, scale }}
           className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20"
         >
@@ -423,7 +423,7 @@ export default function LandingPage() {
               <span>Leo IA 2.0 est maintenant disponible</span>
               <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full">NEW</span>
             </motion.div>
-            
+
             {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
@@ -439,7 +439,7 @@ export default function LandingPage() {
                 comme un pro
               </span>
             </motion.h1>
-            
+
             {/* Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -450,7 +450,7 @@ export default function LandingPage() {
               La plateforme tout-en-one pour moderniser votre gestion du personnel.
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold"> Pointage, paie, absences</span> et bien plus.
             </motion.p>
-            
+
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -468,7 +468,7 @@ export default function LandingPage() {
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-700 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
-              
+
               <button className="group px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold rounded-2xl border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-all hover:shadow-xl flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
@@ -503,7 +503,7 @@ export default function LandingPage() {
             </motion.div>
           </div>
         </motion.div>
-        
+
         {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -525,7 +525,7 @@ export default function LandingPage() {
       {/* Features Section */}
       <section id="fonctionnalités" className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20 gsap-reveal">
             <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-4">
@@ -574,7 +574,7 @@ export default function LandingPage() {
       {/* Interactive Demo Section */}
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-cyan-500/5 to-violet-500/5" />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="gsap-reveal">
@@ -588,10 +588,10 @@ export default function LandingPage() {
                 </span>
               </h2>
               <p className="text-xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-                Découvrez une interface intuitive et moderne qui simplifie chaque action. 
+                Découvrez une interface intuitive et moderne qui simplifie chaque action.
                 Gérez votre équipe avec une fluidité inégalée.
               </p>
-              
+
               <div className="space-y-4">
                 {[
                   'Tableau de bord en temps réel',
@@ -615,7 +615,7 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            
+
             <TiltCard className="gsap-reveal">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 z-10 pointer-events-none" />
@@ -634,7 +634,7 @@ export default function LandingPage() {
       {/* Pricing Section */}
       <section id="tarifs" className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900" />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20 gsap-reveal">
             <span className="inline-block px-4 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-4">
@@ -667,8 +667,8 @@ export default function LandingPage() {
                 }`}
               >
                 <div className={`relative h-full rounded-[22px] ${
-                  plan.popular 
-                    ? 'bg-white dark:bg-slate-900' 
+                  plan.popular
+                    ? 'bg-white dark:bg-slate-900'
                     : 'bg-white dark:bg-slate-900'
                 } p-8`}>
                   {plan.popular && (
@@ -678,7 +678,7 @@ export default function LandingPage() {
                       </span>
                     </div>
                   )}
-                  
+
                   <div className="text-center mb-8">
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{plan.name}</h3>
                     <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">{plan.description}</p>
@@ -694,8 +694,8 @@ export default function LandingPage() {
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-center gap-3">
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                          plan.popular 
-                            ? 'bg-emerald-100 dark:bg-emerald-900/30' 
+                          plan.popular
+                            ? 'bg-emerald-100 dark:bg-emerald-900/30'
                             : 'bg-slate-100 dark:bg-slate-800'
                         }`}>
                           <CheckCircle2 className={`w-3 h-3 ${
@@ -728,7 +728,7 @@ export default function LandingPage() {
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-        
+
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -777,7 +777,7 @@ export default function LandingPage() {
                 La solution moderne pour gérer vos ressources humaines.
               </p>
             </div>
-            
+
             {[
               { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API'] },
               { title: 'Ressources', links: ['Documentation', 'Blog', 'Support', 'Status'] },
@@ -797,7 +797,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          
+
           <div className="pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               © 2026 Leopardo RH. Tous droits réservés.
@@ -812,4 +812,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
