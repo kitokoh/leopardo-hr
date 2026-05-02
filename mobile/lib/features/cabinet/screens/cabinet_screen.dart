@@ -206,8 +206,10 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.create_new_folder_outlined,
-                  color: Color(0xFF8B6914)),
+              leading: const Icon(
+                Icons.create_new_folder_outlined,
+                color: Color(0xFF8B6914),
+              ),
               title: const Text('Nouveau dossier'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -215,8 +217,10 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.upload_file_outlined,
-                  color: Color(0xFF8B6914)),
+              leading: const Icon(
+                Icons.upload_file_outlined,
+                color: Color(0xFF8B6914),
+              ),
               title: const Text('Ajouter un document'),
               subtitle: const Text('Depuis vos fichiers ou la camera'),
               onTap: () {
@@ -256,10 +260,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               if (name.isEmpty) return;
               Navigator.pop(ctx);
               final repo = ref.read(cabinetRepositoryProvider);
-              await repo.createFolder(
-                name: name,
-                parentId: widget.folderId,
-              );
+              await repo.createFolder(name: name, parentId: widget.folderId);
               ref.invalidate(cabinetFoldersProvider(widget.folderId));
             },
             child: const Text('Creer'),
@@ -274,9 +275,9 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     if (picked == null) return;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Envoi en cours...')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Envoi en cours...')));
 
     final repo = ref.read(cabinetRepositoryProvider);
     await repo.uploadDocument(
@@ -312,8 +313,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Partager "${doc.name}"',
-                style: AppTypography.subtitle),
+            Text('Partager "${doc.name}"', style: AppTypography.subtitle),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -328,9 +328,9 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 );
                 if (!mounted) return;
                 final url = result['share_url'] ?? '';
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Lien copie : $url')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Lien copie : $url')));
               },
             ),
             const Divider(),
@@ -379,7 +379,9 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Supprimer le document ?'),
-        content: Text('Le document "${doc.name}" sera supprime definitivement.'),
+        content: Text(
+          'Le document "${doc.name}" sera supprime definitivement.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -422,10 +424,8 @@ class _FolderTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => context.push(
-            '/cabinet/folder/${folder.id}',
-            extra: folder.name,
-          ),
+          onTap: () =>
+              context.push('/cabinet/folder/${folder.id}', extra: folder.name),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
@@ -441,8 +441,11 @@ class _FolderTile extends StatelessWidget {
                     color: const Color(0xFF8B6914).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.folder,
-                      color: Color(0xFF8B6914), size: 24),
+                  child: const Icon(
+                    Icons.folder,
+                    color: Color(0xFF8B6914),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
