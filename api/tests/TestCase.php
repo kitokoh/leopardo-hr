@@ -24,11 +24,15 @@ abstract class TestCase extends BaseTestCase
 
     private function resetTestSearchPath(): void
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            return;
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants,public');
+        } elseif ($driver === 'sqlite') {
+            // SQLite doesn't support search_path, but we can set the schema via PRAGMA
+            // This is a no-op for SQLite as it doesn't have schemas like PostgreSQL
+            // The connection is already configured to use the correct database file
         }
-
-        DB::statement('SET search_path TO shared_tenants,public');
     }
 
     private function configureTestingDatabaseConnection(): void
