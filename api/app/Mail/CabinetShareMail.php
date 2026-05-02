@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\CabinetDocument;
 use App\Models\CabinetFolder;
 use App\Models\CabinetShare;
+use App\Models\Employee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -39,8 +40,8 @@ class CabinetShareMail extends Mailable
         };
 
         $employee = $share->employee;
-        $firstName = $employee instanceof \App\Models\Employee ? ($employee->first_name ?? '') : '';
-        $lastName = $employee instanceof \App\Models\Employee ? ($employee->last_name ?? '') : '';
+        $firstName = $employee instanceof Employee ? ($employee->first_name ?? '') : '';
+        $lastName = $employee instanceof Employee ? ($employee->last_name ?? '') : '';
         $this->ownerName = trim($firstName.' '.$lastName);
     }
 
