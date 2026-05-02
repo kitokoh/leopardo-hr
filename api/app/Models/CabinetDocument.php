@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -11,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class CabinetDocument extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
 
     protected $table = 'cabinet_documents';
 
@@ -32,16 +30,25 @@ class CabinetDocument extends Model
         'size' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Employee, $this>
+     */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /**
+     * @return BelongsTo<CabinetFolder, $this>
+     */
     public function folder(): BelongsTo
     {
         return $this->belongsTo(CabinetFolder::class, 'folder_id');
     }
 
+    /**
+     * @return MorphMany<CabinetShare, $this>
+     */
     public function shares(): MorphMany
     {
         return $this->morphMany(CabinetShare::class, 'shareable');
