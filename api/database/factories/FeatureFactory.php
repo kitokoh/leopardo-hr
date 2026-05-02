@@ -6,7 +6,7 @@ use App\Models\Feature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Feature>
+ * @extends Factory<Feature>
  */
 class FeatureFactory extends Factory
 {
@@ -30,10 +30,10 @@ class FeatureFactory extends Factory
 
         return [
             'company_id' => null, // Sera défini par le test ou le seeder
-            'key' => $this->faker->unique()->slug(2) . '_management',
+            'key' => $this->faker->unique()->slug(2).'_management',
             'title' => $this->faker->words(3, true),
             'description' => $this->faker->sentence(10),
-            'endpoint' => '/api/v1/' . $this->faker->slug(2),
+            'endpoint' => '/api/v1/'.$this->faker->slug(2),
             'http_methods' => $this->faker->randomElement($httpMethods),
             'parameters' => $this->generateParameters(),
             'response_schema' => $this->generateResponseSchema(),
@@ -106,11 +106,12 @@ class FeatureFactory extends Factory
     private function generatePermissions(): array
     {
         $basePermission = $this->faker->slug(2);
+
         return [
-            $basePermission . '.view',
-            $basePermission . '.create',
-            $basePermission . '.update',
-            $basePermission . '.delete',
+            $basePermission.'.view',
+            $basePermission.'.create',
+            $basePermission.'.update',
+            $basePermission.'.delete',
         ];
     }
 

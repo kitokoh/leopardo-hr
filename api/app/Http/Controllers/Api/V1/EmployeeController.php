@@ -24,9 +24,13 @@ class EmployeeController extends Controller
      * Liste des employés avec pagination
      *
      * @title Liste des Employés
+     *
      * @description Récupère la liste paginée de tous les employés de l'entreprise
+     *
      * @permission employees.view
+     *
      * @mobile true
+     *
      * @ui list
      */
     #[ApiFeature(
@@ -65,9 +69,13 @@ class EmployeeController extends Controller
      * Créer un nouvel employé
      *
      * @title Créer un Employé
+     *
      * @description Crée un nouvel employé dans le système
+     *
      * @permission employees.create
+     *
      * @mobile true
+     *
      * @ui form
      */
     #[ApiFeature(
@@ -95,9 +103,13 @@ class EmployeeController extends Controller
      * Afficher les détails d'un employé
      *
      * @title Détails de l'Employé
+     *
      * @description Affiche les informations détaillées d'un employé spécifique
+     *
      * @permission employees.view
+     *
      * @mobile true
+     *
      * @ui detail
      */
     #[ApiFeature(

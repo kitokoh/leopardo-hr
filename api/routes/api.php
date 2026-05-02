@@ -1,11 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\FeatureManifestController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
-use App\Http\Controllers\Api\FeatureManifestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 

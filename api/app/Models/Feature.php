@@ -40,8 +40,6 @@ class Feature extends Model
 
     /**
      * Génère le tableau de données pour le manifeste JSON
-     *
-     * @return array
      */
     public function toManifestArray(): array
     {
@@ -78,10 +76,10 @@ class Feature extends Model
     public function scopeCompatibleWith($query, string $mobileVersion)
     {
         return $query->where('mobile_version_min', '<=', $mobileVersion)
-                    ->where(function ($q) use ($mobileVersion) {
-                        $q->whereNull('mobile_version_max')
-                          ->orWhere('mobile_version_max', '>=', $mobileVersion);
-                    });
+            ->where(function ($q) use ($mobileVersion) {
+                $q->whereNull('mobile_version_max')
+                    ->orWhere('mobile_version_max', '>=', $mobileVersion);
+            });
     }
 
     /**

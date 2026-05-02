@@ -46,7 +46,8 @@ class Feature {
     this.detailSchema,
   });
 
-  factory Feature.fromJson(Map<String, dynamic> json) => _$FeatureFromJson(json);
+  factory Feature.fromJson(Map<String, dynamic> json) =>
+      _$FeatureFromJson(json);
 
   Map<String, dynamic> toJson() => _$FeatureToJson(this);
 
@@ -63,15 +64,14 @@ class Feature {
 
   /// Vérifie si l'utilisateur a les permissions requises pour cette fonctionnalité
   bool hasRequiredPermissions(List<String> userPermissions) {
-    return permissions.every((permission) => userPermissions.contains(permission));
+    return permissions
+        .every((permission) => userPermissions.contains(permission));
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Feature &&
-          runtimeType == other.runtimeType &&
-          key == other.key;
+      other is Feature && runtimeType == other.runtimeType && key == other.key;
 
   @override
   int get hashCode => key.hashCode;

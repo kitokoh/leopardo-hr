@@ -13,8 +13,11 @@ use Tests\TestCase;
 class FeatureDetectorTest extends TestCase
 {
     private FeatureDetectorInterface $featureDetector;
+
     private Router $router;
+
     private ReflectionService $reflectionService;
+
     private AnnotationReader $annotationReader;
 
     protected function setUp(): void
@@ -75,7 +78,8 @@ class FeatureDetectorTest extends TestCase
     public function test_can_detect_new_features_without_database(): void
     {
         // Mock la méthode qui accède à la base de données
-        $detector = new class($this->router, $this->reflectionService, $this->annotationReader) extends FeatureDetector {
+        $detector = new class($this->router, $this->reflectionService, $this->annotationReader) extends FeatureDetector
+        {
             public function detectNewFeatures(): Collection
             {
                 $routes = $this->scanRoutes();
@@ -195,7 +199,7 @@ class FeatureDetectorTest extends TestCase
         $validMetadata = [
             'title' => 'Test Feature',
             'method_info' => ['name' => 'index'],
-            'mobile_compatible' => true
+            'mobile_compatible' => true,
         ];
 
         $reflection = new \ReflectionClass($this->featureDetector);
@@ -208,7 +212,7 @@ class FeatureDetectorTest extends TestCase
         $invalidMetadata = [
             'title' => '',
             'method_info' => [],
-            'mobile_compatible' => false
+            'mobile_compatible' => false,
         ];
 
         $this->assertFalse($method->invoke($this->featureDetector, $invalidMetadata));

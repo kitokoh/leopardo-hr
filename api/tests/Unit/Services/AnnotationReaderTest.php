@@ -12,7 +12,7 @@ class AnnotationReaderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->annotationReader = new AnnotationReader();
+        $this->annotationReader = new AnnotationReader;
     }
 
     public function test_can_extract_method_annotations(): void

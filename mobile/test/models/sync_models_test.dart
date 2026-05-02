@@ -153,7 +153,9 @@ void main() {
         type: FeatureType.generic,
       );
 
-      expect(feature.hasRequiredPermissions(['test.view', 'test.edit', 'other']), isTrue);
+      expect(
+          feature.hasRequiredPermissions(['test.view', 'test.edit', 'other']),
+          isTrue);
       expect(feature.hasRequiredPermissions(['test.view']), isFalse);
       expect(feature.hasRequiredPermissions([]), isFalse);
     });

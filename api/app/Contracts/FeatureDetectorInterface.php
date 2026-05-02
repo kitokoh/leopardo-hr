@@ -28,8 +28,8 @@ interface FeatureDetectorInterface
      * Utilise la reflection PHP pour analyser une méthode de contrôleur
      * et extraire ses métadonnées (annotations, attributs, paramètres, etc.).
      *
-     * @param string $controllerClass Nom complet de la classe du contrôleur
-     * @param string $method Nom de la méthode à analyser
+     * @param  string  $controllerClass  Nom complet de la classe du contrôleur
+     * @param  string  $method  Nom de la méthode à analyser
      * @return array Métadonnées extraites de la méthode
      */
     public function extractMetadata(string $controllerClass, string $method): array;

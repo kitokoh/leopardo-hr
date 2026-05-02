@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
 use App\Services\FeatureRegistry;
+use Illuminate\Cache\CacheManager;
+use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -16,8 +19,6 @@ class FeatureRegistryServiceProvider extends ServiceProvider
 {
     /**
      * Enregistre les services dans le conteneur
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -27,8 +28,8 @@ class FeatureRegistryServiceProvider extends ServiceProvider
         // Enregistrer comme singleton pour optimiser les performances
         $this->app->singleton(FeatureRegistry::class, function ($app) {
             return new FeatureRegistry(
-                $app->make(\App\Contracts\FeatureDetectorInterface::class),
-                $app->make(\Illuminate\Cache\CacheManager::class)
+                $app->make(FeatureDetectorInterface::class),
+                $app->make(CacheManager::class)
             );
         });
 
@@ -38,21 +39,17 @@ class FeatureRegistryServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap des services
-     *
-     * @return void
      */
     public function boot(): void
     {
         // Configuration du cache avec tags si supporté
-        if ($this->app->make('cache')->getStore() instanceof \Illuminate\Cache\TaggableStore) {
+        if ($this->app->make('cache')->getStore() instanceof TaggableStore) {
             // Le cache supporte les tags, on peut utiliser des tags pour une invalidation plus fine
         }
     }
 
     /**
      * Services fournis par ce provider
-     *
-     * @return array
      */
     public function provides(): array
     {

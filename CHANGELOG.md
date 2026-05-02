@@ -2,7 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.84] - 2026-04-30 
+## [4.1.85] - 2026-05-02
+
+### API / Mobile - Synchronisation dynamique des fonctionnalités (Mobile Sync)
+
+- API : Implémentation du `FeatureRegistry` et `FeatureDetector` utilisant les attributs PHP 8 pour la découverte automatique des capacités de l'API.
+- API : Nouvel endpoint `/api/v1/features/manifest` fournissant un descriptif complet des fonctionnalités (UI, schémas, permissions) adapté à la version mobile.
+- Mobile : Intégration de modèles de données robustes pour la consommation dynamique du manifeste (Feature, FormSchema, ListSchema).
+- Web : Modernisation majeure de l'interface (Landing page, Login, Dashboard) avec des animations GSAP et Framer Motion.
+- Core : Résolution de conflits majeurs et alignement des contrats de données transversaux.
+
+## [4.1.84] - 2026-04-30
 
 ### API / Mobile / Web - Experience client alignee et modernisee
 

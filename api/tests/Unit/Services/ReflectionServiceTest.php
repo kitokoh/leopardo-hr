@@ -12,7 +12,7 @@ class ReflectionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->reflectionService = new ReflectionService();
+        $this->reflectionService = new ReflectionService;
     }
 
     public function test_can_analyze_class(): void

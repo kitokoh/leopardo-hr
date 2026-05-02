@@ -15,10 +15,6 @@ class AnnotationReader
 {
     /**
      * Extrait les annotations d'une méthode de contrôleur
-     *
-     * @param string $className
-     * @param string $methodName
-     * @return array
      */
     public function extractMethodAnnotations(string $className, string $methodName): array
     {
@@ -56,9 +52,6 @@ class AnnotationReader
 
     /**
      * Parse un commentaire PHPDoc pour extraire les informations
-     *
-     * @param string $docComment
-     * @return array
      */
     private function parseDocComment(string $docComment): array
     {
@@ -66,7 +59,7 @@ class AnnotationReader
 
         // Nettoyer le commentaire
         $comment = preg_replace('/^\s*\/\*\*|\*\/\s*$/', '', $docComment);
-        $lines = array_map(fn($line) => trim(ltrim($line, ' *')), explode("\n", $comment));
+        $lines = array_map(fn ($line) => trim(ltrim($line, ' *')), explode("\n", $comment));
 
         $description = [];
         $currentTag = null;
@@ -104,14 +97,14 @@ class AnnotationReader
                         $annotations['responses'][] = $this->parseResponseTag($value);
                         break;
                 }
-            } elseif ($currentTag === null && !empty($line)) {
+            } elseif ($currentTag === null && ! empty($line)) {
                 // Description principale
                 $description[] = $line;
             }
         }
 
         // Si pas de description explicite, utiliser les premières lignes
-        if (empty($annotations['description']) && !empty($description)) {
+        if (empty($annotations['description']) && ! empty($description)) {
             $annotations['description'] = implode(' ', $description);
         }
 
@@ -120,9 +113,6 @@ class AnnotationReader
 
     /**
      * Parse les attributs PHP 8 d'une méthode
-     *
-     * @param ReflectionMethod $method
-     * @return array
      */
     private function parseMethodAttributes(ReflectionMethod $method): array
     {
@@ -147,7 +137,7 @@ class AnnotationReader
 
                 case 'App\\Attributes\\RequiresPermission':
                     $permissions = $arguments['permissions'] ?? $arguments[0] ?? [];
-                    if (!is_array($permissions)) {
+                    if (! is_array($permissions)) {
                         $permissions = [$permissions];
                     }
                     $annotations['permissions'] = array_merge(
@@ -169,9 +159,6 @@ class AnnotationReader
 
     /**
      * Parse un tag @param
-     *
-     * @param string $value
-     * @return array
      */
     private function parseParamTag(string $value): array
     {
@@ -181,7 +168,7 @@ class AnnotationReader
                 'type' => $matches[1],
                 'name' => $matches[2],
                 'description' => $matches[3] ?? '',
-                'required' => !str_contains($matches[1], '?') && !str_contains($matches[3], 'optional'),
+                'required' => ! str_contains($matches[1], '?') && ! str_contains($matches[3], 'optional'),
             ];
         }
 
@@ -190,9 +177,6 @@ class AnnotationReader
 
     /**
      * Parse un tag @response
-     *
-     * @param string $value
-     * @return array
      */
     private function parseResponseTag(string $value): array
     {
@@ -209,9 +193,6 @@ class AnnotationReader
 
     /**
      * Génère un titre automatique basé sur le nom de la méthode
-     *
-     * @param string $methodName
-     * @return string
      */
     public function generateTitleFromMethod(string $methodName): string
     {
@@ -238,10 +219,6 @@ class AnnotationReader
 
     /**
      * Génère une description automatique basée sur le nom de la méthode
-     *
-     * @param string $methodName
-     * @param string $controllerName
-     * @return string
      */
     public function generateDescriptionFromMethod(string $methodName, string $controllerName): string
     {
@@ -264,9 +241,6 @@ class AnnotationReader
 
     /**
      * Extrait le nom de la ressource depuis le nom du contrôleur
-     *
-     * @param string $controllerName
-     * @return string
      */
     private function extractResourceName(string $controllerName): string
     {

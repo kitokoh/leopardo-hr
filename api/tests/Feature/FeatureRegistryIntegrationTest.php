@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Contracts\FeatureRegistryInterface;
 use App\Models\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 /**
@@ -45,11 +44,11 @@ class FeatureRegistryIntegrationTest extends TestCase
             'http_methods' => ['GET', 'POST'],
             'parameters' => [
                 'id' => ['type' => 'integer', 'required' => true],
-                'name' => ['type' => 'string', 'required' => false]
+                'name' => ['type' => 'string', 'required' => false],
             ],
             'response_schema' => [
                 'data' => ['type' => 'object'],
-                'message' => ['type' => 'string']
+                'message' => ['type' => 'string'],
             ],
             'permissions' => ['integration.test'],
             'mobile_version_min' => '1.0.0',
@@ -59,8 +58,8 @@ class FeatureRegistryIntegrationTest extends TestCase
             'metadata' => [
                 'ui_type' => 'form',
                 'controller_class' => 'App\\Http\\Controllers\\TestController',
-                'controller_method' => 'store'
-            ]
+                'controller_method' => 'store',
+            ],
         ];
 
         $feature = new Feature($featureData);
@@ -76,7 +75,7 @@ class FeatureRegistryIntegrationTest extends TestCase
 
         // Act & Assert - Update feature
         $this->registry->updateFeature('integration_test_feature', [
-            'test_metadata' => 'test_value'
+            'test_metadata' => 'test_value',
         ]);
 
         $updatedFeature = $this->registry->getFeature('integration_test_feature');
@@ -116,14 +115,14 @@ class FeatureRegistryIntegrationTest extends TestCase
             'key' => 'v1_feature',
             'api_version' => 'v1',
             'mobile_version_min' => '1.0.0',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Feature::factory()->create([
             'key' => 'v2_feature',
             'api_version' => 'v2',
             'mobile_version_min' => '2.0.0',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act
@@ -207,14 +206,14 @@ class FeatureRegistryIntegrationTest extends TestCase
             'key' => 'old_feature',
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => '1.5.0',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Feature::factory()->create([
             'key' => 'new_feature',
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act

@@ -38,11 +38,11 @@ class DetectFeaturesCommand extends Command
             if ($this->option('details')) {
                 $this->table(
                     ['URI', 'Méthodes', 'Contrôleur', 'Action'],
-                    $routes->map(fn($route) => [
+                    $routes->map(fn ($route) => [
                         $route['uri'],
                         implode(', ', $route['methods']),
                         class_basename($route['controller_class']),
-                        $route['method']
+                        $route['method'],
                     ])->toArray()
                 );
             }
@@ -53,6 +53,7 @@ class DetectFeaturesCommand extends Command
 
             if ($newFeatures->isEmpty()) {
                 $this->info('✨ Aucune nouvelle fonctionnalité détectée');
+
                 return self::SUCCESS;
             }
 
@@ -61,17 +62,18 @@ class DetectFeaturesCommand extends Command
             // Afficher les fonctionnalités détectées
             $this->table(
                 ['Clé', 'Titre', 'Endpoint', 'Méthodes', 'Type UI'],
-                $newFeatures->map(fn($feature) => [
+                $newFeatures->map(fn ($feature) => [
                     $feature['key'],
                     $feature['title'],
                     $feature['endpoint'],
                     implode(', ', $feature['http_methods']),
-                    $feature['metadata']['ui_type'] ?? 'generic'
+                    $feature['metadata']['ui_type'] ?? 'generic',
                 ])->toArray()
             );
 
             if ($this->option('dry-run')) {
                 $this->warn('🔍 Mode dry-run : aucune fonctionnalité n\'a été enregistrée');
+
                 return self::SUCCESS;
             }
 

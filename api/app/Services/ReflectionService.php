@@ -3,9 +3,8 @@
 namespace App\Services;
 
 use ReflectionClass;
-use ReflectionMethod;
-use ReflectionParameter;
 use ReflectionException;
+use ReflectionMethod;
 
 /**
  * Service pour l'analyse par reflection des classes et méthodes PHP
@@ -18,8 +17,9 @@ class ReflectionService
     /**
      * Analyse une classe et retourne ses informations
      *
-     * @param string $className Nom complet de la classe
+     * @param  string  $className  Nom complet de la classe
      * @return array Informations sur la classe
+     *
      * @throws ReflectionException
      */
     public function analyzeClass(string $className): array
@@ -37,16 +37,17 @@ class ReflectionService
                 'doc_comment' => $reflection->getDocComment() ?: null,
             ];
         } catch (ReflectionException $e) {
-            throw new ReflectionException("Cannot analyze class {$className}: " . $e->getMessage());
+            throw new ReflectionException("Cannot analyze class {$className}: ".$e->getMessage());
         }
     }
 
     /**
      * Analyse une méthode spécifique d'une classe
      *
-     * @param string $className Nom complet de la classe
-     * @param string $methodName Nom de la méthode
+     * @param  string  $className  Nom complet de la classe
+     * @param  string  $methodName  Nom de la méthode
      * @return array Informations sur la méthode
+     *
      * @throws ReflectionException
      */
     public function analyzeMethod(string $className, string $methodName): array
@@ -66,15 +67,12 @@ class ReflectionService
                 'signature' => $this->generateMethodSignature($method),
             ];
         } catch (ReflectionException $e) {
-            throw new ReflectionException("Cannot analyze method {$className}::{$methodName}: " . $e->getMessage());
+            throw new ReflectionException("Cannot analyze method {$className}::{$methodName}: ".$e->getMessage());
         }
     }
 
     /**
      * Extrait les paramètres d'une méthode
-     *
-     * @param ReflectionMethod $method
-     * @return array
      */
     private function getMethodParameters(ReflectionMethod $method): array
     {
@@ -98,9 +96,6 @@ class ReflectionService
 
     /**
      * Obtient les méthodes publiques d'une classe
-     *
-     * @param ReflectionClass $reflection
-     * @return array
      */
     private function getPublicMethods(ReflectionClass $reflection): array
     {
@@ -125,9 +120,6 @@ class ReflectionService
 
     /**
      * Extrait les attributs PHP 8 d'une classe
-     *
-     * @param ReflectionClass $reflection
-     * @return array
      */
     private function getClassAttributes(ReflectionClass $reflection): array
     {
@@ -145,9 +137,6 @@ class ReflectionService
 
     /**
      * Extrait les attributs PHP 8 d'une méthode
-     *
-     * @param ReflectionMethod $method
-     * @return array
      */
     private function getMethodAttributes(ReflectionMethod $method): array
     {
@@ -165,9 +154,6 @@ class ReflectionService
 
     /**
      * Détermine la visibilité d'une méthode
-     *
-     * @param ReflectionMethod $method
-     * @return string
      */
     private function getMethodVisibility(ReflectionMethod $method): string
     {
@@ -184,9 +170,6 @@ class ReflectionService
 
     /**
      * Génère une signature unique pour une méthode
-     *
-     * @param ReflectionMethod $method
-     * @return string
      */
     private function generateMethodSignature(ReflectionMethod $method): string
     {
@@ -196,22 +179,22 @@ class ReflectionService
             $param = '';
 
             if ($parameter->getType()) {
-                $param .= $parameter->getType()->__toString() . ' ';
+                $param .= $parameter->getType()->__toString().' ';
             }
 
-            $param .= '$' . $parameter->getName();
+            $param .= '$'.$parameter->getName();
 
             if ($parameter->isDefaultValueAvailable()) {
-                $param .= ' = ' . var_export($parameter->getDefaultValue(), true);
+                $param .= ' = '.var_export($parameter->getDefaultValue(), true);
             }
 
             $parameters[] = $param;
         }
 
-        $signature = $method->getName() . '(' . implode(', ', $parameters) . ')';
+        $signature = $method->getName().'('.implode(', ', $parameters).')';
 
         if ($method->getReturnType()) {
-            $signature .= ': ' . $method->getReturnType()->__toString();
+            $signature .= ': '.$method->getReturnType()->__toString();
         }
 
         return $signature;
@@ -219,9 +202,6 @@ class ReflectionService
 
     /**
      * Vérifie si une classe est un contrôleur API
-     *
-     * @param string $className
-     * @return bool
      */
     public function isApiController(string $className): bool
     {
@@ -230,7 +210,7 @@ class ReflectionService
 
             // Vérifier si c'est dans le namespace des contrôleurs API
             $namespace = $reflection->getNamespaceName();
-            if (!str_contains($namespace, 'App\\Http\\Controllers\\Api')) {
+            if (! str_contains($namespace, 'App\\Http\\Controllers\\Api')) {
                 return false;
             }
 

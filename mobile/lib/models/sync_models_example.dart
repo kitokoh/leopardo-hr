@@ -9,7 +9,6 @@ import 'detail_schema.dart';
 
 /// Exemple de création et utilisation des modèles de synchronisation
 class SyncModelsExample {
-
   /// Exemple de création d'une Feature
   static Feature createSampleFeature() {
     return Feature(
@@ -327,16 +326,19 @@ class SyncModelsExample {
     final manifest = createSampleManifest();
 
     // Test de compatibilité de version
-    print('Feature compatible avec v1.1.0: ${feature.isCompatibleWith('1.1.0')}');
+    print(
+        'Feature compatible avec v1.1.0: ${feature.isCompatibleWith('1.1.0')}');
 
     // Test de permissions
     final userPermissions = ['employees.view', 'employees.create'];
-    print('Utilisateur autorisé: ${feature.hasRequiredPermissions(userPermissions)}');
+    print(
+        'Utilisateur autorisé: ${feature.hasRequiredPermissions(userPermissions)}');
 
     // Filtrage des fonctionnalités du manifeste
     final compatibleFeatures = manifest.getCompatibleFeatures('1.1.0');
     final authorizedFeatures = manifest.getAuthorizedFeatures(userPermissions);
-    final availableFeatures = manifest.getAvailableFeatures('1.1.0', userPermissions);
+    final availableFeatures =
+        manifest.getAvailableFeatures('1.1.0', userPermissions);
 
     print('Fonctionnalités compatibles: ${compatibleFeatures.length}');
     print('Fonctionnalités autorisées: ${authorizedFeatures.length}');

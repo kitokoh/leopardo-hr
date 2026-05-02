@@ -123,7 +123,8 @@ class ListColumn {
         return value.toString();
 
       case ListColumnType.number:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
 
         if (format != null) {
@@ -160,12 +161,14 @@ class ListColumn {
         return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
 
       case ListColumnType.currency:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(2)} €';
 
       case ListColumnType.percentage:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(1)}%';
 
@@ -179,14 +182,14 @@ class ListColumn {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
-           '${date.month.toString().padLeft(2, '0')}/'
-           '${date.year}';
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
   }
 
   String _formatDateTime(DateTime date) {
     return '${_formatDate(date)} '
-           '${date.hour.toString().padLeft(2, '0')}:'
-           '${date.minute.toString().padLeft(2, '0')}';
+        '${date.hour.toString().padLeft(2, '0')}:'
+        '${date.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -276,7 +279,8 @@ class ListSorting {
   Map<String, dynamic> toJson() => _$ListSortingToJson(this);
 
   @override
-  String toString() => 'ListSorting(defaultColumn: $defaultColumn, direction: $defaultDirection)';
+  String toString() =>
+      'ListSorting(defaultColumn: $defaultColumn, direction: $defaultDirection)';
 }
 
 @JsonEnum()

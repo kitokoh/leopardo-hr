@@ -112,7 +112,7 @@ class FeatureTest extends TestCase
             'key', 'title', 'description', 'endpoint', 'methods',
             'parameters', 'response_schema', 'permissions',
             'mobile_version_min', 'mobile_version_max', 'ui_type',
-            'form_schema', 'list_schema', 'status', 'api_version'
+            'form_schema', 'list_schema', 'status', 'api_version',
         ];
 
         foreach ($expectedKeys as $key) {

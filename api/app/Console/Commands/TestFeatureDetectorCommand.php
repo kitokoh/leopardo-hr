@@ -73,8 +73,8 @@ class TestFeatureDetectorCommand extends Command
             $this->info("Title: {$metadata['title']}");
             $this->info("Description: {$metadata['description']}");
             $this->info("UI Type: {$metadata['ui_type']}");
-            $this->info("Mobile Compatible: " . ($metadata['mobile_compatible'] ? 'Yes' : 'No'));
-            $this->info("Permissions: " . implode(', ', $metadata['permissions']));
+            $this->info('Mobile Compatible: '.($metadata['mobile_compatible'] ? 'Yes' : 'No'));
+            $this->info('Permissions: '.implode(', ', $metadata['permissions']));
 
             // Test detectChanges
             $this->info("\nDetecting changes in existing features...");
@@ -82,7 +82,7 @@ class TestFeatureDetectorCommand extends Command
             $this->info("Found {$changes->count()} changes");
 
             if ($changes->count() > 0) {
-                $this->warn("Changes detected:");
+                $this->warn('Changes detected:');
                 foreach ($changes->take(5) as $change) {
                     $this->line("- {$change['type']}: {$change['feature_key']}");
                 }

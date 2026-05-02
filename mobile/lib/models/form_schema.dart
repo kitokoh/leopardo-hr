@@ -158,7 +158,8 @@ class FormField {
   }
 
   @override
-  String toString() => 'FormField(name: $name, type: $type, required: $required)';
+  String toString() =>
+      'FormField(name: $name, type: $type, required: $required)';
 }
 
 @JsonEnum()
@@ -242,7 +243,8 @@ class FormValidationResult {
   bool hasError(String fieldName) => errors.containsKey(fieldName);
 
   @override
-  String toString() => 'FormValidationResult(isValid: $isValid, errors: ${errors.length})';
+  String toString() =>
+      'FormValidationResult(isValid: $isValid, errors: ${errors.length})';
 }
 
 /// Extension pour ajouter firstOrNull si pas disponible

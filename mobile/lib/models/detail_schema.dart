@@ -72,7 +72,8 @@ class DetailSchema {
   }
 
   @override
-  String toString() => 'DetailSchema(sections: ${sections.length}, layout: $layout)';
+  String toString() =>
+      'DetailSchema(sections: ${sections.length}, layout: $layout)';
 }
 
 @JsonEnum()
@@ -123,7 +124,8 @@ class DetailSection {
   }
 
   @override
-  String toString() => 'DetailSection(name: $name, title: $title, fields: ${fields.length})';
+  String toString() =>
+      'DetailSection(name: $name, title: $title, fields: ${fields.length})';
 }
 
 @JsonSerializable()
@@ -162,7 +164,8 @@ class DetailField {
         return value.toString();
 
       case DetailFieldType.number:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
 
         if (format != null) {
@@ -199,12 +202,14 @@ class DetailField {
         return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
 
       case DetailFieldType.currency:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(2)} €';
 
       case DetailFieldType.percentage:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(1)}%';
 
@@ -237,14 +242,14 @@ class DetailField {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
-           '${date.month.toString().padLeft(2, '0')}/'
-           '${date.year}';
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
   }
 
   String _formatDateTime(DateTime date) {
     return '${_formatDate(date)} '
-           '${date.hour.toString().padLeft(2, '0')}:'
-           '${date.minute.toString().padLeft(2, '0')}';
+        '${date.hour.toString().padLeft(2, '0')}:'
+        '${date.minute.toString().padLeft(2, '0')}';
   }
 
   @override
