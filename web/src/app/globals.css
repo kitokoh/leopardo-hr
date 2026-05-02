@@ -43,3 +43,40 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Gradient animation */
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 6s ease infinite;
+}
+
+/* Selection */
+::selection {
+  background: rgba(16, 185, 129, 0.2);
+  color: inherit;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
