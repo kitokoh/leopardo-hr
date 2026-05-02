@@ -49,8 +49,8 @@ class EvaluationController extends Controller
                 'updated_at',
             ])
             ->with([
-                'employee:id,company_id,first_name,last_name,email',
-                'evaluator:id,company_id,first_name,last_name',
+                'employee:id,first_name,last_name,email',
+                'evaluator:id,first_name,last_name',
             ]);
 
         if (! $actor->isManager()) {
