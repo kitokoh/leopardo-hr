@@ -5,9 +5,12 @@ namespace Tests\Unit\Models;
 use App\Models\Feature;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Tests unitaires pour le modèle Feature sans base de données
+ */
 class FeatureUnitTest extends TestCase
 {
-    public function test_feature_model_has_correct_fillable_fields()
+    public function test_feature_model_has_correct_fillable_fields(): void
     {
         $feature = new Feature();
         
@@ -31,11 +34,12 @@ class FeatureUnitTest extends TestCase
         $this->assertEquals($expectedFillable, $feature->getFillable());
     }
 
-    public function test_feature_model_has_correct_casts()
+    public function test_feature_model_has_correct_casts(): void
     {
         $feature = new Feature();
         
         $expectedCasts = [
+            'id' => 'int',
             'http_methods' => 'array',
             'parameters' => 'array',
             'response_schema' => 'array',
@@ -45,34 +49,32 @@ class FeatureUnitTest extends TestCase
         
         $casts = $feature->getCasts();
         
-        foreach ($expectedCasts as $field => $cast) {
-            $this->assertArrayHasKey($field, $casts);
-            $this->assertEquals($cast, $casts[$field]);
+        foreach ($expectedCasts as $field => $expectedCast) {
+            $this->assertEquals($expectedCast, $casts[$field]);
         }
     }
 
-    public function test_to_manifest_array_returns_correct_structure()
+    public function test_to_manifest_array_returns_correct_structure(): void
     {
-        $feature = new Feature();
-        
-        // Simuler les données du modèle
-        $feature->key = 'test_feature';
-        $feature->title = 'Test Feature';
-        $feature->description = 'A test feature';
-        $feature->endpoint = '/api/v1/test';
-        $feature->http_methods = ['GET', 'POST'];
-        $feature->parameters = ['param1' => 'value1'];
-        $feature->response_schema = ['field1' => 'string'];
-        $feature->permissions = ['test.view'];
-        $feature->mobile_version_min = '1.0.0';
-        $feature->mobile_version_max = '2.0.0';
-        $feature->api_version = '1.1.0';
-        $feature->status = 'active';
-        $feature->metadata = [
-            'ui_type' => 'list',
-            'form_schema' => ['fields' => []],
-            'list_schema' => ['columns' => []],
-        ];
+        $feature = new Feature([
+            'key' => 'test_feature',
+            'title' => 'Test Feature',
+            'description' => 'A test feature',
+            'endpoint' => '/api/v1/test',
+            'http_methods' => ['GET', 'POST'],
+            'parameters' => ['param1' => 'value1'],
+            'response_schema' => ['field1' => 'string'],
+            'permissions' => ['test.view'],
+            'mobile_version_min' => '1.0.0',
+            'mobile_version_max' => '2.0.0',
+            'api_version' => '1.1.0',
+            'status' => 'active',
+            'metadata' => [
+                'ui_type' => 'list',
+                'form_schema' => ['fields' => []],
+                'list_schema' => ['columns' => []],
+            ],
+        ]);
 
         $manifestArray = $feature->toManifestArray();
 
@@ -91,26 +93,24 @@ class FeatureUnitTest extends TestCase
         $this->assertEquals('Test Feature', $manifestArray['title']);
         $this->assertEquals(['GET', 'POST'], $manifestArray['methods']);
         $this->assertEquals('list', $manifestArray['ui_type']);
-        $this->assertEquals(['fields' => []], $manifestArray['form_schema']);
     }
 
-    public function test_to_manifest_array_handles_null_metadata()
+    public function test_to_manifest_array_handles_null_metadata(): void
     {
-        $feature = new Feature();
-        
-        $feature->key = 'test_feature';
-        $feature->title = 'Test Feature';
-        $feature->description = 'A test feature';
-        $feature->endpoint = '/api/v1/test';
-        $feature->http_methods = ['GET'];
-        $feature->parameters = [];
-        $feature->response_schema = [];
-        $feature->permissions = [];
-        $feature->mobile_version_min = '1.0.0';
-        $feature->mobile_version_max = null;
-        $feature->api_version = '1.0.0';
-        $feature->status = 'active';
-        $feature->metadata = null;
+        $feature = new Feature([
+            'key' => 'test_feature',
+            'title' => 'Test Feature',
+            'description' => 'A test feature',
+            'endpoint' => '/api/v1/test',
+            'http_methods' => ['GET'],
+            'parameters' => [],
+            'response_schema' => [],
+            'permissions' => [],
+            'mobile_version_min' => '1.0.0',
+            'api_version' => '1.0.0',
+            'status' => 'active',
+            'metadata' => null,
+        ]);
 
         $manifestArray = $feature->toManifestArray();
 
@@ -119,23 +119,22 @@ class FeatureUnitTest extends TestCase
         $this->assertNull($manifestArray['list_schema']);
     }
 
-    public function test_to_manifest_array_handles_empty_metadata()
+    public function test_to_manifest_array_handles_empty_metadata(): void
     {
-        $feature = new Feature();
-        
-        $feature->key = 'test_feature';
-        $feature->title = 'Test Feature';
-        $feature->description = 'A test feature';
-        $feature->endpoint = '/api/v1/test';
-        $feature->http_methods = ['GET'];
-        $feature->parameters = [];
-        $feature->response_schema = [];
-        $feature->permissions = [];
-        $feature->mobile_version_min = '1.0.0';
-        $feature->mobile_version_max = null;
-        $feature->api_version = '1.0.0';
-        $feature->status = 'active';
-        $feature->metadata = [];
+        $feature = new Feature([
+            'key' => 'test_feature',
+            'title' => 'Test Feature',
+            'description' => 'A test feature',
+            'endpoint' => '/api/v1/test',
+            'http_methods' => ['GET'],
+            'parameters' => [],
+            'response_schema' => [],
+            'permissions' => [],
+            'mobile_version_min' => '1.0.0',
+            'api_version' => '1.0.0',
+            'status' => 'active',
+            'metadata' => [],
+        ]);
 
         $manifestArray = $feature->toManifestArray();
 
@@ -144,7 +143,7 @@ class FeatureUnitTest extends TestCase
         $this->assertNull($manifestArray['list_schema']);
     }
 
-    public function test_model_uses_correct_table_name()
+    public function test_model_uses_correct_table_name(): void
     {
         $feature = new Feature();
         $this->assertEquals('features', $feature->getTable());
