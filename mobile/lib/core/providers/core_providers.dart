@@ -10,6 +10,7 @@ import 'package:leopardo_rh/features/salary_advances/data/salary_advance_reposit
 import 'package:leopardo_rh/features/payrolls/data/payroll_repository.dart';
 import 'package:leopardo_rh/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_rh/features/evaluations/data/evaluation_repository.dart';
+import 'package:leopardo_rh/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_rh/features/home/data/project_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
@@ -69,6 +70,11 @@ final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
 final evaluationRepositoryProvider = Provider<EvaluationRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return EvaluationRepository(apiClient);
+});
+
+final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return CabinetRepository(apiClient);
 });
 
 final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
