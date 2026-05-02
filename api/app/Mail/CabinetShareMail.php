@@ -25,7 +25,9 @@ class CabinetShareMail extends Mailable
 
     public function __construct(public readonly CabinetShare $share)
     {
-        $frontendUrl = rtrim((string) config('app.frontend_url', (string) config('app.url')), '/');
+        /** @var string $baseUrl */
+        $baseUrl = config('app.frontend_url') ?? config('app.url') ?? '';
+        $frontendUrl = rtrim($baseUrl, '/');
         $this->shareUrl = $frontendUrl.'/cabinet/shared/'.$share->share_token;
 
         $shareable = $share->shareable;
