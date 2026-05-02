@@ -7,9 +7,11 @@ use App\Http\Requests\Api\V1\Cabinet\MoveDocumentRequest;
 use App\Http\Requests\Api\V1\Cabinet\StoreDocumentRequest;
 use App\Http\Requests\Api\V1\Cabinet\UpdateDocumentRequest;
 use App\Models\CabinetDocument;
+use App\Models\Employee;
 use App\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -19,7 +21,7 @@ class CabinetDocumentController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
 
         $query = CabinetDocument::where('employee_id', $actor->id);
 
@@ -31,7 +33,7 @@ class CabinetDocumentController extends Controller
         }
 
         if ($request->filled('search')) {
-            $search = $request->input('search');
+            $search = (string) $request->input('search');
             $query->where(function ($q) use ($search): void {
                 $q->where('name', 'ilike', "%{$search}%")
                     ->orWhere('original_name', 'ilike', "%{$search}%");
@@ -54,8 +56,9 @@ class CabinetDocumentController extends Controller
 
     public function store(StoreDocumentRequest $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
         $file = $request->file('file');
+        assert($file instanceof UploadedFile);
 
         $document = $this->cabinetService->uploadDocument($actor, $file, $request->validated());
 
@@ -110,19 +113,27 @@ class CabinetDocumentController extends Controller
     {
         $this->authorizeOwnership($request, $cabinetDocument);
 
-        $document = $this->cabinetService->moveDocument(
-            $cabinetDocument,
-            $request->validated('folder_id')
-        );
+        /** @var int|null $folderId */
+        $folderId = $request->validated('folder_id');
+
+        $document = $this->cabinetService->moveDocument($cabinetDocument, $folderId);
 
         return response()->json([
             'data' => $this->serialize($document),
         ]);
     }
 
+    private function employee(Request $request): Employee
+    {
+        $user = $request->user();
+        assert($user instanceof Employee);
+
+        return $user;
+    }
+
     private function authorizeOwnership(Request $request, CabinetDocument $document): void
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
 
         if ($document->company_id !== $actor->company_id) {
             abort(404);
@@ -133,6 +144,9 @@ class CabinetDocumentController extends Controller
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function serialize(CabinetDocument $doc): array
     {
         return [

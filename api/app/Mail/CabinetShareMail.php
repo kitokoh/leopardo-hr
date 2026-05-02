@@ -24,16 +24,24 @@ class CabinetShareMail extends Mailable
 
     public function __construct(public readonly CabinetShare $share)
     {
-        $frontendUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url', (string) config('app.url')), '/');
         $this->shareUrl = $frontendUrl.'/cabinet/shared/'.$share->share_token;
-        $this->shareableName = $share->shareable?->name ?? '';
-        $this->ownerName = trim(($share->employee?->first_name ?? '').' '.($share->employee?->last_name ?? ''));
+
+        $shareable = $share->shareable;
+        $this->shareableName = ($shareable instanceof CabinetFolder || $shareable instanceof CabinetDocument)
+            ? $shareable->name
+            : '';
 
         $this->shareableType = match (true) {
-            $share->shareable instanceof CabinetFolder => 'folder',
-            $share->shareable instanceof CabinetDocument => 'document',
+            $shareable instanceof CabinetFolder => 'folder',
+            $shareable instanceof CabinetDocument => 'document',
             default => 'item',
         };
+
+        $employee = $share->employee;
+        $firstName = $employee instanceof \App\Models\Employee ? ($employee->first_name ?? '') : '';
+        $lastName = $employee instanceof \App\Models\Employee ? ($employee->last_name ?? '') : '';
+        $this->ownerName = trim($firstName.' '.$lastName);
     }
 
     public function build(): self

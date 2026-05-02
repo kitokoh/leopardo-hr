@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -11,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class CabinetShare extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
 
     protected $table = 'cabinet_shares';
 
@@ -30,11 +28,17 @@ class CabinetShare extends Model
         'expires_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Employee, $this>
+     */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function shareable(): MorphTo
     {
         return $this->morphTo();

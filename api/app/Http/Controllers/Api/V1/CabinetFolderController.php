@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Cabinet\StoreFolderRequest;
 use App\Http\Requests\Api\V1\Cabinet\UpdateFolderRequest;
 use App\Models\CabinetFolder;
+use App\Models\Employee;
 use App\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class CabinetFolderController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
         $parentId = $request->input('parent_id');
 
         $query = CabinetFolder::where('employee_id', $actor->id);
@@ -38,10 +39,10 @@ class CabinetFolderController extends Controller
 
     public function store(StoreFolderRequest $request): JsonResponse
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
 
         if ($request->filled('parent_id')) {
-            $parent = CabinetFolder::where('employee_id', $actor->id)
+            CabinetFolder::where('employee_id', $actor->id)
                 ->findOrFail($request->integer('parent_id'));
         }
 
@@ -84,9 +85,17 @@ class CabinetFolderController extends Controller
         return response()->json(null, 204);
     }
 
+    private function employee(Request $request): Employee
+    {
+        $user = $request->user();
+        assert($user instanceof Employee);
+
+        return $user;
+    }
+
     private function authorizeOwnership(Request $request, CabinetFolder $folder): void
     {
-        $actor = $request->user();
+        $actor = $this->employee($request);
 
         if ($folder->company_id !== $actor->company_id) {
             abort(404);
@@ -97,6 +106,9 @@ class CabinetFolderController extends Controller
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function serialize(CabinetFolder $folder): array
     {
         return [
