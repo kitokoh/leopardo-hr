@@ -218,27 +218,53 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           break;
                       }
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: statusColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.circle,
-                            color: statusColor,
-                            size: 12,
+                      final statusLabel = switch (log.status) {
+                        'ontime' => 'à l\'heure',
+                        'late' => 'en retard',
+                        'absent' => 'absent',
+                        _ => log.status,
+                      };
+
+                      final hours = log.workedHours ?? 0;
+                      final hoursLabel = hours <= 1 ? 'heure travaillée' : 'heures travaillées';
+
+                      final timeInfo = log.checkIn != null
+                          ? ' de ${log.checkIn!.hour}h${log.checkIn!.minute.toString().padLeft(2, '0')} à '
+                              '${log.checkOut != null ? "${log.checkOut!.hour}h${log.checkOut!.minute.toString().padLeft(2, '0')}" : "en cours"}'
+                          : '';
+
+                      final semanticLabel =
+                          'Journée du ${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}, statut $statusLabel,$timeInfo $hours $hoursLabel.';
+
+                      return Semantics(
+                        label: semanticLabel,
+                        container: true,
+                        child: ExcludeSemantics(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor:
+                                  statusColor.withValues(alpha: 0.2),
+                              child: Icon(
+                                Icons.circle,
+                                color: statusColor,
+                                size: 12,
+                              ),
+                            ),
+                            title: Text(
+                              '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
+                            ),
+                            subtitle: Text(
+                              log.checkIn != null
+                                  ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                  : 'Absence',
+                            ),
+                            trailing: Text(
+                              '${log.workedHours ?? 0}h',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
-                        ),
-                        subtitle: Text(
-                          log.checkIn != null
-                              ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                  '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
-                              : 'Absence',
-                        ),
-                        trailing: Text(
-                          '${log.workedHours ?? 0}h',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       );
                     },

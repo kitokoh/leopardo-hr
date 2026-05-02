@@ -10,6 +10,7 @@
 - API : renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` pour verrouiller ce nouveau contrat mobile.
 - Mobile : realignement de `welcome`, `login`, `home` et `modules hub` sur l'experience mobile-first documentee, avec consommation directe du payload backend (`features` + `mobile_experience`).
 - Mobile : ajout des modeles `MobileExperience`, `MobileModule`, `MobileQuickAction` et du mapping d'icones associe pour garder une navigation coherente avec les routes reelles de l'application.
+- Mobile : amélioration de l'accessibilité de l'écran d'historique de présence avec des labels `Semantics` unifiés pour les lecteurs d'écran.
 - Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
 - Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
 
