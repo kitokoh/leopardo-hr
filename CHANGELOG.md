@@ -41,7 +41,7 @@
 
 - API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
 - API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
-## [4.1.84] - 2026-05-02
+## [4.1.84] - 2026-05-02 module placard 
 
 ### Sentinel - Sécurisation des validations et tests d'isolation
 
