@@ -28,6 +28,7 @@
 
 ## [4.1.84] - 2026-04-30
 
+
 ### API / Mobile / Web - Experience client alignee et modernisee
 
 - API : ajout de `mobile_experience` dans le payload `/api/v1/auth/me` via `MobileExperienceService`, avec modules exposes, quick actions et stade d'usage pour les clients mobiles.
