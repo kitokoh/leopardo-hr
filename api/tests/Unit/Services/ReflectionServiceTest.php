@@ -91,7 +91,7 @@ class ReflectionServiceTest extends TestCase
         );
         
         $this->assertArrayHasKey('signature', $methodInfo);
-        $this->assertStringContains('analyzeClass', $methodInfo['signature']);
-        $this->assertStringContains('string $className', $methodInfo['signature']);
+        $this->assertStringContainsString('analyzeClass', $methodInfo['signature']);
+        $this->assertStringContainsString('string $className', $methodInfo['signature']);
     }
 }

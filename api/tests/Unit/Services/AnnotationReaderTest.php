@@ -62,8 +62,8 @@ class AnnotationReaderTest extends TestCase
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
         
-        $this->assertStringContains('Récupère la liste', $description);
-        $this->assertStringContains('employee', $description);
+        $this->assertStringContainsString('Récupère la liste', $description);
+        $this->assertStringContainsString('employee', $description);
         
         $description = $this->annotationReader->generateDescriptionFromMethod(
             'store',

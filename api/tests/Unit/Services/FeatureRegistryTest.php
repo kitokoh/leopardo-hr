@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 use Mockery;
 
@@ -19,7 +20,7 @@ use Mockery;
  */
 class FeatureRegistryTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     private FeatureRegistry $registry;
     private FeatureDetectorInterface $mockDetector;
