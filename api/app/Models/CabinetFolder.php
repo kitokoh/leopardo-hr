@@ -25,6 +25,7 @@ class CabinetFolder extends Model
 
     protected $casts = [
         'company_id' => 'integer',
+        'employee_id' => 'integer',
     ];
 
     /**

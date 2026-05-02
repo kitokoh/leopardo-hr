@@ -26,6 +26,7 @@ class CabinetShare extends Model
 
     protected $casts = [
         'company_id' => 'integer',
+        'employee_id' => 'integer',
         'expires_at' => 'datetime',
     ];
 
