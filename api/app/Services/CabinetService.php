@@ -16,6 +16,9 @@ class CabinetService
 {
     // ── Folders ──────────────────────────────────────────────────────────────
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function createFolder(Employee $owner, array $data): CabinetFolder
     {
         return CabinetFolder::create([
@@ -28,6 +31,9 @@ class CabinetService
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function updateFolder(CabinetFolder $folder, array $data): CabinetFolder
     {
         $fields = [];
@@ -46,8 +52,9 @@ class CabinetService
         }
 
         $folder->update($fields);
+        $folder->refresh();
 
-        return $folder->fresh();
+        return $folder;
     }
 
     public function deleteFolder(CabinetFolder $folder): void
@@ -58,6 +65,9 @@ class CabinetService
 
     // ── Documents ────────────────────────────────────────────────────────────
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function uploadDocument(Employee $owner, UploadedFile $file, array $data): CabinetDocument
     {
         $storagePath = sprintf('cabinet/%d/%d', $owner->company_id, $owner->id);
@@ -77,6 +87,9 @@ class CabinetService
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function updateDocument(CabinetDocument $document, array $data): CabinetDocument
     {
         $fields = [];
@@ -92,8 +105,9 @@ class CabinetService
         }
 
         $document->update($fields);
+        $document->refresh();
 
-        return $document->fresh();
+        return $document;
     }
 
     public function deleteDocument(CabinetDocument $document): void
@@ -102,20 +116,18 @@ class CabinetService
         $document->delete();
     }
 
-    /**
-     * Move a document to another folder (or root if folder_id is null).
-     */
     public function moveDocument(CabinetDocument $document, ?int $folderId): CabinetDocument
     {
         $document->update(['folder_id' => $folderId]);
+        $document->refresh();
 
-        return $document->fresh();
+        return $document;
     }
 
     // ── Sharing ──────────────────────────────────────────────────────────────
 
     /**
-     * Create a share link for a document or folder.
+     * @param  array<string, mixed>  $data
      */
     public function share(Employee $owner, string $shareableType, int $shareableId, array $data): CabinetShare
     {
@@ -145,7 +157,7 @@ class CabinetService
     // ── Storage stats ────────────────────────────────────────────────────────
 
     /**
-     * Return storage usage stats for the employee's cabinet.
+     * @return array<string, int>
      */
     public function storageStats(Employee $owner): array
     {

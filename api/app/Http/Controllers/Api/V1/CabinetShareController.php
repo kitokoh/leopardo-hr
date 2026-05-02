@@ -43,13 +43,13 @@ class CabinetShareController extends Controller
         $actor = $this->employee($request);
         $data = $request->validated();
 
-        /** @var string $shareableType */
-        $shareableType = $data['shareable_type'];
+        $shareableType = is_string($data['shareable_type']) ? $data['shareable_type'] : '';
         $shareableClass = self::SHAREABLE_MAP[$shareableType];
+        $shareableId = is_numeric($data['shareable_id']) ? (int) $data['shareable_id'] : 0;
 
         /** @var CabinetFolder|CabinetDocument $shareable */
         $shareable = $shareableClass::where('employee_id', $actor->id)
-            ->findOrFail((int) $data['shareable_id']);
+            ->findOrFail($shareableId);
 
         $share = $this->cabinetService->share(
             $actor,
