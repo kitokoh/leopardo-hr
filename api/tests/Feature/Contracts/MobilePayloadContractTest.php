@@ -168,6 +168,7 @@ class MobilePayloadContractTest extends TestCase
         $response->assertOk();
         $response->assertJsonStructure([
             'data' => [
+                'id',
                 'employee_id',
                 'matricule',
                 'name',
@@ -177,6 +178,7 @@ class MobilePayloadContractTest extends TestCase
                 'hours_worked',
                 'overtime_hours',
                 'status',
+                'late_minutes',
                 'base_gain',
                 'overtime_gain',
                 'total_estimated',
@@ -248,6 +250,7 @@ class MobilePayloadContractTest extends TestCase
                 'mode',
                 'items' => [
                     '*' => [
+                        'id',
                         'employee_id',
                         'matricule',
                         'name',
@@ -257,6 +260,7 @@ class MobilePayloadContractTest extends TestCase
                         'hours_worked',
                         'overtime_hours',
                         'status',
+                        'late_minutes',
                         'base_gain',
                         'overtime_gain',
                         'total_estimated',
