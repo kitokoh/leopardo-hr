@@ -50,7 +50,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
-## [4.1.83] - 2026-05-01
+## [4.1.85] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (attendance today)
+
+- API : Mise à jour de `AttendanceTodayResource` pour inclure l'ID du pointage (`id`) et les minutes de retard (`late_minutes`), alignant ainsi le payload `/api/v1/attendance/today` et `/api/v1/me/daily-summary` sur les attentes des modèles mobiles.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces champs dans les payloads de présence journalière.
+
 ## [4.1.84] - 2026-05-02
 
 ### Contractor - Alignement contrat API/mobile (employee & attendance)
