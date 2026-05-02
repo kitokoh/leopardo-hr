@@ -20,6 +20,7 @@ import 'package:leopardo_rh/features/salary_advances/screens/salary_advance_list
 import 'package:leopardo_rh/features/payrolls/screens/payroll_list_screen.dart';
 import 'package:leopardo_rh/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_rh/features/evaluations/screens/evaluation_list_screen.dart';
+import 'package:leopardo_rh/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_rh/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_rh/features/team/screens/team_screen.dart';
 
@@ -100,6 +101,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/modules/rh',
         builder: (context, state) => const ModulesScreen(),
+      ),
+      GoRoute(
+        path: '/cabinet',
+        builder: (context, state) => const CabinetScreen(),
+      ),
+      GoRoute(
+        path: '/cabinet/folder/:folderId',
+        builder: (context, state) {
+          final folderId = int.parse(state.pathParameters['folderId']!);
+          final folderName = state.extra as String?;
+          return CabinetScreen(folderId: folderId, folderName: folderName);
+        },
       ),
       GoRoute(
         path: '/settings',
