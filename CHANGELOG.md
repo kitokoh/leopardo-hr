@@ -15,7 +15,7 @@
 
 ### API - Performance et durcissement multi-tenant
 
-- API : optimisation de `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
+- API : optimisation de `PayrollController@index`, `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
 - API : elimination des concatenations directes de `schema_name` dans plusieurs `SET search_path` sensibles au profit de `Company::getSafeSearchPath()`.
 - API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
 - Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
