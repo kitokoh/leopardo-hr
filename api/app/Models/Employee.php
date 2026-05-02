@@ -183,7 +183,7 @@ class Employee extends Authenticatable
                 'company_id' => $this->company_id,
                 'schema_name' => $this->company?->schema_name ?? 'shared_tenants',
                 'employee_id' => $this->id,
-                'role' => $this->role,
+                'role' => $this->userLookupRole(),
             ]
         );
     }
@@ -218,5 +218,14 @@ class Employee extends Authenticatable
     private function userLookupTable(): string
     {
         return DB::getDriverName() === 'pgsql' ? 'public.user_lookups' : 'user_lookups';
+    }
+
+    private function userLookupRole(): string
+    {
+        $role = $this->getAttribute('role');
+
+        return is_string($role) && $role !== ''
+            ? $role
+            : 'employee';
     }
 }

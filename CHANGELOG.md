@@ -28,8 +28,42 @@
 ### Depot - Hygiene
 
 - Depot : suppression du gitlink fantome `.codex-pr-140` reste d'une branche bot obsolete.
+## [4.1.84] - 2026-05-02
+
+### DocKeeper - Alignement documentation
+
+- Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
+- Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+## [4.1.84] - 2026-05-01
+
+### Performance - Optimisation des index Absence et Evaluation
+
+- API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
+- API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
+## [4.1.84] - 2026-05-02
+
+### Sentinel - Sécurisation des validations et tests d'isolation
+
+- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empêcher les attaques par IDOR (Insecure Direct Object Reference) en vérifiant systématiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifié.
+- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modèles supplémentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
+- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.83] - 2026-05-01
+## [4.1.84] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (employee & attendance)
+
+- Mobile : Mise à jour du modèle `Employee` pour inclure et parser `photo_url` et `hire_date`.
+- Mobile : Mise à jour du modèle `AttendanceLog` pour inclure et parser `late_minutes`.
+- Mobile : Correction de `AttendanceRepository.decodeTodayResponse` pour mapper correctement `overtime_hours` et `late_minutes` dans l'objet `AttendanceLog`.
+- Tests : Renforcement de `widget_test.dart` pour verrouiller le parsing des nouveaux champs de contrat.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
+### Janitor - Hygiène du dépôt
+
+- Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
 
 ### DocKeeper - Alignement documentation et maintenance
 
@@ -52,6 +86,11 @@
 ### API - Stabilisation seed demo / deploiement
 
 - API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
+
+### Sentinel - Renforcement de la sécurité multi-tenant
+
+- API : Élimination des risques d'injection SQL dans les commandes `SET search_path` par l'application systématique de `Company::getSafeSearchPath()` sur tous les points d'entrée critiques (`StoreEmployeeRequest`, `UpdateEmployeeRequest`, `BiometricAdminController`, `KioskController`).
+
 ## [4.1.82] - 2026-04-29
 
 ### Janitor - Hygiène du dépôt et sécurité

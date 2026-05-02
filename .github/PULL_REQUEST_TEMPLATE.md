@@ -3,16 +3,16 @@
 - Why:
 
 ## Scope
-- [ ] Phase 1 backlog ticket referenced (`docs/GESTION_PROJET/BACKLOG_PHASE1_UNIQUE.md`)
-- Ticket ID:
+- [ ] Task referenced in `PILOTAGE.md`
+- Ticket/Prompt ID:
 
 ## Governance Checks
 - [ ] `CHANGELOG.md` updated (required for critical scope)
 - [ ] `JOURNAL_RACINE.md` updated
-- [ ] `INDEX_CANONIQUE.md` respected (no archive-based implementation)
+- [ ] `PILOTAGE.md` respected (no archive-based implementation)
 
 ## Technical Checks
-- [ ] API contract aligned (`02_API_CONTRATS_COMPLET.md`) or N/A
+- [ ] API contract aligned (`docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`) or N/A
 - [ ] ERD/SQL impact reviewed or N/A
 - [ ] RBAC impact reviewed or N/A
 - [ ] Tenant isolation impact reviewed or N/A
