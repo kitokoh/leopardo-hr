@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.85] - 2026-05-02
+
+### CI/CD - Résolution des problèmes de pipeline et tests
+
+- API : Correction de la compatibilité SQLite dans `api/tests/TestCase.php` — gestion du driver PostgreSQL vs SQLite pour `SET search_path`
+- Mobile : Formatage complet des fichiers Dart (7 fichiers) avec `dart format`
+- Docs : Ajout de `MOBILE_API_SYNC_CI_CD_FIXES.md` avec documentation complète des fixes et instructions Docker
+- Tests : Safeguards ajoutés dans `FeatureDetector` pour éviter les boucles infinies lors du scan de routes
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
