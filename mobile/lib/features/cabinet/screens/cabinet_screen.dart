@@ -105,7 +105,8 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
         itemCount: 6,
         itemBuilder: (_, __) => const Padding(
           padding: EdgeInsets.only(bottom: 12),
-          child: ShimmerLoading(height: 64, borderRadius: 16),
+          child: ShimmerLoading(
+              width: double.infinity, height: 64, borderRadius: 16),
         ),
       );
     }
@@ -132,7 +133,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           EmptyState(
             icon: Icons.door_sliding_outlined,
             title: 'Placard vide',
-            subtitle:
+            description:
                 'Ajoutez des dossiers et documents pour organiser votre espace.',
           ),
         ],
