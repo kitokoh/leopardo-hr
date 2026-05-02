@@ -5272,6 +5272,42 @@ parameters:
 			message: '#^Cannot access property \$company_id on mixed\.$#'
 			identifier: property.nonObject
 			count: 2
+			path: app/Models/CabinetDocument.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetDocument.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetFolder.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetFolder.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetShare.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Models/CabinetShare.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
 			path: app/Models/UserInvitation.php
 
 		-
