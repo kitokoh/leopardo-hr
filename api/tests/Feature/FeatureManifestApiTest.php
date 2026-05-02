@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Employee;
 use App\Models\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\RefreshTenantDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -13,7 +13,7 @@ use Tests\TestCase;
  */
 class FeatureManifestApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     private Employee $user;
     private Employee $adminUser;

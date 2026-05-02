@@ -98,6 +98,8 @@ class FeatureDetector implements FeatureDetectorInterface
                 'ui_type' => $annotations['ui_type'] ?? $this->inferUIType($method),
                 'parameters' => $this->extractParameters($methodInfo),
                 'response_schema' => $this->inferResponseSchema($controllerClass, $method),
+                'form_schema' => $this->generateFormSchema($controllerClass, $method),
+                'list_schema' => $this->generateListSchema($controllerClass, $method),
             ];
         } catch (\Exception $e) {
             Log::error('Failed to extract metadata', [
@@ -247,7 +249,7 @@ class FeatureDetector implements FeatureDetectorInterface
      * @param array $routeData
      * @return string
      */
-    private function generateFeatureKey(array $routeData): string
+    protected function generateFeatureKey(array $routeData): string
     {
         $controller = class_basename($routeData['controller_class']);
         $method = $routeData['method'];
@@ -264,7 +266,7 @@ class FeatureDetector implements FeatureDetectorInterface
      * @param array $metadata
      * @return bool
      */
-    private function isValidFeature(array $metadata): bool
+    protected function isValidFeature(array $metadata): bool
     {
         // Vérifier que les métadonnées de base sont présentes
         if (empty($metadata['title']) || empty($metadata['method_info'])) {
@@ -513,5 +515,96 @@ class FeatureDetector implements FeatureDetectorInterface
         $storedSignature = $feature->metadata['method_signature'] ?? '';
         
         return $currentSignature !== $storedSignature;
+    }
+
+    /**
+     * Génère le schéma de formulaire pour une méthode
+     * 
+     * @param string $controllerClass
+     * @param string $method
+     * @return array
+     */
+    private function generateFormSchema(string $controllerClass, string $method): array
+    {
+        // Schéma de base pour les formulaires
+        $baseSchema = [
+            'fields' => [],
+        ];
+
+        // Ajouter des champs selon le type de méthode
+        if (in_array($method, ['store', 'update', 'create', 'edit'])) {
+            $resource = $this->extractResourceName($controllerClass);
+            
+            // Champs de base génériques
+            $baseSchema['fields'] = [
+                [
+                    'name' => 'name',
+                    'type' => 'text',
+                    'label' => 'Nom',
+                    'required' => true,
+                    'validation' => [
+                        'min_length' => 2,
+                        'max_length' => 100,
+                    ],
+                ],
+                [
+                    'name' => 'description',
+                    'type' => 'textarea',
+                    'label' => 'Description',
+                    'required' => false,
+                    'validation' => [
+                        'max_length' => 500,
+                    ],
+                ],
+            ];
+        }
+
+        return $baseSchema;
+    }
+
+    /**
+     * Génère le schéma de liste pour une méthode
+     * 
+     * @param string $controllerClass
+     * @param string $method
+     * @return array
+     */
+    private function generateListSchema(string $controllerClass, string $method): array
+    {
+        // Schéma de base pour les listes
+        $baseSchema = [
+            'columns' => [],
+            'actions' => [],
+        ];
+
+        // Ajouter des colonnes selon le type de méthode
+        if (in_array($method, ['index', 'show'])) {
+            $baseSchema['columns'] = [
+                [
+                    'field' => 'name',
+                    'label' => 'Nom',
+                    'sortable' => true,
+                ],
+                [
+                    'field' => 'status',
+                    'label' => 'Statut',
+                    'sortable' => true,
+                ],
+                [
+                    'field' => 'created_at',
+                    'label' => 'Créé le',
+                    'sortable' => true,
+                    'type' => 'date',
+                ],
+            ];
+
+            $baseSchema['actions'] = [
+                ['type' => 'view', 'label' => 'Voir'],
+                ['type' => 'edit', 'label' => 'Modifier'],
+                ['type' => 'delete', 'label' => 'Supprimer'],
+            ];
+        }
+
+        return $baseSchema;
     }
 }
