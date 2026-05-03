@@ -4,9 +4,8 @@ Ce dossier conserve les traces de travail utiles pour comprendre l'historique du
 
 ## Contenu
 
-- `archive/` : anciens index, journaux, backlogs de session et documents de contexte
-- `CONTINUE_v2.md` : reprise de contexte recente
-- `remarquesimportantaverifier.md` : points a verifier, non canoniques
+- `archive/` : anciens index, journaux, backlogs de session, documents de contexte (PHASE 0) et explorations bots
+- `README.md` : cette orientation
 
 ## Regle
 
