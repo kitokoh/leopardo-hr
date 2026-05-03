@@ -20,6 +20,12 @@
 - API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
 - Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
 
+### Sentinel - Sécurisation des index et tests de régression Salary Advance
+
+- API : Durcissement des requêtes de liste (IndexRequest) pour les modules `Absences`, `Payroll`, `Attendance` et `SalaryAdvances` via l'ajout d'une validation `exists` systématiquement scopée au tenant de l'utilisateur pour le champ `employee_id`.
+- Tests : Création de `SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module des avances sur salaire.
+- Tests : Ajout de tests de régression dans `AbsenceIndexTest` et `TodayAndHistoryTest` pour vérifier la protection contre le filtrage par `employee_id` hors-tenant.
+
 ### Mobile - Contrat attendance et UX absences
 
 - Mobile : parsing de `photo_url`, `hire_date`, `overtime_hours` et `late_minutes` aligne sur les payloads backend actuels.
