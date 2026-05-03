@@ -1819,12 +1819,6 @@ parameters:
 			path: app/Http/Controllers/Web/MyDashboardController.php
 
 		-
-			message: '#^Cannot cast mixed to float\.$#'
-			identifier: cast.double
-			count: 1
-			path: app/Http/Controllers/Web/MyDashboardController.php
-
-		-
 			message: '#^Parameter \#1 \$timeZone of method Carbon\\Carbon\:\:setTimezone\(\) expects DateTimeZone\|int\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 2
@@ -4591,18 +4585,6 @@ parameters:
 			path: app/Services/AuthService.php
 
 		-
-			message: '#^Access to an undefined property object\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/AuthService.php
-
-		-
 			message: '#^Cannot access property \$table_name on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -5263,19 +5245,7 @@ parameters:
 			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
 
 		-
-			message: '#^Access to an undefined property object\:\:\$rtsp_url\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
 			message: '#^Cannot access property \$name on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
-			message: '#^Cannot access property \$rtsp_url on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/Cameras/CamerasCrudTest.php
@@ -5447,24 +5417,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/PlatformCompanyEditTest.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$bank_account\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$iban\.$#'
-			identifier: property.notFound
-			count: 2
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$national_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Security/EmployeeEncryptionTest.php
 
 		-
 			message: '#^Cannot access property \$email on mixed\.$#'
