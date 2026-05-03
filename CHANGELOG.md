@@ -76,6 +76,7 @@
 
 - Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
 - Dépôt : Suppression du répertoire `.kiro/` contenant des spécifications d'implémentation obsolètes déjà fusionnées.
+- Dépôt : Archivage des notes historiques (`CONTINUE_v2.md`, `remarquesimportantaverifier.md`) et de l'artefact bot `EXPLORE.md` vers `docs/notes/archive/`.
 
 ### DocKeeper - Alignement documentation et maintenance
 
