@@ -191,12 +191,14 @@ jobs:
         working-directory: ./api
         env:
           DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
       - name: Run backend feature tests
         working-directory: ./api
         env:
           DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
         run: php artisan test --testsuite=Feature --log-junit=storage/test-results/feature.xml
 
       - name: Upload backend test reports
@@ -244,7 +246,7 @@ jobs:
         with:
           php-version: "8.4"
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
-          tools: phpstan, larastan/larastan
+          tools: composer:v2
           coverage: none
 
       - name: Validate composer.json
@@ -279,14 +281,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          composer_home="$(composer global config home --quiet)"
           cat > phpstan.ci.neon <<EOF
           includes:
               - phpstan.neon
-              - ${composer_home}/vendor/larastan/larastan/extension.neon
+              - vendor/larastan/larastan/extension.neon
           EOF
           mkdir -p storage/test-results
-          phpstan analyse -c phpstan.ci.neon --no-progress --error-format=raw | tee storage/test-results/phpstan.txt
+          ./vendor/bin/phpstan analyse -c phpstan.ci.neon --no-progress --error-format=raw | tee storage/test-results/phpstan.txt
 
       - name: Build backend quality summary
         if: always()
