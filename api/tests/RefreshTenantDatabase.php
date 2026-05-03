@@ -17,12 +17,10 @@ trait RefreshTenantDatabase
     {
         $this->artisan('migrate:fresh', [
             '--path' => 'database/migrations/public',
-            '--realpath' => true,
         ]);
 
         $this->artisan('migrate', [
             '--path' => 'database/migrations/tenant',
-            '--realpath' => true,
         ]);
 
         $this->app[Kernel::class]->setArtisan(null);
@@ -36,12 +34,10 @@ trait RefreshTenantDatabase
         if (! RefreshDatabaseState::$migrated) {
             $this->artisan('migrate:fresh', [
                 '--path' => 'database/migrations/public',
-                '--realpath' => true,
             ]);
 
             $this->artisan('migrate', [
                 '--path' => 'database/migrations/tenant',
-                '--realpath' => true,
             ]);
 
             $this->app[Kernel::class]->setArtisan(null);
