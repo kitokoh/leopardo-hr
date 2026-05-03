@@ -369,6 +369,40 @@ trait CreatesMvpSchema
             $table->unique(['employee_id', 'period', 'evaluator_id']);
         });
 
+        Schema::create($this->tenantTable('features'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->string('key', 100)->unique();
+            $table->string('title', 200);
+            $table->text('description');
+            $table->string('endpoint', 500);
+
+            if (DB::getDriverName() === 'pgsql') {
+                $table->jsonb('http_methods');
+                $table->jsonb('parameters');
+                $table->jsonb('response_schema');
+                $table->jsonb('permissions');
+                $table->jsonb('metadata');
+            } else {
+                $table->json('http_methods');
+                $table->json('parameters');
+                $table->json('response_schema');
+                $table->json('permissions');
+                $table->json('metadata');
+            }
+
+            $table->string('mobile_version_min', 20);
+            $table->string('mobile_version_max', 20)->nullable();
+            $table->string('api_version', 20);
+            $table->string('status', 20)->default('active');
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent();
+
+            $table->index(['company_id', 'status']);
+            $table->index(['status', 'api_version']);
+            $table->unique(['company_id', 'key']);
+        });
+
         Schema::create($this->tenantTable('payrolls'), function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->uuid('company_id')->nullable()->index();
@@ -533,6 +567,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.languages CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.features CASCADE');
     }
 
     /**
@@ -581,6 +616,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "evaluations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "features"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absence_types"'.$cascade);

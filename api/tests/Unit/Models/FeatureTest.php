@@ -15,8 +15,8 @@ class FeatureTest extends TestCase
     {
         $featureData = [
             'key' => 'employee_management',
-            'title' => 'Gestion des Employés',
-            'description' => 'Module de gestion complète des employés',
+            'title' => 'Gestion des EmployÃ©s',
+            'description' => 'Module de gestion complÃ¨te des employÃ©s',
             'endpoint' => '/api/v1/employees',
             'http_methods' => ['GET', 'POST', 'PUT', 'DELETE'],
             'parameters' => [
@@ -45,7 +45,7 @@ class FeatureTest extends TestCase
                         [
                             'name' => 'first_name',
                             'type' => 'text',
-                            'label' => 'Prénom',
+                            'label' => 'PrÃ©nom',
                             'required' => true,
                         ],
                     ],
@@ -57,7 +57,7 @@ class FeatureTest extends TestCase
 
         $this->assertInstanceOf(Feature::class, $feature);
         $this->assertEquals('employee_management', $feature->key);
-        $this->assertEquals('Gestion des Employés', $feature->title);
+        $this->assertEquals('Gestion des EmployÃ©s', $feature->title);
         $this->assertEquals(['GET', 'POST', 'PUT', 'DELETE'], $feature->http_methods);
         $this->assertEquals('active', $feature->status);
     }
@@ -112,7 +112,7 @@ class FeatureTest extends TestCase
             'key', 'title', 'description', 'endpoint', 'methods',
             'parameters', 'response_schema', 'permissions',
             'mobile_version_min', 'mobile_version_max', 'ui_type',
-            'form_schema', 'list_schema', 'status', 'api_version'
+            'form_schema', 'list_schema', 'status', 'api_version',
         ];
 
         foreach ($expectedKeys as $key) {
@@ -155,25 +155,21 @@ class FeatureTest extends TestCase
     /** @test */
     public function it_scopes_compatible_features_correctly()
     {
-        // Fonctionnalité compatible (version min 1.0.0, pas de max)
         Feature::factory()->create([
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => null,
         ]);
 
-        // Fonctionnalité compatible (version min 1.0.0, max 2.0.0)
         Feature::factory()->create([
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => '2.0.0',
         ]);
 
-        // Fonctionnalité incompatible (version min trop élevée)
         Feature::factory()->create([
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,
         ]);
 
-        // Fonctionnalité incompatible (version max trop basse)
         Feature::factory()->create([
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => '1.1.0',
@@ -194,7 +190,7 @@ class FeatureTest extends TestCase
         $v11Features = Feature::forApiVersion('1.1.0')->get();
 
         $this->assertCount(2, $v11Features);
-        $v11Features->each(function ($feature) {
+        $v11Features->each(function ($feature): void {
             $this->assertEquals('1.1.0', $feature->api_version);
         });
     }
