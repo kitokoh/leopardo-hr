@@ -218,27 +218,54 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           break;
                       }
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: statusColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.circle,
-                            color: statusColor,
-                            size: 12,
+                      String statusLabel = 'à l\'heure';
+                      if (log.status == 'late') statusLabel = 'en retard';
+                      if (log.status == 'absent') statusLabel = 'absent';
+
+                      final dateStr =
+                          '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}';
+                      final semanticLabel = log.checkIn != null
+                          ? 'Journée du $dateStr, statut $statusLabel, de '
+                              '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} à '
+                              '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}, '
+                              '${log.workedHours ?? 0} heures travaillées'
+                          : 'Journée du $dateStr, statut absent';
+
+                      return Semantics(
+                        label: semanticLabel,
+                        container: true,
+                        child: ListTile(
+                          leading: ExcludeSemantics(
+                            child: CircleAvatar(
+                              backgroundColor:
+                                  statusColor.withValues(alpha: 0.2),
+                              child: Icon(
+                                Icons.circle,
+                                color: statusColor,
+                                size: 12,
+                              ),
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
-                        ),
-                        subtitle: Text(
-                          log.checkIn != null
-                              ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                  '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
-                              : 'Absence',
-                        ),
-                        trailing: Text(
-                          '${log.workedHours ?? 0}h',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          title: ExcludeSemantics(
+                            child: Text(
+                              dateStr,
+                            ),
+                          ),
+                          subtitle: ExcludeSemantics(
+                            child: Text(
+                              log.checkIn != null
+                                  ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                  : 'Absence',
+                            ),
+                          ),
+                          trailing: ExcludeSemantics(
+                            child: Text(
+                              '${log.workedHours ?? 0}h',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
                       );
                     },

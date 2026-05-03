@@ -24,6 +24,7 @@
 
 - Mobile : parsing de `photo_url`, `hire_date`, `overtime_hours` et `late_minutes` aligne sur les payloads backend actuels.
 - Mobile : `AbsenceListScreen` gagne le pull-to-refresh, un meilleur etat vide scrollable et de petites ameliorations d'accessibilite.
+- Mobile : Amelioration de l'accessibilite de `HistoryScreen` par le regroupement des informations de pointage dans un label `Semantics` unique.
 
 ### Depot - Hygiene
 
