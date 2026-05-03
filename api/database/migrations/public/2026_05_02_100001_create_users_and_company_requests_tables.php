@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::dropIfExists('user_employee_links');
+        Schema::dropIfExists('company_requests');
+
         Schema::create('users', function (Blueprint $table): void {
             $table->id();
             $table->string('first_name');
