@@ -1,5 +1,5 @@
 # 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.85 | 2026-05-02
+# PROGRAM_VERSION = 4.1.86 | 2026-05-03
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
