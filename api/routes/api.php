@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
+use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/rh.php';
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
+    require __DIR__.'/modules/user.php';
 
     // Platform (super-admin, hors module)
     Route::middleware(['auth:super_admin_api'])->prefix('platform')->group(function (): void {
@@ -55,5 +57,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
+
+        Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
+        Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
+        Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
     });
 });
