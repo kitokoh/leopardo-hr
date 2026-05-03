@@ -1,9 +1,13 @@
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_rh/core/api/api_client.dart';
 import 'package:leopardo_rh/core/storage/app_preferences.dart';
 import 'package:leopardo_rh/models/employee.dart';
 import 'package:leopardo_rh/core/storage/secure_storage.dart';
 
 class AuthRepository {
+  final _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
   final ApiClient apiClient;
   final SecureStorage storage;
   final AppPreferences preferences;
@@ -35,6 +39,70 @@ class AuthRepository {
     } catch (_) {
       // Si /auth/me echoue on retombe sur la reponse de login.
     }
+
+    final employee = Employee.fromJson(employeeJson);
+    await _persistEmployeeContext(employee);
+
+    return {'employee': employee};
+  }
+
+  Future<Map<String, dynamic>> loginWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) {
+      throw Exception('Connexion Google annulée');
+    }
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final String? idToken = googleAuth.idToken;
+
+    if (idToken == null) {
+      throw Exception('Impossible de récupérer le token Google');
+    }
+
+    // On envoie le token au backend.
+    // Note: Le backend doit être capable de vérifier ce token.
+    // Pour simplifier l'intégration Socialite existante, on peut passer par une route
+    // qui accepte le token.
+    final response = await apiClient.dio.post(
+      '/auth/google/token',
+      data: {'token': idToken, 'device_name': 'Mobile App'},
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    final employeeJson = extractEmployeeJson(data);
+    final token = extractToken(data);
+
+    await storage.saveToken(token);
+
+    final employee = Employee.fromJson(employeeJson);
+    await _persistEmployeeContext(employee);
+
+    return {'employee': employee};
+  }
+
+  Future<Map<String, dynamic>> register({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+  }) async {
+    final response = await apiClient.dio.post(
+      '/auth/register',
+      data: {
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        'password': password,
+        'password_confirmation': password,
+        'device_name': 'Mobile App',
+      },
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    final employeeJson = extractEmployeeJson(data);
+    final token = extractToken(data);
+
+    await storage.saveToken(token);
 
     final employee = Employee.fromJson(employeeJson);
     await _persistEmployeeContext(employee);

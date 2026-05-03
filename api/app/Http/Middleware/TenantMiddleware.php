@@ -32,6 +32,9 @@ class TenantMiddleware
         $company = $employee->company;
 
         if (! $company) {
+            if ($employee->role === 'ordinary') {
+                return $next($request);
+            }
             if ($request->expectsJson() || $request->is('api/*')) {
                 return new JsonResponse(['error' => 'COMPANY_NOT_FOUND'], 403);
             }

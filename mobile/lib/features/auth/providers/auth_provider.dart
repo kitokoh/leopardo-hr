@@ -58,6 +58,44 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<bool> loginWithGoogle() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final data = await _repository.loginWithGoogle();
+      state = state.copyWith(isLoading: false, employee: data['employee']);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> register({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final data = await _repository.register(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+      );
+      state = state.copyWith(isLoading: false, employee: data['employee']);
+      return true;
+    } catch (e) {
+      if (e is ApiException) {
+        state = state.copyWith(isLoading: false, error: e.message);
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     await _repository.logout();
     state = AuthState(); // reset completely
