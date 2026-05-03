@@ -70,8 +70,8 @@ class AnnotationReaderTest extends TestCase
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
 
-        $this->assertStringContains('Crée un nouveau', $description);
-        $this->assertStringContains('employee', $description);
+        $this->assertStringContainsString('Crée un nouveau', $description);
+        $this->assertStringContainsString('employee', $description);
     }
 
     public function test_extracts_all_apifeature_attributes(): void

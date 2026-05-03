@@ -385,7 +385,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     /**
      * Construit une clé de cache avec préfixe et paramètres
      */
-    private function buildCacheKey(string ...$parts): string
+    private function buildCacheKey(?string ...$parts): string
     {
         return implode(':', array_filter($parts));
     }
