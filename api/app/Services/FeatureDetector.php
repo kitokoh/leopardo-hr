@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\FeatureDetectorInterface;
 use App\Models\Feature;
+use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -11,7 +12,7 @@ use Illuminate\Support\Str;
 
 /**
  * Implémentation du détecteur de fonctionnalités API
- * 
+ *
  * Utilise la reflection PHP et l'analyse des routes Laravel pour détecter
  * automatiquement les nouvelles fonctionnalités API et extraire leurs métadonnées.
  */
@@ -29,10 +30,10 @@ class FeatureDetector implements FeatureDetectorInterface
     public function detectNewFeatures(): Collection
     {
         Log::info('Starting feature detection process');
-        
+
         $routes = $this->scanRoutes();
         $newFeatures = collect();
-        
+
         // Récupérer les fonctionnalités déjà enregistrées
         $existingFeatures = [];
         try {
@@ -41,37 +42,37 @@ class FeatureDetector implements FeatureDetectorInterface
             Log::warning('Could not fetch existing features from database', ['error' => $e->getMessage()]);
             // Continuer sans les fonctionnalités existantes pour permettre le test
         }
-        
+
         foreach ($routes as $routeData) {
             try {
                 $featureKey = $this->generateFeatureKey($routeData);
-                
+
                 // Ignorer si la fonctionnalité existe déjà
                 if (in_array($featureKey, $existingFeatures)) {
                     continue;
                 }
-                
+
                 $metadata = $this->extractMetadata(
                     $routeData['controller_class'],
                     $routeData['method']
                 );
-                
+
                 if ($this->isValidFeature($metadata)) {
                     $featureData = $this->buildFeatureData($routeData, $metadata);
                     $newFeatures->push($featureData);
-                    
+
                     Log::info('New feature detected', ['key' => $featureKey]);
                 }
             } catch (\Exception $e) {
                 Log::warning('Failed to process route for feature detection', [
                     'route' => $routeData,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
-        
+
         Log::info('Feature detection completed', ['count' => $newFeatures->count()]);
-        
+
         return $newFeatures;
     }
 
@@ -83,10 +84,10 @@ class FeatureDetector implements FeatureDetectorInterface
         try {
             // Analyser la méthode avec reflection
             $methodInfo = $this->reflection->analyzeMethod($controllerClass, $method);
-            
+
             // Extraire les annotations
             $annotations = $this->annotations->extractMethodAnnotations($controllerClass, $method);
-            
+
             // Combiner les informations
             return [
                 'method_info' => $methodInfo,
@@ -105,9 +106,9 @@ class FeatureDetector implements FeatureDetectorInterface
             Log::error('Failed to extract metadata', [
                 'controller' => $controllerClass,
                 'method' => $method,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return [];
         }
     }
@@ -118,23 +119,23 @@ class FeatureDetector implements FeatureDetectorInterface
     public function scanRoutes(): Collection
     {
         $routes = collect();
-        
+
         foreach ($this->router->getRoutes() as $route) {
             // Filtrer uniquement les routes API
-            if (!$this->isApiRoute($route)) {
+            if (! $this->isApiRoute($route)) {
                 continue;
             }
-            
+
             $action = $route->getAction();
-            
+
             // Ignorer les routes sans contrôleur
-            if (!isset($action['controller'])) {
+            if (! isset($action['controller'])) {
                 continue;
             }
-            
+
             // Parser l'action du contrôleur
             $controllerAction = $action['controller'];
-            if (!str_contains($controllerAction, '@')) {
+            if (! str_contains($controllerAction, '@')) {
                 // Format moderne Laravel avec invokable ou array
                 if (is_string($controllerAction)) {
                     $controllerClass = $controllerAction;
@@ -145,12 +146,12 @@ class FeatureDetector implements FeatureDetectorInterface
             } else {
                 [$controllerClass, $method] = explode('@', $controllerAction);
             }
-            
+
             // Vérifier que c'est un contrôleur API valide
-            if (!$this->reflection->isApiController($controllerClass)) {
+            if (! $this->reflection->isApiController($controllerClass)) {
                 continue;
             }
-            
+
             $routes->push([
                 'uri' => $route->uri(),
                 'methods' => $route->methods(),
@@ -162,7 +163,7 @@ class FeatureDetector implements FeatureDetectorInterface
                 'where' => $route->wheres,
             ]);
         }
-        
+
         return $routes;
     }
 
@@ -172,35 +173,37 @@ class FeatureDetector implements FeatureDetectorInterface
     public function detectChanges(): Collection
     {
         $changes = collect();
-        
+
         try {
             $existingFeatures = Feature::all();
         } catch (\Exception $e) {
             Log::warning('Could not fetch existing features for change detection', ['error' => $e->getMessage()]);
+
             return $changes; // Retourner une collection vide si pas d'accès DB
         }
-        
+
         foreach ($existingFeatures as $feature) {
             try {
                 // Retrouver la route correspondante
                 $currentRoute = $this->findRouteByEndpoint($feature->endpoint);
-                
-                if (!$currentRoute) {
+
+                if (! $currentRoute) {
                     // La route n'existe plus
                     $changes->push([
                         'type' => 'removed',
                         'feature_key' => $feature->key,
                         'feature' => $feature,
                     ]);
+
                     continue;
                 }
-                
+
                 // Extraire les métadonnées actuelles
                 $currentMetadata = $this->extractMetadata(
                     $currentRoute['controller_class'],
                     $currentRoute['method']
                 );
-                
+
                 // Comparer avec les métadonnées enregistrées
                 if ($this->hasMetadataChanged($feature, $currentMetadata)) {
                     $changes->push([
@@ -213,58 +216,51 @@ class FeatureDetector implements FeatureDetectorInterface
             } catch (\Exception $e) {
                 Log::warning('Failed to detect changes for feature', [
                     'feature_key' => $feature->key,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
-        
+
         return $changes;
     }
 
     /**
      * Vérifie si une route est une route API
-     * 
-     * @param \Illuminate\Routing\Route $route
-     * @return bool
+     *
+     * @param  Route  $route
      */
     private function isApiRoute($route): bool
     {
         // Vérifier le préfixe de l'URI
-        if (!str_starts_with($route->uri(), 'api/')) {
+        if (! str_starts_with($route->uri(), 'api/')) {
             return false;
         }
-        
+
         // Vérifier les middlewares
         $middleware = $route->middleware();
-        if (!in_array('api', $middleware) && !in_array('throttle:api', $middleware)) {
+        if (! in_array('api', $middleware) && ! in_array('throttle:api', $middleware)) {
             return false;
         }
-        
+
         return true;
     }
 
     /**
      * Génère une clé unique pour une fonctionnalité
-     * 
-     * @param array $routeData
-     * @return string
      */
     protected function generateFeatureKey(array $routeData): string
     {
         $controller = class_basename($routeData['controller_class']);
         $method = $routeData['method'];
-        
+
         // Supprimer "Controller" du nom
         $controller = str_replace('Controller', '', $controller);
-        
-        return Str::snake($controller . '_' . $method);
+
+        return Str::snake($controller.'_'.$method);
     }
 
     /**
      * Vérifie si les métadonnées constituent une fonctionnalité valide
-     * 
-     * @param array $metadata
-     * @return bool
      */
     protected function isValidFeature(array $metadata): bool
     {
@@ -272,27 +268,23 @@ class FeatureDetector implements FeatureDetectorInterface
         if (empty($metadata['title']) || empty($metadata['method_info'])) {
             return false;
         }
-        
+
         // Vérifier que c'est compatible mobile (si spécifié)
-        if (isset($metadata['mobile_compatible']) && !$metadata['mobile_compatible']) {
+        if (isset($metadata['mobile_compatible']) && ! $metadata['mobile_compatible']) {
             return false;
         }
-        
+
         // Ignorer les méthodes de constructeur et magiques
         $methodName = $metadata['method_info']['name'] ?? '';
         if (str_starts_with($methodName, '__') && $methodName !== '__invoke') {
             return false;
         }
-        
+
         return true;
     }
 
     /**
      * Construit les données complètes d'une fonctionnalité
-     * 
-     * @param array $routeData
-     * @param array $metadata
-     * @return array
      */
     private function buildFeatureData(array $routeData, array $metadata): array
     {
@@ -300,8 +292,8 @@ class FeatureDetector implements FeatureDetectorInterface
             'key' => $this->generateFeatureKey($routeData),
             'title' => $metadata['title'],
             'description' => $metadata['description'],
-            'endpoint' => '/' . ltrim($routeData['uri'], '/'),
-            'http_methods' => array_filter($routeData['methods'], fn($method) => $method !== 'HEAD'),
+            'endpoint' => '/'.ltrim($routeData['uri'], '/'),
+            'http_methods' => array_filter($routeData['methods'], fn ($method) => $method !== 'HEAD'),
             'parameters' => $metadata['parameters'],
             'response_schema' => $metadata['response_schema'],
             'permissions' => $metadata['permissions'],
@@ -324,15 +316,11 @@ class FeatureDetector implements FeatureDetectorInterface
 
     /**
      * Infère les permissions requises basées sur le contrôleur et la méthode
-     * 
-     * @param string $controllerClass
-     * @param string $method
-     * @return array
      */
     private function inferPermissions(string $controllerClass, string $method): array
     {
         $resource = $this->extractResourceName($controllerClass);
-        
+
         $permissionMap = [
             'index' => ["{$resource}.view"],
             'show' => ["{$resource}.view"],
@@ -340,15 +328,12 @@ class FeatureDetector implements FeatureDetectorInterface
             'update' => ["{$resource}.update"],
             'destroy' => ["{$resource}.delete"],
         ];
-        
+
         return $permissionMap[$method] ?? ["{$resource}.manage"];
     }
 
     /**
      * Infère le type d'interface utilisateur basé sur la méthode
-     * 
-     * @param string $method
-     * @return string
      */
     private function inferUIType(string $method): string
     {
@@ -360,47 +345,40 @@ class FeatureDetector implements FeatureDetectorInterface
             'create' => 'form',
             'edit' => 'form',
         ];
-        
+
         return $uiTypeMap[$method] ?? 'generic';
     }
 
     /**
      * Extrait les paramètres de la méthode
-     * 
-     * @param array $methodInfo
-     * @return array
      */
     private function extractParameters(array $methodInfo): array
     {
         $parameters = [];
-        
+
         foreach ($methodInfo['parameters'] as $param) {
             // Ignorer les paramètres de type Request et Model
             if (in_array($param['type'], ['Illuminate\\Http\\Request', 'string', 'int'])) {
                 continue;
             }
-            
+
             $parameters[$param['name']] = [
                 'type' => $this->mapPhpTypeToApiType($param['type']),
-                'required' => !$param['is_optional'],
+                'required' => ! $param['is_optional'],
                 'description' => "Paramètre {$param['name']}",
             ];
         }
-        
+
         return $parameters;
     }
 
     /**
      * Infère le schéma de réponse basé sur le contrôleur
-     * 
-     * @param string $controllerClass
-     * @param string $method
-     * @return array
      */
     private function inferResponseSchema(string $controllerClass, string $method): array
     {
         $resource = $this->extractResourceName($controllerClass);
-        
+
         // Schémas de base selon le type de méthode
         $schemas = [
             'index' => [
@@ -419,15 +397,12 @@ class FeatureDetector implements FeatureDetectorInterface
                 'message' => ['type' => 'string'],
             ],
         ];
-        
+
         return $schemas[$method] ?? ['data' => ['type' => 'object']];
     }
 
     /**
      * Mappe un type PHP vers un type API
-     * 
-     * @param string|null $phpType
-     * @return string
      */
     private function mapPhpTypeToApiType(?string $phpType): string
     {
@@ -440,29 +415,23 @@ class FeatureDetector implements FeatureDetectorInterface
             'boolean' => 'boolean',
             'array' => 'array',
         ];
-        
+
         return $typeMap[$phpType] ?? 'string';
     }
 
     /**
      * Extrait le nom de la ressource depuis le contrôleur
-     * 
-     * @param string $controllerClass
-     * @return string
      */
     private function extractResourceName(string $controllerClass): string
     {
         $shortName = class_basename($controllerClass);
         $resource = str_replace('Controller', '', $shortName);
-        
+
         return Str::snake(Str::plural($resource));
     }
 
     /**
      * Extrait la version de l'API depuis l'URI
-     * 
-     * @param string $uri
-     * @return string
      */
     private function extractApiVersionFromUri(string $uri): string
     {
@@ -470,59 +439,48 @@ class FeatureDetector implements FeatureDetectorInterface
         if (preg_match('/api\/(v\d+)\//', $uri, $matches)) {
             return $matches[1];
         }
-        
+
         return 'v1'; // Version par défaut
     }
 
     /**
      * Trouve une route par son endpoint
-     * 
-     * @param string $endpoint
-     * @return array|null
      */
     private function findRouteByEndpoint(string $endpoint): ?array
     {
         $routes = $this->scanRoutes();
-        
+
         return $routes->first(function ($route) use ($endpoint) {
-            return '/' . ltrim($route['uri'], '/') === $endpoint;
+            return '/'.ltrim($route['uri'], '/') === $endpoint;
         });
     }
 
     /**
      * Vérifie si les métadonnées d'une fonctionnalité ont changé
-     * 
-     * @param Feature $feature
-     * @param array $currentMetadata
-     * @return bool
      */
     private function hasMetadataChanged(Feature $feature, array $currentMetadata): bool
     {
         // Comparer les champs critiques
         $criticalFields = ['title', 'description', 'permissions'];
-        
+
         foreach ($criticalFields as $field) {
             $currentValue = $currentMetadata[$field] ?? null;
             $storedValue = $feature->$field ?? null;
-            
+
             if ($currentValue !== $storedValue) {
                 return true;
             }
         }
-        
+
         // Comparer la signature de la méthode
         $currentSignature = $currentMetadata['method_info']['signature'] ?? '';
         $storedSignature = $feature->metadata['method_signature'] ?? '';
-        
+
         return $currentSignature !== $storedSignature;
     }
 
     /**
      * Génère le schéma de formulaire pour une méthode
-     * 
-     * @param string $controllerClass
-     * @param string $method
-     * @return array
      */
     private function generateFormSchema(string $controllerClass, string $method): array
     {
@@ -534,7 +492,7 @@ class FeatureDetector implements FeatureDetectorInterface
         // Ajouter des champs selon le type de méthode
         if (in_array($method, ['store', 'update', 'create', 'edit'])) {
             $resource = $this->extractResourceName($controllerClass);
-            
+
             // Champs de base génériques
             $baseSchema['fields'] = [
                 [
@@ -564,10 +522,6 @@ class FeatureDetector implements FeatureDetectorInterface
 
     /**
      * Génère le schéma de liste pour une méthode
-     * 
-     * @param string $controllerClass
-     * @param string $method
-     * @return array
      */
     private function generateListSchema(string $controllerClass, string $method): array
     {

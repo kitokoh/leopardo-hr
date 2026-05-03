@@ -12,7 +12,7 @@ class AnnotationReaderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->annotationReader = new AnnotationReader();
+        $this->annotationReader = new AnnotationReader;
     }
 
     public function test_can_extract_method_annotations(): void
@@ -22,7 +22,7 @@ class AnnotationReaderTest extends TestCase
             'App\Http\Controllers\Api\V1\EmployeeController',
             'index'
         );
-        
+
         $this->assertIsArray($annotations);
         $this->assertArrayHasKey('title', $annotations);
         $this->assertArrayHasKey('description', $annotations);
@@ -31,7 +31,7 @@ class AnnotationReaderTest extends TestCase
         $this->assertArrayHasKey('mobile_compatible', $annotations);
         $this->assertArrayHasKey('form_schema', $annotations);
         $this->assertArrayHasKey('list_schema', $annotations);
-        
+
         // Vérifier les valeurs extraites des attributs
         $this->assertEquals('Liste des Employés', $annotations['title']);
         $this->assertEquals('list', $annotations['ui_type']);
@@ -43,13 +43,13 @@ class AnnotationReaderTest extends TestCase
     {
         $title = $this->annotationReader->generateTitleFromMethod('index');
         $this->assertEquals('Liste des éléments', $title);
-        
+
         $title = $this->annotationReader->generateTitleFromMethod('show');
         $this->assertEquals('Afficher un élément', $title);
-        
+
         $title = $this->annotationReader->generateTitleFromMethod('store');
         $this->assertEquals('Créer un nouvel élément', $title);
-        
+
         // Test avec une méthode personnalisée
         $title = $this->annotationReader->generateTitleFromMethod('getUserProfile');
         $this->assertEquals('Get User Profile', $title);
@@ -61,15 +61,15 @@ class AnnotationReaderTest extends TestCase
             'index',
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
-        
+
         $this->assertStringContainsString('Récupère la liste', $description);
         $this->assertStringContainsString('employee', $description);
-        
+
         $description = $this->annotationReader->generateDescriptionFromMethod(
             'store',
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
-        
+
         $this->assertStringContains('Crée un nouveau', $description);
         $this->assertStringContains('employee', $description);
     }
@@ -80,13 +80,13 @@ class AnnotationReaderTest extends TestCase
             'App\Http\Controllers\Api\V1\EmployeeController',
             'index'
         );
-        
+
         // Vérifier que tous les champs de ApiFeature sont extraits
         $this->assertArrayHasKey('mobile_version_min', $annotations);
         $this->assertArrayHasKey('mobile_version_max', $annotations);
         $this->assertArrayHasKey('form_schema', $annotations);
         $this->assertArrayHasKey('list_schema', $annotations);
-        
+
         // Ces champs doivent être des tableaux même s'ils sont vides
         $this->assertIsArray($annotations['form_schema']);
         $this->assertIsArray($annotations['list_schema']);
@@ -96,13 +96,13 @@ class AnnotationReaderTest extends TestCase
     {
         // Cette méthode teste la gestion des différents formats de permissions
         // mais nécessiterait un contrôleur de test avec différents formats
-        
+
         // Pour l'instant, on teste juste que les permissions sont bien des tableaux
         $annotations = $this->annotationReader->extractMethodAnnotations(
             'App\Http\Controllers\Api\V1\EmployeeController',
             'index'
         );
-        
+
         $this->assertIsArray($annotations['permissions']);
         $this->assertNotEmpty($annotations['permissions']);
     }
@@ -113,7 +113,7 @@ class AnnotationReaderTest extends TestCase
             'App\Http\Controllers\Api\V1\EmployeeController',
             'nonExistentMethod'
         );
-        
+
         $this->assertIsArray($annotations);
         $this->assertEmpty($annotations);
     }
@@ -124,7 +124,7 @@ class AnnotationReaderTest extends TestCase
             'NonExistentClass',
             'index'
         );
-        
+
         $this->assertIsArray($annotations);
         $this->assertEmpty($annotations);
     }
