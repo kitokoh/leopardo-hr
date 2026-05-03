@@ -145,7 +145,7 @@ class FeatureUnitTest extends TestCase
 
     public function test_model_uses_correct_table_name()
     {
-        $feature = new Feature;
+        $feature = new Feature();
 
         $this->assertEquals('features', $feature->getTable());
     }
