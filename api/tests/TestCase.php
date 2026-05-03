@@ -24,11 +24,11 @@ abstract class TestCase extends BaseTestCase
 
     private function resetTestSearchPath(): void
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            return;
-        }
+        $driver = DB::getDriverName();
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if ($driver === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
     }
 
     private function configureTestingDatabaseConnection(): void
