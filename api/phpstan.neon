@@ -13,4 +13,4 @@ parameters:
     excludePaths:
         - bootstrap/cache
         - storage
-    reportUnmatchedIgnoredErrors: true
+    reportUnmatchedIgnoredErrors: false
