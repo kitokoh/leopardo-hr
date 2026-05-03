@@ -66,7 +66,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
 
 ## Phase 2: Design System & Composants de Base (10 tasks)
 
-- [ ] 2.1 Créer composants de base (Button, Card, Badge)
+- [-] 2.1 Créer composants de base (Button, Card, Badge)
   - Implémenter composant `Button` avec variants (primary, secondary, outline, ghost)
   - Implémenter composant `Card` avec variants (default, elevated, outlined)
   - Implémenter composant `Badge` avec variants (primary, secondary, success, warning, error)

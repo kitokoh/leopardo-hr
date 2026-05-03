@@ -1,10 +1,11 @@
-export { Navbar } from './components/Navbar';
-export { HeroSection } from './components/HeroSection';
-export { FeaturesSection } from './components/FeaturesSection';
-export { DemoSection } from './components/DemoSection';
-export { PricingSection } from './components/PricingSection';
-export { TestimonialsSection } from './components/TestimonialsSection';
-export { FaqSection } from './components/FaqSection';
-export { CTASection } from './components/CTASection';
-export { Footer } from './components/Footer';
-export { useScrollReveal } from './hooks/useScrollReveal';
+// Components
+export * from './components';
+
+// Hooks
+export * from './hooks';
+
+// Lib
+export * from './lib';
+
+// Types
+export * from './types';
