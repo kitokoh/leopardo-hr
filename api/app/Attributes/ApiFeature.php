@@ -6,7 +6,7 @@ use Attribute;
 
 /**
  * Attribut pour marquer et configurer une fonctionnalité API
- * 
+ *
  * Cet attribut permet de définir les métadonnées d'une fonctionnalité API
  * directement dans le code du contrôleur.
  */

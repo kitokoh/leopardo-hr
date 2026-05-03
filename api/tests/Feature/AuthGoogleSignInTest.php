@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Employee;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Socialite\Facades\Socialite;
 use Tests\TestCase;
 
@@ -15,8 +16,8 @@ class AuthGoogleSignInTest extends TestCase
     {
         parent::setUp();
 
-        if (\Illuminate\Support\Facades\DB::getDriverName() === 'sqlite') {
-            \Illuminate\Support\Facades\Schema::create('employees', function ($table) {
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::create('employees', function ($table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable();
                 $table->string('first_name');
@@ -28,7 +29,7 @@ class AuthGoogleSignInTest extends TestCase
                 $table->timestamps();
             });
 
-             \Illuminate\Support\Facades\Schema::create('personal_access_tokens', function ($table) {
+            Schema::create('personal_access_tokens', function ($table) {
                 $table->id();
                 $table->morphs('tokenable');
                 $table->string('name');

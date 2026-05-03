@@ -123,7 +123,7 @@ class SalaryAdvanceSecurityTest extends TestCase
 
         $response = $this->actingAs($managerA, 'sanctum')
             ->putJson("/api/v1/salary-advances/{$advanceB->id}/approve", [
-                'repayment_months' => 3
+                'repayment_months' => 3,
             ]);
 
         $response->assertStatus(404);
@@ -177,7 +177,7 @@ class SalaryAdvanceSecurityTest extends TestCase
 
         $response = $this->actingAs($employee, 'sanctum')
             ->putJson("/api/v1/salary-advances/{$advance->id}/approve", [
-                'repayment_months' => 3
+                'repayment_months' => 3,
             ]);
 
         $response->assertStatus(403);

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Commande Artisan pour gérer le registre des fonctionnalités
- * 
+ *
  * Fournit des commandes pour synchroniser, afficher et gérer
  * le registre des fonctionnalités API.
  */
@@ -34,9 +34,6 @@ class FeatureRegistryCommand extends Command
 
     /**
      * Exécute la commande
-     *
-     * @param FeatureRegistryInterface $registry
-     * @return int
      */
     public function handle(FeatureRegistryInterface $registry): int
     {
@@ -58,24 +55,23 @@ class FeatureRegistryCommand extends Command
 
                 default:
                     $this->error("Action inconnue: {$action}");
-                    $this->info("Actions disponibles: sync, list, stats, clear-cache");
+                    $this->info('Actions disponibles: sync, list, stats, clear-cache');
+
                     return Command::FAILURE;
             }
         } catch (\Exception $e) {
             $this->error("Erreur lors de l'exécution: {$e->getMessage()}");
             Log::error('Feature registry command failed', [
                 'action' => $action,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return Command::FAILURE;
         }
     }
 
     /**
      * Gère la synchronisation du registre
-     *
-     * @param FeatureRegistryInterface $registry
-     * @return int
      */
     private function handleSync(FeatureRegistryInterface $registry): int
     {
@@ -83,13 +79,13 @@ class FeatureRegistryCommand extends Command
 
         $result = $registry->synchronize();
 
-        $this->info("Synchronisation terminée:");
+        $this->info('Synchronisation terminée:');
         $this->line("  - Nouvelles fonctionnalités: {$result['new']}");
         $this->line("  - Fonctionnalités mises à jour: {$result['updated']}");
         $this->line("  - Fonctionnalités supprimées: {$result['removed']}");
 
-        if (!empty($result['errors'])) {
-            $this->warn("Erreurs rencontrées:");
+        if (! empty($result['errors'])) {
+            $this->warn('Erreurs rencontrées:');
             foreach ($result['errors'] as $error) {
                 $this->line("  - {$error}");
             }
@@ -100,9 +96,6 @@ class FeatureRegistryCommand extends Command
 
     /**
      * Gère l'affichage de la liste des fonctionnalités
-     *
-     * @param FeatureRegistryInterface $registry
-     * @return int
      */
     private function handleList(FeatureRegistryInterface $registry): int
     {
@@ -115,12 +108,13 @@ class FeatureRegistryCommand extends Command
             $this->info("Fonctionnalités compatibles avec la version mobile {$mobileVersion}:");
         } else {
             $features = $registry->getFeatures($version);
-            $title = $version ? "Fonctionnalités pour l'API {$version}:" : "Toutes les fonctionnalités:";
+            $title = $version ? "Fonctionnalités pour l'API {$version}:" : 'Toutes les fonctionnalités:';
             $this->info($title);
         }
 
         if ($features->isEmpty()) {
             $this->warn('Aucune fonctionnalité trouvée.');
+
             return Command::SUCCESS;
         }
 
@@ -147,9 +141,6 @@ class FeatureRegistryCommand extends Command
 
     /**
      * Gère l'affichage des statistiques
-     *
-     * @param FeatureRegistryInterface $registry
-     * @return int
      */
     private function handleStats(FeatureRegistryInterface $registry): int
     {
@@ -165,14 +156,14 @@ class FeatureRegistryCommand extends Command
             $this->line("  Fonctionnalités inactives: {$stats['inactive_features']}");
             $this->line("  Mises à jour récentes (7 jours): {$stats['recently_updated']}");
 
-            if (!empty($stats['by_api_version'])) {
+            if (! empty($stats['by_api_version'])) {
                 $this->line("\nPar version API:");
                 foreach ($stats['by_api_version'] as $version => $count) {
                     $this->line("  - {$version}: {$count}");
                 }
             }
 
-            if (!empty($stats['by_status'])) {
+            if (! empty($stats['by_status'])) {
                 $this->line("\nPar statut:");
                 foreach ($stats['by_status'] as $status => $count) {
                     $this->line("  - {$status}: {$count}");
@@ -182,8 +173,8 @@ class FeatureRegistryCommand extends Command
             $this->line("\nCache:");
             $cacheStatus = $stats['cache_status'];
             $this->line("  - Driver: {$cacheStatus['cache_driver']}");
-            $this->line("  - Manifeste en cache: " . ($cacheStatus['manifest_cached'] ? 'Oui' : 'Non'));
-            $this->line("  - Fonctionnalités en cache: " . ($cacheStatus['features_cached'] ? 'Oui' : 'Non'));
+            $this->line('  - Manifeste en cache: '.($cacheStatus['manifest_cached'] ? 'Oui' : 'Non'));
+            $this->line('  - Fonctionnalités en cache: '.($cacheStatus['features_cached'] ? 'Oui' : 'Non'));
 
             if ($stats['last_synchronization']) {
                 $this->line("\nDernière synchronisation: {$stats['last_synchronization']}");
@@ -195,9 +186,6 @@ class FeatureRegistryCommand extends Command
 
     /**
      * Gère la suppression du cache
-     *
-     * @param FeatureRegistryInterface $registry
-     * @return int
      */
     private function handleClearCache(FeatureRegistryInterface $registry): int
     {

@@ -4,27 +4,32 @@ namespace App\Services;
 
 use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
+use App\Exceptions\FeatureSynchronizationException;
 use App\Models\Feature;
+use Carbon\Carbon;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 /**
  * Implémentation du registre centralisé des fonctionnalités API
- * 
+ *
  * Maintient un inventaire complet de toutes les fonctionnalités API disponibles
  * avec système de cache intelligent et support du versioning.
  */
 class FeatureRegistry implements FeatureRegistryInterface
 {
     private const CACHE_PREFIX = 'feature_registry';
+
     private const CACHE_TTL = 3600; // 1 heure
-    private const MANIFEST_CACHE_KEY = self::CACHE_PREFIX . ':manifest';
-    private const FEATURES_CACHE_KEY = self::CACHE_PREFIX . ':features';
-    private const STATISTICS_CACHE_KEY = self::CACHE_PREFIX . ':statistics';
+
+    private const MANIFEST_CACHE_KEY = self::CACHE_PREFIX.':manifest';
+
+    private const FEATURES_CACHE_KEY = self::CACHE_PREFIX.':features';
+
+    private const STATISTICS_CACHE_KEY = self::CACHE_PREFIX.':statistics';
 
     public function __construct(
         private readonly FeatureDetectorInterface $detector,
@@ -41,7 +46,7 @@ class FeatureRegistry implements FeatureRegistryInterface
 
             // Vérifier si la fonctionnalité existe déjà
             $existingFeature = Feature::where('key', $feature->key)->first();
-            
+
             if ($existingFeature) {
                 // Mettre à jour la fonctionnalité existante
                 $existingFeature->update($feature->toArray());
@@ -61,9 +66,9 @@ class FeatureRegistry implements FeatureRegistryInterface
             DB::rollBack();
             Log::error('Failed to register feature', [
                 'key' => $feature->key,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            throw new \App\Exceptions\FeatureSynchronizationException(
+            throw new FeatureSynchronizationException(
                 "Failed to register feature {$feature->key}: {$e->getMessage()}"
             );
         }
@@ -87,7 +92,7 @@ class FeatureRegistry implements FeatureRegistryInterface
 
             Log::debug('Features retrieved from database', [
                 'count' => $features->count(),
-                'version' => $version
+                'version' => $version,
             ]);
 
             return $features;
@@ -115,13 +120,13 @@ class FeatureRegistry implements FeatureRegistryInterface
             DB::beginTransaction();
 
             $feature = Feature::where('key', $key)->firstOrFail();
-            
+
             // Fusionner les nouvelles métadonnées avec les existantes
             $updatedMetadata = array_merge($feature->metadata ?? [], $metadata);
-            
+
             $feature->update([
                 'metadata' => $updatedMetadata,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
             DB::commit();
@@ -134,16 +139,16 @@ class FeatureRegistry implements FeatureRegistryInterface
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             Log::warning('Attempted to update non-existent feature', ['key' => $key]);
-            throw new \App\Exceptions\FeatureSynchronizationException(
+            throw new FeatureSynchronizationException(
                 "Feature {$key} not found for update"
             );
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update feature', [
                 'key' => $key,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            throw new \App\Exceptions\FeatureSynchronizationException(
+            throw new FeatureSynchronizationException(
                 "Failed to update feature {$key}: {$e->getMessage()}"
             );
         }
@@ -174,9 +179,9 @@ class FeatureRegistry implements FeatureRegistryInterface
             DB::rollBack();
             Log::error('Failed to remove feature', [
                 'key' => $key,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            throw new \App\Exceptions\FeatureSynchronizationException(
+            throw new FeatureSynchronizationException(
                 "Failed to remove feature {$key}: {$e->getMessage()}"
             );
         }
@@ -198,12 +203,12 @@ class FeatureRegistry implements FeatureRegistryInterface
                 'mobile_version_min' => $this->getMinimumMobileVersion(),
                 'mobile_version_target' => $mobileVersion,
                 'total_features' => $features->count(),
-                'features' => $features->map(fn(Feature $feature) => $feature->toManifestArray())->toArray(),
+                'features' => $features->map(fn (Feature $feature) => $feature->toManifestArray())->toArray(),
             ];
 
             Log::info('Manifest generated', [
                 'mobile_version' => $mobileVersion,
-                'feature_count' => $features->count()
+                'feature_count' => $features->count(),
             ]);
 
             return $manifest;
@@ -254,9 +259,9 @@ class FeatureRegistry implements FeatureRegistryInterface
         } else {
             // Invalider tout le cache du registre
             $patterns = [
-                self::MANIFEST_CACHE_KEY . '*',
-                self::FEATURES_CACHE_KEY . '*',
-                self::STATISTICS_CACHE_KEY . '*',
+                self::MANIFEST_CACHE_KEY.'*',
+                self::FEATURES_CACHE_KEY.'*',
+                self::STATISTICS_CACHE_KEY.'*',
             ];
         }
 
@@ -286,7 +291,7 @@ class FeatureRegistry implements FeatureRegistryInterface
                 'new' => 0,
                 'updated' => 0,
                 'removed' => 0,
-                'errors' => []
+                'errors' => [],
             ];
 
             // Détecter les nouvelles fonctionnalités
@@ -336,7 +341,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Feature registry synchronization failed', ['error' => $e->getMessage()]);
-            throw new \App\Exceptions\FeatureSynchronizationException(
+            throw new FeatureSynchronizationException(
                 "Synchronization failed: {$e->getMessage()}"
             );
         }
@@ -350,7 +355,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         return $this->cache->remember(self::STATISTICS_CACHE_KEY, self::CACHE_TTL, function () {
             $totalFeatures = Feature::count();
             $activeFeatures = Feature::active()->count();
-            
+
             $byApiVersion = Feature::select('api_version', DB::raw('count(*) as count'))
                 ->groupBy('api_version')
                 ->pluck('count', 'api_version')
@@ -379,9 +384,6 @@ class FeatureRegistry implements FeatureRegistryInterface
 
     /**
      * Construit une clé de cache avec préfixe et paramètres
-     * 
-     * @param string ...$parts
-     * @return string
      */
     private function buildCacheKey(string ...$parts): string
     {
@@ -390,8 +392,6 @@ class FeatureRegistry implements FeatureRegistryInterface
 
     /**
      * Récupère la version actuelle de l'API
-     * 
-     * @return string
      */
     private function getCurrentApiVersion(): string
     {
@@ -400,8 +400,6 @@ class FeatureRegistry implements FeatureRegistryInterface
 
     /**
      * Récupère la version mobile minimale supportée
-     * 
-     * @return string
      */
     private function getMinimumMobileVersion(): string
     {
@@ -410,25 +408,22 @@ class FeatureRegistry implements FeatureRegistryInterface
 
     /**
      * Récupère l'heure de la dernière synchronisation
-     * 
-     * @return string|null
      */
     private function getLastSynchronizationTime(): ?string
     {
-        $lastSync = $this->cache->get(self::CACHE_PREFIX . ':last_sync');
+        $lastSync = $this->cache->get(self::CACHE_PREFIX.':last_sync');
+
         return $lastSync ? Carbon::parse($lastSync)->toISOString() : null;
     }
 
     /**
      * Récupère le statut du cache
-     * 
-     * @return array
      */
     private function getCacheStatus(): array
     {
         $manifestCached = $this->cache->has(self::MANIFEST_CACHE_KEY);
         $featuresCached = $this->cache->has(self::FEATURES_CACHE_KEY);
-        
+
         return [
             'manifest_cached' => $manifestCached,
             'features_cached' => $featuresCached,
