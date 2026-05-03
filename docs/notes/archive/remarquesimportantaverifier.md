@@ -1,3 +1,16 @@
+# 📦 FICHIER HISTORIQUE (PHASE 0) - REMPLACE PAR PILOTAGE.md
+# PROGRAM_VERSION DE REFERENCE: 4.1.85
+# Date de gel: 02 Mai 2026
+
+Ce document est conserve pour tracabilite uniquement.
+Ne pas l'utiliser pour piloter l'execution.
+
+Source de verite active:
+- `../../../PILOTAGE.md`
+- `../../README.md`
+
+---
+
 🔍 ANALYSE DE FOND — LEOPARDO RH
 Après lecture complète de tous les fichiers clés, voici le rapport complet.
 
