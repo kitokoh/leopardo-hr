@@ -148,8 +148,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-});
+      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+    });
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
   ref,

@@ -93,9 +93,10 @@ class SettingsRepository {
       if (faceImage != null)
         'face_image': await MultipartFile.fromFile(
           faceImage.path,
-          filename: faceImage.uri.pathSegments.isNotEmpty
-              ? faceImage.uri.pathSegments.last
-              : 'face.jpg',
+          filename:
+              faceImage.uri.pathSegments.isNotEmpty
+                  ? faceImage.uri.pathSegments.last
+                  : 'face.jpg',
         ),
     });
 

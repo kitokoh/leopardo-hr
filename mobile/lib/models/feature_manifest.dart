@@ -21,7 +21,7 @@ class FeatureManifest {
     required this.features,
   });
 
-  factory FeatureManifest.fromJson(Map<String, dynamic> json) => 
+  factory FeatureManifest.fromJson(Map<String, dynamic> json) =>
       _$FeatureManifestFromJson(json);
 
   Map<String, dynamic> toJson() => _$FeatureManifestToJson(this);
@@ -53,9 +53,11 @@ class FeatureManifest {
     List<String> userPermissions,
   ) {
     return features
-        .where((feature) => 
-            feature.isCompatibleWith(mobileVersion) &&
-            feature.hasRequiredPermissions(userPermissions))
+        .where(
+          (feature) =>
+              feature.isCompatibleWith(mobileVersion) &&
+              feature.hasRequiredPermissions(userPermissions),
+        )
         .toList();
   }
 
@@ -64,20 +66,17 @@ class FeatureManifest {
     final currentKeys = features.map((f) => f.key).toSet();
     final otherKeys = other.features.map((f) => f.key).toSet();
 
-    final newFeatures = other.features
-        .where((f) => !currentKeys.contains(f.key))
-        .toList();
+    final newFeatures =
+        other.features.where((f) => !currentKeys.contains(f.key)).toList();
 
-    final removedFeatures = features
-        .where((f) => !otherKeys.contains(f.key))
-        .toList();
+    final removedFeatures =
+        features.where((f) => !otherKeys.contains(f.key)).toList();
 
     final modifiedFeatures = <Feature>[];
     for (final otherFeature in other.features) {
-      final currentFeature = features
-          .where((f) => f.key == otherFeature.key)
-          .firstOrNull;
-      
+      final currentFeature =
+          features.where((f) => f.key == otherFeature.key).firstOrNull;
+
       if (currentFeature != null && currentFeature != otherFeature) {
         modifiedFeatures.add(otherFeature);
       }
@@ -107,7 +106,7 @@ class FeatureManifest {
   int get hashCode => version.hashCode ^ signature.hashCode;
 
   @override
-  String toString() => 
+  String toString() =>
       'FeatureManifest(version: $version, features: ${features.length})';
 }
 
@@ -124,23 +123,23 @@ class ManifestDiff {
     required this.modifiedFeatures,
   });
 
-  factory ManifestDiff.fromJson(Map<String, dynamic> json) => 
+  factory ManifestDiff.fromJson(Map<String, dynamic> json) =>
       _$ManifestDiffFromJson(json);
 
   Map<String, dynamic> toJson() => _$ManifestDiffToJson(this);
 
   /// Vérifie s'il y a des changements
-  bool get hasChanges => 
-      newFeatures.isNotEmpty || 
-      removedFeatures.isNotEmpty || 
+  bool get hasChanges =>
+      newFeatures.isNotEmpty ||
+      removedFeatures.isNotEmpty ||
       modifiedFeatures.isNotEmpty;
 
   /// Nombre total de changements
-  int get totalChanges => 
+  int get totalChanges =>
       newFeatures.length + removedFeatures.length + modifiedFeatures.length;
 
   @override
-  String toString() => 
+  String toString() =>
       'ManifestDiff(new: ${newFeatures.length}, '
       'removed: ${removedFeatures.length}, '
       'modified: ${modifiedFeatures.length})';

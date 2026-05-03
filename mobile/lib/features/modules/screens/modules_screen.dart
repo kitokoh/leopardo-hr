@@ -86,12 +86,13 @@ class _EvaluationsTab extends ConsumerWidget {
       onRefresh: () async => ref.refresh(evaluationsProvider.future),
       child: asyncValue.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ListView(
-          children: [
-            const SizedBox(height: 80),
-            Center(child: Text('Erreur : $error')),
-          ],
-        ),
+        error:
+            (error, _) => ListView(
+              children: [
+                const SizedBox(height: 80),
+                Center(child: Text('Erreur : $error')),
+              ],
+            ),
         data: (items) {
           if (items.isEmpty) {
             return ListView(
@@ -156,64 +157,65 @@ class _EvaluationsTab extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isManager && evaluation.status == 'draft')
-                ListTile(
-                  leading: const Icon(Icons.send_outlined),
-                  title: const Text('Soumettre'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await _runAction(
-                      context,
-                      ref,
-                      () => ref
-                          .read(modulesRepositoryProvider)
-                          .submitEvaluation(evaluation.id),
-                      successMessage: 'Evaluation soumise.',
-                    );
-                  },
-                ),
-              if (isManager && evaluation.status == 'draft')
-                ListTile(
-                  leading: const Icon(Icons.delete_outline),
-                  title: const Text('Supprimer'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await _runAction(
-                      context,
-                      ref,
-                      () => ref
-                          .read(modulesRepositoryProvider)
-                          .deleteEvaluation(evaluation.id),
-                      successMessage: 'Evaluation supprimee.',
-                    );
-                  },
-                ),
-              if (!isManager && evaluation.status == 'submitted')
-                ListTile(
-                  leading: const Icon(Icons.verified_outlined),
-                  title: const Text('Accuser reception'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await _runAction(
-                      context,
-                      ref,
-                      () => ref
-                          .read(modulesRepositoryProvider)
-                          .acknowledgeEvaluation(evaluation.id),
-                      successMessage: 'Evaluation accusee reception.',
-                    );
-                  },
-                ),
-            ],
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isManager && evaluation.status == 'draft')
+                    ListTile(
+                      leading: const Icon(Icons.send_outlined),
+                      title: const Text('Soumettre'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        await _runAction(
+                          context,
+                          ref,
+                          () => ref
+                              .read(modulesRepositoryProvider)
+                              .submitEvaluation(evaluation.id),
+                          successMessage: 'Evaluation soumise.',
+                        );
+                      },
+                    ),
+                  if (isManager && evaluation.status == 'draft')
+                    ListTile(
+                      leading: const Icon(Icons.delete_outline),
+                      title: const Text('Supprimer'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        await _runAction(
+                          context,
+                          ref,
+                          () => ref
+                              .read(modulesRepositoryProvider)
+                              .deleteEvaluation(evaluation.id),
+                          successMessage: 'Evaluation supprimee.',
+                        );
+                      },
+                    ),
+                  if (!isManager && evaluation.status == 'submitted')
+                    ListTile(
+                      leading: const Icon(Icons.verified_outlined),
+                      title: const Text('Accuser reception'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        await _runAction(
+                          context,
+                          ref,
+                          () => ref
+                              .read(modulesRepositoryProvider)
+                              .acknowledgeEvaluation(evaluation.id),
+                          successMessage: 'Evaluation accusee reception.',
+                        );
+                      },
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -254,9 +256,10 @@ class _EvaluationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final person = isManager
-        ? item.employee?.fullName ?? 'Collaborateur'
-        : item.evaluator?.fullName ?? 'Manager';
+    final person =
+        isManager
+            ? item.employee?.fullName ?? 'Collaborateur'
+            : item.evaluator?.fullName ?? 'Manager';
     final score = item.score != null ? item.score!.toStringAsFixed(1) : '-';
 
     return Card(
@@ -297,11 +300,11 @@ class _EvaluationCard extends StatelessWidget {
   }
 
   String _label(String status) => switch (status) {
-        'draft' => 'Brouillon',
-        'submitted' => 'Soumise',
-        'acknowledged' => 'Lue',
-        _ => status,
-      };
+    'draft' => 'Brouillon',
+    'submitted' => 'Soumise',
+    'acknowledged' => 'Lue',
+    _ => status,
+  };
 }
 
 class _SalaryAdvancesTab extends ConsumerWidget {
@@ -317,12 +320,13 @@ class _SalaryAdvancesTab extends ConsumerWidget {
       onRefresh: () async => ref.refresh(salaryAdvancesProvider.future),
       child: asyncValue.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ListView(
-          children: [
-            const SizedBox(height: 80),
-            Center(child: Text('Erreur : $error')),
-          ],
-        ),
+        error:
+            (error, _) => ListView(
+              children: [
+                const SizedBox(height: 80),
+                Center(child: Text('Erreur : $error')),
+              ],
+            ),
         data: (items) {
           return ListView.separated(
             padding: const EdgeInsets.all(20),
@@ -372,8 +376,8 @@ class _SalaryAdvancesTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       IconButton(
-                        onPressed: () =>
-                            _showAdvanceActions(context, ref, item),
+                        onPressed:
+                            () => _showAdvanceActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
                       ),
                     ],
@@ -402,79 +406,82 @@ class _SalaryAdvancesTab extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isManager && item.status == 'pending')
-                ListTile(
-                  leading: const Icon(Icons.check_circle_outline),
-                  title: const Text('Approuver'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await _decisionDialog(
-                      context,
-                      title: 'Approuver cette avance',
-                      onSubmit: (comment) => ref
-                          .read(modulesRepositoryProvider)
-                          .approveSalaryAdvance(
-                            item.id,
-                            decisionComment: comment,
-                          ),
-                      ref: ref,
-                    );
-                  },
-                ),
-              if (isManager && item.status == 'pending')
-                ListTile(
-                  leading: const Icon(Icons.highlight_off),
-                  title: const Text('Rejeter'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await _decisionDialog(
-                      context,
-                      title: 'Rejeter cette avance',
-                      onSubmit: (comment) => ref
-                          .read(modulesRepositoryProvider)
-                          .rejectSalaryAdvance(
-                            item.id,
-                            decisionComment: comment,
-                          ),
-                      ref: ref,
-                    );
-                  },
-                ),
-              if (!isManager && item.status == 'pending')
-                ListTile(
-                  leading: const Icon(Icons.cancel_outlined),
-                  title: const Text('Annuler ma demande'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    try {
-                      await ref
-                          .read(modulesRepositoryProvider)
-                          .cancelSalaryAdvance(item.id);
-                      ref.invalidate(salaryAdvancesProvider);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Demande annulee.')),
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isManager && item.status == 'pending')
+                    ListTile(
+                      leading: const Icon(Icons.check_circle_outline),
+                      title: const Text('Approuver'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        await _decisionDialog(
+                          context,
+                          title: 'Approuver cette avance',
+                          onSubmit:
+                              (comment) => ref
+                                  .read(modulesRepositoryProvider)
+                                  .approveSalaryAdvance(
+                                    item.id,
+                                    decisionComment: comment,
+                                  ),
+                          ref: ref,
                         );
-                      }
-                    } catch (error) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Echec : $error')),
+                      },
+                    ),
+                  if (isManager && item.status == 'pending')
+                    ListTile(
+                      leading: const Icon(Icons.highlight_off),
+                      title: const Text('Rejeter'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        await _decisionDialog(
+                          context,
+                          title: 'Rejeter cette avance',
+                          onSubmit:
+                              (comment) => ref
+                                  .read(modulesRepositoryProvider)
+                                  .rejectSalaryAdvance(
+                                    item.id,
+                                    decisionComment: comment,
+                                  ),
+                          ref: ref,
                         );
-                      }
-                    }
-                  },
-                ),
-            ],
+                      },
+                    ),
+                  if (!isManager && item.status == 'pending')
+                    ListTile(
+                      leading: const Icon(Icons.cancel_outlined),
+                      title: const Text('Annuler ma demande'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        try {
+                          await ref
+                              .read(modulesRepositoryProvider)
+                              .cancelSalaryAdvance(item.id);
+                          ref.invalidate(salaryAdvancesProvider);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Demande annulee.')),
+                            );
+                          }
+                        } catch (error) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Echec : $error')),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -487,24 +494,25 @@ class _SalaryAdvancesTab extends ConsumerWidget {
     final controller = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          maxLines: 3,
-          decoration: const InputDecoration(labelText: 'Commentaire'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+      builder:
+          (_) => AlertDialog(
+            title: Text(title),
+            content: TextField(
+              controller: controller,
+              maxLines: 3,
+              decoration: const InputDecoration(labelText: 'Commentaire'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Annuler'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Valider'),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Valider'),
-          ),
-        ],
-      ),
     );
     if (confirmed != true) return;
 
@@ -526,12 +534,12 @@ class _SalaryAdvancesTab extends ConsumerWidget {
   }
 
   String _advanceLabel(String status) => switch (status) {
-        'pending' => 'En attente',
-        'approved' => 'Approuvee',
-        'rejected' => 'Rejetee',
-        'cancelled' => 'Annulee',
-        _ => status,
-      };
+    'pending' => 'En attente',
+    'approved' => 'Approuvee',
+    'rejected' => 'Rejetee',
+    'cancelled' => 'Annulee',
+    _ => status,
+  };
 }
 
 class _PayrollsTab extends ConsumerWidget {
@@ -547,12 +555,13 @@ class _PayrollsTab extends ConsumerWidget {
       onRefresh: () async => ref.refresh(payrollsProvider.future),
       child: asyncValue.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ListView(
-          children: [
-            const SizedBox(height: 80),
-            Center(child: Text('Erreur : $error')),
-          ],
-        ),
+        error:
+            (error, _) => ListView(
+              children: [
+                const SizedBox(height: 80),
+                Center(child: Text('Erreur : $error')),
+              ],
+            ),
         data: (items) {
           return ListView.separated(
             padding: const EdgeInsets.all(20),
@@ -607,8 +616,8 @@ class _PayrollsTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       IconButton(
-                        onPressed: () =>
-                            _showPayrollActions(context, ref, item),
+                        onPressed:
+                            () => _showPayrollActions(context, ref, item),
                         icon: const Icon(Icons.more_horiz),
                       ),
                     ],
@@ -639,65 +648,66 @@ class _PayrollsTab extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (item.status == 'draft')
-                ListTile(
-                  leading: const Icon(Icons.verified_outlined),
-                  title: const Text('Valider'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    try {
-                      await ref
-                          .read(modulesRepositoryProvider)
-                          .validatePayroll(item.id);
-                      ref.invalidate(payrollsProvider);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Bulletin valide.')),
-                        );
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (item.status == 'draft')
+                    ListTile(
+                      leading: const Icon(Icons.verified_outlined),
+                      title: const Text('Valider'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        try {
+                          await ref
+                              .read(modulesRepositoryProvider)
+                              .validatePayroll(item.id);
+                          ref.invalidate(payrollsProvider);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Bulletin valide.')),
+                            );
+                          }
+                        } catch (error) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Echec : $error')),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ListTile(
+                    leading: const Icon(Icons.delete_outline),
+                    title: const Text('Supprimer'),
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                      try {
+                        await ref
+                            .read(modulesRepositoryProvider)
+                            .deletePayroll(item.id);
+                        ref.invalidate(payrollsProvider);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Bulletin supprime.')),
+                          );
+                        }
+                      } catch (error) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Echec : $error')),
+                          );
+                        }
                       }
-                    } catch (error) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Echec : $error')),
-                        );
-                      }
-                    }
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: const Text('Supprimer'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  try {
-                    await ref
-                        .read(modulesRepositoryProvider)
-                        .deletePayroll(item.id);
-                    ref.invalidate(payrollsProvider);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Bulletin supprime.')),
-                      );
-                    }
-                  } catch (error) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
-                    }
-                  }
-                },
+                    },
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -707,11 +717,11 @@ class _PayrollsTab extends ConsumerWidget {
   }
 
   String _payrollLabel(String status) => switch (status) {
-        'draft' => 'Brouillon',
-        'validated' => 'Valide',
-        'paid' => 'Paye',
-        _ => status,
-      };
+    'draft' => 'Brouillon',
+    'validated' => 'Valide',
+    'paid' => 'Paye',
+    _ => status,
+  };
 }
 
 class _NotificationsTab extends ConsumerWidget {
@@ -725,12 +735,13 @@ class _NotificationsTab extends ConsumerWidget {
       onRefresh: () async => ref.refresh(notificationsProvider.future),
       child: asyncValue.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ListView(
-          children: [
-            const SizedBox(height: 80),
-            Center(child: Text('Erreur : $error')),
-          ],
-        ),
+        error:
+            (error, _) => ListView(
+              children: [
+                const SizedBox(height: 80),
+                Center(child: Text('Erreur : $error')),
+              ],
+            ),
         data: (items) {
           return ListView.separated(
             padding: const EdgeInsets.all(20),
@@ -795,55 +806,56 @@ class _NotificationsTab extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!item.isRead)
-                ListTile(
-                  leading: const Icon(Icons.mark_email_read_outlined),
-                  title: const Text('Marquer comme lue'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    try {
-                      await ref
-                          .read(modulesRepositoryProvider)
-                          .markNotificationRead(item.id);
-                      ref.invalidate(notificationsProvider);
-                    } catch (error) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Echec : $error')),
-                        );
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!item.isRead)
+                    ListTile(
+                      leading: const Icon(Icons.mark_email_read_outlined),
+                      title: const Text('Marquer comme lue'),
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        try {
+                          await ref
+                              .read(modulesRepositoryProvider)
+                              .markNotificationRead(item.id);
+                          ref.invalidate(notificationsProvider);
+                        } catch (error) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Echec : $error')),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ListTile(
+                    leading: const Icon(Icons.delete_outline),
+                    title: const Text('Supprimer'),
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                      try {
+                        await ref
+                            .read(modulesRepositoryProvider)
+                            .deleteNotification(item.id);
+                        ref.invalidate(notificationsProvider);
+                      } catch (error) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Echec : $error')),
+                          );
+                        }
                       }
-                    }
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: const Text('Supprimer'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  try {
-                    await ref
-                        .read(modulesRepositoryProvider)
-                        .deleteNotification(item.id);
-                    ref.invalidate(notificationsProvider);
-                  } catch (error) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
-                    }
-                  }
-                },
+                    },
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }
@@ -935,34 +947,44 @@ class _CreateEvaluationSheetState
               ),
               const SizedBox(height: 16),
               team.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
+                loading:
+                    () => const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
                 error: (error, _) => Text('Equipe indisponible : $error'),
-                data: (employees) => DropdownButtonFormField<int>(
-                  initialValue: _employeeId,
-                  decoration: const InputDecoration(labelText: 'Collaborateur'),
-                  items: employees
-                      .map(
-                        (employee) => DropdownMenuItem<int>(
-                          value: employee.id,
-                          child: Text(employee.fullName),
-                        ),
-                      )
-                      .toList(),
-                  validator: (value) =>
-                      value == null ? 'Choisissez un collaborateur' : null,
-                  onChanged: (value) => setState(() => _employeeId = value),
-                ),
+                data:
+                    (employees) => DropdownButtonFormField<int>(
+                      initialValue: _employeeId,
+                      decoration: const InputDecoration(
+                        labelText: 'Collaborateur',
+                      ),
+                      items:
+                          employees
+                              .map(
+                                (employee) => DropdownMenuItem<int>(
+                                  value: employee.id,
+                                  child: Text(employee.fullName),
+                                ),
+                              )
+                              .toList(),
+                      validator:
+                          (value) =>
+                              value == null
+                                  ? 'Choisissez un collaborateur'
+                                  : null,
+                      onChanged: (value) => setState(() => _employeeId = value),
+                    ),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _periodController,
                 decoration: const InputDecoration(labelText: 'Periode'),
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Periode requise'
-                    : null,
+                validator:
+                    (value) =>
+                        (value == null || value.trim().isEmpty)
+                            ? 'Periode requise'
+                            : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -1011,7 +1033,9 @@ class _CreateEvaluationSheetState
 
     setState(() => _submitting = true);
     try {
-      await ref.read(modulesRepositoryProvider).createEvaluation(
+      await ref
+          .read(modulesRepositoryProvider)
+          .createEvaluation(
             employeeId: _employeeId!,
             period: _periodController.text,
             score: double.tryParse(_scoreController.text.replaceAll(',', '.')),
@@ -1082,11 +1106,12 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
                   decimal: true,
                 ),
                 decoration: const InputDecoration(labelText: 'Montant'),
-                validator: (value) =>
-                    (double.tryParse((value ?? '').replaceAll(',', '.')) ==
-                            null)
-                        ? 'Montant invalide'
-                        : null,
+                validator:
+                    (value) =>
+                        (double.tryParse((value ?? '').replaceAll(',', '.')) ==
+                                null)
+                            ? 'Montant invalide'
+                            : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -1095,18 +1120,22 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
                 decoration: const InputDecoration(
                   labelText: 'Nombre de mensualites',
                 ),
-                validator: (value) => (int.tryParse(value ?? '') == null)
-                    ? 'Valeur invalide'
-                    : null,
+                validator:
+                    (value) =>
+                        (int.tryParse(value ?? '') == null)
+                            ? 'Valeur invalide'
+                            : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _reasonController,
                 decoration: const InputDecoration(labelText: 'Motif'),
                 maxLines: 3,
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Motif requis'
-                    : null,
+                validator:
+                    (value) =>
+                        (value == null || value.trim().isEmpty)
+                            ? 'Motif requis'
+                            : null,
               ),
               const SizedBox(height: 20),
               FilledButton(
@@ -1125,7 +1154,9 @@ class _CreateAdvanceSheetState extends ConsumerState<_CreateAdvanceSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(modulesRepositoryProvider).createSalaryAdvance(
+      await ref
+          .read(modulesRepositoryProvider)
+          .createSalaryAdvance(
             amount: double.parse(_amountController.text.replaceAll(',', '.')),
             reason: _reasonController.text,
             repaymentMonths: int.parse(_monthsController.text),
@@ -1207,21 +1238,28 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
               team.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => Text('Equipe indisponible : $error'),
-                data: (employees) => DropdownButtonFormField<int>(
-                  initialValue: _employeeId,
-                  decoration: const InputDecoration(labelText: 'Collaborateur'),
-                  items: employees
-                      .map(
-                        (employee) => DropdownMenuItem<int>(
-                          value: employee.id,
-                          child: Text(employee.fullName),
-                        ),
-                      )
-                      .toList(),
-                  validator: (value) =>
-                      value == null ? 'Choisissez un collaborateur' : null,
-                  onChanged: (value) => setState(() => _employeeId = value),
-                ),
+                data:
+                    (employees) => DropdownButtonFormField<int>(
+                      initialValue: _employeeId,
+                      decoration: const InputDecoration(
+                        labelText: 'Collaborateur',
+                      ),
+                      items:
+                          employees
+                              .map(
+                                (employee) => DropdownMenuItem<int>(
+                                  value: employee.id,
+                                  child: Text(employee.fullName),
+                                ),
+                              )
+                              .toList(),
+                      validator:
+                          (value) =>
+                              value == null
+                                  ? 'Choisissez un collaborateur'
+                                  : null,
+                      onChanged: (value) => setState(() => _employeeId = value),
+                    ),
               ),
               const SizedBox(height: 12),
               Row(
@@ -1237,8 +1275,8 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
                           child: Text('${index + 1}'),
                         ),
                       ),
-                      onChanged: (value) =>
-                          setState(() => _month = value ?? _month),
+                      onChanged:
+                          (value) => setState(() => _month = value ?? _month),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -1253,8 +1291,8 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
                           child: Text('$year'),
                         );
                       }),
-                      onChanged: (value) =>
-                          setState(() => _year = value ?? _year),
+                      onChanged:
+                          (value) => setState(() => _year = value ?? _year),
                     ),
                   ),
                 ],
@@ -1315,7 +1353,9 @@ class _CreatePayrollSheetState extends ConsumerState<_CreatePayrollSheet> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(modulesRepositoryProvider).createPayroll(
+      await ref
+          .read(modulesRepositoryProvider)
+          .createPayroll(
             employeeId: _employeeId!,
             periodMonth: _month,
             periodYear: _year,

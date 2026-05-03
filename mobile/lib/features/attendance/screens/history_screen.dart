@@ -64,30 +64,41 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async =>
-            ref.refresh(historyProvider(DateTime(now.year, now.month)).future),
-        child: historyAsync.when(
-          loading: () => ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: 6,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (_, __) => Row(
-              children: [
-                const ShimmerLoading(width: 40, height: 40, borderRadius: 20),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      ShimmerLoading(width: 100, height: 16),
-                      SizedBox(height: 8),
-                      ShimmerLoading(width: double.infinity, height: 16),
-                    ],
-                  ),
-                ),
-              ],
+        onRefresh:
+            () async => ref.refresh(
+              historyProvider(DateTime(now.year, now.month)).future,
             ),
-          ),
+        child: historyAsync.when(
+          loading:
+              () => ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: 6,
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemBuilder:
+                    (_, __) => Row(
+                      children: [
+                        const ShimmerLoading(
+                          width: 40,
+                          height: 40,
+                          borderRadius: 20,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              ShimmerLoading(width: 100, height: 16),
+                              SizedBox(height: 8),
+                              ShimmerLoading(
+                                width: double.infinity,
+                                height: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+              ),
           error: (err, stack) {
             final errorText = err.toString();
 
@@ -135,9 +146,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => ref.refresh(
-                            historyProvider(DateTime(now.year, now.month)),
-                          ),
+                          onPressed:
+                              () => ref.refresh(
+                                historyProvider(DateTime(now.year, now.month)),
+                              ),
                           child: const Text('Réessayer'),
                         ),
                       ],

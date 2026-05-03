@@ -28,28 +28,28 @@ class LeopardoBadge extends StatelessWidget {
   }
 
   factory LeopardoBadge.present({String label = 'Présent'}) => LeopardoBadge(
-        label: label,
-        color: AppColors.success,
-        icon: Icons.check_circle,
-      );
+    label: label,
+    color: AppColors.success,
+    icon: Icons.check_circle,
+  );
 
   factory LeopardoBadge.late({String label = 'En retard'}) => LeopardoBadge(
-        label: label,
-        color: AppColors.warning,
-        icon: Icons.schedule,
-      );
+    label: label,
+    color: AppColors.warning,
+    icon: Icons.schedule,
+  );
 
   factory LeopardoBadge.absent({String label = 'Absent'}) => LeopardoBadge(
-        label: label,
-        color: AppColors.danger,
-        icon: Icons.error_outline,
-      );
+    label: label,
+    color: AppColors.danger,
+    icon: Icons.error_outline,
+  );
 
   factory LeopardoBadge.onLeave({String label = 'En congé'}) => LeopardoBadge(
-        label: label,
-        color: AppColors.info,
-        icon: Icons.beach_access,
-      );
+    label: label,
+    color: AppColors.info,
+    icon: Icons.beach_access,
+  );
 
   factory LeopardoBadge.domain(String domain, String label, {IconData? icon}) {
     return LeopardoBadge(

@@ -69,9 +69,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
       if (mounted) {
         final msg =
             e is ApiException ? e.message : 'Erreur lors de la soumission';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -95,18 +95,18 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.success.withValues(alpha: 0.12),
-                    ),
-                    child: const Icon(
-                      Icons.check_circle_outline,
-                      color: AppColors.success,
-                      size: 40,
-                    ),
-                  )
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.success.withValues(alpha: 0.12),
+                        ),
+                        child: const Icon(
+                          Icons.check_circle_outline,
+                          color: AppColors.success,
+                          size: 40,
+                        ),
+                      )
                       .animate()
                       .fadeIn(duration: 400.ms)
                       .scale(begin: const Offset(0.5, 0.5)),
@@ -161,9 +161,7 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
               decoration: BoxDecoration(
                 color: AppColors.ia.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.ia.withValues(alpha: 0.2),
-                ),
+                border: Border.all(color: AppColors.ia.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
@@ -278,16 +276,17 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: _loading ? null : _submit,
-            icon: _loading
-                ? const SizedBox(
-                    height: 18,
-                    width: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Icon(Icons.send_outlined),
+            icon:
+                _loading
+                    ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Icon(Icons.send_outlined),
             label: const Text('Soumettre la demande'),
           ),
         ],

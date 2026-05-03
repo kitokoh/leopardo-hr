@@ -18,14 +18,14 @@ class ApiClient {
   final VoidCallback? onUnauthorized;
 
   ApiClient(this._storage, this._preferences, {this.onUnauthorized})
-      : _dio = Dio(
-          BaseOptions(
-            baseUrl: resolveBaseUrl(),
-            connectTimeout: const Duration(seconds: 20),
-            receiveTimeout: const Duration(seconds: 20),
-            headers: {'Accept': 'application/json'},
-          ),
-        ) {
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: resolveBaseUrl(),
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 20),
+          headers: {'Accept': 'application/json'},
+        ),
+      ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -36,9 +36,11 @@ class ApiClient {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          options.headers['Accept-Language'] = preferredLanguage.isNotEmpty
-              ? preferredLanguage
-              : PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+          options.headers['Accept-Language'] =
+              preferredLanguage.isNotEmpty
+                  ? preferredLanguage
+                  : PlatformDispatcher.instance.locale.languageCode
+                      .toLowerCase();
 
           return handler.next(options);
         },
@@ -105,8 +107,9 @@ class ApiClient {
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
         final data = (e.response?.data as Map).cast<dynamic, dynamic>();
-        message = (data['localized_message'] ?? data['message'] ?? message)
-            .toString();
+        message =
+            (data['localized_message'] ?? data['message'] ?? message)
+                .toString();
         code = data['error']?.toString();
       }
     } else if (e.type == DioExceptionType.connectionTimeout) {

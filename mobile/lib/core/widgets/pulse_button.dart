@@ -46,18 +46,20 @@ class _PulseButtonState extends State<PulseButton>
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: widget.isCheckedIn
-          ? 'Se deconnecter du pointage'
-          : 'Pointer mon arrivee',
+      label:
+          widget.isCheckedIn
+              ? 'Se deconnecter du pointage'
+              : 'Pointer mon arrivee',
       button: true,
       enabled: !widget.isLoading,
       child: GestureDetector(
-        onTap: widget.isLoading
-            ? null
-            : () {
-                HapticFeedback.mediumImpact();
-                widget.onTap?.call();
-              },
+        onTap:
+            widget.isLoading
+                ? null
+                : () {
+                  HapticFeedback.mediumImpact();
+                  widget.onTap?.call();
+                },
         child: AnimatedBuilder(
           animation: _animation,
           builder: (context, child) {
@@ -69,9 +71,10 @@ class _PulseButtonState extends State<PulseButton>
                 height: 200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: widget.isCheckedIn
-                      ? Theme.of(context).colorScheme.error
-                      : Theme.of(context).primaryColor,
+                  color:
+                      widget.isCheckedIn
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).primaryColor,
                   boxShadow: [
                     BoxShadow(
                       color: (widget.isCheckedIn
@@ -85,17 +88,18 @@ class _PulseButtonState extends State<PulseButton>
                   ],
                 ),
                 child: Center(
-                  child: widget.isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          widget.isCheckedIn ? 'TERMINER' : 'POINTER',
-                          style: AppTypography.subtitle.copyWith(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.6,
+                  child:
+                      widget.isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                            widget.isCheckedIn ? 'TERMINER' : 'POINTER',
+                            style: AppTypography.subtitle.copyWith(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.6,
+                            ),
                           ),
-                        ),
                 ),
               ),
             );

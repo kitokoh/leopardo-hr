@@ -24,7 +24,7 @@ class ListSchema {
     this.enableRefresh = true,
   });
 
-  factory ListSchema.fromJson(Map<String, dynamic> json) => 
+  factory ListSchema.fromJson(Map<String, dynamic> json) =>
       _$ListSchemaFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListSchemaToJson(this);
@@ -47,10 +47,10 @@ class ListSchema {
   /// Obtient les actions disponibles pour un élément
   List<ListAction> getActionsForItem(Map<String, dynamic> item) {
     if (actions == null) return [];
-    
+
     return actions!.where((action) {
       if (action.condition == null) return true;
-      
+
       // Évaluation simple des conditions
       // TODO: Implémenter un évaluateur d'expressions plus sophistiqué
       return _evaluateCondition(action.condition!, item);
@@ -60,7 +60,7 @@ class ListSchema {
   bool _evaluateCondition(String condition, Map<String, dynamic> item) {
     // Implémentation basique pour les conditions simples
     // Exemple: "status == 'active'" ou "role != 'admin'"
-    
+
     if (condition.contains('==')) {
       final parts = condition.split('==').map((s) => s.trim()).toList();
       if (parts.length == 2) {
@@ -69,7 +69,7 @@ class ListSchema {
         return fieldValue == expectedValue;
       }
     }
-    
+
     if (condition.contains('!=')) {
       final parts = condition.split('!=').map((s) => s.trim()).toList();
       if (parts.length == 2) {
@@ -78,7 +78,7 @@ class ListSchema {
         return fieldValue != expectedValue;
       }
     }
-    
+
     // Par défaut, retourner true si la condition n'est pas reconnue
     return true;
   }
@@ -109,7 +109,7 @@ class ListColumn {
     this.alignment = ListColumnAlignment.left,
   });
 
-  factory ListColumn.fromJson(Map<String, dynamic> json) => 
+  factory ListColumn.fromJson(Map<String, dynamic> json) =>
       _$ListColumnFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListColumnToJson(this);
@@ -121,11 +121,12 @@ class ListColumn {
     switch (type) {
       case ListColumnType.text:
         return value.toString();
-      
+
       case ListColumnType.number:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
-        
+
         if (format != null) {
           // Format simple pour les nombres (ex: "0.00" pour 2 décimales)
           if (format!.contains('.')) {
@@ -134,7 +135,7 @@ class ListColumn {
           }
         }
         return numValue.toString();
-      
+
       case ListColumnType.date:
         if (value is DateTime) {
           return _formatDate(value);
@@ -143,7 +144,7 @@ class ListColumn {
           return date != null ? _formatDate(date) : value;
         }
         return value.toString();
-      
+
       case ListColumnType.datetime:
         if (value is DateTime) {
           return _formatDateTime(value);
@@ -152,26 +153,28 @@ class ListColumn {
           return date != null ? _formatDateTime(date) : value;
         }
         return value.toString();
-      
+
       case ListColumnType.boolean:
         if (value is bool) {
           return value ? 'Oui' : 'Non';
         }
         return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
-      
+
       case ListColumnType.currency:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(2)} €';
-      
+
       case ListColumnType.percentage:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(1)}%';
-      
+
       case ListColumnType.badge:
         return value.toString();
-      
+
       case ListColumnType.image:
         return value.toString(); // URL de l'image
     }
@@ -179,14 +182,14 @@ class ListColumn {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
-           '${date.month.toString().padLeft(2, '0')}/'
-           '${date.year}';
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
   }
 
   String _formatDateTime(DateTime date) {
     return '${_formatDate(date)} '
-           '${date.hour.toString().padLeft(2, '0')}:'
-           '${date.minute.toString().padLeft(2, '0')}';
+        '${date.hour.toString().padLeft(2, '0')}:'
+        '${date.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -212,7 +215,7 @@ enum ListColumnType {
   @JsonValue('badge')
   badge,
   @JsonValue('image')
-  image;
+  image,
 }
 
 @JsonEnum()
@@ -222,7 +225,7 @@ enum ListColumnAlignment {
   @JsonValue('center')
   center,
   @JsonValue('right')
-  right;
+  right,
 }
 
 @JsonSerializable()
@@ -237,7 +240,7 @@ class ListPagination {
     this.pageSizeOptions,
   });
 
-  factory ListPagination.fromJson(Map<String, dynamic> json) => 
+  factory ListPagination.fromJson(Map<String, dynamic> json) =>
       _$ListPaginationFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListPaginationToJson(this);
@@ -245,7 +248,7 @@ class ListPagination {
   /// Obtient les options de taille de page
   List<int> get pageSizeOptionsList {
     if (pageSizeOptions == null) return [10, 20, 50, 100];
-    
+
     return pageSizeOptions!
         .split(',')
         .map((s) => int.tryParse(s.trim()))
@@ -270,13 +273,14 @@ class ListSorting {
     this.multiColumn = false,
   });
 
-  factory ListSorting.fromJson(Map<String, dynamic> json) => 
+  factory ListSorting.fromJson(Map<String, dynamic> json) =>
       _$ListSortingFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListSortingToJson(this);
 
   @override
-  String toString() => 'ListSorting(defaultColumn: $defaultColumn, direction: $defaultDirection)';
+  String toString() =>
+      'ListSorting(defaultColumn: $defaultColumn, direction: $defaultDirection)';
 }
 
 @JsonEnum()
@@ -284,7 +288,7 @@ enum ListSortDirection {
   @JsonValue('asc')
   asc,
   @JsonValue('desc')
-  desc;
+  desc,
 }
 
 @JsonSerializable()
@@ -292,12 +296,9 @@ class ListFiltering {
   final List<ListFilter> filters;
   final bool quickFilters;
 
-  const ListFiltering({
-    required this.filters,
-    this.quickFilters = true,
-  });
+  const ListFiltering({required this.filters, this.quickFilters = true});
 
-  factory ListFiltering.fromJson(Map<String, dynamic> json) => 
+  factory ListFiltering.fromJson(Map<String, dynamic> json) =>
       _$ListFilteringFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListFilteringToJson(this);
@@ -322,7 +323,7 @@ class ListFilter {
     this.placeholder,
   });
 
-  factory ListFilter.fromJson(Map<String, dynamic> json) => 
+  factory ListFilter.fromJson(Map<String, dynamic> json) =>
       _$ListFilterFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListFilterToJson(this);
@@ -340,7 +341,7 @@ enum ListFilterType {
   @JsonValue('date_range')
   dateRange,
   @JsonValue('number_range')
-  numberRange;
+  numberRange,
 }
 
 @JsonSerializable()
@@ -365,7 +366,7 @@ class ListAction {
     this.confirmRequired = false,
   });
 
-  factory ListAction.fromJson(Map<String, dynamic> json) => 
+  factory ListAction.fromJson(Map<String, dynamic> json) =>
       _$ListActionFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListActionToJson(this);
@@ -383,7 +384,7 @@ enum ListActionType {
   @JsonValue('delete')
   delete,
   @JsonValue('custom')
-  custom;
+  custom,
 }
 
 /// Extension pour ajouter firstOrNull si pas disponible
