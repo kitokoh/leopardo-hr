@@ -2,6 +2,7 @@
 
 use App\Models\Employee;
 use App\Models\SuperAdmin;
+use App\Models\User;
 
 return [
 
@@ -55,6 +56,10 @@ return [
             'driver' => 'sanctum',
             'provider' => 'employees',
         ],
+        'user_api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -84,10 +89,10 @@ return [
             'model' => SuperAdmin::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => User::class,
+        ],
     ],
 
     /*
