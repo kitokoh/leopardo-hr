@@ -433,6 +433,9 @@ class FeatureRegistryTest extends TestCase
         $this->mockCache->shouldReceive('get')
             ->andReturn(null);
 
+        $this->mockCache->shouldReceive('has')
+            ->andReturn(false);
+
         // Act
         $stats = $this->registry->getStatistics();
 
