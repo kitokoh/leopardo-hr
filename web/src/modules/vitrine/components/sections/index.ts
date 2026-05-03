@@ -30,3 +30,4 @@ export { CTASection, type CTASectionProps } from './CTASection';
 // Blog Components
 export { BlogCard, type BlogCardProps } from './BlogCard';
 export { BlogGrid, type BlogGridProps } from './BlogGrid';
+export { BlogArticle, type BlogArticleProps } from './BlogArticle';
