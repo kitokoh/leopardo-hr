@@ -15,10 +15,10 @@ class CompanyRequestController extends Controller
         /** @var User $user */
         $user = $request->user('user_api');
 
-        $requests = $user->companyRequests()
+        $requests = CompanyRequest::where('user_id', $user->id)
             ->latest()
             ->get()
-            ->map(fn (CompanyRequest $r) => [
+            ->map(fn (CompanyRequest $r): array => [
                 'id' => $r->id,
                 'company_name' => $r->company_name,
                 'sector' => $r->sector,
@@ -49,7 +49,10 @@ class CompanyRequestController extends Controller
         /** @var User $user */
         $user = $request->user('user_api');
 
-        $pending = $user->companyRequests()->where('status', 'pending')->count();
+        $pending = CompanyRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->count();
+
         if ($pending >= 3) {
             return new JsonResponse([
                 'error' => 'TOO_MANY_PENDING_REQUESTS',
@@ -57,7 +60,10 @@ class CompanyRequestController extends Controller
             ], 422);
         }
 
-        $companyRequest = $user->companyRequests()->create($validated);
+        $companyRequest = CompanyRequest::create([
+            ...$validated,
+            'user_id' => $user->id,
+        ]);
 
         return new JsonResponse([
             'data' => [
@@ -74,7 +80,9 @@ class CompanyRequestController extends Controller
         /** @var User $user */
         $user = $request->user('user_api');
 
-        $companyRequest = $user->companyRequests()->findOrFail($id);
+        /** @var CompanyRequest $companyRequest */
+        $companyRequest = CompanyRequest::where('user_id', $user->id)
+            ->findOrFail($id);
 
         return new JsonResponse([
             'data' => [
