@@ -3767,3 +3767,27 @@ parameters:
 			identifier: property.nonObject
 			count: 2
 			path: app/Models/UserInvitation.php
+
+		-
+			message: '#^Cannot call method errors\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
+
+		-
+			message: '#^Cannot call method errors\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
+
+		-
+			message: '#^Binary operation "\." between .* and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: app/Services/SuperAdminService.php
+
+		-
+			message: '#^Binary operation "\&" between mixed and 2147483647 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: app/Services/SuperAdminService.php
