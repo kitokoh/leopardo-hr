@@ -1,3 +1,16 @@
+# 📦 FICHIER HISTORIQUE (BOT ARTEFACT) - REMPLACE PAR PILOTAGE.md
+# PROGRAM_VERSION DE REFERENCE: 4.1.85
+# Date de gel: 02 Mai 2026
+
+Ce document est conserve pour tracabilite uniquement.
+Ne pas l'utiliser pour piloter l'execution.
+
+Source de verite active:
+- `../../../PILOTAGE.md`
+- `../../README.md`
+
+---
+
 # EXPLORE — Exploration technique du projet Leopardo RH
 
 **Date :** 2 mai 2026
@@ -406,7 +419,7 @@ Les migrations tenant sont executees dans le schema de chaque entreprise lors du
 - **PHPStan level max** : tous les types doivent etre explicites
   - Generics obligatoires sur les relations : `@return BelongsTo<Employee, $this>`
   - `array` doit avoir un type de valeur : `@param array<string, mixed> $data`
-  - `mixed` ne peut pas etre cast directement : utiliser `is_string()`, `is_numeric()`, `$request->string()`
+  - `mixed` ne peut pas etre cast directement : utiliser `is_string()`, `$request->string()`, `intval()` avec check `is_numeric()`
 - **Trait BelongsToCompany** sur tous les modeles tenant
 - **Form Requests** pour chaque operation de validation (pas de validation inline)
 - **Services** pour la logique metier (les controleurs delegent aux services)
@@ -515,7 +528,7 @@ flutter run --dart-define=API_BASE_URL=mock
 
 5. **Pour ajouter un module mobile** : il faut modifier a la fois le backend (`MobileExperienceService`) et le mobile (repository, provider, screen, route, icone, core_providers).
 
-6. **Les migrations sont separees** en `public/` (partagees) et `tenant/` (par schema). Ne pas melanger.
+6. **Les migrations sont separees** en `public/` (partagees) et `tenant/`. Ne pas melanger.
 
 7. **La validation passe par des Form Requests** dedies — jamais de `$request->validate()` inline dans les controleurs.
 
