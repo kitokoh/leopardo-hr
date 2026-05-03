@@ -81,9 +81,9 @@ class Employee {
     final hireDateRaw = json['hire_date'];
 
     return Employee(
-      id: json['id'],
-      matricule: json['matricule'] as String?,
-      companyId: json['company_id'] as String?,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      matricule: json['matricule']?.toString(),
+      companyId: json['company_id']?.toString(),
       firstName: (json['first_name'] ?? '') as String,
       lastName: (json['last_name'] ?? '') as String,
       email: (json['email'] ?? '') as String,
