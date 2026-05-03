@@ -35,6 +35,11 @@
 - Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
 - Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Ajout de `GO_NO_GO_MVP.md` comme source de vérité canonique dans `PILOTAGE.md` et `docs/README.md`.
+- Gouvernance : Mise à jour de `CODE_VERSION` à `0.1.0` dans `PILOTAGE.md` (release MVP prête).
+- Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
+- Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
+
 ## [4.1.84] - 2026-05-01
 
 ### Performance - Optimisation des index Absence et Evaluation
@@ -334,7 +339,7 @@
 - Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis à jour pour refléter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
 - Suite locale : 11/11 Unit + 87/87 Feature OK.
 
-## [4.1.71] - 2026-05-20
+## [4.1.71] - 2026-04-24
 ### Performance - Optimisation du dashboard manager
 
 - `api/app/Http/Controllers/Web/DashboardController.php` : ajout de `select()` sur les requetes `Employee` et `AttendanceLog` pour ne recuperer que les colonnes necessaires, evitant ainsi le chargement des colonnes JSONB lourdes et reduisant la consommation memoire lors de l'hydratation des modeles Eloquent.
