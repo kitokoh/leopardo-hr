@@ -277,10 +277,7 @@ class _StoryCard extends StatelessWidget {
               child: Icon(story.icon, color: color),
             ),
             const SizedBox(height: 22),
-            Text(
-              story.title,
-              style: AppTypography.title.copyWith(color: text),
-            ),
+            Text(story.title, style: AppTypography.title.copyWith(color: text)),
             const SizedBox(height: 10),
             Text(story.body, style: AppTypography.body.copyWith(color: muted)),
             const Spacer(),
@@ -288,18 +285,9 @@ class _StoryCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _SignalPill(
-                  label: 'RH',
-                  color: AppColors.rh,
-                ),
-                _SignalPill(
-                  label: 'Finance',
-                  color: AppColors.finance,
-                ),
-                _SignalPill(
-                  label: 'Leo',
-                  color: AppColors.ia,
-                ),
+                _SignalPill(label: 'RH', color: AppColors.rh),
+                _SignalPill(label: 'Finance', color: AppColors.finance),
+                _SignalPill(label: 'Leo', color: AppColors.ia),
               ],
             ),
           ],
@@ -328,10 +316,7 @@ class _SignalPill extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
-        label,
-        style: AppTypography.caption.copyWith(color: color),
-      ),
+      child: Text(label, style: AppTypography.caption.copyWith(color: color)),
     );
   }
 }

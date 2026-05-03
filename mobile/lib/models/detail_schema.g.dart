@@ -7,17 +7,20 @@ part of 'detail_schema.dart';
 // **************************************************************************
 
 DetailSchema _$DetailSchemaFromJson(Map<String, dynamic> json) => DetailSchema(
-      sections: (json['sections'] as List<dynamic>)
+  sections:
+      (json['sections'] as List<dynamic>)
           .map((e) => DetailSection.fromJson(e as Map<String, dynamic>))
           .toList(),
-      actions: (json['actions'] as List<dynamic>?)
+  actions:
+      (json['actions'] as List<dynamic>?)
           ?.map((e) => DetailAction.fromJson(e as Map<String, dynamic>))
           .toList(),
-      title: json['title'] as String?,
-      subtitle: json['subtitle'] as String?,
-      layout: $enumDecodeNullable(_$DetailLayoutEnumMap, json['layout']) ??
-          DetailLayout.vertical,
-    );
+  title: json['title'] as String?,
+  subtitle: json['subtitle'] as String?,
+  layout:
+      $enumDecodeNullable(_$DetailLayoutEnumMap, json['layout']) ??
+      DetailLayout.vertical,
+);
 
 Map<String, dynamic> _$DetailSchemaToJson(DetailSchema instance) =>
     <String, dynamic>{
@@ -40,9 +43,10 @@ DetailSection _$DetailSectionFromJson(Map<String, dynamic> json) =>
     DetailSection(
       name: json['name'] as String,
       title: json['title'] as String,
-      fields: (json['fields'] as List<dynamic>)
-          .map((e) => DetailField.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      fields:
+          (json['fields'] as List<dynamic>)
+              .map((e) => DetailField.fromJson(e as Map<String, dynamic>))
+              .toList(),
       visible: json['visible'] as bool? ?? true,
       collapsible: json['collapsible'] as bool? ?? false,
       collapsed: json['collapsed'] as bool? ?? false,
@@ -61,16 +65,17 @@ Map<String, dynamic> _$DetailSectionToJson(DetailSection instance) =>
     };
 
 DetailField _$DetailFieldFromJson(Map<String, dynamic> json) => DetailField(
-      name: json['name'] as String,
-      label: json['label'] as String,
-      type: $enumDecode(_$DetailFieldTypeEnumMap, json['type']),
-      visible: json['visible'] as bool? ?? true,
-      format: json['format'] as String?,
-      size: $enumDecodeNullable(_$DetailFieldSizeEnumMap, json['size']) ??
-          DetailFieldSize.full,
-      icon: json['icon'] as String?,
-      helpText: json['help_text'] as String?,
-    );
+  name: json['name'] as String,
+  label: json['label'] as String,
+  type: $enumDecode(_$DetailFieldTypeEnumMap, json['type']),
+  visible: json['visible'] as bool? ?? true,
+  format: json['format'] as String?,
+  size:
+      $enumDecodeNullable(_$DetailFieldSizeEnumMap, json['size']) ??
+      DetailFieldSize.full,
+  icon: json['icon'] as String?,
+  helpText: json['help_text'] as String?,
+);
 
 Map<String, dynamic> _$DetailFieldToJson(DetailField instance) =>
     <String, dynamic>{
@@ -109,16 +114,16 @@ const _$DetailFieldSizeEnumMap = {
 };
 
 DetailAction _$DetailActionFromJson(Map<String, dynamic> json) => DetailAction(
-      name: json['name'] as String,
-      label: json['label'] as String,
-      type: $enumDecode(_$DetailActionTypeEnumMap, json['type']),
-      icon: json['icon'] as String?,
-      endpoint: json['endpoint'] as String?,
-      method: json['method'] as String?,
-      condition: json['condition'] as String?,
-      confirmRequired: json['confirm_required'] as bool? ?? false,
-      confirmMessage: json['confirm_message'] as String?,
-    );
+  name: json['name'] as String,
+  label: json['label'] as String,
+  type: $enumDecode(_$DetailActionTypeEnumMap, json['type']),
+  icon: json['icon'] as String?,
+  endpoint: json['endpoint'] as String?,
+  method: json['method'] as String?,
+  condition: json['condition'] as String?,
+  confirmRequired: json['confirm_required'] as bool? ?? false,
+  confirmMessage: json['confirm_message'] as String?,
+);
 
 Map<String, dynamic> _$DetailActionToJson(DetailAction instance) =>
     <String, dynamic>{

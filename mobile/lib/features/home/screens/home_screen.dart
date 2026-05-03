@@ -17,21 +17,24 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final employee = ref.watch(authProvider).employee;
-    final experience = employee?.mobileExperience ??
+    final experience =
+        employee?.mobileExperience ??
         const MobileExperience(
           stage: 'regular',
           modules: <MobileModule>[],
           quickActions: <MobileQuickAction>[],
         );
     final stage = experience.stage;
-    final quickActions = stage == 'new'
-        ? experience.quickActions.take(3).toList()
-        : experience.quickActions;
+    final quickActions =
+        stage == 'new'
+            ? experience.quickActions.take(3).toList()
+            : experience.quickActions;
     final activeModules = experience.activeModules;
     final upcomingModules = experience.upcomingModules;
-    final firstName = employee?.firstName.isNotEmpty == true
-        ? employee!.firstName
-        : employee?.email.split('@').first ?? '';
+    final firstName =
+        employee?.firstName.isNotEmpty == true
+            ? employee!.firstName
+            : employee?.email.split('@').first ?? '';
     final canManageTeam = employee?.canManageTeam == true;
     final background = AppColors.backgroundFor(context);
 
@@ -76,9 +79,10 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 24),
                     _SectionTitle(
                       title: 'Actions rapides',
-                      subtitle: stage == 'new'
-                          ? 'Leo vous montre l essentiel pour bien commencer.'
-                          : 'Vos raccourcis les plus utiles sont regroupes ici.',
+                      subtitle:
+                          stage == 'new'
+                              ? 'Leo vous montre l essentiel pour bien commencer.'
+                              : 'Vos raccourcis les plus utiles sont regroupes ici.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -165,8 +169,9 @@ class _HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
-    final dateLabel =
-        DateFormat.EEEE('fr_FR').add_d().add_MMMM().format(DateTime.now());
+    final dateLabel = DateFormat.EEEE(
+      'fr_FR',
+    ).add_d().add_MMMM().format(DateTime.now());
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -205,10 +210,7 @@ class _HeroHeader extends StatelessWidget {
             firstName.isEmpty
                 ? _greetingForHour(DateTime.now().hour)
                 : '${_greetingForHour(DateTime.now().hour)}, $firstName',
-            style: AppTypography.display.copyWith(
-              color: text,
-              fontSize: 30,
-            ),
+            style: AppTypography.display.copyWith(color: text, fontSize: 30),
           ),
           const SizedBox(height: 6),
           Text(
@@ -243,12 +245,14 @@ class _LeoCard extends StatelessWidget {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
     final shortName = firstName.isEmpty ? 'vous' : firstName;
-    final guidance = stage == 'new'
-        ? 'On commence simple: Leo met en avant quelques actions utiles et laisse l interface s ouvrir progressivement.'
-        : 'Leo garde le contexte, puis vous bascule vers la bonne action sans vous perdre dans un dashboard massif.';
-    final focus = canManageTeam
-        ? 'Aujourd hui, gardez l oeil sur le pointage, les validations RH et l activite de votre equipe.'
-        : 'Aujourd hui, tout part du pointage, puis de la consultation de votre mois et de vos documents RH.';
+    final guidance =
+        stage == 'new'
+            ? 'On commence simple: Leo met en avant quelques actions utiles et laisse l interface s ouvrir progressivement.'
+            : 'Leo garde le contexte, puis vous bascule vers la bonne action sans vous perdre dans un dashboard massif.';
+    final focus =
+        canManageTeam
+            ? 'Aujourd hui, gardez l oeil sur le pointage, les validations RH et l activite de votre equipe.'
+            : 'Aujourd hui, tout part du pointage, puis de la consultation de votre mois et de vos documents RH.';
 
     return Container(
       padding: const EdgeInsets.all(22),
@@ -331,9 +335,10 @@ class _AlertStack extends StatelessWidget {
   Widget build(BuildContext context) {
     final alerts = <Widget>[
       AlertBanner(
-        message: stage == 'new'
-            ? 'Leo garde une home volontairement simple pour vos premiers usages.'
-            : 'Votre mobile reste la surface principale: RH, pointage et suivi personnel vivent ici.',
+        message:
+            stage == 'new'
+                ? 'Leo garde une home volontairement simple pour vos premiers usages.'
+                : 'Votre mobile reste la surface principale: RH, pointage et suivi personnel vivent ici.',
         level: AlertLevel.info,
         icon: Icons.phone_iphone,
       ),
@@ -415,9 +420,10 @@ class _QuickActionsGrid extends StatelessWidget {
           childAspectRatio: 1.04,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children: actions
-              .map((action) => _QuickActionCard(action: action))
-              .toList(),
+          children:
+              actions
+                  .map((action) => _QuickActionCard(action: action))
+                  .toList(),
         );
       },
     );
@@ -808,9 +814,10 @@ class _ChatInputBar extends StatelessWidget {
                 enabled: false,
                 decoration: InputDecoration(
                   isDense: true,
-                  hintText: stage == 'new'
-                      ? 'Leo commencera bientot par vous guider pas a pas...'
-                      : 'Leo arrive bientot dans cette conversation...',
+                  hintText:
+                      stage == 'new'
+                          ? 'Leo commencera bientot par vous guider pas a pas...'
+                          : 'Leo arrive bientot dans cette conversation...',
                   hintStyle: AppTypography.bodySmall.copyWith(color: muted),
                   filled: true,
                   fillColor: AppColors.surfaceFor(context),

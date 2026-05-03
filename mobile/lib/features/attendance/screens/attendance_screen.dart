@@ -14,36 +14,39 @@ class AttendanceScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     final attState = ref.watch(attendanceProvider);
-    final isManager = authState.employee?.isManager == true ||
+    final isManager =
+        authState.employee?.isManager == true ||
         attState.context?['mode'] == 'collection';
 
     return Scaffold(
       body: SafeArea(
-        child: attState.error != null &&
-                attState.error!.contains('NOT_IMPLEMENTED')
-            ? _buildStubScreen(context, ref)
-            : RefreshIndicator(
-                onRefresh: () =>
-                    ref.read(attendanceProvider.notifier).loadTodayData(),
-                child: ListView(
-                  padding: const EdgeInsets.all(24.0),
-                  children: [
-                    _buildHeader(context, authState, isManager),
-                    const SizedBox(height: 32),
-                    isManager
-                        ? _buildManagerOverviewCard(context, ref, attState)
-                        : _buildActionCard(context, ref, attState),
-                    const SizedBox(height: 32),
-                    if (!isManager) _buildSummaryCard(context, attState),
-                    if (attState.notice != null) ...[
-                      _buildNoticeCard(context, attState.notice!),
+        child:
+            attState.error != null &&
+                    attState.error!.contains('NOT_IMPLEMENTED')
+                ? _buildStubScreen(context, ref)
+                : RefreshIndicator(
+                  onRefresh:
+                      () =>
+                          ref.read(attendanceProvider.notifier).loadTodayData(),
+                  child: ListView(
+                    padding: const EdgeInsets.all(24.0),
+                    children: [
+                      _buildHeader(context, authState, isManager),
                       const SizedBox(height: 32),
+                      isManager
+                          ? _buildManagerOverviewCard(context, ref, attState)
+                          : _buildActionCard(context, ref, attState),
+                      const SizedBox(height: 32),
+                      if (!isManager) _buildSummaryCard(context, attState),
+                      if (attState.notice != null) ...[
+                        _buildNoticeCard(context, attState.notice!),
+                        const SizedBox(height: 32),
+                      ],
+                      const SizedBox(height: 32),
+                      _buildActions(context, ref, attState, isManager),
                     ],
-                    const SizedBox(height: 32),
-                    _buildActions(context, ref, attState, isManager),
-                  ],
+                  ),
                 ),
-              ),
       ),
     );
   }
@@ -171,8 +174,8 @@ class AttendanceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             OutlinedButton(
-              onPressed: () =>
-                  ref.read(attendanceProvider.notifier).loadTodayData(),
+              onPressed:
+                  () => ref.read(attendanceProvider.notifier).loadTodayData(),
               child: const Text('Reessayer'),
             ),
           ] else if (state.todayLog?.checkIn != null)
@@ -198,10 +201,11 @@ class AttendanceScreen extends ConsumerWidget {
   ) {
     final items = state.context?['items'];
     final employees = items is List ? items : const [];
-    final checkedInCount = employees.whereType<Map>().where((item) {
-      final status = item['status']?.toString();
-      return status != null && status != 'absent';
-    }).length;
+    final checkedInCount =
+        employees.whereType<Map>().where((item) {
+          final status = item['status']?.toString();
+          return status != null && status != 'absent';
+        }).length;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -246,8 +250,8 @@ class AttendanceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             OutlinedButton(
-              onPressed: () =>
-                  ref.read(attendanceProvider.notifier).loadTodayData(),
+              onPressed:
+                  () => ref.read(attendanceProvider.notifier).loadTodayData(),
               child: const Text('Actualiser le suivi'),
             ),
           ],

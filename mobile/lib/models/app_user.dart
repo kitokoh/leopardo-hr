@@ -44,14 +44,16 @@ class AppUser {
       status: json['status'] as String? ?? 'active',
       accountType: json['account_type'] as String? ?? 'user',
       hasCompany: json['has_company'] as bool? ?? false,
-      companyRequests: (json['company_requests'] as List<dynamic>?)
+      companyRequests:
+          (json['company_requests'] as List<dynamic>?)
               ?.map(
                 (e) =>
                     CompanyRequestSummary.fromJson(e as Map<String, dynamic>),
               )
               .toList() ??
           [],
-      employeeLinks: (json['employee_links'] as List<dynamic>?)
+      employeeLinks:
+          (json['employee_links'] as List<dynamic>?)
               ?.map(
                 (e) => EmployeeLinkSummary.fromJson(e as Map<String, dynamic>),
               )

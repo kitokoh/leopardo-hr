@@ -160,7 +160,8 @@ class LeopardoApp extends ConsumerWidget {
     final preferences = ref.watch(appPreferencesProvider);
     final deviceLanguage =
         PlatformDispatcher.instance.locale.languageCode.toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
