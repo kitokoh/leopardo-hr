@@ -24,6 +24,28 @@
 - Web : Ajout de modules vitrine (landing page) avec composants réutilisables
 - Web : Mise à jour des dépendances (package.json, package-lock.json)
 - Web : Sections Hero, Features, Pricing, Testimonials, FAQ, CTA avec animations
+## [4.1.85] - 2026-05-03
+
+### Auth - Self-registration, Google Sign-In & Company Requests
+
+- API : nouveau modele `User` (schema public) pour les comptes ordinaires sans entreprise, avec support Sanctum et Google ID.
+- API : `UserAuthService` — inscription email/mot de passe, connexion, Google Sign-In avec emission de tokens et verrouillage de compte.
+- API : `UserAuthController` — register, login, googleSignIn, me, updateProfile, changePassword, logout.
+- API : `CompanyRequestController` — soumission et consultation de demandes de creation d'entreprise (scope user).
+- API : `UserEmployeeLinkController` — liaison d'un compte ordinaire a un employe par le manager.
+- API : `PlatformCompanyRequestController` — validation/rejet des demandes par le super-admin.
+- API : migration `2026_05_02_100001` — tables `users`, `company_requests`, `user_employee_links`.
+- API : guard `user_api` (Sanctum + users provider) dans `config/auth.php`.
+- API : routes `/v1/user/*` et `/v1/platform/company-requests/*`.
+- API : i18n fr, en, tr, ar pour le module user.
+- Mobile : packages `flutter_animate`, `google_sign_in`, `cached_network_image`, `flutter_haptic`.
+- Mobile : `UserRegisterScreen` — inscription avec email/mot de passe + Google Sign-In, design moderne avec animations.
+- Mobile : `UserLoginScreen` — connexion compte personnel avec Google Sign-In.
+- Mobile : `UserHomeScreen` — espace personnel avec acces Placard, creation d'entreprise, liens employe.
+- Mobile : `CompanyRequestScreen` — formulaire de soumission de creation d'entreprise.
+- Mobile : modele `AppUser`, `UserAuthRepository`, `UserAuthProvider` (Riverpod StateNotifier).
+- Mobile : `WelcomeScreen` mis a jour avec bouton "Creer un compte personnel".
+- Mobile : `LoginScreen` mis a jour avec lien "Connexion compte personnel".
 
 ## [4.1.84] - 2026-04-30 
 ### Mobile-API Synchronization - Système de synchronisation automatique des fonctionnalités
