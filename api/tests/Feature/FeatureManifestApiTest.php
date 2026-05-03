@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Employee;
 use App\Models\Feature;
-use Tests\RefreshTenantDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -16,6 +16,7 @@ class FeatureManifestApiTest extends TestCase
     use RefreshTenantDatabase;
 
     private Employee $user;
+
     private Employee $adminUser;
 
     protected function setUp(): void
@@ -24,12 +25,12 @@ class FeatureManifestApiTest extends TestCase
 
         // Créer un utilisateur normal
         $this->user = Employee::factory()->create([
-            'role' => 'employee'
+            'role' => 'employee',
         ]);
 
         // Créer un utilisateur admin
         $this->adminUser = Employee::factory()->create([
-            'role' => 'admin'
+            'role' => 'admin',
         ]);
     }
 
@@ -48,10 +49,10 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->user);
-        
+
         Feature::factory()->count(3)->create([
             'status' => 'active',
-            'mobile_version_min' => '1.0.0'
+            'mobile_version_min' => '1.0.0',
         ]);
 
         // Act
@@ -74,17 +75,17 @@ class FeatureManifestApiTest extends TestCase
                             'description',
                             'endpoint',
                             'methods',
-                            'permissions'
-                        ]
+                            'permissions',
+                        ],
                     ],
                     'user_id',
-                    'user_role'
+                    'user_role',
                 ],
                 'meta' => [
                     'generated_for_user',
                     'mobile_version',
-                    'api_version'
-                ]
+                    'api_version',
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -96,13 +97,13 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->user);
-        
+
         // Fonctionnalité compatible avec version 1.0.0
         Feature::factory()->create([
             'key' => 'compatible_feature',
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Fonctionnalité incompatible (version trop récente)
@@ -110,7 +111,7 @@ class FeatureManifestApiTest extends TestCase
             'key' => 'incompatible_feature',
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act
@@ -123,13 +124,13 @@ class FeatureManifestApiTest extends TestCase
                 'data' => [
                     'mobile_version',
                     'total_features',
-                    'features'
-                ]
+                    'features',
+                ],
             ]);
 
         $features = $response->json('data.features');
         $featureKeys = array_column($features, 'key');
-        
+
         $this->assertContains('compatible_feature', $featureKeys);
         $this->assertNotContains('incompatible_feature', $featureKeys);
     }
@@ -139,11 +140,11 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->user);
-        
+
         $feature = Feature::factory()->create([
             'key' => 'test_feature',
             'permissions' => [], // Aucune permission requise
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act
@@ -158,8 +159,8 @@ class FeatureManifestApiTest extends TestCase
                     'title',
                     'description',
                     'endpoint',
-                    'methods'
-                ]
+                    'methods',
+                ],
             ]);
 
         $this->assertEquals('test_feature', $response->json('data.key'));
@@ -178,7 +179,7 @@ class FeatureManifestApiTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'success' => false,
-                'message' => 'Feature not found'
+                'message' => 'Feature not found',
             ]);
     }
 
@@ -187,19 +188,19 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->user);
-        
+
         // Fonctionnalité sans permissions (accessible à tous)
         Feature::factory()->create([
             'key' => 'public_feature',
             'permissions' => [],
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Fonctionnalité avec permissions (non accessible)
         Feature::factory()->create([
             'key' => 'restricted_feature',
             'permissions' => ['admin.manage'],
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act
@@ -207,10 +208,10 @@ class FeatureManifestApiTest extends TestCase
 
         // Assert
         $response->assertStatus(200);
-        
+
         $features = $response->json('data.features');
         $featureKeys = array_column($features, 'key');
-        
+
         $this->assertContains('public_feature', $featureKeys);
         $this->assertNotContains('restricted_feature', $featureKeys);
     }
@@ -220,11 +221,11 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->user);
-        
+
         Feature::factory()->create([
             'key' => 'restricted_feature',
             'permissions' => ['admin.manage'],
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act
@@ -234,7 +235,7 @@ class FeatureManifestApiTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'message' => 'Insufficient permissions'
+                'message' => 'Insufficient permissions',
             ]);
     }
 
@@ -243,7 +244,7 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->adminUser);
-        
+
         Feature::factory()->count(5)->create(['status' => 'active']);
         Feature::factory()->count(2)->create(['status' => 'deprecated']);
 
@@ -259,8 +260,8 @@ class FeatureManifestApiTest extends TestCase
                     'active_features',
                     'inactive_features',
                     'by_status',
-                    'cache_status'
-                ]
+                    'cache_status',
+                ],
             ]);
 
         $this->assertEquals(7, $response->json('data.total_features'));
@@ -280,7 +281,7 @@ class FeatureManifestApiTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'message' => 'Admin access required'
+                'message' => 'Admin access required',
             ]);
     }
 
@@ -301,9 +302,9 @@ class FeatureManifestApiTest extends TestCase
                     'new',
                     'updated',
                     'removed',
-                    'errors'
+                    'errors',
                 ],
-                'message'
+                'message',
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -322,7 +323,7 @@ class FeatureManifestApiTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'success' => false,
-                'message' => 'Admin access required'
+                'message' => 'Admin access required',
             ]);
     }
 
@@ -331,22 +332,22 @@ class FeatureManifestApiTest extends TestCase
     {
         // Arrange
         Sanctum::actingAs($this->user);
-        
+
         Feature::factory()->create([
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => '1.5.0',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Feature::factory()->create([
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act - Version 1.0.0 (devrait voir la première fonctionnalité)
         $response1 = $this->getJson('/api/v1/features/manifest?mobile_version=1.0.0');
-        
+
         // Act - Version 2.0.0 (devrait voir la deuxième fonctionnalité)
         $response2 = $this->getJson('/api/v1/features/manifest?mobile_version=2.0.0');
 
@@ -369,11 +370,11 @@ class FeatureManifestApiTest extends TestCase
 
         // Assert
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $this->assertEquals($this->user->id, $data['user_id']);
         $this->assertEquals('employee', $data['user_role']);
-        
+
         $meta = $response->json('meta');
         $this->assertEquals($this->user->id, $meta['generated_for_user']);
     }

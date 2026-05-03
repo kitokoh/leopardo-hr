@@ -19,23 +19,27 @@ return new class extends Migration
             $table->string('schema_name', 63)->nullable()->change();
         });
 
-        // 2. Update employees in tenant schema
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check");
+        // 2. Update employees in tenant schema — only runs when the table exists
+        // (skipped during public-schema-only CI migrations)
+        if (Schema::hasTable('employees')) {
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check');
+            }
+
+            Schema::table('employees', function (Blueprint $table) {
+                $table->uuid('company_id')->nullable()->change();
+                $table->string('role', 20)->default('employee')->change();
+            });
+
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement("ALTER TABLE employees ADD CONSTRAINT employees_role_check CHECK (role IN ('manager', 'employee', 'ordinary'))");
+            }
         }
 
-        Schema::table('employees', function (Blueprint $table) {
-            $table->uuid('company_id')->nullable()->change();
-            $table->string('role', 20)->default('employee')->change();
-        });
-
         if (DB::getDriverName() === 'pgsql') {
-             DB::statement("ALTER TABLE employees ADD CONSTRAINT employees_role_check CHECK (role IN ('manager', 'employee', 'ordinary'))");
-             DB::statement('SET search_path TO public');
+            DB::statement('SET search_path TO public');
         }
     }
 
-    public function down(): void
-    {
-    }
+    public function down(): void {}
 };
