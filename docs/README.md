@@ -1,5 +1,5 @@
 # LEOPARDO RH - Documentation Technique
-## Version documentaire 4.1.77 | Avril 2026
+## Version documentaire 4.1.85 | Mai 2026
 ## Reference programme : `PILOTAGE.md` fait foi
 
 ---
@@ -84,6 +84,7 @@ Toute nouvelle documentation ajoutee dans ce depot doit respecter ces regles :
 |------|---------|------------------|
 | Etat reel API/backend sur `main` | `GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` | canonique pour l'etat courant |
 | Pilotage programme | `../PILOTAGE.md` | source de verite operationnelle |
+| Decision officielle GO MVP | `GESTION_PROJET/GO_NO_GO_MVP.md` | perimetre valide et decision GO |
 | Contrat API cible | `dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` | cible produit, pas garantie d'implementation complete |
 | APV / architecture produit | `REFERENTIEL_PRODUIT/APV.md` | canonique pour la vision produit active |
 | Roadmap produit | `REFERENTIEL_PRODUIT/ROADMAP.md` | canonique pour l'ordre d'execution et les phases |
