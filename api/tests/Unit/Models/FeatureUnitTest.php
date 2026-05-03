@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class FeatureUnitTest extends TestCase
 {
-    public function test_feature_model_has_correct_fillable_fields()
+    public function test_feature_model_has_correct_fillable_fields(): void
     {
         $feature = new Feature;
 
@@ -31,7 +31,7 @@ class FeatureUnitTest extends TestCase
         $this->assertEquals($expectedFillable, $feature->getFillable());
     }
 
-    public function test_feature_model_has_correct_casts()
+    public function test_feature_model_has_correct_casts(): void
     {
         $feature = new Feature;
 
@@ -51,7 +51,7 @@ class FeatureUnitTest extends TestCase
         }
     }
 
-    public function test_to_manifest_array_returns_correct_structure()
+    public function test_to_manifest_array_returns_correct_structure(): void
     {
         $feature = new Feature;
 
@@ -93,7 +93,7 @@ class FeatureUnitTest extends TestCase
         $this->assertEquals(['fields' => []], $manifestArray['form_schema']);
     }
 
-    public function test_to_manifest_array_handles_null_metadata()
+    public function test_to_manifest_array_handles_null_metadata(): void
     {
         $feature = new Feature;
 
@@ -109,7 +109,7 @@ class FeatureUnitTest extends TestCase
         $feature->mobile_version_max = null;
         $feature->api_version = '1.0.0';
         $feature->status = 'active';
-        $feature->metadata = null;
+        $feature->setRawAttributes(['metadata' => null] + $feature->getAttributes(), true);
 
         $manifestArray = $feature->toManifestArray();
 
@@ -118,7 +118,7 @@ class FeatureUnitTest extends TestCase
         $this->assertNull($manifestArray['list_schema']);
     }
 
-    public function test_to_manifest_array_handles_empty_metadata()
+    public function test_to_manifest_array_handles_empty_metadata(): void
     {
         $feature = new Feature;
 
@@ -143,7 +143,7 @@ class FeatureUnitTest extends TestCase
         $this->assertNull($manifestArray['list_schema']);
     }
 
-    public function test_model_uses_correct_table_name()
+    public function test_model_uses_correct_table_name(): void
     {
         $feature = new Feature;
 

@@ -2,28 +2,36 @@
 
 namespace App\Traits;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 trait BelongsToCompany
 {
     protected static function bootBelongsToCompany(): void
     {
         static::addGlobalScope('company', function (Builder $builder): void {
-            if (app()->bound('current_company')) {
-                $builder->where(
-                    $builder->getModel()->qualifyColumn('company_id'),
-                    app('current_company')->id
-                );
-            }
-        });
+            $currentCompany = app()->bound('current_company') ? app('current_company') : null;
 
-        static::creating(function ($model): void {
-            if (! app()->bound('current_company')) {
+            if (! $currentCompany instanceof Company) {
                 return;
             }
 
-            if (empty($model->company_id)) {
-                $model->company_id = app('current_company')->id;
+            $builder->where(
+                $builder->getModel()->qualifyColumn('company_id'),
+                $currentCompany->id
+            );
+        });
+
+        static::creating(function (Model $model): void {
+            $currentCompany = app()->bound('current_company') ? app('current_company') : null;
+
+            if (! $currentCompany instanceof Company) {
+                return;
+            }
+
+            if (empty($model->getAttribute('company_id'))) {
+                $model->setAttribute('company_id', $currentCompany->id);
             }
         });
     }

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Feature;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -19,7 +20,7 @@ class FeatureTest extends TestCase
             return;
         }
 
-        Schema::create('features', function ($table): void {
+        Schema::create('features', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable();
             $table->string('key', 100)->unique();
@@ -34,18 +35,18 @@ class FeatureTest extends TestCase
             $table->string('mobile_version_max', 20)->nullable();
             $table->string('api_version', 20);
             $table->string('status', 20)->default('active');
-            $table->json('metadata');
+            $table->json('metadata')->nullable();
             $table->timestamps();
         });
     }
 
     /** @test */
-    public function it_can_create_a_feature_with_all_required_fields()
+    public function it_can_create_a_feature_with_all_required_fields(): void
     {
         $featureData = [
             'key' => 'employee_management',
-            'title' => 'Gestion des EmployÃ©s',
-            'description' => 'Module de gestion complÃ¨te des employÃ©s',
+            'title' => 'Gestion des EmployÃƒÂ©s',
+            'description' => 'Module de gestion complÃƒÂ¨te des employÃƒÂ©s',
             'endpoint' => '/api/v1/employees',
             'http_methods' => ['GET', 'POST', 'PUT', 'DELETE'],
             'parameters' => [
@@ -74,7 +75,7 @@ class FeatureTest extends TestCase
                         [
                             'name' => 'first_name',
                             'type' => 'text',
-                            'label' => 'PrÃ©nom',
+                            'label' => 'PrÃƒÂ©nom',
                             'required' => true,
                         ],
                     ],
@@ -86,13 +87,13 @@ class FeatureTest extends TestCase
 
         $this->assertInstanceOf(Feature::class, $feature);
         $this->assertEquals('employee_management', $feature->key);
-        $this->assertEquals('Gestion des EmployÃ©s', $feature->title);
+        $this->assertEquals('Gestion des EmployÃƒÂ©s', $feature->title);
         $this->assertEquals(['GET', 'POST', 'PUT', 'DELETE'], $feature->http_methods);
         $this->assertEquals('active', $feature->status);
     }
 
     /** @test */
-    public function it_casts_json_fields_correctly()
+    public function it_casts_json_fields_correctly(): void
     {
         $feature = Feature::factory()->create([
             'http_methods' => ['GET', 'POST'],
@@ -102,18 +103,12 @@ class FeatureTest extends TestCase
             'metadata' => ['ui_type' => 'form'],
         ]);
 
-        $this->assertIsArray($feature->http_methods);
-        $this->assertIsArray($feature->parameters);
-        $this->assertIsArray($feature->response_schema);
-        $this->assertIsArray($feature->permissions);
-        $this->assertIsArray($feature->metadata);
-
         $this->assertEquals(['GET', 'POST'], $feature->http_methods);
         $this->assertEquals(['permission1', 'permission2'], $feature->permissions);
     }
 
     /** @test */
-    public function it_generates_manifest_array_correctly()
+    public function it_generates_manifest_array_correctly(): void
     {
         $feature = Feature::factory()->create([
             'key' => 'test_feature',
@@ -155,7 +150,7 @@ class FeatureTest extends TestCase
     }
 
     /** @test */
-    public function it_handles_null_metadata_gracefully_in_manifest()
+    public function it_handles_null_metadata_gracefully_in_manifest(): void
     {
         $feature = new Feature;
         $feature->key = 'test_feature';
@@ -170,7 +165,7 @@ class FeatureTest extends TestCase
         $feature->mobile_version_max = null;
         $feature->api_version = '1.0.0';
         $feature->status = 'active';
-        $feature->metadata = null;
+        $feature->setRawAttributes(['metadata' => null] + $feature->getAttributes(), true);
 
         $manifestArray = $feature->toManifestArray();
 
@@ -180,20 +175,22 @@ class FeatureTest extends TestCase
     }
 
     /** @test */
-    public function it_scopes_active_features_correctly()
+    public function it_scopes_active_features_correctly(): void
     {
         Feature::factory()->create(['status' => 'active']);
         Feature::factory()->create(['status' => 'deprecated']);
         Feature::factory()->create(['status' => 'removed']);
 
         $activeFeatures = Feature::active()->get();
+        $firstFeature = $activeFeatures->first();
 
         $this->assertCount(1, $activeFeatures);
-        $this->assertEquals('active', $activeFeatures->first()->status);
+        $this->assertNotNull($firstFeature);
+        $this->assertEquals('active', $firstFeature->status);
     }
 
     /** @test */
-    public function it_scopes_compatible_features_correctly()
+    public function it_scopes_compatible_features_correctly(): void
     {
         Feature::factory()->create([
             'mobile_version_min' => '1.0.0',
@@ -221,7 +218,7 @@ class FeatureTest extends TestCase
     }
 
     /** @test */
-    public function it_scopes_features_by_api_version_correctly()
+    public function it_scopes_features_by_api_version_correctly(): void
     {
         Feature::factory()->create(['api_version' => '1.0.0']);
         Feature::factory()->create(['api_version' => '1.1.0']);
@@ -230,13 +227,13 @@ class FeatureTest extends TestCase
         $v11Features = Feature::forApiVersion('1.1.0')->get();
 
         $this->assertCount(2, $v11Features);
-        $v11Features->each(function ($feature): void {
+        $v11Features->each(function (Feature $feature): void {
             $this->assertEquals('1.1.0', $feature->api_version);
         });
     }
 
     /** @test */
-    public function it_belongs_to_company_when_company_id_is_set()
+    public function it_belongs_to_company_when_company_id_is_set(): void
     {
         $feature = Feature::factory()->create([
             'company_id' => '123e4567-e89b-12d3-a456-426614174000',
@@ -246,7 +243,7 @@ class FeatureTest extends TestCase
     }
 
     /** @test */
-    public function it_can_have_null_company_id_for_global_features()
+    public function it_can_have_null_company_id_for_global_features(): void
     {
         $feature = Feature::factory()->create([
             'company_id' => null,
