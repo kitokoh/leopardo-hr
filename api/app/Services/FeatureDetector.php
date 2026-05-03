@@ -294,7 +294,7 @@ class FeatureDetector implements FeatureDetectorInterface
      * @param array $metadata
      * @return array
      */
-    private function buildFeatureData(array $routeData, array $metadata): array
+    protected function buildFeatureData(array $routeData, array $metadata): array
     {
         return [
             'key' => $this->generateFeatureKey($routeData),
