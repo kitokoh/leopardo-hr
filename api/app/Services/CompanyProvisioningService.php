@@ -46,7 +46,10 @@ class CompanyProvisioningService
                 'notes' => $payload['notes'] ?? null,
             ]);
 
-            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+            }
+
             $this->tenantManager->setTenant($company);
 
             try {

@@ -23,12 +23,12 @@ class EnsureEmployeeMiddleware
         }
 
         if (($employee->status ?? null) !== 'active') {
-            abort(403, 'Compte inactif.');
+            abort(403, 'Compte inactif.'); }
         }
 
         $company = $employee->company;
         if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
-            abort(403, 'Societe suspendue ou expiree.');
+            abort(403, 'Societe suspendue ou expiree.'); }
         }
 
         return $next($request);

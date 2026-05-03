@@ -9,6 +9,8 @@ import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/auth/screens/login_screen.dart';
 import 'package:leopardo_rh/features/auth/screens/register_screen.dart';
 import 'package:leopardo_rh/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_rh/features/personal_space/screens/personal_space_screen.dart';
+import 'package:leopardo_rh/features/personal_space/screens/company_request_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
@@ -47,7 +49,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       final onPublic = publicRoutes.contains(location);
 
       if (!isAuth && !onPublic) return '/welcome';
-      if (isAuth && onPublic) return '/';
+      if (isAuth) {
+        final isOrdinary = authState.employee?.role == 'ordinary';
+        if (isOrdinary &&
+            !location.startsWith('/personal') &&
+            location != '/request-company') {
+          return '/personal';
+        }
+        if (!isOrdinary && location.startsWith('/personal')) {
+          return '/';
+        }
+        if (onPublic) return isOrdinary ? '/personal' : '/';
+      }
       return null;
     },
     routes: [
@@ -117,6 +130,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/personal',
+        builder: (context, state) => const PersonalSpaceScreen(),
+      ),
+      GoRoute(
+        path: '/request-company',
+        builder: (context, state) => const CompanyRequestScreen(),
       ),
     ],
   );

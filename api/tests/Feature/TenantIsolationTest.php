@@ -34,8 +34,13 @@ class TenantIsolationTest extends TestCase
             $table->char('language', 2)->default('fr');
             $table->string('timezone', 50)->default('Africa/Algiers');
             $table->char('currency', 3)->default('DZD');
-            $table->jsonb('features')->default(\DB::raw("'{}'::jsonb"));
-            $table->jsonb('metadata')->default(\DB::raw("'{}'::jsonb"));
+            if (\DB::getDriverName() === 'pgsql') {
+                $table->jsonb('features')->default(\DB::raw("'{}'::jsonb"));
+                $table->jsonb('metadata')->default(\DB::raw("'{}'::jsonb"));
+            } else {
+                $table->text('features')->nullable();
+                $table->text('metadata')->nullable();
+            }
             $table->timestamps();
         });
 

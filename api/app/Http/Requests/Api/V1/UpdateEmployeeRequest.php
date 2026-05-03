@@ -16,7 +16,7 @@ class UpdateEmployeeRequest extends FormRequest
 
     public function rules(): array
     {
-        $employeeId = $this->route('employee');
+        $employeeId = $this->route('employee'); }
         $companyId = $this->user()?->company_id
             ?? (app()->bound('current_company') ? app('current_company')->id : null);
 
@@ -105,11 +105,11 @@ class UpdateEmployeeRequest extends FormRequest
         $schemaName = $company->schema_name;
 
         if ($company->tenancy_type === 'schema' && $schemaName !== '') {
-            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO '.$company->getSafeSearchPath());
 
             return;
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
     }
 }

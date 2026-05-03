@@ -7,6 +7,7 @@ use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ChangePasswordRequest;
 use App\Http\Requests\Api\V1\LoginRequest;
+use App\Http\Requests\Api\V1\StoreRegistrationRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
@@ -16,6 +17,7 @@ use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -43,12 +45,35 @@ class AuthController extends Controller
             ->response();
     }
 
+    public function register(StoreRegistrationRequest $request): JsonResponse
+    {
+        $employee = Employee::create([
+            'first_name' => $request->validated('first_name'),
+            'last_name' => $request->validated('last_name'),
+            'email' => $request->validated('email'),
+            'password_hash' => Hash::make($request->validated('password')),
+            'role' => 'ordinary',
+            'status' => 'active',
+        ]);
+
+        $tokenName = $request->validated('device_name') ?: 'api';
+        $token = $employee->createToken($tokenName);
+
+        return (new EmployeeResource($employee))
+            ->additional([
+                'token' => $token->plainTextToken,
+                'token_type' => 'Bearer',
+            ])
+            ->response()
+            ->setStatusCode(201);
+    }
+
     public function me(Request $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        if ($employee->company === null) {
+        if ($employee->company === null && $employee->role !== 'ordinary') {
             throw new CompanyNotFoundException;
         }
 
@@ -120,5 +145,80 @@ class AuthController extends Controller
         }
 
         return new JsonResponse(['message' => 'LOGGED_OUT']);
+    }
+
+    public function redirectToGoogle(): mixed
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+    public function handleGoogleCallback(): JsonResponse
+    {
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
+        }
+
+        $employee = Employee::where('email', $googleUser->getEmail())->first();
+
+        if (! $employee) {
+            $employee = Employee::create([
+                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
+                'last_name' => $googleUser->offsetGet('family_name') ?? '',
+                'email' => $googleUser->getEmail(),
+                'password_hash' => Hash::make(str()->random(24)),
+                'role' => 'ordinary',
+                'status' => 'active',
+            ]);
+        }
+
+        $token = $employee->createToken('google-auth');
+
+        return (new EmployeeResource($employee))
+            ->additional([
+                'token' => $token->plainTextToken,
+                'token_type' => 'Bearer',
+            ])
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function handleGoogleToken(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'token' => 'required|string',
+            'device_name' => 'nullable|string',
+        ]);
+
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->userFromToken($validated['token']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
+        }
+
+        $employee = Employee::where('email', $googleUser->getEmail())->first();
+
+        if (! $employee) {
+            $employee = Employee::create([
+                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
+                'last_name' => $googleUser->offsetGet('family_name') ?? '',
+                'email' => $googleUser->getEmail(),
+                'password_hash' => Hash::make(str()->random(24)),
+                'role' => 'ordinary',
+                'status' => 'active',
+            ]);
+        }
+
+        $tokenName = $validated['device_name'] ?? 'google-auth';
+        $token = $employee->createToken($tokenName);
+
+        return (new EmployeeResource($employee))
+            ->additional([
+                'token' => $token->plainTextToken,
+                'token_type' => 'Bearer',
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 }

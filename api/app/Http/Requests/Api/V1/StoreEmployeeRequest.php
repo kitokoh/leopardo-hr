@@ -75,20 +75,20 @@ class StoreEmployeeRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
-            $role = $this->input('role', 'employee');
-            $password = $this->input('password');
+            $role = $this->input('role', 'employee'); }
+            $password = $this->input('password'); }
             $sendInvitation = filter_var($this->input('send_invitation', false), FILTER_VALIDATE_BOOLEAN);
 
             if (! $password && ! $sendInvitation) {
-                $validator->errors()->add('password', 'Le mot de passe ou l\'invitation email est requis.');
+                $validator->errors()->add('password', 'Le mot de passe ou l\'invitation email est requis.'); }
             }
 
             if ($role === 'manager' && ! $this->input('manager_role')) {
-                $validator->errors()->add('manager_role', 'Le type de manager est requis.');
+                $validator->errors()->add('manager_role', 'Le type de manager est requis.'); }
             }
 
             if ($role === 'manager' && $this->user()?->isManager() && $this->input('manager_role') === 'principal') {
-                $validator->errors()->add('manager_role', 'Seul le super admin peut creer un manager principal.');
+                $validator->errors()->add('manager_role', 'Seul le super admin peut creer un manager principal.'); }
             }
         });
     }
@@ -109,11 +109,11 @@ class StoreEmployeeRequest extends FormRequest
         $schemaName = $company->schema_name;
 
         if ($company->tenancy_type === 'schema' && $schemaName !== '') {
-            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO '.$company->getSafeSearchPath());
 
             return;
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
     }
 }

@@ -1,46 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
-/// Ecran d'information pour la creation de compte.
-///
-/// Leopardo RH fonctionne par invitation : un manager / RH envoie un lien
-/// d'invitation (table `user_invitations`) et l'employe active son compte
-/// avec un mot de passe. Il n'existe pas d'auto-inscription publique.
-///
-/// Cet ecran l'explique clairement et propose les deux chemins utiles :
-///  - "J'ai deja recu une invitation" (retour vers la connexion)
-///  - "Je veux etre contacte quand l'inscription libre sera ouverte" (capture
-///    d'email locale, pas encore branchee au backend — UX placeholder).
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
-  bool _submitted = false;
+  final _passwordController = TextEditingController();
 
   @override
   void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
     FocusScope.of(context).unfocus();
-    setState(() => _submitted = true);
+
+    final success = await ref.read(authProvider.notifier).register(
+      firstName: _firstNameController.text.trim(),
+      lastName: _lastNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (success && mounted) {
+      context.go('/');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
     return Scaffold(
       backgroundColor: AppColors.bgDark,
       appBar: AppBar(
@@ -66,13 +74,99 @@ class _RegisterScreenState extends State<RegisterScreen> {
             children: [
               const _RegisterHero(),
               const SizedBox(height: 28),
-              const _InvitationExplainerCard(),
-              const SizedBox(height: 16),
-              _RequestAccessCard(
-                formKey: _formKey,
-                controller: _emailController,
-                submitted: _submitted,
-                onSubmit: _submit,
+              Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceFor(context),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.borderFor(context)),
+                ),
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Créer votre compte',
+                        style: AppTypography.subtitle.copyWith(
+                          color: AppColors.textPrimaryFor(context),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _firstNameController,
+                        textInputAction: TextInputAction.next,
+                        decoration: _fieldDecoration(
+                          context,
+                          label: 'Prénom',
+                          icon: Icons.person_outline,
+                        ),
+                        validator: (v) =>
+                            (v ?? '').isEmpty ? 'Obligatoire' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _lastNameController,
+                        textInputAction: TextInputAction.next,
+                        decoration: _fieldDecoration(
+                          context,
+                          label: 'Nom',
+                          icon: Icons.person_outline,
+                        ),
+                        validator: (v) =>
+                            (v ?? '').isEmpty ? 'Obligatoire' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        decoration: _fieldDecoration(
+                          context,
+                          label: 'Email',
+                          icon: Icons.email_outlined,
+                        ),
+                        validator: (value) {
+                          final email = value?.trim() ?? '';
+                          if (email.isEmpty) return 'Email obligatoire';
+                          if (!email.contains('@') || !email.contains('.')) {
+                            return 'Email invalide';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                        decoration: _fieldDecoration(
+                          context,
+                          label: 'Mot de passe',
+                          icon: Icons.lock_outline,
+                        ),
+                        validator: (v) => (v ?? '').length < 8
+                            ? '8 caractères minimum'
+                            : null,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: authState.isLoading ? null : _submit,
+                        child: authState.isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text('Créer mon compte'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
               Center(
@@ -131,7 +225,7 @@ class _RegisterHero extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Le compte est cree par votre employeur via une invitation.',
+          'Rejoignez la plateforme RH moderne.',
           textAlign: TextAlign.center,
           style: AppTypography.bodySmall.copyWith(
             color: AppColors.textMutedDark,
@@ -142,233 +236,15 @@ class _RegisterHero extends StatelessWidget {
   }
 }
 
-class _InvitationExplainerCard extends StatelessWidget {
-  const _InvitationExplainerCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.verified_user_outlined, color: AppColors.rh, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Comment acceder a l\'application',
-                style: AppTypography.subtitle.copyWith(
-                  color: AppColors.textDark,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          const _InvitationStep(
-            number: '1',
-            text:
-                'Votre manager ou votre RH ajoute votre email dans Leopardo RH.',
-          ),
-          const SizedBox(height: 10),
-          const _InvitationStep(
-            number: '2',
-            text:
-                'Vous recevez un email d\'invitation avec un lien d\'activation.',
-          ),
-          const SizedBox(height: 10),
-          const _InvitationStep(
-            number: '3',
-            text:
-                'Vous definissez votre mot de passe, puis vous vous connectez ici.',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InvitationStep extends StatelessWidget {
-  const _InvitationStep({required this.number, required this.text});
-
-  final String number;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.rh.withValues(alpha: 0.15),
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.rh.withValues(alpha: 0.4)),
-          ),
-          child: Text(
-            number,
-            style: AppTypography.caption.copyWith(
-              color: AppColors.rh,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            text,
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RequestAccessCard extends StatelessWidget {
-  const _RequestAccessCard({
-    required this.formKey,
-    required this.controller,
-    required this.submitted,
-    required this.onSubmit,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TextEditingController controller;
-  final bool submitted;
-  final VoidCallback onSubmit;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.schedule_outlined, color: AppColors.warning, size: 22),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Pas encore d\'entreprise ? Inscrivez-vous a la liste',
-                  style: AppTypography.subtitle.copyWith(
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'L\'inscription libre pour les employes independants arrive. Laissez votre email pour etre prevenu des son ouverture.',
-            style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textMutedDark,
-            ),
-          ),
-          const SizedBox(height: 14),
-          if (submitted)
-            _SuccessTile(email: controller.text.trim())
-          else
-            Form(
-              key: formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFormField(
-                    controller: controller,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => onSubmit(),
-                    decoration: InputDecoration(
-                      labelText: 'Votre email',
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      filled: true,
-                      fillColor: AppColors.bgDark,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: AppColors.borderDark),
-                      ),
-                    ),
-                    validator: (value) {
-                      final email = value?.trim() ?? '';
-                      if (email.isEmpty) return 'Email obligatoire';
-                      if (!email.contains('@') || !email.contains('.')) {
-                        return 'Email invalide';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: onSubmit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.rh,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text('Me prevenir'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SuccessTile extends StatelessWidget {
-  const _SuccessTile({required this.email});
-
-  final String email;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.rh.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.rh.withValues(alpha: 0.35)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.check_circle_outline, color: AppColors.rh),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              email.isEmpty
-                  ? 'Merci, vous etes dans la liste.'
-                  : 'Merci, nous contacterons $email des l\'ouverture.',
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textDark,
-              ),
-            ),
-          ),
-        ],
-      ),
+extension on _RegisterScreenState {
+  InputDecoration _fieldDecoration(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: AppColors.textSecondaryFor(context)),
     );
   }
 }

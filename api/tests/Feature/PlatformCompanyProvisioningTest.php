@@ -70,7 +70,9 @@ class PlatformCompanyProvisioningTest extends TestCase
             'schema_name' => 'shared_tenants',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
 
         $this->assertDatabaseHas('employees', [
             'email' => 'salim.kaci@nouvelle-societe.dz',
@@ -79,7 +81,9 @@ class PlatformCompanyProvisioningTest extends TestCase
             'company_id' => $response->json('data.company.id'),
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
 
         $this->assertDatabaseHas('user_invitations', [
             'email' => 'salim.kaci@nouvelle-societe.dz',

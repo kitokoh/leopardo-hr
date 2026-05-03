@@ -60,8 +60,8 @@ trait CreatesMvpSchema
                 $table->jsonb('features')->default(DB::raw("'{}'::jsonb"));
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
             } else {
-                $table->json('features')->default('{}');
-                $table->json('metadata')->default('{}');
+                $table->text('features')->nullable();
+                $table->text('metadata')->nullable();
             }
             $table->timestamps();
         });
@@ -153,7 +153,7 @@ trait CreatesMvpSchema
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
             } else {
-                $table->json('metadata')->default('{}');
+                $table->text('metadata')->nullable();
             }
             $table->timestamps();
 
@@ -357,7 +357,7 @@ trait CreatesMvpSchema
             if (DB::getDriverName() === 'pgsql') {
                 $table->jsonb('criteria')->default(DB::raw("'[]'::jsonb"));
             } else {
-                $table->json('criteria')->default('[]');
+                $table->text('criteria')->nullable();
             }
             $table->text('strengths')->nullable();
             $table->text('improvements')->nullable();

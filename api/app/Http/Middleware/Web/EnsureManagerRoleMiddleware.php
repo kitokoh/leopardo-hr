@@ -22,7 +22,7 @@ class EnsureManagerRoleMiddleware
         $employee = $request->user();
 
         if (! $employee || ! method_exists($employee, 'isManager') || ! $employee->isManager()) {
-            abort(403, 'Acces reserve aux managers.');
+            abort(403, 'Acces reserve aux managers.'); }
         }
 
         if ($roles === []) {
@@ -30,7 +30,7 @@ class EnsureManagerRoleMiddleware
         }
 
         if (! in_array($employee->manager_role, $roles, true)) {
-            abort(403, 'Sous-role manager insuffisant.');
+            abort(403, 'Sous-role manager insuffisant.'); }
         }
 
         return $next($request);
