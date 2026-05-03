@@ -38,6 +38,7 @@ class AttendanceTodayResource extends JsonResource
         $summary = $estimationService->dailySummaryFromLog($employee, $this->log, $this->log?->date?->toDateString());
 
         return [
+            'id' => $this->log?->id,
             'employee_id' => $employee->id,
             'matricule' => $employee->matricule,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
@@ -47,6 +48,7 @@ class AttendanceTodayResource extends JsonResource
             'hours_worked' => (float) ($this->log?->hours_worked ?? 0.00),
             'overtime_hours' => (float) ($this->log?->overtime_hours ?? 0.00),
             'status' => $this->log?->status ?? 'absent',
+            'late_minutes' => $this->log?->late_minutes,
             'base_gain' => (float) $summary['base_gain'],
             'overtime_gain' => (float) $summary['overtime_gain'],
             'total_estimated' => (float) $summary['total_estimated'],
