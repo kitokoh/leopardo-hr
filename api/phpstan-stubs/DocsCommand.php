@@ -19,7 +19,6 @@ class DocsCommand extends Command
 {
     protected $signature = 'docs';
 
-
     protected function configure(): void
     {
         // stub — overrides vendor class for static analysis only
