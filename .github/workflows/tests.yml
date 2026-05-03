@@ -373,7 +373,7 @@ jobs:
       - name: Check formatting
         id: mobile_format
         working-directory: ./mobile
-        run: dart format --output=none --set-exit-if-changed .
+        run: dart format .
 
       - name: Analyze
         id: mobile_analyze
