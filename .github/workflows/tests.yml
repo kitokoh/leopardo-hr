@@ -189,10 +189,14 @@ jobs:
 
       - name: Run backend unit tests
         working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
       - name: Run backend feature tests
         working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
         run: php artisan test --testsuite=Feature --log-junit=storage/test-results/feature.xml
 
       - name: Upload backend test reports
