@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Illuminate\Foundation\Console;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -13,8 +14,12 @@ use Symfony\Component\Console\Command\Command;
  *
  * @see https://github.com/laravel/framework/issues/DocsCommand
  */
+#[AsCommand(name: 'docs')]
 class DocsCommand extends Command
 {
+    protected $signature = 'docs';
+
+
     protected function configure(): void
     {
         // stub — overrides vendor class for static analysis only

@@ -7,8 +7,10 @@ use App\Exceptions\FeatureSynchronizationException;
 use App\Models\Feature;
 use App\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -29,6 +31,28 @@ class FeatureRegistryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        if (! Schema::hasTable('features')) {
+            Schema::create('features', function (Blueprint $table): void {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('key', 100)->unique();
+                $table->string('title', 200);
+                $table->text('description');
+                $table->string('endpoint', 500);
+                $table->json('http_methods');
+                $table->json('parameters');
+                $table->json('response_schema');
+                $table->json('permissions');
+                $table->json('metadata')->nullable();
+                $table->string('mobile_version_min', 20);
+                $table->string('mobile_version_max', 20)->nullable();
+                $table->string('api_version', 20);
+                $table->string('status', 20)->default('active');
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+            });
+        }
 
         $this->mockDetector = Mockery::mock(FeatureDetectorInterface::class);
         $this->mockCache = Mockery::mock(CacheManager::class);
