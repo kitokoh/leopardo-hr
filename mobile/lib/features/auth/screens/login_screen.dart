@@ -173,6 +173,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 )
                               : const Text('Entrer dans Leopardo RH'),
                         ),
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          onPressed: authState.isLoading
+                              ? null
+                              : () => ref
+                                  .read(authProvider.notifier)
+                                  .loginWithGoogle(),
+                          icon: const Icon(Icons.login),
+                          label: const Text('Continuer avec Google'),
+                        ),
                         const SizedBox(height: 14),
                         Text(
                           'Votre entreprise vous a invite ? Activez d abord votre acces depuis l email recu, puis revenez vous connecter ici.',

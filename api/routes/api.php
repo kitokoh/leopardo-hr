@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OnboardingController;
@@ -17,6 +18,10 @@ Route::prefix('v1')->group(function (): void {
     // Auth (core, hors module)
     Route::middleware(['throttle:10,1'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
+        Route::post('/auth/register', [AuthController::class, 'register']);
+        Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+        Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+        Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
     });
 
@@ -34,6 +39,10 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
+
+        // Company requests for ordinary users
+        Route::get('/company-requests', [CompanyRequestController::class, 'index']);
+        Route::post('/company-requests', [CompanyRequestController::class, 'store']);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
