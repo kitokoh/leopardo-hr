@@ -286,7 +286,7 @@ class FeatureDetector implements FeatureDetectorInterface
     /**
      * Construit les données complètes d'une fonctionnalité
      */
-    private function buildFeatureData(array $routeData, array $metadata): array
+    protected function buildFeatureData(array $routeData, array $metadata): array
     {
         return [
             'key' => $this->generateFeatureKey($routeData),
