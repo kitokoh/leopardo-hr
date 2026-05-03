@@ -1,6 +1,10 @@
 // Hero Section
 export { HeroSection, type HeroSectionProps } from './HeroSection';
 
+// Problem & Solution Components
+export { ProblemSection, type ProblemSectionProps, type ProblemItem } from './ProblemSection';
+export { SolutionSection, type SolutionSectionProps, type SolutionFeature } from './SolutionSection';
+
 // Feature Components
 export { FeatureCard, type FeatureCardProps } from './FeatureCard';
 export { FeaturesSection, type FeaturesSectionProps } from './FeaturesSection';
