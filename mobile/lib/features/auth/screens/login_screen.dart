@@ -186,6 +186,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed: () => context.go('/register'),
                           child: const Text('Je n ai pas encore d invitation'),
                         ),
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: () => context.go('/user-login'),
+                          icon: const Icon(Icons.person_outlined, size: 18),
+                          label: const Text('Connexion compte personnel'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.ia,
+                          ),
+                        ),
                       ],
                     ),
                   ),

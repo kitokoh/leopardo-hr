@@ -104,12 +104,24 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () => context.go('/register'),
-                        child: const Text('Demander un acces'),
+                        child: const Text('Acces employe (invitation)'),
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton.icon(
+                        onPressed: () => context.go('/user-register'),
+                        icon: const Icon(Icons.person_add_outlined, size: 18),
+                        label: const Text('Creer un compte personnel'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.ia,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     Text(
-                      'Invite par votre entreprise ? Utilisez le lien recu par email pour activer votre acces.',
+                      'Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace.',
                       textAlign: TextAlign.center,
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textSecondaryFor(context),
