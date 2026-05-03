@@ -96,6 +96,10 @@ abstract class TestCase extends BaseTestCase
 
     private function isRunningInsideDocker(): bool
     {
+        if (getenv('GITHUB_ACTIONS') === 'true' || getenv('CI') === 'true') {
+            return false;
+        }
+
         return file_exists('/.dockerenv');
     }
 }
