@@ -56,6 +56,7 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''language'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/AuthController.php
@@ -104,6 +105,7 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''manager_note'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
@@ -188,24 +190,28 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''from'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/MeController.php
 
 		-
 			message: '#^Cannot access offset ''month'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/MeController.php
 
 		-
 			message: '#^Cannot access offset ''to'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/MeController.php
 
 		-
 			message: '#^Cannot access offset ''year'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/MeController.php
@@ -314,12 +320,14 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''employee_name'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/OnboardingController.php
 
 		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/OnboardingController.php
@@ -374,30 +382,35 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''code'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
 
 		-
 			message: '#^Cannot access offset ''device_name'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
 
 		-
 			message: '#^Cannot access offset ''email'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
 
 		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
 
 		-
 			message: '#^Cannot access offset ''two_fa_code'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
@@ -428,24 +441,28 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''biometric_mode'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/BiometricAdminController.php
 
 		-
 			message: '#^Cannot access offset ''location_label'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/BiometricAdminController.php
 
 		-
 			message: '#^Cannot access offset ''manager_note'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: app/Http/Controllers/Web/BiometricAdminController.php
 
 		-
 			message: '#^Cannot access offset ''name'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/BiometricAdminController.php
@@ -500,6 +517,7 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/InvitationController.php
@@ -512,12 +530,14 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''action'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/KioskController.php
 
 		-
 			message: '#^Cannot access offset ''identifier'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/KioskController.php
@@ -548,12 +568,14 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''email'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: app/Http/Controllers/Web/PlatformAuthController.php
 
 		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformAuthController.php
@@ -584,36 +606,42 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''cameras''\|''finance''\|''leo_ai''\|''muhasebe'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
 
 		-
 			message: '#^Cannot access offset ''features'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
 
 		-
 			message: '#^Cannot access offset ''manager_email'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
 
 		-
 			message: '#^Cannot access offset ''notes'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
 
 		-
 			message: '#^Cannot access offset ''plan_id'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
 
 		-
 			message: '#^Cannot access offset ''status'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
@@ -644,6 +672,7 @@ parameters:
 
 		-
 			message: '#^Property App\\Models\\Company\:\:\$status \(''active''\|''expired''\|''suspended''\|''trial''\) does not accept mixed\.$#'
+
 			identifier: assign.propertyType
 			count: 1
 			path: app/Http/Controllers/Web/PlatformCompanyController.php
@@ -656,12 +685,14 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''email'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 4
 			path: app/Http/Controllers/Web/WebAuthController.php
 
 		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Http/Controllers/Web/WebAuthController.php
@@ -674,12 +705,14 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''from'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
 			path: app/Http/Controllers/Web/WebEmployeeController.php
 
 		-
 			message: '#^Cannot access offset ''to'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
 			path: app/Http/Controllers/Web/WebEmployeeController.php
@@ -986,6 +1019,7 @@ parameters:
 
 		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
@@ -1502,6 +1536,7 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''rh'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Models/Company.php
@@ -2702,6 +2737,7 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$array \(array\{''required'', ''integer'', ''min\:1''\|Illuminate\\Validation\\Rules\\In\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+
 			identifier: arrayFilter.same
 			count: 1
 			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraAccessTokenRequest.php
@@ -2942,6 +2978,7 @@ parameters:
 
 		-
 			message: '#^Property App\\Models\\AttendanceLog\:\:\$method \(''biometric''\|''manual''\|''mobile''\|''qr''\) does not accept string\.$#'
+
 			identifier: assign.propertyType
 			count: 1
 			path: app/Services/AttendanceService.php
@@ -3104,6 +3141,7 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''total_salarial'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Services/EstimationService.php
@@ -3212,30 +3250,35 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''action'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Services/KioskAttendanceService.php
 
 		-
 			message: '#^Cannot access offset ''biometric_type'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Services/KioskAttendanceService.php
 
 		-
 			message: '#^Cannot access offset ''external_event_id'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Services/KioskAttendanceService.php
 
 		-
 			message: '#^Cannot access offset ''identifier'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Services/KioskAttendanceService.php
 
 		-
 			message: '#^Cannot access offset ''occurred_at'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Services/KioskAttendanceService.php
@@ -3368,6 +3411,7 @@ parameters:
 
 		-
 			message: '#^Binary operation "\." between ''Leopardo RH…'' and mixed results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Services/SuperAdminService.php
@@ -3416,6 +3460,7 @@ parameters:
 
 		-
 			message: '#^Offset float\|int might not exist on ''ABCDEFGHIJKLMNOPQRS…''\.$#'
+
 			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Services/SuperAdminService.php
@@ -3434,6 +3479,7 @@ parameters:
 
 		-
 			message: '#^Binary operation "\." between ''SET search_path TO '' and mixed results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Services/TenantManager.php
@@ -3572,6 +3618,7 @@ parameters:
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/kiosks/'' and mixed results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 3
 			path: tests/Feature/BiometricWorkflowTest.php
@@ -3608,6 +3655,7 @@ parameters:
 
 		-
 			message: '#^Binary operation "\." between mixed and ''xx'' results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
@@ -3776,12 +3824,14 @@ parameters:
 
 		-
 			message: '#^Binary operation "\." between ''/api/v1/invitations/'' and mixed results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/OnboardingE2ETest.php
 
 		-
 			message: '#^Binary operation "\." between ''Bearer '' and mixed results in an error\.$#'
+
 			identifier: binaryOp.invalid
 			count: 3
 			path: tests/Feature/OnboardingE2ETest.php
@@ -3944,36 +3994,42 @@ parameters:
 
 		-
 			message: '#^Cannot access offset ''days_absent'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Unit/EstimationServiceTest.php
 
 		-
 			message: '#^Cannot access offset ''days_present'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Unit/EstimationServiceTest.php
 
 		-
 			message: '#^Cannot access offset ''deductions'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Unit/EstimationServiceTest.php
 
 		-
 			message: '#^Cannot access offset ''gross'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: tests/Unit/EstimationServiceTest.php
 
 		-
 			message: '#^Cannot access offset ''net'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Unit/EstimationServiceTest.php
 
 		-
 			message: '#^Cannot access offset ''working_days'' on mixed\.$#'
+
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Unit/EstimationServiceTest.php
@@ -4309,12 +4365,14 @@ parameters:
 			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
 
 		-
-			message: '#^Cannot access offset 'admin_notes' on mixed\.$#'
+			message: '#^Cannot access offset ''admin_notes'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
 
 		-
-			message: '#^Cannot access offset 'status' on mixed\.$#'
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
 
@@ -4434,52 +4492,62 @@ parameters:
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'avatar_url' on mixed\.$#'
+			message: '#^Cannot access offset ''avatar_url'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'current_password' on mixed\.$#'
+			message: '#^Cannot access offset ''current_password'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'device_name' on mixed\.$#'
+			message: '#^Cannot access offset ''device_name'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'email' on mixed\.$#'
+			message: '#^Cannot access offset ''email'' on mixed\.$#'
+
 			count: 3
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'first_name' on mixed\.$#'
+			message: '#^Cannot access offset ''first_name'' on mixed\.$#'
+
 			count: 2
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'google_id' on mixed\.$#'
+			message: '#^Cannot access offset ''google_id'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'last_name' on mixed\.$#'
+			message: '#^Cannot access offset ''last_name'' on mixed\.$#'
+
 			count: 2
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'new_password' on mixed\.$#'
+			message: '#^Cannot access offset ''new_password'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'password' on mixed\.$#'
+			message: '#^Cannot access offset ''password'' on mixed\.$#'
+
 			count: 2
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
 		-
-			message: '#^Cannot access offset 'phone' on mixed\.$#'
+			message: '#^Cannot access offset ''phone'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserAuthController.php
 
@@ -4584,12 +4652,14 @@ parameters:
 			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
 		-
-			message: '#^Cannot access offset 'email' on mixed\.$#'
+			message: '#^Cannot access offset ''email'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
 		-
-			message: '#^Cannot access offset 'employee_id' on mixed\.$#'
+			message: '#^Cannot access offset ''employee_id'' on mixed\.$#'
+
 			count: 1
 			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
