@@ -26,7 +26,7 @@ VERSION  = 4.1.84   → Version globale du projet/pilotage (ce fichier fait foi)
                                 - GET /api/v1/health → champ "version"
 DOC_VERSION      = propre   → Chaque doc technique garde sa version interne
                               (ex: ERD v2.0, API v2.1, SQL v1.1)
-CODE_VERSION     = 0.0.0    → Version release applicative (sera 0.1.0 au premier déploiement)
+CODE_VERSION     = 0.1.0    → Version release applicative (Release MVP)
 
 Règle :
 - PROGRAM_VERSION est la SEULE version de référence pour l'état du projet
@@ -238,6 +238,7 @@ Pays MVP :
 | 5 | API Contrats | `docs/dossierdeConception/01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md` | Payloads et réponses |
 | 6 | Règles Métier | `docs/dossierdeConception/05_regles_metier/05_REGLES_METIER.md` | Formules de calcul |
 | 7 | Prompts MVP v3 | `docs/PROMPTS_EXECUTION/v3/MVP-*.md` | Instructions par session |
+| 8 | Décision MVP | `docs/GESTION_PROJET/GO_NO_GO_MVP.md` | Décision GO MVP et périmètre validé |
 
 > En cas de contradiction entre 2 documents → le plus haut dans cette liste gagne.
 
@@ -260,6 +261,7 @@ LEGACY  : docs/PROMPTS_EXECUTION/ORCHESTRATION/*   (remplacé par PILOTAGE.md)
 | `docs/GESTION_PROJET/GARDE_FOUS.md` | ✅ **ACTIF** | Règles de survie du projet |
 | `docs/GESTION_PROJET/CORRECTIONS.md` | ✅ **ACTIF** | Corrections Sprint 0 à appliquer |
 | `CHANGELOG.md` | ✅ **ACTIF** | Continue à recevoir les entrées |
+| `docs/GESTION_PROJET/GO_NO_GO_MVP.md` | ✅ **ACTIF** | Décision officielle GO MVP |
 | `JOURNAL_RACINE.md` | ✅ **ACTIF** | Continue à recevoir les entrées |
 | `docs/notes/archive/ORCHESTRATION_MAITRE.md` | 📦 **HISTORIQUE** | Remplacé par PILOTAGE.md — lecture seule |
 | `docs/notes/archive/INDEX_CANONIQUE.md` | 📦 **HISTORIQUE** | Absorbé dans PILOTAGE.md |
