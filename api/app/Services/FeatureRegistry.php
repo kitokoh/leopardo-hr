@@ -383,7 +383,7 @@ class FeatureRegistry implements FeatureRegistryInterface
      * @param string ...$parts
      * @return string
      */
-    private function buildCacheKey(string ...$parts): string
+    private function buildCacheKey(?string ...$parts): string
     {
         return implode(':', array_filter($parts));
     }
