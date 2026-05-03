@@ -18,7 +18,7 @@ class DetailSchema {
     this.layout = DetailLayout.vertical,
   });
 
-  factory DetailSchema.fromJson(Map<String, dynamic> json) => 
+  factory DetailSchema.fromJson(Map<String, dynamic> json) =>
       _$DetailSchemaFromJson(json);
 
   Map<String, dynamic> toJson() => _$DetailSchemaToJson(this);
@@ -36,10 +36,10 @@ class DetailSchema {
   /// Obtient les actions disponibles pour un élément
   List<DetailAction> getActionsForItem(Map<String, dynamic> item) {
     if (actions == null) return [];
-    
+
     return actions!.where((action) {
       if (action.condition == null) return true;
-      
+
       // Évaluation simple des conditions
       return _evaluateCondition(action.condition!, item);
     }).toList();
@@ -48,7 +48,7 @@ class DetailSchema {
   bool _evaluateCondition(String condition, Map<String, dynamic> item) {
     // Implémentation basique pour les conditions simples
     // Exemple: "status == 'active'" ou "role != 'admin'"
-    
+
     if (condition.contains('==')) {
       final parts = condition.split('==').map((s) => s.trim()).toList();
       if (parts.length == 2) {
@@ -57,7 +57,7 @@ class DetailSchema {
         return fieldValue == expectedValue;
       }
     }
-    
+
     if (condition.contains('!=')) {
       final parts = condition.split('!=').map((s) => s.trim()).toList();
       if (parts.length == 2) {
@@ -66,13 +66,14 @@ class DetailSchema {
         return fieldValue != expectedValue;
       }
     }
-    
+
     // Par défaut, retourner true si la condition n'est pas reconnue
     return true;
   }
 
   @override
-  String toString() => 'DetailSchema(sections: ${sections.length}, layout: $layout)';
+  String toString() =>
+      'DetailSchema(sections: ${sections.length}, layout: $layout)';
 }
 
 @JsonEnum()
@@ -84,7 +85,7 @@ enum DetailLayout {
   @JsonValue('grid')
   grid,
   @JsonValue('tabs')
-  tabs;
+  tabs,
 }
 
 @JsonSerializable()
@@ -107,7 +108,7 @@ class DetailSection {
     this.icon,
   });
 
-  factory DetailSection.fromJson(Map<String, dynamic> json) => 
+  factory DetailSection.fromJson(Map<String, dynamic> json) =>
       _$DetailSectionFromJson(json);
 
   Map<String, dynamic> toJson() => _$DetailSectionToJson(this);
@@ -123,7 +124,8 @@ class DetailSection {
   }
 
   @override
-  String toString() => 'DetailSection(name: $name, title: $title, fields: ${fields.length})';
+  String toString() =>
+      'DetailSection(name: $name, title: $title, fields: ${fields.length})';
 }
 
 @JsonSerializable()
@@ -148,7 +150,7 @@ class DetailField {
     this.helpText,
   });
 
-  factory DetailField.fromJson(Map<String, dynamic> json) => 
+  factory DetailField.fromJson(Map<String, dynamic> json) =>
       _$DetailFieldFromJson(json);
 
   Map<String, dynamic> toJson() => _$DetailFieldToJson(this);
@@ -160,11 +162,12 @@ class DetailField {
     switch (type) {
       case DetailFieldType.text:
         return value.toString();
-      
+
       case DetailFieldType.number:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
-        
+
         if (format != null) {
           // Format simple pour les nombres (ex: "0.00" pour 2 décimales)
           if (format!.contains('.')) {
@@ -173,7 +176,7 @@ class DetailField {
           }
         }
         return numValue.toString();
-      
+
       case DetailFieldType.date:
         if (value is DateTime) {
           return _formatDate(value);
@@ -182,7 +185,7 @@ class DetailField {
           return date != null ? _formatDate(date) : value;
         }
         return value.toString();
-      
+
       case DetailFieldType.datetime:
         if (value is DateTime) {
           return _formatDateTime(value);
@@ -191,44 +194,46 @@ class DetailField {
           return date != null ? _formatDateTime(date) : value;
         }
         return value.toString();
-      
+
       case DetailFieldType.boolean:
         if (value is bool) {
           return value ? 'Oui' : 'Non';
         }
         return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
-      
+
       case DetailFieldType.currency:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(2)} €';
-      
+
       case DetailFieldType.percentage:
-        final num? numValue = value is num ? value : num.tryParse(value.toString());
+        final num? numValue =
+            value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
         return '${numValue.toStringAsFixed(1)}%';
-      
+
       case DetailFieldType.email:
         return value.toString();
-      
+
       case DetailFieldType.phone:
         return value.toString();
-      
+
       case DetailFieldType.url:
         return value.toString();
-      
+
       case DetailFieldType.badge:
         return value.toString();
-      
+
       case DetailFieldType.image:
         return value.toString(); // URL de l'image
-      
+
       case DetailFieldType.list:
         if (value is List) {
           return value.join(', ');
         }
         return value.toString();
-      
+
       case DetailFieldType.json:
         // Affichage formaté du JSON (simplifié)
         return value.toString();
@@ -237,14 +242,14 @@ class DetailField {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/'
-           '${date.month.toString().padLeft(2, '0')}/'
-           '${date.year}';
+        '${date.month.toString().padLeft(2, '0')}/'
+        '${date.year}';
   }
 
   String _formatDateTime(DateTime date) {
     return '${_formatDate(date)} '
-           '${date.hour.toString().padLeft(2, '0')}:'
-           '${date.minute.toString().padLeft(2, '0')}';
+        '${date.hour.toString().padLeft(2, '0')}:'
+        '${date.minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -280,7 +285,7 @@ enum DetailFieldType {
   @JsonValue('list')
   list,
   @JsonValue('json')
-  json;
+  json,
 }
 
 @JsonEnum()
@@ -292,7 +297,7 @@ enum DetailFieldSize {
   @JsonValue('third')
   third,
   @JsonValue('quarter')
-  quarter;
+  quarter,
 }
 
 @JsonSerializable()
@@ -319,7 +324,7 @@ class DetailAction {
     this.confirmMessage,
   });
 
-  factory DetailAction.fromJson(Map<String, dynamic> json) => 
+  factory DetailAction.fromJson(Map<String, dynamic> json) =>
       _$DetailActionFromJson(json);
 
   Map<String, dynamic> toJson() => _$DetailActionToJson(this);
@@ -341,7 +346,7 @@ enum DetailActionType {
   @JsonValue('export')
   export,
   @JsonValue('custom')
-  custom;
+  custom,
 }
 
 /// Extension pour ajouter firstOrNull si pas disponible

@@ -139,9 +139,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     : Icons.visibility,
                                 color: AppColors.textSecondaryFor(context),
                               ),
-                              tooltip: _obscurePassword
-                                  ? 'Afficher le mot de passe'
-                                  : 'Masquer le mot de passe',
+                              tooltip:
+                                  _obscurePassword
+                                      ? 'Afficher le mot de passe'
+                                      : 'Masquer le mot de passe',
                               onPressed: () {
                                 setState(() {
                                   _obscurePassword = !_obscurePassword;
@@ -162,24 +163,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 22),
                         ElevatedButton(
                           onPressed: authState.isLoading ? null : _submit,
-                          child: authState.isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text('Entrer dans Leopardo RH'),
+                          child:
+                              authState.isLoading
+                                  ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                  : const Text('Entrer dans Leopardo RH'),
                         ),
                         const SizedBox(height: 16),
                         OutlinedButton.icon(
-                          onPressed: authState.isLoading
-                              ? null
-                              : () => ref
-                                  .read(authProvider.notifier)
-                                  .loginWithGoogle(),
+                          onPressed:
+                              authState.isLoading
+                                  ? null
+                                  : () =>
+                                      ref
+                                          .read(authProvider.notifier)
+                                          .loginWithGoogle(),
                           icon: const Icon(Icons.login),
                           label: const Text('Continuer avec Google'),
                         ),
@@ -383,10 +387,7 @@ class _BenefitPill extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: color),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: AppTypography.caption.copyWith(color: color),
-          ),
+          Text(label, style: AppTypography.caption.copyWith(color: color)),
         ],
       ),
     );

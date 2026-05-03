@@ -46,7 +46,8 @@ class Feature {
     this.detailSchema,
   });
 
-  factory Feature.fromJson(Map<String, dynamic> json) => _$FeatureFromJson(json);
+  factory Feature.fromJson(Map<String, dynamic> json) =>
+      _$FeatureFromJson(json);
 
   Map<String, dynamic> toJson() => _$FeatureToJson(this);
 
@@ -54,24 +55,25 @@ class Feature {
   bool isCompatibleWith(String mobileVersion) {
     final current = Version.parse(mobileVersion);
     final min = Version.parse(minimumMobileVersion);
-    final max = maximumMobileVersion != null 
-        ? Version.parse(maximumMobileVersion!) 
-        : null;
+    final max =
+        maximumMobileVersion != null
+            ? Version.parse(maximumMobileVersion!)
+            : null;
 
     return current >= min && (max == null || current <= max);
   }
 
   /// Vérifie si l'utilisateur a les permissions requises pour cette fonctionnalité
   bool hasRequiredPermissions(List<String> userPermissions) {
-    return permissions.every((permission) => userPermissions.contains(permission));
+    return permissions.every(
+      (permission) => userPermissions.contains(permission),
+    );
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Feature &&
-          runtimeType == other.runtimeType &&
-          key == other.key;
+      other is Feature && runtimeType == other.runtimeType && key == other.key;
 
   @override
   int get hashCode => key.hashCode;
@@ -114,11 +116,11 @@ class Version implements Comparable<Version> {
     if (parts.length < 2) {
       throw ArgumentError('Version invalide: $version');
     }
-    
+
     final major = int.parse(parts[0]);
     final minor = int.parse(parts[1]);
     final patch = parts.length > 2 ? int.parse(parts[2]) : 0;
-    
+
     return Version(major, minor, patch);
   }
 

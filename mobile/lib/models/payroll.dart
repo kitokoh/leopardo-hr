@@ -31,9 +31,10 @@ class Payroll {
       netSalary: (json['net_salary'] as num).toDouble(),
       status: json['status'] as String,
       pdfPath: json['pdf_path'] as String?,
-      validatedAt: json['validated_at'] != null
-          ? DateTime.parse(json['validated_at'] as String)
-          : null,
+      validatedAt:
+          json['validated_at'] != null
+              ? DateTime.parse(json['validated_at'] as String)
+              : null,
     );
   }
 }

@@ -103,11 +103,15 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       return ListView.builder(
         padding: const EdgeInsets.all(20),
         itemCount: 6,
-        itemBuilder: (_, __) => const Padding(
-          padding: EdgeInsets.only(bottom: 12),
-          child: ShimmerLoading(
-              width: double.infinity, height: 64, borderRadius: 16),
-        ),
+        itemBuilder:
+            (_, __) => const Padding(
+              padding: EdgeInsets.only(bottom: 12),
+              child: ShimmerLoading(
+                width: double.infinity,
+                height: 64,
+                borderRadius: 16,
+              ),
+            ),
       );
     }
 
@@ -192,47 +196,48 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      builder:
+          (ctx) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(
+                    Icons.create_new_folder_outlined,
+                    color: Color(0xFF8B6914),
+                  ),
+                  title: const Text('Nouveau dossier'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showCreateFolderDialog();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.upload_file_outlined,
+                    color: Color(0xFF8B6914),
+                  ),
+                  title: const Text('Ajouter un document'),
+                  subtitle: const Text('Depuis vos fichiers ou la camera'),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickAndUploadDocument();
+                  },
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(
-                Icons.create_new_folder_outlined,
-                color: Color(0xFF8B6914),
-              ),
-              title: const Text('Nouveau dossier'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _showCreateFolderDialog();
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.upload_file_outlined,
-                color: Color(0xFF8B6914),
-              ),
-              title: const Text('Ajouter un document'),
-              subtitle: const Text('Depuis vos fichiers ou la camera'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _pickAndUploadDocument();
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -240,34 +245,38 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     final controller = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Nouveau dossier'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Nom du dossier',
-            prefixIcon: Icon(Icons.folder_outlined),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Nouveau dossier'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Nom du dossier',
+                prefixIcon: Icon(Icons.folder_outlined),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Annuler'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  final name = controller.text.trim();
+                  if (name.isEmpty) return;
+                  Navigator.pop(ctx);
+                  final repo = ref.read(cabinetRepositoryProvider);
+                  await repo.createFolder(
+                    name: name,
+                    parentId: widget.folderId,
+                  );
+                  ref.invalidate(cabinetFoldersProvider(widget.folderId));
+                },
+                child: const Text('Creer'),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final name = controller.text.trim();
-              if (name.isEmpty) return;
-              Navigator.pop(ctx);
-              final repo = ref.read(cabinetRepositoryProvider);
-              await repo.createFolder(name: name, parentId: widget.folderId);
-              ref.invalidate(cabinetFoldersProvider(widget.folderId));
-            },
-            child: const Text('Creer'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -303,103 +312,105 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          20,
-          20,
-          20 + MediaQuery.of(ctx).viewInsets.bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Partager "${doc.name}"', style: AppTypography.subtitle),
-            const SizedBox(height: 16),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.link, color: Color(0xFF8B6914)),
-              title: const Text('Creer un lien de partage'),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final repo = ref.read(cabinetRepositoryProvider);
-                final result = await repo.shareViaLink(
-                  shareableType: 'document',
-                  shareableId: doc.id,
-                );
-                if (!mounted) return;
-                final url = result['share_url'] ?? '';
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text('Lien copie : $url')));
-              },
+      builder:
+          (ctx) => Padding(
+            padding: EdgeInsets.fromLTRB(
+              20,
+              20,
+              20,
+              20 + MediaQuery.of(ctx).viewInsets.bottom,
             ),
-            const Divider(),
-            const Text('Partager par email'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                hintText: 'Email du destinataire',
-                prefixIcon: Icon(Icons.email_outlined),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Partager "${doc.name}"', style: AppTypography.subtitle),
+                const SizedBox(height: 16),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.link, color: Color(0xFF8B6914)),
+                  title: const Text('Creer un lien de partage'),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    final repo = ref.read(cabinetRepositoryProvider);
+                    final result = await repo.shareViaLink(
+                      shareableType: 'document',
+                      shareableId: doc.id,
+                    );
+                    if (!mounted) return;
+                    final url = result['share_url'] ?? '';
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Lien copie : $url')),
+                    );
+                  },
+                ),
+                const Divider(),
+                const Text('Partager par email'),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    hintText: 'Email du destinataire',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.send),
+                    label: const Text('Envoyer'),
+                    onPressed: () async {
+                      final email = emailController.text.trim();
+                      if (email.isEmpty) return;
+                      Navigator.pop(ctx);
+                      final repo = ref.read(cabinetRepositoryProvider);
+                      await repo.shareViaEmail(
+                        shareableType: 'document',
+                        shareableId: doc.id,
+                        email: email,
+                      );
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Partage envoye a $email')),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                icon: const Icon(Icons.send),
-                label: const Text('Envoyer'),
-                onPressed: () async {
-                  final email = emailController.text.trim();
-                  if (email.isEmpty) return;
-                  Navigator.pop(ctx);
-                  final repo = ref.read(cabinetRepositoryProvider);
-                  await repo.shareViaEmail(
-                    shareableType: 'document',
-                    shareableId: doc.id,
-                    email: email,
-                  );
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Partage envoye a $email')),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   void _confirmDeleteDocument(CabinetDocument doc) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer le document ?'),
-        content: Text(
-          'Le document "${doc.name}" sera supprime definitivement.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Supprimer le document ?'),
+            content: Text(
+              'Le document "${doc.name}" sera supprime definitivement.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Annuler'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  final repo = ref.read(cabinetRepositoryProvider);
+                  await repo.deleteDocument(doc.id);
+                  ref.invalidate(cabinetDocumentsProvider(widget.folderId));
+                },
+                child: const Text('Supprimer'),
+              ),
+            ],
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final repo = ref.read(cabinetRepositoryProvider);
-              await repo.deleteDocument(doc.id);
-              ref.invalidate(cabinetDocumentsProvider(widget.folderId));
-            },
-            child: const Text('Supprimer'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -425,8 +436,11 @@ class _FolderTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () =>
-              context.push('/cabinet/folder/${folder.id}', extra: folder.name),
+          onTap:
+              () => context.push(
+                '/cabinet/folder/${folder.id}',
+                extra: folder.name,
+              ),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(

@@ -111,7 +111,8 @@ class UserAuthNotifier extends StateNotifier<UserAuthState> {
   }
 }
 
-final userAuthProvider =
-    StateNotifierProvider<UserAuthNotifier, UserAuthState>((ref) {
-  return UserAuthNotifier(ref.watch(userAuthRepositoryProvider));
-});
+final userAuthProvider = StateNotifierProvider<UserAuthNotifier, UserAuthState>(
+  (ref) {
+    return UserAuthNotifier(ref.watch(userAuthRepositoryProvider));
+  },
+);

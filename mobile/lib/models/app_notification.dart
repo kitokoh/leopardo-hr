@@ -28,9 +28,10 @@ class AppNotification {
       type: (json['type'] ?? '') as String,
       title: (json['title'] ?? '') as String,
       body: (json['body'] ?? '') as String,
-      payload: rawPayload is Map
-          ? rawPayload.cast<String, dynamic>()
-          : const <String, dynamic>{},
+      payload:
+          rawPayload is Map
+              ? rawPayload.cast<String, dynamic>()
+              : const <String, dynamic>{},
       isRead: json['is_read'] == true,
       readAt: DateTime.tryParse(json['read_at']?.toString() ?? ''),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
