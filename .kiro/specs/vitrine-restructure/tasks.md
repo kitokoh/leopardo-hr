@@ -242,7 +242,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [-] 4.5 Créer Page Marketing Digital (/marketing)
+- [x] 4.5 Créer Page Marketing Digital (/marketing)
   - Implémenter page avec structure module
   - Ajouter HeroSection avec headline spécifique
   - Ajouter ProblemSection
@@ -255,7 +255,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [ ] 4.6 Créer Page Pricing (/pricing)
+- [-] 4.6 Créer Page Pricing (/pricing)
   - Implémenter page avec HeroSection
   - Ajouter PricingSection avec 3 plans
   - Ajouter tableau de comparaison détaillée
