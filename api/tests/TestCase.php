@@ -52,7 +52,7 @@ abstract class TestCase extends BaseTestCase
             $this->configString("database.connections.{$connection}.host", '127.0.0.1')
         );
 
-        if ($this->isRunningInsideDocker() && in_array($host, ['127.0.0.1', 'localhost'], true)) {
+        if ($this->isRunningInsideDocker() && !env('GITHUB_ACTIONS') && in_array($host, ['127.0.0.1', 'localhost'], true)) {
             $host = 'pgsql';
         }
 
