@@ -1,3 +1,16 @@
+# 📦 FICHIER HISTORIQUE (PHASE 0) - REMPLACE PAR PILOTAGE.md
+# PROGRAM_VERSION DE REFERENCE: 4.1.85
+# Date de gel: 02 Mai 2026
+
+Ce document est conserve pour tracabilite uniquement.
+Ne pas l'utiliser pour piloter l'execution.
+
+Source de verite active:
+- `../../../PILOTAGE.md`
+- `../../README.md`
+
+---
+
 # 🐆 LEOPARDO RH — FICHIER DE CONTINUITÉ IA — v2.0
 # Lis ce fichier EN ENTIER avant de faire quoi que ce soit.
 # Il te dit qui tu es, où en est le projet, et exactement quoi faire.
