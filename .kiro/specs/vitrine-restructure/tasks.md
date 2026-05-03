@@ -216,7 +216,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [ ] 4.3 Créer Page Gestion Documents (/documents)
+- [x] 4.3 Créer Page Gestion Documents (/documents)
   - Implémenter page avec structure module
   - Ajouter HeroSection avec headline spécifique
   - Ajouter ProblemSection
@@ -229,7 +229,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [ ] 4.4 Créer Page Comptabilité & Paie (/comptabilite)
+- [x] 4.4 Créer Page Comptabilité & Paie (/comptabilite)
   - Implémenter page avec structure module
   - Ajouter HeroSection avec headline spécifique
   - Ajouter ProblemSection
@@ -242,7 +242,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [ ] 4.5 Créer Page Marketing Digital (/marketing)
+- [-] 4.5 Créer Page Marketing Digital (/marketing)
   - Implémenter page avec structure module
   - Ajouter HeroSection avec headline spécifique
   - Ajouter ProblemSection
