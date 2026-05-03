@@ -4,11 +4,40 @@ namespace Tests\Unit\Models;
 
 use App\Models\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class FeatureTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (Schema::hasTable('features')) {
+            return;
+        }
+
+        Schema::create('features', function ($table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable();
+            $table->string('key', 100)->unique();
+            $table->string('title', 200);
+            $table->text('description');
+            $table->string('endpoint', 500);
+            $table->json('http_methods');
+            $table->json('parameters');
+            $table->json('response_schema');
+            $table->json('permissions');
+            $table->string('mobile_version_min', 20);
+            $table->string('mobile_version_max', 20)->nullable();
+            $table->string('api_version', 20);
+            $table->string('status', 20)->default('active');
+            $table->json('metadata');
+            $table->timestamps();
+        });
+    }
 
     /** @test */
     public function it_can_create_a_feature_with_all_required_fields()
