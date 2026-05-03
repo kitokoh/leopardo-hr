@@ -18,7 +18,31 @@ class PayrollController extends Controller
     public function index(PayrollIndexRequest $request): JsonResponse
     {
         $actor = $request->user();
-        $query = Payroll::with('employee');
+        $query = Payroll::query()
+            ->select([
+                'id',
+                'company_id',
+                'employee_id',
+                'period_month',
+                'period_year',
+                'gross_salary',
+                'overtime_amount',
+                'bonuses',
+                'deductions',
+                'cotisations',
+                'ir_amount',
+                'advance_deduction',
+                'absence_deduction',
+                'penalty_deduction',
+                'net_salary',
+                'pdf_path',
+                'status',
+                'validated_by',
+                'validated_at',
+                'created_at',
+                'updated_at',
+            ])
+            ->with(['employee:id,company_id,first_name,last_name,email']);
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
