@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Attributes\ApiFeature;
+use App\Attributes\RequiresPermission;
 use App\DTOs\CreateEmployeeDTO;
 use App\DTOs\UpdateEmployeeDTO;
 use App\Http\Controllers\Controller;
@@ -17,6 +19,23 @@ use Illuminate\Http\Request;
 class EmployeeController extends Controller
 {
     public function __construct(private readonly EmployeeService $employeeService) {}
+
+    /**
+     * Liste des employés avec pagination
+     * 
+     * @title Liste des Employés
+     * @description Récupère la liste paginée de tous les employés de l'entreprise
+     * @permission employees.view
+     * @mobile true
+     * @ui list
+     */
+    #[ApiFeature(
+        title: 'Liste des Employés',
+        description: 'Récupère la liste paginée de tous les employés de l\'entreprise',
+        ui_type: 'list',
+        mobile_compatible: true
+    )]
+    #[RequiresPermission('employees.view')]
 
     public function index(): JsonResponse
     {
@@ -43,6 +62,22 @@ class EmployeeController extends Controller
         return EmployeeResource::collection($paginator)->response();
     }
 
+    /**
+     * Créer un nouvel employé
+     * 
+     * @title Créer un Employé
+     * @description Crée un nouvel employé dans le système
+     * @permission employees.create
+     * @mobile true
+     * @ui form
+     */
+    #[ApiFeature(
+        title: 'Créer un Employé',
+        description: 'Crée un nouvel employé dans le système',
+        ui_type: 'form',
+        mobile_compatible: true
+    )]
+    #[RequiresPermission('employees.create')]
     public function store(StoreEmployeeRequest $request): JsonResponse
     {
         $this->authorize('create', Employee::class);
@@ -57,6 +92,22 @@ class EmployeeController extends Controller
             ->setStatusCode(201);
     }
 
+    /**
+     * Afficher les détails d'un employé
+     * 
+     * @title Détails de l'Employé
+     * @description Affiche les informations détaillées d'un employé spécifique
+     * @permission employees.view
+     * @mobile true
+     * @ui detail
+     */
+    #[ApiFeature(
+        title: 'Détails de l\'Employé',
+        description: 'Affiche les informations détaillées d\'un employé spécifique',
+        ui_type: 'detail',
+        mobile_compatible: true
+    )]
+    #[RequiresPermission('employees.view')]
     public function show(string $employeeId, Request $request): JsonResponse
     {
         $employee = Employee::query()->findOrFail($employeeId);
