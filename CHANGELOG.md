@@ -55,6 +55,22 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.86] - 2026-05-03
+
+### Auth - Auto-inscription, Google Sign-In, espace personnel et demandes d'entreprise
+
+- API : ajout du rôle `ordinary` pour les utilisateurs sans entreprise immédiate (Espace Personnel).
+- API : migration pour rendre `company_id` nullable dans `employees` et `user_lookups`.
+- API : implémentation de `POST /api/v1/auth/register` pour l'auto-inscription en tant que compte ordinaire.
+- API : intégration de Laravel Socialite pour Google Sign-In avec endpoints `redirectToGoogle`, `handleGoogleCallback` et `handleGoogleToken` (mobile).
+- API : création du modèle `CompanyRequest` et des endpoints associés pour permettre aux comptes ordinaires de demander la création d'une entreprise (incluant les détails du manager).
+- API : mise à jour de `TenantMiddleware` pour autoriser l'accès à l'API aux utilisateurs `ordinary` sans contexte d'entreprise.
+- Mobile : ajout des dépendances `google_sign_in` et `url_launcher`.
+- Mobile : implémentation de `PersonalSpaceScreen` (accueil pour comptes sans entreprise) et `CompanyRequestScreen` (formulaire de demande enrichi).
+- Mobile : ajout du bouton "Continuer avec Google" sur `LoginScreen` et activation du formulaire sur `RegisterScreen`.
+- Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
+- CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
+
 ## [4.1.85] - 2026-05-02
 
 ### Contractor - Alignement contrat API/mobile (attendance today)
