@@ -6,7 +6,7 @@ use App\Models\Feature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Feature>
+ * @extends Factory<Feature>
  */
 class FeatureFactory extends Factory
 {
@@ -29,11 +29,11 @@ class FeatureFactory extends Factory
         ];
 
         return [
-            'company_id' => null, // Sera défini par le test ou le seeder
-            'key' => $this->faker->unique()->slug(2) . '_management',
+            'company_id' => null, // Sera dÃ©fini par le test ou le seeder
+            'key' => $this->faker->unique()->slug(2).'_management',
             'title' => $this->faker->words(3, true),
             'description' => $this->faker->sentence(10),
-            'endpoint' => '/api/v1/' . $this->faker->slug(2),
+            'endpoint' => '/api/v1/'.$this->faker->slug(2),
             'http_methods' => $this->faker->randomElement($httpMethods),
             'parameters' => $this->generateParameters(),
             'response_schema' => $this->generateResponseSchema(),
@@ -51,7 +51,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Génère des paramètres d'exemple pour l'API
+     * GÃ©nÃ¨re des paramÃ¨tres d'exemple pour l'API
      */
     private function generateParameters(): array
     {
@@ -75,7 +75,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Génère un schéma de réponse d'exemple
+     * GÃ©nÃ¨re un schÃ©ma de rÃ©ponse d'exemple
      */
     private function generateResponseSchema(): array
     {
@@ -101,21 +101,22 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Génère des permissions d'exemple
+     * GÃ©nÃ¨re des permissions d'exemple
      */
     private function generatePermissions(): array
     {
         $basePermission = $this->faker->slug(2);
+
         return [
-            $basePermission . '.view',
-            $basePermission . '.create',
-            $basePermission . '.update',
-            $basePermission . '.delete',
+            $basePermission.'.view',
+            $basePermission.'.create',
+            $basePermission.'.update',
+            $basePermission.'.delete',
         ];
     }
 
     /**
-     * Génère un schéma de formulaire pour l'interface mobile
+     * GÃ©nÃ¨re un schÃ©ma de formulaire pour l'interface mobile
      */
     private function generateFormSchema(): array
     {
@@ -150,7 +151,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Génère un schéma de liste pour l'interface mobile
+     * GÃ©nÃ¨re un schÃ©ma de liste pour l'interface mobile
      */
     private function generateListSchema(): array
     {
@@ -158,7 +159,7 @@ class FeatureFactory extends Factory
             'columns' => [
                 ['field' => 'name', 'label' => 'Nom', 'sortable' => true],
                 ['field' => 'status', 'label' => 'Statut', 'sortable' => true],
-                ['field' => 'created_at', 'label' => 'Créé le', 'sortable' => true, 'type' => 'date'],
+                ['field' => 'created_at', 'label' => 'CrÃ©Ã© le', 'sortable' => true, 'type' => 'date'],
             ],
             'actions' => [
                 ['type' => 'view', 'label' => 'Voir'],
@@ -169,7 +170,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * État actif
+     * Ã‰tat actif
      */
     public function active(): static
     {
@@ -179,7 +180,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * État déprécié
+     * Ã‰tat dÃ©prÃ©ciÃ©
      */
     public function deprecated(): static
     {
@@ -189,7 +190,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * État supprimé
+     * Ã‰tat supprimÃ©
      */
     public function removed(): static
     {
@@ -199,7 +200,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Fonctionnalité de type liste
+     * FonctionnalitÃ© de type liste
      */
     public function listType(): static
     {
@@ -212,7 +213,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Fonctionnalité de type formulaire
+     * FonctionnalitÃ© de type formulaire
      */
     public function formType(): static
     {
@@ -225,7 +226,7 @@ class FeatureFactory extends Factory
     }
 
     /**
-     * Fonctionnalité CRUD complète
+     * FonctionnalitÃ© CRUD complÃ¨te
      */
     public function fullCrud(): static
     {

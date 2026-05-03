@@ -10,7 +10,7 @@ class FeatureUnitTest extends TestCase
     public function test_feature_model_has_correct_fillable_fields()
     {
         $feature = new Feature();
-        
+
         $expectedFillable = [
             'company_id',
             'key',
@@ -27,14 +27,14 @@ class FeatureUnitTest extends TestCase
             'status',
             'metadata',
         ];
-        
+
         $this->assertEquals($expectedFillable, $feature->getFillable());
     }
 
     public function test_feature_model_has_correct_casts()
     {
         $feature = new Feature();
-        
+
         $expectedCasts = [
             'http_methods' => 'array',
             'parameters' => 'array',
@@ -42,9 +42,9 @@ class FeatureUnitTest extends TestCase
             'permissions' => 'array',
             'metadata' => 'array',
         ];
-        
+
         $casts = $feature->getCasts();
-        
+
         foreach ($expectedCasts as $field => $cast) {
             $this->assertArrayHasKey($field, $casts);
             $this->assertEquals($cast, $casts[$field]);
@@ -54,8 +54,7 @@ class FeatureUnitTest extends TestCase
     public function test_to_manifest_array_returns_correct_structure()
     {
         $feature = new Feature();
-        
-        // Simuler les données du modèle
+
         $feature->key = 'test_feature';
         $feature->title = 'Test Feature';
         $feature->description = 'A test feature';
@@ -80,7 +79,7 @@ class FeatureUnitTest extends TestCase
             'key', 'title', 'description', 'endpoint', 'methods',
             'parameters', 'response_schema', 'permissions',
             'mobile_version_min', 'mobile_version_max', 'ui_type',
-            'form_schema', 'list_schema', 'status', 'api_version'
+            'form_schema', 'list_schema', 'status', 'api_version',
         ];
 
         foreach ($expectedKeys as $key) {
@@ -97,7 +96,7 @@ class FeatureUnitTest extends TestCase
     public function test_to_manifest_array_handles_null_metadata()
     {
         $feature = new Feature();
-        
+
         $feature->key = 'test_feature';
         $feature->title = 'Test Feature';
         $feature->description = 'A test feature';
@@ -122,7 +121,7 @@ class FeatureUnitTest extends TestCase
     public function test_to_manifest_array_handles_empty_metadata()
     {
         $feature = new Feature();
-        
+
         $feature->key = 'test_feature';
         $feature->title = 'Test Feature';
         $feature->description = 'A test feature';
@@ -146,7 +145,8 @@ class FeatureUnitTest extends TestCase
 
     public function test_model_uses_correct_table_name()
     {
-        $feature = new Feature();
+        $feature = new Feature;
+
         $this->assertEquals('features', $feature->getTable());
     }
 }

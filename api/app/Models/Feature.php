@@ -39,9 +39,7 @@ class Feature extends Model
     ];
 
     /**
-     * Génère le tableau de données pour le manifeste JSON
-     * 
-     * @return array
+     * GÃ©nÃ¨re le tableau de donnÃ©es pour le manifeste JSON.
      */
     public function toManifestArray(): array
     {
@@ -65,7 +63,7 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour récupérer uniquement les fonctionnalités actives
+     * Scope pour rÃ©cupÃ©rer uniquement les fonctionnalitÃ©s actives
      */
     public function scopeActive($query)
     {
@@ -73,19 +71,19 @@ class Feature extends Model
     }
 
     /**
-     * Scope pour récupérer les fonctionnalités compatibles avec une version mobile
+     * Scope pour rÃ©cupÃ©rer les fonctionnalitÃ©s compatibles avec une version mobile
      */
     public function scopeCompatibleWith($query, string $mobileVersion)
     {
         return $query->where('mobile_version_min', '<=', $mobileVersion)
-                    ->where(function ($q) use ($mobileVersion) {
-                        $q->whereNull('mobile_version_max')
-                          ->orWhere('mobile_version_max', '>=', $mobileVersion);
-                    });
+            ->where(function ($q) use ($mobileVersion) {
+                $q->whereNull('mobile_version_max')
+                    ->orWhere('mobile_version_max', '>=', $mobileVersion);
+            });
     }
 
     /**
-     * Scope pour récupérer les fonctionnalités par version API
+     * Scope pour rÃ©cupÃ©rer les fonctionnalitÃ©s par version API
      */
     public function scopeForApiVersion($query, string $apiVersion)
     {

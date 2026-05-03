@@ -15,8 +15,8 @@ class FeatureSeeder extends Seeder
         $features = [
             [
                 'key' => 'employee_management',
-                'title' => 'Gestion des Employés',
-                'description' => 'Module complet de gestion des employés : création, modification, consultation et suppression des profils employés.',
+                'title' => 'Gestion des EmployÃ©s',
+                'description' => 'Module complet de gestion des employÃ©s : crÃ©ation, modification, consultation et suppression des profils employÃ©s.',
                 'endpoint' => '/api/v1/employees',
                 'http_methods' => ['GET', 'POST', 'PUT', 'DELETE'],
                 'parameters' => [
@@ -60,15 +60,15 @@ class FeatureSeeder extends Seeder
                     'ui_type' => 'list',
                     'form_schema' => [
                         'fields' => [
-                            ['name' => 'first_name', 'type' => 'text', 'label' => 'Prénom', 'required' => true],
+                            ['name' => 'first_name', 'type' => 'text', 'label' => 'PrÃ©nom', 'required' => true],
                             ['name' => 'last_name', 'type' => 'text', 'label' => 'Nom', 'required' => true],
                             ['name' => 'email', 'type' => 'email', 'label' => 'Email', 'required' => true],
-                            ['name' => 'phone', 'type' => 'tel', 'label' => 'Téléphone', 'required' => false],
+                            ['name' => 'phone', 'type' => 'tel', 'label' => 'TÃ©lÃ©phone', 'required' => false],
                         ],
                     ],
                     'list_schema' => [
                         'columns' => [
-                            ['field' => 'first_name', 'label' => 'Prénom', 'sortable' => true],
+                            ['field' => 'first_name', 'label' => 'PrÃ©nom', 'sortable' => true],
                             ['field' => 'last_name', 'label' => 'Nom', 'sortable' => true],
                             ['field' => 'email', 'label' => 'Email', 'sortable' => true],
                             ['field' => 'status', 'label' => 'Statut', 'sortable' => true],
@@ -78,8 +78,8 @@ class FeatureSeeder extends Seeder
             ],
             [
                 'key' => 'attendance_management',
-                'title' => 'Gestion des Présences',
-                'description' => 'Suivi et gestion des présences, pointages et heures de travail des employés.',
+                'title' => 'Gestion des PrÃ©sences',
+                'description' => 'Suivi et gestion des prÃ©sences, pointages et heures de travail des employÃ©s.',
                 'endpoint' => '/api/v1/attendance',
                 'http_methods' => ['GET', 'POST'],
                 'parameters' => [
@@ -120,7 +120,7 @@ class FeatureSeeder extends Seeder
             [
                 'key' => 'absence_requests',
                 'title' => 'Demandes d\'Absence',
-                'description' => 'Gestion des demandes de congés, absences et validation par les managers.',
+                'description' => 'Gestion des demandes de congÃ©s, absences et validation par les managers.',
                 'endpoint' => '/api/v1/absences',
                 'http_methods' => ['GET', 'POST', 'PUT'],
                 'parameters' => [
@@ -156,7 +156,7 @@ class FeatureSeeder extends Seeder
                     'form_schema' => [
                         'fields' => [
                             ['name' => 'absence_type_id', 'type' => 'select', 'label' => 'Type d\'absence', 'required' => true],
-                            ['name' => 'start_date', 'type' => 'date', 'label' => 'Date de début', 'required' => true],
+                            ['name' => 'start_date', 'type' => 'date', 'label' => 'Date de dÃ©but', 'required' => true],
                             ['name' => 'end_date', 'type' => 'date', 'label' => 'Date de fin', 'required' => true],
                             ['name' => 'reason', 'type' => 'textarea', 'label' => 'Motif', 'required' => false],
                         ],
@@ -166,7 +166,7 @@ class FeatureSeeder extends Seeder
             [
                 'key' => 'payroll_consultation',
                 'title' => 'Consultation des Paies',
-                'description' => 'Consultation des bulletins de paie et historique des rémunérations.',
+                'description' => 'Consultation des bulletins de paie et historique des rÃ©munÃ©rations.',
                 'endpoint' => '/api/v1/payrolls',
                 'http_methods' => ['GET'],
                 'parameters' => [
@@ -202,7 +202,7 @@ class FeatureSeeder extends Seeder
             [
                 'key' => 'legacy_reports',
                 'title' => 'Rapports Anciens',
-                'description' => 'Module de rapports de l\'ancienne version, maintenu pour compatibilité.',
+                'description' => 'Module de rapports de l\'ancienne version, maintenu pour compatibilitÃ©.',
                 'endpoint' => '/api/v1/legacy/reports',
                 'http_methods' => ['GET'],
                 'parameters' => [
@@ -223,7 +223,7 @@ class FeatureSeeder extends Seeder
                 'status' => 'deprecated',
                 'metadata' => [
                     'ui_type' => 'generic',
-                    'deprecation_notice' => 'Ce module sera supprimé dans la version 2.0.0',
+                    'deprecation_notice' => 'Ce module sera supprimÃ© dans la version 2.0.0',
                 ],
             ],
         ];
