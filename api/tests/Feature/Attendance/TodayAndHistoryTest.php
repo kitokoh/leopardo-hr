@@ -240,4 +240,20 @@ class TodayAndHistoryTest extends TestCase
         $resp->assertOk();
         $this->assertSame([], $resp->json('data'));
     }
+
+    public function test_manager_cannot_filter_attendance_history_by_another_tenant_employee_id(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+
+        $managerA = Employee::factory()->create(['company_id' => $companyA->id, 'role' => 'manager', 'manager_role' => 'principal']);
+        $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
+
+        Sanctum::actingAs($managerA);
+
+        $response = $this->getJson("/api/v1/attendance?employee_id={$employeeB->id}");
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['employee_id']);
+    }
 }
