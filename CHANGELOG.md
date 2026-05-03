@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.86] - 2026-05-02
+
+### DocKeeper - Alignement documentation
+
+- Dépôt : Mise à jour de `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` (v1.1) pour refléter l'infrastructure Render/Neon/FrankenPHP et le workflow de démarrage automatique via `docker-entrypoint.sh`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.86` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
