@@ -517,12 +517,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/EvaluationController.php
 
 		-
-			message: '#^Parameter \#1 \$name of static method Illuminate\\Filesystem\\FilesystemManager\:\:disk\(\) expects string\|null, string\|UnitEnum given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/HealthController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\UserInvitation\:\:\$accepted_at\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5246,6 +5240,12 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$name on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Cameras/CamerasCrudTest.php
+
+		-
+			message: '#^Cannot access property \$rtsp_url on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/Cameras/CamerasCrudTest.php
