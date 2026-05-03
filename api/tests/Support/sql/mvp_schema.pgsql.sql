@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS public.languages CASCADE;
 DROP TABLE IF EXISTS public.companies CASCADE;
 DROP TABLE IF EXISTS public.plans CASCADE;
 DROP TABLE IF EXISTS shared_tenants.evaluations CASCADE;
+DROP TABLE IF EXISTS shared_tenants.features CASCADE;
 DROP TABLE IF EXISTS shared_tenants.payrolls CASCADE;
 DROP TABLE IF EXISTS shared_tenants.projects CASCADE;
 DROP TABLE IF EXISTS shared_tenants.tasks CASCADE;
@@ -390,6 +391,38 @@ CREATE TABLE shared_tenants.evaluations (
 
 CREATE UNIQUE INDEX evaluations_employee_id_period_evaluator_id_unique
     ON shared_tenants.evaluations (employee_id, period, evaluator_id);
+
+CREATE TABLE shared_tenants.features (
+    id serial PRIMARY KEY,
+    company_id uuid NULL,
+    key varchar(100) NOT NULL,
+    title varchar(200) NOT NULL,
+    description text NOT NULL,
+    endpoint varchar(500) NOT NULL,
+    http_methods jsonb NOT NULL,
+    parameters jsonb NOT NULL,
+    response_schema jsonb NOT NULL,
+    permissions jsonb NOT NULL,
+    mobile_version_min varchar(20) NOT NULL,
+    mobile_version_max varchar(20) NULL,
+    api_version varchar(20) NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'active',
+    metadata jsonb NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX features_key_unique ON shared_tenants.features (key);
+CREATE UNIQUE INDEX features_company_id_key_unique
+    ON shared_tenants.features (company_id, key);
+CREATE INDEX features_company_id_status_index
+    ON shared_tenants.features (company_id, status);
+CREATE INDEX features_status_index ON shared_tenants.features (status);
+CREATE INDEX features_api_version_index ON shared_tenants.features (api_version);
+CREATE INDEX features_mobile_version_min_index
+    ON shared_tenants.features (mobile_version_min);
+CREATE INDEX features_status_api_version_index
+    ON shared_tenants.features (status, api_version);
 
 CREATE TABLE shared_tenants.payrolls (
     id bigserial PRIMARY KEY,
