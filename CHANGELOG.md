@@ -2,7 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.84] - 2026-04-30
+## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
 
@@ -15,7 +15,7 @@
 
 ### API - Performance et durcissement multi-tenant
 
-- API : optimisation de `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
+- API : optimisation de `PayrollController@index`, `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
 - API : elimination des concatenations directes de `schema_name` dans plusieurs `SET search_path` sensibles au profit de `Company::getSafeSearchPath()`.
 - API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
 - Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
@@ -35,13 +35,18 @@
 - Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
 - Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Ajout de `GO_NO_GO_MVP.md` comme source de vérité canonique dans `PILOTAGE.md` et `docs/README.md`.
+- Gouvernance : Mise à jour de `CODE_VERSION` à `0.1.0` dans `PILOTAGE.md` (release MVP prête).
+- Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
+- Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
+
 ## [4.1.84] - 2026-05-01
 
 ### Performance - Optimisation des index Absence et Evaluation
 
 - API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
 - API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
-## [4.1.84] - 2026-05-02
+## [4.1.84] - 2026-05-02 module placard 
 
 ### Sentinel - Sécurisation des validations et tests d'isolation
 
@@ -50,7 +55,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
-## [4.1.83] - 2026-05-01
+## [4.1.85] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (attendance today)
+
+- API : Mise à jour de `AttendanceTodayResource` pour inclure l'ID du pointage (`id`) et les minutes de retard (`late_minutes`), alignant ainsi le payload `/api/v1/attendance/today` et `/api/v1/me/daily-summary` sur les attentes des modèles mobiles.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces champs dans les payloads de présence journalière.
+
 ## [4.1.84] - 2026-05-02
 
 ### Contractor - Alignement contrat API/mobile (employee & attendance)
@@ -64,6 +75,8 @@
 ### Janitor - Hygiène du dépôt
 
 - Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
+- Dépôt : Suppression du répertoire `.kiro/` contenant des spécifications d'implémentation obsolètes déjà fusionnées.
+- Dépôt : Archivage des notes historiques (`CONTINUE_v2.md`, `remarquesimportantaverifier.md`) et de l'artefact bot `EXPLORE.md` vers `docs/notes/archive/`.
 
 ### DocKeeper - Alignement documentation et maintenance
 
@@ -333,7 +346,7 @@
 - Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis à jour pour refléter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
 - Suite locale : 11/11 Unit + 87/87 Feature OK.
 
-## [4.1.71] - 2026-05-20
+## [4.1.71] - 2026-04-24
 ### Performance - Optimisation du dashboard manager
 
 - `api/app/Http/Controllers/Web/DashboardController.php` : ajout de `select()` sur les requetes `Employee` et `AttendanceLog` pour ne recuperer que les colonnes necessaires, evitant ainsi le chargement des colonnes JSONB lourdes et reduisant la consommation memoire lors de l'hydratation des modeles Eloquent.
