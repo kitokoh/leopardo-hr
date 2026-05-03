@@ -23,6 +23,10 @@ import 'package:leopardo_rh/features/evaluations/screens/evaluation_list_screen.
 import 'package:leopardo_rh/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_rh/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_rh/features/team/screens/team_screen.dart';
+import 'package:leopardo_rh/features/user_auth/screens/user_register_screen.dart';
+import 'package:leopardo_rh/features/user_auth/screens/user_login_screen.dart';
+import 'package:leopardo_rh/features/user_auth/screens/user_home_screen.dart';
+import 'package:leopardo_rh/features/user_auth/screens/company_request_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
@@ -43,7 +47,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (authState.isLoading) return null;
 
       final location = state.matchedLocation;
-      const publicRoutes = {'/welcome', '/login', '/register'};
+      const publicRoutes = {
+        '/welcome',
+        '/login',
+        '/register',
+        '/user-register',
+        '/user-login',
+        '/user-home',
+        '/company-request',
+      };
       final onPublic = publicRoutes.contains(location);
 
       if (!isAuth && !onPublic) return '/welcome';
@@ -117,6 +129,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/user-register',
+        builder: (context, state) => const UserRegisterScreen(),
+      ),
+      GoRoute(
+        path: '/user-login',
+        builder: (context, state) => const UserLoginScreen(),
+      ),
+      GoRoute(
+        path: '/user-home',
+        builder: (context, state) => const UserHomeScreen(),
+      ),
+      GoRoute(
+        path: '/company-request',
+        builder: (context, state) => const CompanyRequestScreen(),
       ),
     ],
   );
