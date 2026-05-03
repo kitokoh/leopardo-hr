@@ -55,126 +55,6 @@ parameters:
 			path: app/Exceptions/SalaryAdvanceNotPendingException.php
 
 		-
-			message: '#^Cannot access property \$code on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Cannot access property \$deducts_leave on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Cannot access property \$name on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\AbsenceController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Parameter \#1 \$employee of method App\\Services\\AbsenceService\:\:create\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Parameter \#2 \$approver of method App\\Services\\AbsenceService\:\:approve\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Parameter \#2 \$reason of method App\\Services\\AbsenceService\:\:reject\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\Carbon\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 2
-			path: app/Http/Controllers/Api/V1/AbsenceController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Employee\>\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Cannot access property \$timezone on mixed\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Parameter \#1 \$perPage of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\AttendanceLog\>\:\:paginate\(\) expects int\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Parameter \#1 \$resource of class App\\Http\\Resources\\Api\\V1\\AttendanceTodayResource constructor expects App\\Models\\Employee, App\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Employee\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Parameter \#1 \$timeZone of method Carbon\\Carbon\:\:setTimezone\(\) expects DateTimeZone\|int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
-			message: '#^Parameter \#3 \$timezone of class App\\Http\\Resources\\Api\\V1\\AttendanceTodayResource constructor expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Http/Controllers/Api/V1/AttendanceController.php
-
-		-
 			message: '#^Cannot access offset ''language'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -259,84 +139,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/BiometricEnrollmentController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\DepartmentController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Only iterables can be unpacked, mixed given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Department\>\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Parameter \#1 \$d of method App\\Http\\Controllers\\Api\\V1\\DepartmentController\:\:serialize\(\) expects App\\Models\\Department, App\\Models\\Department\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/Api/V1/DepartmentController.php
-
-		-
 			message: '#^Parameter \#3 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -367,108 +169,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/EstimationController.php
 
 		-
-			message: '#^Cannot access offset ''criteria'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access offset ''employee_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access offset ''improvements'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access offset ''overall_comment'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access offset ''period'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access offset ''score'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access offset ''strengths'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 6
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access property \$email on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access property \$first_name on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot access property \$last_name on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Cannot call method load\(\) on App\\Models\\Evaluation\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\EvaluationController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/EvaluationController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\UserInvitation\:\:\$accepted_at\.$#'
 			identifier: property.notFound
 			count: 1
@@ -485,132 +185,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/InvitationController.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''action'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''biometric_mode'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''events'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''identifier'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''location_label'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''name'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access offset ''trusted_device_label'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access property \$last_sync_at on App\\Models\\AttendanceKiosk\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot access property \$name on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\KioskController\:\:serializeKiosk\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$boolean of function abort_unless expects bool, bool\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Http\\Controllers\\Api\\V1\\KioskController\:\:setTenantSearchPath\(\) expects App\\Models\\Company\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Http\\Controllers\\Api\\V1\\KioskController\:\:setTenantSearchPath\(\) expects App\\Models\\Company\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#2 \$events of method App\\Services\\KioskAttendanceService\:\:syncPunches\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \$action of method App\\Services\\KioskAttendanceService\:\:punch\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Carbon\\Carbon\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Api/V1/KioskController.php
 
 		-
 			message: '#^Cannot access offset ''from'' on mixed\.$#'
@@ -709,24 +283,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/MeController.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\NotificationController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
-			message: '#^Parameter \#1 \$n of method App\\Http\\Controllers\\Api\\V1\\NotificationController\:\:serialize\(\) expects App\\Models\\Notification, App\\Models\\Notification\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/NotificationController.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\UserInvitation\:\:\$accepted_at\.$#'
 			identifier: property.notFound
 			count: 2
@@ -791,66 +347,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/OnboardingController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Cannot access property \$email on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Cannot access property \$first_name on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Cannot access property \$last_name on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\PayrollController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Parameter \#1 \$manager of method App\\Services\\PayrollService\:\:create\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
-
-		-
-			message: '#^Parameter \#2 \$validator of method App\\Services\\PayrollService\:\:validate\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/PayrollController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
@@ -929,402 +425,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: app/Http/Controllers/Api/V1/PlatformAuthController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\PositionController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Only iterables can be unpacked, mixed given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Position\>\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Parameter \#1 \$p of method App\\Http\\Controllers\\Api\\V1\\PositionController\:\:serialize\(\) expects App\\Models\\Position, App\\Models\\Position\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/PositionController.php
-
-		-
-			message: '#^Cannot access offset ''members'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ProjectController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Only iterables can be unpacked, mixed given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Project\>\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Parameter \#1 \$p of method App\\Http\\Controllers\\Api\\V1\\ProjectController\:\:serialize\(\) expects App\\Models\\Project, App\\Models\\Project\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/ProjectController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\SalaryAdvanceController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \#1 \$employee of method App\\Services\\SalaryAdvanceService\:\:create\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \#2 \$approver of method App\\Services\\SalaryAdvanceService\:\:approve\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \#2 \$approver of method App\\Services\\SalaryAdvanceService\:\:reject\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Parameter \#3 \$comment of method App\\Services\\SalaryAdvanceService\:\:reject\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Cannot access offset ''is_default'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Cannot access offset ''work_days'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 3
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ScheduleController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Only iterables can be unpacked, mixed given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Schedule\>\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Parameter \#1 \$s of method App\\Http\\Controllers\\Api\\V1\\ScheduleController\:\:serialize\(\) expects App\\Models\\Schedule, App\\Models\\Schedule\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/ScheduleController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\SiteController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Only iterables can be unpacked, mixed given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Site\>\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Parameter \#1 \$s of method App\\Http\\Controllers\\Api\\V1\\SiteController\:\:serialize\(\) expects App\\Models\\Site, App\\Models\\Site\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/SiteController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$author\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$author_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$content\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access offset ''assigned_to'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access offset ''content'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access offset ''priority'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access offset ''visibility'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 6
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access property \$first_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 9
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot access property \$last_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\V1\\TaskController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Only iterables can be unpacked, mixed given\.$#'
-			identifier: arrayUnpacking.nonIterable
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Task\>\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Parameter \#1 \$task of method App\\Http\\Controllers\\Api\\V1\\TaskController\:\:serialize\(\) expects App\\Models\\Task, App\\Models\\Task\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
 
 		-
 			message: '#^Cannot access offset ''biometric_mode'' on mixed\.$#'
@@ -1411,54 +511,6 @@ parameters:
 			path: app/Http/Controllers/Web/InvitationController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Employee\>\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Employee\>\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\UserInvitation\:\:\$accepted_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\UserInvitation\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Cannot access property \$email on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Parameter \$company of method App\\Services\\UserInvitationService\:\:createAndSend\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Parameter \$employee of method App\\Services\\UserInvitationService\:\:createAndSend\(\) expects App\\Models\\Employee, App\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Employee\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
 			message: '#^Cannot access offset ''action'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1487,36 +539,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Web/KioskController.php
-
-		-
-			message: '#^Cannot access property \$company on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Web/MyDashboardController.php
-
-		-
-			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Controllers/Web/MyDashboardController.php
-
-		-
-			message: '#^Cannot access property \$timezone on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Web/MyDashboardController.php
-
-		-
-			message: '#^Parameter \#1 \$timeZone of method Carbon\\Carbon\:\:setTimezone\(\) expects DateTimeZone\|int\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Web/MyDashboardController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>timezone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Web/MyDashboardController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$password_hash\.$#'
@@ -1765,88 +787,10 @@ parameters:
 			path: app/Http/Middleware/SetLocale.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Method App\\Http\\Middleware\\TenantMiddleware\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Parameter \#1 \$company of method App\\Services\\TenantManager\:\:setTenant\(\) expects App\\Models\\Company, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Parameter \#2 \$value of method Sentry\\State\\Scope\:\:setTag\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Middleware/TenantMiddleware.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/Web/EnsureEmployeeMiddleware.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/Web/EnsureEmployeeMiddleware.php
-
-		-
-			message: '#^Method App\\Http\\Middleware\\Web\\EnsureEmployeeMiddleware\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Middleware/Web/EnsureEmployeeMiddleware.php
-
-		-
 			message: '#^Method App\\Http\\Middleware\\Web\\EnsureManagerMiddleware\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Http/Middleware/Web/EnsureManagerMiddleware.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Middleware/Web/EnsureManagerRoleMiddleware.php
-
-		-
-			message: '#^Method App\\Http\\Middleware\\Web\\EnsureManagerRoleMiddleware\:\:handle\(\) should return Symfony\\Component\\HttpFoundation\\Response but returns mixed\.$#'
-			identifier: return.type
-			count: 2
-			path: app/Http/Middleware/Web/EnsureManagerRoleMiddleware.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\Absence\\AbsenceIndexRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -1877,24 +821,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/Attendance/AttendanceIndexRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/Attendance/AttendanceTodayRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\Attendance\\AttendanceTodayRequest\:\:messages\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/Attendance/AttendanceTodayRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\Attendance\\AttendanceTodayRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/Attendance/AttendanceTodayRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\Attendance\\CheckInRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -1979,150 +905,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/SalaryAdvance/StoreSalaryAdvanceRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method add\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method after\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method errors\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreEmployeeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreEmployeeRequest\:\:withValidator\(\) has parameter \$validator with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>company" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>company_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method add\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method after\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method errors\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateEmployeeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateEmployeeRequest\:\:withValidator\(\) has parameter \$validator with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>company" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>company_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateProfileRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -3967,12 +2749,6 @@ parameters:
 			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/UpdateCameraRequest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\AbsenceType\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\AbsenceType\>\:\:\$company_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5351,3 +4127,598 @@ parameters:
 			identifier: property.nonObject
 			count: 2
 			path: app/Models/UserInvitation.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/AbsenceController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 3
+			path: app/Http/Controllers/Api/V1/AbsenceController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/AbsenceController.php
+
+		-
+			message: '#^Parameter \#1 \$employee of method App\\Services\\AbsenceService::create\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/AbsenceController.php
+
+		-
+			message: '#^Parameter \#2 \$approver of method App\\Services\\AbsenceService::approve\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/AbsenceController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/AttendanceController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$admin_notes\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$city\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$company_name\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$country\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$created_at\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$description\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$email\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$id\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$phone\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$reviewed_at\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$sector\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$status\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
+			count: 3
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection<int, Illuminate\\Database\\Eloquent\\Model>>::create\(\) expects array<string, mixed>, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\): array\{id: int, company_name: string, sector: string\|null, country: string\|null, city: string\|null, email: string, status: string, admin_notes: string\|null, reviewed_at: string\|null, created_at: string\|null\}, Closure\(App\\Models\\CompanyRequest\): array\{id: int, company_name: string, sector: string\|null, country: string\|null, city: string\|null, email: string, status: string, admin_notes: string\|null, reviewed_at: string\|null, created_at: string\|null\} given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/DepartmentController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/DepartmentController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 6
+			path: app/Http/Controllers/Api/V1/EvaluationController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/EvaluationController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 6
+			path: app/Http/Controllers/Api/V1/EvaluationController.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::isManager\(\)\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/KioskController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/NotificationController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/PayrollController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/PayrollController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 6
+			path: app/Http/Controllers/Api/V1/PayrollController.php
+
+		-
+			message: '#^Parameter \#1 \$manager of method App\\Services\\PayrollService::create\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollController.php
+
+		-
+			message: '#^Parameter \#2 \$validator of method App\\Services\\PayrollService::validate\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$email\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$id\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model::fullName\(\)\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Cannot access offset 'admin_notes' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Cannot access offset 'status' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection<int,App\\Models\\CompanyRequest>::map\(\) contains unresolvable type\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection<int,App\\Models\\CompanyRequest>::map\(\) contains unresolvable type\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PlatformCompanyRequestController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/PositionController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/PositionController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/ProjectController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 3
+			path: app/Http/Controllers/Api/V1/ProjectController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/ProjectController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 3
+			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
+
+		-
+			message: '#^Parameter \#1 \$employee of method App\\Services\\SalaryAdvanceService::create\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
+
+		-
+			message: '#^Parameter \#2 \$approver of method App\\Services\\SalaryAdvanceService::approve\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
+
+		-
+			message: '#^Parameter \#2 \$approver of method App\\Services\\SalaryAdvanceService::reject\(\) expects App\\Models\\Employee, App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 3
+			path: app/Http/Controllers/Api/V1/ScheduleController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/ScheduleController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/SiteController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 5
+			path: app/Http/Controllers/Api/V1/SiteController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 6
+			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 9
+			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 4
+			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$company\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$company_id\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$employee_id\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'avatar_url' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'current_password' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'device_name' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'email' on mixed\.$#'
+			count: 3
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'first_name' on mixed\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'google_id' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'last_name' on mixed\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'new_password' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'password' on mixed\.$#'
+			count: 2
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access offset 'phone' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Cannot access property \$name on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model::update\(\) expects array<string, mixed>, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\) contains unresolvable type\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash::check\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Illuminate\\Support\\Facades\\Hash::make\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$avatarUrl of method App\\Services\\UserAuthService::googleSignIn\(\) expects string\|null, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$deviceName of method App\\Services\\UserAuthService::login\(\) expects string\|null, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$email of method App\\Services\\UserAuthService::googleSignIn\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$email of method App\\Services\\UserAuthService::login\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$email of method App\\Services\\UserAuthService::register\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$firstName of method App\\Services\\UserAuthService::googleSignIn\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$firstName of method App\\Services\\UserAuthService::register\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$googleId of method App\\Services\\UserAuthService::googleSignIn\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$lastName of method App\\Services\\UserAuthService::googleSignIn\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$lastName of method App\\Services\\UserAuthService::register\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$password of method App\\Services\\UserAuthService::login\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$password of method App\\Services\\UserAuthService::register\(\) expects string, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Parameter \$phone of method App\\Services\\UserAuthService::register\(\) expects string\|null, mixed given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\) contains unresolvable type\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserAuthController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model::\$name\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Cannot access offset 'email' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Cannot access offset 'employee_id' on mixed\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\) contains unresolvable type\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\): array\{id: int, company_id: string, company_name: mixed, employee_id: int<0, max>, status: string, linked_at: string\|null\}, Closure\(App\\Models\\UserEmployeeLink\): array\{id: int, company_id: string, company_name: mixed, employee_id: int<0, max>, status: string, linked_at: string\|null\} given\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\) contains unresolvable type\.$#'
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 2
+			path: app/Http/Controllers/Web/InvitationManagementController.php
+
+		-
+			message: '#^Cannot access property \$email on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 1
+			path: app/Http/Controllers/Web/InvitationManagementController.php
+
+		-
+			message: '#^Cannot access property \$company on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 1
+			path: app/Http/Controllers/Web/MyDashboardController.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			count: 2
+			path: app/Http/Controllers/Web/MyDashboardController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company\.$#'
+			count: 1
+			path: app/Http/Middleware/TenantMiddleware.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$status\.$#'
+			count: 1
+			path: app/Http/Middleware/TenantMiddleware.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company\.$#'
+			count: 1
+			path: app/Http/Middleware/Web/EnsureEmployeeMiddleware.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$manager_role\.$#'
+			count: 1
+			path: app/Http/Middleware/Web/EnsureManagerRoleMiddleware.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/Attendance/AttendanceTodayRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::isManager\(\)\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreEmployeeRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::isManager\(\)\.$#'
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateEmployeeRequest.php
+
+		-
+			message: '#^Method App\\Models\\CompanyRequest::approvedCompany\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel$#'
+			count: 1
+			path: app/Models/CompanyRequest.php
+
+		-
+			message: '#^Method App\\Models\\CompanyRequest::user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel$#'
+			count: 1
+			path: app/Models/CompanyRequest.php
+
+		-
+			message: '#^Method App\\Models\\User::companyRequests\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types: TRelatedModel, TDeclaringModel$#'
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User::employeeLinks\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types: TRelatedModel, TDeclaringModel$#'
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\UserEmployeeLink::company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel$#'
+			count: 1
+			path: app/Models/UserEmployeeLink.php
+
+		-
+			message: '#^Method App\\Models\\UserEmployeeLink::user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types: TRelatedModel, TDeclaringModel$#'
+			count: 1
+			path: app/Models/UserEmployeeLink.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$until of class App\\Exceptions\\AccountLockedException constructor expects Illuminate\\Support\\Carbon, Carbon\\Carbon given\.$#'
+			count: 1
+			path: app/Services/UserAuthService.php

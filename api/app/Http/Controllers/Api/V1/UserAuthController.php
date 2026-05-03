@@ -111,8 +111,11 @@ class UserAuthController extends Controller
         $user = $request->user('user_api');
         $user->update($validated);
 
+        /** @var User $freshUser */
+        $freshUser = $user->fresh();
+
         return new JsonResponse([
-            'data' => $this->formatUser($user->fresh()),
+            'data' => $this->formatUser($freshUser),
         ]);
     }
 
