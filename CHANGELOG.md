@@ -57,6 +57,11 @@
 
 ## [4.1.85] - 2026-05-02
 
+### Scout - Tests de régression MVP (Salary Advances)
+
+- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et les règles RBAC du module d'avances sur salaire.
+- Sécurité : Identification d'une absence de validation tenant-scoped sur `employee_id` dans `SalaryAdvanceIndexRequest`, permettant potentiellement le probing d'IDs d'autres entreprises (comportement rapporté pour correction).
+
 ### Contractor - Alignement contrat API/mobile (attendance today)
 
 - API : Mise à jour de `AttendanceTodayResource` pour inclure l'ID du pointage (`id`) et les minutes de retard (`late_minutes`), alignant ainsi le payload `/api/v1/attendance/today` et `/api/v1/me/daily-summary` sur les attentes des modèles mobiles.
