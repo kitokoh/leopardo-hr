@@ -99,6 +99,8 @@ class FeatureDetector implements FeatureDetectorInterface
                 'ui_type' => $annotations['ui_type'] ?? $this->inferUIType($method),
                 'parameters' => $this->extractParameters($methodInfo),
                 'response_schema' => $this->inferResponseSchema($controllerClass, $method),
+                'form_schema' => $annotations['form_schema'] ?? [],
+                'list_schema' => $annotations['list_schema'] ?? [],
             ];
         } catch (\Exception $e) {
             Log::error('Failed to extract metadata', [
@@ -118,7 +120,10 @@ class FeatureDetector implements FeatureDetectorInterface
     {
         $routes = collect();
 
-        foreach ($this->router->getRoutes() as $route) {
+        /** @var iterable<Route> $routeCollection */
+        $routeCollection = $this->router->getRoutes();
+
+        foreach ($routeCollection as $route) {
             // Filtrer uniquement les routes API
             if (! $this->isApiRoute($route)) {
                 continue;
@@ -224,10 +229,8 @@ class FeatureDetector implements FeatureDetectorInterface
 
     /**
      * Vérifie si une route est une route API
-     *
-     * @param  Route  $route
      */
-    private function isApiRoute($route): bool
+    private function isApiRoute(Route $route): bool
     {
         // Vérifier le préfixe de l'URI
         if (! str_starts_with($route->uri(), 'api/')) {
@@ -246,7 +249,7 @@ class FeatureDetector implements FeatureDetectorInterface
     /**
      * Génère une clé unique pour une fonctionnalité
      */
-    private function generateFeatureKey(array $routeData): string
+    protected function generateFeatureKey(array $routeData): string
     {
         $controller = class_basename($routeData['controller_class']);
         $method = $routeData['method'];
@@ -260,7 +263,7 @@ class FeatureDetector implements FeatureDetectorInterface
     /**
      * Vérifie si les métadonnées constituent une fonctionnalité valide
      */
-    private function isValidFeature(array $metadata): bool
+    protected function isValidFeature(array $metadata): bool
     {
         // Vérifier que les métadonnées de base sont présentes
         if (empty($metadata['title']) || empty($metadata['method_info'])) {
@@ -284,7 +287,7 @@ class FeatureDetector implements FeatureDetectorInterface
     /**
      * Construit les données complètes d'une fonctionnalité
      */
-    private function buildFeatureData(array $routeData, array $metadata): array
+    protected function buildFeatureData(array $routeData, array $metadata): array
     {
         return [
             'key' => $this->generateFeatureKey($routeData),
@@ -305,8 +308,8 @@ class FeatureDetector implements FeatureDetectorInterface
                 'controller_method' => $routeData['method'],
                 'route_name' => $routeData['name'],
                 'middleware' => $routeData['middleware'],
-                'form_schema' => $metadata['form_schema'] ?? null,
-                'list_schema' => $metadata['list_schema'] ?? null,
+                'form_schema' => $metadata['form_schema'] ?? [],
+                'list_schema' => $metadata['list_schema'] ?? [],
                 'mobile_compatible' => $metadata['mobile_compatible'],
             ],
         ];

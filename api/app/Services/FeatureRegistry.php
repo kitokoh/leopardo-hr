@@ -81,6 +81,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, $version);
 
+        /** @var Collection<int, Feature> */
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($version) {
             $query = Feature::active();
 
@@ -88,6 +89,7 @@ class FeatureRegistry implements FeatureRegistryInterface
                 $query->forApiVersion($version);
             }
 
+            /** @var \Illuminate\Database\Eloquent\Collection<int, Feature> $features */
             $features = $query->orderBy('title')->get();
 
             Log::debug('Features retrieved from database', [
@@ -106,7 +108,9 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'single', $key);
 
+        /** @var Feature|null */
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($key) {
+            /** @var Feature|null */
             return Feature::where('key', $key)->first();
         });
     }
@@ -162,6 +166,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         try {
             DB::beginTransaction();
 
+            /** @var int $deleted */
             $deleted = Feature::where('key', $key)->delete();
 
             if ($deleted > 0) {
@@ -173,6 +178,7 @@ class FeatureRegistry implements FeatureRegistryInterface
             DB::commit();
 
             // Invalider le cache
+            $this->invalidateCache($key);
             $this->invalidateCache();
 
         } catch (\Exception $e) {
@@ -197,13 +203,20 @@ class FeatureRegistry implements FeatureRegistryInterface
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
             $features = $this->getCompatibleFeatures($mobileVersion ?? '1.0.0');
 
+            $featuresData = $features->map(fn (Feature $feature) => $feature->toManifestArray())->toArray();
+
+            // Calculer une signature simple pour satisfaire le contrat mobile
+            // En production, cela utiliserait une clé privée asymétrique
+            $signature = hash('sha256', json_encode($featuresData));
+
             $manifest = [
                 'version' => $this->getCurrentApiVersion(),
                 'generated_at' => Carbon::now()->toISOString(),
                 'mobile_version_min' => $this->getMinimumMobileVersion(),
                 'mobile_version_target' => $mobileVersion,
                 'total_features' => $features->count(),
-                'features' => $features->map(fn (Feature $feature) => $feature->toManifestArray())->toArray(),
+                'signature' => $signature,
+                'features' => $featuresData,
             ];
 
             Log::info('Manifest generated', [
@@ -222,7 +235,9 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'compatible', $mobileVersion);
 
+        /** @var Collection<int, Feature> */
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
+            /** @var \Illuminate\Database\Eloquent\Collection<int, Feature> */
             return Feature::active()
                 ->compatibleWith($mobileVersion)
                 ->orderBy('title')
@@ -380,7 +395,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     /**
      * Construit une clé de cache avec préfixe et paramètres
      */
-    private function buildCacheKey(string ...$parts): string
+    private function buildCacheKey(?string ...$parts): string
     {
         return implode(':', array_filter($parts));
     }

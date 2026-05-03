@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\FeatureRegistryInterface;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,8 @@ class FeatureManifestController extends Controller
     public function __construct(
         private readonly FeatureRegistryInterface $registry
     ) {
+        // middleware() is a magic method on the base Controller in older Laravel versions
+        // or handled by traits. We'll ignore the PHPStan error for now as it works at runtime.
         $this->middleware('auth:sanctum');
     }
 
@@ -30,6 +33,7 @@ class FeatureManifestController extends Controller
     {
         try {
             $mobileVersion = $request->query('mobile_version', '1.0.0');
+            /** @var Employee $user */
             $user = Auth::user();
 
             Log::info('Feature manifest requested', [
@@ -84,6 +88,7 @@ class FeatureManifestController extends Controller
     public function compatible(Request $request, string $version): JsonResponse
     {
         try {
+            /** @var Employee $user */
             $user = Auth::user();
 
             $features = $this->registry->getCompatibleFeatures($version);
@@ -130,6 +135,7 @@ class FeatureManifestController extends Controller
                 ], 404);
             }
 
+            /** @var Employee $user */
             $user = Auth::user();
 
             // Vérifier les permissions
@@ -165,6 +171,7 @@ class FeatureManifestController extends Controller
     public function statistics(): JsonResponse
     {
         try {
+            /** @var Employee $user */
             $user = Auth::user();
 
             // Vérifier que l'utilisateur est admin
@@ -201,6 +208,7 @@ class FeatureManifestController extends Controller
     public function synchronize(): JsonResponse
     {
         try {
+            /** @var Employee $user */
             $user = Auth::user();
 
             // Vérifier que l'utilisateur est admin

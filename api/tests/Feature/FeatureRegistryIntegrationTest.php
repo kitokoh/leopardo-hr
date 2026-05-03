@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Contracts\FeatureRegistryInterface;
 use App\Models\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -12,14 +12,21 @@ use Tests\TestCase;
  */
 class FeatureRegistryIntegrationTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private FeatureRegistryInterface $registry;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
         $this->registry = app(FeatureRegistryInterface::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     /** @test */
@@ -37,6 +44,7 @@ class FeatureRegistryIntegrationTest extends TestCase
     {
         // Arrange - Create a feature
         $featureData = [
+            'company_id' => null,
             'key' => 'integration_test_feature',
             'title' => 'Integration Test Feature',
             'description' => 'A feature for integration testing',

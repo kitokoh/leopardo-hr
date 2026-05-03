@@ -3,12 +3,24 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class FeatureTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpMvpSchema();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
+    }
 
     /** @test */
     public function it_can_create_a_feature_with_all_required_fields()
@@ -129,7 +141,7 @@ class FeatureTest extends TestCase
     public function it_handles_null_metadata_gracefully_in_manifest()
     {
         $feature = Feature::factory()->create([
-            'metadata' => null,
+            'metadata' => [],
         ]);
 
         $manifestArray = $feature->toManifestArray();

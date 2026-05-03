@@ -7,10 +7,10 @@ use App\Exceptions\FeatureSynchronizationException;
 use App\Models\Feature;
 use App\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -18,7 +18,7 @@ use Tests\TestCase;
  */
 class FeatureRegistryTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private FeatureRegistry $registry;
 
@@ -29,6 +29,7 @@ class FeatureRegistryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->mockDetector = Mockery::mock(FeatureDetectorInterface::class);
         $this->mockCache = Mockery::mock(CacheManager::class);
@@ -41,6 +42,7 @@ class FeatureRegistryTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->tearDownMvpSchema();
         Mockery::close();
         parent::tearDown();
     }
@@ -405,6 +407,9 @@ class FeatureRegistryTest extends TestCase
             ->andReturnUsing(function ($key, $ttl, $callback) {
                 return $callback();
             });
+
+        $this->mockCache->shouldReceive('get')->andReturn(null);
+        $this->mockCache->shouldReceive('has')->andReturn(false);
 
         // Act
         $stats = $this->registry->getStatistics();

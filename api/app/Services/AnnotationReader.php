@@ -30,8 +30,8 @@ class AnnotationReader
                 'responses' => [],
                 'mobile_compatible' => true,
                 'ui_type' => 'generic',
-                'form_schema' => null,
-                'list_schema' => null,
+                'form_schema' => [],
+                'list_schema' => [],
             ];
 
             // Parser le commentaire PHPDoc

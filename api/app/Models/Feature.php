@@ -3,9 +3,40 @@
 namespace App\Models;
 
 use App\Traits\BelongsToCompany;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string|null $company_id
+ * @property string $key
+ * @property string $title
+ * @property string $description
+ * @property string $endpoint
+ * @property array $http_methods
+ * @property array $parameters
+ * @property array $response_schema
+ * @property array $permissions
+ * @property string $mobile_version_min
+ * @property string|null $mobile_version_max
+ * @property string $api_version
+ * @property string $status
+ * @property array|null $metadata
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature active()
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature forApiVersion(string $apiVersion)
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature compatibleWith(string $mobileVersion)
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature orderBy($column, $direction = 'asc')
+ * @method static int count($columns = '*')
+ * @method static mixed min($column)
+ * @method static \Illuminate\Database\Eloquent\Builder|Feature select($columns = ['*'], ...$args)
+ * @method static \Illuminate\Support\Collection<int, string> pluck($column, $key = null)
+ */
 class Feature extends Model
 {
     use BelongsToCompany;

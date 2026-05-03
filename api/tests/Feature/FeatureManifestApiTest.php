@@ -2,10 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
@@ -13,7 +14,7 @@ use Tests\TestCase;
  */
 class FeatureManifestApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private Employee $user;
 
@@ -22,16 +23,31 @@ class FeatureManifestApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
+
+        $company = Company::factory()->create([
+            'schema_name' => 'shared_tenants',
+        ]);
 
         // Créer un utilisateur normal
         $this->user = Employee::factory()->create([
+            'company_id' => $company->id,
             'role' => 'employee',
         ]);
 
         // Créer un utilisateur admin
         $this->adminUser = Employee::factory()->create([
+            'company_id' => $company->id,
             'role' => 'admin',
         ]);
+
+        app()->instance('current_company', $company);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     /** @test */
@@ -68,6 +84,7 @@ class FeatureManifestApiTest extends TestCase
                     'mobile_version_min',
                     'mobile_version_target',
                     'total_features',
+                    'signature',
                     'features' => [
                         '*' => [
                             'key',
@@ -100,14 +117,17 @@ class FeatureManifestApiTest extends TestCase
 
         // Fonctionnalité compatible avec version 1.0.0
         Feature::factory()->create([
+            'company_id' => $this->user->company_id,
             'key' => 'compatible_feature',
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => null,
             'status' => 'active',
+            'permissions' => [],
         ]);
 
         // Fonctionnalité incompatible (version trop récente)
         Feature::factory()->create([
+            'company_id' => $this->user->company_id,
             'key' => 'incompatible_feature',
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,

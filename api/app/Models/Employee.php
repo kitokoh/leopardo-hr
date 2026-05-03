@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\BelongsToCompany;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $email
+ * @property string $role
+ * @property string|null $manager_role
+ * @property string $password_hash
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $invitation_accepted_at
+ */
 class Employee extends Authenticatable
 {
     use BelongsToCompany;

@@ -27,6 +27,7 @@ mobile/build/
 api/bootstrap/cache/*.php
 api/storage/logs/*.log
 api/storage/app/public/
+api/storage/phpstan/
 
 # IDE
 .idea/

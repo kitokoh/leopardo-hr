@@ -609,6 +609,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "languages"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "plans"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "hr_model_templates"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "features"'.$cascade);
     }
 
     private function restoreDefaultSearchPath(): void
