@@ -38,6 +38,7 @@ class UpdateEmployeeRequest extends FormRequest
                 'email',
                 'max:150',
                 Rule::unique('employees', 'email')->ignore($employeeId),
+                new \App\Rules\GlobalEmailUnique((int) $employeeId),
             ],
             'password' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
             'role' => ['sometimes', 'nullable', 'in:employee,manager'],
