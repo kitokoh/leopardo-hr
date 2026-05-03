@@ -53,10 +53,10 @@ class CheckOutTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->postJson('/api/v1/attendance/check-out');
+        $response = $this->postJson('/api/v1/attendance/check-out'); }
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'MISSING_CHECK_IN');
+        $response->assertJsonPath('error', 'MISSING_CHECK_IN'); }
     }
 
     public function test_employee_can_check_out_and_hours_are_calculated(): void
@@ -96,15 +96,15 @@ class CheckOutTest extends TestCase
         Sanctum::actingAs($employee);
 
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));
-        $checkIn = $this->postJson('/api/v1/attendance/check-in');
+        $checkIn = $this->postJson('/api/v1/attendance/check-in'); }
         $checkIn->assertStatus(201);
 
         $this->travelTo(Carbon::parse('2026-04-04 17:00:00', 'UTC'));
-        $checkOut = $this->postJson('/api/v1/attendance/check-out');
+        $checkOut = $this->postJson('/api/v1/attendance/check-out'); }
 
         $checkOut->assertOk();
-        $checkOut->assertJsonPath('data.hours_worked', '8.00');
-        $checkOut->assertJsonPath('data.overtime_hours', '0.00');
+        $checkOut->assertJsonPath('data.hours_worked', '8.00'); }
+        $checkOut->assertJsonPath('data.overtime_hours', '0.00'); }
 
         $log = AttendanceLog::query()->firstOrFail();
         $this->assertSame('8.00', $log->hours_worked);

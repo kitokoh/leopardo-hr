@@ -44,7 +44,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
@@ -57,7 +57,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $response = $this
             ->actingAs($manager, 'sanctum')
@@ -80,12 +80,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
             ]);
 
         $response->assertCreated();
-        $response->assertJsonPath('data.manager_role', 'rh');
+        $response->assertJsonPath('data.manager_role', 'rh'); }
         $response->assertJsonPath('data.biometric_face_enabled', true);
         $response->assertJsonPath('data.biometric_fingerprint_enabled', true);
-        $response->assertJsonPath('data.extra_data.department', 'RH');
+        $response->assertJsonPath('data.extra_data.department', 'RH'); }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $this->assertDatabaseHas('employees', [
             'email' => 'fatima.rh@company.test',
@@ -96,7 +96,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'biometric_fingerprint_enabled' => true,
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $this->assertDatabaseHas('user_invitations', [
             'email' => 'fatima.rh@company.test',
@@ -109,7 +109,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             return $mail->employee->email === 'fatima.rh@company.test'
                 && $mail->employee->role === 'manager'
                 && $mail->employee->manager_role === 'rh'
-                && str_contains($mail->activationUrl, '/activate/');
+                && str_contains($mail->activationUrl, '/activate/'); }
         });
     }
 
@@ -130,7 +130,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
@@ -143,7 +143,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $this
             ->actingAs($manager, 'sanctum')
@@ -166,7 +166,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         $token = basename(parse_url($activationUrl, PHP_URL_PATH));
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $this->assertDatabaseHas('user_invitations', [
             'email' => 'karim.aouad@company.test',
@@ -181,7 +181,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
                 'password_confirmation' => 'password456',
             ])->assertRedirect(route('login'));
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $employee = Employee::query()->where('email', 'karim.aouad@company.test')->firstOrFail();
         $this->assertTrue(Hash::check('password456', $employee->password_hash));
@@ -206,7 +206,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         $manager = Employee::query()->create([
             'company_id' => $company->id,
@@ -219,7 +219,7 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'status' => 'active',
         ]);
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
 
         $this
             ->actingAs($manager, 'sanctum')

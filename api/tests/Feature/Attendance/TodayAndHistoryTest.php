@@ -56,13 +56,13 @@ class TodayAndHistoryTest extends TestCase
         $this->postJson('/api/v1/attendance/check-in')
             ->assertStatus(201);
 
-        $today = $this->getJson('/api/v1/attendance/today');
+        $today = $this->getJson('/api/v1/attendance/today'); }
 
         $today->assertOk();
-        $today->assertJsonPath('data.mode', 'single');
+        $today->assertJsonPath('data.mode', 'single'); }
         $today->assertJsonPath('data.item.employee_id', $employee->id);
         $today->assertJsonPath('data.item.checked_in', true);
-        $today->assertJsonPath('data.item.check_in_time', '08:00');
+        $today->assertJsonPath('data.item.check_in_time', '08:00'); }
     }
 
     public function test_employee_history_returns_only_self(): void
@@ -118,11 +118,11 @@ class TodayAndHistoryTest extends TestCase
             'overtime_hours' => 1.0,
             'status' => 'ontime',
         ]);
-        app()->forgetInstance('current_company');
+        app()->forgetInstance('current_company'); }
 
         Sanctum::actingAs($employeeA);
 
-        $resp = $this->getJson('/api/v1/attendance');
+        $resp = $this->getJson('/api/v1/attendance'); }
 
         $resp->assertOk();
         $ids = collect($resp->json('data'))->pluck('employee_id')->unique()->values()->all();
@@ -166,11 +166,11 @@ class TodayAndHistoryTest extends TestCase
         $this->postJson('/api/v1/attendance/check-in')->assertStatus(201);
 
         Sanctum::actingAs($manager);
-        $all = $this->getJson('/api/v1/attendance/today');
+        $all = $this->getJson('/api/v1/attendance/today'); }
 
         $all->assertOk();
-        $all->assertJsonPath('data.mode', 'collection');
-        $all->assertJsonCount(2, 'data.items');
+        $all->assertJsonPath('data.mode', 'collection'); }
+        $all->assertJsonCount(2, 'data.items'); }
 
         Sanctum::actingAs($employee);
         $forbidden = $this->getJson("/api/v1/attendance/today?employee_id={$manager->id}");
@@ -232,10 +232,10 @@ class TodayAndHistoryTest extends TestCase
             'overtime_hours' => 1.0,
             'status' => 'ontime',
         ]);
-        app()->forgetInstance('current_company');
+        app()->forgetInstance('current_company'); }
 
         Sanctum::actingAs($managerA);
-        $resp = $this->getJson('/api/v1/attendance');
+        $resp = $this->getJson('/api/v1/attendance'); }
 
         $resp->assertOk();
         $this->assertSame([], $resp->json('data'));

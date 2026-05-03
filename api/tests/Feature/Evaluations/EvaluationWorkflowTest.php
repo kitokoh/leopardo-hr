@@ -48,18 +48,18 @@ class EvaluationWorkflowTest extends TestCase
         $store->assertStatus(201);
         $store->assertJsonPath('data.employee_id', $employee->id);
         $store->assertJsonPath('data.evaluator_id', $manager->id);
-        $store->assertJsonPath('data.status', 'draft');
+        $store->assertJsonPath('data.status', 'draft'); }
 
-        $evaluationId = $store->json('data.id');
+        $evaluationId = $store->json('data.id'); }
 
         $submit = $this->putJson("/api/v1/evaluations/{$evaluationId}/submit");
 
         $submit->assertOk();
-        $submit->assertJsonPath('data.status', 'submitted');
+        $submit->assertJsonPath('data.status', 'submitted'); }
 
         $submittedDelete = $this->deleteJson("/api/v1/evaluations/{$evaluationId}");
         $submittedDelete->assertStatus(422);
-        $submittedDelete->assertJsonPath('error.code', 'EVALUATION_NOT_DRAFT');
+        $submittedDelete->assertJsonPath('error.code', 'EVALUATION_NOT_DRAFT'); }
 
         $draft = Evaluation::query()->create([
             'company_id' => $company->id,
@@ -107,9 +107,9 @@ class EvaluationWorkflowTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $index = $this->getJson('/api/v1/evaluations');
+        $index = $this->getJson('/api/v1/evaluations'); }
         $index->assertOk();
-        $index->assertJsonCount(1, 'data');
+        $index->assertJsonCount(1, 'data'); }
         $index->assertJsonPath('data.0.id', $ownEvaluation->id);
 
         $showOther = $this->getJson("/api/v1/evaluations/{$otherEvaluation->id}");
@@ -117,7 +117,7 @@ class EvaluationWorkflowTest extends TestCase
 
         $ack = $this->putJson("/api/v1/evaluations/{$ownEvaluation->id}/acknowledge");
         $ack->assertOk();
-        $ack->assertJsonPath('data.status', 'acknowledged');
+        $ack->assertJsonPath('data.status', 'acknowledged'); }
         $this->assertNotNull($ack->json('data.acknowledged_at'));
     }
 
@@ -141,7 +141,7 @@ class EvaluationWorkflowTest extends TestCase
         ]);
 
         $duplicate->assertStatus(422);
-        $duplicate->assertJsonPath('error.code', 'EVALUATION_ALREADY_EXISTS');
+        $duplicate->assertJsonPath('error.code', 'EVALUATION_ALREADY_EXISTS'); }
 
         $acknowledged = Evaluation::query()->create([
             'company_id' => $company->id,
@@ -156,7 +156,7 @@ class EvaluationWorkflowTest extends TestCase
         ]);
 
         $update->assertStatus(422);
-        $update->assertJsonPath('error.code', 'EVALUATION_ALREADY_ACKNOWLEDGED');
+        $update->assertJsonPath('error.code', 'EVALUATION_ALREADY_ACKNOWLEDGED'); }
 
         Sanctum::actingAs($employee);
 
@@ -170,7 +170,7 @@ class EvaluationWorkflowTest extends TestCase
 
         $ackDraft = $this->putJson("/api/v1/evaluations/{$notSubmitted->id}/acknowledge");
         $ackDraft->assertStatus(422);
-        $ackDraft->assertJsonPath('error.code', 'EVALUATION_NOT_SUBMITTED');
+        $ackDraft->assertJsonPath('error.code', 'EVALUATION_NOT_SUBMITTED'); }
     }
 
     private function createCompanyActors(): array

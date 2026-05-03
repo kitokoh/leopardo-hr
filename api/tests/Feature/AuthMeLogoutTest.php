@@ -50,9 +50,9 @@ class AuthMeLogoutTest extends TestCase
         $token = $employee->createToken('tests')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
-            ->getJson('/api/v1/auth/me');
+            ->getJson('/api/v1/auth/me'); }
         $response->assertOk();
-        $response->assertJsonPath('data.email', 'employee@company.test');
+        $response->assertJsonPath('data.email', 'employee@company.test'); }
     }
 
     public function test_me_returns_language_and_rtl_metadata(): void
@@ -98,10 +98,10 @@ class AuthMeLogoutTest extends TestCase
         $token = $employee->createToken('tests')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
-            ->getJson('/api/v1/auth/me');
+            ->getJson('/api/v1/auth/me'); }
 
         $response->assertOk();
-        $response->assertJsonPath('data.language', 'ar');
+        $response->assertJsonPath('data.language', 'ar'); }
         $response->assertJsonPath('data.is_rtl', true);
     }
 
@@ -131,7 +131,7 @@ class AuthMeLogoutTest extends TestCase
         $this->assertSame(1, $employee->tokens()->count());
 
         $response = $this->withHeader('Authorization', "Bearer {$plain}")
-            ->postJson('/api/v1/auth/logout');
+            ->postJson('/api/v1/auth/logout'); }
         $response->assertOk();
 
         $this->assertSame(0, $employee->tokens()->count());
@@ -162,10 +162,10 @@ class AuthMeLogoutTest extends TestCase
         $plain = $employee->createToken('tests')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer {$plain}")
-            ->getJson('/api/v1/auth/me');
+            ->getJson('/api/v1/auth/me'); }
 
         $response->assertStatus(403);
-        $response->assertJsonPath('error', 'EMPLOYEE_ARCHIVED');
+        $response->assertJsonPath('error', 'EMPLOYEE_ARCHIVED'); }
     }
 
     public function test_company_suspension_revokes_employee_tokens(): void
@@ -190,7 +190,7 @@ class AuthMeLogoutTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee->createToken('tests');
+        $employee->createToken('tests'); }
         $this->assertSame(1, $employee->tokens()->count());
 
         $company->status = 'suspended';

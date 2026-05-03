@@ -60,10 +60,10 @@ class PlatformCompanyProvisioningTest extends TestCase
             ]);
 
         $response->assertCreated();
-        $response->assertJsonPath('data.company.name', 'Nouvelle Societe');
-        $response->assertJsonPath('data.manager.role', 'manager');
-        $response->assertJsonPath('data.manager.manager_role', 'principal');
-        $response->assertJsonPath('data.company.language', 'fr');
+        $response->assertJsonPath('data.company.name', 'Nouvelle Societe'); }
+        $response->assertJsonPath('data.manager.role', 'manager'); }
+        $response->assertJsonPath('data.manager.manager_role', 'principal'); }
+        $response->assertJsonPath('data.company.language', 'fr'); }
 
         $this->assertDatabaseHas('companies', [
             'name' => 'Nouvelle Societe',
@@ -71,7 +71,7 @@ class PlatformCompanyProvisioningTest extends TestCase
         ]);
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO shared_tenants,public');
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         }
 
         $this->assertDatabaseHas('employees', [
@@ -82,7 +82,7 @@ class PlatformCompanyProvisioningTest extends TestCase
         ]);
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
         }
 
         $this->assertDatabaseHas('user_invitations', [
@@ -96,7 +96,7 @@ class PlatformCompanyProvisioningTest extends TestCase
             return $mail->employee->email === 'salim.kaci@nouvelle-societe.dz'
                 && $mail->employee->role === 'manager'
                 && $mail->employee->manager_role === 'principal'
-                && str_contains($mail->activationUrl, '/activate/');
+                && str_contains($mail->activationUrl, '/activate/'); }
         });
     }
 
@@ -115,7 +115,7 @@ class PlatformCompanyProvisioningTest extends TestCase
         ]);
 
         $response->assertOk();
-        $response->assertJsonPath('data.email', 'admin@leopardo-rh.com');
-        $response->assertJsonPath('token_type', 'Bearer');
+        $response->assertJsonPath('data.email', 'admin@leopardo-rh.com'); }
+        $response->assertJsonPath('token_type', 'Bearer'); }
     }
 }

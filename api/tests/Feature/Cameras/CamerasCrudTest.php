@@ -52,10 +52,10 @@ class CamerasCrudTest extends TestCase
         ]);
 
         $list = $this->withHeaders($this->authHeaders($principal, 'tests2'))
-            ->getJson('/api/v1/cameras');
+            ->getJson('/api/v1/cameras'); }
 
         $list->assertOk();
-        $list->assertJsonCount(1, 'data');
+        $list->assertJsonCount(1, 'data'); }
         $list->assertJsonPath('plan_limit.max_cameras', 4);
         $list->assertJsonPath('plan_limit.current_count', 1);
     }
@@ -109,7 +109,7 @@ class CamerasCrudTest extends TestCase
         $principal = $this->createManager($company);
 
         $response = $this->withHeaders($this->authHeaders($principal))
-            ->getJson('/api/v1/cameras');
+            ->getJson('/api/v1/cameras'); }
 
         $response->assertStatus(403);
         $this->assertSame('FEATURE_NOT_ENABLED', $response->json('error'));
@@ -121,7 +121,7 @@ class CamerasCrudTest extends TestCase
         $employee = $this->createEmployee($company);
 
         $response = $this->withHeaders($this->authHeaders($employee))
-            ->getJson('/api/v1/cameras');
+            ->getJson('/api/v1/cameras'); }
 
         $response->assertStatus(403);
     }
@@ -167,8 +167,8 @@ class CamerasCrudTest extends TestCase
     public function test_rh_cannot_create_but_can_view(): void
     {
         $company = $this->createCompanyWithCameras();
-        $principal = $this->createManager($company, 'principal', 'p@co.test');
-        $rh = $this->createManager($company, 'rh', 'rh@co.test');
+        $principal = $this->createManager($company, 'principal', 'p@co.test'); }
+        $rh = $this->createManager($company, 'rh', 'rh@co.test'); }
 
         $cam = Camera::query()->create([
             'company_id' => $company->id,
@@ -178,9 +178,9 @@ class CamerasCrudTest extends TestCase
         ]);
 
         $rhList = $this->withHeaders($this->authHeaders($rh))
-            ->getJson('/api/v1/cameras');
+            ->getJson('/api/v1/cameras'); }
         $rhList->assertOk();
-        $rhList->assertJsonCount(1, 'data');
+        $rhList->assertJsonCount(1, 'data'); }
 
         $rhCreate = $this->withHeaders($this->authHeaders($rh, 't2'))
             ->postJson('/api/v1/cameras', [
@@ -193,8 +193,8 @@ class CamerasCrudTest extends TestCase
     public function test_expired_manage_permission_cannot_update_camera(): void
     {
         $company = $this->createCompanyWithCameras();
-        $principal = $this->createManager($company, 'principal', 'principal@co.test');
-        $supervisor = $this->createManager($company, 'superviseur', 'supervisor@co.test');
+        $principal = $this->createManager($company, 'principal', 'principal@co.test'); }
+        $supervisor = $this->createManager($company, 'superviseur', 'supervisor@co.test'); }
 
         $cam = Camera::query()->create([
             'company_id' => $company->id,

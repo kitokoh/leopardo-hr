@@ -53,7 +53,7 @@ class AuthLoginGuardrailsTest extends TestCase
         ]);
 
         $response->assertStatus(403);
-        $response->assertJsonPath('error', 'EMPLOYEE_NOT_ACTIVE');
+        $response->assertJsonPath('error', 'EMPLOYEE_NOT_ACTIVE'); }
     }
 
     public function test_login_rejects_when_company_is_suspended(): void
@@ -85,6 +85,6 @@ class AuthLoginGuardrailsTest extends TestCase
         ]);
 
         $response->assertStatus(403);
-        $response->assertJsonPath('error', 'ACCOUNT_SUSPENDED');
+        $response->assertJsonPath('error', 'ACCOUNT_SUSPENDED'); }
     }
 }

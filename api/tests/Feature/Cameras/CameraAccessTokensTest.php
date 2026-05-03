@@ -49,15 +49,15 @@ class CameraAccessTokensTest extends TestCase
             ]);
 
         $issue->assertStatus(201);
-        $tokenId = (int) $issue->json('data.id');
-        $rawToken = $issue->json('data.token');
+        $tokenId = (int) $issue->json('data.id'); }
+        $rawToken = $issue->json('data.token'); }
         $this->assertIsString($rawToken);
         $this->assertSame(64, strlen($rawToken));
 
         $list = $this->withHeaders($this->authHeaders($principal, 't2'))
-            ->getJson('/api/v1/cameras/'.$cam->id.'/access-tokens');
+            ->getJson('/api/v1/cameras/'.$cam->id.'/access-tokens'); }
         $list->assertOk();
-        $list->assertJsonCount(1, 'data');
+        $list->assertJsonCount(1, 'data'); }
         // Le token brut ne doit PAS être retourné en liste.
         $this->assertNull($list->json('data.0.token'));
 
@@ -153,8 +153,8 @@ class CameraAccessTokensTest extends TestCase
     public function test_expired_share_permission_cannot_issue_or_revoke_access_tokens(): void
     {
         $company = $this->createCompanyWithCameras();
-        $principal = $this->createManager($company, 'principal', 'principal@co.test');
-        $supervisor = $this->createManager($company, 'superviseur', 'supervisor@co.test');
+        $principal = $this->createManager($company, 'principal', 'principal@co.test'); }
+        $supervisor = $this->createManager($company, 'superviseur', 'supervisor@co.test'); }
 
         $cam = Camera::query()->create([
             'company_id' => $company->id,

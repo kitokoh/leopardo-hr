@@ -78,7 +78,7 @@ class EmployeesRbacTest extends TestCase
         $token = $managerA->createToken('tests')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
-            ->getJson('/api/v1/employees');
+            ->getJson('/api/v1/employees'); }
 
         $response->assertOk();
 
@@ -113,7 +113,7 @@ class EmployeesRbacTest extends TestCase
         $token = $employeeA->createToken('tests')->plainTextToken;
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
-            ->getJson('/api/v1/employees');
+            ->getJson('/api/v1/employees'); }
 
         $response->assertStatus(403);
     }
@@ -190,7 +190,7 @@ class EmployeesRbacTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
         ]);
-        $employeeA->createToken('tests');
+        $employeeA->createToken('tests'); }
         $this->assertSame(1, $employeeA->tokens()->count());
 
         $token = $managerA->createToken('tests')->plainTextToken;
@@ -198,7 +198,7 @@ class EmployeesRbacTest extends TestCase
         $ok = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson("/api/v1/employees/{$employeeA->id}/archive");
         $ok->assertOk();
-        $ok->assertJsonPath('data.status', 'archived');
+        $ok->assertJsonPath('data.status', 'archived'); }
         $this->assertSame(0, $employeeA->fresh()->tokens()->count());
 
         $deny = $this->withHeader('Authorization', "Bearer {$token}")

@@ -28,9 +28,9 @@ class EstimationServiceTest extends TestCase
     protected function tearDown(): void
     {
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('DROP TABLE IF EXISTS public.hr_model_templates CASCADE');
+            DB::statement('DROP TABLE IF EXISTS public.hr_model_templates CASCADE'); }
         } else {
-            Schema::dropIfExists('hr_model_templates');
+            Schema::dropIfExists('hr_model_templates'); }
         }
 
         $this->tearDownMvpSchema();
@@ -45,7 +45,7 @@ class EstimationServiceTest extends TestCase
         ]);
         app()->instance('current_company', $company);
 
-        $summary = app(EstimationService::class)->dailySummaryFromLog($employee, null, '2026-04-07');
+        $summary = app(EstimationService::class)->dailySummaryFromLog($employee, null, '2026-04-07'); }
 
         $this->assertSame('absent', $summary['status']);
         $this->assertSame(0.0, $summary['total_estimated']);
@@ -76,7 +76,7 @@ class EstimationServiceTest extends TestCase
             'status' => 'ontime',
         ]);
 
-        $estimate = app(EstimationService::class)->quickEstimate($employee, '2026-04-06', '2026-04-10');
+        $estimate = app(EstimationService::class)->quickEstimate($employee, '2026-04-06', '2026-04-10'); }
 
         $this->assertSame(4, $estimate['period']['working_days']);
         $this->assertSame(1, $estimate['period']['days_present']);
@@ -112,7 +112,7 @@ class EstimationServiceTest extends TestCase
             'status' => 'ontime',
         ]);
 
-        $estimate = app(EstimationService::class)->quickEstimate($employee, '2026-04-06', '2026-04-06');
+        $estimate = app(EstimationService::class)->quickEstimate($employee, '2026-04-06', '2026-04-06'); }
 
         $this->assertSame(925.0, $estimate['totals']['gross']);
         $this->assertSame(111.0, $estimate['totals']['deductions']);
@@ -170,7 +170,7 @@ class EstimationServiceTest extends TestCase
                 return;
             }
 
-            DB::statement('SET search_path TO public');
+            if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
             try {
                 Schema::create('hr_model_templates', function (Blueprint $table): void {
                     $table->id();
@@ -179,7 +179,7 @@ class EstimationServiceTest extends TestCase
                     $table->timestamps();
                 });
             } finally {
-                DB::statement('SET search_path TO shared_tenants,public');
+                if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
             }
 
             return;

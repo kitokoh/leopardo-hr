@@ -106,12 +106,12 @@ class AbsenceIndexTest extends TestCase
 
         Sanctum::actingAs($employeeA);
 
-        $response = $this->getJson('/api/v1/absences');
+        $response = $this->getJson('/api/v1/absences'); }
 
         $response->assertStatus(200);
-        $response->assertJsonCount(1, 'data');
+        $response->assertJsonCount(1, 'data'); }
         $response->assertJsonPath('data.0.employee_id', $employeeA->id);
-        $response->assertJsonPath('data.0.reason', 'Vacances');
+        $response->assertJsonPath('data.0.reason', 'Vacances'); }
     }
 
     public function test_manager_sees_all_company_absences(): void
@@ -200,10 +200,10 @@ class AbsenceIndexTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences');
+        $response = $this->getJson('/api/v1/absences'); }
 
         $response->assertStatus(200);
-        $response->assertJsonCount(2, 'data');
+        $response->assertJsonCount(2, 'data'); }
     }
 
     public function test_manager_can_filter_by_employee_id(): void
@@ -294,7 +294,7 @@ class AbsenceIndexTest extends TestCase
         $response = $this->getJson('/api/v1/absences?employee_id='.$employee1->id);
 
         $response->assertStatus(200);
-        $response->assertJsonCount(1, 'data');
+        $response->assertJsonCount(1, 'data'); }
         $response->assertJsonPath('data.0.employee_id', $employee1->id);
     }
 
@@ -375,11 +375,11 @@ class AbsenceIndexTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences?status=pending');
+        $response = $this->getJson('/api/v1/absences?status=pending'); }
 
         $response->assertStatus(200);
-        $response->assertJsonCount(1, 'data');
-        $response->assertJsonPath('data.0.status', 'pending');
+        $response->assertJsonCount(1, 'data'); }
+        $response->assertJsonPath('data.0.status', 'pending'); }
     }
 
     public function test_filter_by_month_year(): void
@@ -459,11 +459,11 @@ class AbsenceIndexTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/absences?month=4&year=2026');
+        $response = $this->getJson('/api/v1/absences?month=4&year=2026'); }
 
         $response->assertStatus(200);
-        $response->assertJsonCount(1, 'data');
-        $response->assertJsonPath('data.0.start_date', '2026-04-10');
+        $response->assertJsonCount(1, 'data'); }
+        $response->assertJsonPath('data.0.start_date', '2026-04-10'); }
     }
 
     public function test_pagination_meta_present(): void
@@ -524,7 +524,7 @@ class AbsenceIndexTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/absences?per_page=3');
+        $response = $this->getJson('/api/v1/absences?per_page=3'); }
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -537,12 +537,12 @@ class AbsenceIndexTest extends TestCase
         ]);
         $response->assertJsonPath('meta.per_page', 3);
         $response->assertJsonPath('meta.total', 5);
-        $response->assertJsonCount(3, 'data');
+        $response->assertJsonCount(3, 'data'); }
     }
 
     public function test_unauthenticated_returns_401(): void
     {
-        $response = $this->getJson('/api/v1/absences');
+        $response = $this->getJson('/api/v1/absences'); }
 
         $response->assertStatus(401);
     }

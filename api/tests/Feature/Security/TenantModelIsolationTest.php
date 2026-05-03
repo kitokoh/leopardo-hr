@@ -42,8 +42,8 @@ class TenantModelIsolationTest extends TestCase
 
     public function test_attendance_kiosk_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         AttendanceKiosk::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -62,15 +62,15 @@ class TenantModelIsolationTest extends TestCase
         $kiosks = AttendanceKiosk::all();
         $kiosk = $kiosks->first();
 
-        $this->assertCount(1, $kiosks, 'AttendanceKiosk should be isolated by company_id');
+        $this->assertCount(1, $kiosks, 'AttendanceKiosk should be isolated by company_id'); }
         $this->assertNotNull($kiosk);
         $this->assertEquals('Kiosk A', $kiosk->name);
     }
 
     public function test_biometric_enrollment_request_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         BiometricEnrollmentRequest::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -86,13 +86,13 @@ class TenantModelIsolationTest extends TestCase
 
         app()->instance('current_company', $companyA);
 
-        $this->assertCount(1, BiometricEnrollmentRequest::all(), 'BiometricEnrollmentRequest should be isolated by company_id');
+        $this->assertCount(1, BiometricEnrollmentRequest::all(), 'BiometricEnrollmentRequest should be isolated by company_id'); }
     }
 
     public function test_user_invitation_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         UserInvitation::query()->forceCreate([
             'id' => (string) Str::uuid(),
@@ -122,13 +122,13 @@ class TenantModelIsolationTest extends TestCase
 
         app()->instance('current_company', $companyA);
 
-        $this->assertCount(1, UserInvitation::all(), 'UserInvitation should be isolated by company_id');
+        $this->assertCount(1, UserInvitation::all(), 'UserInvitation should be isolated by company_id'); }
     }
 
     public function test_employee_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Employee::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -145,13 +145,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Employee::all(), 'Employee should be isolated by company_id');
+        $this->assertCount(1, Employee::all(), 'Employee should be isolated by company_id'); }
     }
 
     public function test_absence_type_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         AbsenceType::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -166,13 +166,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, AbsenceType::all(), 'AbsenceType should be isolated by company_id');
+        $this->assertCount(1, AbsenceType::all(), 'AbsenceType should be isolated by company_id'); }
     }
 
     public function test_absence_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Absence::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -193,13 +193,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Absence::all(), 'Absence should be isolated by company_id');
+        $this->assertCount(1, Absence::all(), 'Absence should be isolated by company_id'); }
     }
 
     public function test_attendance_log_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         AttendanceLog::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -216,13 +216,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, AttendanceLog::all(), 'AttendanceLog should be isolated by company_id');
+        $this->assertCount(1, AttendanceLog::all(), 'AttendanceLog should be isolated by company_id'); }
     }
 
     public function test_salary_advance_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         SalaryAdvance::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -239,13 +239,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, SalaryAdvance::all(), 'SalaryAdvance should be isolated by company_id');
+        $this->assertCount(1, SalaryAdvance::all(), 'SalaryAdvance should be isolated by company_id'); }
     }
 
     public function test_evaluation_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Evaluation::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -264,13 +264,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Evaluation::all(), 'Evaluation should be isolated by company_id');
+        $this->assertCount(1, Evaluation::all(), 'Evaluation should be isolated by company_id'); }
     }
 
     public function test_payroll_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Payroll::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -289,13 +289,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Payroll::all(), 'Payroll should be isolated by company_id');
+        $this->assertCount(1, Payroll::all(), 'Payroll should be isolated by company_id'); }
     }
 
     public function test_project_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Project::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -310,13 +310,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Project::all(), 'Project should be isolated by company_id');
+        $this->assertCount(1, Project::all(), 'Project should be isolated by company_id'); }
     }
 
     public function test_task_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Task::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -333,13 +333,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Task::all(), 'Task should be isolated by company_id');
+        $this->assertCount(1, Task::all(), 'Task should be isolated by company_id'); }
     }
 
     public function test_notification_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Notification::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -358,13 +358,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Notification::all(), 'Notification should be isolated by company_id');
+        $this->assertCount(1, Notification::all(), 'Notification should be isolated by company_id'); }
     }
 
     public function test_department_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Department::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -377,13 +377,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Department::all(), 'Department should be isolated by company_id');
+        $this->assertCount(1, Department::all(), 'Department should be isolated by company_id'); }
     }
 
     public function test_position_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Position::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -398,13 +398,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Position::all(), 'Position should be isolated by company_id');
+        $this->assertCount(1, Position::all(), 'Position should be isolated by company_id'); }
     }
 
     public function test_site_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Site::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -417,13 +417,13 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Site::all(), 'Site should be isolated by company_id');
+        $this->assertCount(1, Site::all(), 'Site should be isolated by company_id'); }
     }
 
     public function test_schedule_is_isolated(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
         Schedule::query()->forceCreate([
             'company_id' => $companyA->id,
@@ -440,7 +440,7 @@ class TenantModelIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        $this->assertCount(1, Schedule::all(), 'Schedule should be isolated by company_id');
+        $this->assertCount(1, Schedule::all(), 'Schedule should be isolated by company_id'); }
     }
 
     private function createCompany(string $name): Company

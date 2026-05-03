@@ -77,11 +77,11 @@ class TenantIsolationTest extends TestCase
 
         $summary = $this->getJson("/api/v1/employees/{$employeeB->id}/daily-summary?date=2026-04-18");
         $summary->assertStatus(404);
-        $summary->assertJsonPath('error', 'RESOURCE_NOT_FOUND');
+        $summary->assertJsonPath('error', 'RESOURCE_NOT_FOUND'); }
 
         $estimate = $this->getJson("/api/v1/employees/{$employeeB->id}/quick-estimate?from=2026-04-01&to=2026-04-18");
         $estimate->assertStatus(404);
-        $estimate->assertJsonPath('error', 'RESOURCE_NOT_FOUND');
+        $estimate->assertJsonPath('error', 'RESOURCE_NOT_FOUND'); }
 
         $receipt = $this->get("/api/v1/employees/{$employeeB->id}/receipt?from=2026-04-01&to=2026-04-18");
         $receipt->assertStatus(404);

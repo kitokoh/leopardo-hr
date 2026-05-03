@@ -59,8 +59,8 @@ class AuthProfileSettingsTest extends TestCase
             ]);
 
         $response->assertOk();
-        $response->assertJsonPath('data.first_name', 'Karim Updated');
-        $response->assertJsonPath('data.email', 'karim.updated@company.test');
+        $response->assertJsonPath('data.first_name', 'Karim Updated'); }
+        $response->assertJsonPath('data.email', 'karim.updated@company.test'); }
     }
 
     public function test_employee_can_change_password_with_current_password(): void
@@ -130,8 +130,8 @@ class AuthProfileSettingsTest extends TestCase
             ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'INVALID_CURRENT_PASSWORD');
-        $response->assertJsonPath('message', 'INVALID_CURRENT_PASSWORD');
+        $response->assertJsonPath('error', 'INVALID_CURRENT_PASSWORD'); }
+        $response->assertJsonPath('message', 'INVALID_CURRENT_PASSWORD'); }
         $this->assertNotNull($response->json('localized_message'));
         $this->assertTrue(Hash::check('password123', $employee->fresh()->password_hash));
     }
@@ -183,7 +183,7 @@ class AuthProfileSettingsTest extends TestCase
             ]);
 
         $response->assertOk();
-        $response->assertJsonPath('data.language', 'ar');
+        $response->assertJsonPath('data.language', 'ar'); }
         $response->assertJsonPath('data.is_rtl', true);
         $this->assertSame('ar', $employee->fresh()->preferred_language);
     }
@@ -235,7 +235,7 @@ class AuthProfileSettingsTest extends TestCase
             ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'VALIDATION_ERROR');
+        $response->assertJsonPath('error', 'VALIDATION_ERROR'); }
         $this->assertNull($employee->fresh()->preferred_language);
     }
 }

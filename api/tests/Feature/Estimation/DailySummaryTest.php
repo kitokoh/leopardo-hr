@@ -55,12 +55,12 @@ class DailySummaryTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/daily-summary?date=2026-04-04');
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/daily-summary?date=2026-04-04'); }
 
         $response->assertOk();
-        $response->assertJsonPath('data.status', 'absent');
+        $response->assertJsonPath('data.status', 'absent'); }
         $response->assertJsonPath('data.total_estimated', 0);
-        $response->assertJsonPath('data.currency', 'DZD');
+        $response->assertJsonPath('data.currency', 'DZD'); }
     }
 
     public function test_returns_daily_summary_with_overtime(): void
@@ -105,12 +105,12 @@ class DailySummaryTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/daily-summary?date=2026-04-04');
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/daily-summary?date=2026-04-04'); }
 
         $response->assertOk();
         $response->assertJsonPath('data.employee_id', $employee->id);
-        $response->assertJsonPath('data.name', 'Ahmed Benali');
-        $response->assertJsonPath('data.status', 'complete');
+        $response->assertJsonPath('data.name', 'Ahmed Benali'); }
+        $response->assertJsonPath('data.status', 'complete'); }
         $response->assertJsonPath('data.base_gain', 800);
         $response->assertJsonPath('data.overtime_gain', 250);
         $response->assertJsonPath('data.total_estimated', 1050);
@@ -154,7 +154,7 @@ class DailySummaryTest extends TestCase
 
         Sanctum::actingAs($employeeA);
 
-        $response = $this->getJson('/api/v1/employees/'.$employeeB->id.'/daily-summary?date=2026-04-04');
+        $response = $this->getJson('/api/v1/employees/'.$employeeB->id.'/daily-summary?date=2026-04-04'); }
         $response->assertForbidden();
     }
 
@@ -196,7 +196,7 @@ class DailySummaryTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/daily-summary?date=2026-04-04');
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/daily-summary?date=2026-04-04'); }
         $response->assertOk();
     }
 }

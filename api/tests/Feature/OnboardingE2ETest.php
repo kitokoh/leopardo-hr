@@ -73,7 +73,7 @@ class OnboardingE2ETest extends TestCase
                 'manager_email' => 'lina@acme.test',
             ]);
         $createResponse->assertCreated();
-        $companyId = $createResponse->json('data.company.id');
+        $companyId = $createResponse->json('data.company.id'); }
 
         // 2. L'email d'invitation manager est parti.
         $managerActivationUrl = null;
@@ -86,7 +86,7 @@ class OnboardingE2ETest extends TestCase
             return true;
         });
         $this->assertNotNull($managerActivationUrl);
-        $plainToken = basename(parse_url($managerActivationUrl, PHP_URL_PATH) ?? '');
+        $plainToken = basename(parse_url($managerActivationUrl, PHP_URL_PATH) ?? ''); }
         $this->assertNotEmpty($plainToken);
 
         // 3. Le manager active son compte via le lien (token plain reconstitue).
@@ -94,9 +94,9 @@ class OnboardingE2ETest extends TestCase
         $this->post('/activate/'.$plainToken, [
             'password' => 'ManagerStrong!123',
             'password_confirmation' => 'ManagerStrong!123',
-        ])->assertRedirect('/login');
+        ])->assertRedirect('/login'); }
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
         $this->assertDatabaseHas('user_invitations', [
             'email' => 'lina@acme.test',
         ]);
@@ -104,21 +104,21 @@ class OnboardingE2ETest extends TestCase
         $this->assertNotNull($invitation->accepted_at);
 
         // 4. Login API + /auth/me.
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'lina@acme.test',
             'password' => 'ManagerStrong!123',
             'device_name' => 'tests',
         ]);
         $login->assertOk();
-        $managerToken = $login->json('token');
+        $managerToken = $login->json('token'); }
         $this->assertNotEmpty($managerToken);
 
         $me = $this->withHeader('Authorization', 'Bearer '.$managerToken)
-            ->getJson('/api/v1/auth/me');
+            ->getJson('/api/v1/auth/me'); }
         $me->assertOk();
-        $me->assertJsonPath('data.role', 'manager');
-        $me->assertJsonPath('data.manager_role', 'principal');
+        $me->assertJsonPath('data.role', 'manager'); }
+        $me->assertJsonPath('data.manager_role', 'principal'); }
         $me->assertJsonPath('data.capabilities.can_create_employees', true);
         $me->assertJsonPath('data.capabilities.can_manage_invitations', true);
         $me->assertJsonPath('data.capabilities.is_principal', true);
@@ -134,7 +134,7 @@ class OnboardingE2ETest extends TestCase
                 'send_invitation' => true,
             ]);
         $createRh->assertCreated();
-        $createRh->assertJsonPath('data.manager_role', 'rh');
+        $createRh->assertJsonPath('data.manager_role', 'rh'); }
 
         // Verifier que le RH a recu une invitation.
         $rhActivationUrl = null;
@@ -147,22 +147,22 @@ class OnboardingE2ETest extends TestCase
             return true;
         });
         $this->assertNotNull($rhActivationUrl);
-        $rhToken = basename(parse_url($rhActivationUrl, PHP_URL_PATH) ?? '');
+        $rhToken = basename(parse_url($rhActivationUrl, PHP_URL_PATH) ?? ''); }
 
         // 6. Le RH active son compte et cree un employe simple.
         $this->post('/activate/'.$rhToken, [
             'password' => 'RhStrong!123',
             'password_confirmation' => 'RhStrong!123',
-        ])->assertRedirect('/login');
+        ])->assertRedirect('/login'); }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         $rhLogin = $this->postJson('/api/v1/auth/login', [
             'email' => 'rh@acme.test',
             'password' => 'RhStrong!123',
             'device_name' => 'tests',
         ]);
         $rhLogin->assertOk();
-        $rhApiToken = $rhLogin->json('token');
+        $rhApiToken = $rhLogin->json('token'); }
 
         $createEmployee = $this->withHeader('Authorization', 'Bearer '.$rhApiToken)
             ->postJson('/api/v1/employees', [
@@ -184,29 +184,29 @@ class OnboardingE2ETest extends TestCase
 
             return true;
         });
-        $employeeToken = basename(parse_url($employeeActivationUrl, PHP_URL_PATH) ?? '');
+        $employeeToken = basename(parse_url($employeeActivationUrl, PHP_URL_PATH) ?? ''); }
         $this->post('/activate/'.$employeeToken, [
             'password' => 'EmpStrong!123',
             'password_confirmation' => 'EmpStrong!123',
-        ])->assertRedirect('/login');
+        ])->assertRedirect('/login'); }
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
 
         // 7. Employe login Web → redirige sur /me.
-        $this->get('/login');
+        $this->get('/login'); }
         $csrfToken = session()->token();
         $loginWeb = $this->withSession(['_token' => $csrfToken])->post('/login', [
             '_token' => $csrfToken,
             'email' => 'sami@acme.test',
             'password' => 'EmpStrong!123',
         ]);
-        $loginWeb->assertRedirect('/me');
-        $this->assertAuthenticated('web');
+        $loginWeb->assertRedirect('/me'); }
+        $this->assertAuthenticated('web'); }
 
-        $this->get('/me')->assertOk()->assertSee('Sami');
+        $this->get('/me')->assertOk()->assertSee('Sami'); }
 
         // 8. Toutes les societes sont bien sur le meme schema partage.
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
         $this->assertSame('shared_tenants', DB::table('companies')->where('id', $companyId)->value('schema_name'));
     }
 
@@ -237,9 +237,9 @@ class OnboardingE2ETest extends TestCase
                 'manager_email' => 'rita@acme.test',
             ])->assertCreated();
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         $rita = Employee::query()->where('email', 'rita@acme.test')->firstOrFail();
-        $rita->password_hash = Hash::make('Rita!123456');
+        $rita->password_hash = Hash::make('Rita!123456'); }
         $rita->email_verified_at = now();
         $rita->invitation_accepted_at = now();
         $rita->save();
@@ -261,7 +261,7 @@ class OnboardingE2ETest extends TestCase
             'role' => 'employee',
         ])->assertCreated();
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         $yacine = Employee::query()->where('email', 'yacine@acme.test')->firstOrFail();
         $sami = Employee::query()->where('email', 'sami@acme.test')->firstOrFail();
 
@@ -304,17 +304,17 @@ class OnboardingE2ETest extends TestCase
         // RH peut lister les invitations.
         $this->resetAuth();
         Sanctum::actingAs($yacine, ['*']);
-        $list = $this->getJson('/api/v1/invitations');
+        $list = $this->getJson('/api/v1/invitations'); }
         $list->assertOk();
         $this->assertGreaterThanOrEqual(1, count($list->json('data')));
 
-        DB::statement('SET search_path TO public');
-        $ritaInvId = UserInvitation::query()->where('email', 'rita@acme.test')->value('id');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
+        $ritaInvId = UserInvitation::query()->where('email', 'rita@acme.test')->value('id'); }
         // L'invitation de Rita a ete acceptee via ORM (invitation_accepted_at),
         // donc le resend peut aboutir 200 (renvoi) ou 410 (deja acceptee) selon la logique.
         $this->resetAuth();
         Sanctum::actingAs($yacine, ['*']);
-        $resend = $this->postJson('/api/v1/invitations/'.$ritaInvId.'/resend');
+        $resend = $this->postJson('/api/v1/invitations/'.$ritaInvId.'/resend'); }
         $this->assertContains($resend->status(), [200, 410]);
     }
 
@@ -359,10 +359,10 @@ class OnboardingE2ETest extends TestCase
             $response->assertCreated();
         }
 
-        DB::statement('SET search_path TO public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO public'); }
         $this->assertSame(3, DB::table('companies')->where('schema_name', 'shared_tenants')->count());
 
-        DB::statement('SET search_path TO shared_tenants,public');
+        if (DB::getDriverName() === 'pgsql') { DB::statement('SET search_path TO shared_tenants,public'); }
         $this->assertSame(3, Employee::query()->where('role', 'manager')->where('manager_role', 'principal')->count());
     }
 }

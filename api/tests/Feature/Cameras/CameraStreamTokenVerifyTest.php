@@ -46,11 +46,11 @@ class CameraStreamTokenVerifyTest extends TestCase
         $service = app(CameraStreamTokenService::class);
         $issued = $service->issue($cam->fresh(), $principal->id);
 
-        $response = $this->getJson('/api/v1/internal/camera-token/verify?token='.urlencode($issued['token']).'&camera_id='.$cam->id.'&client_ip=1.2.3.4');
+        $response = $this->getJson('/api/v1/internal/camera-token/verify?token='.urlencode($issued['token']).'&camera_id='.$cam->id.'&client_ip=1.2.3.4'); }
 
         $response->assertOk();
         $response->assertJsonPath('allowed', true);
-        $response->assertJsonPath('type', 'stream_token');
+        $response->assertJsonPath('type', 'stream_token'); }
     }
 
     public function test_verify_rejects_tampered_jwt(): void
@@ -101,7 +101,7 @@ class CameraStreamTokenVerifyTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('allowed', true);
-        $response->assertJsonPath('type', 'access_token');
+        $response->assertJsonPath('type', 'access_token'); }
 
         $fresh = CameraAccessToken::query()->find($access->id);
         $this->assertSame(1, (int) $fresh->use_count);
@@ -133,7 +133,7 @@ class CameraStreamTokenVerifyTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('allowed', false);
-        $response->assertJsonPath('reason', 'token_expired');
+        $response->assertJsonPath('reason', 'token_expired'); }
     }
 
     public function test_verify_denies_when_company_suspended(): void
@@ -163,7 +163,7 @@ class CameraStreamTokenVerifyTest extends TestCase
         $response = $this->getJson('/api/v1/internal/camera-token/verify?token='.$access->token.'&camera_id='.$cam->id);
         $response->assertOk();
         $response->assertJsonPath('allowed', false);
-        $response->assertJsonPath('reason', 'company_suspended');
+        $response->assertJsonPath('reason', 'company_suspended'); }
     }
 
     public function test_verify_denies_soft_deleted_or_inactive_camera(): void
@@ -191,7 +191,7 @@ class CameraStreamTokenVerifyTest extends TestCase
         $this->getJson('/api/v1/internal/camera-token/verify?token='.$inactiveToken->token.'&camera_id='.$inactive->id)
             ->assertOk()
             ->assertJsonPath('allowed', false)
-            ->assertJsonPath('reason', 'camera_not_found');
+            ->assertJsonPath('reason', 'camera_not_found'); }
 
         $deleted = Camera::query()->create([
             'company_id' => $company->id,
@@ -214,12 +214,12 @@ class CameraStreamTokenVerifyTest extends TestCase
         $this->getJson('/api/v1/internal/camera-token/verify?token='.$deletedToken->token.'&camera_id='.$deleted->id)
             ->assertOk()
             ->assertJsonPath('allowed', false)
-            ->assertJsonPath('reason', 'camera_not_found');
+            ->assertJsonPath('reason', 'camera_not_found'); }
     }
 
     public function test_verify_requires_bearer_secret_when_configured(): void
     {
-        config()->set('cameras.mediamtx_secret', 'topsecret');
+        config()->set('cameras.mediamtx_secret', 'topsecret'); }
 
         $company = $this->createCompanyWithCameras();
         $principal = $this->createManager($company);

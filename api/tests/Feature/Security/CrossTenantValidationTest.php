@@ -27,10 +27,10 @@ class CrossTenantValidationTest extends TestCase
 
     public function test_manager_cannot_create_absence_with_another_tenant_absence_type(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
-        $managerA = $this->createEmployee($companyA, 'manager', 'principal');
+        $managerA = $this->createEmployee($companyA, 'manager', 'principal'); }
         $absenceTypeB = AbsenceType::create([
             'company_id' => $companyB->id,
             'name' => 'Boutique Leave',
@@ -52,11 +52,11 @@ class CrossTenantValidationTest extends TestCase
 
     public function test_manager_cannot_create_payroll_for_another_tenant_employee(): void
     {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
+        $companyA = $this->createCompany('Company A'); }
+        $companyB = $this->createCompany('Company B'); }
 
-        $managerA = $this->createEmployee($companyA, 'manager', 'principal');
-        $employeeB = $this->createEmployee($companyB, 'employee');
+        $managerA = $this->createEmployee($companyA, 'manager', 'principal'); }
+        $employeeB = $this->createEmployee($companyB, 'employee'); }
 
         $response = $this->actingAs($managerA, 'sanctum')
             ->postJson('/api/v1/payrolls', [

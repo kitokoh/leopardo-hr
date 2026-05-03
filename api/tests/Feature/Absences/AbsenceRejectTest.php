@@ -100,8 +100,8 @@ class AbsenceRejectTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertJsonPath('data.status', 'rejected');
-        $response->assertJsonPath('data.rejected_reason', 'Période trop chargée pour l\'équipe');
+        $response->assertJsonPath('data.status', 'rejected'); }
+        $response->assertJsonPath('data.rejected_reason', 'Période trop chargée pour l\'équipe'); }
 
         $this->assertDatabaseHas('absences', [
             'id' => $absence->id,
@@ -201,7 +201,7 @@ class AbsenceRejectTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertJsonPath('data.status', 'rejected');
+        $response->assertJsonPath('data.status', 'rejected'); }
 
         // Check that balance was restored
         $this->assertDatabaseHas('leave_balance_logs', [
@@ -361,7 +361,7 @@ class AbsenceRejectTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING');
+        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING'); }
     }
 
     public function test_employee_cannot_reject(): void

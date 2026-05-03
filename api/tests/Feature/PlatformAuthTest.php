@@ -49,12 +49,12 @@ class PlatformAuthTest extends TestCase
         $token = $this->superAdmin->createToken('test')->plainTextToken;
 
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
-            ->postJson('/api/v1/platform/auth/2fa/setup');
+            ->postJson('/api/v1/platform/auth/2fa/setup'); }
 
         $response->assertOk();
         $response->assertJsonStructure(['data' => ['secret', 'qr_code_url']]);
 
-        $secret = $response->json('data.secret');
+        $secret = $response->json('data.secret'); }
         $this->assertNotEmpty($secret);
 
         // Secret should not be saved yet
@@ -75,7 +75,7 @@ class PlatformAuthTest extends TestCase
             ]);
 
         $response->assertStatus(400);
-        $response->assertJsonPath('error', 'INVALID_2FA_CODE');
+        $response->assertJsonPath('error', 'INVALID_2FA_CODE'); }
         $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
         $this->assertSame($secret, Cache::get("2fa_setup:{$this->superAdmin->id}"));
     }
@@ -90,7 +90,7 @@ class PlatformAuthTest extends TestCase
             ]);
 
         $response->assertStatus(400);
-        $response->assertJsonPath('error', 'SETUP_REQUIRED');
+        $response->assertJsonPath('error', 'SETUP_REQUIRED'); }
     }
 
     public function test_login_requires_2fa_code_when_enabled(): void
@@ -104,7 +104,7 @@ class PlatformAuthTest extends TestCase
         ]);
 
         $response->assertStatus(202);
-        $response->assertJsonPath('error', 'TWO_FA_REQUIRED');
+        $response->assertJsonPath('error', 'TWO_FA_REQUIRED'); }
     }
 
     public function test_login_rejects_invalid_2fa_code(): void
@@ -119,7 +119,7 @@ class PlatformAuthTest extends TestCase
         ]);
 
         $response->assertStatus(401);
-        $response->assertJsonPath('error', 'INVALID_2FA_CODE');
+        $response->assertJsonPath('error', 'INVALID_2FA_CODE'); }
     }
 
     public function test_super_admin_can_disable_2fa_with_password(): void
@@ -135,7 +135,7 @@ class PlatformAuthTest extends TestCase
             ]);
 
         $response->assertStatus(401);
-        $response->assertJsonPath('error', 'INVALID_PASSWORD');
+        $response->assertJsonPath('error', 'INVALID_PASSWORD'); }
         $this->assertNotNull($this->superAdmin->fresh()->two_fa_secret);
 
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])

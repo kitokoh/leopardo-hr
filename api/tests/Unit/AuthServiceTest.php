@@ -52,7 +52,7 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        $result = app(AuthService::class)->login('manager@a.test', 'password123', 'unit-tests');
+        $result = app(AuthService::class)->login('manager@a.test', 'password123', 'unit-tests'); }
 
         $this->assertSame($employee->id, $result['employee']->id);
         $this->assertSame('Bearer', $result['token_type']);
@@ -90,7 +90,7 @@ class AuthServiceTest extends TestCase
 
         $this->expectException(InvalidCredentialsException::class);
 
-        app(AuthService::class)->login('employee@a.test', 'wrong-password');
+        app(AuthService::class)->login('employee@a.test', 'wrong-password'); }
     }
 
     public function test_login_rejects_suspended_company(): void
@@ -117,7 +117,7 @@ class AuthServiceTest extends TestCase
 
         $this->expectException(AccountSuspendedException::class);
 
-        app(AuthService::class)->login('employee@a.test', 'password123');
+        app(AuthService::class)->login('employee@a.test', 'password123'); }
     }
 
     public function test_login_rejects_archived_employee(): void
@@ -144,6 +144,6 @@ class AuthServiceTest extends TestCase
 
         $this->expectException(EmployeeNotActiveException::class);
 
-        app(AuthService::class)->login('employee@a.test', 'password123');
+        app(AuthService::class)->login('employee@a.test', 'password123'); }
     }
 }

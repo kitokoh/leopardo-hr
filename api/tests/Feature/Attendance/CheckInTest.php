@@ -73,7 +73,7 @@ class CheckInTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('data.status', 'ontime');
+        $response->assertJsonPath('data.status', 'ontime'); }
 
         $log = AttendanceLog::query()->firstOrFail();
 
@@ -123,12 +123,12 @@ class CheckInTest extends TestCase
 
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));
 
-        $ok = $this->postJson('/api/v1/attendance/check-in');
+        $ok = $this->postJson('/api/v1/attendance/check-in'); }
         $ok->assertStatus(201);
 
-        $dup = $this->postJson('/api/v1/attendance/check-in');
+        $dup = $this->postJson('/api/v1/attendance/check-in'); }
         $dup->assertStatus(422);
-        $dup->assertJsonPath('error', 'ALREADY_CHECKED_IN');
+        $dup->assertJsonPath('error', 'ALREADY_CHECKED_IN'); }
     }
 
     public function test_late_status_when_check_in_after_tolerance(): void
@@ -169,9 +169,9 @@ class CheckInTest extends TestCase
 
         $this->travelTo(Carbon::parse('2026-04-04 08:20:00', 'UTC'));
 
-        $response = $this->postJson('/api/v1/attendance/check-in');
+        $response = $this->postJson('/api/v1/attendance/check-in'); }
         $response->assertStatus(201);
-        $response->assertJsonPath('data.status', 'late');
+        $response->assertJsonPath('data.status', 'late'); }
     }
 
     public function test_manager_cannot_check_in(): void
@@ -211,7 +211,7 @@ class CheckInTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson('/api/v1/attendance/check-in');
+        $response = $this->postJson('/api/v1/attendance/check-in'); }
 
         $response->assertStatus(403);
     }

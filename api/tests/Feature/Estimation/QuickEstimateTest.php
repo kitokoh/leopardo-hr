@@ -91,7 +91,7 @@ class QuickEstimateTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2026-04-01&to=2026-04-05');
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2026-04-01&to=2026-04-05'); }
 
         $response->assertOk();
         $response->assertJsonPath('data.employee_id', $employee->id);
@@ -131,7 +131,7 @@ class QuickEstimateTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2026-04-01&to=2026-04-05');
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2026-04-01&to=2026-04-05'); }
         $response->assertForbidden();
     }
 
@@ -173,7 +173,7 @@ class QuickEstimateTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2025-01-01&to=2026-04-08');
+        $response = $this->getJson('/api/v1/employees/'.$employee->id.'/quick-estimate?from=2025-01-01&to=2026-04-08'); }
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['to']);

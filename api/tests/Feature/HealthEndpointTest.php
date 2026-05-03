@@ -8,7 +8,7 @@ class HealthEndpointTest extends TestCase
 {
     public function test_health_returns_ok_with_checks_matrix(): void
     {
-        $response = $this->getJson('/api/v1/health');
+        $response = $this->getJson('/api/v1/health'); }
 
         $response->assertOk();
         $response->assertJsonStructure([

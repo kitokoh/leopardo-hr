@@ -92,12 +92,12 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('data.status', 'pending');
+        $response->assertJsonPath('data.status', 'pending'); }
         $response->assertJsonPath('data.employee_id', $employee->id);
         $response->assertJsonPath('data.absence_type_id', $absenceType->id);
-        $response->assertJsonPath('data.start_date', '2026-04-10');
-        $response->assertJsonPath('data.end_date', '2026-04-12');
-        $response->assertJsonPath('data.reason', 'Vacances familiales');
+        $response->assertJsonPath('data.start_date', '2026-04-10'); }
+        $response->assertJsonPath('data.end_date', '2026-04-12'); }
+        $response->assertJsonPath('data.reason', 'Vacances familiales'); }
 
         $this->assertDatabaseHas('absences', [
             'employee_id' => $employee->id,
@@ -236,7 +236,7 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'INSUFFICIENT_LEAVE_BALANCE');
+        $response->assertJsonPath('error', 'INSUFFICIENT_LEAVE_BALANCE'); }
     }
 
     public function test_date_conflict_returns_422(): void
@@ -313,7 +313,7 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'ABSENCE_DATE_CONFLICT');
+        $response->assertJsonPath('error', 'ABSENCE_DATE_CONFLICT'); }
     }
 
     public function test_end_date_before_start_date_returns_422(): void
@@ -481,7 +481,7 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('data.status', 'pending');
+        $response->assertJsonPath('data.status', 'pending'); }
         $response->assertJsonPath('data.days_count', 5);
     }
 
@@ -558,6 +558,6 @@ class AbsenceStoreTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('data.status', 'pending');
+        $response->assertJsonPath('data.status', 'pending'); }
     }
 }

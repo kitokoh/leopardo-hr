@@ -87,7 +87,7 @@ class AbsenceCancelTest extends TestCase
         $response = $this->deleteJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(200);
-        $response->assertJsonPath('data.status', 'cancelled');
+        $response->assertJsonPath('data.status', 'cancelled'); }
 
         $this->assertDatabaseHas('absences', [
             'id' => $absence->id,
@@ -164,7 +164,7 @@ class AbsenceCancelTest extends TestCase
         $response = $this->deleteJson('/api/v1/absences/'.$absence->id);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING');
+        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING'); }
     }
 
     public function test_employee_cannot_cancel_other_employee_absence(): void

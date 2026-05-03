@@ -79,10 +79,10 @@ class ReceiptPdfTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->get('/api/v1/employees/'.$employee->id.'/receipt?from=2026-04-01&to=2026-04-01');
+        $response = $this->get('/api/v1/employees/'.$employee->id.'/receipt?from=2026-04-01&to=2026-04-01'); }
 
         $response->assertOk();
-        $response->assertHeader('content-type', 'application/pdf');
+        $response->assertHeader('content-type', 'application/pdf'); }
 
         $content = $response->getContent();
         $this->assertNotFalse($content);
@@ -117,7 +117,7 @@ class ReceiptPdfTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->get('/api/v1/employees/'.$employee->id.'/receipt?from=2026-04-01&to=2026-04-01');
+        $response = $this->get('/api/v1/employees/'.$employee->id.'/receipt?from=2026-04-01&to=2026-04-01'); }
         $response->assertForbidden();
     }
 }

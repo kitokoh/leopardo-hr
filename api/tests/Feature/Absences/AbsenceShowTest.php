@@ -90,11 +90,11 @@ class AbsenceShowTest extends TestCase
         $response->assertJsonPath('data.id', $absence->id);
         $response->assertJsonPath('data.employee_id', $employee->id);
         $response->assertJsonPath('data.absence_type_id', $absenceType->id);
-        $response->assertJsonPath('data.start_date', '2026-04-10');
-        $response->assertJsonPath('data.end_date', '2026-04-12');
+        $response->assertJsonPath('data.start_date', '2026-04-10'); }
+        $response->assertJsonPath('data.end_date', '2026-04-12'); }
         $response->assertJsonPath('data.days_count', 3);
-        $response->assertJsonPath('data.status', 'pending');
-        $response->assertJsonPath('data.reason', 'Vacances familiales');
+        $response->assertJsonPath('data.status', 'pending'); }
+        $response->assertJsonPath('data.reason', 'Vacances familiales'); }
         $response->assertJsonStructure([
             'data' => [
                 'id',
@@ -259,7 +259,7 @@ class AbsenceShowTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonPath('data.id', $absence->id);
         $response->assertJsonPath('data.employee_id', $employee->id);
-        $response->assertJsonPath('data.reason', 'Vacances');
+        $response->assertJsonPath('data.reason', 'Vacances'); }
     }
 
     public function test_absence_not_found_returns_404(): void
@@ -298,7 +298,7 @@ class AbsenceShowTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/absences/99999'); // Non-existent ID
+        $response = $this->getJson('/api/v1/absences/99999'); } // Non-existent ID
 
         $response->assertStatus(404);
     }

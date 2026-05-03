@@ -26,9 +26,9 @@ class WebAuthPagesTest extends TestCase
 
     public function test_guest_is_redirected_to_login_for_dashboard(): void
     {
-        $response = $this->get('/dashboard');
+        $response = $this->get('/dashboard'); }
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/login'); }
     }
 
     public function test_manager_can_login_to_web_dashboard(): void
@@ -54,7 +54,7 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->get('/login');
+        $this->get('/login'); }
         $token = session()->token();
 
         $response = $this->withSession(['_token' => $token])->post('/login', [
@@ -63,8 +63,8 @@ class WebAuthPagesTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect('/dashboard');
-        $this->assertAuthenticated('web');
+        $response->assertRedirect('/dashboard'); }
+        $this->assertAuthenticated('web'); }
     }
 
     public function test_employee_is_redirected_to_personal_space_on_web_login(): void
@@ -89,7 +89,7 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->get('/login');
+        $this->get('/login'); }
         $token = session()->token();
 
         $response = $this->from('/login')->withSession(['_token' => $token])->post('/login', [
@@ -98,8 +98,8 @@ class WebAuthPagesTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect('/me');
-        $this->assertAuthenticated('web');
+        $response->assertRedirect('/me'); }
+        $this->assertAuthenticated('web'); }
     }
 
     public function test_suspended_company_is_blocked_from_web_login(): void
@@ -124,7 +124,7 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->get('/login');
+        $this->get('/login'); }
         $token = session()->token();
 
         $response = $this->from('/login')->withSession(['_token' => $token])->post('/login', [
@@ -133,8 +133,8 @@ class WebAuthPagesTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/login'); }
         $response->assertSessionHasErrors(['email']);
-        $this->assertGuest('web');
+        $this->assertGuest('web'); }
     }
 }

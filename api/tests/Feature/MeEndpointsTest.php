@@ -45,7 +45,7 @@ class MeEndpointsTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/me/daily-summary?date=2026-04-10');
+        $response = $this->getJson('/api/v1/me/daily-summary?date=2026-04-10'); }
 
         $response->assertOk();
         $response->assertJsonPath('data.employee_id', $employee->id);
@@ -83,7 +83,7 @@ class MeEndpointsTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/me/quick-estimate?from=2026-04-01&to=2026-04-05');
+        $response = $this->getJson('/api/v1/me/quick-estimate?from=2026-04-01&to=2026-04-05'); }
 
         $response->assertOk();
         $response->assertJsonPath('data.employee_id', $employee->id);
@@ -113,7 +113,7 @@ class MeEndpointsTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/me/monthly-summary');
+        $response = $this->getJson('/api/v1/me/monthly-summary'); }
 
         $response->assertOk();
         $response->assertJsonPath('data.employee_id', $employee->id);

@@ -54,7 +54,7 @@ class MobilePayloadContractTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/auth/me');
+        $response = $this->getJson('/api/v1/auth/me'); }
 
         $response->assertOk();
         $response->assertJsonStructure([
@@ -104,14 +104,14 @@ class MobilePayloadContractTest extends TestCase
                 ],
             ],
         ]);
-        $response->assertJsonPath('data.email', 'nora@company.test');
-        $response->assertJsonPath('data.matricule', 'EMP-NORA');
-        $response->assertJsonPath('data.role', 'employee');
-        $response->assertJsonPath('data.company.name', 'Company A');
+        $response->assertJsonPath('data.email', 'nora@company.test'); }
+        $response->assertJsonPath('data.matricule', 'EMP-NORA'); }
+        $response->assertJsonPath('data.role', 'employee'); }
+        $response->assertJsonPath('data.company.name', 'Company A'); }
         $response->assertJsonPath('data.features.rh', true);
-        $response->assertJsonPath('data.mobile_experience.stage', 'regular');
-        $modules = $response->json('data.mobile_experience.modules');
-        $quickActions = $response->json('data.mobile_experience.quick_actions');
+        $response->assertJsonPath('data.mobile_experience.stage', 'regular'); }
+        $modules = $response->json('data.mobile_experience.modules'); }
+        $quickActions = $response->json('data.mobile_experience.quick_actions'); }
 
         $this->assertIsArray($modules);
         $this->assertIsArray($quickActions);
@@ -163,7 +163,7 @@ class MobilePayloadContractTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/me/daily-summary?date=2026-04-10');
+        $response = $this->getJson('/api/v1/me/daily-summary?date=2026-04-10'); }
 
         $response->assertOk();
         $response->assertJsonStructure([
@@ -185,7 +185,7 @@ class MobilePayloadContractTest extends TestCase
                 'currency',
             ],
         ]);
-        $response->assertJsonPath('data.matricule', 'EMP-ME');
+        $response->assertJsonPath('data.matricule', 'EMP-ME'); }
         $this->assertSame(9.0, (float) $response->json('data.hours_worked'));
         $this->assertSame(1.0, (float) $response->json('data.overtime_hours'));
         $this->assertSame(100 * 8 + 100 * 1 * 1.25, (float) $response->json('data.total_estimated'));
@@ -241,10 +241,10 @@ class MobilePayloadContractTest extends TestCase
         Sanctum::actingAs($manager);
         $this->travelTo(Carbon::parse('2026-04-18 09:00:00', 'UTC'));
 
-        $response = $this->getJson('/api/v1/attendance/today');
+        $response = $this->getJson('/api/v1/attendance/today'); }
 
         $response->assertOk();
-        $response->assertJsonPath('data.mode', 'collection');
+        $response->assertJsonPath('data.mode', 'collection'); }
         $response->assertJsonStructure([
             'data' => [
                 'mode',
@@ -312,7 +312,7 @@ class MobilePayloadContractTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/employees?per_page=10');
+        $response = $this->getJson('/api/v1/employees?per_page=10'); }
 
         $response->assertOk();
         $response->assertJsonStructure([

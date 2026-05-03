@@ -105,10 +105,10 @@ class AbsenceApproveTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve'); }
 
         $response->assertStatus(200);
-        $response->assertJsonPath('data.status', 'approved');
+        $response->assertJsonPath('data.status', 'approved'); }
         $response->assertJsonPath('data.approved_by', $manager->id);
 
         $this->assertDatabaseHas('absences', [
@@ -193,7 +193,7 @@ class AbsenceApproveTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve'); }
 
         $response->assertStatus(200);
 
@@ -274,10 +274,10 @@ class AbsenceApproveTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve'); }
 
         $response->assertStatus(200);
-        $response->assertJsonPath('data.status', 'approved');
+        $response->assertJsonPath('data.status', 'approved'); }
 
         // Check that no new balance log was created for non-deductible type
         $finalLogCount = LeaveBalanceLog::query()->where('employee_id', $employee->id)->count();
@@ -350,10 +350,10 @@ class AbsenceApproveTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve'); }
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING');
+        $response->assertJsonPath('error', 'ABSENCE_NOT_PENDING'); }
     }
 
     public function test_employee_cannot_approve(): void
@@ -411,7 +411,7 @@ class AbsenceApproveTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve'); }
 
         $response->assertStatus(403);
     }
@@ -492,7 +492,7 @@ class AbsenceApproveTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$absence->id.'/approve'); }
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.approved_by', $manager->id);
@@ -590,10 +590,10 @@ class AbsenceApproveTest extends TestCase
         $this->putJson('/api/v1/absences/'.$firstAbsence->id.'/approve')
             ->assertOk();
 
-        $response = $this->putJson('/api/v1/absences/'.$secondAbsence->id.'/approve');
+        $response = $this->putJson('/api/v1/absences/'.$secondAbsence->id.'/approve'); }
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'INSUFFICIENT_LEAVE_BALANCE');
+        $response->assertJsonPath('error', 'INSUFFICIENT_LEAVE_BALANCE'); }
         $this->assertDatabaseHas('absences', [
             'id' => $secondAbsence->id,
             'status' => 'pending',

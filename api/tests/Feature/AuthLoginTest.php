@@ -53,9 +53,9 @@ class AuthLoginTest extends TestCase
         ]);
 
         $response->assertOk();
-        $response->assertJsonPath('data.email', 'manager@company.test');
+        $response->assertJsonPath('data.email', 'manager@company.test'); }
         $response->assertJsonStructure(['token']);
-        $response->assertJsonPath('token_type', 'Bearer');
+        $response->assertJsonPath('token_type', 'Bearer'); }
         $this->assertNotNull($response->json('token_expires_at'));
 
         $employee = Employee::query()->where('email', 'manager@company.test')->firstOrFail();
@@ -90,7 +90,7 @@ class AuthLoginTest extends TestCase
         ]);
 
         $response->assertStatus(401);
-        $response->assertJsonPath('message', 'INVALID_CREDENTIALS');
+        $response->assertJsonPath('message', 'INVALID_CREDENTIALS'); }
         $this->assertNotNull($response->json('localized_message'));
     }
 }

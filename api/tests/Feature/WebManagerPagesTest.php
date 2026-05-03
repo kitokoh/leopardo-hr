@@ -41,7 +41,7 @@ class WebManagerPagesTest extends TestCase
             'overtime_hours' => 0,
         ]);
 
-        $response = $this->actingAs($manager, 'web')->get('/dashboard');
+        $response = $this->actingAs($manager, 'web')->get('/dashboard'); }
 
         $response->assertOk();
         $response->assertSee(__('dashboard.manager_dashboard'));
@@ -52,7 +52,7 @@ class WebManagerPagesTest extends TestCase
     {
         [, , $employee] = $this->makeCompanyWithUsers();
 
-        $response = $this->actingAs($employee, 'web')->get('/dashboard');
+        $response = $this->actingAs($employee, 'web')->get('/dashboard'); }
 
         $response->assertForbidden();
     }
@@ -62,13 +62,13 @@ class WebManagerPagesTest extends TestCase
         [, , $employee] = $this->makeCompanyWithUsers();
 
         $detail = $this->get("/employees/{$employee->id}");
-        $detail->assertRedirect('/login');
+        $detail->assertRedirect('/login'); }
 
         $estimate = $this->get("/employees/{$employee->id}/quick-estimate?from=2026-04-04&to=2026-04-04");
-        $estimate->assertRedirect('/login');
+        $estimate->assertRedirect('/login'); }
 
         $pdf = $this->get("/employees/{$employee->id}/receipt?from=2026-04-04&to=2026-04-04");
-        $pdf->assertRedirect('/login');
+        $pdf->assertRedirect('/login'); }
     }
 
     public function test_manager_can_open_employee_detail_and_download_pdf(): void

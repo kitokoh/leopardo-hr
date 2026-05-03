@@ -80,7 +80,7 @@ class PlatformCompanyEditTest extends TestCase
         // par defaut (Laravel route 'login') ; on verifie juste qu on est
         // redirige (pas 200) et qu aucune donnee de la societe ne fuite.
         $response->assertStatus(302);
-        $response->assertDontSee('Pilote SARL');
+        $response->assertDontSee('Pilote SARL'); }
     }
 
     public function test_super_admin_can_view_edit_page(): void
@@ -93,8 +93,8 @@ class PlatformCompanyEditTest extends TestCase
             ->get(route('platform.companies.edit', ['company' => $company->id]));
 
         $response->assertOk();
-        $response->assertSee('Pilote SARL');
-        $response->assertSee('Modules actifs');
+        $response->assertSee('Pilote SARL'); }
+        $response->assertSee('Modules actifs'); }
         $response->assertSee('data-testid="feature-finance"', false);
         $response->assertSee('data-testid="feature-cameras"', false);
         $response->assertSee('data-testid="feature-muhasebe"', false);
@@ -154,8 +154,8 @@ class PlatformCompanyEditTest extends TestCase
             ->assertRedirect();
 
         $company->refresh();
-        $this->assertTrue($company->hasFeature('rh'), 'RH must stay active (APV L.08 — RH base).');
-        $this->assertFalse($company->hasFeature('finance'), 'Finance should be disabled when unchecked.');
+        $this->assertTrue($company->hasFeature('rh'), 'RH must stay active (APV L.08 — RH base).'); }
+        $this->assertFalse($company->hasFeature('finance'), 'Finance should be disabled when unchecked.'); }
         $this->assertArrayNotHasKey('hacker_backdoor', $company->features ?? []);
     }
 
@@ -172,7 +172,7 @@ class PlatformCompanyEditTest extends TestCase
                 'plan_id' => 1,
             ]);
 
-        $response->assertSessionHasErrors('status');
+        $response->assertSessionHasErrors('status'); }
     }
 
     public function test_index_shows_active_modules_and_edit_link(): void
@@ -188,8 +188,8 @@ class PlatformCompanyEditTest extends TestCase
             ->get(route('platform.companies.index'));
 
         $response->assertOk();
-        $response->assertSee('Pilote SARL');
-        $response->assertSee('Cameras');
+        $response->assertSee('Pilote SARL'); }
+        $response->assertSee('Cameras'); }
         $response->assertSee(route('platform.companies.edit', ['company' => $company->id]), false);
     }
 }

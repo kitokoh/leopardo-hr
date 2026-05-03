@@ -97,9 +97,9 @@ class ManualUpdateTest extends TestCase
         ]);
 
         $response->assertOk();
-        $response->assertJsonPath('data.status', 'late');
-        $response->assertJsonPath('data.hours_worked', '9.00');
-        $response->assertJsonPath('data.overtime_hours', '1.00');
+        $response->assertJsonPath('data.status', 'late'); }
+        $response->assertJsonPath('data.hours_worked', '9.00'); }
+        $response->assertJsonPath('data.overtime_hours', '1.00'); }
         $response->assertJsonPath('data.late_minutes', 15);
 
         $this->assertDatabaseHas('attendance_logs', [
