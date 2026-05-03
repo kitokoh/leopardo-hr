@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Attendance;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AttendanceIndexRequest extends FormRequest
 {
@@ -14,7 +15,12 @@ class AttendanceIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_id' => ['nullable', 'integer', 'min:1'],
+            'employee_id' => [
+                'nullable',
+                'integer',
+                'min:1',
+                Rule::exists('employees', 'id')->where('company_id', $this->user()?->company_id),
+            ],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
