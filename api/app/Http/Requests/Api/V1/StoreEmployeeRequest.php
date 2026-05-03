@@ -35,6 +35,7 @@ class StoreEmployeeRequest extends FormRequest
                 'email',
                 'max:150',
                 Rule::unique('employees', 'email'),
+                new \App\Rules\GlobalEmailUnique,
             ],
             'password' => ['nullable', 'string', 'min:8', 'max:255'],
             'contract_start' => ['nullable', 'date_format:Y-m-d'],
