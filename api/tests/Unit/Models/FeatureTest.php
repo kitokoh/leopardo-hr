@@ -157,9 +157,20 @@ class FeatureTest extends TestCase
     /** @test */
     public function it_handles_null_metadata_gracefully_in_manifest()
     {
-        $feature = Feature::factory()->create([
-            'metadata' => null,
-        ]);
+        $feature = new Feature;
+        $feature->key = 'test_feature';
+        $feature->title = 'Test Feature';
+        $feature->description = 'A test feature';
+        $feature->endpoint = '/api/v1/test';
+        $feature->http_methods = ['GET'];
+        $feature->parameters = [];
+        $feature->response_schema = [];
+        $feature->permissions = [];
+        $feature->mobile_version_min = '1.0.0';
+        $feature->mobile_version_max = null;
+        $feature->api_version = '1.0.0';
+        $feature->status = 'active';
+        $feature->metadata = null;
 
         $manifestArray = $feature->toManifestArray();
 
@@ -228,10 +239,10 @@ class FeatureTest extends TestCase
     public function it_belongs_to_company_when_company_id_is_set()
     {
         $feature = Feature::factory()->create([
-            'company_id' => 'test-company-uuid',
+            'company_id' => '123e4567-e89b-12d3-a456-426614174000',
         ]);
 
-        $this->assertEquals('test-company-uuid', $feature->company_id);
+        $this->assertEquals('123e4567-e89b-12d3-a456-426614174000', $feature->company_id);
     }
 
     /** @test */

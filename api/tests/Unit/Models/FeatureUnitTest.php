@@ -9,7 +9,7 @@ class FeatureUnitTest extends TestCase
 {
     public function test_feature_model_has_correct_fillable_fields()
     {
-        $feature = new Feature();
+        $feature = new Feature;
 
         $expectedFillable = [
             'company_id',
@@ -33,7 +33,7 @@ class FeatureUnitTest extends TestCase
 
     public function test_feature_model_has_correct_casts()
     {
-        $feature = new Feature();
+        $feature = new Feature;
 
         $expectedCasts = [
             'http_methods' => 'array',
@@ -53,7 +53,7 @@ class FeatureUnitTest extends TestCase
 
     public function test_to_manifest_array_returns_correct_structure()
     {
-        $feature = new Feature();
+        $feature = new Feature;
 
         $feature->key = 'test_feature';
         $feature->title = 'Test Feature';
@@ -95,7 +95,7 @@ class FeatureUnitTest extends TestCase
 
     public function test_to_manifest_array_handles_null_metadata()
     {
-        $feature = new Feature();
+        $feature = new Feature;
 
         $feature->key = 'test_feature';
         $feature->title = 'Test Feature';
@@ -120,7 +120,7 @@ class FeatureUnitTest extends TestCase
 
     public function test_to_manifest_array_handles_empty_metadata()
     {
-        $feature = new Feature();
+        $feature = new Feature;
 
         $feature->key = 'test_feature';
         $feature->title = 'Test Feature';
@@ -145,7 +145,7 @@ class FeatureUnitTest extends TestCase
 
     public function test_model_uses_correct_table_name()
     {
-        $feature = new Feature();
+        $feature = new Feature;
 
         $this->assertEquals('features', $feature->getTable());
     }
