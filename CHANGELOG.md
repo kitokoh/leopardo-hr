@@ -55,7 +55,21 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.86] - 2026-05-03
+
+### Contractor 📐 - Durcissement des contrats Index et robustesse mobile
+
+- API : Ajout de validations explicites scopees au tenant pour le champ `employee_id` sur les endpoints d'indexation (`absences`, `attendance`, `payrolls`, `salary-advances`), prevenant les fuites de donnees par sondage d'IDs.
+- API : Alignement de `AttendanceTodayResource` sur les calculs temps reel d'`EstimationService` pour `hours_worked`, `overtime_hours` et `status`.
+- Mobile : Durcissement du parsing du modele `Employee` pour tolerer des types de donnees inconsistants sur les champs `id`, `company_id` et `matricule`.
+- Tests : Ajout de `IndexContractGuardTest` pour verrouiller la protection inter-tenant sur les filtres d'indexation.
+
 ## [4.1.85] - 2026-05-02
+
+### Scout - Tests de régression MVP (Salary Advances)
+
+- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et les règles RBAC du module d'avances sur salaire.
+- Sécurité : Identification d'une absence de validation tenant-scoped sur `employee_id` dans `SalaryAdvanceIndexRequest`, permettant potentiellement le probing d'IDs d'autres entreprises (comportement rapporté pour correction).
 
 ### Contractor - Alignement contrat API/mobile (attendance today)
 
