@@ -52,8 +52,13 @@ abstract class TestCase extends BaseTestCase
             $this->configString("database.connections.{$connection}.host", '127.0.0.1')
         );
 
-        if ($this->isRunningInsideDocker() && ! env('GITHUB_ACTIONS') && ! env('CI') && in_array($host, ['127.0.0.1', 'localhost'], true)) {
-            $host = 'pgsql';
+        if ($this->isRunningInsideDocker() && in_array($host, ['127.0.0.1', 'localhost'], true)) {
+            // Check for CI environment variables explicitly using getenv for robustness
+            $isCI = getenv('GITHUB_ACTIONS') === 'true' || getenv('CI') === 'true';
+
+            if (! $isCI) {
+                $host = 'pgsql';
+            }
         }
 
         config([
