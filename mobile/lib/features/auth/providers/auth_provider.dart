@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_rh/features/auth/data/auth_repository.dart';
 import 'package:leopardo_rh/models/employee.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
