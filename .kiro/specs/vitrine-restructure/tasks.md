@@ -460,28 +460,28 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
 
 ## Phase 8: Déploiement & Monitoring (4 tasks)
 
-- [ ] 8.1 Setup CI/CD avec GitHub Actions
+- [x] 8.1 Setup CI/CD avec GitHub Actions
   - Créer workflow pour tests automatiques
   - Créer workflow pour build et déploiement
   - Ajouter linting et type checking
   - Ajouter tests avant déploiement
   - _Requirements: 1.10_
 
-- [ ] 8.2 Déployer sur staging
+- [x] 8.2 Déployer sur staging
   - Configurer environnement staging sur Vercel
   - Tester tous les formulaires et intégrations
   - Vérifier analytics et conversion tracking
   - Vérifier performance et Lighthouse
   - _Requirements: 1.10_
 
-- [ ] 8.3 Déployer sur production
+- [x] 8.3 Déployer sur production
   - Configurer environnement production sur Vercel
   - Configurer domaine personnalisé
   - Configurer SSL/TLS
   - Vérifier tous les services (analytics, forms, etc.)
   - _Requirements: 1.10_
 
-- [ ] 8.4 Setup monitoring et alertes
+- [x] 8.4 Setup monitoring et alertes
   - Configurer Vercel Analytics
   - Configurer Google Search Console
   - Configurer alertes pour erreurs et performance
