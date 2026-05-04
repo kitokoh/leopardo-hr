@@ -61,7 +61,7 @@ class ReflectionService
                 'class' => $method->getDeclaringClass()->getName(),
                 'visibility' => $this->getMethodVisibility($method),
                 'parameters' => $this->getMethodParameters($method),
-                'return_type' => $method->getReturnType()?->getName(),
+                'return_type' => ($returnType = $method->getReturnType()) instanceof \ReflectionNamedType ? $returnType->getName() : null,
                 'attributes' => $this->getMethodAttributes($method),
                 'doc_comment' => $method->getDocComment() ?: null,
                 'signature' => $this->generateMethodSignature($method),
@@ -81,7 +81,7 @@ class ReflectionService
         foreach ($method->getParameters() as $parameter) {
             $parameters[] = [
                 'name' => $parameter->getName(),
-                'type' => $parameter->getType()?->getName(),
+                'type' => ($type = $parameter->getType()) instanceof \ReflectionNamedType ? $type->getName() : null,
                 'has_default' => $parameter->isDefaultValueAvailable(),
                 'default_value' => $parameter->isDefaultValueAvailable()
                     ? $parameter->getDefaultValue()
@@ -178,8 +178,8 @@ class ReflectionService
         foreach ($method->getParameters() as $parameter) {
             $param = '';
 
-            if ($parameter->getType()) {
-                $param .= $parameter->getType()->getName().' ';
+            if (($type = $parameter->getType()) instanceof \ReflectionNamedType) {
+                $param .= $type->getName().' ';
             }
 
             $param .= '$'.$parameter->getName();
@@ -193,8 +193,8 @@ class ReflectionService
 
         $signature = $method->getName().'('.implode(', ', $parameters).')';
 
-        if ($method->getReturnType()) {
-            $signature .= ': '.$method->getReturnType()->getName();
+        if (($returnType = $method->getReturnType()) instanceof \ReflectionNamedType) {
+            $signature .= ': '.$returnType->getName();
         }
 
         return $signature;

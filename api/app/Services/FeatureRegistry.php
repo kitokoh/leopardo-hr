@@ -75,7 +75,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Collection<int, Feature>
      */
     public function getFeatures(?string $version = null): Collection
     {
@@ -194,7 +194,8 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $cacheKey = $this->buildCacheKey(self::MANIFEST_CACHE_KEY, $mobileVersion);
 
-        return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
+        return (array) $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
+            /** @var Collection<int, Feature> $features */
             $features = $this->getCompatibleFeatures($mobileVersion ?? '1.0.0');
 
             $manifest = [
@@ -216,7 +217,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Collection<int, Feature>
      */
     public function getCompatibleFeatures(string $mobileVersion): Collection
     {
@@ -231,7 +232,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Collection<int, Feature>
      */
     public function getFeaturesByApiVersion(string $apiVersion): Collection
     {
@@ -348,7 +349,7 @@ class FeatureRegistry implements FeatureRegistryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, mixed>
      */
     public function getStatistics(): array
     {
@@ -395,7 +396,7 @@ class FeatureRegistry implements FeatureRegistryInterface
      */
     private function getCurrentApiVersion(): string
     {
-        return config('app.api_version', 'v1');
+        return (string) config('app.api_version', 'v1');
     }
 
     /**
@@ -403,7 +404,7 @@ class FeatureRegistry implements FeatureRegistryInterface
      */
     private function getMinimumMobileVersion(): string
     {
-        return Feature::min('mobile_version_min') ?? '1.0.0';
+        return (string) (Feature::min('mobile_version_min') ?? '1.0.0');
     }
 
     /**

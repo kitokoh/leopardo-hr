@@ -77,7 +77,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, mixed>
      */
     public function extractMetadata(string $controllerClass, string $method): array
     {
@@ -168,19 +168,15 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return Collection<int, array<string, mixed>>
      */
     public function detectChanges(): Collection
     {
         $changes = collect();
 
         try {
-            $existingFeatures = Feature::all();
-        } catch (\Exception $e) {
-            Log::warning('Could not fetch existing features for change detection', ['error' => $e->getMessage()]);
-
-            return $changes; // Retourner une collection vide si pas d'accès DB
-        }
+        /** @var Collection<int, Feature> $existingFeatures */
+        $existingFeatures = Feature::all();
 
         foreach ($existingFeatures as $feature) {
             try {
@@ -205,6 +201,7 @@ class FeatureDetector implements FeatureDetectorInterface
                 );
 
                 // Comparer avec les métadonnées enregistrées
+                /** @var array<string, mixed> $currentMetadata */
                 if ($this->hasMetadataChanged($feature, $currentMetadata)) {
                     $changes->push([
                         'type' => 'modified',
@@ -246,7 +243,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Génère une clé unique pour une fonctionnalité
+     * @param array<string, mixed> $routeData
      */
     protected function generateFeatureKey(array $routeData): string
     {
@@ -284,7 +281,9 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Construit les données complètes d'une fonctionnalité
+     * @param array<string, mixed> $routeData
+     * @param array<string, mixed> $metadata
+     * @return array<string, mixed>
      */
     protected function buildFeatureData(array $routeData, array $metadata): array
     {
@@ -292,14 +291,14 @@ class FeatureDetector implements FeatureDetectorInterface
             'key' => $this->generateFeatureKey($routeData),
             'title' => $metadata['title'],
             'description' => $metadata['description'],
-            'endpoint' => '/'.ltrim($routeData['uri'], '/'),
-            'http_methods' => array_filter($routeData['methods'], fn ($method) => $method !== 'HEAD'),
+            'endpoint' => '/'.ltrim((string) ($routeData['uri'] ?? ''), '/'),
+            'http_methods' => array_filter((array) ($routeData['methods'] ?? []), fn ($method) => $method !== 'HEAD'),
             'parameters' => $metadata['parameters'],
             'response_schema' => $metadata['response_schema'],
             'permissions' => $metadata['permissions'],
             'mobile_version_min' => $metadata['mobile_version_min'] ?? '1.0.0',
             'mobile_version_max' => $metadata['mobile_version_max'] ?? null,
-            'api_version' => $this->extractApiVersionFromUri($routeData['uri']),
+            'api_version' => $this->extractApiVersionFromUri((string) ($routeData['uri'] ?? '')),
             'status' => 'active',
             'metadata' => [
                 'ui_type' => $metadata['ui_type'],
@@ -315,7 +314,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Infère les permissions requises basées sur le contrôleur et la méthode
+     * @return array<int, string>
      */
     private function inferPermissions(string $controllerClass, string $method): array
     {
@@ -350,22 +349,29 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Extrait les paramètres de la méthode
+     * @param array<string, mixed> $methodInfo
+     * @return array<string, array<string, mixed>>
      */
     private function extractParameters(array $methodInfo): array
     {
         $parameters = [];
 
-        foreach ($methodInfo['parameters'] as $param) {
+        /** @var array<int, array<string, mixed>> $methodParams */
+        $methodParams = $methodInfo['parameters'] ?? [];
+
+        foreach ($methodParams as $param) {
+            $paramType = (string) ($param['type'] ?? '');
+            $paramName = (string) ($param['name'] ?? '');
+
             // Ignorer les paramètres de type Request et Model
-            if (in_array($param['type'], ['Illuminate\\Http\\Request', 'string', 'int'])) {
+            if (in_array($paramType, ['Illuminate\\Http\\Request', 'string', 'int'])) {
                 continue;
             }
 
-            $parameters[$param['name']] = [
-                'type' => $this->mapPhpTypeToApiType($param['type']),
-                'required' => ! $param['is_optional'],
-                'description' => "Paramètre {$param['name']}",
+            $parameters[$paramName] = [
+                'type' => $this->mapPhpTypeToApiType($paramType),
+                'required' => ! ($param['is_optional'] ?? false),
+                'description' => "Paramètre {$paramName}",
             ];
         }
 
@@ -373,7 +379,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Infère le schéma de réponse basé sur le contrôleur
+     * @return array<string, mixed>
      */
     private function inferResponseSchema(string $controllerClass, string $method): array
     {
@@ -444,19 +450,19 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Trouve une route par son endpoint
+     * @return array<string, mixed>|null
      */
     private function findRouteByEndpoint(string $endpoint): ?array
     {
         $routes = $this->scanRoutes();
 
-        return $routes->first(function ($route) use ($endpoint) {
-            return '/'.ltrim($route['uri'], '/') === $endpoint;
+        return (array) $routes->first(function ($route) use ($endpoint) {
+            return '/'.ltrim((string) ($route['uri'] ?? ''), '/') === $endpoint;
         });
     }
 
     /**
-     * Vérifie si les métadonnées d'une fonctionnalité ont changé
+     * @param array<string, mixed> $currentMetadata
      */
     private function hasMetadataChanged(Feature $feature, array $currentMetadata): bool
     {
@@ -473,14 +479,14 @@ class FeatureDetector implements FeatureDetectorInterface
         }
 
         // Comparer la signature de la méthode
-        $currentSignature = $currentMetadata['method_info']['signature'] ?? '';
-        $storedSignature = $feature->metadata['method_signature'] ?? '';
+        $currentSignature = (string) ($currentMetadata['method_info']['signature'] ?? '');
+        $storedSignature = (string) (($feature->metadata['method_signature'] ?? ''));
 
         return $currentSignature !== $storedSignature;
     }
 
     /**
-     * Génère le schéma de formulaire pour une méthode
+     * @return array<string, mixed>
      */
     private function generateFormSchema(string $controllerClass, string $method): array
     {
@@ -521,7 +527,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * Génère le schéma de liste pour une méthode
+     * @return array<string, mixed>
      */
     private function generateListSchema(string $controllerClass, string $method): array
     {
