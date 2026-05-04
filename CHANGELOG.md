@@ -57,6 +57,10 @@
 
 ## [4.1.86] - 2026-05-03
 
+### Janitor - Hygiène du dépôt
+
+- Dépôt : Archivage de la version obsolète de la stratégie CI/CD (o2switch/VPS) `docs/dossierdeConception/10_deploiement_cicd/19_CICD_ET_GIT.md` vers `docs/notes/archive/19_CICD_ET_GIT_O2SWITCH.md` pour éliminer la confusion avec la version Render active.
+
 ### ⚡ Bolt - Performance et optimisation Employee
 
 - API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.
