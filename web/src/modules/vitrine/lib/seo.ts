@@ -60,6 +60,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
 
 /**
  * SEO metadata for all pages
+ * Optimized titles (50-60 chars), descriptions (150-160 chars), keywords (3-5)
  */
 export const pageMetadata = {
   landing: {
