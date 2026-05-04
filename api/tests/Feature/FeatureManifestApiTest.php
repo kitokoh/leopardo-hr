@@ -28,9 +28,10 @@ class FeatureManifestApiTest extends TestCase
             'role' => 'employee',
         ]);
 
-        // Créer un utilisateur admin
+        // Créer un utilisateur admin (manager principal)
         $this->adminUser = Employee::factory()->create([
-            'role' => 'admin',
+            'role' => 'manager',
+            'manager_role' => 'principal',
         ]);
     }
 
