@@ -1,0 +1,129 @@
+{
+  "name": "Leopardo - Gestion RH Complète",
+  "short_name": "Leopardo",
+  "description": "Plateforme complète de gestion des employés, paie et documents pour PME et startups",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#10b981",
+  "background_color": "#ffffff",
+  "categories": ["business", "productivity"],
+  "screenshots": [
+    {
+      "src": "/images/screenshots/screenshot-1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/images/screenshots/screenshot-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Essai Gratuit",
+      "short_name": "Essai",
+      "description": "Commencer un essai gratuit de 14 jours",
+      "url": "/signup?source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/icon-shortcut-signup.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Demander une Démo",
+      "short_name": "Démo",
+      "description": "Demander une démonstration personnalisée",
+      "url": "/demo?source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/icon-shortcut-demo.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Gestion Employés",
+      "short_name": "Employés",
+      "description": "Accéder à la gestion des employés",
+      "url": "/employes?source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/icon-shortcut-employees.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Paie & Comptabilité",
+      "short_name": "Paie",
+      "description": "Accéder à la gestion de la paie",
+      "url": "/comptabilite?source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/icon-shortcut-payroll.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/*", "video/*"]
+        }
+      ]
+    }
+  },
+  "prefer_related_applications": false,
+  "related_applications": []
+}
