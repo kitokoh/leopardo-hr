@@ -146,6 +146,13 @@
 - Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
 - CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
 
+## [4.1.86] - 2026-05-03
+
+### ⚡ Bolt - Performance et optimisation Employee
+
+- API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.
+- API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
+
 ## [4.1.85] - 2026-05-02
 
 ### Contractor - Alignement contrat API/mobile (attendance today)
