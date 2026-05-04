@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-04
+
+### Palette - Accessibilité mobile
+
+- Mobile : Amélioration de l'accessibilité de l'historique des pointages par l'ajout d'un label `Semantics` unifié en français, regroupant la date, le statut, les horaires et les heures travaillées pour une meilleure lecture par les lecteurs d'écran.
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
