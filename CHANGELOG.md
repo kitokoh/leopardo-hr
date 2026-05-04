@@ -55,6 +55,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.86] - 2026-05-03
+
+### ⚡ Bolt - Performance et optimisation Employee
+
+- API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.
+- API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
+
 ## [4.1.85] - 2026-05-02
 
 ### Contractor - Alignement contrat API/mobile (attendance today)
