@@ -21,7 +21,7 @@ class FeatureRegistryCommand extends Command
      */
     protected $signature = 'features:registry 
                             {action : Action à effectuer (sync, list, stats, clear-cache)}
-                            {--version= : Version API spécifique}
+                            {--api-version= : Version API spécifique}
                             {--mobile-version= : Version mobile pour la compatibilité}
                             {--format=table : Format de sortie (table, json)}';
 
@@ -99,7 +99,7 @@ class FeatureRegistryCommand extends Command
      */
     private function handleList(FeatureRegistryInterface $registry): int
     {
-        $version = $this->option('version');
+        $version = $this->option('api-version');
         $mobileVersion = $this->option('mobile-version');
         $format = $this->option('format');
 
