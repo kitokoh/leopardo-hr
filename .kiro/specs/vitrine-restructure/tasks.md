@@ -397,35 +397,35 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
 
 ## Phase 7: Testing & QA (8 tasks)
 
-- [ ] 7.1 Tests unitaires des composants
+- [x] 7.1 Tests unitaires des composants
   - Écrire tests pour Button, Card, Badge, Input
   - Écrire tests pour HeroSection, FeatureCard, PricingCard
   - Écrire tests pour formulaires et validation
   - Atteindre 80%+ de couverture de code
   - _Requirements: 1.7_
 
-- [ ] 7.2 Tests d'intégration des pages
+- [x] 7.2 Tests d'intégration des pages
   - Tester flux utilisateur sur Landing page
   - Tester flux utilisateur sur pages modules
   - Tester flux de conversion (signup, demo, contact)
   - Tester navigation et routing
   - _Requirements: 1.7_
 
-- [ ] 7.3 Tests E2E avec Playwright
+- [x] 7.3 Tests E2E avec Playwright
   - Tester conversion funnel complet
   - Tester formulaires et soumissions
   - Tester navigation et liens
   - Tester dark mode toggle
   - _Requirements: 1.7_
 
-- [ ] 7.4 Tests visuels et responsive
+- [x] 7.4 Tests visuels et responsive
   - Tester responsive design (320px, 768px, 1280px)
   - Tester dark mode sur tous les composants
   - Tester animations et transitions
   - Tester sur navigateurs (Chrome, Firefox, Safari, Edge)
   - _Requirements: 1.7_
 
-- [ ] 7.5 Tests d'accessibilité (WCAG 2.1 AA)
+- [x] 7.5 Tests d'accessibilité (WCAG 2.1 AA)
   - Vérifier contraste des couleurs (4.5:1 minimum)
   - Tester navigation au clavier
   - Tester avec lecteur d'écran (NVDA, JAWS)
@@ -433,14 +433,14 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Vérifier labels sur formulaires
   - _Requirements: 1.8_
 
-- [ ] 7.6 Tests de performance (Lighthouse)
+- [x] 7.6 Tests de performance (Lighthouse)
   - Atteindre Lighthouse score > 90 (mobile et desktop)
   - Vérifier Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
   - Vérifier page load time < 2 secondes
   - Optimiser images et assets si nécessaire
   - _Requirements: 1.6_
 
-- [ ] 7.7 Tests SEO
+- [x] 7.7 Tests SEO
   - Vérifier metadata sur toutes les pages
   - Vérifier structured data avec Schema.org validator
   - Vérifier sitemap.xml et robots.txt
@@ -448,7 +448,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Vérifier alt text sur images
   - _Requirements: 2.1, 2.2_
 
-- [ ] 7.8 Tests de sécurité
+- [x] 7.8 Tests de sécurité
   - Vérifier HTTPS sur toutes les pages
   - Vérifier CSRF protection sur formulaires
   - Vérifier sanitization des inputs
