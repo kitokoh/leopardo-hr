@@ -14,8 +14,8 @@ class TenantIsolationTest extends TestCase
     {
         parent::setUp();
 
-        Schema::dropIfExists('employees');
-        Schema::dropIfExists('companies');
+        \DB::statement('DROP TABLE IF EXISTS employees CASCADE');
+        \DB::statement('DROP TABLE IF EXISTS companies CASCADE');
 
         Schema::create('companies', function (Blueprint $table): void {
             $table->uuid('id')->primary();
@@ -56,8 +56,8 @@ class TenantIsolationTest extends TestCase
     protected function tearDown(): void
     {
         app()->forgetInstance('current_company');
-        Schema::dropIfExists('employees');
-        Schema::dropIfExists('companies');
+        \DB::statement('DROP TABLE IF EXISTS employees CASCADE');
+        \DB::statement('DROP TABLE IF EXISTS companies CASCADE');
         parent::tearDown();
     }
 

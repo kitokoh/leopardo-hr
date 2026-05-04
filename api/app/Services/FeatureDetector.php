@@ -256,7 +256,7 @@ class FeatureDetector implements FeatureDetectorInterface
         // Supprimer "Controller" du nom
         $controller = str_replace('Controller', '', $controller);
 
-        return Str::snake($controller.'_'.$method);
+        return Str::snake($controller . '_' . $method);
     }
 
     /**
