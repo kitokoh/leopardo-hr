@@ -341,9 +341,9 @@ class SyncModelsExample {
     */
 
     // Filtrage des fonctionnalités du manifeste
-    final compatibleFeatures = manifest.getCompatibleFeatures('1.1.0');
-    final authorizedFeatures = manifest.getAuthorizedFeatures(userPermissions);
-    final availableFeatures = manifest.getAvailableFeatures(
+    manifest.getCompatibleFeatures('1.1.0');
+    manifest.getAuthorizedFeatures(userPermissions);
+    manifest.getAvailableFeatures(
       '1.1.0',
       userPermissions,
     );
@@ -363,7 +363,7 @@ class SyncModelsExample {
         'department': 'it',
       };
 
-      final validationResult = feature.formSchema!.validate(formData);
+      feature.formSchema!.validate(formData);
       /*
       print('Formulaire valide: ${validationResult.isValid}');
       if (!validationResult.isValid) {
@@ -393,8 +393,8 @@ class SyncModelsExample {
     */
 
     // Désérialisation JSON
-    final featureFromJson = Feature.fromJson(featureJson);
-    final manifestFromJson = FeatureManifest.fromJson(manifestJson);
+    Feature.fromJson(featureJson);
+    FeatureManifest.fromJson(manifestJson);
 
     /*
     print('Feature désérialisée: ${featureFromJson.key}');
