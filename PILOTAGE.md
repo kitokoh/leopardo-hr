@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.1.85   → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.1.86   → Version globale du projet/pilotage (ce fichier fait foi)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
