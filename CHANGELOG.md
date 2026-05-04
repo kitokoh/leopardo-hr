@@ -132,6 +132,7 @@
 
 ## [4.1.86] - 2026-05-03
 
+
 ### Auth - Auto-inscription, Google Sign-In, espace personnel et demandes d'entreprise
 
 - API : ajout du rôle `ordinary` pour les utilisateurs sans entreprise immédiate (Espace Personnel).
@@ -145,6 +146,10 @@
 - Mobile : ajout du bouton "Continuer avec Google" sur `LoginScreen` et activation du formulaire sur `RegisterScreen`.
 - Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
 - CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
+### ⚡ Bolt - Performance et optimisation Employee
+
+- API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.
+- API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
 
 ## [4.1.85] - 2026-05-02
 
