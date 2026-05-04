@@ -130,8 +130,8 @@ export default function AboutPage() {
                 pendant des années, il a décidé de créer une plateforme qui changerait tout.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-                Aujourd'hui, Leopardo aide plus de 50 000 utilisateurs dans 15 pays à gérer leurs employés, leur paie
-                et leurs documents. Nous sommes fiers d'avoir une satisfaction client de 98% et un taux de rétention
+                Aujourd&apos;hui, Leopardo aide plus de 50 000 utilisateurs dans 15 pays à gérer leurs employés, leur paie
+                et leurs documents. Nous sommes fiers d&apos;avoir une satisfaction client de 98% et un taux de rétention
                 de 95%.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">

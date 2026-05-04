@@ -71,8 +71,7 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation email to user
     const userEmailSent = await sendContactConfirmationEmail(
-      sanitizedData.email,
-      sanitizedData.name
+      sanitizedData.email
     );
 
     // Send notification email to support team
@@ -126,7 +125,7 @@ export async function POST(request: NextRequest) {
 /**
  * Send confirmation email to user
  */
-async function sendContactConfirmationEmail(email: string, name: string): Promise<boolean> {
+async function sendContactConfirmationEmail(email: string): Promise<boolean> {
   try {
     // TODO: Implement actual email sending
     console.log('Contact confirmation email would be sent to:', email);
@@ -140,7 +139,7 @@ async function sendContactConfirmationEmail(email: string, name: string): Promis
 /**
  * Send notification email to support team
  */
-async function sendContactNotificationEmail(data: any): Promise<boolean> {
+async function sendContactNotificationEmail(data: Record<string, unknown>): Promise<boolean> {
   try {
     // TODO: Implement actual email sending to support team
     console.log('Contact notification email would be sent to support team:', data);

@@ -28,10 +28,12 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
     // Get saved theme from localStorage
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     const initialTheme = savedTheme || 'system';
-    setThemeState(initialTheme);
 
     // Determine if dark mode should be active
     const shouldBeDark = getDarkModeState(initialTheme);
+    
+    // Update state together
+    setThemeState(initialTheme);
     setIsDark(shouldBeDark);
     applyTheme(shouldBeDark);
 

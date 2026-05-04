@@ -114,7 +114,7 @@ async function networkFirstStrategy(request) {
     }
 
     return response;
-  } catch (error) {
+  } catch {
     console.log('[Service Worker] Network request failed, using cache:', request.url);
 
     // Try to get from cache
@@ -161,7 +161,7 @@ async function cacheFirstStrategy(request, cacheName) {
     }
 
     return response;
-  } catch (error) {
+  } catch {
     console.log('[Service Worker] Cache first strategy failed:', request.url);
 
     // Return error response

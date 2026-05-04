@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { RateLimiter, sanitizeEmail, sanitizeInput } from '@/modules/vitrine/lib/validation';
+import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 
 // Rate limiter instance (in production, use Redis)
 const rateLimiter = new RateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
