@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Send confirmation email to user
-    const userEmailSent = await sendDemoConfirmationEmail(sanitizedData.email, sanitizedData.name);
+    const userEmailSent = await sendDemoConfirmationEmail(sanitizedData.email);
 
     // Send notification email to sales team
     const salesEmailSent = await sendDemoNotificationEmail(sanitizedData);
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
 /**
  * Send confirmation email to user
  */
-async function sendDemoConfirmationEmail(email: string, name: string): Promise<boolean> {
+async function sendDemoConfirmationEmail(email: string): Promise<boolean> {
   try {
     // TODO: Implement actual email sending
     console.log('Demo confirmation email would be sent to:', email);
@@ -139,7 +139,7 @@ async function sendDemoConfirmationEmail(email: string, name: string): Promise<b
 /**
  * Send notification email to sales team
  */
-async function sendDemoNotificationEmail(data: any): Promise<boolean> {
+async function sendDemoNotificationEmail(data: Record<string, unknown>): Promise<boolean> {
   try {
     // TODO: Implement actual email sending to sales team
     console.log('Demo notification email would be sent to sales team:', data);

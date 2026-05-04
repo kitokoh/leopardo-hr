@@ -111,7 +111,7 @@ export default function BlogPage() {
                 type="submit"
                 className="px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors whitespace-nowrap"
               >
-                S'inscrire
+                S&apos;inscrire
               </button>
             </motion.form>
 

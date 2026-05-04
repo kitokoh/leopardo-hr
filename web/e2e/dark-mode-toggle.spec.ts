@@ -50,7 +50,7 @@ test.describe('Dark Mode Toggle E2E Tests', () => {
       }
     });
 
-    test('should persist dark mode preference', async ({ page, context }) => {
+    test('should persist dark mode preference', async ({ page }) => {
       // Find dark mode toggle
       const darkModeToggle = page.locator('button[aria-label*="dark"], button[aria-label*="theme"], button[aria-label*="mode"]').first();
       

@@ -1,11 +1,8 @@
 'use client';
 
-import { Metadata } from 'next';
 import { HeroSection } from '@/modules/vitrine/components/sections/HeroSection';
-import { FeaturesSection } from '@/modules/vitrine/components/sections/FeaturesSection';
 import { CTASection } from '@/modules/vitrine/components/sections/CTASection';
 import { MainLayout } from '@/modules/vitrine/components/layout/MainLayout';
-import { Button } from '@/modules/vitrine/components/common/Button';
 import { Container } from '@/modules/vitrine/components/common/Container';
 import { Section } from '@/modules/vitrine/components/common/Section';
 

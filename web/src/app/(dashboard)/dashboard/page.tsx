@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Users, Clock, Wallet, Shield, Sparkles, ArrowUp, ArrowDown,
-  Zap, TrendingUp, Calendar, Bell, Search, Filter, MoreHorizontal,
-  Download, Share2, Clock3, CheckCircle2, AlertCircle, BarChart3
+  Users, Clock, Sparkles, ArrowUp, ArrowDown,
+  Zap, TrendingUp, Calendar, Bell, Search, Download, CheckCircle2
 } from 'lucide-react';
 import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
@@ -55,7 +54,6 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 
 export default function DashboardPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
-  const labels = useMemo(() => getCopy(locale), [locale]);
   const [activeTab, setActiveTab] = useState('today');
 
   useEffect(() => {
@@ -120,7 +118,7 @@ export default function DashboardPage() {
       >
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Tableau de bord</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Bienvenue ! Voici ce qui se passe aujourd'hui.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Bienvenue ! Voici ce qui se passe aujourd&apos;hui.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -188,7 +186,7 @@ export default function DashboardPage() {
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  Aujourd'hui
+                  Aujourd&apos;hui
                 </button>
                 <button 
                   onClick={() => setActiveTab('week')}
@@ -237,7 +235,7 @@ export default function DashboardPage() {
             </div>
 
             <button className="w-full mt-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-              Voir toute l'activité
+              Voir toute l&apos;activité
             </button>
           </div>
         </GlassCard>
@@ -259,7 +257,7 @@ export default function DashboardPage() {
               
               <div className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-4 mb-4">
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                  "Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j'envoie un message de félicitations à l'équipe ?"
+                  &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de félicitations à l&apos;équipe ?&quot;
                 </p>
               </div>
 

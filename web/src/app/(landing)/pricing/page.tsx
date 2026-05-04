@@ -10,7 +10,7 @@ import {
   Footer,
   useScrollReveal,
 } from '@/modules/vitrine';
-import { pricingPlans, faqItems } from '@/modules/vitrine/lib/constants';
+import { pricingPlans } from '@/modules/vitrine/lib/constants';
 import { Zap } from 'lucide-react';
 
 // Comparison table data
