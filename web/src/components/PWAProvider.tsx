@@ -17,6 +17,17 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
+  // Notify user of update
+  const notifyUpdate = () => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Leopardo', {
+        body: 'Une nouvelle version est disponible. Rechargez la page.',
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+      });
+    }
+  };
+
   // Register service worker
   useEffect(() => {
     if (!('serviceWorker' in navigator)) {
@@ -146,17 +157,6 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('[PWA] Sync registration failed:', error);
-    }
-  };
-
-  // Notify user of update
-  const notifyUpdate = () => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Leopardo', {
-        body: 'Une nouvelle version est disponible. Rechargez la page.',
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
-      });
     }
   };
 

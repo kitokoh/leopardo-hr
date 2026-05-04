@@ -588,7 +588,7 @@ export function setupScrollDepthTracking(page: string): () => void {
 
   const analytics = getAnalytics();
   let maxDepth = 0;
-  let trackedDepths = new Set<number>();
+  const trackedDepths = new Set<number>();
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;

@@ -347,7 +347,6 @@ test.describe('Forms and Submissions E2E Tests', () => {
 
       // Check for labels
       const emailLabel = page.locator('label:has-text("Email"), label:has-text("email")').first();
-      const passwordLabel = page.locator('label:has-text("Password"), label:has-text("password")').first();
 
       // At least one should be visible or form should have aria-labels
       const emailInput = page.locator('input[type="email"]');

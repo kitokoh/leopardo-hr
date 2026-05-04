@@ -194,9 +194,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
       // Page should load successfully
       await expect(page).toHaveURL('/');
       
-      // Check for analytics script
-      const analyticsScript = page.locator('script[src*="gtag"], script[src*="analytics"]').first();
-      // Analytics might be loaded asynchronously
+      // Check for analytics script - might be loaded asynchronously
       await page.waitForTimeout(500);
     });
 
@@ -216,7 +214,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
       await page.context().setOffline(true);
 
       // Try to navigate
-      const result = await page.goto('/', { waitUntil: 'domcontentloaded' }).catch(() => null);
+      await page.goto('/', { waitUntil: 'domcontentloaded' }).catch(() => null);
 
       // Restore network
       await page.context().setOffline(false);

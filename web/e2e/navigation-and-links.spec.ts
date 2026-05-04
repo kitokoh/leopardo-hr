@@ -107,7 +107,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       expect(count).toBeGreaterThan(0);
     });
 
-    test('should open social media links in new tab', async ({ page, context }) => {
+    test('should open social media links in new tab', async ({ page }) => {
       // Scroll to footer
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
@@ -280,10 +280,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       const firstLink = page.locator('a').first();
       await firstLink.focus();
 
-      // Get the href
-      const href = await firstLink.getAttribute('href');
-
-      // Press Enter
+      // Press Enter to navigate
       await page.keyboard.press('Enter');
 
       // Should navigate
