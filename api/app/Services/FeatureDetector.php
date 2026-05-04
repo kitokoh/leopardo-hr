@@ -122,20 +122,20 @@ class FeatureDetector implements FeatureDetectorInterface
 
         foreach ($this->router->getRoutes() as $route) {
             // Filtrer uniquement les routes API
-            if (!$this->isApiRoute($route)) {
+            if (! $this->isApiRoute($route)) {
                 continue;
             }
 
             $action = $route->getAction();
 
             // Ignorer les routes sans contrôleur
-            if (!isset($action['controller'])) {
+            if (! isset($action['controller'])) {
                 continue;
             }
 
             // Parser l'action du contrôleur
             $controllerAction = $action['controller'];
-            if (!str_contains($controllerAction, '@')) {
+            if (! str_contains($controllerAction, '@')) {
                 // Format moderne Laravel avec invokable ou array
                 if (is_string($controllerAction)) {
                     $controllerClass = $controllerAction;
@@ -148,7 +148,7 @@ class FeatureDetector implements FeatureDetectorInterface
             }
 
             // Vérifier que c'est un contrôleur API valide
-            if (!$this->reflection->isApiController($controllerClass)) {
+            if (! $this->reflection->isApiController($controllerClass)) {
                 continue;
             }
 
@@ -183,7 +183,7 @@ class FeatureDetector implements FeatureDetectorInterface
                     // Retrouver la route correspondante
                     $currentRoute = $this->findRouteByEndpoint($feature->endpoint);
 
-                    if (!$currentRoute) {
+                    if (! $currentRoute) {
                         // La route n'existe plus
                         $changes->push([
                             'type' => 'removed',
@@ -232,13 +232,13 @@ class FeatureDetector implements FeatureDetectorInterface
     private function isApiRoute($route): bool
     {
         // Vérifier le préfixe de l'URI
-        if (!str_starts_with($route->uri(), 'api/')) {
+        if (! str_starts_with($route->uri(), 'api/')) {
             return false;
         }
 
         // Vérifier les middlewares
         $middleware = $route->middleware();
-        if (!in_array('api', $middleware) && !in_array('throttle:api', $middleware)) {
+        if (! in_array('api', $middleware) && ! in_array('throttle:api', $middleware)) {
             return false;
         }
 
@@ -294,7 +294,7 @@ class FeatureDetector implements FeatureDetectorInterface
             'key' => $this->generateFeatureKey($routeData),
             'title' => $metadata['title'],
             'description' => $metadata['description'],
-            'endpoint' => '/'.ltrim((string) ($routeData['uri'] ?? ''), '/'),
+            'endpoint' => '/' . ltrim((string) ($routeData['uri'] ?? ''), '/'),
             'http_methods' => array_filter((array) ($routeData['methods'] ?? []), fn ($method) => $method !== 'HEAD'),
             'parameters' => $metadata['parameters'],
             'response_schema' => $metadata['response_schema'],
@@ -460,7 +460,7 @@ class FeatureDetector implements FeatureDetectorInterface
         $routes = $this->scanRoutes();
 
         return (array) $routes->first(function ($route) use ($endpoint) {
-            return '/'.ltrim((string) ($route['uri'] ?? ''), '/') === $endpoint;
+            return '/' . ltrim((string) ($route['uri'] ?? ''), '/') === $endpoint;
         });
     }
 
