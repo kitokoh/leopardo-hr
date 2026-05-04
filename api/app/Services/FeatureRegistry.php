@@ -172,8 +172,9 @@ class FeatureRegistry implements FeatureRegistryInterface
 
             DB::commit();
 
-            // Invalider le cache
+            // Invalider le cache (global et spécifique à la fonctionnalité)
             $this->invalidateCache();
+            $this->invalidateCache($key);
 
         } catch (\Exception $e) {
             DB::rollBack();
