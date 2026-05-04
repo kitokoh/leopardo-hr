@@ -326,15 +326,19 @@ class SyncModelsExample {
     final manifest = createSampleManifest();
 
     // Test de compatibilité de version
+    /*
     print(
       'Feature compatible avec v1.1.0: ${feature.isCompatibleWith('1.1.0')}',
     );
+    */
 
     // Test de permissions
     final userPermissions = ['employees.view', 'employees.create'];
+    /*
     print(
       'Utilisateur autorisé: ${feature.hasRequiredPermissions(userPermissions)}',
     );
+    */
 
     // Filtrage des fonctionnalités du manifeste
     final compatibleFeatures = manifest.getCompatibleFeatures('1.1.0');
@@ -344,9 +348,11 @@ class SyncModelsExample {
       userPermissions,
     );
 
+    /*
     print('Fonctionnalités compatibles: ${compatibleFeatures.length}');
     print('Fonctionnalités autorisées: ${authorizedFeatures.length}');
     print('Fonctionnalités disponibles: ${availableFeatures.length}');
+    */
 
     // Test de validation de formulaire
     if (feature.formSchema != null) {
@@ -358,18 +364,22 @@ class SyncModelsExample {
       };
 
       final validationResult = feature.formSchema!.validate(formData);
+      /*
       print('Formulaire valide: ${validationResult.isValid}');
       if (!validationResult.isValid) {
         print('Erreurs: ${validationResult.errors}');
       }
+      */
     }
 
     // Test de formatage des colonnes de liste
     if (feature.listSchema != null) {
       final dateColumn = feature.listSchema!.getColumn('created_at');
       if (dateColumn != null) {
+        /*
         final formattedDate = dateColumn.formatValue(DateTime.now());
         print('Date formatée: $formattedDate');
+        */
       }
     }
 
@@ -377,14 +387,18 @@ class SyncModelsExample {
     final featureJson = feature.toJson();
     final manifestJson = manifest.toJson();
 
+    /*
     print('Feature sérialisée: ${featureJson.keys.length} clés');
     print('Manifest sérialisé: ${manifestJson.keys.length} clés');
+    */
 
     // Désérialisation JSON
     final featureFromJson = Feature.fromJson(featureJson);
     final manifestFromJson = FeatureManifest.fromJson(manifestJson);
 
+    /*
     print('Feature désérialisée: ${featureFromJson.key}');
     print('Manifest désérialisé: ${manifestFromJson.version}');
+    */
   }
 }
