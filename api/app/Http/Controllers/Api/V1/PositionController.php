@@ -15,7 +15,9 @@ class PositionController extends Controller
             abort(403);
         }
 
-        $query = Position::with('department');
+        $query = Position::query()
+            ->select(['id', 'company_id', 'name', 'department_id', 'created_at'])
+            ->with('department:id,name');
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->integer('department_id'));
         }
@@ -41,7 +43,7 @@ class PositionController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($position->load('department'))]);
+        return response()->json(['data' => $this->serialize($position->load('department:id,name'))]);
     }
 
     public function update(Request $request, Position $position): JsonResponse

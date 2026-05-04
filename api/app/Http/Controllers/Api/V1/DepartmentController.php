@@ -15,7 +15,7 @@ class DepartmentController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => Department::with('manager')->orderBy('name')->get()->map(fn ($d) => $this->serialize($d))]);
+        return response()->json(['data' => Department::query()->select(['id', 'company_id', 'name', 'manager_id', 'created_at'])->with('manager:id,first_name,last_name')->orderBy('name')->get()->map(fn ($d) => $this->serialize($d))]);
     }
 
     public function store(Request $request): JsonResponse
@@ -36,7 +36,7 @@ class DepartmentController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($department->load('manager', 'positions'))]);
+        return response()->json(['data' => $this->serialize($department->load(['manager:id,first_name,last_name', 'positions:id,department_id,name']))]);
     }
 
     public function update(Request $request, Department $department): JsonResponse
