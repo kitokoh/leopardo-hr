@@ -175,47 +175,50 @@ class FeatureDetector implements FeatureDetectorInterface
         $changes = collect();
 
         try {
-        /** @var Collection<int, Feature> $existingFeatures */
-        $existingFeatures = Feature::all();
+            /** @var Collection<int, Feature> $existingFeatures */
+            $existingFeatures = Feature::all();
 
-        foreach ($existingFeatures as $feature) {
-            try {
-                // Retrouver la route correspondante
-                $currentRoute = $this->findRouteByEndpoint($feature->endpoint);
+            foreach ($existingFeatures as $feature) {
+                try {
+                    // Retrouver la route correspondante
+                    $currentRoute = $this->findRouteByEndpoint($feature->endpoint);
 
-                if (! $currentRoute) {
-                    // La route n'existe plus
-                    $changes->push([
-                        'type' => 'removed',
+                    if (! $currentRoute) {
+                        // La route n'existe plus
+                        $changes->push([
+                            'type' => 'removed',
+                            'feature_key' => $feature->key,
+                            'feature' => $feature,
+                        ]);
+
+                        continue;
+                    }
+
+                    // Extraire les métadonnées actuelles
+                    $currentMetadata = $this->extractMetadata(
+                        $currentRoute['controller_class'],
+                        $currentRoute['method']
+                    );
+
+                    // Comparer avec les métadonnées enregistrées
+                    /** @var array<string, mixed> $currentMetadata */
+                    if ($this->hasMetadataChanged($feature, $currentMetadata)) {
+                        $changes->push([
+                            'type' => 'modified',
+                            'feature_key' => $feature->key,
+                            'feature' => $feature,
+                            'current_metadata' => $currentMetadata,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Failed to detect changes for feature', [
                         'feature_key' => $feature->key,
-                        'feature' => $feature,
-                    ]);
-
-                    continue;
-                }
-
-                // Extraire les métadonnées actuelles
-                $currentMetadata = $this->extractMetadata(
-                    $currentRoute['controller_class'],
-                    $currentRoute['method']
-                );
-
-                // Comparer avec les métadonnées enregistrées
-                /** @var array<string, mixed> $currentMetadata */
-                if ($this->hasMetadataChanged($feature, $currentMetadata)) {
-                    $changes->push([
-                        'type' => 'modified',
-                        'feature_key' => $feature->key,
-                        'feature' => $feature,
-                        'current_metadata' => $currentMetadata,
+                        'error' => $e->getMessage(),
                     ]);
                 }
-            } catch (\Exception $e) {
-                Log::warning('Failed to detect changes for feature', [
-                    'feature_key' => $feature->key,
-                    'error' => $e->getMessage(),
-                ]);
             }
+        } catch (\Exception $e) {
+            Log::warning('Could not fetch existing features for change detection', ['error' => $e->getMessage()]);
         }
 
         return $changes;
