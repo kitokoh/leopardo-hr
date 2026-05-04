@@ -47,9 +47,9 @@ MVP : "Combien je dois à mes employés aujourd'hui ?" — en 1 clic.
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-05-02
+Date MAJ       : 2026-05-03
 Conception     : ✅ Terminée (40+ documents dans docs/dossierdeConception/ + README d'orientation)
-Code           : ✅ `main` inclut le MVP livré + i18n + hardening P0/P1/P2 + salary advances + payroll RH (voir CHANGELOG.md jusqu'à 4.1.85)
+Code           : ✅ `main` inclut le MVP livré + i18n + hardening P0/P1/P2 + salary advances + payroll RH (voir CHANGELOG.md jusqu'à 4.1.86)
 Phase active   : Stabilisation beta + gouvernance documentaire + durcissement progressif (voir docs/REFERENTIEL_PRODUIT/ROADMAP.md)
                  Note: la section "SCOPE MVP VERROUILLÉ" plus bas reflète
                  le scope initial figé, pas l'état actuel du code.

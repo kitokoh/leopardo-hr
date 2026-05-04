@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.86] - 2026-05-03
+
+### DocKeeper - Alignement documentation
+
+- Ops : Mise à jour du `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` (v1.1) pour l'aligner sur l'infrastructure Render + Neon (PaaS), remplaçant les instructions VPS obsolètes.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.86` dans `PILOTAGE.md`, `CHANGELOG.md`, `docs/README.md` et `api/config/app.php`.
+- Gouvernance : Mise à jour de la date de dernière mise à jour dans `PILOTAGE.md` (2026-05-03).
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
