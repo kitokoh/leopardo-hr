@@ -40,6 +40,14 @@
 - Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
 - Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
 
+## [4.1.87] - 2026-05-03
+
+### Contractor - Durcissement du contrat API/mobile
+
+- Mobile : Durcissement du parsing des modèles `Employee` et `AttendanceLog` via `int.tryParse` et `.toString()` pour prévenir les échecs au runtime en cas d'incohérence de type (ex: ID en chaîne vs entier).
+- Mobile : Enrichissement du modèle `AttendanceLog` pour supporter le parsing des métadonnées employeur (`employee.name`, `employee.photo_url`) exposées dans l'historique des pointages.
+- Tests : Renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` avec une couverture explicite de l'historique des pointages (`/api/v1/attendance`) pour verrouiller la structure imbriquée des employés.
+
 ## [4.1.84] - 2026-05-01
 
 ### Performance - Optimisation des index Absence et Evaluation
