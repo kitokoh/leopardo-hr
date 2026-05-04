@@ -115,6 +115,7 @@ class FeatureRegistryIntegrationTest extends TestCase
             'key' => 'v1_feature',
             'api_version' => 'v1',
             'mobile_version_min' => '1.0.0',
+            'mobile_version_max' => null,
             'status' => 'active',
         ]);
 
@@ -122,6 +123,7 @@ class FeatureRegistryIntegrationTest extends TestCase
             'key' => 'v2_feature',
             'api_version' => 'v2',
             'mobile_version_min' => '2.0.0',
+            'mobile_version_max' => null,
             'status' => 'active',
         ]);
 

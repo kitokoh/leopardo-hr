@@ -72,17 +72,14 @@ class AuthSelfRegistrationTest extends TestCase
                 'sector' => 'Technology',
                 'country' => 'DZ',
                 'city' => 'Algiers',
-                'manager_name' => 'John Doe',
-                'manager_id_card' => '123456789',
-                'manager_phone' => '+213555555555',
-                'notes' => 'Please approve us.',
+                'email' => 'contact@acme-corp.com',
+                'phone' => '+213555555555',
+                'description' => 'Please approve us.',
             ]);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('company_requests', [
-            'employee_id' => $employee->id,
             'company_name' => 'Acme Corp',
-            'manager_name' => 'John Doe',
         ]);
     }
 }
