@@ -38,11 +38,11 @@ class DetectFeaturesCommand extends Command
             if ($this->option('details')) {
                 $this->table(
                     ['URI', 'Méthodes', 'Contrôleur', 'Action'],
-                    $routes->map(fn ($route) => [
-                        $route['uri'],
-                        implode(', ', $route['methods']),
-                        class_basename($route['controller_class']),
-                        $route['method'],
+                    $routes->map(fn (array $route) => [
+                        (string) $route['uri'],
+                        implode(', ', (array) $route['methods']),
+                        class_basename((string) $route['controller_class']),
+                        (string) $route['method'],
                     ])->toArray()
                 );
             }
@@ -62,12 +62,12 @@ class DetectFeaturesCommand extends Command
             // Afficher les fonctionnalités détectées
             $this->table(
                 ['Clé', 'Titre', 'Endpoint', 'Méthodes', 'Type UI'],
-                $newFeatures->map(fn ($feature) => [
-                    $feature['key'],
-                    $feature['title'],
-                    $feature['endpoint'],
-                    implode(', ', $feature['http_methods']),
-                    $feature['metadata']['ui_type'] ?? 'generic',
+                $newFeatures->map(fn (array $feature) => [
+                    (string) $feature['key'],
+                    (string) $feature['title'],
+                    (string) $feature['endpoint'],
+                    implode(', ', (array) $feature['http_methods']),
+                    isset($feature['metadata']) && is_array($feature['metadata']) ? (string) ($feature['metadata']['ui_type'] ?? 'generic') : 'generic',
                 ])->toArray()
             );
 
@@ -88,8 +88,11 @@ class DetectFeaturesCommand extends Command
                 $this->info("⚠️  {$changes->count()} changements détectés dans les fonctionnalités existantes");
 
                 foreach ($changes as $change) {
-                    $icon = $change['type'] === 'removed' ? '🗑️' : '📝';
-                    $this->line("{$icon} {$change['type']}: {$change['feature_key']}");
+                    /** @var array<string, mixed> $change */
+                    $changeType = (string) $change['type'];
+                    $featureKey = (string) $change['feature_key'];
+                    $icon = $changeType === 'removed' ? '🗑️' : '📝';
+                    $this->line("{$icon} {$changeType}: {$featureKey}");
                 }
             }
 

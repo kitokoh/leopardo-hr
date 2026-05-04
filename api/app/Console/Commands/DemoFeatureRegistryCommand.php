@@ -323,14 +323,15 @@ class DemoFeatureRegistryCommand extends Command
             $rows = [];
 
             foreach ($manifest['features'] as $feature) {
-                $rows[] = [
-                    $feature['key'],
-                    $feature['title'],
-                    $feature['endpoint'],
-                    implode(', ', $feature['methods']),
-                    implode(', ', $feature['permissions']),
-                ];
-            }
+                    /** @var array<string, mixed> $feature */
+                    $rows[] = [
+                        (string) $feature['key'],
+                        (string) $feature['title'],
+                        (string) $feature['endpoint'],
+                        implode(', ', (array) $feature['methods']),
+                        implode(', ', (array) $feature['permissions']),
+                    ];
+                }
 
             $this->table($headers, $rows);
         }
@@ -347,13 +348,14 @@ class DemoFeatureRegistryCommand extends Command
 
         $result = $registry->synchronize();
 
-        $this->line("    - Nouvelles fonctionnalités: {$result['new']}");
-        $this->line("    - Fonctionnalités mises à jour: {$result['updated']}");
-        $this->line("    - Fonctionnalités supprimées: {$result['removed']}");
+        /** @var array<string, mixed> $result */
+        $this->line("    - Nouvelles fonctionnalités: ".(string) $result['new']);
+        $this->line("    - Fonctionnalités mises à jour: ".(string) $result['updated']);
+        $this->line("    - Fonctionnalités supprimées: ".(string) $result['removed']);
 
         if (! empty($result['errors'])) {
-            $this->warn('    - Erreurs: '.count($result['errors']));
-            foreach ($result['errors'] as $error) {
+            $this->warn('    - Erreurs: '.count((array) $result['errors']));
+            foreach ((array) $result['errors'] as $error) {
                 $this->line("      • {$error}");
             }
         } else {
