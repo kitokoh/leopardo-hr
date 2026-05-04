@@ -246,7 +246,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * @param array<string, mixed> $routeData
+     * @param  array<string, mixed>  $routeData
      */
     protected function generateFeatureKey(array $routeData): string
     {
@@ -256,7 +256,7 @@ class FeatureDetector implements FeatureDetectorInterface
         // Supprimer "Controller" du nom
         $controller = str_replace('Controller', '', $controller);
 
-        return Str::snake($controller . '_' . $method);
+        return Str::snake($controller.'_'.$method);
     }
 
     /**
@@ -284,8 +284,8 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * @param array<string, mixed> $routeData
-     * @param array<string, mixed> $metadata
+     * @param  array<string, mixed>  $routeData
+     * @param  array<string, mixed>  $metadata
      * @return array<string, mixed>
      */
     protected function buildFeatureData(array $routeData, array $metadata): array
@@ -294,7 +294,7 @@ class FeatureDetector implements FeatureDetectorInterface
             'key' => $this->generateFeatureKey($routeData),
             'title' => $metadata['title'],
             'description' => $metadata['description'],
-            'endpoint' => '/' . ltrim((string) ($routeData['uri'] ?? ''), '/'),
+            'endpoint' => '/'.ltrim((string) ($routeData['uri'] ?? ''), '/'),
             'http_methods' => array_filter((array) ($routeData['methods'] ?? []), fn ($method) => $method !== 'HEAD'),
             'parameters' => $metadata['parameters'],
             'response_schema' => $metadata['response_schema'],
@@ -352,7 +352,7 @@ class FeatureDetector implements FeatureDetectorInterface
     }
 
     /**
-     * @param array<string, mixed> $methodInfo
+     * @param  array<string, mixed>  $methodInfo
      * @return array<string, array<string, mixed>>
      */
     private function extractParameters(array $methodInfo): array
@@ -460,12 +460,12 @@ class FeatureDetector implements FeatureDetectorInterface
         $routes = $this->scanRoutes();
 
         return (array) $routes->first(function ($route) use ($endpoint) {
-            return '/' . ltrim((string) ($route['uri'] ?? ''), '/') === $endpoint;
+            return '/'.ltrim((string) ($route['uri'] ?? ''), '/') === $endpoint;
         });
     }
 
     /**
-     * @param array<string, mixed> $currentMetadata
+     * @param  array<string, mixed>  $currentMetadata
      */
     private function hasMetadataChanged(Feature $feature, array $currentMetadata): bool
     {
