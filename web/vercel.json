@@ -1,0 +1,125 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm ci",
+  "framework": "nextjs",
+  "nodeVersion": "20.x",
+  "env": {
+    "NEXT_PUBLIC_API_URL": {
+      "description": "API endpoint URL"
+    },
+    "NEXT_PUBLIC_GA_ID": {
+      "description": "Google Analytics 4 ID"
+    },
+    "NEXT_PUBLIC_MIXPANEL_TOKEN": {
+      "description": "Mixpanel token for analytics"
+    },
+    "SENDGRID_API_KEY": {
+      "description": "SendGrid API key for email"
+    },
+    "NEXT_PUBLIC_SITE_URL": {
+      "description": "Site URL for SEO and canonical URLs"
+    },
+    "NEXT_PUBLIC_SITE_NAME": {
+      "description": "Site name for metadata"
+    },
+    "NEXT_PUBLIC_ENVIRONMENT": {
+      "description": "Environment name (staging, production)"
+    },
+    "NEXTAUTH_SECRET": {
+      "description": "NextAuth secret for authentication"
+    },
+    "NEXTAUTH_URL": {
+      "description": "NextAuth URL"
+    },
+    "NEXT_PUBLIC_SENTRY_DSN": {
+      "description": "Sentry DSN for error tracking"
+    }
+  },
+  "regions": ["cdg1"],
+  "functions": {
+    "api/**": {
+      "maxDuration": 60
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=()"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/old-page",
+      "destination": "/new-page",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.leopardo.com/api/:path*"
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "staging": true,
+      "develop": false
+    }
+  }
+}
