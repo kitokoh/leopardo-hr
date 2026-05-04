@@ -18,10 +18,8 @@ use Illuminate\Support\Facades\Log;
 class FeatureManifestController extends Controller
 {
     public function __construct(
-        private readonly FeatureRegistryInterface $registry
-    ) {
-        $this->middleware('auth:sanctum');
-    }
+        private readonly FeatureRegistryInterface $registry,
+    ) {}
 
     /**
      * Récupère le manifeste complet des fonctionnalités
