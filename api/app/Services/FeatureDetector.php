@@ -21,7 +21,7 @@ class FeatureDetector implements FeatureDetectorInterface
     public function __construct(
         private readonly Router $router,
         private readonly ReflectionService $reflection,
-        private readonly AnnotationReader $annotations
+        private readonly AnnotationReader $annotations,
     ) {}
 
     /**
@@ -270,7 +270,7 @@ class FeatureDetector implements FeatureDetectorInterface
         }
 
         // Vérifier que c'est compatible mobile (si spécifié)
-        if (isset($metadata['mobile_compatible']) && !$metadata['mobile_compatible']) {
+        if (isset($metadata['mobile_compatible']) && ! $metadata['mobile_compatible']) {
             return false;
         }
 

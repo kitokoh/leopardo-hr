@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Feature;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -23,15 +25,31 @@ class FeatureManifestApiTest extends TestCase
     {
         parent::setUp();
 
+        // Ensure a plan exists for the company factory
+        if (DB::table('plans')->count() === 0) {
+            DB::table('plans')->insert([
+                'id' => 1,
+                'name' => 'Starter',
+                'price_monthly' => 29,
+                'price_yearly' => 290,
+                'trial_days' => 14,
+                'is_active' => true,
+            ]);
+        }
+
+        $company = Company::factory()->create();
+
         // Créer un utilisateur normal
         $this->user = Employee::factory()->create([
             'role' => 'employee',
+            'company_id' => $company->id,
         ]);
 
         // Créer un utilisateur admin (manager principal)
         $this->adminUser = Employee::factory()->create([
             'role' => 'manager',
             'manager_role' => 'principal',
+            'company_id' => $company->id,
         ]);
     }
 
