@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\Absence;
+namespace App\Http\Requests\Api\V1\Evaluation;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AbsenceIndexRequest extends FormRequest
+class EvaluationIndexRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -22,9 +22,14 @@ class AbsenceIndexRequest extends FormRequest
                 'min:1',
                 'exists:employees,id,company_id,'.$companyId,
             ],
-            'status' => ['nullable', 'in:pending,approved,rejected,cancelled'],
-            'month' => ['nullable', 'integer', 'between:1,12'],
-            'year' => ['nullable', 'integer', 'min:2000'],
+            'evaluator_id' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'exists:employees,id,company_id,'.$companyId,
+            ],
+            'period' => ['nullable', 'string', 'max:20'],
+            'status' => ['nullable', 'in:draft,submitted,acknowledged'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
@@ -33,6 +38,7 @@ class AbsenceIndexRequest extends FormRequest
     {
         return [
             'employee_id.exists' => 'Employé introuvable dans votre entreprise.',
+            'evaluator_id.exists' => 'Évaluateur introuvable dans votre entreprise.',
         ];
     }
 }

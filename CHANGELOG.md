@@ -55,6 +55,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-03
+
+### Sentinel - Durcissement de l'isolation tenant sur les filtres d'index
+
+- API : Renforcement de la validation dans `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationIndexRequest` pour empêcher les fuites de données inter-tenant (ID Enumeration) en vérifiant systématiquement l'appartenance de `employee_id` et `evaluator_id` au tenant de l'utilisateur.
+- Tests : Ajout de `SalaryAdvanceSecurityTest` et `IndexCrossTenantValidationTest` pour verrouiller l'impossibilité de probe ou filtrer des ressources d'un autre tenant via les paramètres de requête.
+
 ## [4.1.86] - 2026-05-03
 
 ### ⚡ Bolt - Performance et optimisation Employee
