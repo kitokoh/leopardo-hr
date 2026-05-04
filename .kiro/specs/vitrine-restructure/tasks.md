@@ -264,7 +264,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [-] 4.7 Créer Page À Propos (/about)
+- [x] 4.7 Créer Page À Propos (/about)
   - Implémenter page avec HeroSection
   - Ajouter section "Notre Histoire"
   - Ajouter section "Valeurs" (4 valeurs)
@@ -275,7 +275,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer metadata SEO
   - _Requirements: 1.1, 1.2, 2.1_
 
-- [-] 4.8 Créer Page Blog (/blog et /blog/[slug])
+- [x] 4.8 Créer Page Blog (/blog et /blog/[slug])
   - Implémenter page listing avec BlogGrid
   - Ajouter filtres par catégorie
   - Ajouter pagination
