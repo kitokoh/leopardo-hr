@@ -3,33 +3,19 @@
 namespace Tests\Feature;
 
 use App\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class AuthSelfRegistrationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Ensure employees table exists in SQLite memory for this test
-        if (DB::getDriverName() === 'sqlite') {
-            Schema::create('employees', function ($table) {
-                $table->increments('id');
-                $table->uuid('company_id')->nullable();
-                $table->string('first_name');
-                $table->string('last_name');
-                $table->string('email')->unique();
-                $table->string('password_hash');
-                $table->string('role')->default('employee');
-                $table->string('status')->default('active');
-                $table->timestamps();
-            });
-
+        if (! Schema::hasTable('company_requests')) {
             Schema::create('company_requests', function ($table) {
                 $table->increments('id');
                 $table->unsignedInteger('employee_id');
@@ -42,17 +28,6 @@ class AuthSelfRegistrationTest extends TestCase
                 $table->string('manager_phone')->nullable();
                 $table->text('notes')->nullable();
                 $table->string('status')->default('pending');
-                $table->timestamps();
-            });
-
-            Schema::create('personal_access_tokens', function ($table) {
-                $table->id();
-                $table->morphs('tokenable');
-                $table->string('name');
-                $table->string('token', 64)->unique();
-                $table->text('abilities')->nullable();
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamp('expires_at')->nullable();
                 $table->timestamps();
             });
         }

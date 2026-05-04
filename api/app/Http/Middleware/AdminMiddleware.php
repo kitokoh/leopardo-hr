@@ -47,6 +47,8 @@ class AdminMiddleware
     private function userIsAdmin($user): bool
     {
         // Adapter selon votre système de rôles
-        return in_array($user->role ?? '', ['admin', 'super_admin']);
+        $role = $user->role ?? '';
+
+        return $role === 'manager' || in_array($role, ['admin', 'super_admin']);
     }
 }
