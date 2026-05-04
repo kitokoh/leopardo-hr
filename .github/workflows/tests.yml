@@ -193,6 +193,7 @@ jobs:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
           DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
       - name: Run backend feature tests
@@ -201,6 +202,7 @@ jobs:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
           DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
         run: php artisan test --testsuite=Feature --log-junit=storage/test-results/feature.xml
 
       - name: Upload backend test reports
