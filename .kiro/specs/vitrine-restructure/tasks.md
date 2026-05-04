@@ -290,7 +290,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
 
 ## Phase 5: Intégrations & Optimisations (7 tasks)
 
-- [ ] 5.1 Intégrer Google Analytics 4 et Mixpanel
+- [x] 5.1 Intégrer Google Analytics 4 et Mixpanel
   - Ajouter script GA4 dans layout racine
   - Configurer événements de page view
   - Configurer événements de conversion (signup, demo, contact, newsletter)
@@ -298,7 +298,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Tester tracking avec Google Tag Manager
   - _Requirements: 2.3_
 
-- [ ] 5.2 Intégrer formulaires (Signup, Demo, Contact, Newsletter)
+- [x] 5.2 Intégrer formulaires (Signup, Demo, Contact, Newsletter)
   - Implémenter `SignupForm` avec validation
   - Implémenter `DemoForm` avec calendrier
   - Implémenter `ContactForm` avec message
@@ -307,7 +307,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Ajouter confirmation email
   - _Requirements: 2.4, 2.5_
 
-- [ ] 5.3 Optimiser images et performance
+- [x] 5.3 Optimiser images et performance
   - Convertir toutes les images en WebP
   - Ajouter lazy loading avec Next.js Image
   - Créer blur placeholders pour images
@@ -315,28 +315,28 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Ajouter srcset pour high-DPI displays
   - _Requirements: 1.6_
 
-- [ ] 5.4 Implémenter lazy loading et code splitting
+- [x] 5.4 Implémenter lazy loading et code splitting
   - Ajouter dynamic imports pour sections lourdes
   - Implémenter Intersection Observer pour animations
   - Ajouter skeleton loaders pour contenu
   - Optimiser bundle size avec tree-shaking
   - _Requirements: 1.6_
 
-- [ ] 5.5 Implémenter PWA features
+- [x] 5.5 Implémenter PWA features
   - Créer manifest.json avec app metadata
   - Ajouter service worker pour offline support
   - Implémenter install prompt
   - Ajouter support pour app shortcuts
   - _Requirements: 1.6_
 
-- [ ] 5.6 Configurer caching et CDN
+- [x] 5.6 Configurer caching et CDN
   - Configurer cache headers pour images et assets
   - Ajouter Vercel Analytics
   - Configurer ISR (Incremental Static Regeneration) pour pages
   - Ajouter compression gzip/brotli
   - _Requirements: 1.6_
 
-- [ ] 5.7 Implémenter dark mode persistant
+- [x] 5.7 Implémenter dark mode persistant
   - Ajouter localStorage pour préférence dark mode
   - Implémenter système de themes avec CSS variables
   - Ajouter support pour prefers-color-scheme
@@ -347,14 +347,14 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
 
 ## Phase 6: SEO & Contenu (6 tasks)
 
-- [ ] 6.1 Créer sitemap.xml et robots.txt
+- [x] 6.1 Créer sitemap.xml et robots.txt
   - Générer sitemap.xml dynamique avec toutes les pages
   - Ajouter priorités et changefreq
   - Créer robots.txt avec règles appropriées
   - Tester avec Google Search Console
   - _Requirements: 2.1, 2.2_
 
-- [ ] 6.2 Ajouter structured data (JSON-LD)
+- [x] 6.2 Ajouter structured data (JSON-LD)
   - Ajouter Organization schema
   - Ajouter Product schema pour chaque module
   - Ajouter FAQ schema pour FAQs
@@ -363,7 +363,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Valider avec Schema.org validator
   - _Requirements: 2.1, 2.2_
 
-- [ ] 6.3 Optimiser metadata par page
+- [x] 6.3 Optimiser metadata par page
   - Vérifier title (50-60 chars) sur toutes les pages
   - Vérifier description (150-160 chars) sur toutes les pages
   - Ajouter keywords pertinents (3-5 par page)
@@ -371,14 +371,14 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Ajouter canonical URLs
   - _Requirements: 2.1, 2.2_
 
-- [ ] 6.4 Créer articles de blog (5-10 articles)
+- [x] 6.4 Créer articles de blog (5-10 articles)
   - Créer 5-10 articles markdown avec contenu SEO
   - Catégories: RH (3), Productivité (2), Tendances (2), Guides (2-3)
   - Ajouter images, alt text, internal links
   - Optimiser pour mots-clés prioritaires
   - _Requirements: 2.1_
 
-- [ ] 6.5 Créer guides téléchargeables
+- [x] 6.5 Créer guides téléchargeables
   - Créer "Guide complet RH pour startup" (PDF)
   - Créer "Checklist paie 2024" (PDF)
   - Créer "Modèle planning employés" (Excel)
@@ -386,7 +386,7 @@ Plan d'implémentation complet pour la restructuration de la vitrine de conversi
   - Configurer email capture
   - _Requirements: 2.1_
 
-- [ ] 6.6 Configurer redirects et canonical URLs
+- [x] 6.6 Configurer redirects et canonical URLs
   - Ajouter redirects pour anciennes URLs (si applicable)
   - Configurer canonical URLs pour éviter duplicate content
   - Ajouter hreflang pour multilingue (si applicable)
