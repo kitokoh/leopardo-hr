@@ -3,7 +3,7 @@ import 'package:leopardo_rh/models/feature.dart';
 import 'package:leopardo_rh/models/feature_manifest.dart';
 import 'package:leopardo_rh/models/form_schema.dart';
 import 'package:leopardo_rh/models/list_schema.dart';
-import 'package:leopardo_rh/models/detail_schema.dart';
+
 
 void main() {
   group('Sync Models Tests', () {
