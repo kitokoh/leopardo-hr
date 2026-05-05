@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-04
+
+### Scout - Tests de régression Salary Advance
+
+- Tests : ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et les règles RBAC (Principal/RH vs Employé) sur les demandes d'avances sur salaire.
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
