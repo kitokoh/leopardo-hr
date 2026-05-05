@@ -21,12 +21,12 @@ export function getCopy(locale: AppLocale) {
 
 export function getPreferredLocale(): AppLocale {
   if (typeof window === 'undefined') return 'fr';
-  
+
   const stored = localStorage.getItem('preferred-locale');
   if (stored && (stored === 'fr' || stored === 'en')) {
     return stored as AppLocale;
   }
-  
+
   const browserLang = navigator.language.split('-')[0];
   return browserLang === 'en' ? 'en' : 'fr';
 }

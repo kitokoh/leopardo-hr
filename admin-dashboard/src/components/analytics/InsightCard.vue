@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     :class="[
       'rounded-lg border-l-4 p-4',
       borderColor,
@@ -8,12 +8,12 @@
   >
     <div class="flex items-start">
       <div class="flex-shrink-0">
-        <component 
-          :is="insightIcon" 
+        <component
+          :is="insightIcon"
           :class="['h-5 w-5', iconColor]"
         />
       </div>
-      
+
       <div class="ml-3 flex-1">
         <div class="flex items-center justify-between">
           <h4 :class="['text-sm font-medium', titleColor]">
@@ -21,7 +21,7 @@
           </h4>
           <div class="flex items-center space-x-2">
             <!-- Impact badge -->
-            <span 
+            <span
               :class="[
                 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
                 impactBadgeColor
@@ -29,13 +29,13 @@
             >
               {{ impactLabel }}
             </span>
-            
+
             <!-- Confidence score -->
             <div class="flex items-center text-xs text-gray-500">
               <span class="mr-1">Confiance:</span>
               <div class="flex items-center">
                 <div class="w-8 bg-gray-200 rounded-full h-1 mr-1">
-                  <div 
+                  <div
                     :class="[
                       'h-1 rounded-full',
                       confidenceColor
@@ -48,11 +48,11 @@
             </div>
           </div>
         </div>
-        
+
         <p :class="['mt-1 text-sm', textColor]">
           {{ insight.description }}
         </p>
-        
+
         <!-- Action button -->
         <div class="mt-3 flex items-center justify-between">
           <button
@@ -65,7 +65,7 @@
             {{ insight.action }}
             <ArrowRightIcon class="ml-1 h-3 w-3" />
           </button>
-          
+
           <!-- Additional actions -->
           <div class="flex items-center space-x-2">
             <button
@@ -82,7 +82,7 @@
             </button>
           </div>
         </div>
-        
+
         <!-- Metadata -->
         <div class="mt-2 flex items-center text-xs text-gray-400 space-x-4">
           <span>Généré par IA</span>

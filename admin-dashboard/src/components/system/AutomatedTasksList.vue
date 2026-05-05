@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-3">
-    <div 
+    <div
       v-for="task in tasks"
       :key="task.id"
       class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
@@ -24,10 +24,10 @@
           </div>
         </div>
       </div>
-      
+
       <div class="flex items-center space-x-3 ml-4">
         <!-- Status badge -->
-        <span 
+        <span
           :class="[
             'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
             task.status === 'success' ? 'bg-green-100 text-green-800' :
@@ -37,7 +37,7 @@
         >
           {{ getStatusLabel(task.status) }}
         </span>
-        
+
         <!-- Actions -->
         <button
           @click="$emit('edit', task)"
@@ -55,7 +55,7 @@
         </button>
       </div>
     </div>
-    
+
     <!-- Empty state -->
     <div v-if="tasks.length === 0" class="text-center py-6">
       <CogIcon class="mx-auto h-8 w-8 text-gray-400" />

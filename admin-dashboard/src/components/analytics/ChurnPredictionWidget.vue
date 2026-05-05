@@ -40,7 +40,7 @@
 
     <!-- Risk Level -->
     <div class="text-center">
-      <span 
+      <span
         :class="[
           'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium',
           riskBadgeColor
@@ -55,12 +55,12 @@
     <div>
       <h4 class="text-sm font-medium text-gray-900 mb-2">Facteurs de risque</h4>
       <div class="space-y-2">
-        <div 
+        <div
           v-for="(factor, index) in data.factors"
           :key="index"
           class="flex items-center text-sm"
         >
-          <div 
+          <div
             :class="[
               'w-2 h-2 rounded-full mr-3',
               getFactorColor(index)

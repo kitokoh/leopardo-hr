@@ -3,14 +3,14 @@
     <div class="p-5">
       <div class="flex items-center">
         <div class="flex-shrink-0">
-          <div 
+          <div
             :class="[
               'flex items-center justify-center h-8 w-8 rounded-md',
               statusColor.bg
             ]"
           >
-            <component 
-              :is="iconComponent" 
+            <component
+              :is="iconComponent"
               :class="['h-5 w-5', statusColor.icon]"
             />
           </div>
@@ -22,7 +22,7 @@
             </dt>
             <dd class="flex items-center">
               <div class="flex items-center">
-                <div 
+                <div
                   :class="[
                     'h-2 w-2 rounded-full mr-2',
                     statusIndicatorColor
@@ -39,7 +39,7 @@
           </dl>
         </div>
       </div>
-      
+
       <!-- Status details -->
       <div v-if="showDetails" class="mt-4 pt-4 border-t border-gray-200">
         <div class="text-xs text-gray-500">
@@ -50,9 +50,9 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Pulse animation for active status -->
-    <div 
+    <div
       v-if="status === 'healthy'"
       class="absolute top-2 right-2"
     >
@@ -175,10 +175,10 @@ const statusLabel = computed(() => {
 // Methods
 function formatTime(date) {
   if (!date) return 'Jamais'
-  
+
   const now = new Date()
   const diff = now - date
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`

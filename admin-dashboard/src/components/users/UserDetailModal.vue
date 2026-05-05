@@ -2,7 +2,7 @@
   <div class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div 
+      <div
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
         @click="$emit('close')"
       ></div>
@@ -14,8 +14,8 @@
           <div class="border-b border-gray-200 px-6 py-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-4">
-                <img 
-                  :src="user?.avatar" 
+                <img
+                  :src="user?.avatar"
                   :alt="user?.name"
                   class="h-16 w-16 rounded-full"
                 />
@@ -23,7 +23,7 @@
                   <h3 class="text-xl font-semibold text-gray-900">{{ user?.name }}</h3>
                   <p class="text-sm text-gray-500">{{ user?.email }}</p>
                   <div class="flex items-center space-x-2 mt-1">
-                    <span 
+                    <span
                       :class="[
                         'inline-flex rounded-full px-2 text-xs font-semibold leading-5',
                         getStatusColor(user?.status)
@@ -31,7 +31,7 @@
                     >
                       {{ getStatusLabel(user?.status) }}
                     </span>
-                    <span 
+                    <span
                       :class="[
                         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                         getRoleColor(user?.role)
@@ -42,7 +42,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="flex items-center space-x-3">
                 <button
                   @click="$emit('edit', user)"
@@ -81,7 +81,7 @@
                     <div>
                       <dt class="text-sm font-medium text-gray-500">Segment</dt>
                       <dd class="mt-1">
-                        <span 
+                        <span
                           :class="[
                             'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
                             getSegmentColor(user?.segment)
@@ -134,7 +134,7 @@
                   <h4 class="text-lg font-medium text-gray-900 mb-4">Activité récente</h4>
                   <div class="flow-root">
                     <ul role="list" class="-mb-8">
-                      <li 
+                      <li
                         v-for="(activity, activityIdx) in recentActivity"
                         :key="activity.id"
                       >
@@ -145,13 +145,13 @@
                           ></span>
                           <div class="relative flex space-x-3">
                             <div>
-                              <span 
+                              <span
                                 :class="[
                                   'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white',
                                   getActivityColor(activity.type)
                                 ]"
                               >
-                                <component 
+                                <component
                                   :is="getActivityIcon(activity.type)"
                                   class="h-4 w-4 text-white"
                                 />
@@ -214,13 +214,13 @@
                 <div class="bg-white border border-gray-200 rounded-lg p-4">
                   <h4 class="text-lg font-medium text-gray-900 mb-4">Permissions</h4>
                   <div class="space-y-2">
-                    <div 
+                    <div
                       v-for="permission in userPermissions"
                       :key="permission.name"
                       class="flex items-center justify-between"
                     >
                       <span class="text-sm text-gray-600">{{ permission.name }}</span>
-                      <span 
+                      <span
                         :class="[
                           'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
                           permission.granted ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -238,7 +238,7 @@
                   <div class="space-y-3">
                     <div class="flex items-center justify-between">
                       <span class="text-sm text-gray-600">2FA activé</span>
-                      <span 
+                      <span
                         :class="[
                           'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
                           userSecurity.twoFactorEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -446,16 +446,16 @@ function formatDate(date) {
 
 function formatLastLogin(date) {
   if (!date) return 'Jamais connecté'
-  
+
   const now = new Date()
   const loginDate = new Date(date)
   const diff = now - loginDate
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
   if (diff < 604800000) return `${Math.floor(diff / 86400000)}j`
-  
+
   return loginDate.toLocaleDateString('fr-FR')
 }
 
@@ -463,7 +463,7 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`

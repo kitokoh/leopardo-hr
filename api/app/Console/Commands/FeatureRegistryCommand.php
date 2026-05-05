@@ -19,7 +19,7 @@ class FeatureRegistryCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'features:registry 
+    protected $signature = 'features:registry
                             {action : Action à effectuer (sync, list, stats, clear-cache)}
                             {--api-version= : Version API spécifique}
                             {--mobile-version= : Version mobile pour la compatibilité}

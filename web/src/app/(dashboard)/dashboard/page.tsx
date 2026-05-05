@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   Users, Clock, Wallet, Shield, Sparkles, ArrowUp, ArrowDown,
   Zap, TrendingUp, Calendar, Bell, Search, Filter, MoreHorizontal,
   Download, Share2, Clock3, CheckCircle2, AlertCircle, BarChart3
@@ -14,13 +14,13 @@ const emptySubscribe = () => () => {};
 // Animated Counter Component
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     let start = 0;
     const end = value;
     const duration = 1500;
     const increment = end / (duration / 16);
-    
+
     const timer = setInterval(() => {
       start += increment;
       if (start >= end) {
@@ -30,10 +30,10 @@ const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string
         setCount(Math.floor(start));
       }
     }, 16);
-    
+
     return () => clearInterval(timer);
   }, [value]);
-  
+
   return <span className="tabular-nums">{count}{suffix}</span>;
 };
 
@@ -113,7 +113,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
@@ -122,12 +122,12 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Tableau de bord</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">Bienvenue ! Voici ce qui se passe aujourd'hui.</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Rechercher..."
               className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-64"
             />
@@ -180,21 +180,21 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={() => setActiveTab('today')}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === 'today' 
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                    activeTab === 'today'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   Aujourd'hui
                 </button>
-                <button 
+                <button
                   onClick={() => setActiveTab('week')}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === 'week' 
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                    activeTab === 'week'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-500 dark:text-slate-400">Assistant intelligent</p>
                 </div>
               </div>
-              
+
               <div className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-4 mb-4">
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                   "Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j'envoie un message de félicitations à l'équipe ?"

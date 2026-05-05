@@ -20,7 +20,7 @@ class DemoFeatureRegistryCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'features:demo 
+    protected $signature = 'features:demo
                             {--reset : Réinitialiser les données de démonstration}
                             {--mobile-version=1.0.0 : Version mobile pour les tests}';
 
