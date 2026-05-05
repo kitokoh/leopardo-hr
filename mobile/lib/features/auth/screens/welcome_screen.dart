@@ -65,8 +65,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
                 child: _WelcomeHero(compact: compact),
@@ -130,7 +136,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ],
                 ),
               ),
-            ],
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
