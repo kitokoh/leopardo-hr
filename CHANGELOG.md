@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-05
+
+### Janitor - Hygiène du dépôt
+
+- Dépôt : Normalisation des marqueurs historiques dans `docs/notes/archive/` pour assurer la conformité avec le protocole d'archivage (usage systématique du préfixe 📦).
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
@@ -63,54 +69,6 @@
 - API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
 
 ## [4.1.85] - 2026-05-02
-
-### Contractor - Alignement contrat API/mobile (attendance today)
-
-- API : Mise à jour de `AttendanceTodayResource` pour inclure l'ID du pointage (`id`) et les minutes de retard (`late_minutes`), alignant ainsi le payload `/api/v1/attendance/today` et `/api/v1/me/daily-summary` sur les attentes des modèles mobiles.
-- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces champs dans les payloads de présence journalière.
-
-## [4.1.84] - 2026-05-02
-
-### Contractor - Alignement contrat API/mobile (employee & attendance)
-
-- Mobile : Mise à jour du modèle `Employee` pour inclure et parser `photo_url` et `hire_date`.
-- Mobile : Mise à jour du modèle `AttendanceLog` pour inclure et parser `late_minutes`.
-- Mobile : Correction de `AttendanceRepository.decodeTodayResponse` pour mapper correctement `overtime_hours` et `late_minutes` dans l'objet `AttendanceLog`.
-- Tests : Renforcement de `widget_test.dart` pour verrouiller le parsing des nouveaux champs de contrat.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
-
-### Janitor - Hygiène du dépôt
-
-- Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
-- Dépôt : Suppression du répertoire `.kiro/` contenant des spécifications d'implémentation obsolètes déjà fusionnées.
-- Dépôt : Archivage des notes historiques (`CONTINUE_v2.md`, `remarquesimportantaverifier.md`) et de l'artefact bot `EXPLORE.md` vers `docs/notes/archive/`.
-
-### DocKeeper - Alignement documentation et maintenance
-
-- Dépôt : Nettoyage du `README.md` racine pour supprimer les liens morts vers les documents archivés (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`) et consolidation des points d'entrée.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.83` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
-
-### Scout - Tests de régression MVP
-
-- Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation inter-tenant des modèles de kiosque, d'enrôlement biométrique et d'invitation.
-### Contractor - Alignement contrat API/mobile (employee)
-
-- API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (alias de `photo_path`) et `hire_date` (alias de `contract_start` formaté en Y-m-d) pour la compatibilité avec les modèles mobiles.
-- API : Mise à jour de `EmployeeController@index` pour inclure `matricule`, `company_id`, `photo_path` et `contract_start` dans la sélection, garantissant ainsi que le `EmployeeResource` est complet.
-- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces nouveaux champs dans les payloads `/auth/me` et `/employees`.
-### API - Correctif demarrage Render
-
-- API : correction du flux de startup dans `api/docker-entrypoint.sh` pour que le cas normal `RESET_TEST_DB_ONCE` deja traite ne fasse plus quitter le conteneur avec `set -e`.
-- API : ajout d'un `api/Caddyfile` de production et mise a jour de `api/Dockerfile.prod` pour embarquer une configuration FrankenPHP/Caddy explicite et compatible Render.
-
-### API - Stabilisation seed demo / deploiement
-
-- API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
-
-### Sentinel - Renforcement de la sécurité multi-tenant
-
-- API : Élimination des risques d'injection SQL dans les commandes `SET search_path` par l'application systématique de `Company::getSafeSearchPath()` sur tous les points d'entrée critiques (`StoreEmployeeRequest`, `UpdateEmployeeRequest`, `BiometricAdminController`, `KioskController`).
-
 ## [4.1.82] - 2026-04-29
 
 ### Janitor - Hygiène du dépôt et sécurité
