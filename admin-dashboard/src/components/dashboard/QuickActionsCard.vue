@@ -2,7 +2,7 @@
   <div class="bg-white overflow-hidden shadow rounded-lg">
     <div class="p-6">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Actions Rapides</h3>
-      
+
       <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <!-- Create User -->
         <button
@@ -28,11 +28,11 @@
           :disabled="isBackupRunning"
           class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <CloudArrowUpIcon 
+          <CloudArrowUpIcon
             :class="[
               'h-8 w-8 text-purple-500 mb-2',
               isBackupRunning ? 'animate-pulse' : ''
-            ]" 
+            ]"
           />
           <span class="text-sm font-medium text-gray-900">
             {{ isBackupRunning ? 'Sauvegarde...' : 'Sauvegarder' }}
@@ -89,13 +89,13 @@
       <div class="mt-6 pt-4 border-t border-gray-200">
         <h4 class="text-sm font-medium text-gray-900 mb-3">Actions Récentes</h4>
         <div class="space-y-2">
-          <div 
+          <div
             v-for="action in recentActions"
             :key="action.id"
             class="flex items-center justify-between text-sm"
           >
             <div class="flex items-center">
-              <div 
+              <div
                 :class="[
                   'h-2 w-2 rounded-full mr-3',
                   action.status === 'success' ? 'bg-green-400' :
@@ -232,7 +232,7 @@ function handleAction(actionKey) {
 
 async function executeAction(actionKey) {
   showModal.value = false
-  
+
   try {
     switch (actionKey) {
       case 'backup':
@@ -258,13 +258,13 @@ async function executeAction(actionKey) {
 
 async function performBackup() {
   isBackupRunning.value = true
-  
+
   // Simulate backup process
   await new Promise(resolve => setTimeout(resolve, 3000))
-  
+
   isBackupRunning.value = false
   toast.success('Sauvegarde créée avec succès')
-  
+
   // Add to recent actions
   recentActions.unshift({
     id: Date.now(),
@@ -277,9 +277,9 @@ async function performBackup() {
 async function sendNotification() {
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   toast.success('Notification envoyée à tous les utilisateurs')
-  
+
   recentActions.unshift({
     id: Date.now(),
     description: 'Notification globale envoyée',
@@ -291,7 +291,7 @@ async function sendNotification() {
 async function exportData() {
   // Simulate export
   await new Promise(resolve => setTimeout(resolve, 2000))
-  
+
   // Create and download a mock CSV file
   const csvContent = "data:text/csv;charset=utf-8,Name,Email,Company\nJohn Doe,john@example.com,Acme Corp"
   const encodedUri = encodeURI(csvContent)
@@ -301,9 +301,9 @@ async function exportData() {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  
+
   toast.success('Export terminé')
-  
+
   recentActions.unshift({
     id: Date.now(),
     description: 'Export des données terminé',
@@ -315,9 +315,9 @@ async function exportData() {
 async function toggleMaintenance() {
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   toast.warning('Mode maintenance activé')
-  
+
   recentActions.unshift({
     id: Date.now(),
     description: 'Mode maintenance activé',
@@ -330,7 +330,7 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`

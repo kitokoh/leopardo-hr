@@ -1,20 +1,20 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Sidebar -->
-    <Sidebar 
-      :is-open="sidebarOpen" 
+    <Sidebar
+      :is-open="sidebarOpen"
       @close="sidebarOpen = false"
       class="fixed inset-y-0 left-0 z-50 lg:static lg:inset-0"
     />
-    
+
     <!-- Main content -->
     <div class="lg:pl-64">
       <!-- Header -->
-      <Header 
+      <Header
         @toggle-sidebar="sidebarOpen = !sidebarOpen"
         class="sticky top-0 z-40"
       />
-      
+
       <!-- Page content -->
       <main class="py-6">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -27,7 +27,7 @@
               <ol class="flex items-center space-x-2 text-sm text-gray-500">
                 <li v-for="(crumb, index) in breadcrumbs" :key="crumb.name">
                   <div class="flex items-center">
-                    <router-link 
+                    <router-link
                       v-if="index < breadcrumbs.length - 1"
                       :to="crumb.path"
                       class="hover:text-gray-700"
@@ -37,7 +37,7 @@
                     <span v-else class="font-medium text-gray-900">
                       {{ crumb.title }}
                     </span>
-                    <ChevronRightIcon 
+                    <ChevronRightIcon
                       v-if="index < breadcrumbs.length - 1"
                       class="ml-2 h-4 w-4 text-gray-400"
                     />
@@ -46,16 +46,16 @@
               </ol>
             </nav>
           </div>
-          
+
           <!-- Router view -->
           <router-view />
         </div>
       </main>
     </div>
-    
+
     <!-- Notifications -->
     <NotificationPanel />
-    
+
     <!-- System alerts overlay -->
     <SystemAlertsOverlay />
   </div>
@@ -83,7 +83,7 @@ const sidebarOpen = ref(false)
 // Breadcrumbs computation
 const breadcrumbs = computed(() => {
   const crumbs = [{ name: 'dashboard', title: 'Tableau de bord', path: '/' }]
-  
+
   if (route.meta.parent) {
     // Find parent route
     const parentRoute = routes.find(r => r.name === route.meta.parent)
@@ -95,7 +95,7 @@ const breadcrumbs = computed(() => {
       })
     }
   }
-  
+
   if (route.name !== 'dashboard') {
     crumbs.push({
       name: route.name,
@@ -103,7 +103,7 @@ const breadcrumbs = computed(() => {
       path: route.path
     })
   }
-  
+
   return crumbs
 })
 
@@ -111,10 +111,10 @@ const breadcrumbs = computed(() => {
 onMounted(async () => {
   // Check authentication
   await authStore.checkAuth()
-  
+
   // Connect to real-time services
   realtimeStore.connect()
-  
+
   // Load initial dashboard data
   try {
     await dashboardStore.fetchDashboardData()

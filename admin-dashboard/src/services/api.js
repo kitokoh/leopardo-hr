@@ -19,7 +19,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
-    
+
     // Ajouter un timestamp pour éviter le cache
     if (config.method === 'get') {
       config.params = {
@@ -27,7 +27,7 @@ api.interceptors.request.use(
         _t: Date.now()
       }
     }
-    
+
     return config
   },
   (error) => {
@@ -43,24 +43,24 @@ api.interceptors.response.use(
   async (error) => {
     const toast = useToast()
     const originalRequest = error.config
-    
+
     if (error.response) {
       const { status, data } = error.response
-      
+
       switch (status) {
         case 401:
           // Token expiré ou invalide
           if (!originalRequest._retry) {
             originalRequest._retry = true
-            
+
             try {
               // Tenter de rafraîchir le token
               const refreshResponse = await api.post('/admin/auth/refresh')
               const { token } = refreshResponse.data
-              
+
               localStorage.setItem('admin_token', token)
               api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-              
+
               // Relancer la requête originale
               return api(originalRequest)
             } catch (refreshError) {
@@ -71,15 +71,15 @@ api.interceptors.response.use(
             }
           }
           break
-          
+
         case 403:
           toast.error('Accès refusé. Permissions insuffisantes.')
           break
-          
+
         case 404:
           toast.error('Ressource non trouvée.')
           break
-          
+
         case 422:
           // Erreurs de validation
           if (data.errors) {
@@ -90,15 +90,15 @@ api.interceptors.response.use(
             toast.error(data.message || 'Données invalides.')
           }
           break
-          
+
         case 429:
           toast.error('Trop de requêtes. Veuillez patienter.')
           break
-          
+
         case 500:
           toast.error('Erreur serveur. Veuillez réessayer plus tard.')
           break
-          
+
         default:
           toast.error(data.message || 'Une erreur est survenue.')
       }
@@ -109,7 +109,7 @@ api.interceptors.response.use(
       // Autre erreur
       toast.error('Une erreur inattendue est survenue.')
     }
-    
+
     return Promise.reject(error)
   }
 )

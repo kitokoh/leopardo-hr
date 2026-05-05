@@ -34,19 +34,19 @@ graph TB
         MES[Mobile Experience Service]
         API[API Endpoints]
     end
-    
+
     subgraph "Mobile Flutter App"
         SE[Synchronization Engine]
         LC[Local Cache]
         UI[Dynamic UI Generator]
         PM[Permission Manager]
     end
-    
+
     subgraph "External Services"
         MON[Monitoring Service]
         LOG[Logging System]
     end
-    
+
     FD --> FR
     FR --> MG
     MG --> CV
@@ -55,14 +55,14 @@ graph TB
     SE --> LC
     SE --> UI
     SE --> PM
-    
+
     FR --> MON
     SE --> LOG
-    
+
     classDef backend fill:#e1f5fe
     classDef mobile fill:#f3e5f5
     classDef external fill:#fff3e0
-    
+
     class FR,FD,MG,CV,MES,API backend
     class SE,LC,UI,PM mobile
     class MON,LOG external
@@ -129,23 +129,23 @@ class FeatureDetector implements FeatureDetectorInterface
         private ReflectionService $reflection,
         private AnnotationReader $annotations
     ) {}
-    
+
     public function detectNewFeatures(): Collection
     {
         $routes = $this->scanRoutes();
         $features = collect();
-        
+
         foreach ($routes as $route) {
             $metadata = $this->extractMetadata(
                 $route->getControllerClass(),
                 $route->getActionMethod()
             );
-            
+
             if ($this->isNewFeature($metadata)) {
                 $features->push(new Feature($metadata));
             }
         }
-        
+
         return $features;
     }
 }
@@ -169,7 +169,7 @@ class ManifestGenerator implements ManifestGeneratorInterface
     public function generate(?string $mobileVersion = null): array
     {
         $features = $this->registry->getFeatures($mobileVersion);
-        
+
         return [
             'version' => $this->getApiVersion(),
             'generated_at' => now()->toISOString(),
@@ -198,22 +198,22 @@ class SynchronizationEngineImpl implements SynchronizationEngine {
   final LocalCache _cache;
   final CompatibilityValidator _validator;
   final PermissionManager _permissions;
-  
+
   @override
   Future<SyncResult> synchronize() async {
     try {
       final manifest = await fetchManifest();
-      
+
       if (!await validateCompatibility(manifest)) {
         return SyncResult.incompatible();
       }
-      
+
       final newFeatures = await _identifyNewFeatures(manifest);
       final authorizedFeatures = await _permissions.filterAuthorized(newFeatures);
-      
+
       await applyFeatures(authorizedFeatures);
       await _cache.updateManifest(manifest);
-      
+
       return SyncResult.success(authorizedFeatures.length);
     } catch (e) {
       return SyncResult.error(e);
@@ -237,7 +237,7 @@ abstract class DynamicUIGenerator {
 class DynamicUIGeneratorImpl implements DynamicUIGenerator {
   final ThemeData _theme;
   final LocalizationService _l10n;
-  
+
   @override
   Widget generateScreen(Feature feature) {
     switch (feature.type) {
@@ -251,7 +251,7 @@ class DynamicUIGeneratorImpl implements DynamicUIGenerator {
         return _generateGenericScreen(feature);
     }
   }
-  
+
   Widget _generateListScreen(Feature feature) {
     return Scaffold(
       appBar: AppBar(title: Text(feature.title)),
@@ -292,14 +292,14 @@ class CompatibilityValidator implements CompatibilityValidatorInterface
 // Mobile
 class CompatibilityValidator {
   static const String currentMobileVersion = '1.2.0';
-  
+
   bool isCompatible(Feature feature) {
     final minVersion = feature.minimumMobileVersion;
     final maxVersion = feature.maximumMobileVersion;
-    
+
     return _versionInRange(currentMobileVersion, minVersion, maxVersion);
   }
-  
+
   bool _versionInRange(String current, String min, String? max) {
     // Implémentation de comparaison sémantique des versions
     return Version.parse(current) >= Version.parse(min) &&
@@ -330,7 +330,7 @@ class Feature extends Model
         'status',
         'metadata'
     ];
-    
+
     protected $casts = [
         'http_methods' => 'array',
         'parameters' => 'array',
@@ -338,7 +338,7 @@ class Feature extends Model
         'permissions' => 'array',
         'metadata' => 'array',
     ];
-    
+
     public function toManifestArray(): array
     {
         return [
@@ -376,7 +376,7 @@ class Feature {
   final FeatureType type;
   final FormSchema? formSchema;
   final ListSchema? listSchema;
-  
+
   const Feature({
     required this.key,
     required this.title,
@@ -392,7 +392,7 @@ class Feature {
     this.formSchema,
     this.listSchema,
   });
-  
+
   factory Feature.fromJson(Map<String, dynamic> json) {
     return Feature(
       key: json['key'],
@@ -406,11 +406,11 @@ class Feature {
       minimumMobileVersion: json['mobile_version_min'],
       maximumMobileVersion: json['mobile_version_max'],
       type: FeatureType.fromString(json['ui_type']),
-      formSchema: json['form_schema'] != null 
-          ? FormSchema.fromJson(json['form_schema']) 
+      formSchema: json['form_schema'] != null
+          ? FormSchema.fromJson(json['form_schema'])
           : null,
-      listSchema: json['list_schema'] != null 
-          ? ListSchema.fromJson(json['list_schema']) 
+      listSchema: json['list_schema'] != null
+          ? ListSchema.fromJson(json['list_schema'])
           : null,
     );
   }
@@ -422,7 +422,7 @@ enum FeatureType {
   detail,
   dashboard,
   generic;
-  
+
   static FeatureType fromString(String type) {
     return FeatureType.values.firstWhere(
       (e) => e.name == type,
@@ -499,12 +499,12 @@ class FeatureSynchronizationException extends Exception
     {
         return new self("Feature detection failed: {$reason}");
     }
-    
+
     public static function manifestGenerationFailed(string $reason): self
     {
         return new self("Manifest generation failed: {$reason}");
     }
-    
+
     public static function incompatibleVersion(string $feature, string $version): self
     {
         return new self("Feature {$feature} incompatible with mobile version {$version}");
@@ -537,17 +537,17 @@ class SyncException implements Exception {
   final String message;
   final SyncErrorType type;
   final dynamic originalError;
-  
+
   const SyncException(this.message, this.type, [this.originalError]);
-  
+
   static SyncException networkError(dynamic error) {
     return SyncException('Network error during sync', SyncErrorType.network, error);
   }
-  
+
   static SyncException incompatibleVersion(String version) {
     return SyncException('Incompatible version: $version', SyncErrorType.compatibility);
   }
-  
+
   static SyncException manifestCorrupted() {
     return SyncException('Manifest signature invalid', SyncErrorType.security);
   }

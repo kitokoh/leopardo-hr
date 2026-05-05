@@ -1,7 +1,7 @@
 <template>
   <div class="flow-root">
     <ul role="list" class="-mb-8">
-      <li 
+      <li
         v-for="(activity, activityIdx) in activities"
         :key="activity.id"
       >
@@ -12,13 +12,13 @@
           ></span>
           <div class="relative flex space-x-3">
             <div>
-              <span 
+              <span
                 :class="[
                   'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white',
                   getActivityColor(activity.type)
                 ]"
               >
-                <component 
+                <component
                   :is="getActivityIcon(activity.type)"
                   class="h-4 w-4 text-white"
                 />
@@ -28,14 +28,14 @@
               <div>
                 <p class="text-sm text-gray-500">
                   {{ activity.description }}
-                  <a 
+                  <a
                     v-if="activity.user"
                     href="#"
                     class="font-medium text-gray-900 hover:text-gray-700"
                   >
                     {{ activity.user.name }}
                   </a>
-                  <a 
+                  <a
                     v-if="activity.company"
                     href="#"
                     class="font-medium text-gray-900 hover:text-gray-700"
@@ -44,7 +44,7 @@
                   </a>
                 </p>
                 <div v-if="activity.metadata" class="mt-1">
-                  <div 
+                  <div
                     v-for="(value, key) in activity.metadata"
                     :key="key"
                     class="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800 mr-2"
@@ -63,7 +63,7 @@
         </div>
       </li>
     </ul>
-    
+
     <!-- Empty state -->
     <div v-if="activities.length === 0" class="text-center py-12">
       <ClockIcon class="mx-auto h-12 w-12 text-gray-400" />
@@ -72,7 +72,7 @@
         Les activités récentes apparaîtront ici en temps réel.
       </p>
     </div>
-    
+
     <!-- Load more -->
     <div v-if="activities.length > 0" class="mt-6 text-center">
       <button
@@ -148,7 +148,7 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
@@ -158,11 +158,11 @@ function formatTime(timestamp) {
 
 async function loadMore() {
   isLoading.value = true
-  
+
   try {
     // Simulate loading more activities
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // In a real app, this would fetch more data from the API
     console.log('Loading more activities...')
   } catch (error) {

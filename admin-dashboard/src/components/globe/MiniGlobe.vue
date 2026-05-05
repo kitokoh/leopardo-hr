@@ -1,12 +1,12 @@
 <template>
   <div class="relative h-full w-full">
-    <div 
+    <div
       ref="globeContainer"
       class="h-full w-full"
     ></div>
-    
+
     <!-- Loading overlay -->
-    <div 
+    <div
       v-if="isLoading"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75"
     >
@@ -15,21 +15,21 @@
         <p class="mt-2 text-sm text-gray-500">Chargement du globe...</p>
       </div>
     </div>
-    
+
     <!-- Controls -->
     <div class="absolute top-4 right-4 space-y-2">
       <button
         @click="toggleAutoRotate"
         :class="[
           'p-2 rounded-md shadow-sm text-sm font-medium',
-          autoRotate 
-            ? 'bg-indigo-600 text-white hover:bg-indigo-700' 
+          autoRotate
+            ? 'bg-indigo-600 text-white hover:bg-indigo-700'
             : 'bg-white text-gray-700 hover:bg-gray-50'
         ]"
       >
         {{ autoRotate ? 'Arrêter' : 'Rotation' }}
       </button>
-      
+
       <button
         @click="resetView"
         class="block p-2 rounded-md shadow-sm text-sm font-medium bg-white text-gray-700 hover:bg-gray-50"
@@ -37,7 +37,7 @@
         Reset
       </button>
     </div>
-    
+
     <!-- Stats overlay -->
     <div class="absolute bottom-4 left-4 bg-white bg-opacity-90 rounded-lg p-3 shadow-sm">
       <div class="text-xs text-gray-500 mb-1">Activité en temps réel</div>
@@ -73,14 +73,14 @@ const realtimeStore = useRealtimeStore()
 onMounted(async () => {
   await nextTick()
   await initGlobe()
-  
+
   // Listen for new globe points
   realtimeStore.$subscribe((mutation, state) => {
     if (mutation.events?.some(event => event.key === 'globePoints')) {
       updateGlobePoints(state.globePoints)
     }
   })
-  
+
   // Initial points
   updateGlobePoints(realtimeStore.globePoints)
 })
@@ -96,15 +96,15 @@ async function initGlobe() {
   try {
     // Dynamically import Globe.gl to avoid SSR issues
     const Globe = (await import('globe.gl')).default
-    
+
     if (!globeContainer.value) return
-    
+
     globe.value = Globe()(globeContainer.value)
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
       .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
       .pointOfView({ altitude: 2.5 })
       .enablePointerInteraction(true)
-    
+
     // Configure points
     globe.value
       .pointsData([])
@@ -118,13 +118,13 @@ async function initGlobe() {
           <div class="text-xs text-gray-400">${new Date(d.timestamp).toLocaleString('fr-FR')}</div>
         </div>
       `)
-    
+
     // Auto-rotate
     if (autoRotate.value) {
       globe.value.controls().autoRotate = true
       globe.value.controls().autoRotateSpeed = 0.5
     }
-    
+
     isLoading.value = false
   } catch (error) {
     console.error('Failed to initialize globe:', error)
@@ -134,7 +134,7 @@ async function initGlobe() {
 
 function updateGlobePoints(points) {
   if (!globe.value || !points) return
-  
+
   // Process points for globe
   const globePoints = points.map(point => ({
     lat: point.latitude,
@@ -144,18 +144,18 @@ function updateGlobePoints(points) {
     users: point.users || 1,
     timestamp: point.timestamp || new Date()
   }))
-  
+
   // Update active points and countries
   activePoints.value = globePoints
   countries.value = new Set(globePoints.map(p => p.country))
-  
+
   // Update globe
   globe.value.pointsData(globePoints)
 }
 
 function toggleAutoRotate() {
   autoRotate.value = !autoRotate.value
-  
+
   if (globe.value) {
     globe.value.controls().autoRotate = autoRotate.value
     if (autoRotate.value) {
@@ -182,7 +182,7 @@ function generateMockPoints() {
     { city: 'Mumbai', country: 'India', lat: 19.0760, lng: 72.8777 },
     { city: 'Cairo', country: 'Egypt', lat: 30.0444, lng: 31.2357 }
   ]
-  
+
   const points = []
   for (let i = 0; i < 15; i++) {
     const city = cities[Math.floor(Math.random() * cities.length)]
@@ -194,7 +194,7 @@ function generateMockPoints() {
       timestamp: new Date(Date.now() - Math.random() * 3600000) // Last hour
     })
   }
-  
+
   return points
 }
 
