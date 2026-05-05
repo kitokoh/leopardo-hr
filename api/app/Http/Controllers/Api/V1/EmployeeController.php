@@ -24,7 +24,6 @@ class EmployeeController extends Controller
 
         $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
         $paginator = Employee::query()
-            ->with(['company:id,name,language,timezone,currency,features'])
             ->select([
                 'id',
                 'matricule',
@@ -37,8 +36,6 @@ class EmployeeController extends Controller
                 'status',
                 'photo_path',
                 'contract_start',
-                'preferred_language',
-                'extra_data',
             ])
             ->orderBy('id')
             ->paginate($perPage);
@@ -62,9 +59,7 @@ class EmployeeController extends Controller
 
     public function show(string $employeeId, Request $request): JsonResponse
     {
-        $employee = Employee::query()
-            ->with(['company:id,name,language,timezone,currency,features'])
-            ->findOrFail($employeeId);
+        $employee = Employee::query()->findOrFail($employeeId);
 
         $this->authorize('view', $employee);
 
