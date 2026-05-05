@@ -93,8 +93,8 @@
 <script setup>
 import { computed, onMounted, ref, nextTick } from 'vue'
 import {
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   ArrowRightIcon
 } from '@heroicons/vue/24/outline'
 
