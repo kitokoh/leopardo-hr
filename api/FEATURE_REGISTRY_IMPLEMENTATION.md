@@ -23,7 +23,7 @@ La tâche 3.1 a été **complètement implémentée** avec succès. Le système 
 
 #### 4. Tests Complets
 - **Tests unitaires** - `FeatureRegistryTest` (100% couverture des méthodes)
-- **Tests d'intégration** - `FeatureRegistryIntegrationTest` 
+- **Tests d'intégration** - `FeatureRegistryIntegrationTest`
 - **Tests API** - `FeatureManifestApiTest`
 
 #### 5. Documentation

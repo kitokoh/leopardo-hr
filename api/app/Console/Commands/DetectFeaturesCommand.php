@@ -13,7 +13,7 @@ class DetectFeaturesCommand extends Command
     /**
      * The name and signature of the console command.
      */
-    protected $signature = 'features:detect 
+    protected $signature = 'features:detect
                             {--dry-run : Afficher les fonctionnalités détectées sans les enregistrer}
                             {--details : Afficher des informations détaillées}';
 

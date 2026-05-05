@@ -1,7 +1,7 @@
 <template>
   <!-- Mobile sidebar overlay -->
-  <div 
-    v-if="isOpen" 
+  <div
+    v-if="isOpen"
     class="fixed inset-0 z-40 lg:hidden"
     @click="$emit('close')"
   >
@@ -9,7 +9,7 @@
   </div>
 
   <!-- Sidebar -->
-  <div 
+  <div
     :class="[
       'fixed inset-y-0 left-0 z-50 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
       isOpen ? 'translate-x-0' : '-translate-x-full'
@@ -50,7 +50,7 @@
             ]"
           />
           {{ item.title }}
-          
+
           <!-- Badge for notifications -->
           <span
             v-if="item.badge && item.badge > 0"
@@ -71,7 +71,7 @@
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-600">Statut</span>
               <div class="flex items-center">
-                <div 
+                <div
                   :class="[
                     'h-2 w-2 rounded-full mr-2',
                     healthStatus.color === 'green' ? 'bg-green-400' :
@@ -81,15 +81,15 @@
                 <span class="text-xs text-gray-500">{{ healthStatus.label }}</span>
               </div>
             </div>
-            
+
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-600">Utilisateurs en ligne</span>
               <span class="text-xs font-medium text-gray-900">{{ onlineUsersCount }}</span>
             </div>
-            
+
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-600">Alertes</span>
-              <span 
+              <span
                 :class="[
                   'text-xs font-medium',
                   criticalAlertsCount > 0 ? 'text-red-600' : 'text-gray-500'

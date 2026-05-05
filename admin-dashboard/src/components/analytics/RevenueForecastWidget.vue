@@ -15,7 +15,7 @@
         <span class="font-medium text-gray-900">{{ Math.round(data.confidence * 100) }}%</span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-2">
-        <div 
+        <div
           :class="[
             'h-2 rounded-full transition-all duration-1000',
             confidenceColor
@@ -27,8 +27,8 @@
 
     <!-- Trend Indicator -->
     <div class="flex items-center justify-center space-x-2">
-      <component 
-        :is="trendIcon" 
+      <component
+        :is="trendIcon"
         :class="['h-5 w-5', trendColor]"
       />
       <span :class="['text-sm font-medium', trendColor]">
@@ -165,47 +165,47 @@ function formatCurrency(amount) {
 
 function drawMiniChart() {
   if (!chartCanvas.value) return
-  
+
   const canvas = chartCanvas.value
   const ctx = canvas.getContext('2d')
   const { width, height } = canvas.getBoundingClientRect()
-  
+
   // Set canvas size
   canvas.width = width * window.devicePixelRatio
   canvas.height = height * window.devicePixelRatio
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
-  
+
   // Generate sample data for the last 6 months + forecast
   const data = []
   const baseRevenue = props.data.nextMonth * 0.8
-  
+
   for (let i = 6; i >= 0; i--) {
     const variation = (Math.random() - 0.5) * 0.2
     const value = baseRevenue * (1 + variation + (6 - i) * 0.05)
     data.push(value)
   }
-  
+
   // Add forecast point
   data.push(props.data.nextMonth)
-  
+
   // Draw chart
   const padding = 10
   const chartWidth = width - padding * 2
   const chartHeight = height - padding * 2
-  
+
   const minValue = Math.min(...data) * 0.95
   const maxValue = Math.max(...data) * 1.05
   const valueRange = maxValue - minValue
-  
+
   // Draw historical line
   ctx.beginPath()
   ctx.strokeStyle = '#3B82F6'
   ctx.lineWidth = 2
-  
+
   for (let i = 0; i < data.length - 1; i++) {
     const x = padding + (i / (data.length - 1)) * chartWidth
     const y = padding + chartHeight - ((data[i] - minValue) / valueRange) * chartHeight
-    
+
     if (i === 0) {
       ctx.moveTo(x, y)
     } else {
@@ -213,25 +213,25 @@ function drawMiniChart() {
     }
   }
   ctx.stroke()
-  
+
   // Draw forecast line (dashed)
   ctx.beginPath()
   ctx.setLineDash([5, 5])
   ctx.strokeStyle = '#10B981'
   ctx.lineWidth = 2
-  
+
   const lastHistoricalX = padding + ((data.length - 2) / (data.length - 1)) * chartWidth
   const lastHistoricalY = padding + chartHeight - ((data[data.length - 2] - minValue) / valueRange) * chartHeight
   const forecastX = padding + ((data.length - 1) / (data.length - 1)) * chartWidth
   const forecastY = padding + chartHeight - ((data[data.length - 1] - minValue) / valueRange) * chartHeight
-  
+
   ctx.moveTo(lastHistoricalX, lastHistoricalY)
   ctx.lineTo(forecastX, forecastY)
   ctx.stroke()
-  
+
   // Reset line dash
   ctx.setLineDash([])
-  
+
   // Draw forecast point
   ctx.beginPath()
   ctx.fillStyle = '#10B981'

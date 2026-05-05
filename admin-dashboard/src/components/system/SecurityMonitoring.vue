@@ -38,7 +38,7 @@
     <div class="border-t border-gray-200 pt-4">
       <h4 class="text-sm font-medium text-gray-900 mb-3">Alertes de sécurité</h4>
       <div class="space-y-2">
-        <div 
+        <div
           v-for="alert in alerts"
           :key="alert.id"
           :class="[
@@ -50,7 +50,7 @@
         >
           <div class="flex items-start justify-between">
             <div class="flex-1">
-              <p 
+              <p
                 :class="[
                   'text-sm font-medium',
                   alert.severity === 'high' ? 'text-red-800' :
@@ -62,7 +62,7 @@
               </p>
               <p class="text-xs text-gray-600 mt-1">{{ alert.details }}</p>
               <div class="flex items-center space-x-2 mt-2 text-xs">
-                <span 
+                <span
                   :class="[
                     'inline-flex items-center px-2 py-1 rounded-full font-medium',
                     alert.status === 'open' ? 'bg-red-100 text-red-800' :
@@ -75,7 +75,7 @@
                 <span class="text-gray-500">{{ formatTime(alert.timestamp) }}</span>
               </div>
             </div>
-            
+
             <div class="flex items-center space-x-2 ml-3">
               <button
                 @click="$emit('investigate', alert)"
@@ -92,7 +92,7 @@
             </div>
           </div>
         </div>
-        
+
         <div v-if="alerts.length === 0" class="text-center py-4">
           <ShieldCheckIcon class="mx-auto h-8 w-8 text-green-400" />
           <p class="mt-2 text-sm text-gray-500">Aucune alerte de sécurité</p>
@@ -174,7 +174,7 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`

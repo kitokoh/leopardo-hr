@@ -14,7 +14,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     supportTickets: 0,
     systemHealth: 'good'
   })
-  
+
   const recentActivities = ref([])
   const systemAlerts = ref([])
   const isLoading = ref(false)
@@ -104,12 +104,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
     systemAlerts,
     isLoading,
     lastUpdated,
-    
+
     // Getters
     formattedRevenue,
     healthStatus,
     criticalAlerts,
-    
+
     // Actions
     fetchDashboardData,
     refreshStats,
