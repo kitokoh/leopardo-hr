@@ -55,6 +55,14 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-05
+
+### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (SalaryAdvance)
+
+- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empêchant l'énumération d'identifiants inter-tenant.
+- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation des avances sur salaire et la validation des filtres.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.86] - 2026-05-03
 
 ### ⚡ Bolt - Performance et optimisation Employee
