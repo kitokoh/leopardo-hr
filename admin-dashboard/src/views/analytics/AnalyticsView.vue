@@ -198,8 +198,8 @@ import {
   DocumentArrowDownIcon,
   InformationCircleIcon,
   ArrowPathIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   CurrencyEuroIcon,
   UserPlusIcon
 } from '@heroicons/vue/24/outline'

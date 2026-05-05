@@ -75,8 +75,8 @@
 <script setup>
 import { computed } from 'vue'
 import {
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   ChartBarIcon,

@@ -275,7 +275,7 @@ import {
   KeyIcon,
   ChatBubbleLeftRightIcon,
   DocumentTextIcon,
-  LoginIcon,
+  ArrowRightOnRectangleIcon as LoginIcon,
   CogIcon,
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
