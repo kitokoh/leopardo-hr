@@ -45,7 +45,7 @@ class FeatureRegistry implements FeatureRegistryInterface
             DB::beginTransaction();
 
             // Vérifier si la fonctionnalité existe déjà
-            $existingFeature = Feature::where('key', $feature->key)->first();
+            $existingFeature = Feature::withoutGlobalScope('company')->where('key', $feature->key)->first();
 
             if ($existingFeature) {
                 // Mettre à jour la fonctionnalité existante
@@ -82,7 +82,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, $version);
 
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($version) {
-            $query = Feature::active();
+            $query = Feature::withoutGlobalScope('company')->active();
 
             if ($version) {
                 $query->forApiVersion($version);
@@ -107,7 +107,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'single', $key);
 
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($key) {
-            return Feature::where('key', $key)->first();
+            return Feature::withoutGlobalScope('company')->where('key', $key)->first();
         });
     }
 
@@ -119,7 +119,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         try {
             DB::beginTransaction();
 
-            $feature = Feature::where('key', $key)->firstOrFail();
+            $feature = Feature::withoutGlobalScope('company')->where('key', $key)->firstOrFail();
 
             // Fusionner les nouvelles métadonnées avec les existantes
             $updatedMetadata = array_merge($feature->metadata ?? [], $metadata);
@@ -162,7 +162,7 @@ class FeatureRegistry implements FeatureRegistryInterface
         try {
             DB::beginTransaction();
 
-            $deleted = Feature::where('key', $key)->delete();
+            $deleted = Feature::withoutGlobalScope('company')->where('key', $key)->delete();
 
             if ($deleted > 0) {
                 Log::info('Feature removed from registry', ['key' => $key]);
@@ -225,7 +225,8 @@ class FeatureRegistry implements FeatureRegistryInterface
         $cacheKey = $this->buildCacheKey(self::FEATURES_CACHE_KEY, 'compatible', $mobileVersion);
 
         return $this->cache->remember($cacheKey, self::CACHE_TTL, function () use ($mobileVersion) {
-            return Feature::active()
+            return Feature::withoutGlobalScope('company')
+                ->active()
                 ->compatibleWith($mobileVersion)
                 ->orderBy('title')
                 ->get();
@@ -355,20 +356,21 @@ class FeatureRegistry implements FeatureRegistryInterface
     public function getStatistics(): array
     {
         return $this->cache->remember(self::STATISTICS_CACHE_KEY, self::CACHE_TTL, function () {
-            $totalFeatures = Feature::count();
-            $activeFeatures = Feature::active()->count();
+            $query = Feature::withoutGlobalScope('company');
+            $totalFeatures = (clone $query)->count();
+            $activeFeatures = (clone $query)->active()->count();
 
-            $byApiVersion = Feature::select('api_version', DB::raw('count(*) as count'))
+            $byApiVersion = (clone $query)->select('api_version', DB::raw('count(*) as count'))
                 ->groupBy('api_version')
                 ->pluck('count', 'api_version')
                 ->toArray();
 
-            $byStatus = Feature::select('status', DB::raw('count(*) as count'))
+            $byStatus = (clone $query)->select('status', DB::raw('count(*) as count'))
                 ->groupBy('status')
                 ->pluck('count', 'status')
                 ->toArray();
 
-            $recentlyUpdated = Feature::where('updated_at', '>=', Carbon::now()->subDays(7))
+            $recentlyUpdated = (clone $query)->where('updated_at', '>=', Carbon::now()->subDays(7))
                 ->count();
 
             return [
@@ -405,7 +407,7 @@ class FeatureRegistry implements FeatureRegistryInterface
      */
     private function getMinimumMobileVersion(): string
     {
-        return (string) (Feature::min('mobile_version_min') ?? '1.0.0');
+        return (string) (Feature::withoutGlobalScope('company')->min('mobile_version_min') ?? '1.0.0');
     }
 
     /**

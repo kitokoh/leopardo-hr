@@ -276,7 +276,8 @@ class FeatureManifestController extends Controller
      */
     private function userIsAdmin($user): bool
     {
-        // Adapter selon votre système de rôles
-        return $user->role === 'admin' || $user->role === 'super_admin';
+        $role = $user->role ?? '';
+
+        return $role === 'manager' || in_array($role, ['admin', 'super_admin'], true);
     }
 }
