@@ -55,6 +55,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-04
+
+### 🎨 Palette - Accessibilité Historique mobile
+
+- Mobile : Amélioration de l'accessibilité de l'écran historique par l'ajout de labels `Semantics` unifiés sur les logs de présence, permettant une annonce vocale cohérente (Date, statut, horaires et heures travaillées) en une seule fois.
+- Mobile : Utilisation de `ExcludeSemantics` pour supprimer les annonces fragmentées et redondantes des éléments de liste.
+
 ## [4.1.86] - 2026-05-03
 
 ### ⚡ Bolt - Performance et optimisation Employee

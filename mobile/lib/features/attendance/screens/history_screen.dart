@@ -218,27 +218,63 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           break;
                       }
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: statusColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.circle,
-                            color: statusColor,
-                            size: 12,
+                      final day = log.date.day.toString().padLeft(2, '0');
+                      final month = log.date.month.toString().padLeft(2, '0');
+                      final statusText = switch (log.status) {
+                        'ontime' => 'à l\'heure',
+                        'late' => 'en retard',
+                        'absent' => 'absent',
+                        _ => log.status,
+                      };
+
+                      String timeInfo = '';
+                      if (log.checkIn != null) {
+                        final inH = log.checkIn!.hour.toString().padLeft(2, '0');
+                        final inM = log.checkIn!.minute.toString().padLeft(2, '0');
+                        if (log.checkOut != null) {
+                          final outH = log.checkOut!.hour.toString().padLeft(2, '0');
+                          final outM = log.checkOut!.minute.toString().padLeft(2, '0');
+                          timeInfo = 'de $inH:$inM à $outH:$outM';
+                        } else {
+                          timeInfo = 'de $inH:$inM, en cours';
+                        }
+                      } else {
+                        timeInfo = 'absence';
+                      }
+
+                      final hours = log.workedHours ?? 0;
+                      final hoursLabel =
+                          hours < 2 ? 'heure travaillée' : 'heures travaillées';
+
+                      final semanticsLabel =
+                          'Journée du $day/$month, statut $statusText, $timeInfo, $hours $hoursLabel';
+
+                      return Semantics(
+                        label: semanticsLabel,
+                        container: true,
+                        child: ExcludeSemantics(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: statusColor.withValues(alpha: 0.2),
+                              child: Icon(
+                                Icons.circle,
+                                color: statusColor,
+                                size: 12,
+                              ),
+                            ),
+                            title: Text('$day/$month'),
+                            subtitle: Text(
+                              log.checkIn != null
+                                  ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                  : 'Absence',
+                            ),
+                            trailing: Text(
+                              '${hours}h',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
-                        ),
-                        subtitle: Text(
-                          log.checkIn != null
-                              ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                  '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
-                              : 'Absence',
-                        ),
-                        trailing: Text(
-                          '${log.workedHours ?? 0}h',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       );
                     },
