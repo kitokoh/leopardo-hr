@@ -62,6 +62,10 @@
 - API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.
 - API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
 
+### DocKeeper - Alignement documentation
+
+- Ops : Mise à jour de `RUNBOOK_BETA_ENV_SETUP.md` (v1.1) pour refléter le passage au PaaS (Render + Neon) et supprimer les instructions VPS obsolètes.
+
 ## [4.1.85] - 2026-05-02
 
 ### Contractor - Alignement contrat API/mobile (attendance today)
