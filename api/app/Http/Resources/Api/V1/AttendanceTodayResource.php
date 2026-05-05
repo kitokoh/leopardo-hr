@@ -49,6 +49,7 @@ class AttendanceTodayResource extends JsonResource
             'overtime_hours' => (float) ($this->log?->overtime_hours ?? 0.00),
             'status' => $this->log?->status ?? 'absent',
             'late_minutes' => $this->log?->late_minutes,
+            'photo_url' => $employee->photo_path,
             'base_gain' => (float) $summary['base_gain'],
             'overtime_gain' => (float) $summary['overtime_gain'],
             'total_estimated' => (float) $summary['total_estimated'],

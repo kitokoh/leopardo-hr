@@ -24,11 +24,26 @@ class EvaluationController extends Controller
         $actor = $request->user();
 
         $request->validate([
-            'employee_id' => ['nullable', 'integer', 'min:1'],
-            'evaluator_id' => ['nullable', 'integer', 'min:1'],
+            'employee_id' => [
+                'nullable',
+                'integer',
+                'min:1',
+                \Illuminate\Validation\Rule::exists('employees', 'id')
+                    ->where('company_id', $actor->company_id),
+            ],
+            'evaluator_id' => [
+                'nullable',
+                'integer',
+                'min:1',
+                \Illuminate\Validation\Rule::exists('employees', 'id')
+                    ->where('company_id', $actor->company_id),
+            ],
             'period' => ['nullable', 'string', 'max:20'],
             'status' => ['nullable', 'in:draft,submitted,acknowledged'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ], [
+            'employee_id.exists' => 'Employé introuvable dans votre entreprise.',
+            'evaluator_id.exists' => 'Employé introuvable dans votre entreprise.',
         ]);
 
         $query = Evaluation::query()

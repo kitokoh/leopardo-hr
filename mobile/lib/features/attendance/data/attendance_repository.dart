@@ -136,12 +136,14 @@ class AttendanceRepository {
 
     return {
       'log': AttendanceLog(
-        id: (today['id'] ?? 0) as int,
-        employeeId: (today['employee_id'] ?? 0) as int,
+        id: int.tryParse(today['id']?.toString() ?? '') ?? 0,
+        employeeId: int.tryParse(today['employee_id']?.toString() ?? '') ?? 0,
+        employeeName: today['name']?.toString(),
+        employeePhotoUrl: today['photo_url']?.toString(),
         date: DateTime(now.year, now.month, now.day),
-        checkIn: _parseLocalTime(today['check_in_time'] as String?),
-        checkOut: _parseLocalTime(today['check_out_time'] as String?),
-        status: (today['status'] ?? 'absent') as String,
+        checkIn: _parseLocalTime(today['check_in_time']?.toString()),
+        checkOut: _parseLocalTime(today['check_out_time']?.toString()),
+        status: (today['status']?.toString() ?? 'absent'),
         workedHours: today['hours_worked'] != null
             ? double.tryParse(today['hours_worked'].toString())
             : 0.0,

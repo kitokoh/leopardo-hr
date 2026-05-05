@@ -41,9 +41,9 @@ class SalaryAdvance {
     }
 
     return SalaryAdvance(
-      id: (json['id'] as num?)?.toInt() ?? 0,
-      employeeId: (json['employee_id'] as num?)?.toInt() ?? 0,
-      status: (json['status'] ?? 'pending') as String,
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      employeeId: int.tryParse(json['employee_id']?.toString() ?? '') ?? 0,
+      status: (json['status']?.toString() ?? 'pending'),
       amount: _parseDouble(json['amount']),
       reason: json['reason'] as String?,
       approvedBy: (json['approved_by'] as num?)?.toInt(),

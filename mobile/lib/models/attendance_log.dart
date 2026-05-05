@@ -1,6 +1,8 @@
 class AttendanceLog {
   final int id;
   final int employeeId;
+  final String? employeeName;
+  final String? employeePhotoUrl;
   final DateTime date;
   final DateTime? checkIn;
   final DateTime? checkOut;
@@ -12,6 +14,8 @@ class AttendanceLog {
   AttendanceLog({
     required this.id,
     required this.employeeId,
+    this.employeeName,
+    this.employeePhotoUrl,
     required this.date,
     this.checkIn,
     this.checkOut,
@@ -27,17 +31,36 @@ class AttendanceLog {
     final overtimeRaw = json['overtime_hours'] ?? json['overtimeHours'];
     final lateRaw = json['late_minutes'];
 
+    final employeeJson = json['employee'];
+    String? employeeName;
+    String? employeePhotoUrl;
+
+    if (employeeJson is Map) {
+      employeeName = employeeJson['name']?.toString();
+      employeePhotoUrl = employeeJson['photo_url']?.toString();
+    } else {
+      employeeName = json['employee_name']?.toString() ?? json['name']?.toString();
+      employeePhotoUrl = json['employee_photo_url']?.toString() ?? json['photo_url']?.toString();
+    }
+
     return AttendanceLog(
-      id: (json['id'] ?? 0) as int,
-      employeeId: (json['employee_id'] ?? json['employeeId']) as int,
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      employeeId: int.tryParse(
+            (json['employee_id'] ?? json['employeeId'])?.toString() ?? '',
+          ) ??
+          0,
+      employeeName: employeeName,
+      employeePhotoUrl: employeePhotoUrl,
       date: DateTime.parse(
-        (json['date'] ?? DateTime.now().toIso8601String()) as String,
+        (json['date']?.toString() ?? DateTime.now().toIso8601String()),
       ),
-      checkIn:
-          json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
-      checkOut:
-          json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
-      status: (json['status'] ?? 'incomplete') as String,
+      checkIn: json['check_in'] != null
+          ? DateTime.tryParse(json['check_in'].toString())
+          : null,
+      checkOut: json['check_out'] != null
+          ? DateTime.tryParse(json['check_out'].toString())
+          : null,
+      status: (json['status']?.toString() ?? 'incomplete'),
       workedHours:
           hoursRaw != null ? double.tryParse(hoursRaw.toString()) : null,
       overtimeHours:

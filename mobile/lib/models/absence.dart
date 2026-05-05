@@ -25,14 +25,14 @@ class Absence {
 
   factory Absence.fromJson(Map<String, dynamic> json) {
     return Absence(
-      id: json['id'] as int,
-      employeeId: json['employee_id'] as int,
-      absenceTypeId: json['absence_type_id'] as int,
-      absenceTypeName: json['absence_type']?['name'] as String?,
-      startDate: DateTime.parse(json['start_date'] as String),
-      endDate: DateTime.parse(json['end_date'] as String),
-      daysCount: (json['days_count'] as num).toDouble(),
-      status: json['status'] as String,
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      employeeId: int.tryParse(json['employee_id']?.toString() ?? '') ?? 0,
+      absenceTypeId: int.tryParse(json['absence_type_id']?.toString() ?? '') ?? 0,
+      absenceTypeName: json['absence_type']?['name']?.toString() ?? json['absenceType']?['name']?.toString(),
+      startDate: DateTime.parse(json['start_date']?.toString() ?? DateTime.now().toIso8601String()),
+      endDate: DateTime.parse(json['end_date']?.toString() ?? DateTime.now().toIso8601String()),
+      daysCount: double.tryParse(json['days_count']?.toString() ?? '0') ?? 0.0,
+      status: json['status']?.toString() ?? 'pending',
       reason: json['reason'] as String?,
       rejectionReason: json['rejected_reason'] as String?,
     );

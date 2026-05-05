@@ -55,6 +55,19 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-03
+
+### 📐 Contractor - Durcissement index et modèles mobiles
+
+- API : Renforcement de `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationController@index` avec une validation `exists` scopee au tenant pour `employee_id` et `evaluator_id`.
+- API : Retour d'un message d'erreur localise "Employé introuvable dans votre entreprise." pour empecher l'enumeration d'IDs inter-tenant.
+- API : Ajout de `photo_url` dans `AttendanceTodayResource` pour l'alignement avec les autres ressources employe.
+- Mobile : Durcissement des modèles `Employee`, `AttendanceLog`, `SalaryAdvance` et `Absence` avec un parsing d'ID robuste (`int.tryParse(toString())`) et le support de payloads plats ou imbriques pour `AttendanceLog`.
+- Mobile : Correction de `AttendanceRepository.decodeTodayResponse` pour mapper correctement le nom et la photo de l'employe.
+- Tests : Ajout de `IndexCrossTenantValidationTest` et `SalaryAdvanceSecurityTest` pour verrouiller l'isolation et la validation.
+- Tests : Mise a jour de `MobilePayloadContractTest` pour couvrir le nouveau champ `photo_url`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.86] - 2026-05-03
 
 ### ⚡ Bolt - Performance et optimisation Employee
