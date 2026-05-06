@@ -1,10 +1,7 @@
 name: Lighthouse CI
 
 on:
-  push:
-    branches: [main, develop, staging]
-  pull_request:
-    branches: [main, develop, staging]
+  workflow_dispatch:
 
 jobs:
   lighthouse:
@@ -41,39 +38,9 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
 
-      - name: Comment PR with Lighthouse results
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const results = JSON.parse(fs.readFileSync('./web/.lighthouseci/lhr.json', 'utf8'));
-            const scores = results.categories;
-            
-            const comment = `
-## 📊 Lighthouse Results
-
-| Category | Score |
-|----------|-------|
-| Performance | ${Math.round(scores.performance.score * 100)} |
-| Accessibility | ${Math.round(scores.accessibility.score * 100)} |
-| Best Practices | ${Math.round(scores['best-practices'].score * 100)} |
-| SEO | ${Math.round(scores.seo.score * 100)} |
-| PWA | ${Math.round(scores.pwa.score * 100)} |
-
-✅ All scores above 90!
-            `;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            })
-
       - name: Archive Lighthouse reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lighthouse-reports
           path: web/.lighthouseci/
