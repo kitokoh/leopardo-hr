@@ -1,0 +1,240 @@
+@import "tailwindcss";
+
+/* Root variables */
+:root {
+  --font-inter: "Inter", system-ui, sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", monospace;
+
+  /* Light mode colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border: #e2e8f0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode colors */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --border: #334155;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body defaults */
+body {
+  @apply bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300;
+  font-family: var(--font-inter);
+}
+
+/* Selection */
+::selection {
+  @apply bg-emerald-500 text-white;
+}
+
+::-moz-selection {
+  @apply bg-emerald-500 text-white;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600;
+}
+
+/* Focus visible */
+:focus-visible {
+  @apply outline-none ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-950;
+}
+
+/* Links */
+a {
+  @apply transition-colors duration-200;
+}
+
+a:hover {
+  @apply text-emerald-600 dark:text-emerald-400;
+}
+
+/* Buttons */
+button {
+  @apply transition-all duration-200;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  @apply transition-colors duration-200;
+}
+
+/* Code blocks */
+code {
+  @apply font-mono text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded;
+}
+
+pre {
+  @apply bg-slate-900 dark:bg-slate-950 text-slate-100 p-4 rounded-lg overflow-x-auto;
+}
+
+pre code {
+  @apply bg-transparent p-0;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold tracking-tight;
+}
+
+h1 {
+  @apply text-5xl md:text-6xl lg:text-7xl;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl lg:text-5xl;
+}
+
+h3 {
+  @apply text-2xl md:text-3xl lg:text-4xl;
+}
+
+h4 {
+  @apply text-xl md:text-2xl lg:text-3xl;
+}
+
+h5 {
+  @apply text-lg md:text-xl lg:text-2xl;
+}
+
+h6 {
+  @apply text-base md:text-lg lg:text-xl;
+}
+
+/* Paragraphs */
+p {
+  @apply leading-relaxed;
+}
+
+/* Lists */
+ul,
+ol {
+  @apply list-inside space-y-2;
+}
+
+ul {
+  @apply list-disc;
+}
+
+ol {
+  @apply list-decimal;
+}
+
+/* Tables */
+table {
+  @apply w-full border-collapse;
+}
+
+th,
+td {
+  @apply border border-slate-200 dark:border-slate-700 px-4 py-2 text-left;
+}
+
+th {
+  @apply bg-slate-100 dark:bg-slate-800 font-semibold;
+}
+
+/* Blockquotes */
+blockquote {
+  @apply border-l-4 border-emerald-500 pl-4 italic text-slate-600 dark:text-slate-400;
+}
+
+/* Horizontal rule */
+hr {
+  @apply border-slate-200 dark:border-slate-700 my-8;
+}
+
+/* Utility classes */
+.container-vitrine {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.section-padding {
+  @apply py-12 sm:py-16 md:py-20 lg:py-24;
+}
+
+.gradient-emerald-cyan {
+  @apply bg-gradient-to-r from-emerald-500 to-cyan-500;
+}
+
+.gradient-emerald-cyan-dark {
+  @apply dark:bg-gradient-to-r dark:from-emerald-600 dark:to-cyan-600;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent;
+}
+
+.blur-backdrop {
+  @apply backdrop-blur-md bg-white/80 dark:bg-slate-900/80;
+}
+
+.card-base {
+  @apply rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition-all duration-300;
+}
+
+.card-hover {
+  @apply hover:shadow-lg hover:-translate-y-1;
+}
+
+.button-base {
+  @apply inline-flex items-center justify-center font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.button-primary {
+  @apply button-base bg-emerald-500 text-white hover:bg-emerald-600 active:scale-95;
+}
+
+.button-secondary {
+  @apply button-base bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700;
+}
+
+.button-outline {
+  @apply button-base border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800;
+}
+
+.button-ghost {
+  @apply button-base text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .hide-mobile {
+    @apply hidden;
+  }
+}
+
+@media (min-width: 641px) {
+  .show-mobile {
+    @apply hidden;
+  }
+}

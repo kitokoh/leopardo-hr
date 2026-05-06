@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import {
   Navbar,
-  HeroSection,
-  FeaturesSection,
+  LegacyHeroSection,
+  LegacyFeaturesSection,
   DemoSection,
-  PricingSection,
-  TestimonialsSection,
-  FaqSection,
-  CTASection,
+  LegacyPricingSection,
+  LegacyTestimonialsSection,
+  LegacyFaqSection,
+  LegacyCTASection,
   Footer,
   useScrollReveal,
 } from '@/modules/vitrine';
@@ -21,13 +21,13 @@ export default function LandingPage() {
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
-      <HeroSection />
-      <FeaturesSection />
+      <LegacyHeroSection />
+      <LegacyFeaturesSection />
       <DemoSection />
-      <PricingSection />
-      <TestimonialsSection />
-      <FaqSection />
-      <CTASection />
+      <LegacyPricingSection />
+      <LegacyTestimonialsSection />
+      <LegacyFaqSection />
+      <LegacyCTASection />
       <Footer />
     </div>
   );

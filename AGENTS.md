@@ -1,0 +1,88 @@
+# AGENTS.md - Guide de travail Leopardo RH
+
+Derniere mise a jour : 2026-05-06
+
+Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
+
+## Regles obligatoires
+
+- Avant de travailler sur une branche existante, faire `git fetch origin main` puis comparer avec `origin/main`.
+- `main` distant est la source de verite. Le local doit rester aligne sur `origin/main` apres chaque intervention terminee.
+- Ne pas pousser directement sur `main` si la branche est protegee. Creer un PR, attendre les checks GitHub Actions, puis merger et supprimer la branche.
+- Apres un merge dans `main`, supprimer la branche distante et nettoyer les branches locales devenues inutiles.
+- Ne jamais perdre les stashes existants. Verifier `git stash list` avant toute operation destructive.
+- Chaque changement de comportement, migration, CI ou procedure doit avoir une entree `CHANGELOG.md`.
+- Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
+
+## Strategie CI rapide
+
+Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Actions comme source de verite au lieu d'insister sur les checks locaux Windows.
+
+- Preferer `gh pr checks <numero>` pour voir l'etat global.
+- Preferer `gh run view <run-id> --log-failed` pour lire uniquement les erreurs rouges.
+- Corriger l'erreur exacte, push, puis repeter.
+- Eviter les longues commandes locales si elles bloquent sur Windows : `dart format`, `jest`, `npm run build`, `flutter analyze` peuvent etre lents ou produire du bruit localement.
+- `npx tsc --strict --noEmit` est acceptable localement quand il faut verifier vite une erreur TypeScript evidente.
+- Les checks GitHub Actions qui ont permis de merger le PR #268 : backend, backend quality, mobile, build, lint, type-check, test Node 20, CodeQL, governance.
+
+## Pieges connus
+
+### Render et migrations PostgreSQL
+
+Render peut rejouer des migrations dans un environnement ou certaines tables existent deja. Les migrations publiques doivent donc etre idempotentes.
+
+Exemples resolus le 2026-05-06 :
+
+- `2026_05_02_000003_create_company_requests_table.php` doit verifier `Schema::hasTable('company_requests')` avant `Schema::create`.
+- `2026_05_02_100001_create_users_and_company_requests_tables.php` doit verifier l'existence de `users`, `company_requests` et `user_employee_links`.
+- Si une migration touche une table tenant comme `employees`, verifier le `search_path` PostgreSQL et proteger avec `Schema::hasTable`.
+
+### Vercel
+
+Le statut externe `Vercel` peut echouer immediatement vers une page de configuration projet. Lors du PR #268 et du hotfix #299, tous les GitHub Actions etaient verts et le merge restait possible malgre ce statut externe. Ne pas perdre du temps a corriger le code si Vercel echoue sans logs de build applicatif.
+
+### Main local divergent
+
+Le poste local peut avoir un `main` divergent (`ahead`/`behind`). Dans ce cas :
+
+- Ne pas tenter de fast-forward aveugle.
+- Travailler depuis `origin/main` via une branche propre.
+- Une fois les travaux merges, remettre le local en phase avec `origin/main` seulement apres avoir confirme qu'aucun changement local utile ne sera perdu.
+
+## Procedure PR et merge
+
+1. Creer une branche courte depuis `origin/main`.
+2. Faire le changement minimal.
+3. Ajouter `CHANGELOG.md` et `AGENTS.md` si une connaissance doit etre conservee.
+4. Push la branche et creer un PR.
+5. Observer avec `gh pr checks <numero>`.
+6. Corriger uniquement les rouges.
+7. Quand les GitHub Actions requis sont verts, merger avec `gh pr merge <numero> --merge --delete-branch`.
+8. Verifier que le PR est `MERGED` avec `gh pr view <numero> --json state,mergedAt,mergeCommit`.
+9. Verifier que la branche distante est supprimee avec `git ls-remote --heads origin <branche>`.
+
+## Nettoyage branches
+
+Objectif demande le 2026-05-06 : en local, ne garder que `main` aligne sur `origin/main`.
+
+Procedure recommandee :
+
+- Verifier `git status --short --branch`.
+- Verifier les stashes avec `git stash list`.
+- Supprimer les branches locales non `main` apres merge ou abandon explicite.
+- Pour les branches distantes, commencer par les PR ouverts. Merger uniquement si les changements apportent une nouveaute utile a `main`, puis supprimer la branche.
+- Ne pas supprimer une branche distante non analysee si elle contient du travail non merge ou non remplace.
+
+## Historique utile
+
+### 2026-05-06 - PR #268 Feature/vitrine restructure
+
+- Le PR #268 a ete merge dans `main` avec le commit `08d4316a2b9baaf2e95b2d40ffa8dd69bdc40af5`.
+- Approche gagnante : boucle rapide GitHub Actions, pas de tatonnement local.
+- Corrections majeures : TypeScript vitrine, exports ambigus, Zod v4, Playwright hors Jest, migrations PostgreSQL, mobile pubspec, gates CI instables.
+
+### 2026-05-06 - PR #299 Hotfix Render company_requests
+
+- Render echouait avec `SQLSTATE[42P07]: Duplicate table: relation "company_requests" already exists`.
+- Hotfix merge dans `main` avec le commit `53f1d20892353e7012612822ff43eb0709e56202`.
+- Le correctif rend la migration `company_requests` idempotente.
