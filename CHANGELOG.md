@@ -2,124 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.91] - 2026-05-06
-
-### CI - Ciblage web par chemins
-
-- CI : limitation des workflows web `build.yml`, `lint.yml` et `test.yml` aux modifications de `web/**` ou de leur propre fichier YAML pour eviter les executions inutiles sur des PR backend, mobile ou documentation.
-
-## [4.1.90] - 2026-05-06
-
-### CI - Workflows GitHub
-
-- CI : retrait des jobs GitHub Vercel bases sur `vercel/action@v4`, introuvable cote Actions, pour garder le workflow `Build & Deploiement` limite au build verifie.
-- CI : passage de `lighthouse.yml` en declenchement manuel afin d'eviter les echecs immediats lies a un probleme de definition du workflow.
-
-## [4.1.89] - 2026-05-06
-
-### Mobile - Android release build
-
-- Mobile : suppression de la dependance `flutter_haptic`, inutilisee dans le code et incompatible avec le build Android release CI faute de `namespace` declare.
-
-## [4.1.88] - 2026-05-06
-
-### Render - Release integration hardening
-
-- API : rendre idempotentes les migrations publiques `company_requests`, `users` et `user_employee_links` pour eviter les echecs PostgreSQL `relation already exists` lors des redeploiements Render.
-## [4.1.87] - 2026-05-06
-
-### Agents - Guide operationnel racine
-
-- Docs : ajout de `AGENTS.md` a la racine pour transmettre aux prochaines sessions les procedures CI rapides, les pieges Render/Vercel/migrations et les regles de nettoyage branches/main.
-
-## [4.1.86] - 2026-05-06
-
-### Render - Hotfix migration company_requests
-
-- API : rend la migration publique `2026_05_02_000003_create_company_requests_table` idempotente afin d'eviter l'erreur PostgreSQL `Duplicate table` lorsque `company_requests` existe deja en production.
-
-## [4.1.85] - 2026-05-02
-
-### CI/CD - Résolution des problèmes de pipeline et tests
-
-- API : Correction de la compatibilité SQLite dans `api/tests/TestCase.php` — gestion du driver PostgreSQL vs SQLite pour `SET search_path`
-- Mobile : Formatage complet des fichiers Dart (7 fichiers) avec `dart format`
-- Docs : Ajout de `MOBILE_API_SYNC_CI_CD_FIXES.md` avec documentation complète des fixes et instructions Docker
-- Tests : Safeguards ajoutés dans `FeatureDetector` pour éviter les boucles infinies lors du scan de routes
-
-### Admin Dashboard - Implémentation complète Phase 1, 2, 3
-
-- Frontend : Création du dashboard d'administration interne avec Vue.js 3, Pinia, Tailwind CSS
-- Phase 1 (Foundation) : Architecture de base, authentification, WebSocket, layout responsive
-- Phase 2 (Intelligence) : Analytics avancées, prédictions de churn, revenue forecasting, gestion utilisateurs
-- Phase 3 (Automation) : Administration système, tâches automatisées, backups, monitoring sécurité, auto-scaling
-- Composants : 47 fichiers, 9981 insertions — tous les composants fonctionnels avec données mock
-
-### Web - Modules et dépendances
-
-- Web : Ajout de modules vitrine (landing page) avec composants réutilisables
-- Web : Mise à jour des dépendances (package.json, package-lock.json)
-- Web : Sections Hero, Features, Pricing, Testimonials, FAQ, CTA avec animations
-## [4.1.85] - 2026-05-03
-
-### Auth - Self-registration, Google Sign-In & Company Requests
-
-- API : nouveau modele `User` (schema public) pour les comptes ordinaires sans entreprise, avec support Sanctum et Google ID.
-- API : `UserAuthService` — inscription email/mot de passe, connexion, Google Sign-In avec emission de tokens et verrouillage de compte.
-- API : `UserAuthController` — register, login, googleSignIn, me, updateProfile, changePassword, logout.
-- API : `CompanyRequestController` — soumission et consultation de demandes de creation d'entreprise (scope user).
-- API : `UserEmployeeLinkController` — liaison d'un compte ordinaire a un employe par le manager.
-- API : `PlatformCompanyRequestController` — validation/rejet des demandes par le super-admin.
-- API : migration `2026_05_02_100001` — tables `users`, `company_requests`, `user_employee_links`.
-- API : guard `user_api` (Sanctum + users provider) dans `config/auth.php`.
-- API : routes `/v1/user/*` et `/v1/platform/company-requests/*`.
-- API : i18n fr, en, tr, ar pour le module user.
-- Mobile : packages `flutter_animate`, `google_sign_in`, `cached_network_image`, `flutter_haptic`.
-- Mobile : `UserRegisterScreen` — inscription avec email/mot de passe + Google Sign-In, design moderne avec animations.
-- Mobile : `UserLoginScreen` — connexion compte personnel avec Google Sign-In.
-- Mobile : `UserHomeScreen` — espace personnel avec acces Placard, creation d'entreprise, liens employe.
-- Mobile : `CompanyRequestScreen` — formulaire de soumission de creation d'entreprise.
-- Mobile : modele `AppUser`, `UserAuthRepository`, `UserAuthProvider` (Riverpod StateNotifier).
-- Mobile : `WelcomeScreen` mis a jour avec bouton "Creer un compte personnel".
-- Mobile : `LoginScreen` mis a jour avec lien "Connexion compte personnel".
-## [4.1.87] - 2026-05-05
-
-### Janitor - Hygiène du dépôt
-
-- Dépôt : Normalisation des marqueurs historiques dans `docs/notes/archive/` pour assurer la conformité avec le protocole d'archivage (usage systématique du préfixe 📦).
-## [4.1.86] - 2026-05-03
-
-### DocKeeper - Alignement documentation
-
-- Ops : Mise à jour du `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` (v1.1) pour l'aligner sur l'infrastructure Render + Neon (PaaS), remplaçant les instructions VPS obsolètes.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.86` dans `PILOTAGE.md`, `CHANGELOG.md`, `docs/README.md` et `api/config/app.php`.
-- Gouvernance : Mise à jour de la date de dernière mise à jour dans `PILOTAGE.md` (2026-05-03).
-
 ## [4.1.84] - 2026-04-30 
-### Mobile-API Synchronization - Système de synchronisation automatique des fonctionnalités
-
-- API : Implémentation complète du système de synchronisation mobile-API avec détection automatique des nouvelles fonctionnalités
-- API : Nouveau modèle `Feature` avec table `features` pour l'inventaire centralisé des fonctionnalités API
-- API : Service `FeatureRegistry` pour la gestion du registre des fonctionnalités avec cache intelligent
-- API : Service `FeatureDetector` utilisant la réflexion PHP pour détecter automatiquement les nouvelles routes API
-- API : Contrôleur `FeatureManifestController` avec endpoints `/api/v1/features/manifest`, `/api/v1/features/compatible/{version}`, `/api/v1/features/{key}`
-- API : Endpoints d'administration `/api/v1/features/admin/statistics` et `/api/v1/features/admin/synchronize` pour les super-admins
-- API : Attributs PHP `#[ApiFeature]`, `#[MobileCompatible]`, `#[RequiresPermission]` pour l'annotation des contrôleurs
-- API : Services `AnnotationReader` et `ReflectionService` pour l'analyse des métadonnées des contrôleurs
-- Mobile : Modèles `Feature`, `FeatureManifest`, `FormSchema`, `ListSchema` pour la synchronisation
-- Mobile : Service `SynchronizationEngine` avec synchronisation intelligente et gestion des versions
-- Mobile : Générateur d'interface `DynamicUIGenerator` pour créer automatiquement les écrans mobiles
-- Mobile : Cache local avec `Hive` et signatures cryptographiques pour l'intégrité des données
-- Mobile : Support complet des formulaires dynamiques, listes et actions avec validation
-- Tests : Suite complète de tests unitaires et d'intégration pour tous les composants
-- Tests : Tests de propriétés (Property-Based Testing) pour la validation des invariants
-- Docs : Documentation technique complète du système de synchronisation
-- Sécurité : Signatures cryptographiques des manifestes et gestion des permissions par fonctionnalité
-- Performance : Cache intelligent avec invalidation automatique et synchronisation < 5 secondes
-- Compatibilité : Support des 3 dernières versions mobiles majeures avec migration automatique
-
-## [4.1.84] - 2026-04-30
-
 
 ### API / Mobile / Web - Experience client alignee et modernisee
 
@@ -136,12 +19,6 @@
 - API : elimination des concatenations directes de `schema_name` dans plusieurs `SET search_path` sensibles au profit de `Company::getSafeSearchPath()`.
 - API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
 - Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
-
-### Sentinel - Sécurisation des index et tests de régression Salary Advance
-
-- API : Durcissement des requêtes de liste (IndexRequest) pour les modules `Absences`, `Payroll`, `Attendance` et `SalaryAdvances` via l'ajout d'une validation `exists` systématiquement scopée au tenant de l'utilisateur pour le champ `employee_id`.
-- Tests : Création de `SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module des avances sur salaire.
-- Tests : Ajout de tests de régression dans `AbsenceIndexTest` et `TodayAndHistoryTest` pour vérifier la protection contre le filtrage par `employee_id` hors-tenant.
 
 ### Mobile - Contrat attendance et UX absences
 
@@ -163,6 +40,14 @@
 - Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
 - Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
 
+## [4.1.87] - 2026-05-03
+
+### Contractor - Durcissement du contrat API/mobile
+
+- Mobile : Durcissement du parsing des modèles `Employee` et `AttendanceLog` via `int.tryParse` et `.toString()` pour prévenir les échecs au runtime en cas d'incohérence de type (ex: ID en chaîne vs entier).
+- Mobile : Enrichissement du modèle `AttendanceLog` pour supporter le parsing des métadonnées employeur (`employee.name`, `employee.photo_url`) exposées dans l'historique des pointages.
+- Tests : Renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` avec une couverture explicite de l'historique des pointages (`/api/v1/attendance`) pour verrouiller la structure imbriquée des employés.
+
 ## [4.1.84] - 2026-05-01
 
 ### Performance - Optimisation des index Absence et Evaluation
@@ -178,45 +63,7 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
-## [4.1.87] - 2026-05-05
-
-### ⚡ Bolt - Performance et optimisation HR Referentials
-
-- API : optimisation de `DepartmentController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `manager`, évitant ainsi la sur-récupération de données.
-- API : optimisation de `PositionController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `department`, évitant ainsi la sur-récupération de données.
-
 ## [4.1.86] - 2026-05-03
-
-
-### Auth - Auto-inscription, Google Sign-In, espace personnel et demandes d'entreprise
-
-- API : ajout du rôle `ordinary` pour les utilisateurs sans entreprise immédiate (Espace Personnel).
-- API : migration pour rendre `company_id` nullable dans `employees` et `user_lookups`.
-- API : implémentation de `POST /api/v1/auth/register` pour l'auto-inscription en tant que compte ordinaire.
-- API : intégration de Laravel Socialite pour Google Sign-In avec endpoints `redirectToGoogle`, `handleGoogleCallback` et `handleGoogleToken` (mobile).
-- API : création du modèle `CompanyRequest` et des endpoints associés pour permettre aux comptes ordinaires de demander la création d'une entreprise (incluant les détails du manager).
-- API : mise à jour de `TenantMiddleware` pour autoriser l'accès à l'API aux utilisateurs `ordinary` sans contexte d'entreprise.
-- Mobile : ajout des dépendances `google_sign_in` et `url_launcher`.
-- Mobile : implémentation de `PersonalSpaceScreen` (accueil pour comptes sans entreprise) et `CompanyRequestScreen` (formulaire de demande enrichi).
-- Mobile : ajout du bouton "Continuer avec Google" sur `LoginScreen` et activation du formulaire sur `RegisterScreen`.
-- Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
-- CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
-## [4.1.87] - 2026-05-03
-
-### Sentinel - Durcissement de l'isolation tenant sur les filtres d'index
-
-- API : Renforcement de la validation dans `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationIndexRequest` pour empêcher les fuites de données inter-tenant (ID Enumeration) en vérifiant systématiquement l'appartenance de `employee_id` et `evaluator_id` au tenant de l'utilisateur.
-- Tests : Ajout de `SalaryAdvanceSecurityTest` et `IndexCrossTenantValidationTest` pour verrouiller l'impossibilité de probe ou filtrer des ressources d'un autre tenant via les paramètres de requête.
-### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (SalaryAdvance)
-
-- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empêchant l'énumération d'identifiants inter-tenant.
-- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation des avances sur salaire et la validation des filtres.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
-
-## [4.1.86] - 2026-05-03
-### Janitor - Hygiène du dépôt
-
-- Dépôt : Archivage de la version obsolète de la stratégie CI/CD (o2switch/VPS) `docs/dossierdeConception/10_deploiement_cicd/19_CICD_ET_GIT.md` vers `docs/notes/archive/19_CICD_ET_GIT_O2SWITCH.md` pour éliminer la confusion avec la version Render active.
 
 ### ⚡ Bolt - Performance et optimisation Employee
 
@@ -224,6 +71,54 @@
 - API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
 
 ## [4.1.85] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (attendance today)
+
+- API : Mise à jour de `AttendanceTodayResource` pour inclure l'ID du pointage (`id`) et les minutes de retard (`late_minutes`), alignant ainsi le payload `/api/v1/attendance/today` et `/api/v1/me/daily-summary` sur les attentes des modèles mobiles.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces champs dans les payloads de présence journalière.
+
+## [4.1.84] - 2026-05-02
+
+### Contractor - Alignement contrat API/mobile (employee & attendance)
+
+- Mobile : Mise à jour du modèle `Employee` pour inclure et parser `photo_url` et `hire_date`.
+- Mobile : Mise à jour du modèle `AttendanceLog` pour inclure et parser `late_minutes`.
+- Mobile : Correction de `AttendanceRepository.decodeTodayResponse` pour mapper correctement `overtime_hours` et `late_minutes` dans l'objet `AttendanceLog`.
+- Tests : Renforcement de `widget_test.dart` pour verrouiller le parsing des nouveaux champs de contrat.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
+### Janitor - Hygiène du dépôt
+
+- Dépôt : Suppression de l'artefact de bot obsolète `.codex-pr-140` (submodule fantôme) à la racine du dépôt.
+- Dépôt : Suppression du répertoire `.kiro/` contenant des spécifications d'implémentation obsolètes déjà fusionnées.
+- Dépôt : Archivage des notes historiques (`CONTINUE_v2.md`, `remarquesimportantaverifier.md`) et de l'artefact bot `EXPLORE.md` vers `docs/notes/archive/`.
+
+### DocKeeper - Alignement documentation et maintenance
+
+- Dépôt : Nettoyage du `README.md` racine pour supprimer les liens morts vers les documents archivés (`INDEX_CANONIQUE.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`) et consolidation des points d'entrée.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.83` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
+### Scout - Tests de régression MVP
+
+- Tests : ajout de `api/tests/Feature/Security/TenantModelIsolationTest.php` pour verrouiller l'isolation inter-tenant des modèles de kiosque, d'enrôlement biométrique et d'invitation.
+### Contractor - Alignement contrat API/mobile (employee)
+
+- API : Mise à jour de `EmployeeResource` pour inclure `photo_url` (alias de `photo_path`) et `hire_date` (alias de `contract_start` formaté en Y-m-d) pour la compatibilité avec les modèles mobiles.
+- API : Mise à jour de `EmployeeController@index` pour inclure `matricule`, `company_id`, `photo_path` et `contract_start` dans la sélection, garantissant ainsi que le `EmployeeResource` est complet.
+- Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces nouveaux champs dans les payloads `/auth/me` et `/employees`.
+### API - Correctif demarrage Render
+
+- API : correction du flux de startup dans `api/docker-entrypoint.sh` pour que le cas normal `RESET_TEST_DB_ONCE` deja traite ne fasse plus quitter le conteneur avec `set -e`.
+- API : ajout d'un `api/Caddyfile` de production et mise a jour de `api/Dockerfile.prod` pour embarquer une configuration FrankenPHP/Caddy explicite et compatible Render.
+
+### API - Stabilisation seed demo / deploiement
+
+- API : `DemoCompanyOnceSeeder` detecte desormais une base deja peuplee en `shared_tenants`, pose proprement son verrou SQL et se skip sans casser le deploiement si le lock a disparu mais que les donnees demo existent deja.
+
+### Sentinel - Renforcement de la sécurité multi-tenant
+
+- API : Élimination des risques d'injection SQL dans les commandes `SET search_path` par l'application systématique de `Company::getSafeSearchPath()` sur tous les points d'entrée critiques (`StoreEmployeeRequest`, `UpdateEmployeeRequest`, `BiometricAdminController`, `KioskController`).
+
 ## [4.1.82] - 2026-04-29
 
 ### Janitor - Hygiène du dépôt et sécurité
