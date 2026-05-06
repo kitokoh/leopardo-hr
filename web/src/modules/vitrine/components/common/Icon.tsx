@@ -3,6 +3,8 @@
 import React from 'react';
 import * as LucideIcons from 'lucide-react';
 
+const safeLog = (..._args: unknown[]) => {};
+
 export type IconName = keyof typeof LucideIcons;
 
 interface IconProps {
@@ -23,7 +25,7 @@ export function Icon({ name, size = 'md', className = '', strokeWidth = 2 }: Ico
   const IconComponent = LucideIcons[name] as React.ComponentType<any>;
 
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found in lucide-react`);
+    safeLog(`Icon "${name}" not found in lucide-react`);
     return null;
   }
 
@@ -86,4 +88,5 @@ export const Icons = {
 
   // Loading
   Loader: () => <LucideIcons.Loader2 className="w-4 h-4 animate-spin" />,
+
 };

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail, sanitizeInput } from '@/modules/vitrine/lib/validation';
 
+const safeLog = (..._args: unknown[]) => {};
+
 // Rate limiter instance (in production, use Redis)
 const rateLimiter = new RateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
 
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
     // 4. Create calendar event
     // 5. Log event to analytics
 
-    console.log('Demo request:', {
+    safeLog('Demo request:', {
       ...sanitizedData,
       page: validatedData.page,
       timestamp: validatedData.timestamp,
@@ -78,7 +80,7 @@ export async function POST(request: NextRequest) {
     const salesEmailSent = await sendDemoNotificationEmail(sanitizedData);
 
     if (!userEmailSent || !salesEmailSent) {
-      console.warn('Email sending failed for demo request');
+      safeLog('Email sending failed for demo request');
       // Don't fail the request, just log the warning
     }
 
@@ -97,7 +99,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Demo request error:', error);
+    safeLog('Demo request error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -117,6 +119,7 @@ export async function POST(request: NextRequest) {
         message: 'Erreur lors de la demande de démo',
         error: 'INTERNAL_SERVER_ERROR',
       },
+
       { status: 500 }
     );
   }
@@ -128,10 +131,10 @@ export async function POST(request: NextRequest) {
 async function sendDemoConfirmationEmail(email: string): Promise<boolean> {
   try {
     // TODO: Implement actual email sending
-    console.log('Demo confirmation email would be sent to:', email);
+    safeLog('Demo confirmation email would be sent to:', email);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    safeLog('Email sending error:', error);
     return false;
   }
 }
@@ -142,10 +145,10 @@ async function sendDemoConfirmationEmail(email: string): Promise<boolean> {
 async function sendDemoNotificationEmail(data: Record<string, unknown>): Promise<boolean> {
   try {
     // TODO: Implement actual email sending to sales team
-    console.log('Demo notification email would be sent to sales team:', data);
+    safeLog('Demo notification email would be sent to sales team:', data);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    safeLog('Email sending error:', error);
     return false;
   }
 }

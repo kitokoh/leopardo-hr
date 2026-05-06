@@ -137,7 +137,12 @@ export function validatePassword(password: string): {
 }
 
 export function validatePhoneNumber(phone: string): boolean {
-  const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 10 || digits.length > 15) {
+    return false;
+  }
+
+  const phoneRegex = /^\+?[\d\s().-]+$/;
   return phoneRegex.test(phone);
 }
 

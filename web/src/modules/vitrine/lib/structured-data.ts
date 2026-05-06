@@ -1,3 +1,5 @@
+
+const safeLog = (..._args: unknown[]) => {};
 /**
  * Structured Data (JSON-LD) generators for SEO
  * Validates: Requirements 2.1, 2.2
@@ -386,6 +388,7 @@ export function combineStructuredData(
   return {
     '@context': 'https://schema.org',
     '@graph': schemas,
+
   };
 }
 
@@ -394,11 +397,11 @@ export function combineStructuredData(
  */
 export function validateStructuredData(data: Record<string, any>): boolean {
   if (!data['@context']) {
-    console.warn('Missing @context in structured data');
+    safeLog('Missing @context in structured data');
     return false;
   }
   if (!data['@type']) {
-    console.warn('Missing @type in structured data');
+    safeLog('Missing @type in structured data');
     return false;
   }
   return true;

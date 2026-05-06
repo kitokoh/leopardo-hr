@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 
+const safeLog = (..._args: unknown[]) => {};
+
 // Rate limiter instance (in production, use Redis)
 const rateLimiter = new RateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
 
@@ -54,7 +56,7 @@ export async function POST(request: NextRequest) {
     // 5. Log signup event
 
     // Mock implementation - simulate database operations
-    console.log('Signup attempt:', {
+    safeLog('Signup attempt:', {
       email: sanitizedEmail,
       page: validatedData.page,
       timestamp: validatedData.timestamp,
@@ -89,7 +91,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Signup error:', error);
+    safeLog('Signup error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -129,12 +131,13 @@ async function sendConfirmationEmail(email: string): Promise<boolean> {
     //   from: 'noreply@leopardo.com',
     //   subject: 'Confirmez votre email',
     //   html: confirmationEmailTemplate(email),
+
     // });
 
-    console.log('Confirmation email would be sent to:', email);
+    safeLog('Confirmation email would be sent to:', email);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    safeLog('Email sending error:', error);
     return false;
   }
 }

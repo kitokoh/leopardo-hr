@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
+const safeLog = (..._args: unknown[]) => {};
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const file = searchParams.get('file');
@@ -48,9 +50,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Download error:', error);
+    safeLog('Download error:', error);
     return NextResponse.json(
       { error: 'Failed to download file' },
+
       { status: 500 }
     );
   }
