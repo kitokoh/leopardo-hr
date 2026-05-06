@@ -13,7 +13,11 @@ return new class extends Migration
             DB::statement('SET search_path TO public');
         }
 
-        Schema::create('company_requests', function (Blueprint $table) {
+        if (Schema::hasTable('company_requests')) {
+            return;
+        }
+
+        Schema::create('company_requests', function (Blueprint $table): void {
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
             $table->string('company_name', 100);
