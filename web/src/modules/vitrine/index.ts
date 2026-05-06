@@ -1,11 +1,25 @@
-export * from './components/CTASection';
-export * from './components/DemoSection';
-export * from './components/FaqSection';
-export * from './components/FeaturesSection';
-export * from './components/Footer';
-export * from './components/HeroSection';
-export * from './components/Navbar';
-export * from './components/ParticleField';
-export * from './components/PricingSection';
-export * from './components/TestimonialsSection';
-export * from './hooks/useScrollReveal';
+// Components
+export * from './components';
+
+// Hooks
+export * from './hooks';
+
+// Lib
+export * from './lib';
+
+// Types
+export type {
+  PageMetadata,
+  Section,
+  PageContent,
+  AnimationConfig,
+  FormField,
+  FormConfig,
+  Feature,
+  PricingPlan,
+  Testimonial,
+  CaseStudy,
+  BlogPost,
+  NavItem,
+  SocialLink,
+} from './types';

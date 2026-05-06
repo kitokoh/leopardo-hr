@@ -1,17 +1,25 @@
 'use client';
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Users, Clock, Wallet, Shield, Sparkles, ArrowUp, ArrowDown,
-  Zap, TrendingUp, Calendar, Bell, Search, Filter, MoreHorizontal,
-  Download, Share2, Clock3, CheckCircle2, AlertCircle, BarChart3
+  Users,
+  Clock,
+  Sparkles,
+  ArrowUp,
+  ArrowDown,
+  Zap,
+  TrendingUp,
+  Calendar,
+  Bell,
+  Search,
+  Download,
+  CheckCircle2,
 } from 'lucide-react';
-import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 const emptySubscribe = () => () => {};
 
-// Animated Counter Component
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
 
@@ -37,7 +45,6 @@ const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string
   return <span className="tabular-nums">{count}{suffix}</span>;
 };
 
-// Glass Card Component
 const GlassCard = ({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -46,8 +53,8 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
     whileHover={{ y: -2, transition: { duration: 0.2 } }}
     className={`relative group ${className}`}
   >
-    <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl opacity-0 group-hover:opacity-20 transition duration-500 blur" />
-    <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-700/50 shadow-lg overflow-hidden">
+    <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 blur transition duration-500 group-hover:opacity-20" />
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200/50 bg-white/80 shadow-lg backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/80">
       {children}
     </div>
   </motion.div>
@@ -55,7 +62,6 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 
 export default function DashboardPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
-  const labels = useMemo(() => getCopy(locale), [locale]);
   const [activeTab, setActiveTab] = useState('today');
 
   useEffect(() => {
@@ -64,7 +70,7 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: 'Employés actifs',
+      title: 'Employes actifs',
       value: 24,
       change: '+2',
       trend: 'up',
@@ -73,7 +79,7 @@ export default function DashboardPage() {
       bgColor: 'bg-blue-50 dark:bg-blue-900/20',
     },
     {
-      title: 'Présents aujourd\'hui',
+      title: 'Presents aujourd hui',
       value: 18,
       change: '75%',
       trend: 'up',
@@ -86,12 +92,12 @@ export default function DashboardPage() {
       value: 2,
       change: '-15%',
       trend: 'down',
-      icon: Clock3,
+      icon: Clock,
       color: 'from-amber-500 to-amber-600',
       bgColor: 'bg-amber-50 dark:bg-amber-900/20',
     },
     {
-      title: 'Heures travaillées',
+      title: 'Heures travaillees',
       value: 142,
       suffix: 'h',
       change: '+12h',
@@ -100,63 +106,63 @@ export default function DashboardPage() {
       color: 'from-violet-500 to-violet-600',
       bgColor: 'bg-violet-50 dark:bg-violet-900/20',
     },
-  ];
+  ] as const;
 
   const activities = [
-    { name: 'Ahmed Ben', action: 'pointage entrée', time: '08:30', status: 'present', avatar: 'AB' },
-    { name: 'Sarah Mou', action: 'pointage entrée', time: '08:35', status: 'present', avatar: 'SM' },
-    { name: 'Karim Had', action: 'demande congé', time: '09:15', status: 'pending', avatar: 'KH' },
-    { name: 'Leila Ben', action: 'pointage entrée', time: '09:20', status: 'late', avatar: 'LB' },
-    { name: 'Youssef A', action: 'pointage entrée', time: '08:45', status: 'present', avatar: 'YA' },
-  ];
+    { name: 'Ahmed Ben', action: 'pointage entree', time: '08:30', status: 'present', avatar: 'AB' },
+    { name: 'Sarah Mou', action: 'pointage entree', time: '08:35', status: 'present', avatar: 'SM' },
+    { name: 'Karim Had', action: 'demande conge', time: '09:15', status: 'pending', avatar: 'KH' },
+    { name: 'Leila Ben', action: 'pointage entree', time: '09:20', status: 'late', avatar: 'LB' },
+    { name: 'Youssef A', action: 'pointage entree', time: '08:45', status: 'present', avatar: 'YA' },
+  ] as const;
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center"
       >
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Tableau de bord</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Bienvenue ! Voici ce qui se passe aujourd'hui.</p>
+          <p className="mt-1 text-slate-500 dark:text-slate-400">Bienvenue ! Voici ce qui se passe aujourd&apos;hui.</p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Rechercher..."
-              className="pl-10 pr-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 w-64"
+              className="w-64 rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-700 dark:bg-slate-800"
             />
           </div>
-          <button className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-colors relative">
-            <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+          <button className="relative rounded-xl border border-slate-200 bg-white p-2 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
+            <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
           </button>
         </div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
-          <GlassCard key={index} delay={index * 0.1}>
+          <GlassCard key={stat.title} delay={index * 0.1}>
             <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
-                  <stat.icon className={`w-6 h-6 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`} style={{ color: 'inherit' }} />
+              <div className="mb-4 flex items-start justify-between">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bgColor}`}>
+                  <stat.icon className={`h-6 w-6 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`} style={{ color: 'inherit' }} />
                 </div>
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                  stat.trend === 'up' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                <div className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+                  stat.trend === 'up'
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                 }`}>
-                  {stat.trend === 'up' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                  {stat.trend === 'up' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                   {stat.change}
                 </div>
               </div>
-              <div className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
-                <AnimatedNumber value={stat.value} suffix={stat.suffix || ''} />
+              <div className="mb-1 text-3xl font-bold text-slate-900 dark:text-white">
+                <AnimatedNumber value={stat.value} suffix={stat.suffix ?? ''} />
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400">{stat.title}</p>
             </div>
@@ -164,38 +170,36 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Activity Feed */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <GlassCard className="lg:col-span-2" delay={0.4}>
           <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-white" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600">
+                  <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-white">Activité récente</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Dernières actions de votre équipe</p>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">Activite recente</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Dernieres actions de votre equipe</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('today')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     activeTab === 'today'
                       ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
                   }`}
                 >
-                  Aujourd'hui
+                  Aujourd&apos;hui
                 </button>
                 <button
                   onClick={() => setActiveTab('week')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     activeTab === 'week'
                       ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
                   }`}
                 >
                   Cette semaine
@@ -206,16 +210,18 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {activities.map((activity, index) => (
                 <motion.div
-                  key={index}
+                  key={`${activity.name}-${activity.time}`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer"
+                  className="group flex cursor-pointer items-center gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold ${
-                    activity.status === 'present' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                    activity.status === 'late' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold ${
+                    activity.status === 'present'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                      : activity.status === 'late'
+                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                   }`}>
                     {activity.avatar}
                   </div>
@@ -225,31 +231,31 @@ export default function DashboardPage() {
                       {activity.action} • {activity.time}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    activity.status === 'present' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                    activity.status === 'late' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    activity.status === 'present'
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                      : activity.status === 'late'
+                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                   }`}>
-                    {activity.status === 'present' ? 'Présent' : activity.status === 'late' ? 'Retard' : 'En attente'}
+                    {activity.status === 'present' ? 'Present' : activity.status === 'late' ? 'Retard' : 'En attente'}
                   </span>
                 </motion.div>
               ))}
             </div>
 
-            <button className="w-full mt-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-              Voir toute l'activité
+            <button className="mt-4 w-full rounded-xl border border-slate-200 py-3 font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800">
+              Voir toute l&apos;activite
             </button>
           </div>
         </GlassCard>
 
-        {/* Right Sidebar */}
         <div className="space-y-6">
-          {/* AI Assistant Card */}
           <GlassCard delay={0.5}>
-            <div className="p-6 bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                  <Sparkles className="w-6 h-6 text-white" />
+            <div className="bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 p-6">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/30">
+                  <Sparkles className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-900 dark:text-white">Leo IA</h4>
@@ -257,40 +263,39 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-4 mb-4">
-                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                  "Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j'envoie un message de félicitations à l'équipe ?"
+              <div className="mb-4 rounded-xl bg-white/50 p-4 dark:bg-slate-900/50">
+                <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                  &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
                 </p>
               </div>
 
               <div className="flex gap-2">
-                <button className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-medium hover:shadow-lg hover:shadow-violet-500/30 transition-all">
+                <button className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 py-2.5 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-violet-500/30">
                   Oui, envoyer
                 </button>
-                <button className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <button className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800">
                   Plus tard
                 </button>
               </div>
             </div>
           </GlassCard>
 
-          {/* Quick Actions */}
           <GlassCard delay={0.6}>
             <div className="p-6">
-              <h4 className="font-semibold text-slate-900 dark:text-white mb-4">Actions rapides</h4>
+              <h4 className="mb-4 font-semibold text-slate-900 dark:text-white">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employé', color: 'bg-blue-500' },
-                  { icon: Calendar, label: 'Congés', color: 'bg-emerald-500' },
+                  { icon: Users, label: 'Nouvel employe', color: 'bg-blue-500' },
+                  { icon: Calendar, label: 'Conges', color: 'bg-emerald-500' },
                   { icon: TrendingUp, label: 'Rapports', color: 'bg-violet-500' },
                   { icon: Download, label: 'Export', color: 'bg-amber-500' },
-                ].map((action, i) => (
+                ].map((action) => (
                   <button
-                    key={i}
-                    className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
+                    key={action.label}
+                    className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
-                    <div className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                      <action.icon className="w-5 h-5 text-white" />
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.color} transition-transform group-hover:scale-110`}>
+                      <action.icon className="h-5 w-5 text-white" />
                     </div>
                     <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{action.label}</span>
                   </button>
@@ -299,25 +304,24 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
 
-          {/* Mini Chart */}
           <GlassCard delay={0.7}>
             <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold text-slate-900 dark:text-white">Présence hebdo</h4>
-                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">+12%</span>
+              <div className="mb-4 flex items-center justify-between">
+                <h4 className="font-semibold text-slate-900 dark:text-white">Presence hebdo</h4>
+                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">+12%</span>
               </div>
-              <div className="flex items-end gap-2 h-32">
-                {[65, 80, 75, 90, 85, 70, 88].map((height, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+              <div className="flex h-32 items-end gap-2">
+                {[65, 80, 75, 90, 85, 70, 88].map((height, index) => (
+                  <div key={index} className="flex flex-1 flex-col items-center gap-1">
                     <motion.div
                       initial={{ height: 0 }}
                       animate={{ height: `${height}%` }}
-                      transition={{ delay: 0.8 + i * 0.1, duration: 0.5 }}
+                      transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
                       className={`w-full rounded-t-lg ${
                         height > 80 ? 'bg-emerald-500' : height > 70 ? 'bg-emerald-400' : 'bg-emerald-300'
                       }`}
                     />
-                    <span className="text-xs text-slate-400">{['L', 'M', 'M', 'J', 'V', 'S', 'D'][i]}</span>
+                    <span className="text-xs text-slate-400">{['L', 'M', 'M', 'J', 'V', 'S', 'D'][index]}</span>
                   </div>
                 ))}
               </div>

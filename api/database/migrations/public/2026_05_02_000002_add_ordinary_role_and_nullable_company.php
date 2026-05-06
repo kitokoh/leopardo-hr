@@ -19,11 +19,14 @@ return new class extends Migration
             $table->string('schema_name', 63)->nullable()->change();
         });
 
-        // 2. Update employees in tenant schema — only runs when the table exists
-        // (skipped during public-schema-only CI migrations)
+        // 2. Update employees in tenant schema
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
+
         if (Schema::hasTable('employees')) {
             if (DB::getDriverName() === 'pgsql') {
-                DB::statement('ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check');
+                DB::statement("ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check");
             }
 
             Schema::table('employees', function (Blueprint $table) {

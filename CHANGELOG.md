@@ -7,6 +7,17 @@
 ### Render - Release integration hardening
 
 - API : rendre idempotentes les migrations publiques `company_requests`, `users` et `user_employee_links` pour eviter les echecs PostgreSQL `relation already exists` lors des redeploiements Render.
+## [4.1.87] - 2026-05-06
+
+### Agents - Guide operationnel racine
+
+- Docs : ajout de `AGENTS.md` a la racine pour transmettre aux prochaines sessions les procedures CI rapides, les pieges Render/Vercel/migrations et les regles de nettoyage branches/main.
+
+## [4.1.86] - 2026-05-06
+
+### Render - Hotfix migration company_requests
+
+- API : rend la migration publique `2026_05_02_000003_create_company_requests_table` idempotente afin d'eviter l'erreur PostgreSQL `Duplicate table` lorsque `company_requests` existe deja en production.
 
 ## [4.1.85] - 2026-05-02
 
@@ -137,6 +148,7 @@
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.86] - 2026-05-03
+
 
 ### Auth - Auto-inscription, Google Sign-In, espace personnel et demandes d'entreprise
 
