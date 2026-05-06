@@ -12,6 +12,7 @@ import 'package:leopardo_rh/features/notifications/data/notification_repository.
 import 'package:leopardo_rh/features/evaluations/data/evaluation_repository.dart';
 import 'package:leopardo_rh/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_rh/features/home/data/project_repository.dart';
+import 'package:leopardo_rh/features/user_auth/data/user_auth_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();
@@ -80,4 +81,10 @@ final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
 final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return ProjectRepository(apiClient);
+});
+
+final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  final storage = ref.watch(secureStorageProvider);
+  return UserAuthRepository(apiClient, storage);
 });

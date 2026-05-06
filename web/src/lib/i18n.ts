@@ -1,256 +1,187 @@
 export type AppLocale = 'fr' | 'ar' | 'tr' | 'en';
 
-export type StoredAuthUser = {
-  id?: number;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  language?: AppLocale;
-  is_rtl?: boolean;
-};
-
-export const SUPPORTED_LOCALES: AppLocale[] = ['fr', 'ar', 'tr', 'en'];
 export const AUTH_TOKEN_KEY = 'auth_token';
-export const AUTH_USER_KEY = 'auth_user';
-export const PREFERRED_LOCALE_KEY = 'preferred_locale';
+const USER_STORAGE_KEY = 'auth_user';
+const LOCALE_STORAGE_KEY = 'preferred-locale';
 
-type CopyTree = {
-  login: {
-    title: string;
-    back: string;
-    email: string;
-    password: string;
-    remember: string;
-    forgot: string;
-    submit: string;
-    loading: string;
-  };
-  dashboard: {
-    heading: string;
-    employees: string;
-    present: string;
-    late: string;
-    activity: string;
-    team: string;
-    attendance: string;
-    payroll: string;
-    settings: string;
-    logout: string;
-    language: string;
-    presentBadge: string;
-    employeeLabel: string;
-    checkInAt: string;
-  };
-};
+export interface StoredAuthUser {
+  id?: number | string;
+  first_name?: string | null;
+  last_name?: string | null;
+  name?: string | null;
+  email?: string | null;
+  language?: string | null;
+  is_rtl?: boolean;
+  role?: string | null;
+  manager_role?: string | null;
+}
 
-const copy: Record<AppLocale, CopyTree> = {
+const translations = {
   fr: {
     login: {
-      title: 'Connexion a Leopardo RH',
-      back: 'Retour a l accueil',
-      email: 'Adresse email',
+      title: 'Connexion',
+      back: 'Retour au site',
+      email: 'Email',
       password: 'Mot de passe',
       remember: 'Se souvenir de moi',
       forgot: 'Mot de passe oublie ?',
-      submit: 'Se connecter',
       loading: 'Connexion...',
+      submit: 'Se connecter',
     },
     dashboard: {
+      title: 'Tableau de bord',
       heading: 'Tableau de bord',
-      employees: 'Employes actifs',
-      present: 'Presents aujourd hui',
-      late: 'Retards',
-      activity: 'Activite recente',
-      team: 'Employes',
+      welcome: 'Bienvenue ! Voici ce qui se passe aujourd\'hui.',
+      team: 'Equipe',
       attendance: 'Pointages',
-      payroll: 'Paie',
-      settings: 'Parametres',
       logout: 'Deconnexion',
       language: 'Langue',
-      presentBadge: 'Present',
-      employeeLabel: 'Employe',
-      checkInAt: 'Check-in a',
+      present: 'presents',
     },
   },
   ar: {
     login: {
-      title: 'تسجيل الدخول إلى ليوباردو للموارد البشرية',
-      back: 'العودة إلى الصفحة الرئيسية',
+      title: 'تسجيل الدخول',
+      back: 'العودة إلى الموقع',
       email: 'البريد الإلكتروني',
       password: 'كلمة المرور',
       remember: 'تذكرني',
-      forgot: 'هل نسيت كلمة المرور؟',
-      submit: 'تسجيل الدخول',
+      forgot: 'نسيت كلمة المرور؟',
       loading: 'جار تسجيل الدخول...',
+      submit: 'دخول',
     },
     dashboard: {
+      title: 'لوحة التحكم',
       heading: 'لوحة التحكم',
-      employees: 'الموظفون النشطون',
-      present: 'الحاضرون اليوم',
-      late: 'التأخير',
-      activity: 'النشاط الأخير',
-      team: 'الموظفون',
+      welcome: 'مرحباً! هذا ما يحدث اليوم.',
+      team: 'الفريق',
       attendance: 'الحضور',
-      payroll: 'الرواتب',
-      settings: 'الإعدادات',
-      logout: 'تسجيل الخروج',
+      logout: 'خروج',
       language: 'اللغة',
-      presentBadge: 'حاضر',
-      employeeLabel: 'موظف',
-      checkInAt: 'تسجيل الدخول عند',
+      present: 'حاضرون',
     },
   },
   tr: {
     login: {
-      title: 'Leopardo IK girisi',
-      back: 'Ana sayfaya don',
-      email: 'E-posta adresi',
+      title: 'Giris',
+      back: 'Siteye don',
+      email: 'E-posta',
       password: 'Sifre',
       remember: 'Beni hatirla',
-      forgot: 'Sifrenizi mi unuttunuz?',
-      submit: 'Giris yap',
+      forgot: 'Sifremi unuttum',
       loading: 'Giris yapiliyor...',
+      submit: 'Giris yap',
     },
     dashboard: {
+      title: 'Kontrol paneli',
       heading: 'Kontrol paneli',
-      employees: 'Aktif calisanlar',
-      present: 'Bugun burada olanlar',
-      late: 'Gecikmeler',
-      activity: 'Son etkinlik',
-      team: 'Calisanlar',
-      attendance: 'Devam',
-      payroll: 'Bordro',
-      settings: 'Ayarlar',
-      logout: 'Cikis yap',
+      welcome: 'Hos geldiniz! Bugun olanlar burada.',
+      team: 'Ekip',
+      attendance: 'Puantaj',
+      logout: 'Cikis',
       language: 'Dil',
-      presentBadge: 'Burada',
-      employeeLabel: 'Calisan',
-      checkInAt: 'Giris saati',
+      present: 'mevcut',
     },
   },
   en: {
     login: {
-      title: 'Sign in to Leopardo RH',
-      back: 'Back to home',
-      email: 'Email address',
+      title: 'Sign in',
+      back: 'Back to site',
+      email: 'Email',
       password: 'Password',
       remember: 'Remember me',
       forgot: 'Forgot password?',
-      submit: 'Sign in',
       loading: 'Signing in...',
+      submit: 'Sign in',
     },
     dashboard: {
+      title: 'Dashboard',
       heading: 'Dashboard',
-      employees: 'Active employees',
-      present: 'Present today',
-      late: 'Late arrivals',
-      activity: 'Recent activity',
-      team: 'Employees',
+      welcome: 'Welcome! Here\'s what\'s happening today.',
+      team: 'Team',
       attendance: 'Attendance',
-      payroll: 'Payroll',
-      settings: 'Settings',
-      logout: 'Sign out',
+      logout: 'Logout',
       language: 'Language',
-      presentBadge: 'Present',
-      employeeLabel: 'Employee',
-      checkInAt: 'Check-in at',
+      present: 'present',
     },
   },
 };
 
-export function isSupportedLocale(value: unknown): value is AppLocale {
-  return typeof value === 'string' && SUPPORTED_LOCALES.includes(value as AppLocale);
-}
-
-export function normalizeLocale(value: unknown): AppLocale {
-  if (typeof value !== 'string' || value.trim() === '') {
-    return 'fr';
-  }
-
-  const normalized = value.toLowerCase().slice(0, 2);
-  return isSupportedLocale(normalized) ? normalized : 'fr';
-}
-
-export function getLocaleDirection(locale: AppLocale, isRtl?: boolean): 'ltr' | 'rtl' {
-  return isRtl === true || locale === 'ar' ? 'rtl' : 'ltr';
+export function normalizeLocale(value?: string | null): AppLocale {
+  return value === 'ar' || value === 'tr' || value === 'en' ? value : 'fr';
 }
 
 export function getCopy(locale: AppLocale) {
-  return copy[locale];
+  return translations[locale] || translations.fr;
+}
+
+export function getPreferredLocale(): AppLocale {
+  if (typeof window === 'undefined') return 'fr';
+  
+  const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
+  if (stored) {
+    return normalizeLocale(stored);
+  }
+  
+  const browserLang = navigator.language.split('-')[0];
+  return normalizeLocale(browserLang);
+}
+
+export function storePreferredLocale(locale: AppLocale): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+}
+
+export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.lang = locale;
+  document.documentElement.dir = isRtl ?? locale === 'ar' ? 'rtl' : 'ltr';
+}
+
+export function storeAuthSession(token: string, user: StoredAuthUser): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  storePreferredLocale(normalizeLocale(user.language));
+}
+
+export function clearAuthSession(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(USER_STORAGE_KEY);
 }
 
 export function getStoredUser(): StoredAuthUser | null {
   if (typeof window === 'undefined') return null;
-  const raw = window.localStorage.getItem(AUTH_USER_KEY);
+
+  const raw = localStorage.getItem(USER_STORAGE_KEY);
   if (!raw) return null;
 
   try {
     return JSON.parse(raw) as StoredAuthUser;
   } catch {
+    clearAuthSession();
     return null;
   }
 }
 
-export function getPreferredLocale(): AppLocale {
-  if (typeof window === 'undefined') return 'fr';
+export function getDisplayName(user?: StoredAuthUser | null): string {
+  if (!user) return 'Leopardo RH';
 
-  const storedUser = getStoredUser();
-  if (storedUser?.language) {
-    return normalizeLocale(storedUser.language);
-  }
-
-  const raw = window.localStorage.getItem(PREFERRED_LOCALE_KEY);
-  if (raw) {
-    return normalizeLocale(raw);
-  }
-
-  return normalizeLocale(window.navigator.language);
+  const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ').trim();
+  return fullName || user.name || user.email || 'Leopardo RH';
 }
 
-export function storePreferredLocale(locale: AppLocale) {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(PREFERRED_LOCALE_KEY, locale);
-}
-
-export function storeAuthSession(token: string, user: StoredAuthUser) {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(AUTH_TOKEN_KEY, token);
-  window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-  storePreferredLocale(normalizeLocale(user.language));
-}
-
-export function clearAuthSession() {
-  if (typeof window === 'undefined') return;
-  window.localStorage.removeItem(AUTH_TOKEN_KEY);
-  window.localStorage.removeItem(AUTH_USER_KEY);
-  window.localStorage.removeItem(PREFERRED_LOCALE_KEY);
-}
-
-export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean) {
-  if (typeof document === 'undefined') return;
-  document.documentElement.lang = locale;
-  document.documentElement.dir = getLocaleDirection(locale, isRtl);
-}
-
-export function getDisplayName(user: StoredAuthUser | null) {
-  if (!user) return '';
-  const fullName = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-  return fullName || user.email || 'Leopardo RH';
-}
-
-export function getApiErrorMessage(payload: unknown, fallback: string) {
+export function getApiErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== 'object') {
     return fallback;
   }
 
   const data = payload as Record<string, unknown>;
-  if (typeof data.localized_message === 'string' && data.localized_message.trim() !== '') {
-    return data.localized_message;
-  }
 
-  if (typeof data.message === 'string' && data.message.trim() !== '') {
-    return data.message;
-  }
+  if (typeof data.localized_message === 'string') return data.localized_message;
+  if (typeof data.message === 'string') return data.message;
+  if (typeof data.error === 'string') return data.error;
 
   return fallback;
 }

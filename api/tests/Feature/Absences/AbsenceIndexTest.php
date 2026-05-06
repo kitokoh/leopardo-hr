@@ -298,6 +298,21 @@ class AbsenceIndexTest extends TestCase
         $response->assertJsonPath('data.0.employee_id', $employee1->id);
     }
 
+    public function test_manager_cannot_filter_by_another_tenant_employee_id(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+        $managerA = Employee::factory()->create(['company_id' => $companyA->id, 'role' => 'manager', 'manager_role' => 'principal']);
+        $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
+
+        Sanctum::actingAs($managerA);
+
+        $response = $this->getJson("/api/v1/absences?employee_id={$employeeB->id}");
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['employee_id']);
+    }
+
     public function test_filter_by_status(): void
     {
         $company = Company::query()->create([
