@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.89] - 2026-05-06
+
+### Mobile - Android release build
+
+- Mobile : suppression de la dependance `flutter_haptic`, inutilisee dans le code et incompatible avec le build Android release CI faute de `namespace` declare.
+
 ## [4.1.88] - 2026-05-06
 
 ### Render - Release integration hardening
