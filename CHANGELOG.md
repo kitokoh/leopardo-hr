@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.91] - 2026-05-06
+
+### CI - Ciblage web par chemins
+
+- CI : limitation des workflows web `build.yml`, `lint.yml` et `test.yml` aux modifications de `web/**` ou de leur propre fichier YAML pour eviter les executions inutiles sur des PR backend, mobile ou documentation.
+
 ## [4.1.90] - 2026-05-06
 
 ### CI - Workflows GitHub
