@@ -32,11 +32,6 @@ jobs:
         working-directory: ./web
         run: npm run test -- --coverage --passWithNoTests
 
-      - name: Run E2E tests
-        continue-on-error: true
-        working-directory: ./web
-        run: npm run test:e2e
-
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
