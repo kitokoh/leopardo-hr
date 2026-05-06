@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.93] - 2026-05-07
+
+### Mobile - Durcissement du contrat attendance
+
+- Mobile : durcissement du parsing des modeles `Employee` et `AttendanceLog` pour mieux tolerer les ecarts de types dans les payloads (`int.tryParse`, champs employe imbriques, `photo_url`/`photo_path`).
+- Mobile : enrichissement du mapping `AttendanceRepository` pour recuperer proprement les metadonnees employe exposees dans les reponses attendance.
+- Tests : ajout d'une couverture explicite du payload `/api/v1/attendance` dans `MobilePayloadContractTest` pour verrouiller le contrat mobile de l'historique.
+
 ## [4.1.92] - 2026-05-06
 
 ### Mobile - Federation UX et dependances
