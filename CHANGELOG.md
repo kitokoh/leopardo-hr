@@ -55,6 +55,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-05
+
+### ⚡ Bolt - Performance et optimisation HR Referentials
+
+- API : optimisation de `DepartmentController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `manager`, évitant ainsi la sur-récupération de données.
+- API : optimisation de `PositionController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `department`, évitant ainsi la sur-récupération de données.
+
 ## [4.1.86] - 2026-05-03
 
 ### ⚡ Bolt - Performance et optimisation Employee
