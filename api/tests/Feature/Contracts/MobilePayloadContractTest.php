@@ -338,4 +338,74 @@ class MobilePayloadContractTest extends TestCase
         ]);
         $response->assertJsonPath('meta.per_page', 10);
     }
+
+    public function test_attendance_history_payload_matches_mobile_contract(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'matricule' => 'EMP-H',
+            'first_name' => 'Hassen',
+            'last_name' => 'B.',
+            'email' => 'hassen@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        AttendanceLog::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'date' => '2026-04-15',
+            'session_number' => 1,
+            'check_in' => Carbon::parse('2026-04-15 08:00:00', 'UTC'),
+            'check_out' => Carbon::parse('2026-04-15 17:00:00', 'UTC'),
+            'hours_worked' => 9.00,
+            'overtime_hours' => 1.00,
+            'status' => 'ontime',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/attendance?date_from=2026-04-01&date_to=2026-04-30');
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => [
+                    'id',
+                    'employee_id',
+                    'employee' => [
+                        'id',
+                        'name',
+                        'matricule',
+                        'photo_url',
+                    ],
+                    'date',
+                    'check_in',
+                    'check_out',
+                    'hours_worked',
+                    'overtime_hours',
+                    'status',
+                    'late_minutes',
+                ],
+            ],
+            'meta' => [
+                'current_page',
+                'per_page',
+                'total',
+            ],
+        ]);
+    }
 }
