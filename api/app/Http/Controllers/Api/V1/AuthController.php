@@ -13,11 +13,11 @@ use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
 use App\Models\Language;
 use App\Services\AuthService;
-use Laravel\Socialite\Facades\Socialite;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {

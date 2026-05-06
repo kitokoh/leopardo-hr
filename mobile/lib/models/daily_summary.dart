@@ -17,21 +17,26 @@ class DailySummary {
 
   factory DailySummary.fromJson(Map<String, dynamic> json) {
     return DailySummary(
-      hoursWorked: json['hours_worked'] != null
-          ? (json['hours_worked'] as num).toDouble()
-          : 0.0,
-      overtimeHours: json['overtime_hours'] != null
-          ? (json['overtime_hours'] as num).toDouble()
-          : 0.0,
-      baseGain: json['base_gain'] != null
-          ? (json['base_gain'] as num).toDouble()
-          : 0.0,
-      overtimeGain: json['overtime_gain'] != null
-          ? (json['overtime_gain'] as num).toDouble()
-          : 0.0,
-      totalEstimated: json['total_estimated'] != null
-          ? (json['total_estimated'] as num).toDouble()
-          : 0.0,
+      hoursWorked:
+          json['hours_worked'] != null
+              ? (json['hours_worked'] as num).toDouble()
+              : 0.0,
+      overtimeHours:
+          json['overtime_hours'] != null
+              ? (json['overtime_hours'] as num).toDouble()
+              : 0.0,
+      baseGain:
+          json['base_gain'] != null
+              ? (json['base_gain'] as num).toDouble()
+              : 0.0,
+      overtimeGain:
+          json['overtime_gain'] != null
+              ? (json['overtime_gain'] as num).toDouble()
+              : 0.0,
+      totalEstimated:
+          json['total_estimated'] != null
+              ? (json['total_estimated'] as num).toDouble()
+              : 0.0,
       currency: json['currency'] ?? 'DA',
     );
   }

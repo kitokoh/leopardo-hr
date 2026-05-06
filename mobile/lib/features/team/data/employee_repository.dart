@@ -117,17 +117,20 @@ class Invitation {
       id: json['id'].toString(),
       email: (json['email'] ?? '') as String,
       status: (json['status'] ?? 'pending') as String,
-      expiresAt: json['expires_at'] != null
-          ? DateTime.tryParse(json['expires_at'].toString())
-          : null,
-      sentAt: json['last_sent_at'] != null
-          ? DateTime.tryParse(json['last_sent_at'].toString())
-          : (json['sent_at'] != null
-              ? DateTime.tryParse(json['sent_at'].toString())
-              : null),
-      employeeId: json['employee_id'] is num
-          ? (json['employee_id'] as num).toInt()
-          : null,
+      expiresAt:
+          json['expires_at'] != null
+              ? DateTime.tryParse(json['expires_at'].toString())
+              : null,
+      sentAt:
+          json['last_sent_at'] != null
+              ? DateTime.tryParse(json['last_sent_at'].toString())
+              : (json['sent_at'] != null
+                  ? DateTime.tryParse(json['sent_at'].toString())
+                  : null),
+      employeeId:
+          json['employee_id'] is num
+              ? (json['employee_id'] as num).toInt()
+              : null,
     );
   }
 }

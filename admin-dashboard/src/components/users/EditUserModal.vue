@@ -2,7 +2,7 @@
   <div class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div 
+      <div
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
         @click="$emit('close')"
       ></div>
@@ -22,8 +22,8 @@
                 <div class="mt-4 space-y-4">
                   <!-- Avatar -->
                   <div class="flex items-center space-x-4">
-                    <img 
-                      :src="user?.avatar" 
+                    <img
+                      :src="user?.avatar"
                       :alt="user?.name"
                       class="h-16 w-16 rounded-full"
                     />
@@ -174,7 +174,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Actions -->
           <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
@@ -191,7 +191,7 @@
               </span>
               <span v-else>Mettre à jour</span>
             </button>
-            
+
             <button
               type="button"
               @click="$emit('close')"
@@ -268,17 +268,17 @@ function populateForm() {
 
 async function handleSubmit() {
   isLoading.value = true
-  
+
   try {
     // Validate form
     if (!form.name || !form.email || !form.role) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return
     }
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
+
     // Create updated user object
     const updatedUser = {
       ...props.user,
@@ -290,10 +290,10 @@ async function handleSubmit() {
       company: companies.value.find(c => c.id === parseInt(form.companyId)) || null,
       updatedAt: new Date()
     }
-    
+
     toast.success('Utilisateur mis à jour avec succès')
     emit('updated', updatedUser)
-    
+
   } catch (error) {
     console.error('Failed to update user:', error)
     toast.error('Erreur lors de la mise à jour de l\'utilisateur')

@@ -9,10 +9,10 @@
             Analyse approfondie des performances et tendances
           </p>
         </div>
-        
+
         <!-- Filters -->
         <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-          <select 
+          <select
             v-model="selectedPeriod"
             @change="updateAnalytics"
             class="rounded-md border-gray-300 text-sm"
@@ -22,8 +22,8 @@
             <option value="90d">3 derniers mois</option>
             <option value="1y">Cette année</option>
           </select>
-          
-          <select 
+
+          <select
             v-model="selectedMetric"
             @change="updateAnalytics"
             class="rounded-md border-gray-300 text-sm"
@@ -33,7 +33,7 @@
             <option value="engagement">Engagement</option>
             <option value="churn">Churn</option>
           </select>
-          
+
           <button
             @click="exportReport"
             class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -148,7 +148,7 @@
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-medium text-gray-900">Segmentation Utilisateurs</h3>
         <div class="flex items-center space-x-3">
-          <select 
+          <select
             v-model="selectedSegmentation"
             class="text-sm border-gray-300 rounded-md"
           >
@@ -198,8 +198,8 @@ import {
   DocumentArrowDownIcon,
   InformationCircleIcon,
   ArrowPathIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   CurrencyEuroIcon,
   UserPlusIcon
 } from '@heroicons/vue/24/outline'
@@ -259,7 +259,7 @@ onMounted(async () => {
 // Methods
 async function loadAnalytics() {
   isLoading.value = true
-  
+
   try {
     // Simulate API calls for different analytics data
     await Promise.all([
@@ -280,7 +280,7 @@ async function loadAnalytics() {
 async function loadCohortData() {
   // Simulate cohort analysis data
   await new Promise(resolve => setTimeout(resolve, 500))
-  
+
   analytics.cohortData = [
     { month: 'Jan 2026', week0: 100, week1: 85, week2: 72, week3: 65, week4: 58 },
     { month: 'Fév 2026', week0: 100, week1: 88, week2: 75, week3: 68, week4: 62 },
@@ -292,7 +292,7 @@ async function loadCohortData() {
 async function loadFunnelData() {
   // Simulate funnel data
   await new Promise(resolve => setTimeout(resolve, 300))
-  
+
   analytics.funnelData = [
     { stage: 'Visiteurs', value: 10000, conversion: 100 },
     { stage: 'Inscriptions', value: 2500, conversion: 25 },
@@ -305,7 +305,7 @@ async function loadFunnelData() {
 async function loadSegmentationData() {
   // Simulate segmentation data
   await new Promise(resolve => setTimeout(resolve, 400))
-  
+
   analytics.segmentationData = [
     { segment: 'Champions', users: 450, value: 'Très élevée', color: '#10B981' },
     { segment: 'Loyaux', users: 680, value: 'Élevée', color: '#3B82F6' },
@@ -318,7 +318,7 @@ async function loadSegmentationData() {
 async function loadBenchmarkData() {
   // Simulate benchmark data
   await new Promise(resolve => setTimeout(resolve, 350))
-  
+
   analytics.benchmarkData = [
     { metric: 'Taux de conversion', our: 12.5, industry: 8.2, status: 'above' },
     { metric: 'Churn mensuel', our: 3.2, industry: 5.1, status: 'above' },
@@ -331,7 +331,7 @@ async function loadBenchmarkData() {
 async function loadInsights() {
   // Simulate AI-generated insights
   await new Promise(resolve => setTimeout(resolve, 600))
-  
+
   analytics.insights = [
     {
       id: 1,
@@ -380,7 +380,7 @@ async function exportReport() {
     // Simulate report generation
     toast.info('Génération du rapport en cours...')
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // Create and download mock report
     const reportData = {
       period: selectedPeriod.value,
@@ -388,7 +388,7 @@ async function exportReport() {
       generated: new Date().toISOString(),
       data: analytics
     }
-    
+
     const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -398,7 +398,7 @@ async function exportReport() {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-    
+
     toast.success('Rapport exporté avec succès')
   } catch (error) {
     console.error('Export failed:', error)

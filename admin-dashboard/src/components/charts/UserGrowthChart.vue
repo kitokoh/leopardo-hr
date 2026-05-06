@@ -1,12 +1,12 @@
 <template>
   <div class="relative">
-    <div 
+    <div
       ref="chartContainer"
       class="h-64 w-full"
     ></div>
-    
+
     <!-- Loading overlay -->
-    <div 
+    <div
       v-if="isLoading"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75"
     >
@@ -34,7 +34,7 @@ onMounted(async () => {
   await nextTick()
   await loadData()
   initChart()
-  
+
   // Handle window resize
   window.addEventListener('resize', handleResize)
 })
@@ -49,36 +49,36 @@ onUnmounted(() => {
 async function loadData() {
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   // Generate mock data for the last 30 days
   const dates = []
   const newUsers = []
   const totalUsers = []
-  
+
   let total = 1000 // Starting total
-  
+
   for (let i = 29; i >= 0; i--) {
     const date = new Date()
     date.setDate(date.getDate() - i)
     dates.push(date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' }))
-    
+
     // Random new users between 5-50
     const newUsersCount = Math.floor(Math.random() * 45) + 5
     newUsers.push(newUsersCount)
-    
+
     total += newUsersCount
     totalUsers.push(total)
   }
-  
+
   chartData.value = { dates, newUsers, totalUsers }
   isLoading.value = false
 }
 
 function initChart() {
   if (!chartContainer.value) return
-  
+
   chart.value = echarts.init(chartContainer.value)
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -91,7 +91,7 @@ function initChart() {
       formatter: function(params) {
         let result = `<div class="font-medium">${params[0].axisValue}</div>`
         params.forEach(param => {
-          const value = param.seriesName === 'Total Utilisateurs' 
+          const value = param.seriesName === 'Total Utilisateurs'
             ? param.value.toLocaleString('fr-FR')
             : param.value
           result += `
@@ -197,7 +197,7 @@ function initChart() {
       }
     ]
   }
-  
+
   chart.value.setOption(option)
 }
 

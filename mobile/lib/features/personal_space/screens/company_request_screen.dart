@@ -9,7 +9,8 @@ class CompanyRequestScreen extends ConsumerStatefulWidget {
   const CompanyRequestScreen({super.key});
 
   @override
-  ConsumerState<CompanyRequestScreen> createState() => _CompanyRequestScreenState();
+  ConsumerState<CompanyRequestScreen> createState() =>
+      _CompanyRequestScreenState();
 }
 
 class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
@@ -43,16 +44,19 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
 
     try {
       final apiClient = ref.read(apiClientProvider);
-      await apiClient.dio.post('/company-requests', data: {
-        'company_name': _companyNameController.text.trim(),
-        'sector': _sectorController.text.trim(),
-        'country': 'DZ', // Default for MVP
-        'city': _cityController.text.trim(),
-        'manager_name': _managerNameController.text.trim(),
-        'manager_id_card': _managerIdCardController.text.trim(),
-        'manager_phone': _managerPhoneController.text.trim(),
-        'notes': _notesController.text.trim(),
-      });
+      await apiClient.dio.post(
+        '/company-requests',
+        data: {
+          'company_name': _companyNameController.text.trim(),
+          'sector': _sectorController.text.trim(),
+          'country': 'DZ', // Default for MVP
+          'city': _cityController.text.trim(),
+          'manager_name': _managerNameController.text.trim(),
+          'manager_id_card': _managerIdCardController.text.trim(),
+          'manager_phone': _managerPhoneController.text.trim(),
+          'notes': _notesController.text.trim(),
+        },
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -62,9 +66,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur : $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -85,19 +89,42 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
             children: [
               Text(
                 'Parlez-nous de votre entreprise',
-                style: AppTypography.title.copyWith(color: AppColors.textPrimaryFor(context)),
+                style: AppTypography.title.copyWith(
+                  color: AppColors.textPrimaryFor(context),
+                ),
               ),
               const SizedBox(height: 24),
               _buildSectionTitle('Informations Entreprise'),
-              _buildField(_companyNameController, 'Nom de l\'entreprise', Icons.business),
-              _buildField(_sectorController, 'Secteur d\'activité', Icons.category),
+              _buildField(
+                _companyNameController,
+                'Nom de l\'entreprise',
+                Icons.business,
+              ),
+              _buildField(
+                _sectorController,
+                'Secteur d\'activité',
+                Icons.category,
+              ),
               _buildField(_cityController, 'Ville', Icons.location_city),
 
               const SizedBox(height: 24),
               _buildSectionTitle('Détails du Responsable'),
-              _buildField(_managerNameController, 'Nom complet du responsable', Icons.person),
-              _buildField(_managerIdCardController, 'N° Carte d\'identité (Optionnel)', Icons.badge, required: false),
-              _buildField(_managerPhoneController, 'Téléphone du responsable', Icons.phone),
+              _buildField(
+                _managerNameController,
+                'Nom complet du responsable',
+                Icons.person,
+              ),
+              _buildField(
+                _managerIdCardController,
+                'N° Carte d\'identité (Optionnel)',
+                Icons.badge,
+                required: false,
+              ),
+              _buildField(
+                _managerPhoneController,
+                'Téléphone du responsable',
+                Icons.phone,
+              ),
 
               const SizedBox(height: 24),
               _buildSectionTitle('Notes Complémentaires'),
@@ -111,9 +138,10 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
-                child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Envoyer la demande'),
+                child:
+                    _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('Envoyer la demande'),
               ),
             ],
           ),
@@ -135,16 +163,19 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
     );
   }
 
-  Widget _buildField(TextEditingController controller, String label, IconData icon, {bool required = true}) {
+  Widget _buildField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool required = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon),
-        ),
-        validator: required ? (v) => (v ?? '').isEmpty ? 'Obligatoire' : null : null,
+        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
+        validator:
+            required ? (v) => (v ?? '').isEmpty ? 'Obligatoire' : null : null,
       ),
     );
   }

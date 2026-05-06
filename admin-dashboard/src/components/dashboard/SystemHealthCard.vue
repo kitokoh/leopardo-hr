@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-medium text-gray-900">État du Système</h3>
         <div class="flex items-center">
-          <div 
+          <div
             :class="[
               'h-3 w-3 rounded-full mr-2',
               healthStatus.color === 'green' ? 'bg-green-400' :
@@ -28,7 +28,7 @@
           <span class="text-sm text-gray-600">Temps de réponse API</span>
           <div class="flex items-center">
             <div class="w-20 bg-gray-200 rounded-full h-2 mr-3">
-              <div 
+              <div
                 class="bg-green-400 h-2 rounded-full transition-all duration-300"
                 :style="{ width: `${Math.min(apiResponseTime / 10, 100)}%` }"
               ></div>
@@ -42,7 +42,7 @@
           <span class="text-sm text-gray-600">Connexions DB</span>
           <div class="flex items-center">
             <div class="w-20 bg-gray-200 rounded-full h-2 mr-3">
-              <div 
+              <div
                 class="bg-blue-400 h-2 rounded-full transition-all duration-300"
                 :style="{ width: `${(dbConnections / maxDbConnections) * 100}%` }"
               ></div>
@@ -56,10 +56,10 @@
           <span class="text-sm text-gray-600">Utilisation mémoire</span>
           <div class="flex items-center">
             <div class="w-20 bg-gray-200 rounded-full h-2 mr-3">
-              <div 
+              <div
                 :class="[
                   'h-2 rounded-full transition-all duration-300',
-                  memoryUsage > 80 ? 'bg-red-400' : 
+                  memoryUsage > 80 ? 'bg-red-400' :
                   memoryUsage > 60 ? 'bg-yellow-400' : 'bg-green-400'
                 ]"
                 :style="{ width: `${memoryUsage}%` }"
@@ -73,7 +73,7 @@
         <div class="flex items-center justify-between">
           <span class="text-sm text-gray-600">WebSocket</span>
           <div class="flex items-center">
-            <div 
+            <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
                 realtimeStore.isConnected ? 'bg-green-400' : 'bg-red-400'
@@ -90,7 +90,7 @@
       <div v-if="criticalAlerts.length > 0" class="mt-6 pt-4 border-t border-gray-200">
         <h4 class="text-sm font-medium text-red-600 mb-2">Alertes Critiques</h4>
         <div class="space-y-2">
-          <div 
+          <div
             v-for="alert in criticalAlerts.slice(0, 3)"
             :key="alert.id"
             class="flex items-start p-2 bg-red-50 rounded-md"
@@ -108,9 +108,9 @@
             </button>
           </div>
         </div>
-        
+
         <div v-if="criticalAlerts.length > 3" class="mt-2">
-          <router-link 
+          <router-link
             to="/system"
             class="text-xs text-red-600 hover:text-red-500 font-medium"
           >
@@ -177,11 +177,11 @@ function dismissAlert(alertId) {
 
 function formatTime(timestamp) {
   if (!timestamp) return 'Jamais'
-  
+
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`

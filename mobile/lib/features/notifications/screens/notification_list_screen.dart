@@ -27,52 +27,60 @@ class NotificationListScreen extends ConsumerWidget {
         ),
       ),
       body: notificationsAsync.when(
-        data: (notifications) => notifications.isEmpty
-            ? const EmptyState(
-                icon: Icons.notifications_none,
-                title: 'Aucune notification',
-                description: 'Vous êtes à jour !',
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(20),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  return Card(
-                    color: AppColors.cardDark,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: Icon(
-                        notification.isRead
-                            ? Icons.notifications_none
-                            : Icons.notifications_active,
-                        color: notification.isRead
-                            ? AppColors.textMutedDark
-                            : AppColors.info,
-                      ),
-                      title: Text(
-                        notification.title,
-                        style: AppTypography.subtitle.copyWith(
-                          color: AppColors.textDark,
-                          fontWeight: notification.isRead
-                              ? FontWeight.normal
-                              : FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(
-                        notification.body,
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textMutedDark,
-                        ),
-                      ),
+        data:
+            (notifications) =>
+                notifications.isEmpty
+                    ? const EmptyState(
+                      icon: Icons.notifications_none,
+                      title: 'Aucune notification',
+                      description: 'Vous êtes à jour !',
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: notifications.length,
+                      itemBuilder: (context, index) {
+                        final notification = notifications[index];
+                        return Card(
+                          color: AppColors.cardDark,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            leading: Icon(
+                              notification.isRead
+                                  ? Icons.notifications_none
+                                  : Icons.notifications_active,
+                              color:
+                                  notification.isRead
+                                      ? AppColors.textMutedDark
+                                      : AppColors.info,
+                            ),
+                            title: Text(
+                              notification.title,
+                              style: AppTypography.subtitle.copyWith(
+                                color: AppColors.textDark,
+                                fontWeight:
+                                    notification.isRead
+                                        ? FontWeight.normal
+                                        : FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              notification.body,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textMutedDark,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
-        ),
+        error:
+            (e, _) => Center(
+              child: Text(
+                e.toString(),
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
       ),
     );
   }

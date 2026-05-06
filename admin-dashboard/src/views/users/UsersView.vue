@@ -9,13 +9,13 @@
             {{ filteredUsers.length }} utilisateur(s) • {{ stats.activeUsers }} actif(s) • {{ stats.newToday }} nouveau(x) aujourd'hui
           </p>
         </div>
-        
+
         <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
           <button
             @click="showBulkActions = !showBulkActions"
             :class="[
               'inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md',
-              selectedUsers.length > 0 
+              selectedUsers.length > 0
                 ? 'border-indigo-300 text-indigo-700 bg-indigo-50 hover:bg-indigo-100'
                 : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
             ]"
@@ -23,7 +23,7 @@
             <CheckCircleIcon class="h-4 w-4 mr-2" />
             Actions groupées ({{ selectedUsers.length }})
           </button>
-          
+
           <button
             @click="exportUsers"
             class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -31,7 +31,7 @@
             <DocumentArrowDownIcon class="h-4 w-4 mr-2" />
             Exporter
           </button>
-          
+
           <button
             @click="showCreateModal = true"
             class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
@@ -59,11 +59,11 @@
             />
           </div>
         </div>
-        
+
         <!-- Status Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-          <select 
+          <select
             v-model="filters.status"
             class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
           >
@@ -74,11 +74,11 @@
             <option value="pending">En attente</option>
           </select>
         </div>
-        
+
         <!-- Role Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
-          <select 
+          <select
             v-model="filters.role"
             class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
           >
@@ -90,7 +90,7 @@
           </select>
         </div>
       </div>
-      
+
       <!-- Advanced Filters Toggle -->
       <div class="mt-4">
         <button
@@ -100,13 +100,13 @@
           {{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés
         </button>
       </div>
-      
+
       <!-- Advanced Filters -->
       <div v-if="showAdvancedFilters" class="mt-4 pt-4 border-t border-gray-200">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Entreprise</label>
-            <select 
+            <select
               v-model="filters.company"
               class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
             >
@@ -116,10 +116,10 @@
               </option>
             </select>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Date d'inscription</label>
-            <select 
+            <select
               v-model="filters.registrationDate"
               class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
             >
@@ -130,10 +130,10 @@
               <option value="quarter">Ce trimestre</option>
             </select>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Dernière connexion</label>
-            <select 
+            <select
               v-model="filters.lastLogin"
               class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
             >
@@ -144,10 +144,10 @@
               <option value="never">Jamais connecté</option>
             </select>
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Segment</label>
-            <select 
+            <select
               v-model="filters.segment"
               class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
             >
@@ -172,7 +172,7 @@
             {{ selectedUsers.length }} utilisateur(s) sélectionné(s)
           </span>
         </div>
-        
+
         <div class="flex items-center space-x-3">
           <button
             @click="bulkAction('activate')"
@@ -221,7 +221,7 @@
         @delete="deleteUser"
         @impersonate="impersonateUser"
       />
-      
+
       <!-- Pagination -->
       <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
         <Pagination
@@ -241,14 +241,14 @@
       @close="showCreateModal = false"
       @created="handleUserCreated"
     />
-    
+
     <EditUserModal
       v-if="showEditModal"
       :user="selectedUser"
       @close="showEditModal = false"
       @updated="handleUserUpdated"
     />
-    
+
     <UserDetailModal
       v-if="showDetailModal"
       :user="selectedUser"
@@ -323,7 +323,7 @@ const filteredUsers = computed(() => {
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(user => 
+    filtered = filtered.filter(user =>
       user.name.toLowerCase().includes(query) ||
       user.email.toLowerCase().includes(query) ||
       user.company?.name.toLowerCase().includes(query)
@@ -386,11 +386,11 @@ watch([searchQuery, filters], () => {
 // Methods
 async function loadUsers() {
   isLoading.value = true
-  
+
   try {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     // Generate mock users
     users.value = generateMockUsers(150)
   } catch (error) {
@@ -417,7 +417,7 @@ function generateMockUsers(count) {
   const statuses = ['active', 'inactive', 'suspended', 'pending']
   const roles = ['admin', 'manager', 'employee', 'hr']
   const segments = ['champions', 'loyal', 'potential', 'new', 'at-risk']
-  
+
   for (let i = 1; i <= count; i++) {
     mockUsers.push({
       id: i,
@@ -432,16 +432,16 @@ function generateMockUsers(count) {
       avatar: `https://ui-avatars.com/api/?name=Utilisateur+${i}&background=random`
     })
   }
-  
+
   return mockUsers
 }
 
 function updateStats() {
   stats.totalUsers = users.value.length
   stats.activeUsers = users.value.filter(u => u.status === 'active').length
-  
+
   const today = new Date().toDateString()
-  stats.newToday = users.value.filter(u => 
+  stats.newToday = users.value.filter(u =>
     new Date(u.createdAt).toDateString() === today
   ).length
 }
@@ -471,7 +471,7 @@ async function bulkAction(action) {
   try {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     switch (action) {
       case 'activate':
         toast.success(`${selectedUsers.value.length} utilisateur(s) activé(s)`)
@@ -486,7 +486,7 @@ async function bulkAction(action) {
         exportSelectedUsers()
         return
     }
-    
+
     clearSelection()
     await loadUsers()
   } catch (error) {
@@ -510,7 +510,7 @@ async function deleteUser(user) {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       toast.success('Utilisateur supprimé')
       await loadUsers()
     } catch (error) {
@@ -540,16 +540,16 @@ function handleUserUpdated(user) {
 async function exportUsers() {
   try {
     toast.info('Export en cours...')
-    
+
     // Simulate export
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    const csvContent = "data:text/csv;charset=utf-8," + 
+
+    const csvContent = "data:text/csv;charset=utf-8," +
       "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
-      filteredUsers.value.map(user => 
+      filteredUsers.value.map(user =>
         `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
       ).join('\n')
-    
+
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement("a")
     link.setAttribute("href", encodedUri)
@@ -557,7 +557,7 @@ async function exportUsers() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    
+
     toast.success('Export terminé')
   } catch (error) {
     console.error('Export failed:', error)
@@ -567,13 +567,13 @@ async function exportUsers() {
 
 function exportSelectedUsers() {
   const selectedUserData = users.value.filter(u => selectedUsers.value.includes(u.id))
-  
-  const csvContent = "data:text/csv;charset=utf-8," + 
+
+  const csvContent = "data:text/csv;charset=utf-8," +
     "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
-    selectedUserData.map(user => 
+    selectedUserData.map(user =>
       `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
     ).join('\n')
-  
+
   const encodedUri = encodeURI(csvContent)
   const link = document.createElement("a")
   link.setAttribute("href", encodedUri)
@@ -581,7 +581,7 @@ function exportSelectedUsers() {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
-  
+
   toast.success('Export de la sélection terminé')
 }
 </script>

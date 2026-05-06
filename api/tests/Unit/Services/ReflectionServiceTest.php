@@ -12,20 +12,20 @@ class ReflectionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->reflectionService = new ReflectionService();
+        $this->reflectionService = new ReflectionService;
     }
 
     public function test_can_analyze_class(): void
     {
         $classInfo = $this->reflectionService->analyzeClass(ReflectionService::class);
-        
+
         $this->assertIsArray($classInfo);
         $this->assertArrayHasKey('name', $classInfo);
         $this->assertArrayHasKey('short_name', $classInfo);
         $this->assertArrayHasKey('namespace', $classInfo);
         $this->assertArrayHasKey('methods', $classInfo);
         $this->assertArrayHasKey('attributes', $classInfo);
-        
+
         $this->assertEquals(ReflectionService::class, $classInfo['name']);
         $this->assertEquals('ReflectionService', $classInfo['short_name']);
     }
@@ -36,14 +36,14 @@ class ReflectionServiceTest extends TestCase
             ReflectionService::class,
             'analyzeClass'
         );
-        
+
         $this->assertIsArray($methodInfo);
         $this->assertArrayHasKey('name', $methodInfo);
         $this->assertArrayHasKey('class', $methodInfo);
         $this->assertArrayHasKey('visibility', $methodInfo);
         $this->assertArrayHasKey('parameters', $methodInfo);
         $this->assertArrayHasKey('signature', $methodInfo);
-        
+
         $this->assertEquals('analyzeClass', $methodInfo['name']);
         $this->assertEquals('public', $methodInfo['visibility']);
     }
@@ -54,14 +54,14 @@ class ReflectionServiceTest extends TestCase
         $isApiController = $this->reflectionService->isApiController(
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
-        
+
         $this->assertTrue($isApiController);
-        
+
         // Test avec une classe qui n'est pas un contrôleur API
         $isNotApiController = $this->reflectionService->isApiController(
             ReflectionService::class
         );
-        
+
         $this->assertFalse($isNotApiController);
     }
 
@@ -71,11 +71,11 @@ class ReflectionServiceTest extends TestCase
             ReflectionService::class,
             'analyzeMethod'
         );
-        
+
         $this->assertArrayHasKey('parameters', $methodInfo);
         $this->assertIsArray($methodInfo['parameters']);
         $this->assertCount(2, $methodInfo['parameters']); // className et methodName
-        
+
         $firstParam = $methodInfo['parameters'][0];
         $this->assertArrayHasKey('name', $firstParam);
         $this->assertArrayHasKey('type', $firstParam);
@@ -89,7 +89,7 @@ class ReflectionServiceTest extends TestCase
             ReflectionService::class,
             'analyzeClass'
         );
-        
+
         $this->assertArrayHasKey('signature', $methodInfo);
         $this->assertStringContainsString('analyzeClass', $methodInfo['signature']);
         $this->assertStringContainsString('string $className', $methodInfo['signature']);

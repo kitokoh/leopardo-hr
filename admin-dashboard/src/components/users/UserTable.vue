@@ -12,7 +12,7 @@
               class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             />
           </th>
-          <th 
+          <th
             v-for="column in columns"
             :key="column.key"
             scope="col"
@@ -25,13 +25,13 @@
             <div class="flex items-center space-x-1">
               <span>{{ column.label }}</span>
               <div v-if="column.sortable" class="flex flex-col">
-                <ChevronUpIcon 
+                <ChevronUpIcon
                   :class="[
                     'h-3 w-3',
                     sortBy === column.key && sortOrder === 'asc' ? 'text-indigo-600' : 'text-gray-400'
                   ]"
                 />
-                <ChevronDownIcon 
+                <ChevronDownIcon
                   :class="[
                     'h-3 w-3 -mt-1',
                     sortBy === column.key && sortOrder === 'desc' ? 'text-indigo-600' : 'text-gray-400'
@@ -55,7 +55,7 @@
             </div>
           </td>
         </tr>
-        
+
         <!-- Empty state -->
         <tr v-else-if="users.length === 0">
           <td colspan="8" class="px-6 py-12 text-center">
@@ -66,9 +66,9 @@
             </p>
           </td>
         </tr>
-        
+
         <!-- User rows -->
-        <tr 
+        <tr
           v-for="user in sortedUsers"
           :key="user.id"
           :class="[
@@ -84,13 +84,13 @@
               class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
             />
           </td>
-          
+
           <!-- Avatar & Name -->
           <td class="whitespace-nowrap px-6 py-4">
             <div class="flex items-center">
               <div class="h-10 w-10 flex-shrink-0">
-                <img 
-                  :src="user.avatar" 
+                <img
+                  :src="user.avatar"
                   :alt="user.name"
                   class="h-10 w-10 rounded-full"
                 />
@@ -101,10 +101,10 @@
               </div>
             </div>
           </td>
-          
+
           <!-- Status -->
           <td class="whitespace-nowrap px-6 py-4">
-            <span 
+            <span
               :class="[
                 'inline-flex rounded-full px-2 text-xs font-semibold leading-5',
                 getStatusColor(user.status)
@@ -113,10 +113,10 @@
               {{ getStatusLabel(user.status) }}
             </span>
           </td>
-          
+
           <!-- Role -->
           <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-            <span 
+            <span
               :class="[
                 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                 getRoleColor(user.role)
@@ -125,15 +125,15 @@
               {{ getRoleLabel(user.role) }}
             </span>
           </td>
-          
+
           <!-- Company -->
           <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
             {{ user.company?.name || '-' }}
           </td>
-          
+
           <!-- Segment -->
           <td class="whitespace-nowrap px-6 py-4">
-            <span 
+            <span
               :class="[
                 'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
                 getSegmentColor(user.segment)
@@ -142,17 +142,17 @@
               {{ getSegmentLabel(user.segment) }}
             </span>
           </td>
-          
+
           <!-- Last Login -->
           <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
             {{ formatLastLogin(user.lastLoginAt) }}
           </td>
-          
+
           <!-- Created At -->
           <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
             {{ formatDate(user.createdAt) }}
           </td>
-          
+
           <!-- Actions -->
           <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
             <div class="flex items-center justify-end space-x-2">
@@ -247,27 +247,27 @@ const isIndeterminate = computed(() => {
 
 const sortedUsers = computed(() => {
   if (!sortBy.value) return props.users
-  
+
   return [...props.users].sort((a, b) => {
     let aValue = a[sortBy.value]
     let bValue = b[sortBy.value]
-    
+
     // Handle nested properties
     if (sortBy.value === 'company') {
       aValue = a.company?.name || ''
       bValue = b.company?.name || ''
     }
-    
+
     // Handle dates
     if (sortBy.value === 'createdAt' || sortBy.value === 'lastLoginAt') {
       aValue = aValue ? new Date(aValue) : new Date(0)
       bValue = bValue ? new Date(bValue) : new Date(0)
     }
-    
+
     // Convert to string for comparison
     aValue = String(aValue).toLowerCase()
     bValue = String(bValue).toLowerCase()
-    
+
     if (sortOrder.value === 'asc') {
       return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
     } else {
@@ -350,16 +350,16 @@ function getSegmentLabel(segment) {
 
 function formatLastLogin(date) {
   if (!date) return 'Jamais'
-  
+
   const now = new Date()
   const loginDate = new Date(date)
   const diff = now - loginDate
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
   if (diff < 604800000) return `${Math.floor(diff / 86400000)}j`
-  
+
   return loginDate.toLocaleDateString('fr-FR')
 }
 

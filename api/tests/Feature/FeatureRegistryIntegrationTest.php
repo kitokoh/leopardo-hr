@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Contracts\FeatureRegistryInterface;
 use App\Models\Feature;
 use Tests\RefreshTenantDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 /**
@@ -45,11 +44,11 @@ class FeatureRegistryIntegrationTest extends TestCase
             'http_methods' => ['GET', 'POST'],
             'parameters' => [
                 'id' => ['type' => 'integer', 'required' => true],
-                'name' => ['type' => 'string', 'required' => false]
+                'name' => ['type' => 'string', 'required' => false],
             ],
             'response_schema' => [
                 'data' => ['type' => 'object'],
-                'message' => ['type' => 'string']
+                'message' => ['type' => 'string'],
             ],
             'permissions' => ['integration.test'],
             'mobile_version_min' => '1.0.0',
@@ -59,8 +58,8 @@ class FeatureRegistryIntegrationTest extends TestCase
             'metadata' => [
                 'ui_type' => 'form',
                 'controller_class' => 'App\\Http\\Controllers\\TestController',
-                'controller_method' => 'store'
-            ]
+                'controller_method' => 'store',
+            ],
         ];
 
         $feature = new Feature($featureData);
@@ -76,7 +75,7 @@ class FeatureRegistryIntegrationTest extends TestCase
 
         // Act & Assert - Update feature
         $this->registry->updateFeature('integration_test_feature', [
-            'test_metadata' => 'test_value'
+            'test_metadata' => 'test_value',
         ]);
 
         $updatedFeature = $this->registry->getFeature('integration_test_feature');
@@ -116,14 +115,16 @@ class FeatureRegistryIntegrationTest extends TestCase
             'key' => 'v1_feature',
             'api_version' => 'v1',
             'mobile_version_min' => '1.0.0',
-            'status' => 'active'
+            'mobile_version_max' => null,
+            'status' => 'active',
         ]);
 
         Feature::factory()->create([
             'key' => 'v2_feature',
             'api_version' => 'v2',
             'mobile_version_min' => '2.0.0',
-            'status' => 'active'
+            'mobile_version_max' => null,
+            'status' => 'active',
         ]);
 
         // Act
@@ -135,7 +136,7 @@ class FeatureRegistryIntegrationTest extends TestCase
         // Assert
         $this->assertTrue($v1Features->contains('key', 'v1_feature'));
         $this->assertFalse($v1Features->contains('key', 'v2_feature'));
-        
+
         $this->assertTrue($v2Features->contains('key', 'v2_feature'));
         $this->assertFalse($v2Features->contains('key', 'v1_feature'));
 
@@ -154,16 +155,16 @@ class FeatureRegistryIntegrationTest extends TestCase
 
         // Act - First call should hit database
         $firstCall = $this->registry->getFeature('cache_test_feature');
-        
+
         // Modify directly in database to test cache
         $feature->update(['title' => 'Modified Title']);
-        
+
         // Second call should return cached version (old title)
         $secondCall = $this->registry->getFeature('cache_test_feature');
-        
+
         // Invalidate cache
         $this->registry->invalidateCache('cache_test_feature');
-        
+
         // Third call should hit database again (new title)
         $thirdCall = $this->registry->getFeature('cache_test_feature');
 
@@ -171,7 +172,7 @@ class FeatureRegistryIntegrationTest extends TestCase
         $this->assertNotNull($firstCall);
         $this->assertNotNull($secondCall);
         $this->assertNotNull($thirdCall);
-        
+
         // Note: In a real scenario with proper cache, secondCall would have old title
         // and thirdCall would have new title. Here we just verify no exceptions.
     }
@@ -207,14 +208,14 @@ class FeatureRegistryIntegrationTest extends TestCase
             'key' => 'old_feature',
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => '1.5.0',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Feature::factory()->create([
             'key' => 'new_feature',
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Act
@@ -258,14 +259,14 @@ class FeatureRegistryIntegrationTest extends TestCase
         $this->assertEquals(6, $stats['total_features']);
         $this->assertEquals(4, $stats['active_features']);
         $this->assertEquals(2, $stats['inactive_features']);
-        
+
         $this->assertArrayHasKey('by_api_version', $stats);
         $this->assertArrayHasKey('by_status', $stats);
         $this->assertArrayHasKey('cache_status', $stats);
-        
+
         $this->assertEquals(5, $stats['by_api_version']['v1']);
         $this->assertEquals(1, $stats['by_api_version']['v2']);
-        
+
         $this->assertEquals(4, $stats['by_status']['active']);
         $this->assertEquals(2, $stats['by_status']['inactive']);
     }

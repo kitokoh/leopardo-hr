@@ -28,7 +28,7 @@ onMounted(async () => {
     if (authStore.token) {
       await authStore.checkAuth()
     }
-    
+
     // Rediriger vers login si non authentifié et pas déjà sur la page login
     if (!authStore.isAuthenticated && router.currentRoute.value.name !== 'login') {
       router.push('/login')
@@ -103,11 +103,11 @@ body {
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(10px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }

@@ -34,8 +34,15 @@ class UserHomeScreen extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             children: [
-              _buildHeader(context, user.fullName, user.email, user.avatarUrl,
-                  text, muted, ref),
+              _buildHeader(
+                context,
+                user.fullName,
+                user.email,
+                user.avatarUrl,
+                text,
+                muted,
+                ref,
+              ),
               const SizedBox(height: 24),
               _buildQuickActions(context, muted),
               const SizedBox(height: 24),
@@ -91,16 +98,17 @@ class UserHomeScreen extends ConsumerWidget {
             radius: 28,
             backgroundColor: AppColors.rh,
             backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-            child: avatarUrl == null
-                ? Text(
-                    name.isNotEmpty ? name[0].toUpperCase() : '?',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                : null,
+            child:
+                avatarUrl == null
+                    ? Text(
+                      name.isNotEmpty ? name[0].toUpperCase() : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                    : null,
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -175,10 +183,7 @@ class UserHomeScreen extends ConsumerWidget {
   }
 
   Widget _buildSection(String title, Color muted) {
-    return Text(
-      title,
-      style: AppTypography.subtitle.copyWith(color: muted),
-    );
+    return Text(title, style: AppTypography.subtitle.copyWith(color: muted));
   }
 }
 
@@ -241,10 +246,7 @@ class _EmployeeLinkCard extends StatelessWidget {
   final String companyName;
   final VoidCallback onTap;
 
-  const _EmployeeLinkCard({
-    required this.companyName,
-    required this.onTap,
-  });
+  const _EmployeeLinkCard({required this.companyName, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -278,10 +280,7 @@ class _CompanyRequestCard extends StatelessWidget {
   final String companyName;
   final String status;
 
-  const _CompanyRequestCard({
-    required this.companyName,
-    required this.status,
-  });
+  const _CompanyRequestCard({required this.companyName, required this.status});
 
   @override
   Widget build(BuildContext context) {

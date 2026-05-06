@@ -5,10 +5,7 @@ import 'package:leopardo_rh/models/employee.dart';
 
 void main() {
   test('uses local debug api as default base url when none is provided', () {
-    expect(
-      ApiClient.resolveBaseUrl(),
-      'http://10.0.2.2:8000/api/v1',
-    );
+    expect(ApiClient.resolveBaseUrl(), 'http://10.0.2.2:8000/api/v1');
   });
 
   test('extracts token from root API payload', () {

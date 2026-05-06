@@ -76,7 +76,7 @@
   <div
     v-if="!realtimeStore.isConnected"
     class="fixed inset-x-0 top-0 z-30"
-    :class="{ 
+    :class="{
       'mt-16': showCriticalAlert && !isMaintenanceMode,
       'mt-12': !showCriticalAlert && isMaintenanceMode,
       'mt-28': showCriticalAlert && isMaintenanceMode
@@ -137,14 +137,14 @@ let alertCheckInterval = null
 
 onMounted(() => {
   checkForCriticalAlerts()
-  
+
   // Check for alerts every 30 seconds
   alertCheckInterval = setInterval(checkForCriticalAlerts, 30000)
-  
+
   // Listen for new critical alerts from real-time
   realtimeStore.$subscribe((mutation, state) => {
-    if (mutation.events?.some(event => 
-      event.key === 'notifications' && 
+    if (mutation.events?.some(event =>
+      event.key === 'notifications' &&
       event.type === 'add' &&
       state.notifications[0]?.priority === 'critical'
     )) {
@@ -176,7 +176,7 @@ function checkForCriticalAlerts() {
 function showCriticalAlertBanner(alert) {
   currentCriticalAlert.value = alert
   showCriticalAlert.value = true
-  
+
   // Auto-dismiss after 30 seconds if not critical
   if (alert.level !== 'critical') {
     setTimeout(() => {
@@ -201,7 +201,7 @@ async function disableMaintenanceMode() {
   try {
     // Simulate API call to disable maintenance mode
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     isMaintenanceMode.value = false
     toast.success('Mode maintenance désactivé')
   } catch (error) {

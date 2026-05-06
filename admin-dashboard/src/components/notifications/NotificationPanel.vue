@@ -20,7 +20,7 @@
           <div class="p-4">
             <div class="flex items-start">
               <div class="flex-shrink-0">
-                <component 
+                <component
                   :is="getNotificationIcon(notification.type)"
                   :class="[
                     'h-6 w-6',

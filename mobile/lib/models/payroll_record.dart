@@ -55,15 +55,16 @@ class PayrollRecord {
       periodMonth: (json['period_month'] as num?)?.toInt() ?? 0,
       periodYear: (json['period_year'] as num?)?.toInt() ?? 0,
       status: (json['status'] ?? 'draft') as String,
-      employee: rawEmployee is Map
-          ? Employee.fromJson({
-              'id': rawEmployee['id'] ?? 0,
-              'first_name': rawEmployee['first_name'] ?? '',
-              'last_name': rawEmployee['last_name'] ?? '',
-              'email': rawEmployee['email'] ?? '',
-              'status': rawEmployee['status'] ?? 'active',
-            })
-          : null,
+      employee:
+          rawEmployee is Map
+              ? Employee.fromJson({
+                'id': rawEmployee['id'] ?? 0,
+                'first_name': rawEmployee['first_name'] ?? '',
+                'last_name': rawEmployee['last_name'] ?? '',
+                'email': rawEmployee['email'] ?? '',
+                'status': rawEmployee['status'] ?? 'active',
+              })
+              : null,
       grossSalary: _parseDouble(json['gross_salary']),
       overtimeAmount: _parseDouble(json['overtime_amount']),
       bonuses: _parseDouble(json['bonuses']),

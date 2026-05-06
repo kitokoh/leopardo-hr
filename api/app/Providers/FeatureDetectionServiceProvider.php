@@ -21,7 +21,7 @@ class FeatureDetectionServiceProvider extends ServiceProvider
         // Enregistrer les services de base
         $this->app->singleton(ReflectionService::class);
         $this->app->singleton(AnnotationReader::class);
-        
+
         // Enregistrer le FeatureDetector
         $this->app->singleton(FeatureDetectorInterface::class, FeatureDetector::class);
         $this->app->singleton(FeatureDetector::class);

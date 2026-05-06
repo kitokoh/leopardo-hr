@@ -17,7 +17,7 @@
         Suivant
       </button>
     </div>
-    
+
     <!-- Desktop pagination -->
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div class="flex items-center space-x-4">
@@ -35,19 +35,19 @@
             <option value="100">100</option>
           </select>
         </div>
-        
+
         <!-- Results info -->
         <div class="text-sm text-gray-700">
-          Affichage de 
+          Affichage de
           <span class="font-medium">{{ startItem }}</span>
-          à 
+          à
           <span class="font-medium">{{ endItem }}</span>
-          sur 
+          sur
           <span class="font-medium">{{ totalItems }}</span>
           résultat{{ totalItems > 1 ? 's' : '' }}
         </div>
       </div>
-      
+
       <!-- Page navigation -->
       <div>
         <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
@@ -59,7 +59,7 @@
           >
             <ChevronLeftIcon class="h-5 w-5" />
           </button>
-          
+
           <!-- Page numbers -->
           <template v-for="page in visiblePages" :key="page">
             <button
@@ -81,7 +81,7 @@
               ...
             </span>
           </template>
-          
+
           <!-- Next button -->
           <button
             @click="nextPage"
@@ -134,7 +134,7 @@ const visiblePages = computed(() => {
   const pages = []
   const total = props.totalPages
   const current = props.currentPage
-  
+
   if (total <= 7) {
     // Show all pages if total is 7 or less
     for (let i = 1; i <= total; i++) {
@@ -143,7 +143,7 @@ const visiblePages = computed(() => {
   } else {
     // Always show first page
     pages.push(1)
-    
+
     if (current <= 4) {
       // Show pages 2-5 and ellipsis
       for (let i = 2; i <= 5; i++) {
@@ -164,13 +164,13 @@ const visiblePages = computed(() => {
       }
       pages.push('...')
     }
-    
+
     // Always show last page (if not already shown)
     if (total > 1 && pages[pages.length - 1] !== total) {
       pages.push(total)
     }
   }
-  
+
   return pages
 })
 

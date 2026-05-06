@@ -53,7 +53,12 @@ abstract class TestCase extends BaseTestCase
         );
 
         if ($this->isRunningInsideDocker() && in_array($host, ['127.0.0.1', 'localhost'], true)) {
-            $host = 'pgsql';
+            // Check for CI environment variables explicitly using getenv for robustness
+            $isCI = getenv('GITHUB_ACTIONS') === 'true' || getenv('CI') === 'true';
+
+            if (! $isCI) {
+                $host = 'pgsql';
+            }
         }
 
         config([
@@ -91,6 +96,10 @@ abstract class TestCase extends BaseTestCase
 
     private function isRunningInsideDocker(): bool
     {
+        if (getenv('GITHUB_ACTIONS') === 'true' || getenv('CI') === 'true') {
+            return false;
+        }
+
         return file_exists('/.dockerenv');
     }
 }

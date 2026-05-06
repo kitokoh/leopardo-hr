@@ -32,8 +32,13 @@ class MultiTenantSharedIsolationTest extends TestCase
     {
         parent::setUp();
 
-        Schema::dropIfExists('employees');
-        Schema::dropIfExists('companies');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('DROP TABLE IF EXISTS employees CASCADE');
+            DB::statement('DROP TABLE IF EXISTS companies CASCADE');
+        } else {
+            Schema::dropIfExists('employees');
+            Schema::dropIfExists('companies');
+        }
 
         Schema::create('companies', function (Blueprint $table): void {
             $table->uuid('id')->primary();
@@ -90,8 +95,13 @@ class MultiTenantSharedIsolationTest extends TestCase
     protected function tearDown(): void
     {
         app()->forgetInstance('current_company');
-        Schema::dropIfExists('employees');
-        Schema::dropIfExists('companies');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('DROP TABLE IF EXISTS employees CASCADE');
+            DB::statement('DROP TABLE IF EXISTS companies CASCADE');
+        } else {
+            Schema::dropIfExists('employees');
+            Schema::dropIfExists('companies');
+        }
         parent::tearDown();
     }
 
