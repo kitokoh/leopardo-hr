@@ -366,8 +366,8 @@ describe('Form Validation Schemas', () => {
         signupFormSchema.parse(data);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          expect(error.errors.length).toBeGreaterThan(0);
-          expect(error.errors[0].message).toBeDefined();
+          expect(error.issues.length).toBeGreaterThan(0);
+          expect(error.issues[0].message).toBeDefined();
         }
       }
     });

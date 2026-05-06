@@ -10,7 +10,7 @@ export interface FeatureCardProps {
   description: string;
   details?: string[];
   image?: string;
-  gradient: string;
+  gradient?: string;
   stats?: {
     value: string;
     label: string;
@@ -25,7 +25,7 @@ export function FeatureCard({
   description,
   details = [],
   image,
-  gradient,
+  gradient = 'from-emerald-500 to-cyan-500',
   stats,
   variant = 'default',
   index = 0,

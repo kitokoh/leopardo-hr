@@ -10,7 +10,7 @@ interface UseIntersectionObserverOptions {
 }
 
 interface UseIntersectionObserverReturn {
-  ref: RefObject<HTMLDivElement>;
+  ref: RefObject<HTMLDivElement | null>;
   isVisible: boolean;
   hasBeenVisible: boolean;
 }
@@ -77,7 +77,7 @@ export function useIntersectionObserver(
 export function useIntersectionObserverCallback(
   callback: (isVisible: boolean) => void,
   options: UseIntersectionObserverOptions = {}
-): RefObject<HTMLDivElement> {
+): RefObject<HTMLDivElement | null> {
   const {
     threshold = 0.1,
     root = null,
@@ -132,7 +132,7 @@ export function useIntersectionObserverCallback(
 export function useIntersectionObserverMultiple(
   options: UseIntersectionObserverOptions = {}
 ): {
-  ref: RefObject<HTMLDivElement>;
+  ref: RefObject<HTMLDivElement | null>;
   visibleElements: Set<Element>;
 } {
   const {

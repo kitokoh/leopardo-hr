@@ -13,7 +13,7 @@ export interface CaseStudyCardProps {
     label: string;
     value: string;
   }>;
-  image: string;
+  image?: string;
   link: string;
   index?: number;
 }
@@ -43,12 +43,14 @@ export function CaseStudyCard({
         <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-3xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-all duration-300 group-hover:border-emerald-200/50 dark:group-hover:border-emerald-800/50 group-hover:shadow-xl h-full flex flex-col cursor-pointer">
           {/* Image */}
           <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900">
-            <Image
-              src={image}
-              alt={title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+            {image ? (
+              <Image
+                src={image}
+                alt={title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : null}
             {/* Industry badge */}
             <div className="absolute top-4 right-4">
               <div className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 export interface FAQItem {
-  id: string;
+  id?: string;
   question: string;
   answer: string;
   category?: string;
@@ -18,7 +18,8 @@ export interface FAQSectionProps {
     text: string;
     icon?: React.ReactNode;
   };
-  items: FAQItem[];
+  items?: FAQItem[];
+  faqs?: FAQItem[];
   categories?: string[];
 }
 
@@ -27,14 +28,16 @@ export function FAQSection({
   subtitle,
   badge,
   items,
+  faqs,
   categories,
 }: FAQSectionProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  const faqItems = items ?? faqs ?? [];
   const filteredItems = selectedCategory
-    ? items.filter((item) => item.category === selectedCategory)
-    : items;
+    ? faqItems.filter((item) => item.category === selectedCategory)
+    : faqItems;
 
   return (
     <section className="relative py-32 overflow-hidden">
@@ -104,14 +107,14 @@ export function FAQSection({
         <div className="space-y-4">
           {filteredItems.map((item, index) => (
             <motion.div
-              key={item.id}
+              key={item.id ?? `${item.question}-${index}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
             >
               <button
-                onClick={() => setOpenId(openId === item.id ? null : item.id)}
+                onClick={() => setOpenId(openId === (item.id ?? `${index}`) ? null : (item.id ?? `${index}`))}
                 className="w-full text-left"
               >
                 <div className="group relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 transition-all duration-300 hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:shadow-lg cursor-pointer">
