@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.92] - 2026-05-06
+
+### Mobile - Federation UX et dependances
+
+- Mobile : amelioration de l'ecran des fiches de paie avec retour `go_router`, rafraichissement manuel et etats vides/chargement plus robustes.
+- Mobile : amelioration de l'accessibilite de l'historique de pointage avec labels semantiques plus explicites pour les lecteurs d'ecran.
+- Mobile : mise a jour des dependances Flutter du lot `#298` sans reintroduire `flutter_haptic`.
+
 ## [4.1.91] - 2026-05-06
 
 ### CI - Ciblage web par chemins

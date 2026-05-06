@@ -76,6 +76,12 @@ Procedure recommandee :
 - Pour les branches distantes, commencer par les PR ouverts. Merger uniquement si les changements apportent une nouveaute utile a `main`, puis supprimer la branche.
 - Ne pas supprimer une branche distante non analysee si elle contient du travail non merge ou non remplace.
 
+## Federation de branches
+
+- Pour les vieilles branches mobiles ou mixtes tres en retard sur `main`, ne pas merger la branche complete si le diff embarque des centaines de suppressions hors sujet.
+- Preferer recuperer uniquement les fichiers utiles avec `git checkout <branche> -- <fichier>` dans une branche federatrice propre creee depuis `origin/main`.
+- Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
+
 ## Historique utile
 
 ### 2026-05-06 - PR #268 Feature/vitrine restructure
