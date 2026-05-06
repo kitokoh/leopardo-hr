@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.86] - 2026-05-06
+
+### Render - Hotfix migration company_requests
+
+- API : rend la migration publique `2026_05_02_000003_create_company_requests_table` idempotente afin d'eviter l'erreur PostgreSQL `Duplicate table` lorsque `company_requests` existe deja en production.
+
 ## [4.1.85] - 2026-05-02
 
 ### CI/CD - Résolution des problèmes de pipeline et tests
