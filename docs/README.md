@@ -1,5 +1,5 @@
 # LEOPARDO RH - Documentation Technique
-## Version documentaire 4.1.85 | Mai 2026
+## Version documentaire 4.1.86 | Mai 2026
 ## Reference programme : `PILOTAGE.md` fait foi
 
 ---
