@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.94] - 2026-05-07
+
+### Mobile - Mise a jour dependances Flutter
+
+- Mobile : mise a jour ciblee de `flutter_secure_storage` de `10.0.0` vers `10.1.0`.
+- Mobile : mise a jour ciblee de `google_sign_in` de `6.3.0` vers `7.2.0`.
+
 ## [4.1.92] - 2026-05-06
 
 ### Mobile - Federation UX et dependances
