@@ -47,7 +47,7 @@ export const demoFormSchema = z.object({
     .or(z.literal("")),
   employees: z
     .enum(["1-10", "11-50", "51-200", "201-500", "500+"], {
-      errorMap: () => ({ message: "Sélectionnez une plage d'employés" }),
+      message: "Sélectionnez une plage d'employés",
     })
     .optional(),
   preferredDate: z
@@ -219,7 +219,7 @@ export interface FormError {
  * Parse Zod errors to form errors
  */
 export function parseZodErrors(error: z.ZodError): FormError[] {
-  return error.errors.map((err) => ({
+  return error.issues.map((err) => ({
     field: err.path.join("."),
     message: err.message,
   }));

@@ -45,7 +45,7 @@ describe('HeroSection Component', () => {
       render(
         <HeroSection
           {...defaultProps}
-          badge="New Feature"
+          badge={{ text: 'New Feature' }}
         />
       );
       expect(screen.getByText('New Feature')).toBeInTheDocument();
@@ -55,8 +55,8 @@ describe('HeroSection Component', () => {
   describe('Statistics', () => {
     it('should render statistics when provided', () => {
       const stats = [
-        { value: 1000, suffix: '+', label: 'Users' },
-        { value: 99, suffix: '%', label: 'Uptime' },
+        { value: 1000, suffix: '+', label: 'Users', icon: <span /> },
+        { value: 99, suffix: '%', label: 'Uptime', icon: <span /> },
       ];
       render(
         <HeroSection

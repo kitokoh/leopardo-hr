@@ -19,7 +19,12 @@ export function createDynamicComponent<P extends object>(
   }
 ) {
   return dynamic(importFunc, {
-    loading: options?.loading || (() => <SkeletonLoader type="card" />),
+    loading: options?.loading
+      ? () => {
+          const Loading = options.loading!;
+          return <Loading />;
+        }
+      : () => <SkeletonLoader type="card" />,
     ssr: options?.ssr !== false,
   });
 }
@@ -30,7 +35,7 @@ export function createDynamicComponent<P extends object>(
 export const lazyLoadSections = {
   // Hero sections
   HeroSection: dynamic(
-    () => import('@/modules/vitrine/components/sections/HeroSection'),
+    () => import('@/modules/vitrine/components/sections/HeroSection').then((mod) => mod.HeroSection),
     {
       loading: () => <SkeletonLoader type="card" />,
       ssr: true,
@@ -39,7 +44,7 @@ export const lazyLoadSections = {
 
   // Feature sections
   FeaturesSection: dynamic(
-    () => import('@/modules/vitrine/components/sections/FeaturesSection'),
+    () => import('@/modules/vitrine/components/sections/FeaturesSection').then((mod) => mod.FeaturesSection),
     {
       loading: () => <SkeletonLoader type="card" count={3} />,
       ssr: true,
@@ -48,7 +53,7 @@ export const lazyLoadSections = {
 
   // Testimonial sections
   TestimonialsSection: dynamic(
-    () => import('@/modules/vitrine/components/sections/TestimonialsSection'),
+    () => import('@/modules/vitrine/components/sections/TestimonialsSection').then((mod) => mod.TestimonialsSection),
     {
       loading: () => <SkeletonLoader type="card" count={3} />,
       ssr: true,
@@ -57,7 +62,7 @@ export const lazyLoadSections = {
 
   // Case study sections
   CaseStudiesSection: dynamic(
-    () => import('@/modules/vitrine/components/sections/CaseStudiesSection'),
+    () => import('@/modules/vitrine/components/sections/CaseStudiesSection').then((mod) => mod.CaseStudiesSection),
     {
       loading: () => <SkeletonLoader type="card" count={3} />,
       ssr: true,
@@ -66,7 +71,7 @@ export const lazyLoadSections = {
 
   // FAQ sections
   FAQSection: dynamic(
-    () => import('@/modules/vitrine/components/sections/FAQSection'),
+    () => import('@/modules/vitrine/components/sections/FAQSection').then((mod) => mod.FAQSection),
     {
       loading: () => <SkeletonLoader type="paragraph" />,
       ssr: true,
@@ -75,7 +80,7 @@ export const lazyLoadSections = {
 
   // CTA sections
   CTASection: dynamic(
-    () => import('@/modules/vitrine/components/sections/CTASection'),
+    () => import('@/modules/vitrine/components/sections/CTASection').then((mod) => mod.CTASection),
     {
       loading: () => <SkeletonLoader type="card" />,
       ssr: true,
@@ -84,7 +89,7 @@ export const lazyLoadSections = {
 
   // Pricing sections
   PricingSection: dynamic(
-    () => import('@/modules/vitrine/components/sections/PricingSection'),
+    () => import('@/modules/vitrine/components/sections/PricingSection').then((mod) => mod.PricingSection),
     {
       loading: () => <SkeletonLoader type="card" count={3} />,
       ssr: true,
@@ -93,7 +98,7 @@ export const lazyLoadSections = {
 
   // Blog sections
   BlogGrid: dynamic(
-    () => import('@/modules/vitrine/components/sections/BlogGrid'),
+    () => import('@/modules/vitrine/components/sections/BlogGrid').then((mod) => mod.BlogGrid),
     {
       loading: () => <SkeletonLoader type="card" count={6} />,
       ssr: true,
@@ -107,7 +112,7 @@ export const lazyLoadSections = {
 export const lazyLoadComponents = {
   // Forms
   SignupForm: dynamic(
-    () => import('@/modules/vitrine/components/forms/SignupForm'),
+    () => import('@/modules/vitrine/components/forms/SignupForm').then((mod) => mod.SignupForm),
     {
       loading: () => <SkeletonLoader type="paragraph" />,
       ssr: false,
@@ -115,7 +120,7 @@ export const lazyLoadComponents = {
   ),
 
   DemoForm: dynamic(
-    () => import('@/modules/vitrine/components/forms/DemoForm'),
+    () => import('@/modules/vitrine/components/forms/DemoForm').then((mod) => mod.DemoForm),
     {
       loading: () => <SkeletonLoader type="paragraph" />,
       ssr: false,
@@ -123,7 +128,7 @@ export const lazyLoadComponents = {
   ),
 
   ContactForm: dynamic(
-    () => import('@/modules/vitrine/components/forms/ContactForm'),
+    () => import('@/modules/vitrine/components/forms/ContactForm').then((mod) => mod.ContactForm),
     {
       loading: () => <SkeletonLoader type="paragraph" />,
       ssr: false,
@@ -131,7 +136,7 @@ export const lazyLoadComponents = {
   ),
 
   NewsletterForm: dynamic(
-    () => import('@/modules/vitrine/components/forms/NewsletterForm'),
+    () => import('@/modules/vitrine/components/forms/NewsletterForm').then((mod) => mod.NewsletterForm),
     {
       loading: () => <SkeletonLoader type="text" />,
       ssr: false,
@@ -140,7 +145,7 @@ export const lazyLoadComponents = {
 
   // Animations
   ParticleField: dynamic(
-    () => import('@/modules/vitrine/components/animations/ParticleField'),
+    () => import('@/modules/vitrine/components/ParticleField').then((mod) => mod.ParticleField),
     {
       loading: () => null,
       ssr: false,
@@ -148,7 +153,7 @@ export const lazyLoadComponents = {
   ),
 
   GradientOrbs: dynamic(
-    () => import('@/modules/vitrine/components/animations/GradientOrbs'),
+    () => import('@/modules/vitrine/components/animations/GradientOrbs').then((mod) => mod.GradientOrbs),
     {
       loading: () => null,
       ssr: false,
@@ -156,7 +161,7 @@ export const lazyLoadComponents = {
   ),
 
   AnimatedCounter: dynamic(
-    () => import('@/modules/vitrine/components/animations/AnimatedCounter'),
+    () => import('@/modules/vitrine/components/animations/AnimatedCounter').then((mod) => mod.AnimatedCounter),
     {
       loading: () => <span>0</span>,
       ssr: false,

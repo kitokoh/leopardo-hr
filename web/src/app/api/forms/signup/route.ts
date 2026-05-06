@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
           success: false,
           message: 'Données invalides',
           error: 'VALIDATION_ERROR',
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 }
       );

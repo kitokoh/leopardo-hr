@@ -9,7 +9,7 @@ import { ParticleField } from '../ParticleField';
 export interface HeroSectionProps {
   headline: string;
   subheadline: string;
-  badge?: {
+  badge?: string | {
     icon?: React.ReactNode;
     text: string;
     label?: string;
@@ -28,7 +28,7 @@ export interface HeroSectionProps {
     value: number;
     suffix: string;
     label: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
   }>;
   animated?: boolean;
 }
@@ -48,6 +48,7 @@ export function HeroSection({
   const y = useSpring(useTransform(scrollYProgress, [0, 1], [0, -200]), { stiffness: 80, damping: 30 });
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.6], [1, 0.92]);
+  const badgeConfig = typeof badge === 'string' ? { text: badge } : badge;
 
   return (
     <section ref={ref} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
@@ -74,18 +75,18 @@ export function HeroSection({
       <motion.div style={animated ? { y, opacity, scale } : {}} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <div className="text-center max-w-5xl mx-auto">
           {/* Badge */}
-          {badge && (
+          {badgeConfig && (
             <motion.div
               initial={animated ? { opacity: 0, y: 20, filter: 'blur(10px)' } : {}}
               animate={animated ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
               transition={{ duration: 0.8 }}
               className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-sm font-medium mb-10 backdrop-blur-sm"
             >
-              {badge.icon && <span className="animate-pulse">{badge.icon}</span>}
-              <span>{badge.text}</span>
-              {badge.label && (
+              {badgeConfig.icon && <span className="animate-pulse">{badgeConfig.icon}</span>}
+              <span>{badgeConfig.text}</span>
+              {badgeConfig.label && (
                 <span className="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full">
-                  {badge.label}
+                  {badgeConfig.label}
                 </span>
               )}
             </motion.div>
