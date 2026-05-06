@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.90] - 2026-05-06
+
+### CI - Workflows GitHub
+
+- CI : retrait des jobs GitHub Vercel bases sur `vercel/action@v4`, introuvable cote Actions, pour garder le workflow `Build & Deploiement` limite au build verifie.
+- CI : passage de `lighthouse.yml` en declenchement manuel afin d'eviter les echecs immediats lies a un probleme de definition du workflow.
+
 ## [4.1.89] - 2026-05-06
 
 ### Mobile - Android release build
