@@ -2,58 +2,6 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.1.84] - 2026-04-30 
-
-### API / Mobile / Web - Experience client alignee et modernisee
-
-- API : ajout de `mobile_experience` dans le payload `/api/v1/auth/me` via `MobileExperienceService`, avec modules exposes, quick actions et stade d'usage pour les clients mobiles.
-- API : renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` pour verrouiller ce nouveau contrat mobile.
-- Mobile : realignement de `welcome`, `login`, `home` et `modules hub` sur l'experience mobile-first documentee, avec consommation directe du payload backend (`features` + `mobile_experience`).
-- Mobile : ajout des modeles `MobileExperience`, `MobileModule`, `MobileQuickAction` et du mapping d'icones associe pour garder une navigation coherente avec les routes reelles de l'application.
-- Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
-- Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
-
-### API - Performance et durcissement multi-tenant
-
-- API : optimisation de `PayrollController@index`, `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
-- API : elimination des concatenations directes de `schema_name` dans plusieurs `SET search_path` sensibles au profit de `Company::getSafeSearchPath()`.
-- API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
-- Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
-
-### Mobile - Contrat attendance et UX absences
-
-- Mobile : parsing de `photo_url`, `hire_date`, `overtime_hours` et `late_minutes` aligne sur les payloads backend actuels.
-- Mobile : `AbsenceListScreen` gagne le pull-to-refresh, un meilleur etat vide scrollable et de petites ameliorations d'accessibilite.
-
-### Depot - Hygiene
-
-- Depot : suppression du gitlink fantome `.codex-pr-140` reste d'une branche bot obsolete.
-## [4.1.84] - 2026-05-02
-
-### DocKeeper - Alignement documentation
-
-- Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
-- Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
-- Gouvernance : Ajout de `GO_NO_GO_MVP.md` comme source de vérité canonique dans `PILOTAGE.md` et `docs/README.md`.
-- Gouvernance : Mise à jour de `CODE_VERSION` à `0.1.0` dans `PILOTAGE.md` (release MVP prête).
-- Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
-- Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
-
-## [4.1.84] - 2026-05-01
-
-### Performance - Optimisation des index Absence et Evaluation
-
-- API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
-- API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
-## [4.1.84] - 2026-05-02 module placard 
-
-### Sentinel - Sécurisation des validations et tests d'isolation
-
-- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empêcher les attaques par IDOR (Insecure Direct Object Reference) en vérifiant systématiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifié.
-- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modèles supplémentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
-- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.86] - 2026-05-03
 
@@ -68,6 +16,27 @@
 
 - API : Mise à jour de `AttendanceTodayResource` pour inclure l'ID du pointage (`id`) et les minutes de retard (`late_minutes`), alignant ainsi le payload `/api/v1/attendance/today` et `/api/v1/me/daily-summary` sur les attentes des modèles mobiles.
 - Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la présence de ces champs dans les payloads de présence journalière.
+
+## [4.1.84] - 2026-05-02
+
+### DocKeeper - Alignement documentation
+
+- Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
+- Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Ajout de `GO_NO_GO_MVP.md` comme source de vérité canonique dans `PILOTAGE.md` et `docs/README.md`.
+- Gouvernance : Mise à jour de `CODE_VERSION` à `0.1.0` dans `PILOTAGE.md` (release MVP prête).
+- Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
+- Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
+
+## [4.1.84] - 2026-05-02 module placard 
+
+### Sentinel - Sécurisation des validations et tests d'isolation
+
+- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empêcher les attaques par IDOR (Insecure Direct Object Reference) en vérifiant systématiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifié.
+- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modèles supplémentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
+- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.84] - 2026-05-02
 
@@ -110,6 +79,40 @@
 ### Sentinel - Renforcement de la sécurité multi-tenant
 
 - API : Élimination des risques d'injection SQL dans les commandes `SET search_path` par l'application systématique de `Company::getSafeSearchPath()` sur tous les points d'entrée critiques (`StoreEmployeeRequest`, `UpdateEmployeeRequest`, `BiometricAdminController`, `KioskController`).
+
+## [4.1.84] - 2026-05-01
+
+### Performance - Optimisation des index Absence et Evaluation
+
+- API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
+- API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
+
+## [4.1.84] - 2026-04-30
+
+### API / Mobile / Web - Experience client alignee et modernisee
+
+- API : ajout de `mobile_experience` dans le payload `/api/v1/auth/me` via `MobileExperienceService`, avec modules exposes, quick actions et stade d'usage pour les clients mobiles.
+- API : renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` pour verrouiller ce nouveau contrat mobile.
+- Mobile : realignement de `welcome`, `login`, `home` et `modules hub` sur l'experience mobile-first documentee, avec consommation directe du payload backend (`features` + `mobile_experience`).
+- Mobile : ajout des modeles `MobileExperience`, `MobileModule`, `MobileQuickAction` et du mapping d'icones associe pour garder une navigation coherente avec les routes reelles de l'application.
+- Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
+- Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
+
+### API - Performance et durcissement multi-tenant
+
+- API : optimisation de `PayrollController@index`, `AbsenceController@index` et `EvaluationController@index` avec des `select()` explicites et des relations chargees sur des colonnes limitees pour reduire la sur-recuperation.
+- API : elimination des concatenations directes de `schema_name` dans plusieurs `SET search_path` sensibles au profit de `Company::getSafeSearchPath()`.
+- API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
+- Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
+
+### Mobile - Contrat attendance et UX absences
+
+- Mobile : parsing de `photo_url`, `hire_date`, `overtime_hours` et `late_minutes` aligne sur les payloads backend actuels.
+- Mobile : `AbsenceListScreen` gagne le pull-to-refresh, un meilleur etat vide scrollable et de petites ameliorations d'accessibilite.
+
+### Depot - Hygiene
+
+- Depot : suppression du gitlink fantome `.codex-pr-140` reste d'une branche bot obsolete.
 
 ## [4.1.82] - 2026-04-29
 
@@ -264,6 +267,16 @@
 - Tests : ajout de couverture mobile pour le parsing `language` / `is_rtl`, et extension des tests API sur les payloads auth/localisation.
 - Pilotage : `PILOTAGE.md` realigne les liens de lecture recommande vers `docs/REFERENTIEL_PRODUIT/` et `docs/dossierdeConception/README.md` pour refleter la structure canonique actuelle de la documentation.
 
+## [4.1.73] - 2026-04-27
+
+### Web - Initialisation de l'application Next.js et site vitrine
+
+- Web : Initialisation d'un projet Next.js 16 dans le dossier `web/` avec TypeScript, Tailwind CSS (v4) et App Router.
+- Web : Mise en place d'un site vitrine (landing page) avec sections Hero, Fonctionnalités et Tarifs conformément à la stratégie marketing.
+- Web : Implémentation d'un squelette d'authentification (page de connexion) et d'un tableau de bord (layout + page d'accueil) pour les futurs développements.
+- Docs : Mise à jour de `ARBORESCENCE_PROJET_COMPLET.md`, `README.md` et `PILOTAGE.md` pour intégrer la nouvelle application web dans l'architecture du monorepo.
+- Pilotage : Transition officielle du frontend web de Blade/Alpine vers Next.js pour le dashboard et la vitrine.
+
 ## [4.1.73] - 2026-04-26
 
 ### Multilinguisme - Support complet FR/AR(RTL)/TR/EN
@@ -279,15 +292,6 @@
 - API : Remplacement des messages hardcodes dans AuthController, InvitationController et PlatformAuthController par des appels `__()`.
 - Docs : `api/MULTILANG.md` — guide architecture i18n, usage `__()`, procedure d'ajout de nouvelles langues.
 - Pilotage : `PILOTAGE.md` — statut langues mis a jour de « i18n prepare (1 langue seulement) » a « FR+AR+TR+EN production-ready ».
-## [4.1.73] - 2026-04-27
-
-### Web - Initialisation de l'application Next.js et site vitrine
-
-- Web : Initialisation d'un projet Next.js 16 dans le dossier `web/` avec TypeScript, Tailwind CSS (v4) et App Router.
-- Web : Mise en place d'un site vitrine (landing page) avec sections Hero, Fonctionnalités et Tarifs conformément à la stratégie marketing.
-- Web : Implémentation d'un squelette d'authentification (page de connexion) et d'un tableau de bord (layout + page d'accueil) pour les futurs développements.
-- Docs : Mise à jour de `ARBORESCENCE_PROJET_COMPLET.md`, `README.md` et `PILOTAGE.md` pour intégrer la nouvelle application web dans l'architecture du monorepo.
-- Pilotage : Transition officielle du frontend web de Blade/Alpine vers Next.js pour le dashboard et la vitrine.
 
 ## [4.1.72] - 2026-04-25
 
@@ -363,14 +367,6 @@
 
 - `PILOTAGE.md` : mise a jour du statut S0-2 en "termine" et correction du compte des contradictions (6 -> 7) pour correspondre a `docs/GESTION_PROJET/CORRECTIONS.md`.
 
-## [4.1.71] - 2026-04-23
-### Janitor: Archivage documentation historique et synchronisation
-
-- Docs : archivage de 8 fichiers marques `📦 HISTORIQUE` dans `PILOTAGE.md` vers `docs/notes/archive/` (`ORCHESTRATION_MAITRE.md`, `INDEX_CANONIQUE.md`, `CONTEXTE_SESSION_IA.md`, `JOURNAL_DE_BORD.md`, `BACKLOG_PHASE1_UNIQUE.md`, `CONTINUE.md`, `SUIVI_PROMPTS.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`)
-- Governance : mise a jour de `tools/check-governance.ps1` pour refleter les nouveaux emplacements des fichiers requis
-- Pilotage : mise a jour de `PILOTAGE.md` (bump version `4.1.71`, mise a jour de la table de statut documentaire, validation C-6)
-- API : bump `APP_VERSION` default de `4.1.70` a `4.1.71` dans `api/config/app.php`
-
 ## [4.1.71] - 2026-04-24
 ### Palette - Accessibilite EmptyState mobile
 
@@ -382,6 +378,14 @@
 - API : Mise a jour de `AuthController@serializeEmployee` pour inclure le `matricule` a la racine et un objet `company` imbrique (id, name, language, timezone, currency) conformement au contrat MVP.
 - Mobile : Mise a jour du modele `Employee` pour inclure et parser le champ `matricule`.
 - Tests : Renforcement de `MobilePayloadContractTest` pour verrouiller la presence de `matricule` et de la structure `company` dans la reponse `/api/v1/auth/me`.
+
+## [4.1.71] - 2026-04-23
+### Janitor: Archivage documentation historique et synchronisation
+
+- Docs : archivage de 8 fichiers marques `📦 HISTORIQUE` dans `PILOTAGE.md` vers `docs/notes/archive/` (`ORCHESTRATION_MAITRE.md`, `INDEX_CANONIQUE.md`, `CONTEXTE_SESSION_IA.md`, `JOURNAL_DE_BORD.md`, `BACKLOG_PHASE1_UNIQUE.md`, `CONTINUE.md`, `SUIVI_PROMPTS.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`)
+- Governance : mise a jour de `tools/check-governance.ps1` pour refleter les nouveaux emplacements des fichiers requis
+- Pilotage : mise a jour de `PILOTAGE.md` (bump version `4.1.71`, mise a jour de la table de statut documentaire, validation C-6)
+- API : bump `APP_VERSION` default de `4.1.70` a `4.1.71` dans `api/config/app.php`
 
 ## [4.1.70] - 2026-04-23
 ### Mobile - Page d'accueil (WelcomeScreen) avant la connexion
@@ -661,19 +665,19 @@
 - Ajout d'une boucle wait_for_db_bootstrap (30 tentatives, 2s) avant migrations pour absorber les delais de disponibilite PostgreSQL
 - Gestion d'erreur non fatale (catch PDO) pour permettre les retries au lieu d'un crash immediat
 
-## [4.1.43] - 2026-04-18
-### Migration startup anti-race (Render)
-
-- api/docker-entrypoint.sh passe les migrations avec --isolated pour eviter les executions concurrentes au boot multi-instance
-- Ajout d'un fallback de rattrapage (php artisan migrate --force --isolated) quand la course sur la table migrations persiste
-- Objectif: absorber les erreurs PostgreSQL 42P07 relation "migrations" already exists sans casser le demarrage
-
 ## [4.1.44] - 2026-04-18
 ### Bootstrap migration repository (Render)
 
 - Ajout dans `api/docker-entrypoint.sh` d'une etape SQL directe (PDO) qui cree `public.migrations` et `shared_tenants.migrations` en `IF NOT EXISTS`
 - Suppression de la dependance a `migrate:install` en situation de concurrence de demarrage
 - Objectif: eliminer les crashs de boot lies a `SQLSTATE[42P07] relation "migrations" already exists`
+
+## [4.1.43] - 2026-04-18
+### Migration startup anti-race (Render)
+
+- api/docker-entrypoint.sh passe les migrations avec --isolated pour eviter les executions concurrentes au boot multi-instance
+- Ajout d'un fallback de rattrapage (php artisan migrate --force --isolated) quand la course sur la table migrations persiste
+- Objectif: absorber les erreurs PostgreSQL 42P07 relation "migrations" already exists sans casser le demarrage
 
 ## [4.1.42] - 2026-04-18
 ### CI mobile conditionnelle (anti-lenteur)
@@ -730,61 +734,6 @@
 - Alignement complet de l'unicite email sur une regle globale plateforme (schema, validation, tests, auth routing)
 - Ajout d'une migration corrective pour convertir les bases deja deployees vers l'unicite globale de `employees.email`
 
-## [4.1.34] - 2026-04-12
-### Déploiement Cloud & Alignement Repository
-
-- **Infrastructure Target** : Basculement officiel de o2switch vers le couple **Render (App) + Neon (PostgreSQL)** pour la phase de développement et Beta.
-- **Production Config** : Ajout de `api/Dockerfile.prod` (FrankenPHP) optimisé pour les services Cloud managés. Fix tag Docker vers `latest-php8.4-alpine`.
-- **Nettoyage Automatisé** : Suppression du workflow `deploy.yml` (o2switch) et de toutes ses références obsolètes dans les diagrammes et guides techniques.
-- **Documentation Setup** : Création du guide `RENDER_SETUP.md` pour le déploiement "Zero-Card" sans carte bancaire.
-- **Alignement CI/CD** : Mise à jour de `19_CICD_ET_GIT.md` pour refléter le flux de déploiement automatique sur Render.
-
----
-
-## Convention de versioning (active a partir de 4.1.4)
-
-```
-PROGRAM_VERSION  = Version globale projet/pilotage (PILOTAGE.md fait foi)
-DOC_VERSION      = Version propre de chaque document technique
-CODE_VERSION     = Version release applicative (git tag)
-```
-
----
-
-## [ARCHIVE-NOTE] - 2026-04-04
-### Restructuration gouvernance (historique, nomenclature retiree)
-
-**Gouvernance :**
-- Nouveau fichier maître unique : `PILOTAGE.md` (remplace ORCHESTRATION_MAITRE, INDEX_CANONIQUE, CONTEXTE_SESSION, CONTINUE, JOURNAL_DE_BORD, BACKLOG)
-- Nouveau fichier règles : `docs/GESTION_PROJET/GARDE_FOUS.md` (8 garde-fous)
-- Nouveau fichier corrections : `docs/GESTION_PROJET/CORRECTIONS.md`
-- Convention de versioning : PROGRAM_VERSION / DOC_VERSION / CODE_VERSION
-- 7 fichiers marqués 📦 HISTORIQUE avec bannière interdisant l'utilisation comme instruction
-
-**Filière prompts :**
-- Nouvelle filière active : `docs/PROMPTS_EXECUTION/v3/MVP-01 à MVP-06` (6 prompts)
-- Ancienne filière `v2/CC-*` et `v2/JU-*` marquée LEGACY (non exécutable)
-- Réduction de 10 prompts backend + patches → 6 prompts MVP unifiés
-
-**Corrections documentaires appliquées (Sprint 0) :**
-- C-1 : Supprimé `/auth/refresh` de `api/openapi.yaml` (obsolète depuis v4.0.3)
-- C-2 : Corrigé `is_active` → `status` dans `08_MULTITENANCY_STRATEGY.md`
-- C-3 : Aligné `user_lookups` PK = email dans `08_MULTITENANCY_STRATEGY.md` (conforme au SQL)
-- C-4 : Corrigé "Starter Gratuit" → "Starter 29€/mois" dans `18_MARKETING_ET_VENTES.md`
-- C-6 : Déplacé `AUDIT_COMPLET_MANQUES.md` → `docs/notes/archive/`
-- C-7 : Supprimé répertoire vide `bon-fixed/`
-- C-5 (trait HasCompanyScope bug double boot) : documenté, sera corrigé en MVP-01
-
-**Scope MVP verrouillé :**
-- ~15 endpoints (vs 82+ en vision complète)
-- 2 rôles (vs 7)
-- 1 langue, 1 pays
-- Mode shared uniquement (pas de schéma)
-- File cache/sync queue (pas Redis/Horizon)
-- Blade + Alpine.js (pas Vue.js/Inertia)
-
----
-
 ## [4.1.36] - 2026-04-16
 ### Governance - PR codex/ci-node24-mobile-workflow
 
@@ -807,6 +756,27 @@ CODE_VERSION     = Version release applicative (git tag)
 
 - Trace explicite de la PR `kitokoh-patch-6` pour satisfaire le gate `CHANGELOG.md` sur scope critique CI/mobile
 - Aucun changement fonctionnel métier ajouté dans cette entrée
+
+---
+
+## [4.1.34] - 2026-04-12
+### Déploiement Cloud & Alignement Repository
+
+- **Infrastructure Target** : Basculement officiel de o2switch vers le couple **Render (App) + Neon (PostgreSQL)** pour la phase de développement et Beta.
+- **Production Config** : Ajout de `api/Dockerfile.prod` (FrankenPHP) optimisé pour les services Cloud managés. Fix tag Docker vers `latest-php8.4-alpine`.
+- **Nettoyage Automatisé** : Suppression du workflow `deploy.yml` (o2switch) et de toutes ses références obsolètes dans les diagrammes et guides techniques.
+- **Documentation Setup** : Création du guide `RENDER_SETUP.md` pour le déploiement "Zero-Card" sans carte bancaire.
+- **Alignement CI/CD** : Mise à jour de `19_CICD_ET_GIT.md` pour refléter le flux de déploiement automatique sur Render.
+
+---
+
+## Convention de versioning (active a partir de 4.1.4)
+
+```
+PROGRAM_VERSION  = Version globale projet/pilotage (PILOTAGE.md fait foi)
+DOC_VERSION      = Version propre de chaque document technique
+CODE_VERSION     = Version release applicative (git tag)
+```
 
 ---
 
@@ -843,7 +813,6 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
-
 ## [4.1.30] - 2026-04-09
 ### Gouvernance locale - Docker d'abord pour les tests backend
 
@@ -874,143 +843,42 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
-## [4.1.5] - 2026-04-04
-### Hygiene docs + renforcement gouvernance
+## [4.1.27] - 2026-04-07
+### Batch 2 — Domaine et handler d'erreurs
 
-- Alignement des points d'entrée repo sur `PILOTAGE.md` + prompts `v3` (README + docs/README)
-- `tools/check-governance.ps1` renforcé: inclut `PILOTAGE.md`, `.github/*`, et `docs/GESTION_PROJET/*` comme scope critique
-- Ajout `bon-fixed/` à `.gitignore` (évite le bruit local sur répertoire historique)
-- Normalisation encodage docs sous Windows (UTF-8 BOM sur les `.md` clés + `.editorconfig`)
-
----
-
-## [4.1.6] - 2026-04-04
-### Gouvernance anti-conflits (scribe)
-
-- Ajout règle “scribe” dans `docs/GESTION_PROJET/GARDE_FOUS.md` : un seul agent édite `PILOTAGE.md` + `CHANGELOG.md`
-- Bump `PROGRAM_VERSION` à `4.1.6` dans `PILOTAGE.md`
+- Remplacement des `abort()` metier dans `AuthService` et `AttendanceService` par des exceptions domaine
+- Ajout d'un handler global JSON pour erreurs domaine, validation, not found et authorization
+- Normalisation du format `{error, message}` sur les erreurs API les plus courantes
 
 ---
 
-## [4.1.7] - 2026-04-04
-### MVP-02 — Auth + Employés
+## [4.1.26] - 2026-04-07
+### Batch 1 — Tenant hardening
 
-- Ajout endpoints Auth : `/api/v1/auth/login`, `/api/v1/auth/logout`, `/api/v1/auth/me`
-- Ajout CRUD employés : list/create/show/update/archive avec RBAC (manager vs self)
-- Ajout policies + services + FormRequests (pas de logique métier dans controllers)
-- Tests : auth, RBAC employés, isolation tenant
-
----
-
-## [4.1.8] - 2026-04-04
-### CI — Gouvernance unifiée
-
-- CI: `Governance Gates` exécute `tools/check-governance.ps1` (plus de logique bash dupliquée)
-- Scope critique étendu à `mobile/` (PR Flutter ⇒ `CHANGELOG.md` requis)
+- Validation `matricule` scopee par `company_id` a la creation et a la mise a jour
+- Migration employees et schema de tests alignes sur une unicite composite `company_id + matricule`
+- Suspension ou expiration d'une company => revocation des tokens Sanctum de tous ses employes
+- Suppression du `User.php` fantome non utilise
+- Ajout de tests de regression pour `matricule` multi-tenant et suspension company
 
 ---
 
-## [4.1.9] - 2026-04-04
-### CI — Stabilisation des checks PR
+## [4.1.25] - 2026-04-07
+### Audit v4 — Alignement CI PostgreSQL
 
-- Backend CI: ajout `gd` aux extensions PHP (dépendance requise par `barryvdh/laravel-dompdf`)
-- Backend CI: exécution temporaire sous PHP 8.4 (le `composer.lock` actuel exige Symfony v8 → PHP >= 8.4)
-- Mobile CI: alignement du nom du job sur `Mobile Flutter (Stable Channel)` (conforme aux règles de protection de branche)
-
----
-
-## [4.1.12] - 2026-04-05
-### MVP-04 — Estimation rapide + Reçu PDF
-
-- Ajout endpoints estimation:
-  - `GET /api/v1/employees/{id}/daily-summary`
-  - `GET /api/v1/employees/{id}/quick-estimate` (manager only)
-  - `GET /api/v1/employees/{id}/receipt` (PDF, manager only)
-- Calcul estimation (MVP): base + heures sup (taux 1.25), déduction DZ 9% (CNAS)
-- Ajout template PDF avec disclaimer "NON OFFICIEL"
-- Ajout tests feature estimation + mise à jour schema de tests
+- Retire le forçage SQLite de `phpunit.xml` pour laisser la CI backend utiliser PostgreSQL
+- Ajoute un default `CURRENT_DATE` a `contract_start` dans la migration employees et le schema de tests
 
 ---
 
-## [4.1.13] - 2026-04-05
-### Gouvernance — Branch protection
+## [4.1.24] - 2026-04-07
+### Audit v4 — Correctifs securite batch 2
 
-- Mise à jour `.github/BRANCH_PROTECTION_REQUIRED.md` : alignement des checks requis (notamment `Mobile Flutter (Stable Channel)`) et note anti-"Expected"
-
----
-
-## [4.1.14] - 2026-04-05
-### MVP-05 — Dashboard Web (Blade + Alpine.js)
-
-- Ajout auth web (session) : `/login` → `/dashboard` (manager only)
-- Ajout dashboard manager : présence du jour + total estimé + retard + table employés
-- Ajout page employé : quick estimate (Alpine) + téléchargement PDF + historique 30 derniers logs
-
----
-
-## [4.1.15] - 2026-04-05
-### Gouvernance — Alignement post-merges + Beta
-
-- Mise à jour `PILOTAGE.md` : MVP-01 à MVP-06 marqués comme mergés, Sprint 4 défini comme prochaine phase active
-- Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour la validation end-to-end avant ouverture Beta
-
----
-
-## [4.1.16] - 2026-04-05
-### Beta — Hardening auth web manager
-
-- Blocage du login web pour les comptes employe, inactifs, ou rattaches a une societe suspendue/expiree
-- Ajout de tests feature web pour la redirection guest, le login manager et les refus d'acces Beta
-
----
-
-## [4.1.17] - 2026-04-05
-### Beta — Web polish et couverture manager
-
-- Correction des libelles web corrompus dans les vues Blade du dashboard et de la fiche employe
-- Ajout de tests feature pour l'acces manager au dashboard, au detail employe, au quick estimate et au PDF
-- Correction isolation tenant sur les routes web employe: resolution de l'employe apres `TenantMiddleware`, pas via route model binding
-
----
-
-## [4.1.18] - 2026-04-05
-### Beta — Config MVP par defaut
-
-- Alignement des fallbacks Laravel sur le MVP reel: `SESSION_DRIVER=file`, `CACHE_STORE=file`, `QUEUE_CONNECTION=sync`
-- Remplacement de `api/.env.example` pour retirer les defaults Redis/Horizon et autres options hors scope Beta
-
----
-
-## [4.1.19] - 2026-04-05
-### Beta — Docs deploiement alignees MVP
-
-- Mise a jour de `api/README.md` pour refleter le stack MVP reel et les checks utiles
-- Mise a jour de `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` avec verifications post-deploy web, PDF et session
-
-## [4.1.20] - 2026-04-06
-### Beta — Stabilisation mobile
-
-- Durcissement UX mobile sur erreurs reseau, timeout, 401 et 403
-- Nettoyage du flow login mobile (trim email, dispose des controllers)
-- Alignement du `mobile/README.md` avec le prompt MVP actif et le fonctionnement reel
-
----
-
-## [4.1.21] - 2026-04-06
-### Beta — Ops readiness
-
-- Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` pour preparer l'environnement Beta reel
-- Ajout `docs/GESTION_PROJET/BETA_VALIDATION_REPORT_TEMPLATE.md` pour standardiser les rapports de recette
-- Mise a jour `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour lier setup, execution et trace de validation
-
----
-
-## [4.1.22] - 2026-04-06
-### Beta — Unicite email multi-tenant
-
-- Validation `email` employees scopee par `company_id` a la creation et a la mise a jour
-- Schema de tests et migration tenant alignes sur une unicite composite `company_id + email`
-- Ajout de tests de regression pour autoriser le meme email entre societes et refuser le doublon dans la meme societe
+- Revoque tous les tokens Sanctum lors de l'archivage d'un employe et bloque les comptes archives dans `TenantMiddleware`
+- Supprime le fallback production `sqlite` au profit de `pgsql` dans `config/database.php`
+- Garantit `contract_start` a la creation employe et l'autorise dans la validation API
+- Met a jour `last_login_at` au login et expose `token_type` + `token_expires_at` dans la reponse auth
+- Renforce le schema de tests pour couvrir `contract_start` et `last_login_at`
 
 ---
 
@@ -1027,42 +895,101 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 
-## [4.1.24] - 2026-04-07
-### Audit v4 — Correctifs securite batch 2
+## [4.1.22] - 2026-04-06
+### Beta — Unicite email multi-tenant
 
-- Revoque tous les tokens Sanctum lors de l'archivage d'un employe et bloque les comptes archives dans `TenantMiddleware`
-- Supprime le fallback production `sqlite` au profit de `pgsql` dans `config/database.php`
-- Garantit `contract_start` a la creation employe et l'autorise dans la validation API
-- Met a jour `last_login_at` au login et expose `token_type` + `token_expires_at` dans la reponse auth
-- Renforce le schema de tests pour couvrir `contract_start` et `last_login_at`
+- Validation `email` employees scopee par `company_id` a la creation et a la mise a jour
+- Schema de tests et migration tenant alignes sur une unicite composite `company_id + email`
+- Ajout de tests de regression pour autoriser le meme email entre societes et refuser le doublon dans la meme societe
 
 ---
 
-## [4.1.25] - 2026-04-07
-### Audit v4 — Alignement CI PostgreSQL
+## [4.1.21] - 2026-04-06
+### Beta — Ops readiness
 
-- Retire le forçage SQLite de `phpunit.xml` pour laisser la CI backend utiliser PostgreSQL
-- Ajoute un default `CURRENT_DATE` a `contract_start` dans la migration employees et le schema de tests
-
----
-## [4.1.26] - 2026-04-07
-### Batch 1 — Tenant hardening
-
-- Validation `matricule` scopee par `company_id` a la creation et a la mise a jour
-- Migration employees et schema de tests alignes sur une unicite composite `company_id + matricule`
-- Suspension ou expiration d'une company => revocation des tokens Sanctum de tous ses employes
-- Suppression du `User.php` fantome non utilise
-- Ajout de tests de regression pour `matricule` multi-tenant et suspension company
+- Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` pour preparer l'environnement Beta reel
+- Ajout `docs/GESTION_PROJET/BETA_VALIDATION_REPORT_TEMPLATE.md` pour standardiser les rapports de recette
+- Mise a jour `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour lier setup, execution et trace de validation
 
 ---
-## [4.1.27] - 2026-04-07
-### Batch 2 — Domaine et handler d'erreurs
 
-- Remplacement des `abort()` metier dans `AuthService` et `AttendanceService` par des exceptions domaine
-- Ajout d'un handler global JSON pour erreurs domaine, validation, not found et authorization
-- Normalisation du format `{error, message}` sur les erreurs API les plus courantes
+## [4.1.20] - 2026-04-06
+### Beta — Stabilisation mobile
+
+- Durcissement UX mobile sur erreurs reseau, timeout, 401 et 403
+- Nettoyage du flow login mobile (trim email, dispose des controllers)
+- Alignement du `mobile/README.md` avec le prompt MVP actif et le fonctionnement reel
 
 ---
+
+## [4.1.19] - 2026-04-05
+### Beta — Docs deploiement alignees MVP
+
+- Mise a jour de `api/README.md` pour refleter le stack MVP reel et les checks utiles
+- Mise a jour de `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` avec verifications post-deploy web, PDF et session
+
+## [4.1.18] - 2026-04-05
+### Beta — Config MVP par defaut
+
+- Alignement des fallbacks Laravel sur le MVP reel: `SESSION_DRIVER=file`, `CACHE_STORE=file`, `QUEUE_CONNECTION=sync`
+- Remplacement de `api/.env.example` pour retirer les defaults Redis/Horizon et autres options hors scope Beta
+
+---
+
+## [4.1.17] - 2026-04-05
+### Beta — Web polish et couverture manager
+
+- Correction des libelles web corrompus dans les vues Blade du dashboard et de la fiche employe
+- Ajout de tests feature pour l'acces manager au dashboard, au detail employe, au quick estimate et au PDF
+- Correction isolation tenant sur les routes web employe: resolution de l'employe apres `TenantMiddleware`, pas via route model binding
+
+---
+
+## [4.1.16] - 2026-04-05
+### Beta — Hardening auth web manager
+
+- Blocage du login web pour les comptes employe, inactifs, ou rattaches a une societe suspendue/expiree
+- Ajout de tests feature web pour la redirection guest, le login manager et les refus d'acces Beta
+
+---
+
+## [4.1.15] - 2026-04-05
+### Gouvernance — Alignement post-merges + Beta
+
+- Mise à jour `PILOTAGE.md` : MVP-01 à MVP-06 marqués comme mergés, Sprint 4 défini comme prochaine phase active
+- Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour la validation end-to-end avant ouverture Beta
+
+---
+
+## [4.1.14] - 2026-04-05
+### MVP-05 — Dashboard Web (Blade + Alpine.js)
+
+- Ajout auth web (session) : `/login` → `/dashboard` (manager only)
+- Ajout dashboard manager : présence du jour + total estimé + retard + table employés
+- Ajout page employé : quick estimate (Alpine) + téléchargement PDF + historique 30 derniers logs
+
+---
+
+## [4.1.13] - 2026-04-05
+### Gouvernance — Branch protection
+
+- Mise à jour `.github/BRANCH_PROTECTION_REQUIRED.md` : alignement des checks requis (notamment `Mobile Flutter (Stable Channel)`) et note anti-"Expected"
+
+---
+
+## [4.1.12] - 2026-04-05
+### MVP-04 — Estimation rapide + Reçu PDF
+
+- Ajout endpoints estimation:
+  - `GET /api/v1/employees/{id}/daily-summary`
+  - `GET /api/v1/employees/{id}/quick-estimate` (manager only)
+  - `GET /api/v1/employees/{id}/receipt` (PDF, manager only)
+- Calcul estimation (MVP): base + heures sup (taux 1.25), déduction DZ 9% (CNAS)
+- Ajout template PDF avec disclaimer "NON OFFICIEL"
+- Ajout tests feature estimation + mise à jour schema de tests
+
+---
+
 ## [4.1.11] - 2026-04-05
 ### MVP-06 — App Flutter (bootstrap)
 
@@ -1079,6 +1006,51 @@ CODE_VERSION     = Version release applicative (git tag)
 - Ajout endpoints pointage (check-in/check-out/today/history) sous `/api/v1/attendance/*`
 - Ajout modèle/service/policy `AttendanceLog` + `Schedule` (multitenancy shared via scope `company_id`)
 - Ajout tests feature pointage (dup check-in, check-out sans check-in, heures/HS, RBAC manager vs employee, isolation tenant)
+
+---
+
+## [4.1.9] - 2026-04-04
+### CI — Stabilisation des checks PR
+
+- Backend CI: ajout `gd` aux extensions PHP (dépendance requise par `barryvdh/laravel-dompdf`)
+- Backend CI: exécution temporaire sous PHP 8.4 (le `composer.lock` actuel exige Symfony v8 → PHP >= 8.4)
+- Mobile CI: alignement du nom du job sur `Mobile Flutter (Stable Channel)` (conforme aux règles de protection de branche)
+
+---
+
+## [4.1.8] - 2026-04-04
+### CI — Gouvernance unifiée
+
+- CI: `Governance Gates` exécute `tools/check-governance.ps1` (plus de logique bash dupliquée)
+- Scope critique étendu à `mobile/` (PR Flutter ⇒ `CHANGELOG.md` requis)
+
+---
+
+## [4.1.7] - 2026-04-04
+### MVP-02 — Auth + Employés
+
+- Ajout endpoints Auth : `/api/v1/auth/login`, `/api/v1/auth/logout`, `/api/v1/auth/me`
+- Ajout CRUD employés : list/create/show/update/archive avec RBAC (manager vs self)
+- Ajout policies + services + FormRequests (pas de logique métier dans controllers)
+- Tests : auth, RBAC employés, isolation tenant
+
+---
+
+## [4.1.6] - 2026-04-04
+### Gouvernance anti-conflits (scribe)
+
+- Ajout règle “scribe” dans `docs/GESTION_PROJET/GARDE_FOUS.md` : un seul agent édite `PILOTAGE.md` + `CHANGELOG.md`
+- Bump `PROGRAM_VERSION` à `4.1.6` dans `PILOTAGE.md`
+
+---
+
+## [4.1.5] - 2026-04-04
+### Hygiene docs + renforcement gouvernance
+
+- Alignement des points d'entrée repo sur `PILOTAGE.md` + prompts `v3` (README + docs/README)
+- `tools/check-governance.ps1` renforcé: inclut `PILOTAGE.md`, `.github/*`, et `docs/GESTION_PROJET/*` comme scope critique
+- Ajout `bon-fixed/` à `.gitignore` (évite le bruit local sur répertoire historique)
+- Normalisation encodage docs sous Windows (UTF-8 BOM sur les `.md` clés + `.editorconfig`)
 
 ---
 
@@ -1444,3 +1416,37 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schéma SQL de base.
 - Structure initiale des dossiers.
+
+## [ARCHIVE-NOTE] - 2026-04-04
+### Restructuration gouvernance (historique, nomenclature retiree)
+
+**Gouvernance :**
+- Nouveau fichier maître unique : `PILOTAGE.md` (remplace ORCHESTRATION_MAITRE, INDEX_CANONIQUE, CONTEXTE_SESSION, CONTINUE, JOURNAL_DE_BORD, BACKLOG)
+- Nouveau fichier règles : `docs/GESTION_PROJET/GARDE_FOUS.md` (8 garde-fous)
+- Nouveau fichier corrections : `docs/GESTION_PROJET/CORRECTIONS.md`
+- Convention de versioning : PROGRAM_VERSION / DOC_VERSION / CODE_VERSION
+- 7 fichiers marqués 📦 HISTORIQUE avec bannière interdisant l'utilisation comme instruction
+
+**Filière prompts :**
+- Nouvelle filière active : `docs/PROMPTS_EXECUTION/v3/MVP-01 à MVP-06` (6 prompts)
+- Ancienne filière `v2/CC-*` et `v2/JU-*` marquée LEGACY (non exécutable)
+- Réduction de 10 prompts backend + patches → 6 prompts MVP unifiés
+
+**Corrections documentaires appliquées (Sprint 0) :**
+- C-1 : Supprimé `/auth/refresh` de `api/openapi.yaml` (obsolète depuis v4.0.3)
+- C-2 : Corrigé `is_active` → `status` dans `08_MULTITENANCY_STRATEGY.md`
+- C-3 : Aligné `user_lookups` PK = email dans `08_MULTITENANCY_STRATEGY.md` (conforme au SQL)
+- C-4 : Corrigé "Starter Gratuit" → "Starter 29€/mois" dans `18_MARKETING_ET_VENTES.md`
+- C-6 : Déplacé `AUDIT_COMPLET_MANQUES.md` → `docs/notes/archive/`
+- C-7 : Supprimé répertoire vide `bon-fixed/`
+- C-5 (trait HasCompanyScope bug double boot) : documenté, sera corrigé en MVP-01
+
+**Scope MVP verrouillé :**
+- ~15 endpoints (vs 82+ en vision complète)
+- 2 rôles (vs 7)
+- 1 langue, 1 pays
+- Mode shared uniquement (pas de schéma)
+- File cache/sync queue (pas Redis/Horizon)
+- Blade + Alpine.js (pas Vue.js/Inertia)
+
+---
