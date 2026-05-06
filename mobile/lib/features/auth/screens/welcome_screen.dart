@@ -65,14 +65,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      children: [
+          child: Column(
+            children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
                 child: _WelcomeHero(compact: compact),
@@ -95,7 +89,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               const SizedBox(height: 12),
               _Dots(count: _stories.length, current: _currentPage),
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                padding: EdgeInsets.fromLTRB(24, compact ? 10 : 16, 24, compact ? 14 : 24),
                 child: Column(
                   children: [
                     SizedBox(
@@ -136,12 +130,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ],
                 ),
               ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
+            ],
           ),
         ),
       ),
@@ -160,7 +149,7 @@ class _WelcomeHero extends StatelessWidget {
     final muted = AppColors.textSecondaryFor(context);
 
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: EdgeInsets.all(compact ? 16 : 22),
       decoration: BoxDecoration(
         color: AppColors.surfaceFor(context),
         borderRadius: BorderRadius.circular(30),
@@ -179,8 +168,8 @@ class _WelcomeHero extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 58,
-                height: 58,
+                width: compact ? 46 : 58,
+                height: compact ? 46 : 58,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
@@ -195,7 +184,7 @@ class _WelcomeHero extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontWeight: FontWeight.w700,
-                      fontSize: 28,
+                      fontSize: compact ? 22 : 28,
                       color: Colors.white,
                     ),
                   ),
@@ -220,12 +209,15 @@ class _WelcomeHero extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: compact ? 18 : 22),
+          SizedBox(height: compact ? 12 : 22),
           Text(
             'Votre journee commence ici, pas dans un back-office.',
-            style: AppTypography.display.copyWith(color: text, fontSize: 30),
+            style: AppTypography.display.copyWith(
+              color: text,
+              fontSize: compact ? 24 : 30,
+            ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: compact ? 6 : 10),
           Text(
             'Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible.',
             style: AppTypography.body.copyWith(color: muted),
@@ -257,6 +249,7 @@ class _StoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.of(context).size.height < 740;
     final color = AppColors.forDomain(story.domain);
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
@@ -264,7 +257,7 @@ class _StoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
       child: Container(
-        padding: const EdgeInsets.all(22),
+        padding: EdgeInsets.all(compact ? 16 : 22),
         decoration: BoxDecoration(
           color: AppColors.surfaceFor(context),
           borderRadius: BorderRadius.circular(28),
@@ -274,8 +267,8 @@ class _StoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: compact ? 44 : 56,
+              height: compact ? 44 : 56,
               decoration: BoxDecoration(
                 color: AppColors.tint(
                   context,
@@ -287,9 +280,9 @@ class _StoryCard extends StatelessWidget {
               ),
               child: Icon(story.icon, color: color),
             ),
-            const SizedBox(height: 22),
+            SizedBox(height: compact ? 12 : 22),
             Text(story.title, style: AppTypography.title.copyWith(color: text)),
-            const SizedBox(height: 10),
+            SizedBox(height: compact ? 6 : 10),
             Text(story.body, style: AppTypography.body.copyWith(color: muted)),
             const Spacer(),
             Wrap(
