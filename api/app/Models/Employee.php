@@ -193,6 +193,16 @@ class Employee extends Authenticatable
             ->where('email', '!=', $this->email)
             ->delete();
 
+        // Defense in depth: Never overwrite a lookup record belonging to a different employee.
+        // This prevents cross-tenant hijacking if validation is somehow bypassed.
+        $existing = DB::table($this->userLookupTable())
+            ->where('email', $this->email)
+            ->first();
+
+        if ($existing && (int) $existing->employee_id !== (int) $this->id) {
+            return;
+        }
+
         DB::table($this->userLookupTable())->updateOrInsert(
             ['email' => $this->email],
             [

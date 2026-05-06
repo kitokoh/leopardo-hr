@@ -25,6 +25,7 @@ class UpdateProfileRequest extends FormRequest
                 'email',
                 'max:150',
                 Rule::unique('employees', 'email')->ignore($employeeId),
+                new \App\Rules\GlobalEmailUnique((int) $employeeId),
             ],
         ];
     }
