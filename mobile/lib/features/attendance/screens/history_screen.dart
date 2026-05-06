@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
@@ -218,27 +219,71 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           break;
                       }
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: statusColor.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.circle,
-                            color: statusColor,
-                            size: 12,
+                      String statusText = 'inconnu';
+                      switch (log.status) {
+                        case 'ontime':
+                          statusText = 'à l\'heure';
+                          break;
+                        case 'late':
+                          statusText = 'en retard';
+                          break;
+                        case 'absent':
+                          statusText = 'absent';
+                          break;
+                      }
+
+                      final dateFormatted =
+                          DateFormat.yMMMMEEEEd('fr_FR').format(log.date);
+                      final checkInTime = log.checkIn != null
+                          ? DateFormat.Hm('fr_FR').format(log.checkIn!)
+                          : null;
+                      final checkOutTime = log.checkOut != null
+                          ? DateFormat.Hm('fr_FR').format(log.checkOut!)
+                          : (log.checkIn != null ? 'en cours' : null);
+
+                      final hours = log.workedHours ?? 0;
+                      final hoursLabel =
+                          hours < 2 ? 'heure travaillée' : 'heures travaillées';
+
+                      final semanticsLabel = log.checkIn != null
+                          ? 'Journée du $dateFormatted, statut $statusText, de $checkInTime à $checkOutTime, ${hours.toStringAsFixed(1)} $hoursLabel.'
+                          : 'Journée du $dateFormatted, statut $statusText.';
+
+                      return Semantics(
+                        label: semanticsLabel,
+                        container: true,
+                        child: ListTile(
+                          leading: ExcludeSemantics(
+                            child: CircleAvatar(
+                              backgroundColor:
+                                  statusColor.withValues(alpha: 0.2),
+                              child: Icon(
+                                Icons.circle,
+                                color: statusColor,
+                                size: 12,
+                              ),
+                            ),
                           ),
-                        ),
-                        title: Text(
-                          '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
-                        ),
-                        subtitle: Text(
-                          log.checkIn != null
-                              ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                  '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
-                              : 'Absence',
-                        ),
-                        trailing: Text(
-                          '${log.workedHours ?? 0}h',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          title: ExcludeSemantics(
+                            child: Text(
+                              '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
+                            ),
+                          ),
+                          subtitle: ExcludeSemantics(
+                            child: Text(
+                              log.checkIn != null
+                                  ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                  : 'Absence',
+                            ),
+                          ),
+                          trailing: ExcludeSemantics(
+                            child: Text(
+                              '${hours.toStringAsFixed(1)}h',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
                       );
                     },
@@ -255,47 +300,68 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   child: SafeArea(
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Total jours'),
-                            Text(
-                              '$totalJours',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                        Semantics(
+                          label:
+                              'Total de $totalJours ${totalJours < 2 ? "jour" : "jours"} travaillés.',
+                          container: true,
+                          child: ExcludeSemantics(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Total jours'),
+                                Text(
+                                  '$totalJours',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Total heures'),
-                            Text(
-                              '${totalHeures.toStringAsFixed(1)}h',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                        Semantics(
+                          label:
+                              'Total de ${totalHeures.toStringAsFixed(1)} ${totalHeures < 2 ? "heure travaillée" : "heures travaillées"}.',
+                          container: true,
+                          child: ExcludeSemantics(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Total heures'),
+                                Text(
+                                  '${totalHeures.toStringAsFixed(1)}h',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Heures supplémentaires',
-                              style: TextStyle(color: AppColors.textMuted),
+                        Semantics(
+                          label:
+                              'Heures supplémentaires : ${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)} ${((totalHeures > 160 ? totalHeures - 160 : 0) < 2) ? "heure" : "heures"}.',
+                          container: true,
+                          child: ExcludeSemantics(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Heures supplémentaires',
+                                  style: TextStyle(color: AppColors.textMuted),
+                                ),
+                                Text(
+                                  '${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textMuted,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              '${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textMuted,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),

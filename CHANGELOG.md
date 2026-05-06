@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-06
+
+### 🎨 Palette - Accessibilité et UX Mobile
+
+- Mobile : Amélioration de l'accessibilité de l'écran `HistoryScreen` par l'ajout de labels `Semantics` descriptifs en français, incluant le statut détaillé, les horaires et la pluralisation correcte des heures travaillées.
+- Mobile : Utilisation de `ExcludeSemantics` pour supprimer les annonces redondantes ou fragmentées sur les éléments de liste et les résumés.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
