@@ -195,6 +195,11 @@
 
 - API : Renforcement de la validation dans `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationIndexRequest` pour empêcher les fuites de données inter-tenant (ID Enumeration) en vérifiant systématiquement l'appartenance de `employee_id` et `evaluator_id` au tenant de l'utilisateur.
 - Tests : Ajout de `SalaryAdvanceSecurityTest` et `IndexCrossTenantValidationTest` pour verrouiller l'impossibilité de probe ou filtrer des ressources d'un autre tenant via les paramètres de requête.
+### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (SalaryAdvance)
+
+- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empêchant l'énumération d'identifiants inter-tenant.
+- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation des avances sur salaire et la validation des filtres.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.86] - 2026-05-03
 
