@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Evaluation\EvaluationIndexRequest;
 use App\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,17 +20,9 @@ use Illuminate\Support\Carbon;
  */
 class EvaluationController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(EvaluationIndexRequest $request): JsonResponse
     {
         $actor = $request->user();
-
-        $request->validate([
-            'employee_id' => ['nullable', 'integer', 'min:1'],
-            'evaluator_id' => ['nullable', 'integer', 'min:1'],
-            'period' => ['nullable', 'string', 'max:20'],
-            'status' => ['nullable', 'in:draft,submitted,acknowledged'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-        ]);
 
         $query = Evaluation::query()
             ->select([

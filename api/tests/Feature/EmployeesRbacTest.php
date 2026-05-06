@@ -247,7 +247,7 @@ class EmployeesRbacTest extends TestCase
         ]);
         $this->assertDatabaseHas('employees', [
             'email' => 'john.doe@a.test',
-            'contract_start' => now()->toDateString(),
+            'contract_start' => now()->startOfDay(),
         ]);
     }
 
