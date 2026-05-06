@@ -55,6 +55,14 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-06
+
+### 🛡️ Sentinel - Sécurisation du module Cabinet
+
+- API : Renforcement de la validation dans `StoreDocumentRequest`, `UpdateDocumentRequest`, `MoveDocumentRequest`, `StoreFolderRequest` et `UpdateFolderRequest` pour garantir que les `folder_id` et `parent_id` fournis appartiennent strictement à l'employé et à l'entreprise authentifiés (prévention IDOR).
+- Tests : Ajout de `CabinetCrossTenantIsolationTest.php` pour verrouiller l'isolation des dossiers et documents du Cabinet.
+- Tests : Mise à jour de `CreatesMvpSchema.php` pour inclure les tables du module Cabinet dans la suite de tests.
+
 ## [4.1.86] - 2026-05-03
 
 ### ⚡ Bolt - Performance et optimisation Employee

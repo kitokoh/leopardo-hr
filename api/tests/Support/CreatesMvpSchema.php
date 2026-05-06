@@ -408,6 +408,32 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create('cabinet_folders', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('parent_id')->nullable()->index();
+            $table->string('name', 255);
+            $table->string('color', 30)->nullable();
+            $table->string('icon', 50)->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('cabinet_documents', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('folder_id')->nullable()->index();
+            $table->string('name', 255);
+            $table->string('original_name', 255);
+            $table->string('mime_type', 127);
+            $table->unsignedBigInteger('size');
+            $table->string('disk', 50)->default('local');
+            $table->string('path', 500);
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create($this->tenantTable('departments'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -568,6 +594,8 @@ trait CreatesMvpSchema
 
         $cascade = DB::getDriverName() === 'pgsql' ? ' CASCADE' : '';
 
+        DB::statement('DROP TABLE IF EXISTS "cabinet_documents"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "cabinet_folders"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_invitations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "super_admins"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "personal_access_tokens"'.$cascade);

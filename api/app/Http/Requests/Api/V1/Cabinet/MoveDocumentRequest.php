@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Cabinet;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MoveDocumentRequest extends FormRequest
 {
@@ -16,8 +17,17 @@ class MoveDocumentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $actor = $this->user();
+        $companyId = $actor?->company_id;
+
         return [
-            'folder_id' => ['nullable', 'integer', 'exists:cabinet_folders,id'],
+            'folder_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('cabinet_folders', 'id')
+                    ->where('employee_id', $actor?->id)
+                    ->where('company_id', $companyId),
+            ],
         ];
     }
 }
