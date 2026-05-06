@@ -54,7 +54,7 @@ export const initializeGA4 = () => {
   // Initialize gtag
   window.dataLayer = window.dataLayer || [];
   function gtag(...args: any[]) {
-    window.dataLayer.push(arguments);
+    window.dataLayer?.push(args);
   }
   gtag('js', new Date());
   gtag('config', gaId, {

@@ -7,6 +7,12 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+type SyncCapableRegistration = ServiceWorkerRegistration & {
+  sync?: {
+    register: (tag: string) => Promise<void>;
+  };
+};
+
 /**
  * PWAProvider Component
  * Handles PWA installation, service worker registration, and offline support
@@ -145,14 +151,15 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // Sync forms
-      if ('sync' in swRegistration) {
-        await swRegistration.sync.register('sync-forms');
+      const syncRegistration = swRegistration as SyncCapableRegistration;
+      if (syncRegistration.sync) {
+        await syncRegistration.sync.register('sync-forms');
         console.log('[PWA] Sync forms registered');
       }
 
       // Sync analytics
-      if ('sync' in swRegistration) {
-        await swRegistration.sync.register('sync-analytics');
+      if (syncRegistration.sync) {
+        await syncRegistration.sync.register('sync-analytics');
         console.log('[PWA] Sync analytics registered');
       }
     } catch (error) {

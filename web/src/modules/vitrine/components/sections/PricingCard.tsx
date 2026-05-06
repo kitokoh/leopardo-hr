@@ -6,7 +6,7 @@ import { CheckCircle2, ArrowRight } from 'lucide-react';
 
 export interface PricingCardProps {
   name: string;
-  price: number;
+  price: number | null;
   currency?: string;
   period?: string;
   description: string;
@@ -67,7 +67,7 @@ export function PricingCard({
         {/* Price */}
         <div className="mb-8">
           <div className="flex items-baseline gap-1">
-            <span className="text-5xl font-black text-slate-900 dark:text-white">{price}</span>
+            <span className="text-5xl font-black text-slate-900 dark:text-white">{price ?? 'Sur devis'}</span>
             <span className="text-slate-500 dark:text-slate-400 font-medium">{currency}</span>
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">{period}</p>
