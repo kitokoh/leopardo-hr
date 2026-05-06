@@ -53,6 +53,37 @@ class SalaryAdvanceSecurityTest extends TestCase
         $response->assertJsonPath('data.0.employee_id', $employee1->id);
     }
 
+    public function test_manager_cannot_list_salary_advances_of_another_tenant_employee(): void
+    {
+        $companyA = $this->createCompany('Company A');
+        $companyB = $this->createCompany('Company B');
+
+        $managerA = $this->createEmployee($companyA, 'manager', 'principal');
+        $employeeA = $this->createEmployee($companyA, 'employee');
+        $employeeB = $this->createEmployee($companyB, 'employee');
+
+        SalaryAdvance::query()->forceCreate([
+            'company_id' => $companyA->id,
+            'employee_id' => $employeeA->id,
+            'amount' => 500,
+            'status' => 'pending',
+        ]);
+
+        SalaryAdvance::query()->forceCreate([
+            'company_id' => $companyB->id,
+            'employee_id' => $employeeB->id,
+            'amount' => 1000,
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($managerA, 'sanctum')
+            ->getJson('/api/v1/salary-advances?employee_id=' . $employeeB->id);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['employee_id']);
+        $response->assertJsonPath('errors.employee_id.0', 'EmployÃ© introuvable dans votre entreprise.');
+    }
+
     public function test_manager_can_only_see_salary_advances_within_their_company(): void
     {
         $companyA = $this->createCompany('Company A');
@@ -76,7 +107,6 @@ class SalaryAdvanceSecurityTest extends TestCase
             'status' => 'pending',
         ]);
 
-        // Manager A should only see advance for Employee A
         $response = $this->actingAs($managerA, 'sanctum')
             ->getJson('/api/v1/salary-advances');
 
@@ -146,21 +176,6 @@ class SalaryAdvanceSecurityTest extends TestCase
             ->deleteJson("/api/v1/salary-advances/{$advance2->id}");
 
         $response->assertStatus(403);
-    }
-
-    public function test_manager_cannot_filter_by_another_tenant_employee_id(): void
-    {
-        $companyA = $this->createCompany('Company A');
-        $companyB = $this->createCompany('Company B');
-
-        $managerA = $this->createEmployee($companyA, 'manager', 'principal');
-        $employeeB = $this->createEmployee($companyB, 'employee');
-
-        $response = $this->actingAs($managerA, 'sanctum')
-            ->getJson("/api/v1/salary-advances?employee_id={$employeeB->id}");
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['employee_id']);
     }
 
     public function test_non_manager_cannot_approve_salary_advance(): void
