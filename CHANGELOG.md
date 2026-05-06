@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-06
+
+### Agents - Guide operationnel racine
+
+- Docs : ajout de `AGENTS.md` a la racine pour transmettre aux prochaines sessions les procedures CI rapides, les pieges Render/Vercel/migrations et les regles de nettoyage branches/main.
+
 ## [4.1.86] - 2026-05-06
 
 ### Render - Hotfix migration company_requests
