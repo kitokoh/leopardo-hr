@@ -20,6 +20,17 @@ import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 const emptySubscribe = () => () => {};
 
+type DashboardStat = {
+  title: string;
+  value: number;
+  change: string;
+  trend: 'up' | 'down';
+  icon: typeof Users;
+  color: string;
+  bgColor: string;
+  suffix?: string;
+};
+
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
 
@@ -68,7 +79,7 @@ export default function DashboardPage() {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const stats = [
+  const stats: DashboardStat[] = [
     {
       title: 'Employes actifs',
       value: 24,
@@ -106,7 +117,7 @@ export default function DashboardPage() {
       color: 'from-violet-500 to-violet-600',
       bgColor: 'bg-violet-50 dark:bg-violet-900/20',
     },
-  ] as const;
+  ];
 
   const activities = [
     { name: 'Ahmed Ben', action: 'pointage entree', time: '08:30', status: 'present', avatar: 'AB' },
