@@ -225,7 +225,7 @@ class DemoFeatureRegistryCommand extends Command
             $feature = new Feature($featureData);
             $registry->registerFeature($feature);
 
-            $this->line("  ✅ {$feature->title} enregistrée");
+            $this->line('  ✅ '.$feature->title.' enregistrée');
         }
 
         $this->newLine();
@@ -248,10 +248,10 @@ class DemoFeatureRegistryCommand extends Command
             ]
         );
 
-        if (! empty($stats['by_status'])) {
+        if (!empty($stats['by_status'])) {
             $this->info('Par statut:');
             foreach ($stats['by_status'] as $status => $count) {
-                $this->line("  - {$status}: {$count}");
+                $this->line('  - '.$status.': '.$count);
             }
         }
 
@@ -265,12 +265,12 @@ class DemoFeatureRegistryCommand extends Command
     {
         // Test récupération de toutes les fonctionnalités
         $allFeatures = $registry->getFeatures();
-        $this->line("  📋 Total des fonctionnalités: {$allFeatures->count()}");
+        $this->line('  📋 Total des fonctionnalités: '.$allFeatures->count());
 
         // Test récupération d'une fonctionnalité spécifique
         $specificFeature = $registry->getFeature('demo_employee_management');
         if ($specificFeature) {
-            $this->line("  🎯 Fonctionnalité trouvée: {$specificFeature->title}");
+            $this->line('  🎯 Fonctionnalité trouvée: '.$specificFeature->title);
         }
 
         // Test vérification d'existence
@@ -288,16 +288,16 @@ class DemoFeatureRegistryCommand extends Command
         $mobileVersion = $this->option('mobile-version');
 
         $compatibleFeatures = $registry->getCompatibleFeatures($mobileVersion);
-        $this->line("  📱 Fonctionnalités compatibles avec v{$mobileVersion}: {$compatibleFeatures->count()}");
+        $this->line('  📱 Fonctionnalités compatibles avec v'.$mobileVersion.': '.$compatibleFeatures->count());
 
         foreach ($compatibleFeatures as $feature) {
-            $maxVersion = $feature->mobile_version_max ? " - {$feature->mobile_version_max}" : '';
-            $this->line("    - {$feature->title} (v{$feature->mobile_version_min}{$maxVersion})");
+            $maxVersion = $feature->mobile_version_max ? ' - '.$feature->mobile_version_max : '';
+            $this->line('    - '.$feature->title.' (v'.$feature->mobile_version_min.$maxVersion.')');
         }
 
         // Test avec une version plus ancienne
         $oldCompatible = $registry->getCompatibleFeatures('1.0.0');
-        $this->line("  📱 Fonctionnalités compatibles avec v1.0.0: {$oldCompatible->count()}");
+        $this->line('  📱 Fonctionnalités compatibles avec v1.0.0: '.$oldCompatible->count());
 
         $this->newLine();
     }
@@ -310,10 +310,10 @@ class DemoFeatureRegistryCommand extends Command
         $mobileVersion = $this->option('mobile-version');
         $manifest = $registry->getManifest($mobileVersion);
 
-        $this->line("  📋 Manifeste généré pour la version mobile {$mobileVersion}:");
-        $this->line("    - Version API: {$manifest['version']}");
-        $this->line("    - Généré le: {$manifest['generated_at']}");
-        $this->line("    - Nombre de fonctionnalités: {$manifest['total_features']}");
+        $this->line('  📋 Manifeste généré pour la version mobile '.$mobileVersion.':');
+        $this->line('    - Version API: '.$manifest['version']);
+        $this->line('    - Généré le: '.$manifest['generated_at']);
+        $this->line('    - Nombre de fonctionnalités: '.$manifest['total_features']);
 
         if ($this->option('verbose')) {
             $this->newLine();
@@ -323,15 +323,15 @@ class DemoFeatureRegistryCommand extends Command
             $rows = [];
 
             foreach ($manifest['features'] as $feature) {
-                    /** @var array<string, mixed> $feature */
-                    $rows[] = [
-                        (string) $feature['key'],
-                        (string) $feature['title'],
-                        (string) $feature['endpoint'],
-                        implode(', ', (array) $feature['methods']),
-                        implode(', ', (array) $feature['permissions']),
-                    ];
-                }
+                /** @var array<string, mixed> $feature */
+                $rows[] = [
+                    (string) $feature['key'],
+                    (string) $feature['title'],
+                    (string) $feature['endpoint'],
+                    implode(', ', (array) $feature['methods']),
+                    implode(', ', (array) $feature['permissions']),
+                ];
+            }
 
             $this->table($headers, $rows);
         }
@@ -349,14 +349,14 @@ class DemoFeatureRegistryCommand extends Command
         $result = $registry->synchronize();
 
         /** @var array<string, mixed> $result */
-        $this->line("    - Nouvelles fonctionnalités: ".(string) $result['new']);
-        $this->line("    - Fonctionnalités mises à jour: ".(string) $result['updated']);
-        $this->line("    - Fonctionnalités supprimées: ".(string) $result['removed']);
+        $this->line('    - Nouvelles fonctionnalités: '.(string) $result['new']);
+        $this->line('    - Fonctionnalités mises à jour: '.(string) $result['updated']);
+        $this->line('    - Fonctionnalités supprimées: '.(string) $result['removed']);
 
-        if (! empty($result['errors'])) {
+        if (!empty($result['errors'])) {
             $this->warn('    - Erreurs: '.count((array) $result['errors']));
             foreach ((array) $result['errors'] as $error) {
-                $this->line("      • {$error}");
+                $this->line('      • '.$error);
             }
         } else {
             $this->line('    ✅ Aucune erreur');
@@ -382,8 +382,8 @@ class DemoFeatureRegistryCommand extends Command
         $features2 = $registry->getFeatures();
         $time2 = round((microtime(true) - $start) * 1000, 2);
 
-        $this->line("    - Premier appel: {$time1}ms ({$features1->count()} fonctionnalités)");
-        $this->line("    - Deuxième appel: {$time2}ms ({$features2->count()} fonctionnalités)");
+        $this->line('    - Premier appel: '.$time1.'ms ('.$features1->count().' fonctionnalités)');
+        $this->line('    - Deuxième appel: '.$time2.'ms ('.$features2->count().' fonctionnalités)');
 
         if ($time2 < $time1) {
             $this->line('    ✅ Cache fonctionnel (amélioration: '.round(($time1 - $time2) / $time1 * 100, 1).'%)');
