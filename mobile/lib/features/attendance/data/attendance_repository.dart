@@ -134,11 +134,16 @@ class AttendanceRepository {
     final now = DateTime.now();
     final today = todayPayload.cast<String, dynamic>();
 
+    DateTime date = DateTime(now.year, now.month, now.day);
+    if (today['date'] != null) {
+      date = DateTime.tryParse(today['date'].toString()) ?? date;
+    }
+
     return {
       'log': AttendanceLog(
         id: (today['id'] ?? 0) as int,
         employeeId: (today['employee_id'] ?? 0) as int,
-        date: DateTime(now.year, now.month, now.day),
+        date: date,
         checkIn: _parseLocalTime(today['check_in_time'] as String?),
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
@@ -151,6 +156,9 @@ class AttendanceRepository {
         lateMinutes: today['late_minutes'] != null
             ? int.tryParse(today['late_minutes'].toString())
             : null,
+        employeeName: today['name'] as String?,
+        employeePhotoUrl: today['photo_url'] as String?,
+        employeeMatricule: today['matricule'] as String?,
       ),
       'context': context,
     };

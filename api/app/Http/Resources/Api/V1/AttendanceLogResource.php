@@ -28,8 +28,8 @@ class AttendanceLogResource extends JsonResource
             'check_out' => $this->check_out?->toIso8601String(),
             'method' => $this->method,
             'source_device_code' => $this->source_device_code,
-            'hours_worked' => $this->hours_worked,
-            'overtime_hours' => $this->overtime_hours,
+            'hours_worked' => (float) ($this->hours_worked ?? 0.0),
+            'overtime_hours' => (float) ($this->overtime_hours ?? 0.0),
             'status' => $this->status,
             'late_minutes' => $this->late_minutes,
         ];

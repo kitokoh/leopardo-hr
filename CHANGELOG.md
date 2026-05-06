@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-07
+
+### Contractor - Alignement contrat API/mobile (attendance et logs)
+
+- API : Mise à jour de `AttendanceTodayResource` pour inclure `date` et `photo_url`, et utilisation des heures calculées par `EstimationService` pour une meilleure précision des sessions en cours.
+- API : Alignement de `AttendanceLogResource` en castant explicitement `hours_worked` et `overtime_hours` en float.
+- Tests : Ajout de `test_attendance_history_payload_matches_mobile_contract` dans `MobilePayloadContractTest` pour verrouiller le contrat de l'historique de présence.
+- Mobile : Mise à jour du modèle `AttendanceLog` pour supporter le parsing optionnel des informations employé (nom, photo, matricule) et support des structures JSON plates ou imbriquées.
+- Mobile : Mise à jour de `AttendanceRepository` pour utiliser le champ `date` fourni par l'API afin d'éviter les décalages de fuseau horaire local.
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
