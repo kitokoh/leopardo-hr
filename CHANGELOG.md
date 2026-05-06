@@ -166,6 +166,13 @@
 - Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
 - Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
+## [4.1.87] - 2026-05-05
+
+### ⚡ Bolt - Performance et optimisation HR Referentials
+
+- API : optimisation de `DepartmentController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `manager`, évitant ainsi la sur-récupération de données.
+- API : optimisation de `PositionController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `department`, évitant ainsi la sur-récupération de données.
+
 ## [4.1.86] - 2026-05-03
 
 
@@ -182,6 +189,17 @@
 - Mobile : ajout du bouton "Continuer avec Google" sur `LoginScreen` et activation du formulaire sur `RegisterScreen`.
 - Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
 - CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
+## [4.1.87] - 2026-05-03
+
+### Sentinel - Durcissement de l'isolation tenant sur les filtres d'index
+
+- API : Renforcement de la validation dans `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationIndexRequest` pour empêcher les fuites de données inter-tenant (ID Enumeration) en vérifiant systématiquement l'appartenance de `employee_id` et `evaluator_id` au tenant de l'utilisateur.
+- Tests : Ajout de `SalaryAdvanceSecurityTest` et `IndexCrossTenantValidationTest` pour verrouiller l'impossibilité de probe ou filtrer des ressources d'un autre tenant via les paramètres de requête.
+### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (SalaryAdvance)
+
+- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empêchant l'énumération d'identifiants inter-tenant.
+- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation des avances sur salaire et la validation des filtres.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.86] - 2026-05-03
 
