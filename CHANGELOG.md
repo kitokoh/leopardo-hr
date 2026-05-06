@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.88] - 2026-05-06
+
+### Render - Release integration hardening
+
+- API : rendre idempotentes les migrations publiques `company_requests`, `users` et `user_employee_links` pour eviter les echecs PostgreSQL `relation already exists` lors des redeploiements Render.
+
 ## [4.1.85] - 2026-05-02
 
 ### CI/CD - Résolution des problèmes de pipeline et tests
