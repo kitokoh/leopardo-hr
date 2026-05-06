@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
+use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
+use App\Http\Controllers\Api\FeatureManifestController;
+use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +20,10 @@ Route::prefix('v1')->group(function (): void {
     // Auth (core, hors module)
     Route::middleware(['throttle:10,1'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
+        Route::post('/auth/register', [AuthController::class, 'register']);
+        Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+        Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+        Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
     });
 
@@ -34,6 +41,23 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
+
+        // Feature Registry API - Mobile synchronization
+        Route::prefix('features')->group(function (): void {
+            Route::get('/manifest', [FeatureManifestController::class, 'index']);
+            Route::get('/compatible/{version}', [FeatureManifestController::class, 'compatible']);
+            Route::get('/{key}', [FeatureManifestController::class, 'show']);
+
+            // Admin only endpoints
+            Route::middleware(['admin'])->group(function (): void {
+                Route::get('/admin/statistics', [FeatureManifestController::class, 'statistics']);
+                Route::post('/admin/synchronize', [FeatureManifestController::class, 'synchronize']);
+            });
+        });
+
+        // Company requests for ordinary users
+        Route::get('/company-requests', [CompanyRequestController::class, 'index']);
+        Route::post('/company-requests', [CompanyRequestController::class, 'store']);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
@@ -43,6 +67,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/rh.php';
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
+    require __DIR__.'/modules/user.php';
 
     // Platform (super-admin, hors module)
     Route::middleware(['auth:super_admin_api'])->prefix('platform')->group(function (): void {
@@ -55,5 +80,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
+
+        Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
+        Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
+        Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
     });
 });
