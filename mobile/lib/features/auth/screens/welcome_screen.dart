@@ -89,7 +89,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               const SizedBox(height: 12),
               _Dots(count: _stories.length, current: _currentPage),
               Padding(
-                padding: EdgeInsets.fromLTRB(24, compact ? 10 : 16, 24, compact ? 14 : 24),
+                padding: EdgeInsets.fromLTRB(
+                    24, compact ? 10 : 16, 24, compact ? 14 : 24),
                 child: Column(
                   children: [
                     SizedBox(
@@ -263,38 +264,43 @@ class _StoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: AppColors.borderFor(context)),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: compact ? 44 : 56,
-              height: compact ? 44 : 56,
-              decoration: BoxDecoration(
-                color: AppColors.tint(
-                  context,
-                  color,
-                  lightAlpha: 0.18,
-                  darkAlpha: 0.24,
+        child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: compact ? 44 : 56,
+                height: compact ? 44 : 56,
+                decoration: BoxDecoration(
+                  color: AppColors.tint(
+                    context,
+                    color,
+                    lightAlpha: 0.18,
+                    darkAlpha: 0.24,
+                  ),
+                  shape: BoxShape.circle,
                 ),
-                shape: BoxShape.circle,
+                child: Icon(story.icon, color: color),
               ),
-              child: Icon(story.icon, color: color),
-            ),
-            SizedBox(height: compact ? 12 : 22),
-            Text(story.title, style: AppTypography.title.copyWith(color: text)),
-            SizedBox(height: compact ? 6 : 10),
-            Text(story.body, style: AppTypography.body.copyWith(color: muted)),
-            const Spacer(),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _SignalPill(label: 'RH', color: AppColors.rh),
-                _SignalPill(label: 'Finance', color: AppColors.finance),
-                _SignalPill(label: 'Leo', color: AppColors.ia),
-              ],
-            ),
-          ],
+              SizedBox(height: compact ? 12 : 22),
+              Text(story.title,
+                  style: AppTypography.title.copyWith(color: text)),
+              SizedBox(height: compact ? 6 : 10),
+              Text(story.body,
+                  style: AppTypography.body.copyWith(color: muted)),
+              SizedBox(height: compact ? 14 : 22),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _SignalPill(label: 'RH', color: AppColors.rh),
+                  _SignalPill(label: 'Finance', color: AppColors.finance),
+                  _SignalPill(label: 'Leo', color: AppColors.ia),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
