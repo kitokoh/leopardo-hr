@@ -25,4 +25,11 @@ class SalaryAdvanceIndexRequest extends FormRequest
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'employee_id.exists' => 'EmployÃ© introuvable dans votre entreprise.',
+        ];
+    }
 }
