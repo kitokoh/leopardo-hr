@@ -5627,3 +5627,1093 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Unit/ExampleTest.php
+
+
+		# Release v4186 integration baseline generated from CI run 25420115656.
+		-
+			message: '#^Method\ App\\Attributes\\ApiFeature::__construct\(\)\ has\ parameter\ \$form_schema\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Attributes/ApiFeature.php
+
+		-
+			message: '#^Method\ App\\Attributes\\ApiFeature::__construct\(\)\ has\ parameter\ \$list_schema\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Attributes/ApiFeature.php
+
+		-
+			message: '#^Method\ App\\Attributes\\RequiresPermission::__construct\(\)\ has\ parameter\ \$permissions\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Attributes/RequiresPermission.php
+
+		-
+			message: '#^Argument\ of\ an\ invalid\ type\ mixed\ supplied\ for\ foreach,\ only\ iterables\ are\ supported\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ ''\ \ -\ ''\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ non-falsy-string\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Parameter\ \#1\ \$mobileVersion\ of\ method\ App\\Contracts\\FeatureRegistryInterface::getCompatibleFeatures\(\)\ expects\ string,\ string\|null\ given\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ ''\ \ \ \ -\ Version\ API:\ ''\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ ''\ \ \ \ -\ Généré\ le:\ ''\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ ''\ \ \ \ -\ Nombre\ de…''\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ cast\ mixed\ to\ string\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Parameter\ \#2\ \$array\ of\ function\ implode\ expects\ array<string>,\ array<mixed,\ mixed>\ given\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ ''\ \ \ \ \ \ •\ ''\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Console/Commands/DemoFeatureRegistryCommand.php
+
+		-
+			message: '#^Parameter\ \#1\ \$callback\ of\ method\ Illuminate\\Support\\Collection<\(int\|string\),mixed>::map\(\)\ expects\ callable\(mixed,\ int\|string\):\ array\{string,\ string,\ string,\ string},\ Closure\(array\):\ array\{string,\ string,\ string,\ string}\ given\.$#'
+			path: app/Console/Commands/DetectFeaturesCommand.php
+
+		-
+			message: '#^Cannot\ cast\ mixed\ to\ string\.$#'
+			path: app/Console/Commands/DetectFeaturesCommand.php
+
+		-
+			message: '#^Parameter\ \#2\ \$array\ of\ function\ implode\ expects\ array<string>,\ array\ given\.$#'
+			path: app/Console/Commands/DetectFeaturesCommand.php
+
+		-
+			message: '#^Parameter\ \#1\ \$callback\ of\ method\ Illuminate\\Support\\Collection<\(int\|string\),mixed>::map\(\)\ expects\ callable\(mixed,\ int\|string\):\ array\{string,\ string,\ string,\ string,\ string},\ Closure\(array\):\ array\{string,\ string,\ string,\ string,\ string}\ given\.$#'
+			path: app/Console/Commands/DetectFeaturesCommand.php
+
+		-
+			message: '#^Part\ \$result\[''new'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$result\[''updated'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$result\[''removed'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Argument\ of\ an\ invalid\ type\ mixed\ supplied\ for\ foreach,\ only\ iterables\ are\ supported\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$error\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Parameter\ \#1\ \$string\ of\ method\ Illuminate\\Console\\Command::line\(\)\ expects\ string,\ string\|false\ given\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$key\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$title\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$endpoint\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$http_methods\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Parameter\ \#2\ \$array\ of\ function\ implode\ expects\ array,\ mixed\ given\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$api_version\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$status\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$stats\[''total_features'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$stats\[''active_features'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$stats\[''inactive_features'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$stats\[''recently_updated'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$count\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$version\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$status\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''cache_driver''\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$cacheStatus\[''cache_driver'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''manifest_cached''\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''features_cached''\ on\ mixed\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Part\ \$stats\[''last_synchronization'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/FeatureRegistryCommand.php
+
+		-
+			message: '#^Parameter\ \#2\ \$array\ of\ function\ implode\ expects\ array,\ mixed\ given\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''ui_type''\ on\ mixed\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Part\ \$metadata\[''title'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Part\ \$metadata\[''description'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Part\ \$metadata\[''ui_type'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Part\ \$change\[''feature_key'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Part\ \$change\[''type'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Console/Commands/TestFeatureDetectorCommand.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureDetectorInterface::detectNewFeatures\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Contracts/FeatureDetectorInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureDetectorInterface::scanRoutes\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Contracts/FeatureDetectorInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureDetectorInterface::detectChanges\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Contracts/FeatureDetectorInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::getFeatures\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::updateFeature\(\)\ has\ parameter\ \$metadata\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::getManifest\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::getCompatibleFeatures\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::getFeaturesByApiVersion\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::synchronize\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Contracts\\FeatureRegistryInterface::getStatistics\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Contracts/FeatureRegistryInterface.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::detectionFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::manifestGenerationFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::incompatibleVersion\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::registrationFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::updateFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::featureNotFound\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::synchronizationFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::validationFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Method\ App\\Exceptions\\FeatureSynchronizationException::cacheFailed\(\)\ should\ return\ static\(App\\Exceptions\\FeatureSynchronizationException\)\ but\ returns\ App\\Exceptions\\FeatureSynchronizationException\.$#'
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$id\ on\ App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User\|null\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$features\ of\ method\ App\\Http\\Controllers\\Api\\FeatureManifestController::filterFeaturesByPermissions\(\)\ expects\ array,\ mixed\ given\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Cannot\ call\ method\ toManifestArray\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Method\ App\\Http\\Controllers\\Api\\FeatureManifestController::filterFeaturesByPermissions\(\)\ has\ parameter\ \$features\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Method\ App\\Http\\Controllers\\Api\\FeatureManifestController::filterFeaturesByPermissions\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''permissions''\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Parameter\ \#2\ \$requiredPermissions\ of\ method\ App\\Http\\Controllers\\Api\\FeatureManifestController::userHasFeaturePermissions\(\)\ expects\ array,\ mixed\ given\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Method\ App\\Http\\Controllers\\Api\\FeatureManifestController::userHasFeaturePermissions\(\)\ has\ parameter\ \$requiredPermissions\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Cannot\ call\ method\ can\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$role\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/FeatureManifestController.php
+
+		-
+			message: '#^Ignored\ error\ pattern\ \#\^Parameter\ \\\#1\ \\\$value\ of\ static\ method\ Illuminate\\\\Support\\\\Facades\\\\Hash\\:\\:make\\\(\\\)\ expects\ string,\ mixed\ given\\\.\$\#\ \(argument\.type\)\ in\ path\ /home/runner/work/gestionemployerBackend/gestionemployerBackend/api/app/Http/Controllers/Api/V1/AuthController\.php\ is\ expected\ to\ occur\ 1\ time,\ but\ occurred\ 4\ times\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$name\ of\ method\ App\\Models\\Employee::createToken\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$value\ of\ static\ method\ Illuminate\\Support\\Facades\\Hash::make\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Call\ to\ an\ undefined\ method\ Laravel\\Socialite\\Contracts\\Provider::stateless\(\)\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ redirect\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ user\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ getEmail\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ getName\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ offsetGet\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ random\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''token''\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ call\ method\ userFromToken\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''device_name''\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$callback\ of\ method\ Illuminate\\Database\\Eloquent\\Collection<int,Illuminate\\Database\\Eloquent\\Model>::map\(\)\ expects\ callable\(Illuminate\\Database\\Eloquent\\Model,\ int\):\ array\{id:\ int,\ company_name:\ string,\ sector:\ string\|null,\ country:\ string\|null,\ city:\ string\|null,\ email:\ string,\ status:\ string,\ admin_notes:\ string\|null,\ reviewed_at:\ string\|null,\ created_at:\ string\|null},\ Closure\(App\\Models\\CompanyRequest\):\ array\{id:\ int,\ company_name:\ string,\ sector:\ string\|null,\ country:\ string\|null,\ city:\ string\|null,\ email:\ string,\ status:\ string,\ admin_notes:\ string\|null,\ reviewed_at:\ string\|null,\ created_at:\ string\|null}\ given\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$attributes\ of\ method\ Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection<int,\ Illuminate\\Database\\Eloquent\\Model>>::create\(\)\ expects\ array<string,\ mixed>,\ mixed\ given\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$id\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$company_name\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$status\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$created_at\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Cannot\ call\ method\ toIso8601String\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$sector\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$country\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$city\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$email\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$phone\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$description\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$admin_notes\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$reviewed_at\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Cannot\ call\ method\ random\(\)\ on\ mixed\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$value\ of\ static\ method\ Illuminate\\Support\\Facades\\Hash::make\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Http/Controllers/Api/V1/CompanyRequestController.php
+
+		-
+			message: '#^Parameter\ \#1\ \$name\ of\ static\ method\ Illuminate\\Filesystem\\FilesystemManager::disk\(\)\ expects\ string\|null,\ string\|UnitEnum\ given\.$#'
+			path: app/Http/Controllers/Api/V1/HealthController.php
+
+		-
+			message: '#^Cannot\ cast\ mixed\ to\ float\.$#'
+			path: app/Http/Controllers/Web/MyDashboardController.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$role\ on\ mixed\.$#'
+			path: app/Http/Middleware/AdminMiddleware.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$role\.$#'
+			path: app/Http/Middleware/TenantMiddleware.php
+
+		-
+			message: '#^Ignored\ error\ pattern\ \#\^Method\ App\\\\Http\\\\Middleware\\\\TenantMiddleware\\:\\:handle\\\(\\\)\ should\ return\ Symfony\\\\Component\\\\HttpFoundation\\\\Response\ but\ returns\ mixed\\\.\$\#\ \(return\.type\)\ in\ path\ /home/runner/work/gestionemployerBackend/gestionemployerBackend/api/app/Http/Middleware/TenantMiddleware\.php\ is\ expected\ to\ occur\ 1\ time,\ but\ occurred\ 2\ times\.$#'
+			path: app/Http/Middleware/TenantMiddleware.php
+
+		-
+			message: '#^Method\ App\\Http\\Middleware\\TenantMiddleware::handle\(\)\ should\ return\ Symfony\\Component\\HttpFoundation\\Response\ but\ returns\ mixed\.$#'
+			path: app/Http/Middleware/TenantMiddleware.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			path: app/Http/Requests/Api/V1/Absence/AbsenceIndexRequest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			path: app/Http/Requests/Api/V1/Attendance/AttendanceIndexRequest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			path: app/Http/Requests/Api/V1/Payroll/PayrollIndexRequest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ App\\Models\\Employee\|App\\Models\\SuperAdmin\|App\\Models\\User::\$company_id\.$#'
+			path: app/Http/Requests/Api/V1/SalaryAdvance/SalaryAdvanceIndexRequest.php
+
+		-
+			message: '#^Method\ App\\Http\\Requests\\Api\\V1\\StoreRegistrationRequest::rules\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Http/Requests/Api/V1/StoreRegistrationRequest.php
+
+		-
+			message: '#^Class\ App\\Models\\Feature\ uses\ generic\ trait\ Illuminate\\Database\\Eloquent\\Factories\\HasFactory\ but\ does\ not\ specify\ its\ types:\ TFactory$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Models\\Feature::scopeActive\(\)\ has\ parameter\ \$query\ with\ generic\ class\ Illuminate\\Database\\Eloquent\\Builder\ but\ does\ not\ specify\ its\ types:\ TModel$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Models\\Feature::scopeActive\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Database\\Eloquent\\Builder\ does\ not\ specify\ its\ types:\ TModel$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Models\\Feature::scopeCompatibleWith\(\)\ has\ parameter\ \$query\ with\ generic\ class\ Illuminate\\Database\\Eloquent\\Builder\ but\ does\ not\ specify\ its\ types:\ TModel$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Models\\Feature::scopeCompatibleWith\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Database\\Eloquent\\Builder\ does\ not\ specify\ its\ types:\ TModel$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Models\\Feature::scopeForApiVersion\(\)\ has\ parameter\ \$query\ with\ generic\ class\ Illuminate\\Database\\Eloquent\\Builder\ but\ does\ not\ specify\ its\ types:\ TModel$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Models\\Feature::scopeForApiVersion\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Database\\Eloquent\\Builder\ does\ not\ specify\ its\ types:\ TModel$#'
+			path: app/Models/Feature.php
+
+		-
+			message: '#^Method\ App\\Providers\\FeatureDetectionServiceProvider::provides\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Providers/FeatureDetectionServiceProvider.php
+
+		-
+			message: '#^Cannot\ call\ method\ make\(\)\ on\ mixed\.$#'
+			path: app/Providers/FeatureRegistryServiceProvider.php
+
+		-
+			message: '#^Parameter\ \#1\ \$detector\ of\ class\ App\\Services\\FeatureRegistry\ constructor\ expects\ App\\Contracts\\FeatureDetectorInterface,\ mixed\ given\.$#'
+			path: app/Providers/FeatureRegistryServiceProvider.php
+
+		-
+			message: '#^Parameter\ \#2\ \$cache\ of\ class\ App\\Services\\FeatureRegistry\ constructor\ expects\ Illuminate\\Cache\\CacheManager,\ mixed\ given\.$#'
+			path: app/Providers/FeatureRegistryServiceProvider.php
+
+		-
+			message: '#^Method\ App\\Providers\\FeatureRegistryServiceProvider::provides\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Providers/FeatureRegistryServiceProvider.php
+
+		-
+			message: '#^Method\ App\\Services\\AnnotationReader::extractMethodAnnotations\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Parameter\ \#1\ \$objectOrClass\ of\ class\ ReflectionClass\ constructor\ expects\ class-string<T\ of\ object>\|T\ of\ object,\ string\ given\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Method\ App\\Services\\AnnotationReader::parseDocComment\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Parameter\ \#2\ \$string\ of\ function\ explode\ expects\ string,\ string\|null\ given\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Variable\ \$line\ in\ empty\(\)\ always\ exists\ and\ is\ not\ falsy\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Method\ App\\Services\\AnnotationReader::parseMethodAttributes\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Method\ App\\Services\\AnnotationReader::parseParamTag\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Offset\ 3\ on\ array\{non-falsy-string,\ non-empty-string,\ non-empty-string,\ string}\ on\ left\ side\ of\ \?\?\ always\ exists\ and\ is\ not\ nullable\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Method\ App\\Services\\AnnotationReader::parseResponseTag\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Parameter\ \#1\ \$string\ of\ function\ trim\ expects\ string,\ string\|null\ given\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Parameter\ \#1\ \$string\ of\ function\ strtolower\ expects\ string,\ string\|null\ given\.$#'
+			path: app/Services/AnnotationReader.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ object::\$company_id\.$#'
+			path: app/Services/AuthService.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ object::\$employee_id\.$#'
+			path: app/Services/AuthService.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::detectNewFeatures\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$routeData\ of\ method\ App\\Services\\FeatureDetector::generateFeatureKey\(\)\ expects\ array<string,\ mixed>,\ array\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$controllerClass\ of\ method\ App\\Services\\FeatureDetector::extractMetadata\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#2\ \$method\ of\ method\ App\\Services\\FeatureDetector::extractMetadata\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$routeData\ of\ method\ App\\Services\\FeatureDetector::buildFeatureData\(\)\ expects\ array<string,\ mixed>,\ array\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::detectNewFeatures\(\)\ should\ return\ Illuminate\\Support\\Collection&iterable<array>\ but\ returns\ Illuminate\\Support\\Collection<\(int\|string\),\ mixed>\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$methodInfo\ of\ method\ App\\Services\\FeatureDetector::extractParameters\(\)\ expects\ array<string,\ mixed>,\ array\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::scanRoutes\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Argument\ of\ an\ invalid\ type\ Illuminate\\Routing\\RouteCollectionInterface\ supplied\ for\ foreach,\ only\ iterables\ are\ supported\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$route\ of\ method\ App\\Services\\FeatureDetector::isApiRoute\(\)\ expects\ Illuminate\\Routing\\Route,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ call\ method\ getAction\(\)\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''controller''\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$haystack\ of\ function\ str_contains\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#2\ \$string\ of\ function\ explode\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ call\ method\ uri\(\)\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ call\ method\ methods\(\)\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ call\ method\ getName\(\)\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ call\ method\ middleware\(\)\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ call\ method\ parameterNames\(\)\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$wheres\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::scanRoutes\(\)\ should\ return\ Illuminate\\Support\\Collection&iterable<array>\ but\ returns\ Illuminate\\Support\\Collection<\(int\|string\),\ mixed>\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::detectChanges\(\)\ should\ return\ Illuminate\\Support\\Collection<int,\ array<string,\ mixed>>\ but\ returns\ Illuminate\\Support\\Collection<\(int\|string\),\ mixed>\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$class\ of\ function\ class_basename\ expects\ object\|string,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Binary\ operation\ "\."\ between\ non-falsy-string\ and\ mixed\ results\ in\ an\ error\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::isValidFeature\(\)\ has\ parameter\ \$metadata\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''name''\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$haystack\ of\ function\ str_starts_with\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ cast\ mixed\ to\ string\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::findRouteByEndpoint\(\)\ never\ returns\ null\ so\ it\ can\ be\ removed\ from\ the\ return\ type\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector::findRouteByEndpoint\(\)\ should\ return\ array<string,\ mixed>\|null\ but\ returns\ array<mixed,\ mixed>\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''uri''\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''signature''\ on\ mixed\.$#'
+			path: app/Services/FeatureDetector.php
+
+		-
+			message: '#^Parameter\ \#1\ \$attributes\ of\ method\ Illuminate\\Database\\Eloquent\\Model::update\(\)\ expects\ array<string,\ mixed>,\ array<mixed>\ given\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureRegistry::updateFeature\(\)\ has\ parameter\ \$metadata\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureRegistry::getManifest\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureRegistry::synchronize\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Parameter\ \#1\ \$key\ of\ method\ App\\Services\\FeatureRegistry::updateFeature\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Parameter\ \#2\ \$metadata\ of\ method\ App\\Services\\FeatureRegistry::updateFeature\(\)\ expects\ array,\ mixed\ given\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Parameter\ \#1\ \$key\ of\ method\ App\\Services\\FeatureRegistry::removeFeature\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Part\ \$change\[''feature_key'']\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Cannot\ cast\ mixed\ to\ string\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Parameter\ \#1\ \$time\ of\ static\ method\ Carbon\\Carbon::parse\(\)\ expects\ Carbon\\Month\|Carbon\\WeekDay\|DateTimeInterface\|float\|int\|string\|null,\ mixed\ given\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureRegistry::getCacheStatus\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/FeatureRegistry.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::analyzeClass\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Parameter\ \#1\ \$objectOrClass\ of\ class\ ReflectionClass\ constructor\ expects\ class-string<T\ of\ object>\|T\ of\ object,\ string\ given\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::analyzeMethod\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::getMethodParameters\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::getPublicMethods\(\)\ has\ parameter\ \$reflection\ with\ generic\ class\ ReflectionClass\ but\ does\ not\ specify\ its\ types:\ T$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::getPublicMethods\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::getClassAttributes\(\)\ has\ parameter\ \$reflection\ with\ generic\ class\ ReflectionClass\ but\ does\ not\ specify\ its\ types:\ T$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::getClassAttributes\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Method\ App\\Services\\ReflectionService::getMethodAttributes\(\)\ return\ type\ has\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: app/Services/ReflectionService.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$id\.$#'
+			path: tests/Feature/Absences/AbsenceIndexTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$user\ of\ static\ method\ Laravel\\Sanctum\\Sanctum<Laravel\\Sanctum\\PersonalAccessToken>::actingAs\(\)\ expects\ Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens,\ Illuminate\\Database\\Eloquent\\Model\ given\.$#'
+			path: tests/Feature/Absences/AbsenceIndexTest.php
+
+		-
+			message: '#^Part\ \$employeeB->id\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: tests/Feature/Absences/AbsenceIndexTest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$id\.$#'
+			path: tests/Feature/Attendance/TodayAndHistoryTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$user\ of\ static\ method\ Laravel\\Sanctum\\Sanctum<Laravel\\Sanctum\\PersonalAccessToken>::actingAs\(\)\ expects\ Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens,\ Illuminate\\Database\\Eloquent\\Model\ given\.$#'
+			path: tests/Feature/Attendance/TodayAndHistoryTest.php
+
+		-
+			message: '#^Part\ \$employeeB->id\ \(mixed\)\ of\ encapsed\ string\ cannot\ be\ cast\ to\ string\.$#'
+			path: tests/Feature/Attendance/TodayAndHistoryTest.php
+
+		-
+			message: '#^Method\ Tests\\Feature\\AuthGoogleSignInTest::test_google_callback_creates_new_ordinary_user\(\)\ has\ no\ return\ type\ specified\.$#'
+			path: tests/Feature/AuthGoogleSignInTest.php
+
+		-
+			message: '#^Call\ to\ an\ undefined\ method\ Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::andReturn\(\)\.$#'
+			path: tests/Feature/AuthGoogleSignInTest.php
+
+		-
+			message: '#^Call\ to\ an\ undefined\ method\ Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::with\(\)\.$#'
+			path: tests/Feature/AuthGoogleSignInTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ andReturn\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthGoogleSignInTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ increments\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ unsignedInteger\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ string\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ char\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ nullable\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ text\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ default\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ timestamps\(\)\ on\ mixed\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Method\ Tests\\Feature\\AuthSelfRegistrationTest::test_a_user_can_register_as_an_ordinary_account\(\)\ has\ no\ return\ type\ specified\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Method\ Tests\\Feature\\AuthSelfRegistrationTest::test_an_ordinary_user_can_submit_a_company_request\(\)\ has\ no\ return\ type\ specified\.$#'
+			path: tests/Feature/AuthSelfRegistrationTest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ object::\$rtsp_url\.$#'
+			path: tests/Feature/Cameras/CamerasCrudTest.php
+
+		-
+			message: '#^Property\ Tests\\Feature\\FeatureManifestApiTest::\$user\ \(App\\Models\\Employee\)\ does\ not\ accept\ Illuminate\\Database\\Eloquent\\Model\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ Illuminate\\Database\\Eloquent\\Model::\$id\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Property\ Tests\\Feature\\FeatureManifestApiTest::\$adminUser\ \(App\\Models\\Employee\)\ does\ not\ accept\ Illuminate\\Database\\Eloquent\\Model\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$array\ of\ function\ array_column\ expects\ array,\ mixed\ given\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''user_id''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''user_role''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''generated_for_user''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureManifestApiTest.php
+
+		-
+			message: '#^Cannot\ access\ property\ \$metadata\ on\ App\\Models\\Feature\|null\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Offset\ ''test_metadata''\ might\ not\ exist\ on\ array<string,\ mixed>\|null\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertIsArray\(\)\ with\ array\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$value\ of\ function\ count\ expects\ array\|Countable,\ mixed\ given\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ assertExitCode\(\)\ on\ Illuminate\\Testing\\PendingCommand\|int\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$value\ of\ function\ collect\ expects\ Illuminate\\Contracts\\Support\\Arrayable<\(int\|string\),\ mixed>\|iterable<\(int\|string\),\ mixed>\|null,\ mixed\ given\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Unable\ to\ resolve\ the\ template\ type\ TKey\ in\ call\ to\ function\ collect$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Unable\ to\ resolve\ the\ template\ type\ TValue\ in\ call\ to\ function\ collect$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''v1''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''v2''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''active''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''inactive''\ on\ mixed\.$#'
+			path: tests/Feature/FeatureRegistryIntegrationTest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ object::\$iban\.$#'
+			path: tests/Feature/Security/EmployeeEncryptionTest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ object::\$bank_account\.$#'
+			path: tests/Feature/Security/EmployeeEncryptionTest.php
+
+		-
+			message: '#^Access\ to\ an\ undefined\ property\ object::\$national_id\.$#'
+			path: tests/Feature/Security/EmployeeEncryptionTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertIsArray\(\)\ with\ array\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Unit/Services/AnnotationReaderTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$haystack\ of\ method\ PHPUnit\\Framework\\Assert::assertContains\(\)\ expects\ iterable,\ mixed\ given\.$#'
+			path: tests/Unit/Services/AnnotationReaderTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$array\ of\ method\ PHPUnit\\Framework\\Assert::assertArrayHasKey\(\)\ expects\ array<mixed>\|ArrayAccess<\(int\|string\),\ mixed>,\ mixed\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''uri''\ on\ mixed\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$string\ of\ method\ PHPUnit\\Framework\\Assert::assertStringStartsWith\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertIsArray\(\)\ with\ array<string,\ mixed>\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$haystack\ of\ method\ PHPUnit\\Framework\\Assert::assertContains\(\)\ expects\ iterable,\ mixed\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php:81::detectNewFeatures\(\)\ return\ type\ with\ generic\ class\ Illuminate\\Support\\Collection\ does\ not\ specify\ its\ types:\ TKey,\ TValue$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$routeData\ of\ method\ App\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php:81::generateFeatureKey\(\)\ expects\ array<string,\ mixed>,\ array\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$controllerClass\ of\ method\ App\\Services\\FeatureDetector::extractMetadata\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$method\ of\ method\ App\\Services\\FeatureDetector::extractMetadata\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$routeData\ of\ method\ App\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php:81::buildFeatureData\(\)\ expects\ array<string,\ mixed>,\ array\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php:81::detectNewFeatures\(\)\ should\ return\ Illuminate\\Support\\Collection&iterable<array>\ but\ returns\ Illuminate\\Support\\Collection<\(int\|string\),\ mixed>\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Method\ App\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php:81::isValidFeature\(\)\ has\ parameter\ \$metadata\ with\ no\ value\ type\ specified\ in\ iterable\ type\ array\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$haystack\ of\ function\ str_contains\ expects\ string,\ mixed\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Parameter\ \#1\ \$array\ of\ function\ array_unique\ expects\ an\ array\ of\ values\ castable\ to\ string,\ list<mixed>\ given\.$#'
+			path: tests/Unit/Services/FeatureDetectorTest.php
+
+		-
+			message: '#^Property\ Tests\\Unit\\Services\\FeatureRegistryTest::\$mockDetector\ \(App\\Contracts\\FeatureDetectorInterface\)\ does\ not\ accept\ Mockery\\MockInterface\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Property\ Tests\\Unit\\Services\\FeatureRegistryTest::\$mockCache\ \(Illuminate\\Cache\\CacheManager\)\ does\ not\ accept\ Mockery\\MockInterface\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Call\ to\ an\ undefined\ method\ Illuminate\\Cache\\CacheManager::shouldReceive\(\)\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ andReturn\(\)\ on\ mixed\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ andReturnSelf\(\)\ on\ mixed\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ once\(\)\ on\ mixed\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Cannot\ call\ method\ andReturnUsing\(\)\ on\ mixed\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Trying\ to\ invoke\ mixed\ but\ it''s\ not\ a\ callable\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertIsArray\(\)\ with\ array\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertTrue\(\)\ with\ true\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Call\ to\ an\ undefined\ method\ App\\Contracts\\FeatureDetectorInterface::shouldReceive\(\)\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertIsArray\(\)\ with\ array<string,\ mixed>\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Unit/Services/FeatureRegistryTest.php
+
+		-
+			message: '#^Call\ to\ method\ PHPUnit\\Framework\\Assert::assertIsArray\(\)\ with\ array\ will\ always\ evaluate\ to\ true\.$#'
+			path: tests/Unit/Services/ReflectionServiceTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$array\ of\ method\ PHPUnit\\Framework\\Assert::assertArrayHasKey\(\)\ expects\ array<mixed>\|ArrayAccess<\(int\|string\),\ mixed>,\ mixed\ given\.$#'
+			path: tests/Unit/Services/ReflectionServiceTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''name''\ on\ mixed\.$#'
+			path: tests/Unit/Services/ReflectionServiceTest.php
+
+		-
+			message: '#^Cannot\ access\ offset\ ''type''\ on\ mixed\.$#'
+			path: tests/Unit/Services/ReflectionServiceTest.php
+
+		-
+			message: '#^Parameter\ \#2\ \$haystack\ of\ method\ PHPUnit\\Framework\\Assert::assertStringContainsString\(\)\ expects\ string,\ mixed\ given\.$#'
+			path: tests/Unit/Services/ReflectionServiceTest.php
