@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Cabinet;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateDocumentRequest extends FormRequest
 {
@@ -16,9 +17,18 @@ class UpdateDocumentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $actor = $this->user();
+        $companyId = $actor?->company_id;
+
         return [
             'name' => ['sometimes', 'string', 'max:255'],
-            'folder_id' => ['nullable', 'integer', 'exists:cabinet_folders,id'],
+            'folder_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('cabinet_folders', 'id')
+                    ->where('employee_id', $actor?->id)
+                    ->where('company_id', $companyId),
+            ],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

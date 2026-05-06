@@ -2,6 +2,29 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.87] - 2026-05-06
+
+### 🧪 Scout - Tests de régression MVP
+
+- Tests : ajout de `api/tests/Feature/Security/AuthenticatedGuardrailsTest.php` pour garantir que les employés archivés ou suspendus sont immédiatement bloqués par le `TenantMiddleware` lors des sessions actives.
+
+### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (SalaryAdvance)
+
+- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empêchant l'énumération d'identifiants inter-tenant.
+- Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation des avances sur salaire et la validation des filtres.
+
+### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (Cabinet)
+
+- API : Durcissement de la validation dans `StoreDocumentRequest`, `UpdateDocumentRequest`, `MoveDocumentRequest`, `StoreFolderRequest` et `UpdateFolderRequest` pour empêcher les attaques par IDOR en vérifiant systématiquement l'appartenance des dossiers au tenant et à l'employé.
+- Tests : Ajout de `api/tests/Feature/Security/CabinetCrossTenantIsolationTest.php` pour verrouiller l'isolation des ressources du module Cabinet.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+
+### Contractor - Durcissement du contrat API/mobile
+
+- Mobile : Durcissement du parsing des modèles `Employee` et `AttendanceLog` via `int.tryParse` et `.toString()` pour prévenir les échecs au runtime en cas d'incohérence de type (ex: ID en chaîne vs entier).
+- Mobile : Enrichissement du modèle `AttendanceLog` pour supporter le parsing des métadonnées employeur (`employee.name`, `employee.photo_url`) exposées dans l'historique des pointages.
+- Tests : Renforcement de `api/tests/Feature/Contracts/MobilePayloadContractTest.php` avec une couverture explicite de l'historique des pointages (`/api/v1/attendance`) pour verrouiller la structure imbriquée des employés.
+
 ## [4.1.84] - 2026-04-30 
 
 ### API / Mobile / Web - Experience client alignee et modernisee
