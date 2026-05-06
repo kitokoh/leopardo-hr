@@ -1,12 +1,15 @@
 export type AppLocale = 'fr' | 'ar' | 'tr' | 'en';
 
 export type StoredAuthUser = {
-  id?: number;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  language?: AppLocale;
+  id?: number | string;
+  first_name?: string | null;
+  last_name?: string | null;
+  name?: string | null;
+  email?: string | null;
+  language?: string | null;
   is_rtl?: boolean;
+  role?: string | null;
+  manager_role?: string | null;
 };
 
 export const SUPPORTED_LOCALES: AppLocale[] = ['fr', 'ar', 'tr', 'en'];
@@ -47,7 +50,7 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion a Leopardo RH',
-      back: 'Retour a l accueil',
+      back: 'Retour au site',
       email: 'Adresse email',
       password: 'Mot de passe',
       remember: 'Se souvenir de moi',
@@ -58,7 +61,7 @@ const copy: Record<AppLocale, CopyTree> = {
     dashboard: {
       heading: 'Tableau de bord',
       employees: 'Employes actifs',
-      present: 'Presents aujourd hui',
+      present: 'presents',
       late: 'Retards',
       activity: 'Activite recente',
       team: 'Employes',
@@ -74,8 +77,8 @@ const copy: Record<AppLocale, CopyTree> = {
   },
   ar: {
     login: {
-      title: 'تسجيل الدخول إلى ليوباردو للموارد البشرية',
-      back: 'العودة إلى الصفحة الرئيسية',
+      title: 'تسجيل الدخول إلى ليوباردو',
+      back: 'العودة إلى الموقع',
       email: 'البريد الإلكتروني',
       password: 'كلمة المرور',
       remember: 'تذكرني',
@@ -86,7 +89,7 @@ const copy: Record<AppLocale, CopyTree> = {
     dashboard: {
       heading: 'لوحة التحكم',
       employees: 'الموظفون النشطون',
-      present: 'الحاضرون اليوم',
+      present: 'حاضرون',
       late: 'التأخير',
       activity: 'النشاط الأخير',
       team: 'الموظفون',
@@ -103,18 +106,18 @@ const copy: Record<AppLocale, CopyTree> = {
   tr: {
     login: {
       title: 'Leopardo IK girisi',
-      back: 'Ana sayfaya don',
-      email: 'E-posta adresi',
+      back: 'Siteye don',
+      email: 'E-posta',
       password: 'Sifre',
       remember: 'Beni hatirla',
-      forgot: 'Sifrenizi mi unuttunuz?',
+      forgot: 'Sifremi unuttum?',
       submit: 'Giris yap',
       loading: 'Giris yapiliyor...',
     },
     dashboard: {
       heading: 'Kontrol paneli',
       employees: 'Aktif calisanlar',
-      present: 'Bugun burada olanlar',
+      present: 'mevcut',
       late: 'Gecikmeler',
       activity: 'Son etkinlik',
       team: 'Calisanlar',
@@ -131,7 +134,7 @@ const copy: Record<AppLocale, CopyTree> = {
   en: {
     login: {
       title: 'Sign in to Leopardo RH',
-      back: 'Back to home',
+      back: 'Back to site',
       email: 'Email address',
       password: 'Password',
       remember: 'Remember me',
@@ -142,7 +145,7 @@ const copy: Record<AppLocale, CopyTree> = {
     dashboard: {
       heading: 'Dashboard',
       employees: 'Active employees',
-      present: 'Present today',
+      present: 'present',
       late: 'Late arrivals',
       activity: 'Recent activity',
       team: 'Employees',
@@ -181,12 +184,14 @@ export function getCopy(locale: AppLocale) {
 
 export function getStoredUser(): StoredAuthUser | null {
   if (typeof window === 'undefined') return null;
+
   const raw = window.localStorage.getItem(AUTH_USER_KEY);
   if (!raw) return null;
 
   try {
     return JSON.parse(raw) as StoredAuthUser;
   } catch {
+    clearAuthSession();
     return null;
   }
 }
@@ -207,49 +212,55 @@ export function getPreferredLocale(): AppLocale {
   return normalizeLocale(window.navigator.language);
 }
 
-export function storePreferredLocale(locale: AppLocale) {
+export function storePreferredLocale(locale: AppLocale): void {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(PREFERRED_LOCALE_KEY, locale);
 }
 
-export function storeAuthSession(token: string, user: StoredAuthUser) {
+export function storeAuthSession(token: string, user: StoredAuthUser): void {
   if (typeof window === 'undefined') return;
   window.localStorage.setItem(AUTH_TOKEN_KEY, token);
   window.localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   storePreferredLocale(normalizeLocale(user.language));
 }
 
-export function clearAuthSession() {
+export function clearAuthSession(): void {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
   window.localStorage.removeItem(AUTH_USER_KEY);
   window.localStorage.removeItem(PREFERRED_LOCALE_KEY);
 }
 
-export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean) {
+export function applyDocumentLocale(locale: AppLocale, isRtl?: boolean): void {
   if (typeof document === 'undefined') return;
   document.documentElement.lang = locale;
   document.documentElement.dir = getLocaleDirection(locale, isRtl);
 }
 
-export function getDisplayName(user: StoredAuthUser | null) {
-  if (!user) return '';
+export function getDisplayName(user?: StoredAuthUser | null): string {
+  if (!user) return 'Leopardo RH';
+
   const fullName = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-  return fullName || user.email || 'Leopardo RH';
+  return fullName || user.name || user.email || 'Leopardo RH';
 }
 
-export function getApiErrorMessage(payload: unknown, fallback: string) {
+export function getApiErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== 'object') {
     return fallback;
   }
 
   const data = payload as Record<string, unknown>;
+
   if (typeof data.localized_message === 'string' && data.localized_message.trim() !== '') {
     return data.localized_message;
   }
 
   if (typeof data.message === 'string' && data.message.trim() !== '') {
     return data.message;
+  }
+
+  if (typeof data.error === 'string' && data.error.trim() !== '') {
+    return data.error;
   }
 
   return fallback;
