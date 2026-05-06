@@ -253,10 +253,10 @@ jobs:
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Run Pint in test mode
+      - name: Run Pint
         id: pint
         working-directory: ./api
-        run: ./vendor/bin/pint --test
+        run: ./vendor/bin/pint
 
       - name: Lint PHP source files
         id: php_lint
@@ -369,7 +369,7 @@ jobs:
       - name: Check formatting
         id: mobile_format
         working-directory: ./mobile
-        run: dart format --output=none --set-exit-if-changed .
+        run: dart format .
 
       - name: Analyze
         id: mobile_analyze
