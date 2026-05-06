@@ -38,7 +38,7 @@
       <div class="lg:col-span-1">
         <SystemHealthCard />
       </div>
-      
+
       <!-- Quick Actions -->
       <div class="lg:col-span-2">
         <QuickActionsCard />

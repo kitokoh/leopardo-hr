@@ -27,46 +27,52 @@ class PayrollListScreen extends ConsumerWidget {
         ),
       ),
       body: payrollsAsync.when(
-        data: (payrolls) => payrolls.isEmpty
-            ? const EmptyState(
-                icon: Icons.description,
-                title: 'Aucune fiche de paie',
-                description:
-                    'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.',
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(20),
-                itemCount: payrolls.length,
-                itemBuilder: (context, index) {
-                  final payroll = payrolls[index];
-                  return Card(
-                    color: AppColors.cardDark,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      title: Text(
-                        'Mois: ${payroll.month}/${payroll.year}',
-                        style: AppTypography.subtitle.copyWith(
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'Salaire Net: ${payroll.netSalary} DZD',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textMutedDark,
-                        ),
-                      ),
-                      trailing: const Icon(
-                        Icons.download,
-                        color: AppColors.info,
-                      ),
+        data:
+            (payrolls) =>
+                payrolls.isEmpty
+                    ? const EmptyState(
+                      icon: Icons.description,
+                      title: 'Aucune fiche de paie',
+                      description:
+                          'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.',
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.all(20),
+                      itemCount: payrolls.length,
+                      itemBuilder: (context, index) {
+                        final payroll = payrolls[index];
+                        return Card(
+                          color: AppColors.cardDark,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            title: Text(
+                              'Mois: ${payroll.month}/${payroll.year}',
+                              style: AppTypography.subtitle.copyWith(
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Salaire Net: ${payroll.netSalary} DZD',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textMutedDark,
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.download,
+                              color: AppColors.info,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
-        ),
+        error:
+            (e, _) => Center(
+              child: Text(
+                e.toString(),
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
       ),
     );
   }

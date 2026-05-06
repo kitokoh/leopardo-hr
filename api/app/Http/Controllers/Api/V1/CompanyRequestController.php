@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyRequest;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class CompanyRequestController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user('user_api');
+        $user = $this->resolveRequestUser($request);
 
         $requests = $user->companyRequests()
             ->latest()
@@ -46,8 +47,7 @@ class CompanyRequestController extends Controller
             'description' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        /** @var User $user */
-        $user = $request->user('user_api');
+        $user = $this->resolveRequestUser($request);
 
         $pending = $user->companyRequests()->where('status', 'pending')->count();
         if ($pending >= 3) {
@@ -71,8 +71,7 @@ class CompanyRequestController extends Controller
 
     public function show(Request $request, int $id): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user('user_api');
+        $user = $this->resolveRequestUser($request);
 
         $companyRequest = $user->companyRequests()->findOrFail($id);
 
@@ -92,5 +91,30 @@ class CompanyRequestController extends Controller
                 'created_at' => $companyRequest->created_at?->toIso8601String(),
             ],
         ]);
+    }
+
+    private function resolveRequestUser(Request $request): User
+    {
+        $user = $request->user('user_api');
+        if ($user instanceof User) {
+            return $user;
+        }
+
+        $employee = $request->user();
+        if ($employee instanceof Employee) {
+            return User::firstOrCreate(
+                ['email' => $employee->email],
+                [
+                    'first_name' => $employee->first_name,
+                    'last_name' => $employee->last_name,
+                    'password_hash' => $employee->password_hash ?: Hash::make(str()->random(32)),
+                    'provider' => 'employee',
+                    'preferred_language' => $employee->preferred_language ?? 'fr',
+                    'status' => $employee->status ?? 'active',
+                ]
+            );
+        }
+
+        abort(401);
     }
 }

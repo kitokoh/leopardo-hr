@@ -24,7 +24,7 @@ void main() {
     // Both CTAs are present.
     expect(find.widgetWithText(ElevatedButton, 'Se connecter'), findsOneWidget);
     expect(
-      find.widgetWithText(OutlinedButton, 'Demander un acces'),
+      find.widgetWithText(OutlinedButton, 'Acces employe (invitation)'),
       findsOneWidget,
     );
   });

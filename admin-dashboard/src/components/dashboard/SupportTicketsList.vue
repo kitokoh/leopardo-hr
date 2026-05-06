@@ -24,7 +24,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr 
+              <tr
                 v-for="ticket in tickets"
                 :key="ticket.id"
                 class="hover:bg-gray-50"
@@ -32,7 +32,7 @@
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-6">
                   <div class="flex items-center">
                     <div class="flex-shrink-0">
-                      <div 
+                      <div
                         :class="[
                           'h-8 w-8 rounded-full flex items-center justify-center',
                           getPriorityColor(ticket.priority)
@@ -54,7 +54,7 @@
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  <span 
+                  <span
                     :class="[
                       'inline-flex rounded-full px-2 text-xs font-semibold leading-5',
                       getPriorityBadgeColor(ticket.priority)
@@ -64,7 +64,7 @@
                   </span>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  <span 
+                  <span
                     :class="[
                       'inline-flex rounded-full px-2 text-xs font-semibold leading-5',
                       getStatusBadgeColor(ticket.status)
@@ -106,7 +106,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Empty state -->
     <div v-if="tickets.length === 0" class="text-center py-12">
       <ChatBubbleLeftRightIcon class="mx-auto h-12 w-12 text-gray-400" />
@@ -115,10 +115,10 @@
         Tous les tickets de support ont été traités.
       </p>
     </div>
-    
+
     <!-- View all link -->
     <div v-if="tickets.length > 0" class="mt-6 text-center">
-      <router-link 
+      <router-link
         to="/support"
         class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
       >
@@ -233,7 +233,7 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
@@ -248,13 +248,13 @@ async function assignTicket(ticketId) {
   try {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     // Update ticket status
     const ticket = tickets.value.find(t => t.id === ticketId)
     if (ticket) {
       ticket.status = 'in_progress'
     }
-    
+
     toast.success(`Ticket #${ticketId} assigné`)
   } catch (error) {
     console.error('Failed to assign ticket:', error)
@@ -266,13 +266,13 @@ async function closeTicket(ticketId) {
   try {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     // Update ticket status
     const ticket = tickets.value.find(t => t.id === ticketId)
     if (ticket) {
       ticket.status = 'closed'
     }
-    
+
     toast.success(`Ticket #${ticketId} fermé`)
   } catch (error) {
     console.error('Failed to close ticket:', error)

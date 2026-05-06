@@ -9,7 +9,7 @@
             Monitoring, configuration et automatisation de la plateforme
           </p>
         </div>
-        
+
         <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
           <button
             @click="runHealthCheck"
@@ -19,7 +19,7 @@
             <HeartIcon class="h-4 w-4 mr-2" />
             {{ isRunningHealthCheck ? 'Vérification...' : 'Health Check' }}
           </button>
-          
+
           <button
             @click="toggleMaintenanceMode"
             :class="[
@@ -100,7 +100,7 @@
             + Nouvelle tâche
           </button>
         </div>
-        <AutomatedTasksList 
+        <AutomatedTasksList
           :tasks="automatedTasks"
           @toggle="toggleTask"
           @edit="editTask"
@@ -120,7 +120,7 @@
             {{ isCreatingBackup ? 'Création...' : '+ Nouvelle sauvegarde' }}
           </button>
         </div>
-        <BackupManagement 
+        <BackupManagement
           :backups="backups"
           @restore="restoreBackup"
           @delete="deleteBackup"
@@ -132,7 +132,7 @@
       <div class="bg-white shadow rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-medium text-gray-900">Sécurité</h3>
-          <span 
+          <span
             :class="[
               'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
               securityStatus.level === 'high' ? 'bg-green-100 text-green-800' :
@@ -143,7 +143,7 @@
             {{ securityStatus.label }}
           </span>
         </div>
-        <SecurityMonitoring 
+        <SecurityMonitoring
           :alerts="securityAlerts"
           :status="securityStatus"
           @investigate="investigateAlert"
@@ -171,7 +171,7 @@
           </button>
         </div>
       </div>
-      <SystemConfiguration 
+      <SystemConfiguration
         :config="systemConfig"
         @update="updateConfig"
         @reset="resetConfig"
@@ -190,7 +190,7 @@
           Nouveau test
         </button>
       </div>
-      <ApiTestingTools 
+      <ApiTestingTools
         :tests="apiTests"
         @run="runApiTest"
         @edit="editApiTest"
@@ -203,7 +203,7 @@
       <!-- Auto Scaling -->
       <div class="bg-white shadow rounded-lg p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Auto-Scaling</h3>
-        <AutoScalingManager 
+        <AutoScalingManager
           :config="scalingConfig"
           :metrics="scalingMetrics"
           @update-config="updateScalingConfig"
@@ -214,7 +214,7 @@
       <!-- Load Balancer -->
       <div class="bg-white shadow rounded-lg p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Load Balancer</h3>
-        <LoadBalancerStatus 
+        <LoadBalancerStatus
           :nodes="loadBalancerNodes"
           :traffic="trafficMetrics"
           @toggle-node="toggleLoadBalancerNode"
@@ -229,13 +229,13 @@
       @close="showCreateTaskModal = false"
       @created="handleTaskCreated"
     />
-    
+
     <ImportConfigModal
       v-if="showImportModal"
       @close="showImportModal = false"
       @imported="handleConfigImported"
     />
-    
+
     <ApiTesterModal
       v-if="showApiTesterModal"
       @close="showApiTesterModal = false"
@@ -580,18 +580,18 @@ function startMetricsRefresh() {
 
 function updatePerformanceMetrics() {
   const now = new Date()
-  
+
   // Generate realistic metrics
   const cpu = Math.random() * 30 + 40 // 40-70%
   const memory = Math.random() * 20 + 60 // 60-80%
   const network = Math.random() * 40 + 10 // 10-50%
-  
+
   // Update performance metrics
   performanceMetrics.value.cpu.push(cpu)
   performanceMetrics.value.memory.push(memory)
   performanceMetrics.value.network.push(network)
   performanceMetrics.value.timestamps.push(now)
-  
+
   // Keep only last 20 points
   if (performanceMetrics.value.cpu.length > 20) {
     performanceMetrics.value.cpu.shift()
@@ -599,7 +599,7 @@ function updatePerformanceMetrics() {
     performanceMetrics.value.network.shift()
     performanceMetrics.value.timestamps.shift()
   }
-  
+
   // Update resource usage
   resourceUsage.cpu = Math.round(cpu)
   resourceUsage.memory = Math.round(memory)
@@ -609,17 +609,17 @@ function updatePerformanceMetrics() {
 
 async function runHealthCheck() {
   isRunningHealthCheck.value = true
-  
+
   try {
     // Simulate health check
     await new Promise(resolve => setTimeout(resolve, 3000))
-    
+
     // Update system status
     systemStatus.overall = 'healthy'
     systemStatus.database = 'healthy'
     systemStatus.api = 'healthy'
     systemStatus.websocket = 'healthy'
-    
+
     toast.success('Health check terminé • Tous les services sont opérationnels')
   } catch (error) {
     console.error('Health check failed:', error)
@@ -632,7 +632,7 @@ async function runHealthCheck() {
 async function toggleMaintenanceMode() {
   try {
     systemStatus.maintenanceMode = !systemStatus.maintenanceMode
-    
+
     if (systemStatus.maintenanceMode) {
       toast.warning('Mode maintenance activé')
     } else {
@@ -676,10 +676,10 @@ function handleTaskCreated(task) {
 // Backup management
 async function createBackup() {
   isCreatingBackup.value = true
-  
+
   try {
     await new Promise(resolve => setTimeout(resolve, 5000))
-    
+
     const newBackup = {
       id: Date.now(),
       name: `backup-${new Date().toISOString().split('T')[0]}-${new Date().toTimeString().split(' ')[0].replace(/:/g, '-')}`,
@@ -688,7 +688,7 @@ async function createBackup() {
       createdAt: new Date(),
       status: 'completed'
     }
-    
+
     backups.value.unshift(newBackup)
     toast.success('Sauvegarde créée avec succès')
   } catch (error) {
@@ -742,7 +742,7 @@ function exportConfig() {
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
-  
+
   toast.success('Configuration exportée')
 }
 

@@ -2,7 +2,7 @@
   <div class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div 
+      <div
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
         @click="$emit('close')"
       ></div>
@@ -138,7 +138,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Actions -->
           <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
@@ -155,7 +155,7 @@
               </span>
               <span v-else>Créer l'utilisateur</span>
             </button>
-            
+
             <button
               type="button"
               @click="$emit('close')"
@@ -212,22 +212,22 @@ async function loadCompanies() {
 
 async function handleSubmit() {
   isLoading.value = true
-  
+
   try {
     // Validate form
     if (!form.name || !form.email || !form.role) {
       toast.error('Veuillez remplir tous les champs obligatoires')
       return
     }
-    
+
     if (!form.generatePassword && !form.password) {
       toast.error('Veuillez saisir un mot de passe ou activer la génération automatique')
       return
     }
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // Create user object
     const newUser = {
       id: Date.now(),
@@ -240,7 +240,7 @@ async function handleSubmit() {
       lastLoginAt: null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=random`
     }
-    
+
     // Success feedback
     let message = 'Utilisateur créé avec succès'
     if (form.sendInvitation) {
@@ -249,10 +249,10 @@ async function handleSubmit() {
     if (form.generatePassword) {
       message += ' • Mot de passe temporaire généré'
     }
-    
+
     toast.success(message)
     emit('created', newUser)
-    
+
   } catch (error) {
     console.error('Failed to create user:', error)
     toast.error('Erreur lors de la création de l\'utilisateur')

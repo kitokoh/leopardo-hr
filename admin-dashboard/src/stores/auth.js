@@ -20,21 +20,21 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.post('/admin/auth/login', credentials)
       const { token: authToken, user: userData } = response.data
-      
+
       // Stocker le token et les données utilisateur
       token.value = authToken
       user.value = userData
       localStorage.setItem('admin_token', authToken)
-      
+
       // Configurer le token par défaut pour les futures requêtes
       api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
-      
+
       return { success: true }
     } catch (error) {
       console.error('Erreur de connexion:', error)
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Erreur de connexion' 
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erreur de connexion'
       }
     } finally {
       isLoading.value = false
@@ -63,11 +63,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       // Configurer le token pour la requête
       api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
-      
+
       // Vérifier la validité du token
       const response = await api.get('/admin/auth/me')
       user.value = response.data.user
-      
+
       return true
     } catch (error) {
       console.error('Token invalide:', error)
@@ -81,11 +81,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.post('/admin/auth/refresh')
       const { token: newToken } = response.data
-      
+
       token.value = newToken
       localStorage.setItem('admin_token', newToken)
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`
-      
+
       return true
     } catch (error) {
       console.error('Erreur lors du rafraîchissement du token:', error)
@@ -99,13 +99,13 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     token,
     isLoading,
-    
+
     // Getters
     isAuthenticated,
     userRole,
     userName,
     userEmail,
-    
+
     // Actions
     login,
     logout,

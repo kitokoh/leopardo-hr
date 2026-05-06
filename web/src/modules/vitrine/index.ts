@@ -7,7 +7,7 @@ export * from './hooks';
 // Lib
 export * from './lib';
 
-// Types with explicit conflict handling
+// Types
 export type {
   PageMetadata,
   Section,

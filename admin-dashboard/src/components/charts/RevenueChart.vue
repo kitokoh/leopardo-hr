@@ -1,12 +1,12 @@
 <template>
   <div class="relative">
-    <div 
+    <div
       ref="chartContainer"
       class="h-64 w-full"
     ></div>
-    
+
     <!-- Loading overlay -->
-    <div 
+    <div
       v-if="isLoading"
       class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75"
     >
@@ -34,7 +34,7 @@ onMounted(async () => {
   await nextTick()
   await loadData()
   initChart()
-  
+
   window.addEventListener('resize', handleResize)
 })
 
@@ -48,39 +48,39 @@ onUnmounted(() => {
 async function loadData() {
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 800))
-  
+
   // Generate mock data for the last 12 months
   const months = []
   const revenue = []
   const subscriptions = []
-  
+
   const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
-  
+
   for (let i = 11; i >= 0; i--) {
     const date = new Date()
     date.setMonth(date.getMonth() - i)
     months.push(monthNames[date.getMonth()])
-    
+
     // Generate realistic revenue growth
     const baseRevenue = 15000 + (11 - i) * 2000
     const variation = Math.random() * 5000 - 2500
     revenue.push(Math.max(10000, baseRevenue + variation))
-    
+
     // Generate subscription count
     const baseSubscriptions = 50 + (11 - i) * 8
     const subVariation = Math.random() * 20 - 10
     subscriptions.push(Math.max(30, Math.round(baseSubscriptions + subVariation)))
   }
-  
+
   chartData.value = { months, revenue, subscriptions }
   isLoading.value = false
 }
 
 function initChart() {
   if (!chartContainer.value) return
-  
+
   chart.value = echarts.init(chartContainer.value)
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -214,7 +214,7 @@ function initChart() {
       }
     ]
   }
-  
+
   chart.value.setOption(option)
 }
 

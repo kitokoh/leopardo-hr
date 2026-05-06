@@ -29,7 +29,7 @@
           </div>
         </div>
       </main>
-      
+
       <!-- Additional help -->
       <div class="mt-16 border-t border-gray-200 pt-8">
         <h2 class="text-lg font-medium text-gray-900">Liens utiles</h2>
@@ -49,7 +49,7 @@
               </div>
             </div>
           </router-link>
-          
+
           <router-link
             to="/companies"
             class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
@@ -65,7 +65,7 @@
               </div>
             </div>
           </router-link>
-          
+
           <router-link
             to="/support"
             class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"
@@ -81,7 +81,7 @@
               </div>
             </div>
           </router-link>
-          
+
           <router-link
             to="/system"
             class="group relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400"

@@ -5,9 +5,7 @@ import 'package:leopardo_rh/models/employee.dart';
 import 'package:leopardo_rh/core/storage/secure_storage.dart';
 
 class AuthRepository {
-  final _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+  final _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
   final ApiClient apiClient;
   final SecureStorage storage;
   final AppPreferences preferences;
@@ -52,7 +50,8 @@ class AuthRepository {
       throw Exception('Connexion Google annulée');
     }
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
     final String? idToken = googleAuth.idToken;
 
     if (idToken == null) {

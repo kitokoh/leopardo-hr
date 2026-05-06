@@ -69,10 +69,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Employes'),
-            Tab(text: 'Invitations'),
-          ],
+          tabs: const [Tab(text: 'Employes'), Tab(text: 'Invitations')],
         ),
       ),
       body: TabBarView(
@@ -161,42 +158,43 @@ class _EmployeesTab extends ConsumerWidget {
   }
 
   String _statusLabel(String status) => switch (status) {
-        'active' => 'Actif',
-        'archived' => 'Archive',
-        'blocked' => 'Bloque',
-        'suspended' => 'Suspendu',
-        _ => status,
-      };
+    'active' => 'Actif',
+    'archived' => 'Archive',
+    'blocked' => 'Bloque',
+    'suspended' => 'Suspendu',
+    _ => status,
+  };
 
   void _showActions(BuildContext context, WidgetRef ref, Employee employee) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              employee.fullName,
-              style: Theme.of(context).textTheme.titleLarge,
+      builder:
+          (_) => Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  employee.fullName,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  employee.email,
+                  style: const TextStyle(color: AppColors.textMuted),
+                ),
+                const SizedBox(height: 16),
+                if (employee.status != 'archived')
+                  ListTile(
+                    leading: const Icon(Icons.archive_outlined),
+                    title: const Text('Archiver'),
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                      await _archive(context, ref, employee);
+                    },
+                  ),
+              ],
             ),
-            Text(
-              employee.email,
-              style: const TextStyle(color: AppColors.textMuted),
-            ),
-            const SizedBox(height: 16),
-            if (employee.status != 'archived')
-              ListTile(
-                leading: const Icon(Icons.archive_outlined),
-                title: const Text('Archiver'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  await _archive(context, ref, employee);
-                },
-              ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -207,22 +205,23 @@ class _EmployeesTab extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Archiver cet employe ?'),
-        content: Text(
-          '${employee.fullName} n aura plus acces a l application.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Archiver cet employe ?'),
+            content: Text(
+              '${employee.fullName} n aura plus acces a l application.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Annuler'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Archiver'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Archiver'),
-          ),
-        ],
-      ),
     );
     if (confirmed != true) return;
     try {
@@ -285,13 +284,14 @@ class _InvitationsTab extends ConsumerWidget {
                     ),
                   ],
                 ),
-                trailing: inv.status == 'pending'
-                    ? IconButton(
-                        icon: const Icon(Icons.send),
-                        tooltip: 'Renvoyer',
-                        onPressed: () async => _resend(context, ref, inv),
-                      )
-                    : null,
+                trailing:
+                    inv.status == 'pending'
+                        ? IconButton(
+                          icon: const Icon(Icons.send),
+                          tooltip: 'Renvoyer',
+                          onPressed: () async => _resend(context, ref, inv),
+                        )
+                        : null,
               );
             },
           );
@@ -301,13 +301,13 @@ class _InvitationsTab extends ConsumerWidget {
   }
 
   String _invitationLabel(String status) => switch (status) {
-        'pending' => 'En attente',
-        'sent' => 'Envoyee',
-        'accepted' => 'Acceptee',
-        'expired' => 'Expiree',
-        'revoked' => 'Revoquee',
-        _ => status,
-      };
+    'pending' => 'En attente',
+    'sent' => 'Envoyee',
+    'accepted' => 'Acceptee',
+    'expired' => 'Expiree',
+    'revoked' => 'Revoquee',
+    _ => status,
+  };
 
   Future<void> _resend(
     BuildContext context,
@@ -380,15 +380,17 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               TextFormField(
                 controller: _firstName,
                 decoration: const InputDecoration(labelText: 'Prenom'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _lastName,
                 decoration: const InputDecoration(labelText: 'Nom'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
@@ -419,10 +421,11 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   DropdownMenuItem(value: 'employee', child: Text('Employe')),
                   DropdownMenuItem(value: 'manager', child: Text('Manager')),
                 ],
-                onChanged: (v) => setState(() {
-                  _role = v ?? 'employee';
-                  if (_role != 'manager') _managerRole = null;
-                }),
+                onChanged:
+                    (v) => setState(() {
+                      _role = v ?? 'employee';
+                      if (_role != 'manager') _managerRole = null;
+                    }),
               ),
               if (_role == 'manager') ...[
                 const SizedBox(height: 8),
@@ -443,23 +446,25 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                       child: Text('Superviseur'),
                     ),
                   ],
-                  validator: (v) =>
-                      (_role == 'manager' && (v == null || v.isEmpty))
-                          ? 'Selectionnez un type'
-                          : null,
+                  validator:
+                      (v) =>
+                          (_role == 'manager' && (v == null || v.isEmpty))
+                              ? 'Selectionnez un type'
+                              : null,
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submitting ? null : _submit,
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Envoyer l invitation'),
+                child:
+                    _submitting
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Text('Envoyer l invitation'),
               ),
             ],
           ),
@@ -472,7 +477,9 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref.read(employeeRepositoryProvider).create(
+      await ref
+          .read(employeeRepositoryProvider)
+          .create(
             firstName: _firstName.text,
             lastName: _lastName.text,
             email: _email.text,

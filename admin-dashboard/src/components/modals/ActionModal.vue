@@ -2,7 +2,7 @@
   <div class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div 
+      <div
         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
         @click="$emit('close')"
       ></div>
@@ -12,22 +12,22 @@
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="sm:flex sm:items-start">
             <!-- Icon -->
-            <div 
+            <div
               :class="[
                 'mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10',
                 action?.dangerous ? 'bg-red-100' : 'bg-blue-100'
               ]"
             >
-              <ExclamationTriangleIcon 
+              <ExclamationTriangleIcon
                 v-if="action?.dangerous"
-                class="h-6 w-6 text-red-600" 
+                class="h-6 w-6 text-red-600"
               />
-              <InformationCircleIcon 
+              <InformationCircleIcon
                 v-else
-                class="h-6 w-6 text-blue-600" 
+                class="h-6 w-6 text-blue-600"
               />
             </div>
-            
+
             <!-- Content -->
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
               <h3 class="text-lg font-medium leading-6 text-gray-900">
@@ -37,7 +37,7 @@
                 <p class="text-sm text-gray-500">
                   {{ action?.description }}
                 </p>
-                
+
                 <!-- Warning for dangerous actions -->
                 <div v-if="action?.dangerous" class="mt-3 p-3 bg-yellow-50 rounded-md">
                   <div class="flex">
@@ -53,7 +53,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Actions -->
         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
           <button
@@ -61,8 +61,8 @@
             :disabled="isLoading"
             :class="[
               'inline-flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed',
-              action?.dangerous 
-                ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' 
+              action?.dangerous
+                ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
                 : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
             ]"
           >
@@ -77,7 +77,7 @@
               {{ action?.confirmText || 'Confirmer' }}
             </span>
           </button>
-          
+
           <button
             @click="$emit('close')"
             :disabled="isLoading"
@@ -108,7 +108,7 @@ const isLoading = ref(false)
 
 async function handleConfirm() {
   isLoading.value = true
-  
+
   try {
     await emit('confirm', props.action.key)
   } finally {

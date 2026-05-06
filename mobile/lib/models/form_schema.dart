@@ -18,7 +18,7 @@ class FormSchema {
     this.labels,
   });
 
-  factory FormSchema.fromJson(Map<String, dynamic> json) => 
+  factory FormSchema.fromJson(Map<String, dynamic> json) =>
       _$FormSchemaFromJson(json);
 
   Map<String, dynamic> toJson() => _$FormSchemaToJson(this);
@@ -40,16 +40,13 @@ class FormSchema {
     for (final field in fields) {
       final value = data[field.name];
       final fieldError = field.validate(value);
-      
+
       if (fieldError != null) {
         errors[field.name] = fieldError;
       }
     }
 
-    return FormValidationResult(
-      isValid: errors.isEmpty,
-      errors: errors,
-    );
+    return FormValidationResult(isValid: errors.isEmpty, errors: errors);
   }
 
   @override
@@ -80,7 +77,7 @@ class FormField {
     this.helpText,
   });
 
-  factory FormField.fromJson(Map<String, dynamic> json) => 
+  factory FormField.fromJson(Map<String, dynamic> json) =>
       _$FormFieldFromJson(json);
 
   Map<String, dynamic> toJson() => _$FormFieldToJson(this);
@@ -158,7 +155,8 @@ class FormField {
   }
 
   @override
-  String toString() => 'FormField(name: $name, type: $type, required: $required)';
+  String toString() =>
+      'FormField(name: $name, type: $type, required: $required)';
 }
 
 @JsonEnum()
@@ -196,7 +194,7 @@ enum FormFieldType {
   @JsonValue('image')
   image,
   @JsonValue('hidden')
-  hidden;
+  hidden,
 }
 
 @JsonSerializable()
@@ -211,7 +209,7 @@ class FormFieldOption {
     this.disabled = false,
   });
 
-  factory FormFieldOption.fromJson(Map<String, dynamic> json) => 
+  factory FormFieldOption.fromJson(Map<String, dynamic> json) =>
       _$FormFieldOptionFromJson(json);
 
   Map<String, dynamic> toJson() => _$FormFieldOptionToJson(this);
@@ -225,12 +223,9 @@ class FormValidationResult {
   final bool isValid;
   final Map<String, String> errors;
 
-  const FormValidationResult({
-    required this.isValid,
-    required this.errors,
-  });
+  const FormValidationResult({required this.isValid, required this.errors});
 
-  factory FormValidationResult.fromJson(Map<String, dynamic> json) => 
+  factory FormValidationResult.fromJson(Map<String, dynamic> json) =>
       _$FormValidationResultFromJson(json);
 
   Map<String, dynamic> toJson() => _$FormValidationResultToJson(this);
@@ -242,7 +237,8 @@ class FormValidationResult {
   bool hasError(String fieldName) => errors.containsKey(fieldName);
 
   @override
-  String toString() => 'FormValidationResult(isValid: $isValid, errors: ${errors.length})';
+  String toString() =>
+      'FormValidationResult(isValid: $isValid, errors: ${errors.length})';
 }
 
 /// Extension pour ajouter firstOrNull si pas disponible

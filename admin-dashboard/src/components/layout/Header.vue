@@ -35,7 +35,7 @@
         <div class="flex items-center space-x-4">
           <!-- Real-time connection status -->
           <div class="flex items-center">
-            <div 
+            <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
                 realtimeStore.isConnected ? 'bg-green-400' : 'bg-red-400'
@@ -94,7 +94,7 @@
                   </button>
                 </div>
               </div>
-              
+
               <div class="max-h-96 overflow-y-auto">
                 <div
                   v-for="notification in realtimeStore.recentNotifications"
@@ -107,7 +107,7 @@
                 >
                   <div class="flex items-start">
                     <div class="flex-shrink-0">
-                      <div 
+                      <div
                         :class="[
                           'h-2 w-2 rounded-full mt-2',
                           getNotificationColor(notification.type)
@@ -127,7 +127,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div v-if="realtimeStore.recentNotifications.length === 0" class="px-4 py-6 text-center">
                   <p class="text-sm text-gray-500">Aucune notification</p>
                 </div>
@@ -153,11 +153,11 @@
             :disabled="isRefreshing"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 disabled:opacity-50"
           >
-            <ArrowPathIcon 
+            <ArrowPathIcon
               :class="[
                 'h-5 w-5',
                 isRefreshing ? 'animate-spin' : ''
-              ]" 
+              ]"
             />
           </button>
         </div>
@@ -243,7 +243,7 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  
+
   if (diff < 60000) return 'À l\'instant'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`

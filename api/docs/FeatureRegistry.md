@@ -34,7 +34,7 @@ class MyController extends Controller
     public function __construct(
         private FeatureRegistryInterface $registry
     ) {}
-    
+
     public function index()
     {
         $features = $this->registry->getFeatures();

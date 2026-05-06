@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_rh/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_rh/models/attendance_log.dart';
 import 'package:leopardo_rh/models/daily_summary.dart';
@@ -148,8 +147,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-  return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
-});
+      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+    });
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
   ref,

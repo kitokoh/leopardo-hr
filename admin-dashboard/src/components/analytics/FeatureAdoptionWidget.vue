@@ -2,14 +2,14 @@
   <div class="space-y-4">
     <!-- Feature list with adoption rates -->
     <div class="space-y-3">
-      <div 
+      <div
         v-for="feature in features"
         :key="feature.name"
         class="flex items-center justify-between"
       >
         <div class="flex-1 min-w-0">
           <div class="flex items-center">
-            <div 
+            <div
               :class="[
                 'w-3 h-3 rounded-full mr-3',
                 getAdoptionColor(feature.adoption)
@@ -25,16 +25,16 @@
             </div>
           </div>
         </div>
-        
+
         <div class="ml-4 flex items-center space-x-2">
           <div class="text-right">
             <div class="text-sm font-medium text-gray-900">
               {{ Math.round(feature.adoption * 100) }}%
             </div>
-            <div 
+            <div
               :class="[
                 'text-xs',
-                feature.trend === 'up' ? 'text-green-600' : 
+                feature.trend === 'up' ? 'text-green-600' :
                 feature.trend === 'down' ? 'text-red-600' : 'text-gray-500'
               ]"
             >
@@ -42,11 +42,11 @@
               {{ Math.abs(feature.change) }}%
             </div>
           </div>
-          
+
           <!-- Progress bar -->
           <div class="w-16">
             <div class="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 :class="[
                   'h-2 rounded-full transition-all duration-500',
                   getAdoptionProgressColor(feature.adoption)
@@ -83,7 +83,7 @@
         🚀 Meilleures performances
       </h4>
       <div class="space-y-1">
-        <div 
+        <div
           v-for="feature in topFeatures.slice(0, 2)"
           :key="feature.name"
           class="text-sm text-green-700"
@@ -100,7 +100,7 @@
         ⚠️ Adoption faible
       </h4>
       <div class="space-y-1">
-        <div 
+        <div
           v-for="feature in lowAdoptionFeatures.slice(0, 2)"
           :key="feature.name"
           class="text-sm text-yellow-700"

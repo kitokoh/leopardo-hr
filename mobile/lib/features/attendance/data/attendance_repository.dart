@@ -123,9 +123,10 @@ class AttendanceRepository {
     }
 
     final itemPayload = data['item'];
-    final todayPayload = itemPayload is Map
-        ? itemPayload.cast<String, dynamic>()
-        : (data.containsKey('item') ? null : data);
+    final todayPayload =
+        itemPayload is Map
+            ? itemPayload.cast<String, dynamic>()
+            : (data.containsKey('item') ? null : data);
 
     if (todayPayload == null) {
       return {'log': null, 'context': context};
@@ -142,15 +143,18 @@ class AttendanceRepository {
         checkIn: _parseLocalTime(today['check_in_time'] as String?),
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
-        workedHours: today['hours_worked'] != null
-            ? double.tryParse(today['hours_worked'].toString())
-            : 0.0,
-        overtimeHours: today['overtime_hours'] != null
-            ? double.tryParse(today['overtime_hours'].toString())
-            : 0.0,
-        lateMinutes: today['late_minutes'] != null
-            ? int.tryParse(today['late_minutes'].toString())
-            : null,
+        workedHours:
+            today['hours_worked'] != null
+                ? double.tryParse(today['hours_worked'].toString())
+                : 0.0,
+        overtimeHours:
+            today['overtime_hours'] != null
+                ? double.tryParse(today['overtime_hours'].toString())
+                : 0.0,
+        lateMinutes:
+            today['late_minutes'] != null
+                ? int.tryParse(today['late_minutes'].toString())
+                : null,
       ),
       'context': context,
     };
