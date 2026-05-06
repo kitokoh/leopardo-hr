@@ -26,7 +26,6 @@ export default function LoginPage() {
   const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
   const [submitting, setSubmitting] = useState(false);

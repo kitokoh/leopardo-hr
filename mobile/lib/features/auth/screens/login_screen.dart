@@ -173,6 +173,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 )
                               : const Text('Entrer dans Leopardo RH'),
                         ),
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          onPressed: authState.isLoading
+                              ? null
+                              : () => ref
+                                  .read(authProvider.notifier)
+                                  .loginWithGoogle(),
+                          icon: const Icon(Icons.login),
+                          label: const Text('Continuer avec Google'),
+                        ),
                         const SizedBox(height: 14),
                         Text(
                           'Votre entreprise vous a invite ? Activez d abord votre acces depuis l email recu, puis revenez vous connecter ici.',
@@ -185,6 +195,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         TextButton(
                           onPressed: () => context.go('/register'),
                           child: const Text('Je n ai pas encore d invitation'),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: () => context.go('/user-login'),
+                          icon: const Icon(Icons.person_outlined, size: 18),
+                          label: const Text('Connexion compte personnel'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.ia,
+                          ),
                         ),
                       ],
                     ),
