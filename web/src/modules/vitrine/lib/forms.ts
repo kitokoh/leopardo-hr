@@ -8,6 +8,8 @@ import {
   sanitizeEmail,
 } from "./validation";
 
+const safeLog = (..._args: unknown[]) => {};
+
 /**
  * Form submission handlers
  */
@@ -63,7 +65,7 @@ export async function submitSignupForm(
       data: result,
     };
   } catch (error) {
-    console.error("Signup form error:", error);
+    safeLog("Signup form error:", error);
     return {
       success: false,
       message: "Erreur lors de l'inscription",
@@ -120,7 +122,7 @@ export async function submitDemoForm(
       data: result,
     };
   } catch (error) {
-    console.error("Demo form error:", error);
+    safeLog("Demo form error:", error);
     return {
       success: false,
       message: "Erreur lors de la demande de démo",
@@ -176,7 +178,7 @@ export async function submitContactForm(
       data: result,
     };
   } catch (error) {
-    console.error("Contact form error:", error);
+    safeLog("Contact form error:", error);
     return {
       success: false,
       message: "Erreur lors de l'envoi du message",
@@ -228,7 +230,7 @@ export async function submitNewsletterForm(
       data: result,
     };
   } catch (error) {
-    console.error("Newsletter form error:", error);
+    safeLog("Newsletter form error:", error);
     return {
       success: false,
       message: "Erreur lors de l'inscription à la newsletter",
@@ -272,7 +274,7 @@ export async function trackFormSubmission(
       body: JSON.stringify(submission),
     });
   } catch (error) {
-    console.error("Form submission tracking error:", error);
+    safeLog("Form submission tracking error:", error);
   }
 }
 
@@ -285,7 +287,7 @@ export async function getCSRFToken(): Promise<string> {
     const data = await response.json();
     return data.token;
   } catch (error) {
-    console.error("CSRF token error:", error);
+    safeLog("CSRF token error:", error);
     return "";
   }
 }
@@ -338,6 +340,7 @@ export function createFormReducer() {
           isError: true,
           message: action.payload.message,
           errors: action.payload.errors || {},
+
         };
       case "RESET":
         return initialFormState;

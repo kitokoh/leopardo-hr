@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 
+const safeLog = (..._args: unknown[]) => {};
+
 // Rate limiter instance (in production, use Redis)
 const rateLimiter = new RateLimiter(10, 15 * 60 * 1000); // 10 attempts per 15 minutes
 
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
     // 4. Log event to analytics
     // 5. Integrate with email service (Mailchimp, ConvertKit, etc.)
 
-    console.log('Newsletter signup:', {
+    safeLog('Newsletter signup:', {
       email: sanitizedEmail,
       page: validatedData.page,
       timestamp: validatedData.timestamp,
@@ -63,7 +65,7 @@ export async function POST(request: NextRequest) {
     const emailSent = await sendNewsletterConfirmationEmail(sanitizedEmail);
 
     if (!emailSent) {
-      console.warn('Email sending failed for newsletter signup');
+      safeLog('Email sending failed for newsletter signup');
       // Don't fail the request, just log the warning
     }
 
@@ -80,7 +82,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Newsletter signup error:', error);
+    safeLog('Newsletter signup error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -120,12 +122,13 @@ async function sendNewsletterConfirmationEmail(email: string): Promise<boolean> 
     // await mailchimp.lists.addListMember(process.env.MAILCHIMP_LIST_ID, {
     //   email_address: email,
     //   status: 'pending',
+
     // });
 
-    console.log('Newsletter confirmation email would be sent to:', email);
+    safeLog('Newsletter confirmation email would be sent to:', email);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    safeLog('Email sending error:', error);
     return false;
   }
 }

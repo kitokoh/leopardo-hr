@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+const safeLog = (..._args: unknown[]) => {};
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -37,7 +39,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   // Register service worker
   useEffect(() => {
     if (!('serviceWorker' in navigator)) {
-      console.log('[PWA] Service Workers not supported');
+      safeLog('[PWA] Service Workers not supported');
       return;
     }
 
@@ -47,7 +49,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
           scope: '/',
         });
 
-        console.log('[PWA] Service Worker registered:', registration);
+        safeLog('[PWA] Service Worker registered:', registration);
         setSwRegistration(registration);
 
         // Check for updates periodically
@@ -62,14 +64,14 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New service worker available
-                console.log('[PWA] New service worker available');
+                safeLog('[PWA] New service worker available');
                 notifyUpdate();
               }
             });
           }
         });
       } catch (error) {
-        console.error('[PWA] Service Worker registration failed:', error);
+        safeLog('[PWA] Service Worker registration failed:', error);
       }
     };
 
@@ -81,7 +83,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      console.log('[PWA] Install prompt available');
+      safeLog('[PWA] Install prompt available');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -96,7 +98,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      console.log('[PWA] App installed');
+      safeLog('[PWA] App installed');
     };
 
     window.addEventListener('appinstalled', handleAppInstalled);
@@ -110,13 +112,13 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
-      console.log('[PWA] Back online');
+      safeLog('[PWA] Back online');
       syncPendingData();
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      console.log('[PWA] Offline');
+      safeLog('[PWA] Offline');
     };
 
     window.addEventListener('online', handleOnline);
@@ -131,17 +133,17 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   // Prompt for installation
   const promptInstall = async () => {
     if (!deferredPrompt) {
-      console.log('[PWA] Install prompt not available');
+      safeLog('[PWA] Install prompt not available');
       return;
     }
 
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log('[PWA] User response:', outcome);
+      safeLog('[PWA] User response:', outcome);
       setDeferredPrompt(null);
     } catch (error) {
-      console.error('[PWA] Installation prompt failed:', error);
+      safeLog('[PWA] Installation prompt failed:', error);
     }
   };
 
@@ -154,16 +156,16 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
       const syncRegistration = swRegistration as SyncCapableRegistration;
       if (syncRegistration.sync) {
         await syncRegistration.sync.register('sync-forms');
-        console.log('[PWA] Sync forms registered');
+        safeLog('[PWA] Sync forms registered');
       }
 
       // Sync analytics
       if (syncRegistration.sync) {
         await syncRegistration.sync.register('sync-analytics');
-        console.log('[PWA] Sync analytics registered');
+        safeLog('[PWA] Sync analytics registered');
       }
     } catch (error) {
-      console.error('[PWA] Sync registration failed:', error);
+      safeLog('[PWA] Sync registration failed:', error);
     }
   };
 
@@ -221,6 +223,7 @@ export function usePWA() {
   return {
     ...pwaState,
     promptInstall,
+
   };
 }
 

@@ -22,10 +22,13 @@ return new class extends Migration
         // 2. Update employees in tenant schema
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('SET search_path TO shared_tenants,public');
-            DB::statement("ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check");
         }
 
         if (Schema::hasTable('employees')) {
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement("ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check");
+            }
+
             Schema::table('employees', function (Blueprint $table) {
                 $table->uuid('company_id')->nullable()->change();
                 $table->string('role', 20)->default('employee')->change();

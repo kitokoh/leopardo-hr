@@ -6,6 +6,25 @@ import { ContactForm } from '../ContactForm';
 // Mock the form submission
 jest.mock('@/modules/vitrine/lib/forms', () => ({
   submitContactForm: jest.fn(),
+  initialFormState: {
+    isSubmitting: false,
+    isSuccess: false,
+    isError: false,
+    message: '',
+    errors: {},
+  },
+  createFormReducer: () => (state: any, action: any) => {
+    switch (action.type) {
+      case 'SUBMIT_START':
+        return { ...state, isSubmitting: true };
+      case 'SUBMIT_SUCCESS':
+        return { ...state, isSubmitting: false, isSuccess: true, message: action.payload?.message ?? '' };
+      case 'SUBMIT_ERROR':
+        return { ...state, isSubmitting: false, isError: true, message: action.payload?.message ?? '' };
+      default:
+        return state;
+    }
+  },
 }));
 
 describe('ContactForm Component', () => {

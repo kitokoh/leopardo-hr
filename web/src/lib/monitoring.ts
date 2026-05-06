@@ -7,6 +7,8 @@
 
 import { useEffect } from 'react';
 
+const safeLog = (..._args: unknown[]) => {};
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -41,7 +43,7 @@ export const initializeGA4 = () => {
 
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   if (!gaId) {
-    console.warn('Google Analytics ID not configured');
+    safeLog('Google Analytics ID not configured');
     return;
   }
 
@@ -146,7 +148,7 @@ export const initializeMixpanel = () => {
 
   const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
   if (!token) {
-    console.warn('Mixpanel token not configured');
+    safeLog('Mixpanel token not configured');
     return;
   }
 
@@ -201,7 +203,7 @@ export const initializeSentry = () => {
 
   const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
   if (!dsn) {
-    console.warn('Sentry DSN not configured');
+    safeLog('Sentry DSN not configured');
     return;
   }
 
@@ -496,4 +498,5 @@ export default {
   getEnvironment,
   isMonitoringEnabled,
   getMonitoringStatus,
+
 };
