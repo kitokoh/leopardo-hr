@@ -178,7 +178,7 @@ class _WelcomeHero extends StatelessWidget {
                     colors: [AppColors.rh, AppColors.rhDark],
                   ),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
                     'L',
                     style: TextStyle(

@@ -248,7 +248,7 @@ class DemoFeatureRegistryCommand extends Command
             ]
         );
 
-        if (!empty($stats['by_status'])) {
+        if (! empty($stats['by_status'])) {
             $this->info('Par statut:');
             foreach ($stats['by_status'] as $status => $count) {
                 $this->line('  - '.$status.': '.$count);
@@ -353,7 +353,7 @@ class DemoFeatureRegistryCommand extends Command
         $this->line('    - Fonctionnalités mises à jour: '.(string) $result['updated']);
         $this->line('    - Fonctionnalités supprimées: '.(string) $result['removed']);
 
-        if (!empty($result['errors'])) {
+        if (! empty($result['errors'])) {
             $this->warn('    - Erreurs: '.count((array) $result['errors']));
             foreach ((array) $result['errors'] as $error) {
                 $this->line('      • '.$error);
