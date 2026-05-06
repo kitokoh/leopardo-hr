@@ -24,6 +24,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Eviter les longues commandes locales si elles bloquent sur Windows : `dart format`, `jest`, `npm run build`, `flutter analyze` peuvent etre lents ou produire du bruit localement.
 - `npx tsc --strict --noEmit` est acceptable localement quand il faut verifier vite une erreur TypeScript evidente.
 - Les checks GitHub Actions qui ont permis de merger le PR #268 : backend, backend quality, mobile, build, lint, type-check, test Node 20, CodeQL, governance.
+- Les workflows web `build.yml`, `lint.yml` et `test.yml` doivent rester limites aux changements `web/**` ou a leur propre fichier workflow pour eviter les CI inutiles sur des PR backend/docs.
 
 ## Pieges connus
 
