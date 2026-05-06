@@ -78,7 +78,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
         data: data.user,
         timestamp: new Date()
       })
-      
+
       dashboardStore.addRealtimeActivity({
         type: 'user_registered',
         description: `Nouvel utilisateur: ${data.user.name}`,
@@ -173,9 +173,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
       read: false,
       ...notification
     }
-    
+
     notifications.value.unshift(newNotification)
-    
+
     // Garder seulement les 100 dernières notifications
     if (notifications.value.length > 100) {
       notifications.value = notifications.value.slice(0, 100)
@@ -206,7 +206,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   function addGlobePoint(point) {
     globePoints.value.unshift(point)
-    
+
     // Garder seulement les 1000 derniers points
     if (globePoints.value.length > 1000) {
       globePoints.value = globePoints.value.slice(0, 1000)
@@ -226,11 +226,11 @@ export const useRealtimeStore = defineStore('realtime', () => {
     notifications,
     onlineUsers,
     globePoints,
-    
+
     // Getters
     unreadNotifications,
     recentNotifications,
-    
+
     // Actions
     connect,
     disconnect,

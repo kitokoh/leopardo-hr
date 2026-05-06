@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Illuminate\Console\Kernel;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 

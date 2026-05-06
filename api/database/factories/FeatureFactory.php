@@ -37,7 +37,7 @@ class FeatureFactory extends Factory
             'http_methods' => $this->faker->randomElement($httpMethods),
             'parameters' => $this->generateParameters(),
             'response_schema' => $this->generateResponseSchema(),
-            'permissions' => $this->generatePermissions(),
+            'permissions' => [],
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => $this->faker->optional(0.3)->randomElement(['1.5.0', '2.0.0', null]),
             'api_version' => $this->faker->randomElement(['1.0.0', '1.1.0', '1.2.0']),

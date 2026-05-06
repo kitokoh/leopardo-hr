@@ -7,7 +7,7 @@
 #### 1. SQLite Compatibility Fix
 **File**: `api/tests/TestCase.php`
 **Issue**: PostgreSQL `SET search_path` command fails in SQLite tests
-**Solution**: 
+**Solution**:
 - Added driver detection in `resetTestSearchPath()`
 - PostgreSQL: Executes `SET search_path TO shared_tenants,public`
 - SQLite: No-op (SQLite doesn't have schemas like PostgreSQL)

@@ -2,6 +2,11 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.88] - 2026-05-06
+
+### Render - Release integration hardening
+
+- API : rendre idempotentes les migrations publiques `company_requests`, `users` et `user_employee_links` pour eviter les echecs PostgreSQL `relation already exists` lors des redeploiements Render.
 ## [4.1.87] - 2026-05-06
 
 ### Agents - Guide operationnel racine
@@ -158,6 +163,9 @@
 - Mobile : ajout du bouton "Continuer avec Google" sur `LoginScreen` et activation du formulaire sur `RegisterScreen`.
 - Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
 - CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
+
+## [4.1.86] - 2026-05-03
+
 ### ⚡ Bolt - Performance et optimisation Employee
 
 - API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.

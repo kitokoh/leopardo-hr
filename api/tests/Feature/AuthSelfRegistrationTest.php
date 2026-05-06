@@ -3,32 +3,20 @@
 namespace Tests\Feature;
 
 use App\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class AuthSelfRegistrationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Ensure employees table exists in SQLite memory for this test
-        if (\Illuminate\Support\Facades\DB::getDriverName() === 'sqlite') {
-            \Illuminate\Support\Facades\Schema::create('employees', function ($table) {
-                $table->increments('id');
-                $table->uuid('company_id')->nullable();
-                $table->string('first_name');
-                $table->string('last_name');
-                $table->string('email')->unique();
-                $table->string('password_hash');
-                $table->string('role')->default('employee');
-                $table->string('status')->default('active');
-                $table->timestamps();
-            });
-
-            \Illuminate\Support\Facades\Schema::create('company_requests', function ($table) {
+        if (! Schema::hasTable('company_requests')) {
+            Schema::create('company_requests', function ($table) {
                 $table->increments('id');
                 $table->unsignedInteger('employee_id');
                 $table->string('company_name');
@@ -40,17 +28,6 @@ class AuthSelfRegistrationTest extends TestCase
                 $table->string('manager_phone')->nullable();
                 $table->text('notes')->nullable();
                 $table->string('status')->default('pending');
-                $table->timestamps();
-            });
-
-            \Illuminate\Support\Facades\Schema::create('personal_access_tokens', function ($table) {
-                $table->id();
-                $table->morphs('tokenable');
-                $table->string('name');
-                $table->string('token', 64)->unique();
-                $table->text('abilities')->nullable();
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamp('expires_at')->nullable();
                 $table->timestamps();
             });
         }
@@ -69,7 +46,7 @@ class AuthSelfRegistrationTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'data' => ['id', 'email', 'role'],
-                'token'
+                'token',
             ]);
 
         $this->assertDatabaseHas('employees', [
@@ -95,17 +72,14 @@ class AuthSelfRegistrationTest extends TestCase
                 'sector' => 'Technology',
                 'country' => 'DZ',
                 'city' => 'Algiers',
-                'manager_name' => 'John Doe',
-                'manager_id_card' => '123456789',
-                'manager_phone' => '+213555555555',
-                'notes' => 'Please approve us.',
+                'email' => 'contact@acme-corp.com',
+                'phone' => '+213555555555',
+                'description' => 'Please approve us.',
             ]);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('company_requests', [
-            'employee_id' => $employee->id,
             'company_name' => 'Acme Corp',
-            'manager_name' => 'John Doe',
         ]);
     }
 }

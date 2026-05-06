@@ -34,12 +34,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
     FocusScope.of(context).unfocus();
 
-    final success = await ref.read(authProvider.notifier).register(
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
+    final success = await ref
+        .read(authProvider.notifier)
+        .register(
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
 
     if (success && mounted) {
       context.go('/');
@@ -102,8 +104,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           label: 'Prénom',
                           icon: Icons.person_outline,
                         ),
-                        validator: (v) =>
-                            (v ?? '').isEmpty ? 'Obligatoire' : null,
+                        validator:
+                            (v) => (v ?? '').isEmpty ? 'Obligatoire' : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -114,8 +116,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           label: 'Nom',
                           icon: Icons.person_outline,
                         ),
-                        validator: (v) =>
-                            (v ?? '').isEmpty ? 'Obligatoire' : null,
+                        validator:
+                            (v) => (v ?? '').isEmpty ? 'Obligatoire' : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -146,23 +148,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           label: 'Mot de passe',
                           icon: Icons.lock_outline,
                         ),
-                        validator: (v) => (v ?? '').length < 8
-                            ? '8 caractères minimum'
-                            : null,
+                        validator:
+                            (v) =>
+                                (v ?? '').length < 8
+                                    ? '8 caractères minimum'
+                                    : null,
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: authState.isLoading ? null : _submit,
-                        child: authState.isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text('Créer mon compte'),
+                        child:
+                            authState.isLoading
+                                ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : const Text('Créer mon compte'),
                       ),
                     ],
                   ),

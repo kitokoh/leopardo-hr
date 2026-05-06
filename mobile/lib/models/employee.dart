@@ -91,9 +91,10 @@ class Employee {
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,
       photoUrl: json['photo_url']?.toString(),
-      hireDate: hireDateRaw != null
-          ? DateTime.tryParse(hireDateRaw.toString())
-          : null,
+      hireDate:
+          hireDateRaw != null
+              ? DateTime.tryParse(hireDateRaw.toString())
+              : null,
       biometricFaceEnabled: json['biometric_face_enabled'] == true,
       biometricFingerprintEnabled:
           json['biometric_fingerprint_enabled'] == true,

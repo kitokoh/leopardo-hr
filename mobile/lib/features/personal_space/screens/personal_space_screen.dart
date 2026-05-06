@@ -44,7 +44,8 @@ class PersonalSpaceScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             _ActionCard(
               title: 'Créer mon entreprise',
-              description: 'Envoyez une demande pour enregistrer votre entreprise sur Leopardo RH.',
+              description:
+                  'Envoyez une demande pour enregistrer votre entreprise sur Leopardo RH.',
               icon: Icons.business_center_outlined,
               color: AppColors.rh,
               onTap: () => context.push('/request-company'),
@@ -52,12 +53,17 @@ class PersonalSpaceScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _ActionCard(
               title: 'Rejoindre une équipe',
-              description: 'Attendez que votre employeur vous invite via votre email : ${employee?.email}',
+              description:
+                  'Attendez que votre employeur vous invite via votre email : ${employee?.email}',
               icon: Icons.group_add_outlined,
               color: AppColors.ia,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Contactez votre employeur pour recevoir une invitation.')),
+                  const SnackBar(
+                    content: Text(
+                      'Contactez votre employeur pour recevoir une invitation.',
+                    ),
+                  ),
                 );
               },
             ),

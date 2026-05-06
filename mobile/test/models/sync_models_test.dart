@@ -3,7 +3,6 @@ import 'package:leopardo_rh/models/feature.dart';
 import 'package:leopardo_rh/models/feature_manifest.dart';
 import 'package:leopardo_rh/models/form_schema.dart';
 import 'package:leopardo_rh/models/list_schema.dart';
-import 'package:leopardo_rh/models/detail_schema.dart';
 
 void main() {
   group('Sync Models Tests', () {
@@ -65,10 +64,7 @@ void main() {
       );
 
       // Test valid data
-      final validData = {
-        'email': 'test@example.com',
-        'name': 'John Doe',
-      };
+      final validData = {'email': 'test@example.com', 'name': 'John Doe'};
       final validResult = formSchema.validate(validData);
       expect(validResult.isValid, isTrue);
 
@@ -103,7 +99,7 @@ void main() {
 
       expect(textColumn.formatValue('Test'), equals('Test'));
       expect(currencyColumn.formatValue(123.45), equals('123.45 €'));
-      
+
       final testDate = DateTime(2024, 1, 15);
       expect(dateColumn.formatValue(testDate), equals('15/01/2024'));
     });
@@ -153,7 +149,10 @@ void main() {
         type: FeatureType.generic,
       );
 
-      expect(feature.hasRequiredPermissions(['test.view', 'test.edit', 'other']), isTrue);
+      expect(
+        feature.hasRequiredPermissions(['test.view', 'test.edit', 'other']),
+        isTrue,
+      );
       expect(feature.hasRequiredPermissions(['test.view']), isFalse);
       expect(feature.hasRequiredPermissions([]), isFalse);
     });
@@ -202,7 +201,7 @@ void main() {
       );
 
       final diff = manifest1.compareWith(manifest2);
-      
+
       expect(diff.hasChanges, isTrue);
       expect(diff.newFeatures.length, equals(1));
       expect(diff.newFeatures.first.key, equals('feature2'));

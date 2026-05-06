@@ -15,24 +15,24 @@ class AdminMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Authentication required'
+                'message' => 'Authentication required',
             ], 401);
         }
 
         // Vérifier si l'utilisateur a les droits admin
-        if (!$this->userIsAdmin($user)) {
+        if (! $this->userIsAdmin($user)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Admin access required'
+                'message' => 'Admin access required',
             ], 403);
         }
 
@@ -41,13 +41,14 @@ class AdminMiddleware
 
     /**
      * Vérifie si l'utilisateur est administrateur
-     * 
-     * @param mixed $user
-     * @return bool
+     *
+     * @param  mixed  $user
      */
     private function userIsAdmin($user): bool
     {
         // Adapter selon votre système de rôles
-        return in_array($user->role ?? '', ['admin', 'super_admin']);
+        $role = $user->role ?? '';
+
+        return $role === 'manager' || in_array($role, ['admin', 'super_admin']);
     }
 }

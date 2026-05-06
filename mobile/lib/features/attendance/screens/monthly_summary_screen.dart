@@ -59,14 +59,15 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
             _buildMonthSelector(context, monthLabel),
             const SizedBox(height: 20),
             async.when(
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(
-                    semanticsLabel: 'Chargement du résumé mensuel...',
+              loading:
+                  () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24),
+                      child: CircularProgressIndicator(
+                        semanticsLabel: 'Chargement du résumé mensuel...',
+                      ),
+                    ),
                   ),
-                ),
-              ),
               error: (err, _) {
                 final text = err.toString();
                 if (text.contains('401') || text.contains('UNAUTHENTICATED')) {
@@ -77,8 +78,9 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                 }
                 return _buildError(context, err);
               },
-              data: (summary) =>
-                  _buildSummary(context, summary, employee?.fullName),
+              data:
+                  (summary) =>
+                      _buildSummary(context, summary, employee?.fullName),
             ),
           ],
         ),

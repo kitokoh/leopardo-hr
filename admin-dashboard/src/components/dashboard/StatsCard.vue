@@ -3,14 +3,14 @@
     <div class="p-5">
       <div class="flex items-center">
         <div class="flex-shrink-0">
-          <div 
+          <div
             :class="[
               'flex items-center justify-center h-8 w-8 rounded-md',
               colorClasses.bg
             ]"
           >
-            <component 
-              :is="iconComponent" 
+            <component
+              :is="iconComponent"
               :class="['h-5 w-5', colorClasses.icon]"
             />
           </div>
@@ -24,15 +24,15 @@
               <div class="text-2xl font-semibold text-gray-900">
                 {{ formattedValue }}
               </div>
-              <div 
+              <div
                 v-if="change !== undefined"
                 :class="[
                   'ml-2 flex items-baseline text-sm font-semibold',
                   changeColor
                 ]"
               >
-                <component 
-                  :is="changeIcon" 
+                <component
+                  :is="changeIcon"
                   class="self-center flex-shrink-0 h-4 w-4"
                 />
                 <span class="ml-1">
@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Loading state -->
     <div v-if="isLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
       <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
@@ -153,14 +153,14 @@ const formattedValue = computed(() => {
   if (typeof props.value === 'string') {
     return props.value
   }
-  
+
   // Format numbers with locale
   if (props.value >= 1000000) {
     return (props.value / 1000000).toFixed(1) + 'M'
   } else if (props.value >= 1000) {
     return (props.value / 1000).toFixed(1) + 'K'
   }
-  
+
   return props.value.toLocaleString('fr-FR')
 })
 </script>

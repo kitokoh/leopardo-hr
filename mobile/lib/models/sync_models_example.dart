@@ -9,7 +9,6 @@ import 'detail_schema.dart';
 
 /// Exemple de création et utilisation des modèles de synchronisation
 class SyncModelsExample {
-  
   /// Exemple de création d'une Feature
   static Feature createSampleFeature() {
     return Feature(
@@ -22,13 +21,13 @@ class SyncModelsExample {
         'list': {
           'page': {'type': 'integer', 'required': false},
           'per_page': {'type': 'integer', 'required': false},
-          'search': {'type': 'string', 'required': false}
+          'search': {'type': 'string', 'required': false},
         },
         'create': {
           'first_name': {'type': 'string', 'required': true},
           'last_name': {'type': 'string', 'required': true},
-          'email': {'type': 'email', 'required': true}
-        }
+          'email': {'type': 'email', 'required': true},
+        },
       },
       responseSchema: {
         'employee': {
@@ -36,8 +35,8 @@ class SyncModelsExample {
           'first_name': 'string',
           'last_name': 'string',
           'email': 'string',
-          'created_at': 'datetime'
-        }
+          'created_at': 'datetime',
+        },
       },
       permissions: ['employees.view', 'employees.create'],
       minimumMobileVersion: '1.0.0',
@@ -327,20 +326,33 @@ class SyncModelsExample {
     final manifest = createSampleManifest();
 
     // Test de compatibilité de version
-    print('Feature compatible avec v1.1.0: ${feature.isCompatibleWith('1.1.0')}');
-    
+    /*
+    print(
+      'Feature compatible avec v1.1.0: ${feature.isCompatibleWith('1.1.0')}',
+    );
+    */
+
     // Test de permissions
     final userPermissions = ['employees.view', 'employees.create'];
-    print('Utilisateur autorisé: ${feature.hasRequiredPermissions(userPermissions)}');
+    /*
+    print(
+      'Utilisateur autorisé: ${feature.hasRequiredPermissions(userPermissions)}',
+    );
+    */
 
     // Filtrage des fonctionnalités du manifeste
-    final compatibleFeatures = manifest.getCompatibleFeatures('1.1.0');
-    final authorizedFeatures = manifest.getAuthorizedFeatures(userPermissions);
-    final availableFeatures = manifest.getAvailableFeatures('1.1.0', userPermissions);
+    manifest.getCompatibleFeatures('1.1.0');
+    manifest.getAuthorizedFeatures(userPermissions);
+    manifest.getAvailableFeatures(
+      '1.1.0',
+      userPermissions,
+    );
 
+    /*
     print('Fonctionnalités compatibles: ${compatibleFeatures.length}');
     print('Fonctionnalités autorisées: ${authorizedFeatures.length}');
     print('Fonctionnalités disponibles: ${availableFeatures.length}');
+    */
 
     // Test de validation de formulaire
     if (feature.formSchema != null) {
@@ -350,35 +362,43 @@ class SyncModelsExample {
         'email': 'jean.dupont@exemple.com',
         'department': 'it',
       };
-      
-      final validationResult = feature.formSchema!.validate(formData);
+
+      feature.formSchema!.validate(formData);
+      /*
       print('Formulaire valide: ${validationResult.isValid}');
       if (!validationResult.isValid) {
         print('Erreurs: ${validationResult.errors}');
       }
+      */
     }
 
     // Test de formatage des colonnes de liste
     if (feature.listSchema != null) {
       final dateColumn = feature.listSchema!.getColumn('created_at');
       if (dateColumn != null) {
+        /*
         final formattedDate = dateColumn.formatValue(DateTime.now());
         print('Date formatée: $formattedDate');
+        */
       }
     }
 
     // Sérialisation JSON
     final featureJson = feature.toJson();
     final manifestJson = manifest.toJson();
-    
+
+    /*
     print('Feature sérialisée: ${featureJson.keys.length} clés');
     print('Manifest sérialisé: ${manifestJson.keys.length} clés');
+    */
 
     // Désérialisation JSON
-    final featureFromJson = Feature.fromJson(featureJson);
-    final manifestFromJson = FeatureManifest.fromJson(manifestJson);
-    
+    Feature.fromJson(featureJson);
+    FeatureManifest.fromJson(manifestJson);
+
+    /*
     print('Feature désérialisée: ${featureFromJson.key}');
     print('Manifest désérialisé: ${manifestFromJson.version}');
+    */
   }
 }

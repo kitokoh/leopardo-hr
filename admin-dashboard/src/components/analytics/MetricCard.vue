@@ -3,14 +3,14 @@
     <div class="p-5">
       <div class="flex items-center">
         <div class="flex-shrink-0">
-          <div 
+          <div
             :class="[
               'flex items-center justify-center h-8 w-8 rounded-md',
               colorClasses.bg
             ]"
           >
-            <component 
-              :is="iconComponent" 
+            <component
+              :is="iconComponent"
               :class="['h-5 w-5', colorClasses.icon]"
             />
           </div>
@@ -24,15 +24,15 @@
               <div class="text-2xl font-semibold text-gray-900">
                 {{ prefix }}{{ formattedValue }}{{ suffix }}
               </div>
-              <div 
+              <div
                 v-if="trend"
                 :class="[
                   'ml-2 flex items-baseline text-sm font-semibold',
                   trendColor
                 ]"
               >
-                <component 
-                  :is="trendIcon" 
+                <component
+                  :is="trendIcon"
                   class="self-center flex-shrink-0 h-4 w-4"
                 />
                 <span class="ml-1">
@@ -46,7 +46,7 @@
           </dl>
         </div>
       </div>
-      
+
       <!-- Mini chart or progress bar -->
       <div v-if="showProgress" class="mt-4">
         <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
@@ -54,7 +54,7 @@
           <span>{{ progressValue }}%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div 
+          <div
             :class="[
               'h-2 rounded-full transition-all duration-500',
               colorClasses.progress
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Loading state -->
     <div v-if="isLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
       <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
@@ -75,8 +75,8 @@
 <script setup>
 import { computed } from 'vue'
 import {
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   ChartBarIcon,
@@ -190,13 +190,13 @@ const colorClasses = computed(() => {
 // Trend styling
 const trendColor = computed(() => {
   if (!props.trend) return ''
-  return props.trend === 'up' ? 'text-green-600' : 
+  return props.trend === 'up' ? 'text-green-600' :
          props.trend === 'down' ? 'text-red-600' : 'text-gray-600'
 })
 
 const trendIcon = computed(() => {
   if (!props.trend) return null
-  return props.trend === 'up' ? ArrowUpIcon : 
+  return props.trend === 'up' ? ArrowUpIcon :
          props.trend === 'down' ? ArrowDownIcon : null
 })
 
@@ -205,19 +205,19 @@ const formattedValue = computed(() => {
   if (typeof props.value === 'string') {
     return props.value
   }
-  
+
   // Format numbers with locale
   if (props.value >= 1000000) {
     return (props.value / 1000000).toFixed(1) + 'M'
   } else if (props.value >= 1000) {
     return (props.value / 1000).toFixed(1) + 'K'
   }
-  
+
   // Handle decimals
   if (props.value % 1 !== 0) {
     return props.value.toFixed(1)
   }
-  
+
   return props.value.toLocaleString('fr-FR')
 })
 </script>

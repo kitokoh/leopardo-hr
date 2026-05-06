@@ -93,9 +93,10 @@ class ModulesHubScreen extends ConsumerWidget {
                 final module = activeModules[index];
                 return _ModuleCard(
                   module: module,
-                  onTap: module.isActive
-                      ? () => context.push(module.route!)
-                      : null,
+                  onTap:
+                      module.isActive
+                          ? () => context.push(module.route!)
+                          : null,
                 );
               },
             ),
@@ -244,10 +245,7 @@ class _UpcomingRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            'Bientot',
-            style: AppTypography.caption.copyWith(color: color),
-          ),
+          Text('Bientot', style: AppTypography.caption.copyWith(color: color)),
         ],
       ),
     );

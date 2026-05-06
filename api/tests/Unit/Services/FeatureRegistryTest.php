@@ -7,13 +7,13 @@ use App\Exceptions\FeatureSynchronizationException;
 use App\Models\Feature;
 use App\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Mockery;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Mockery;
 
 /**
  * Tests unitaires pour le service FeatureRegistry
@@ -23,16 +23,40 @@ class FeatureRegistryTest extends TestCase
     use RefreshTenantDatabase;
 
     private FeatureRegistry $registry;
+
     private FeatureDetectorInterface $mockDetector;
+
     private CacheManager $mockCache;
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        if (! Schema::hasTable('features')) {
+            Schema::create('features', function (Blueprint $table): void {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('key', 100)->unique();
+                $table->string('title', 200);
+                $table->text('description');
+                $table->string('endpoint', 500);
+                $table->json('http_methods');
+                $table->json('parameters');
+                $table->json('response_schema');
+                $table->json('permissions');
+                $table->json('metadata')->nullable();
+                $table->string('mobile_version_min', 20);
+                $table->string('mobile_version_max', 20)->nullable();
+                $table->string('api_version', 20);
+                $table->string('status', 20)->default('active');
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+            });
+        }
+
         $this->mockDetector = Mockery::mock(FeatureDetectorInterface::class);
         $this->mockCache = Mockery::mock(CacheManager::class);
-        
+
         $this->registry = new FeatureRegistry(
             $this->mockDetector,
             $this->mockCache
@@ -61,7 +85,7 @@ class FeatureRegistryTest extends TestCase
             'mobile_version_min' => '1.0.0',
             'api_version' => 'v1',
             'status' => 'active',
-            'metadata' => []
+            'metadata' => [],
         ];
 
         $feature = new Feature($featureData);
@@ -77,7 +101,7 @@ class FeatureRegistryTest extends TestCase
         // Assert
         $this->assertDatabaseHas('features', [
             'key' => 'test_feature',
-            'title' => 'Test Feature'
+            'title' => 'Test Feature',
         ]);
     }
 
@@ -87,7 +111,7 @@ class FeatureRegistryTest extends TestCase
         // Arrange
         $existingFeature = Feature::factory()->create([
             'key' => 'existing_feature',
-            'title' => 'Old Title'
+            'title' => 'Old Title',
         ]);
 
         $updatedFeature = new Feature([
@@ -102,7 +126,7 @@ class FeatureRegistryTest extends TestCase
             'mobile_version_min' => '1.0.0',
             'api_version' => 'v1',
             'status' => 'active',
-            'metadata' => []
+            'metadata' => [],
         ]);
 
         // Mock cache invalidation
@@ -116,12 +140,12 @@ class FeatureRegistryTest extends TestCase
         // Assert
         $this->assertDatabaseHas('features', [
             'key' => 'existing_feature',
-            'title' => 'New Title'
+            'title' => 'New Title',
         ]);
 
         $this->assertDatabaseMissing('features', [
             'key' => 'existing_feature',
-            'title' => 'Old Title'
+            'title' => 'Old Title',
         ]);
     }
 
@@ -202,7 +226,7 @@ class FeatureRegistryTest extends TestCase
         // Arrange
         $feature = Feature::factory()->create([
             'key' => 'test_feature',
-            'metadata' => ['old_key' => 'old_value']
+            'metadata' => ['old_key' => 'old_value'],
         ]);
 
         $newMetadata = ['new_key' => 'new_value'];
@@ -219,7 +243,7 @@ class FeatureRegistryTest extends TestCase
         $feature->refresh();
         $this->assertEquals([
             'old_key' => 'old_value',
-            'new_key' => 'new_value'
+            'new_key' => 'new_value',
         ], $feature->metadata);
     }
 
@@ -258,7 +282,7 @@ class FeatureRegistryTest extends TestCase
         // Arrange
         $features = Feature::factory()->count(2)->create([
             'mobile_version_min' => '1.0.0',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $this->mockCache->shouldReceive('remember')
@@ -284,13 +308,13 @@ class FeatureRegistryTest extends TestCase
         Feature::factory()->create([
             'mobile_version_min' => '1.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Feature::factory()->create([
             'mobile_version_min' => '2.0.0',
             'mobile_version_max' => null,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $this->mockCache->shouldReceive('remember')
@@ -363,8 +387,8 @@ class FeatureRegistryTest extends TestCase
                 'mobile_version_min' => '1.0.0',
                 'api_version' => 'v1',
                 'status' => 'active',
-                'metadata' => []
-            ]
+                'metadata' => [],
+            ],
         ]);
 
         $changes = collect([]);
@@ -405,6 +429,12 @@ class FeatureRegistryTest extends TestCase
             ->andReturnUsing(function ($key, $ttl, $callback) {
                 return $callback();
             });
+
+        $this->mockCache->shouldReceive('get')
+            ->andReturn(null);
+
+        $this->mockCache->shouldReceive('has')
+            ->andReturn(false);
 
         // Act
         $stats = $this->registry->getStatistics();
