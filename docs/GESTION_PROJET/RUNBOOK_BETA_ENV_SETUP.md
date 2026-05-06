@@ -1,60 +1,50 @@
 # RUNBOOK BETA ENV SETUP
-# Version 1.0 | 2026-04-06
+# Version 1.1 | 2026-05-03
 
-But: preparer un environnement Beta exploitable avant la recette humaine.
+But: preparer un environnement Beta exploitable sur infrastructure Render + Neon.
 
-## Checklist infrastructure
+## Checklist infrastructure (Render + Neon)
 
-- VPS cree et accessible en SSH
-- Domaine ou sous-domaine pointe vers le VPS
-- TLS actif
-- PostgreSQL accessible
-- PHP/FPM et serveur web actifs
-- dossier `storage/` accessible en ecriture
-- dossier `bootstrap/cache/` accessible en ecriture
+- [ ] Compte Neon.tech actif avec base PostgreSQL 16
+- [ ] Connection string Neon recuperee (DB_URL)
+- [ ] Web Service Render cree avec Docker context `api/`
+- [ ] Dockerfile path positionne sur `Dockerfile.prod`
+- [ ] Instance type positionne sur `Free` ou `Starter`
+- [ ] Health Check Path positionne sur `/api/v1/health`
+- [ ] Auto-Deploy GitHub desactive (pilotage par workflow `deploy-main.yml`)
 
-## Checklist application
+## Checklist application (Variables d'environnement Render)
 
-- Code de `main` deploie
-- `composer install --no-dev --optimize-autoloader` execute
-- `php artisan key:generate` execute si environnement neuf
-- `php artisan migrate --force` execute
-- `php artisan config:cache` execute
-- `php artisan route:cache` execute
-- `php artisan view:cache` execute
+- [ ] `APP_KEY` positionnee
+- [ ] `DB_CONNECTION=pgsql`
+- [ ] `DB_URL` (Connection string Neon avec sslmode=require)
+- [ ] `DB_SEARCH_PATH=shared_tenants,public`
+- [ ] `APP_ENV=production`
+- [ ] `APP_DEBUG=false`
+- [ ] `RUN_MIGRATIONS=true` (pour le premier bootstrap)
+- [ ] `FILESYSTEM_DISK=local`
+- [ ] `TENANCY_DEFAULT_TYPE=shared`
 
-## Variables d'environnement MVP attendues
+## Donnees minimales de recette (Seeders)
 
-- `APP_ENV=production`
-- `APP_DEBUG=false`
-- `DB_CONNECTION=pgsql`
-- `CACHE_STORE=file`
-- `SESSION_DRIVER=file`
-- `QUEUE_CONNECTION=sync`
-- `FILESYSTEM_DISK=local`
-- `TENANCY_DEFAULT_TYPE=shared`
-
-## Donnees minimales de recette
-
-- 1 company active
-- 1 manager actif
-- 1 employee actif
-- 1 ou 2 logs de pointage existants pour verifier dashboard, historique et PDF
+- [ ] `php artisan db:seed --class=DatabaseSeeder` execute (via bootstrap Render)
+- [ ] `DEMO_SEED_ONCE=true` active pour injecter le jeu de donnees pilote
+- [ ] Verifier presence des managers de demo (Ahmed, Fatima)
+- [ ] Verifier presence de l'employe de demo (Karim)
 
 ## Verification express
 
-- `GET /api/v1/health` -> 200
-- `GET /login` -> 200
-- login manager -> redirect `/dashboard`
-- fiche employe accessible
-- quick estimate OK
-- PDF OK
+- [ ] `GET /api/v1/health` -> 200 (checks database: ok)
+- [ ] `GET /login` -> 200
+- [ ] Login manager -> redirect `/dashboard`
+- [ ] Consultation employe -> ok
+- [ ] Generation PDF recu -> ok (DomPDF test)
 
-## Blocage immediate
+## Blocage immediat
 
 Stop Beta si:
-- login impossible
-- erreur 500 sur dashboard
-- PDF KO
-- fuite tenant
-- RBAC manager/employee incoherent
+- Login impossible (401/500)
+- Erreur 500 persistante sur le dashboard
+- PDF corrompu ou vide
+- Fuite de donnees inter-tenant (Isolation Test KO)
+- `search_path` non respecte (relation "employees" not found)
