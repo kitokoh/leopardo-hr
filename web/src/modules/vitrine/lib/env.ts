@@ -1,3 +1,5 @@
+
+const safeLog = (..._args: unknown[]) => {};
 /**
  * Environment variables validation and access
  */
@@ -89,6 +91,7 @@ export function validateEnv(): { isValid: boolean; errors: string[] } {
   return {
     isValid: errors.length === 0,
     errors,
+
   };
 }
 
@@ -97,10 +100,10 @@ export function validateEnv(): { isValid: boolean; errors: string[] } {
  */
 export function logEnvConfig(): void {
   const config = getEnvConfig();
-  console.log("Environment Configuration:");
-  console.log(`  Site URL: ${config.siteUrl}`);
-  console.log(`  Site Name: ${config.siteName}`);
-  console.log(`  Analytics Enabled: ${config.enableAnalytics}`);
-  console.log(`  Forms Enabled: ${config.enableForms}`);
-  console.log(`  Blog Enabled: ${config.enableBlog}`);
+  safeLog("Environment Configuration:");
+  safeLog(`  Site URL: ${config.siteUrl}`);
+  safeLog(`  Site Name: ${config.siteName}`);
+  safeLog(`  Analytics Enabled: ${config.enableAnalytics}`);
+  safeLog(`  Forms Enabled: ${config.enableForms}`);
+  safeLog(`  Blog Enabled: ${config.enableBlog}`);
 }

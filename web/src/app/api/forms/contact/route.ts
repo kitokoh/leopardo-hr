@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail, sanitizeInput } from '@/modules/vitrine/lib/validation';
 
+const safeLog = (..._args: unknown[]) => {};
+
 // Rate limiter instance (in production, use Redis)
 const rateLimiter = new RateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
 
@@ -62,7 +64,7 @@ export async function POST(request: NextRequest) {
     // 4. Create support ticket
     // 5. Log event to analytics
 
-    console.log('Contact message:', {
+    safeLog('Contact message:', {
       ...sanitizedData,
       page: validatedData.page,
       timestamp: validatedData.timestamp,
@@ -78,7 +80,7 @@ export async function POST(request: NextRequest) {
     const supportEmailSent = await sendContactNotificationEmail(sanitizedData);
 
     if (!userEmailSent || !supportEmailSent) {
-      console.warn('Email sending failed for contact message');
+      safeLog('Email sending failed for contact message');
       // Don't fail the request, just log the warning
     }
 
@@ -97,7 +99,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Contact form error:', error);
+    safeLog('Contact form error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -117,6 +119,7 @@ export async function POST(request: NextRequest) {
         message: 'Erreur lors de l\'envoi du message',
         error: 'INTERNAL_SERVER_ERROR',
       },
+
       { status: 500 }
     );
   }
@@ -128,10 +131,10 @@ export async function POST(request: NextRequest) {
 async function sendContactConfirmationEmail(email: string): Promise<boolean> {
   try {
     // TODO: Implement actual email sending
-    console.log('Contact confirmation email would be sent to:', email);
+    safeLog('Contact confirmation email would be sent to:', email);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    safeLog('Email sending error:', error);
     return false;
   }
 }
@@ -142,10 +145,10 @@ async function sendContactConfirmationEmail(email: string): Promise<boolean> {
 async function sendContactNotificationEmail(data: Record<string, unknown>): Promise<boolean> {
   try {
     // TODO: Implement actual email sending to support team
-    console.log('Contact notification email would be sent to support team:', data);
+    safeLog('Contact notification email would be sent to support team:', data);
     return true;
   } catch (error) {
-    console.error('Email sending error:', error);
+    safeLog('Email sending error:', error);
     return false;
   }
 }

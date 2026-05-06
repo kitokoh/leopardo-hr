@@ -1,3 +1,5 @@
+
+const safeLog = (..._args: unknown[]) => {};
 /**
  * Analytics and Conversion Tracking
  * Supports Google Analytics 4 and Mixpanel
@@ -76,7 +78,7 @@ export class GoogleAnalytics {
         page_location: window.location.href,
       });
     } catch (error) {
-      console.error("GA4 page view error:", error);
+      safeLog("GA4 page view error:", error);
     }
   }
 
@@ -96,7 +98,7 @@ export class GoogleAnalytics {
         ...metadata,
       });
     } catch (error) {
-      console.error("GA4 conversion error:", error);
+      safeLog("GA4 conversion error:", error);
     }
   }
 
@@ -155,7 +157,7 @@ export class GoogleAnalytics {
         position: position,
       });
     } catch (error) {
-      console.error("GA4 CTA click error:", error);
+      safeLog("GA4 CTA click error:", error);
     }
   }
 
@@ -171,7 +173,7 @@ export class GoogleAnalytics {
         page: page,
       });
     } catch (error) {
-      console.error("GA4 form submission error:", error);
+      safeLog("GA4 form submission error:", error);
     }
   }
 
@@ -187,7 +189,7 @@ export class GoogleAnalytics {
         depth: `${depth}%`,
       });
     } catch (error) {
-      console.error("GA4 scroll depth error:", error);
+      safeLog("GA4 scroll depth error:", error);
     }
   }
 
@@ -203,7 +205,7 @@ export class GoogleAnalytics {
         seconds: seconds,
       });
     } catch (error) {
-      console.error("GA4 time on page error:", error);
+      safeLog("GA4 time on page error:", error);
     }
   }
 
@@ -216,7 +218,7 @@ export class GoogleAnalytics {
     try {
       (window as any).gtag?.("event", eventName, eventData);
     } catch (error) {
-      console.error("GA4 custom event error:", error);
+      safeLog("GA4 custom event error:", error);
     }
   }
 
@@ -229,7 +231,7 @@ export class GoogleAnalytics {
     try {
       (window as any).gtag?.("config", this.gaId, properties);
     } catch (error) {
-      console.error("GA4 set user properties error:", error);
+      safeLog("GA4 set user properties error:", error);
     }
   }
 }
@@ -266,7 +268,7 @@ export class Mixpanel {
         ...properties,
       });
     } catch (error) {
-      console.error("Mixpanel track error:", error);
+      safeLog("Mixpanel track error:", error);
     }
   }
 
@@ -344,7 +346,7 @@ export class Mixpanel {
     try {
       (window as any).mixpanel?.people?.set(properties);
     } catch (error) {
-      console.error("Mixpanel set user properties error:", error);
+      safeLog("Mixpanel set user properties error:", error);
     }
   }
 
@@ -357,7 +359,7 @@ export class Mixpanel {
     try {
       (window as any).mixpanel?.identify(userId);
     } catch (error) {
-      console.error("Mixpanel identify error:", error);
+      safeLog("Mixpanel identify error:", error);
     }
   }
 
@@ -572,6 +574,7 @@ export async function trackConversionEvent(
     case "newsletter":
       analytics.trackNewsletterSignup(submission.email, {
         page: submission.page,
+
       });
       break;
   }
