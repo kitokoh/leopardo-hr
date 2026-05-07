@@ -486,6 +486,8 @@ jobs:
         run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
 
       - name: Run backend test suite with coverage
+        id: backend_coverage_tests
+        continue-on-error: true
         working-directory: ./api
         env:
           DB_CONNECTION: pgsql
@@ -499,6 +501,7 @@ jobs:
             --coverage-html=storage/coverage-html
 
       - name: Build backend coverage summary
+        if: always()
         id: backend_coverage_summary
         working-directory: ./api
         shell: bash
@@ -507,6 +510,21 @@ jobs:
         run: |
           set -euo pipefail
           threshold="${BACKEND_COVERAGE_MIN:-${DEFAULT_BACKEND_COVERAGE_MIN}}"
+          mkdir -p storage/test-results
+
+          if [[ ! -f storage/test-results/clover.xml ]]; then
+            {
+              echo "- Threshold configured: ${threshold}%"
+              echo "- Backend statement coverage: unavailable"
+              echo "- Coverage test step: ${{ steps.backend_coverage_tests.outcome }}"
+              echo "- HTML artifact: unavailable"
+              echo "- Clover artifact: unavailable"
+            } > storage/test-results/backend-coverage-summary.md
+            printf "Backend statement coverage: unavailable\n" > storage/test-results/coverage-summary.txt
+            cat storage/test-results/backend-coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
           php <<'PHP' > storage/test-results/coverage-summary.txt
           <?php
           $xml = simplexml_load_file('storage/test-results/clover.xml');
@@ -541,6 +559,7 @@ jobs:
       - name: Enforce backend coverage threshold
         id: backend_coverage_gate
         continue-on-error: true
+        if: always() && steps.backend_coverage_tests.outcome == 'success'
         working-directory: ./api
         shell: bash
         env:
@@ -579,6 +598,18 @@ jobs:
             api/storage/test-results/clover.xml
             api/storage/coverage-html/**
           if-no-files-found: ignore
+
+      - name: Fail coverage job if test suite failed
+        if: steps.backend_coverage_tests.outcome == 'failure'
+        run: |
+          echo "Backend coverage test suite failed before summary generation."
+          exit 1
+
+      - name: Fail coverage job if threshold gate failed
+        if: steps.backend_coverage_gate.outcome == 'failure'
+        run: |
+          echo "Backend coverage threshold not met."
+          exit 1
 
   mobile-tests:
     name: Mobile Flutter (Stable Channel)
