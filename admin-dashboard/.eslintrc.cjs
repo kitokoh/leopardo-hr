@@ -1,3 +1,4 @@
+// Minimal Vue ESLint setup for CI signal without legacy bulk cleanup.
 module.exports = {
   root: true,
   env: {
