@@ -1,0 +1,17 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Leopardo IK",
+  "welcomeBrandSubtitle": "Sohbet odakli, mobil oncelikli, moduler.",
+  "welcomeHeroTitle": "Is gununuz burada baslar, arka ofiste degil.",
+  "welcomeHeroDescription": "Puantaj, kisisel takip ve aktif IK modulleri once telefonda acilir; deneyim sade ve okunabilir kalir.",
+  "welcomeStoryClarityTitle": "Bogmadan once konusan bir ana ekran",
+  "welcomeStoryClarityBody": "Leopardo IK birkac net eylemle baslar: giris yapmak, ayi takip etmek ve onemli bilgilere ulasmak.",
+  "welcomeStoryFieldTitle": "Saha ekipleri icin mobil oncelikli",
+  "welcomeStoryFieldBody": "Telefon calisanin ana yuzeyidir. Puantajiniz, izinleriniz ve belgeleriniz burada yasar.",
+  "welcomeStoryModulesTitle": "Aktif moduller, gorunur yol haritasi",
+  "welcomeStoryModulesBody": "Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar.",
+  "login": "Giris yap",
+  "employeeInvitationAccess": "Calisan erisimi (davet)",
+  "createPersonalAccount": "Kisisel hesap olustur",
+  "personalAccountExplanation": "Kisisel hesap: belgelerinizi duzenleyin, sonra alaninizdan bir sirket olusturun veya katilin."
+}

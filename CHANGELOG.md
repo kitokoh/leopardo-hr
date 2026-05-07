@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.96] - 2026-05-07
+
+### Mobile - Fondation i18n
+
+- Mobile : ajout de la configuration `gen-l10n`, des premiers catalogues ARB FR/EN/TR/AR et du helper `context.l10n`.
+- Mobile : raccord de `AppLocalizations.delegate` dans l'application Flutter existante.
+- Mobile : migration initiale de l'ecran Welcome vers les cles localisees, en gardant le support RTL deja present.
+- Docs : ajout dans `AGENTS.md` d'une lecon operationnelle sur le demarrage progressif des chantiers i18n mobile.
+
 ## [4.1.95] - 2026-05-07
 
 ### Backend - Intelligence pointage
