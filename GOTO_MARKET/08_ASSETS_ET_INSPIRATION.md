@@ -46,6 +46,16 @@ GOTO_MARKET/
     case_studies/
     sales_decks/
     ads/
+  public/
+    brand/
+    landing/
+    social/
+    video/
+    press/
+    partners/
+    ads/
+    content_calendar/
+    metrics/
 ```
 
 ## Assets prioritaires a produire
