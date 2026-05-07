@@ -5,17 +5,22 @@ namespace App\Http\Controllers\Api\V1;
 use App\DTOs\CheckInDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
+use App\Http\Requests\Api\V1\Attendance\AttendanceAnomaliesRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceTodayRequest;
+use App\Http\Requests\Api\V1\Attendance\AttendanceMonthlyReportRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckOutRequest;
 use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
+use App\Services\AttendanceAnomalyService;
+use App\Services\AttendanceMonthlyReportService;
 use App\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class AttendanceController extends Controller
 {
@@ -187,6 +192,40 @@ class AttendanceController extends Controller
 
         return AttendanceLogResource::collection($paginator)->response();
 
+    }
+
+    public function anomalies(AttendanceAnomaliesRequest $request, AttendanceAnomalyService $anomalyService): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('viewAny', AttendanceLog::class);
+
+        return new JsonResponse(
+            $anomalyService->summarize($actor->company_id, $request->validated())
+        );
+    }
+
+    public function monthlyReport(
+        AttendanceMonthlyReportRequest $request,
+        AttendanceMonthlyReportService $reportService,
+    ): JsonResponse|Response {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('viewAny', AttendanceLog::class);
+
+        $company = app('current_company');
+        $validated = $request->validated();
+        $month = $validated['month'] ?? now($company->timezone)->format('Y-m');
+        $format = $validated['format'] ?? 'json';
+        $report = $reportService->build($company, $month);
+
+        return match ($format) {
+            'csv' => $reportService->toCsv($report),
+            'pdf' => $reportService->toPdf($report),
+            default => new JsonResponse($report),
+        };
     }
 
     public function update(Request $request, AttendanceLog $attendanceLog): JsonResponse
