@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
@@ -23,60 +24,116 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          onPressed: () => Navigator.of(context).pop(),
+          tooltip: 'Retour',
+          onPressed: () => context.pop(),
         ),
       ),
-      body: advancesAsync.when(
-        data:
-            (advances) =>
-                advances.isEmpty
-                    ? const EmptyState(
-                      icon: Icons.payments,
-                      title: 'Aucune avance',
-                      description:
-                          'Vous n\'avez pas encore demandé d\'avance de salaire.',
-                    )
-                    : ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: advances.length,
-                      itemBuilder: (context, index) {
-                        final advance = advances[index];
-                        return Card(
-                          color: AppColors.cardDark,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            title: Text(
-                              '${advance.amount} DZD',
-                              style: AppTypography.subtitle.copyWith(
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            subtitle: Text(
-                              advance.reason ?? 'Aucun motif',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textMutedDark,
-                              ),
-                            ),
-                            trailing: Text(
-                              advance.status,
-                              style: TextStyle(
-                                color: _getStatusColor(advance.status),
-                              ),
-                            ),
+      body: RefreshIndicator(
+        onRefresh: () async => ref.refresh(salaryAdvancesProvider.future),
+        child: advancesAsync.when(
+          data:
+              (advances) =>
+                  advances.isEmpty
+                      ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: const [
+                          SizedBox(height: 80),
+                          EmptyState(
+                            icon: Icons.payments,
+                            title: 'Aucune avance',
+                            description:
+                                'Vous n\'avez pas encore demandé d\'avance de salaire.',
                           ),
-                        );
-                      },
-                    ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (e, _) => Center(
-              child: Text(
-                e.toString(),
-                style: const TextStyle(color: Colors.red),
+                        ],
+                      )
+                      : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(20),
+                        itemCount: advances.length,
+                        itemBuilder: (context, index) {
+                          final advance = advances[index];
+                          final amount = '${advance.amount ?? 0} DZD';
+                          final reason = advance.reason ?? 'Aucun motif';
+                          final status = _getStatusLabel(advance.status);
+
+                          return Semantics(
+                            label:
+                                'Avance de $amount, motif : $reason, statut $status.',
+                            container: true,
+                            child: ExcludeSemantics(
+                              child: Card(
+                                color: AppColors.cardDark,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: ListTile(
+                                  title: Text(
+                                    amount,
+                                    style: AppTypography.subtitle.copyWith(
+                                      color: AppColors.textDark,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    reason,
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: AppColors.textMutedDark,
+                                    ),
+                                  ),
+                                  trailing: Text(
+                                    advance.status,
+                                    style: TextStyle(
+                                      color: _getStatusColor(advance.status),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+          loading:
+              () => const Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: 'Chargement des avances...',
+                ),
               ),
-            ),
+          error:
+              (e, _) => ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          e.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        ),
       ),
     );
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status) {
+      case 'active':
+        return 'active';
+      case 'approved':
+        return 'approuvée';
+      case 'pending':
+        return 'en attente';
+      case 'rejected':
+        return 'rejetée';
+      case 'cancelled':
+        return 'annulée';
+      default:
+        return status;
+    }
   }
 
   Color _getStatusColor(String status) {
