@@ -9,6 +9,7 @@
 - Docs : ajout du dossier racine `GOTO_MARKET/` pour centraliser la strategie commerciale, les segments ICP, le packaging, le playbook vente, les canaux d'acquisition, le calendrier 90 jours, les KPI, les templates operationnels et les assets d'inspiration.
 - Docs : integration du document inspirant `Leopardo_RH_Production_Creative.pdf` comme source de production creative IA-first, sans creer de dossier nomme `marketing`.
 - Docs : ajout d'une boussole de viabilite et repositionnement pour rappeler que le projet doit utiliser la tech afin de repondre a des besoins actuels, generer du revenu et accepter les modernisations necessaires.
+- Docs : ajout de `GOTO_MARKET/public/` pour structurer les contenus publics de presentation sur LinkedIn, WhatsApp, Instagram/Facebook, landing pages, videos, presse, partenaires, ads, calendrier editorial et metriques.
 
 ## [4.1.98] - 2026-05-07
 
