@@ -39,6 +39,10 @@ jobs:
         working-directory: ./admin-dashboard
         run: npm ci
 
+      - name: Install ESLint parsers
+        working-directory: ./admin-dashboard
+        run: npm install --no-save vue-eslint-parser @babel/eslint-parser
+
       - name: Run ESLint
         working-directory: ./admin-dashboard
         run: npm run lint
