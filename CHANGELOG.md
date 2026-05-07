@@ -21,6 +21,9 @@
 - CI : ajout d'un smoke test Playwright dedie au dashboard d'administration avec artifacts de debug en cas d'echec.
 - CI : ajout d'une couverture backend visible dans `tests.yml` avec artifact Clover, rapport HTML et seuil progressif configurable via `BACKEND_COVERAGE_MIN`.
 - CI : ajout d'un cache Composer base sur `api/composer.lock` pour les jobs backend lourds.
+- CI : le job backend remonte maintenant un echec reel si les suites Unit/Feature cassent au lieu de laisser `continue-on-error` masquer le probleme.
+- API : la migration publique `2026_05_02_100001_create_users_and_company_requests_tables.php` met maintenant a niveau une table `company_requests` legacy pour aligner le schema attendu (`user_id`, `email`, `phone`, `description`, `admin_notes`, `reviewed_at`) avec les controllers actuels.
+- API/Tests : normalisation UTF-8 des messages FR et des assertions backend pour eviter les faux rouges lies au mojibake (`EmployÃ©`, `RÃ©cupÃ¨re`, etc.).
 - Securite : ajout d'un workflow TruffleHog pour le scan automatique des secrets.
 - Docs : simplification du runbook backup/restore autour d'une procedure minimale explicite (backup hebdomadaire, restore mensuel).
 

@@ -1,6 +1,16 @@
 # RUNBOOK - BACKUP / RESTORE
 
-Version 4.1.67 | 2026-04-22
+Version 4.1.95 | 2026-05-07
+
+## 0. Procedure minimale a appliquer
+
+Pour Leopardo RH, la procedure minimale obligatoire reste volontairement simple :
+
+- **Backup manuel hebdomadaire** de la base PostgreSQL de production
+- **Verification de restore mensuelle** sur une base scratch isolee
+- **Trace obligatoire** dans `RUNBOOK_DRILLS_LOG.md`
+
+Si l'equipe n'active pas ou ne maintient pas le drill automatise, cette procedure minimale reste la reference d'exploitation.
 
 ## 1. Perimetre
 
@@ -11,8 +21,9 @@ Le "drill" (exercice de reprise) se fait sur une base **scratch isolee**,
 jamais contre la production.
 
 Cible :
-- **Pre-prod** : drill hebdomadaire automatise (CI cron)
-- **Production** : drill mensuel manuel, trace dans `RUNBOOK_DRILLS_LOG.md`
+- **Production** : backup manuel hebdomadaire + restore mensuel verifie
+- **Pre-prod** : drill automatise possible si l'infrastructure reste maintenue
+- **Reference de trace** : `RUNBOOK_DRILLS_LOG.md`
 
 ## 2. Secrets requis
 
@@ -24,7 +35,22 @@ Cible :
 | `BACKUP_AGE_IDENTITY_FILE` | cle privee `age` (pour restaurer un dump chiffre) | secret GitHub / 1Password |
 | `BACKUP_DIR` | dossier local ou on ecrit le dump | `/var/lib/leopardo/backups` en prod |
 
-## 3. Drill automatise
+## 3. Checklist operationnelle courte
+
+### Backup hebdomadaire
+
+1. Exporter un dump custom PostgreSQL avec `pg_dump`
+2. Chiffrer le dump si la cle `age` est disponible
+3. Copier le dump vers un stockage froid ou un support dedie
+4. Noter la date, le nom du fichier et l'operateur dans `RUNBOOK_DRILLS_LOG.md`
+
+### Restore mensuel
+
+1. Restaurer le dernier dump valide dans une base scratch
+2. Verifier les tables critiques
+3. Consigner le resultat dans `RUNBOOK_DRILLS_LOG.md`
+
+## 4. Drill automatise
 
 Un script prêt a l'emploi est livre : `scripts/backup_drill.sh`.
 
@@ -48,7 +74,7 @@ Sortie :
 - Log : `${BACKUP_DIR}/last-drill.log`
 - Exit 0 si OK, != 0 si mismatch
 
-## 4. Tables verifiees
+## 5. Tables verifiees
 
 Le drill compte les lignes des tables suivantes (source vs restore) :
 
@@ -63,7 +89,7 @@ Le drill compte les lignes des tables suivantes (source vs restore) :
 
 Un mismatch sur l'une de ces tables = echec du drill.
 
-## 5. Procedure manuelle (fallback)
+## 6. Procedure manuelle (fallback)
 
 ```bash
 # 1. Dump source (prod)
@@ -89,20 +115,20 @@ pg_restore --no-owner --no-privileges \
   --dbname="$RESTORE_DB_URL" leopardo.dump
 ```
 
-## 6. Retention
+## 7. Retention
 
 - **Dumps quotidiens chiffres** : 30 jours (R2/S3 Standard)
 - **Dumps mensuels** : 13 mois (R2/S3 Glacier Deep Archive)
 - **Dumps annuels** : 5 ans (R2/S3 Glacier Deep Archive)
 
-## 7. En cas d'echec
+## 8. En cas d'echec
 
 - Si `pg_dump` echoue -> incident P1, escalade DBA
 - Si le drill detecte un mismatch -> incident P2, analyser `last-drill.log`
 - Si la base scratch devient inaccessible -> basculer sur une Neon branch fresh
 - Trace obligatoire dans `RUNBOOK_DRILLS_LOG.md` apres chaque drill
 
-## 8. References
+## 9. References
 
 - Script : `scripts/backup_drill.sh`
 - Rollback DB : `RUNBOOK_ROLLBACK.md` (option B)

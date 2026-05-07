@@ -36,6 +36,8 @@ class AttendanceAnomalyService
                 'overtime_hours',
                 'late_minutes',
                 'corrected_by',
+                'gps_lat',
+                'gps_lng',
             ])
             ->where('company_id', $companyId)
             ->whereBetween('date', [$dateFrom, $dateTo])

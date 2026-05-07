@@ -1,6 +1,7 @@
 name: Tests - Leopardo RH
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [develop, main]
   push:
@@ -11,6 +12,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DEFAULT_BACKEND_COVERAGE_MIN: "0"
   DEFAULT_MOBILE_COVERAGE_MIN: "25"
 
 concurrency:
@@ -66,7 +68,7 @@ jobs:
             mobile_changed=true
           fi
 
-          if printf '%s\n' "${changed_files}" | grep -Eq '^(web/|\.github/workflows/tests\.yml)'; then
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(admin-dashboard/|\.github/workflows/web-ci\.yml|\.github/workflows/tests\.yml)'; then
             web_changed=true
           fi
 
@@ -118,6 +120,19 @@ jobs:
           php-version: "8.4"
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
           coverage: none
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        working-directory: ./api
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php84-
 
       - name: Validate composer.json
         working-directory: ./api
@@ -188,6 +203,7 @@ jobs:
         run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
 
       - name: Run backend unit tests
+        id: backend_unit_tests
         continue-on-error: true
         working-directory: ./api
         env:
@@ -198,6 +214,7 @@ jobs:
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
       - name: Run backend feature tests
+        id: backend_feature_tests
         continue-on-error: true
         working-directory: ./api
         env:
@@ -216,6 +233,18 @@ jobs:
             api/storage/test-results/*.xml
             api/storage/logs/*.log
           if-no-files-found: ignore
+
+      - name: Fail backend job if unit tests failed
+        if: steps.backend_unit_tests.outcome == 'failure'
+        run: |
+          echo "Backend unit tests failed."
+          exit 1
+
+      - name: Fail backend job if feature tests failed
+        if: steps.backend_feature_tests.outcome == 'failure'
+        run: |
+          echo "Backend feature tests failed."
+          exit 1
 
   backend-security:
     name: Backend Security (Composer Audit)
@@ -254,6 +283,19 @@ jobs:
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
           tools: composer:v2
           coverage: none
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        working-directory: ./api
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php84-
 
       - name: Validate composer.json
         id: validate_composer
@@ -336,6 +378,252 @@ jobs:
             api/phpstan.neon
             api/phpstan-baseline.neon
           if-no-files-found: ignore
+
+  backend-coverage:
+    name: Backend Coverage (PHPUnit)
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.4 with PCOV
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+          coverage: pcov
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        working-directory: ./api
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php84-
+
+      - name: Prepare environment
+        working-directory: ./api
+        run: |
+          cat > .env <<'EOF'
+          APP_NAME=LeopardoRH
+          APP_ENV=testing
+          APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          APP_DEBUG=true
+          APP_URL=http://localhost
+
+          DB_CONNECTION=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=leopardo_test
+          DB_USERNAME=leopardo_user
+          DB_PASSWORD=leopardo_pass_test
+          DB_SEARCH_PATH=shared_tenants,public
+
+          CACHE_STORE=array
+          QUEUE_CONNECTION=sync
+          SESSION_DRIVER=array
+          REDIS_HOST=127.0.0.1
+          REDIS_PORT=6379
+          EOF
+
+      - name: Install Composer dependencies
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Bootstrap migration repositories
+        working-directory: ./api
+        run: |
+          php <<'PHP'
+          <?php
+          $dsn = 'pgsql:host=127.0.0.1;port=5432;dbname=leopardo_test';
+          $pdo = new PDO($dsn, 'leopardo_user', 'leopardo_pass_test', [
+              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          ]);
+
+          $pdo->exec(<<<'SQL'
+          CREATE SCHEMA IF NOT EXISTS shared_tenants;
+          CREATE TABLE IF NOT EXISTS public.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          SQL);
+
+          echo "Migration repositories ensured for public/shared_tenants.\n";
+          PHP
+
+      - name: Run public migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=public php artisan migrate --path=database/migrations/public --force --isolated
+
+      - name: Run tenant migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
+
+      - name: Run backend test suite with coverage
+        id: backend_coverage_tests
+        continue-on-error: true
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: |
+          mkdir -p storage/test-results storage/coverage-html
+          php artisan test \
+            --coverage-clover=storage/test-results/clover.xml \
+            --coverage-html=storage/coverage-html
+
+      - name: Build backend coverage summary
+        if: always()
+        id: backend_coverage_summary
+        working-directory: ./api
+        shell: bash
+        env:
+          BACKEND_COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN }}
+        run: |
+          set -euo pipefail
+          threshold="${BACKEND_COVERAGE_MIN:-${DEFAULT_BACKEND_COVERAGE_MIN}}"
+          mkdir -p storage/test-results
+
+          if [[ ! -f storage/test-results/clover.xml ]]; then
+            {
+              echo "- Threshold configured: ${threshold}%"
+              echo "- Backend statement coverage: unavailable"
+              echo "- Coverage test step: ${{ steps.backend_coverage_tests.outcome }}"
+              echo "- HTML artifact: unavailable"
+              echo "- Clover artifact: unavailable"
+            } > storage/test-results/backend-coverage-summary.md
+            printf "Backend statement coverage: unavailable\n" > storage/test-results/coverage-summary.txt
+            cat storage/test-results/backend-coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          php <<'PHP' > storage/test-results/coverage-summary.txt
+          <?php
+          $xml = simplexml_load_file('storage/test-results/clover.xml');
+          if ($xml === false) {
+              fwrite(STDERR, "Unable to read clover.xml\n");
+              exit(1);
+          }
+
+          $metrics = $xml->project->metrics ?? null;
+          if ($metrics === null) {
+              fwrite(STDERR, "Missing project metrics in clover.xml\n");
+              exit(1);
+          }
+
+          $covered = (int) ($metrics['coveredstatements'] ?? 0);
+          $total = (int) ($metrics['statements'] ?? 0);
+          $percent = $total > 0 ? round(($covered / $total) * 100, 2) : 0.0;
+
+          echo "Backend statement coverage: {$percent}% ({$covered}/{$total})\n";
+          PHP
+
+          coverage_line="$(cat storage/test-results/coverage-summary.txt)"
+          {
+            echo "- Threshold configured: ${threshold}%"
+            echo "- ${coverage_line}"
+            echo "- HTML artifact: api/storage/coverage-html/"
+            echo "- Clover artifact: api/storage/test-results/clover.xml"
+          } > storage/test-results/backend-coverage-summary.md
+
+          cat storage/test-results/backend-coverage-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce backend coverage threshold
+        id: backend_coverage_gate
+        continue-on-error: true
+        if: always() && steps.backend_coverage_tests.outcome == 'success'
+        working-directory: ./api
+        shell: bash
+        env:
+          BACKEND_COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN }}
+        run: |
+          set -euo pipefail
+          threshold="${BACKEND_COVERAGE_MIN:-${DEFAULT_BACKEND_COVERAGE_MIN}}"
+          percent="$(python - <<'PY'
+          from pathlib import Path
+          import re
+          line = Path('storage/test-results/coverage-summary.txt').read_text(encoding='utf-8').strip()
+          match = re.search(r'coverage:\s*([0-9]+(?:\.[0-9]+)?)%', line)
+          print(match.group(1) if match else '0')
+          PY
+          )"
+          printf "Threshold: %s%%\nResult: %s%%\n" "${threshold}" "${percent}" > storage/test-results/backend-coverage-threshold.txt
+          awk -v percent="${percent}" -v threshold="${threshold}" 'BEGIN { exit ((percent + 0) < (threshold + 0)) ? 1 : 0 }'
+
+      - name: Upload backend coverage summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-summary
+          path: |
+            api/storage/test-results/backend-coverage-summary.md
+            api/storage/test-results/coverage-summary.txt
+            api/storage/test-results/backend-coverage-threshold.txt
+          if-no-files-found: error
+
+      - name: Upload backend coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-reports
+          path: |
+            api/storage/test-results/clover.xml
+            api/storage/coverage-html/**
+          if-no-files-found: ignore
+
+      - name: Fail coverage job if test suite failed
+        if: steps.backend_coverage_tests.outcome == 'failure'
+        run: |
+          echo "Backend coverage test suite failed before summary generation."
+          exit 1
+
+      - name: Fail coverage job if threshold gate failed
+        if: steps.backend_coverage_gate.outcome == 'failure'
+        run: |
+          echo "Backend coverage threshold not met."
+          exit 1
 
   mobile-tests:
     name: Mobile Flutter (Stable Channel)
@@ -553,6 +841,7 @@ jobs:
       - backend-tests
       - backend-security
       - backend-quality
+      - backend-coverage
       - mobile-tests
       - governance-gates
       - dependency-review
@@ -572,6 +861,13 @@ jobs:
           name: backend-quality-summary
           path: artifacts/backend-quality-summary
 
+      - name: Download backend coverage summary
+        if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.backend-coverage.result)
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage-summary
+          path: artifacts/backend-coverage-summary
+
       - name: Download mobile quality summary
         if: always() && !contains(fromJson('["cancelled","timed_out","skipped"]'), needs.mobile-tests.result)
         uses: actions/download-artifact@v4
@@ -585,6 +881,7 @@ jobs:
         run: |
           set -euo pipefail
           BACKEND_SUMMARY="artifacts/backend-quality-summary/backend-quality-summary.md"
+          BACKEND_COVERAGE_SUMMARY="artifacts/backend-coverage-summary/backend-coverage-summary.md"
           MOBILE_SUMMARY="artifacts/mobile-quality-summary/quality-summary.md"
           cat > ci-report.md <<EOF
           # CI Report — Leopardo RH
@@ -601,6 +898,7 @@ jobs:
           - Backend Tests: ${{ needs.backend-tests.result }}
           - Backend Security: ${{ needs.backend-security.result }}
           - Backend Quality: ${{ needs.backend-quality.result }}
+          - Backend Coverage: ${{ needs.backend-coverage.result }}
           - Mobile Tests: ${{ needs.mobile-tests.result }}
           - Governance Gates: ${{ needs.governance-gates.result }}
           - Dependency Review: ${{ needs.dependency-review.result }}
@@ -610,16 +908,19 @@ jobs:
           - Mobile Flutter scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md
           - Backend quality artifacts: backend-quality-reports
           - Backend quality summary artifact: backend-quality-summary
+          - Backend coverage artifacts: backend-coverage-reports
+          - Backend coverage summary artifact: backend-coverage-summary
           - Mobile quality artifacts: mobile-test-reports
           - Mobile quality summary artifact: mobile-quality-summary
 
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
           - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile
-          - Gaps prioritaires a fermer: register public, conges, payroll, blocked user dedie
+          - Gate strategy: visible immediately, threshold progressive via BACKEND_COVERAGE_MIN
 
           ## Quality Notes
           - PHP static analysis: PHPStan + Larastan with versioned baseline support
+          - Backend coverage: clover + HTML artifact + threshold summary
           - Mobile tests: machine-readable output + coverage summary artifact
           EOF
 
@@ -628,6 +929,14 @@ jobs:
               echo
               echo "## Backend Quality Summary"
               cat "${BACKEND_SUMMARY}"
+            } >> ci-report.md
+          fi
+
+          if [[ -f "${BACKEND_COVERAGE_SUMMARY}" ]]; then
+            {
+              echo
+              echo "## Backend Coverage Summary"
+              cat "${BACKEND_COVERAGE_SUMMARY}"
             } >> ci-report.md
           fi
 
@@ -668,6 +977,7 @@ jobs:
           (needs.backend-tests.result == 'success' || needs.backend-tests.result == 'skipped') &&
           (needs.backend-security.result == 'success' || needs.backend-security.result == 'skipped') &&
           (needs.backend-quality.result == 'success' || needs.backend-quality.result == 'skipped') &&
+          (needs.backend-coverage.result == 'success' || needs.backend-coverage.result == 'skipped') &&
           (needs.mobile-tests.result == 'success' || needs.mobile-tests.result == 'skipped') &&
           (needs.governance-gates.result == 'success' || needs.governance-gates.result == 'skipped') &&
           (needs.dependency-review.result == 'success' || needs.dependency-review.result == 'skipped')
@@ -678,6 +988,7 @@ jobs:
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-tests.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-security.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-quality.result) ||
+          contains(fromJson('["failure","cancelled","timed_out"]'), needs.backend-coverage.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.mobile-tests.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.governance-gates.result) ||
           contains(fromJson('["failure","cancelled","timed_out"]'), needs.dependency-review.result)

@@ -102,17 +102,22 @@ class AttendanceAnomaliesTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('data.period.date_from', '2026-05-06');
         $response->assertJsonPath('data.period.date_to', '2026-05-10');
-        $response->assertJsonPath('data.summary.total', 5);
+        $response->assertJsonPath('data.summary.total', 8);
         $response->assertJsonPath('data.summary.by_type.late_arrival', 1);
         $response->assertJsonPath('data.summary.by_type.missing_check_out', 1);
         $response->assertJsonPath('data.summary.by_type.manual_correction', 1);
         $response->assertJsonPath('data.summary.by_type.excessive_overtime', 1);
         $response->assertJsonPath('data.summary.by_type.rapid_device_sequence', 1);
+        $response->assertJsonPath('data.summary.by_type.repeated_exact_check_in', 3);
     }
 
     public function test_employee_cannot_view_attendance_anomalies(): void
     {
-        $employee = Employee::factory()->create(['role' => 'employee']);
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
 
         Sanctum::actingAs($employee);
 

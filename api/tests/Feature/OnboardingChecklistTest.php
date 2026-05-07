@@ -55,7 +55,11 @@ class OnboardingChecklistTest extends TestCase
 
     public function test_employee_cannot_view_client_onboarding_checklist(): void
     {
-        $employee = Employee::factory()->create(['role' => 'employee']);
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
 
         Sanctum::actingAs($employee);
 
