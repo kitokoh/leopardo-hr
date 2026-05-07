@@ -19,10 +19,32 @@ const keyAliases = {
   'auth.personal_account.explanation': 'personalAccountExplanation',
 };
 
+function sanitizePart(part) {
+  return part
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((token, index) => {
+      const lower = token.toLowerCase();
+      return index === 0
+        ? lower.charAt(0).toUpperCase() + lower.slice(1)
+        : lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join('');
+}
+
 function defaultKey(pathValue) {
   const parts = pathValue.split('.');
   return parts
-    .map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
+    .map((part, index) => {
+      const sanitized = sanitizePart(part);
+      if (!sanitized) {
+        return '';
+      }
+      return index === 0
+        ? sanitized.charAt(0).toLowerCase() + sanitized.slice(1)
+        : sanitized.charAt(0).toUpperCase() + sanitized.slice(1);
+    })
     .join('');
 }
 
