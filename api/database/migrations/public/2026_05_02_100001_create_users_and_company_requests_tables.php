@@ -81,6 +81,14 @@ return new class extends Migration
                     $table->timestamp('reviewed_at')->nullable()->after('admin_notes');
                 }
             });
+
+            if (Schema::hasColumn('company_requests', 'employee_id')) {
+                if (DB::getDriverName() === 'pgsql') {
+                    DB::statement('ALTER TABLE public.company_requests ALTER COLUMN employee_id DROP NOT NULL');
+                } elseif (DB::getDriverName() === 'mysql') {
+                    DB::statement('ALTER TABLE company_requests MODIFY employee_id INT NULL');
+                }
+            }
         }
 
         if (! Schema::hasTable('user_employee_links')) {
