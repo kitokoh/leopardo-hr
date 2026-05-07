@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-05-07T20:45:00Z",
+  "default_locale": "fr",
+  "rtl_locales": [
+    "ar"
+  ],
+  "supported_variants": {
+    "fr": [
+      "fr-FR",
+      "fr-BE",
+      "fr-CA"
+    ],
+    "ar": [
+      "ar-SA",
+      "ar-MA"
+    ],
+    "tr": [
+      "tr-TR"
+    ],
+    "en": [
+      "en-US",
+      "en-GB"
+    ]
+  },
+  "locales": {
+    "fr": {
+      "checksum": "3d09c10bea0d0e9301afa74c7ee758cadf35df5872afba03ed26d70a339f5464",
+      "version": "1.0.0",
+      "updated_at": "2026-05-07T20:45:00Z"
+    },
+    "ar": {
+      "checksum": "9c7c2c0c911d211ad02f24c4558d7729805b19d6af2bb564d24d77bd0c60eac9",
+      "version": "1.0.0",
+      "updated_at": "2026-05-07T20:45:00Z"
+    },
+    "tr": {
+      "checksum": "e0400635fae9975d04e299ab5e013eb481f9186ca4299fa4ca94bee4df8a359e",
+      "version": "1.0.0",
+      "updated_at": "2026-05-07T20:45:00Z"
+    },
+    "en": {
+      "checksum": "68f059a982aa6f35354b74f400966cf7bf6f8d89817ea54aae6ec80085abdb15",
+      "version": "1.0.0",
+      "updated_at": "2026-05-07T20:45:00Z"
+    }
+  }
+}

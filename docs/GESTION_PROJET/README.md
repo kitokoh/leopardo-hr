@@ -1,4 +1,4 @@
-# Gestion projet - Leopardo RH
+﻿# Gestion projet - Leopardo RH
 
 Ce dossier centralise les documents de pilotage, les runbooks, les audits d'ecarts et les supports d'execution du projet.
 
@@ -9,7 +9,8 @@ Ce dossier centralise les documents de pilotage, les runbooks, les audits d'ecar
 3. `GARDE_FOUS.md` - regles anti-derive
 4. `RUNBOOK_DEPLOY.md`, `RUNBOOK_ROLLBACK.md`, `RUNBOOK_BACKUP_RESTORE.md`, `RUNBOOK_INCIDENT_P1.md` - socle d'exploitation
 5. `REGISTRE_SCENARIOS_TESTS.md` + `SCENARIOS_TEST_*` - base canonique de couverture fonctionnelle et CI
-6. `PLAN_ACTION_AMELIORATION.md` - plan d'amelioration backend, conserve comme archive d'execution et feuille de detail
+6. ARCHITECTURE_I18N_ENTERPRISE_2026-05-07.md - cible multilingue partagee backend/web/mobile
+7. PLAN_ACTION_AMELIORATION.md - plan d'amelioration backend, conserve comme archive d'execution et feuille de detail
 
 ## Sous-ensembles logiques
 
@@ -28,3 +29,4 @@ Les fichiers de ce dossier doivent toujours expliciter s'ils sont :
 - un runbook executable,
 - un audit ponctuel,
 - ou une archive de contexte.
+
