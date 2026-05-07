@@ -13,6 +13,11 @@
 
 ## [4.1.96] - 2026-05-07
 
+### Tests - Guardrails d'authentification
+
+- Tests : ajout de `api/tests/Feature/Security/AuthenticatedGuardrailsTest.php` pour verrouiller le blocage immédiat des sessions actives lorsque le statut de l'employé ou de l'entreprise devient invalide (archivé, suspendu, expiré).
+- API : correction de `Company::booted` pour assurer la compatibilité avec SQLite dans les environnements de test lors de la mise à jour du statut de l'entreprise.
+
 ### Mobile - Fondation i18n
 
 - Mobile : ajout de la configuration `gen-l10n`, des premiers catalogues ARB FR/EN/TR/AR et du helper `context.l10n`.
