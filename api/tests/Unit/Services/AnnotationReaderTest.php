@@ -31,7 +31,7 @@ class AnnotationReaderTest extends TestCase
         $this->assertArrayHasKey('form_schema', $annotations);
         $this->assertArrayHasKey('list_schema', $annotations);
 
-        $this->assertEquals('Liste des EmployÃ©s', $annotations['title']);
+        $this->assertEquals("Liste des Employ\u{00E9}s", $annotations['title']);
         $this->assertEquals('list', $annotations['ui_type']);
         $this->assertTrue($annotations['mobile_compatible']);
         $this->assertContains('employees.view', $annotations['permissions']);
@@ -40,13 +40,13 @@ class AnnotationReaderTest extends TestCase
     public function test_generates_title_from_method_name(): void
     {
         $title = $this->annotationReader->generateTitleFromMethod('index');
-        $this->assertEquals('Liste des Ã©lÃ©ments', $title);
+        $this->assertEquals("Liste des \u{00E9}l\u{00E9}ments", $title);
 
         $title = $this->annotationReader->generateTitleFromMethod('show');
-        $this->assertEquals('Afficher un Ã©lÃ©ment', $title);
+        $this->assertEquals("Afficher un \u{00E9}l\u{00E9}ment", $title);
 
         $title = $this->annotationReader->generateTitleFromMethod('store');
-        $this->assertEquals('CrÃ©er un nouvel Ã©lÃ©ment', $title);
+        $this->assertEquals("Cr\u{00E9}er un nouvel \u{00E9}l\u{00E9}ment", $title);
 
         $title = $this->annotationReader->generateTitleFromMethod('getUserProfile');
         $this->assertEquals('Get User Profile', $title);
@@ -59,14 +59,14 @@ class AnnotationReaderTest extends TestCase
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
 
-        $this->assertStringContainsString('RÃ©cupÃ¨re la liste', $description);
+        $this->assertStringContainsString("R\u{00E9}cup\u{00E8}re la liste", $description);
         $this->assertStringContainsString('employee', $description);
 
         $description = $this->annotationReader->generateDescriptionFromMethod(
             'store',
             'App\Http\Controllers\Api\V1\EmployeeController'
         );
-        $this->assertStringContainsString('CrÃ©e un nouveau', $description);
+        $this->assertStringContainsString("Cr\u{00E9}e un nouveau", $description);
         $this->assertStringContainsString('employee', $description);
     }
 

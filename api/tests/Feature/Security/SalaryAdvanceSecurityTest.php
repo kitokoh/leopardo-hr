@@ -81,7 +81,7 @@ class SalaryAdvanceSecurityTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
-        $response->assertJsonPath('errors.employee_id.0', 'EmployÃ© introuvable dans votre entreprise.');
+        $response->assertJsonPath('errors.employee_id.0', "Employ\u{00E9} introuvable dans votre entreprise.");
     }
 
     public function test_manager_can_only_see_salary_advances_within_their_company(): void

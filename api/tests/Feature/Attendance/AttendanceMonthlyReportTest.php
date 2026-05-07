@@ -66,7 +66,11 @@ class AttendanceMonthlyReportTest extends TestCase
 
     public function test_employee_cannot_get_monthly_attendance_report(): void
     {
-        $employee = Employee::factory()->create(['role' => 'employee']);
+        $company = Company::factory()->create(['timezone' => 'UTC']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
 
         Sanctum::actingAs($employee);
 
