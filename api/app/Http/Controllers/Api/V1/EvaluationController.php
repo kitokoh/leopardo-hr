@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Evaluation\EvaluationIndexRequest;
+use App\Http\Requests\Api\V1\Evaluation\StoreEvaluationRequest;
+use App\Http\Requests\Api\V1\Evaluation\UpdateEvaluationRequest;
 use App\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -73,24 +75,10 @@ class EvaluationController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreEvaluationRequest $request): JsonResponse
     {
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-
-        $data = $request->validate([
-            'employee_id' => ['required', 'integer', 'min:1'],
-            'period' => ['required', 'string', 'max:20'],
-            'score' => ['nullable', 'numeric', 'min:0', 'max:5'],
-            'criteria' => ['nullable', 'array'],
-            'criteria.*.label' => ['required_with:criteria', 'string', 'max:100'],
-            'criteria.*.score' => ['required_with:criteria', 'numeric', 'min:0', 'max:5'],
-            'strengths' => ['nullable', 'string', 'max:2000'],
-            'improvements' => ['nullable', 'string', 'max:2000'],
-            'overall_comment' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $data = $request->validated();
 
         if (Evaluation::where('employee_id', $data['employee_id'])->where('evaluator_id', $actor->id)->where('period', $data['period'])->exists()) {
             return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => 'Une évaluation existe déjà pour cet employé sur cette période.']], 422);
@@ -114,40 +102,20 @@ class EvaluationController extends Controller
 
     public function show(Request $request, Evaluation $evaluation): JsonResponse
     {
-        $actor = $request->user();
-        if ($evaluation->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager() && $evaluation->employee_id !== $actor->id) {
-            abort(403);
-        }
+        $this->authorize('view', $evaluation);
 
         return response()->json(['data' => $this->serialize($evaluation->load('employee', 'evaluator'))]);
     }
 
-    public function update(Request $request, Evaluation $evaluation): JsonResponse
+    public function update(UpdateEvaluationRequest $request, Evaluation $evaluation): JsonResponse
     {
-        $actor = $request->user();
-        if ($evaluation->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+        $this->authorize('update', $evaluation);
 
         if ($evaluation->status === 'acknowledged') {
             return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_ACKNOWLEDGED', 'message' => 'Une évaluation accusée de réception ne peut plus être modifiée.']], 422);
         }
 
-        $data = $request->validate([
-            'score' => ['nullable', 'numeric', 'min:0', 'max:5'],
-            'criteria' => ['nullable', 'array'],
-            'criteria.*.label' => ['required_with:criteria', 'string', 'max:100'],
-            'criteria.*.score' => ['required_with:criteria', 'numeric', 'min:0', 'max:5'],
-            'strengths' => ['nullable', 'string', 'max:2000'],
-            'improvements' => ['nullable', 'string', 'max:2000'],
-            'overall_comment' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $data = $request->validated();
 
         $evaluation->update($data);
 
@@ -156,13 +124,7 @@ class EvaluationController extends Controller
 
     public function submit(Request $request, Evaluation $evaluation): JsonResponse
     {
-        $actor = $request->user();
-        if ($evaluation->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+        $this->authorize('submit', $evaluation);
 
         if ($evaluation->status !== 'draft') {
             return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => 'Seule une évaluation en brouillon peut être soumise.']], 422);
@@ -175,13 +137,7 @@ class EvaluationController extends Controller
 
     public function acknowledge(Request $request, Evaluation $evaluation): JsonResponse
     {
-        $actor = $request->user();
-        if ($evaluation->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if ($evaluation->employee_id !== $actor->id) {
-            abort(403);
-        }
+        $this->authorize('acknowledge', $evaluation);
 
         if ($evaluation->status !== 'submitted') {
             return response()->json(['error' => ['code' => 'EVALUATION_NOT_SUBMITTED', 'message' => 'Seule une évaluation soumise peut être accusée de réception.']], 422);
@@ -194,13 +150,7 @@ class EvaluationController extends Controller
 
     public function destroy(Request $request, Evaluation $evaluation): JsonResponse
     {
-        $actor = $request->user();
-        if ($evaluation->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+        $this->authorize('delete', $evaluation);
 
         if ($evaluation->status !== 'draft') {
             return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => 'Seule une évaluation en brouillon peut être supprimée.']], 422);

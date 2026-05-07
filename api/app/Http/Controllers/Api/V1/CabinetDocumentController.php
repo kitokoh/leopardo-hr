@@ -23,7 +23,20 @@ class CabinetDocumentController extends Controller
     {
         $actor = $this->employee($request);
 
-        $query = CabinetDocument::where('employee_id', $actor->id);
+        $query = CabinetDocument::query()
+            ->select([
+                'id',
+                'company_id',
+                'folder_id',
+                'name',
+                'original_name',
+                'mime_type',
+                'size',
+                'notes',
+                'created_at',
+                'updated_at',
+            ])
+            ->where('employee_id', $actor->id);
 
         if ($request->has('folder_id')) {
             $folderId = $request->input('folder_id');

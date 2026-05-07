@@ -2,7 +2,43 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.98] - 2026-05-07
+
+### Federation - PR ouvertes utiles
+
+- Securite : durcissement du module Evaluations avec `StoreEvaluationRequest`, `UpdateEvaluationRequest`, `EvaluationPolicy` et une couverture de regression dediee pour l'isolation tenant.
+- Securite : correction de la recherche employe lors du login Google pour eviter les collisions inter-tenant dues aux global scopes.
+- Securite/Tests : ajout de `AuthenticatedGuardrailsTest` pour verrouiller la revocation immediate des sessions quand le statut employe ou entreprise devient invalide, avec compatibilite SQLite amelioree dans `Company`.
+- Performance : optimisation de `CabinetDocumentController@index` pour limiter les colonnes chargees, et extension du schema SQLite de test au module Cabinet.
+- Mobile : amelioration de l'UX auth avec retour haptique leger et labels d'accessibilite sur les ecrans de connexion/inscription.
+- Mobile : amelioration de l'ecran des avances sur salaire avec pull-to-refresh fiable, etats vides scrollables, semantics plus coherentes et navigation retour plus claire.
+- Hygiene : suppression des logs CI accidentellement suivis a la racine et ajout de garde-fous `.gitignore` pour eviter leur retour.
+
+## [4.1.97] - 2026-05-08
+
+### Sentinel - Renforcement de la sécurité Evaluation
+
+- API : Introduction de `StoreEvaluationRequest` et `UpdateEvaluationRequest` pour durcir la validation des évaluations, incluant une vérification tenant-scoped sur `employee_id`.
+- API : Création de `EvaluationPolicy` pour centraliser l'isolation tenant et les règles RBAC sur le module évaluations.
+- API : Refactorisation de `EvaluationController` pour utiliser les nouveaux FormRequests et la Policy, éliminant les vulnérabilités IDOR potentielles.
+- Tests : Ajout de `api/tests/Feature/Security/EvaluationSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module évaluations.
+## [4.1.97] - 2026-05-07
+
+### ⚡ Bolt - Performance et optimisation Cabinet
+
+- API : optimisation de `CabinetDocumentController@index` par l'ajout de `select()`, évitant ainsi la récupération de colonnes non utilisées (`path`, `disk`) lors de la liste des documents.
+- Tests : mise à jour de `CreatesMvpSchema` pour inclure les tables du module Cabinet (`cabinet_folders`, `cabinet_documents`) dans l'environnement de test SQLite.
+
 ## [4.1.96] - 2026-05-07
+
+### Tests - Guardrails d'authentification
+
+- Tests : ajout de `api/tests/Feature/Security/AuthenticatedGuardrailsTest.php` pour verrouiller le blocage immédiat des sessions actives lorsque le statut de l'employé ou de l'entreprise devient invalide (archivé, suspendu, expiré).
+- API : correction de `Company::booted` pour assurer la compatibilité avec SQLite dans les environnements de test lors de la mise à jour du statut de l'entreprise.
+### Mobile - Ameliorations UX et accessibilite
+
+- Mobile : amelioration de l'accessibilite de la liste des avances de salaire avec labels semantiques unifies (montant, motif, statut) et tooltip de retour.
+- Mobile : ajout d'un rafraichissement manuel (`RefreshIndicator`) et d'etats vides/erreur scrollables sur l'ecran des avances.
 
 ### Mobile - Fondation i18n
 
