@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.98] - 2026-05-07
+
+### Federation - PR ouvertes utiles
+
+- Securite : durcissement du module Evaluations avec `StoreEvaluationRequest`, `UpdateEvaluationRequest`, `EvaluationPolicy` et une couverture de regression dediee pour l'isolation tenant.
+- Securite : correction de la recherche employe lors du login Google pour eviter les collisions inter-tenant dues aux global scopes.
+- Securite/Tests : ajout de `AuthenticatedGuardrailsTest` pour verrouiller la revocation immediate des sessions quand le statut employe ou entreprise devient invalide, avec compatibilite SQLite amelioree dans `Company`.
+- Performance : optimisation de `CabinetDocumentController@index` pour limiter les colonnes chargees, et extension du schema SQLite de test au module Cabinet.
+- Mobile : amelioration de l'UX auth avec retour haptique leger et labels d'accessibilite sur les ecrans de connexion/inscription.
+- Mobile : amelioration de l'ecran des avances sur salaire avec pull-to-refresh fiable, etats vides scrollables, semantics plus coherentes et navigation retour plus claire.
+- Hygiene : suppression des logs CI accidentellement suivis a la racine et ajout de garde-fous `.gitignore` pour eviter leur retour.
+
 ## [4.1.97] - 2026-05-08
 
 ### Sentinel - Renforcement de la sécurité Evaluation
