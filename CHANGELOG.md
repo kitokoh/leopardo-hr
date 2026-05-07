@@ -7,6 +7,10 @@
 ### Backend - Intelligence pointage
 
 - API : ajout de `GET /api/v1/attendance/anomalies` pour donner aux managers un resume actionnable des retards, sorties manquantes, corrections manuelles, heures supplementaires elevees et pointages rapproches sur un meme appareil.
+- API : ajout de la detection avancee des pointages hors zone autorisee (`company.metadata.attendance_geofence`) et des pointages a heure trop repetitive.
+- API : ajout de `GET /api/v1/attendance/monthly-report` en JSON, CSV et PDF pour produire le rapport mensuel comptable/manager.
+- API : ajout de `GET /api/v1/onboarding/checklist` pour exposer la progression d'installation client (societe, manager, equipe, biometrie, kiosque).
+- Platform : ajout de `GET/PATCH /api/v1/platform/companies/{company}/features` pour piloter les modules actifs par entreprise via `companies.features`.
 - Tests : couverture de l'acces manager, du refus employe et de l'isolation tenant sur les anomalies de pointage.
 
 ## [4.1.95] - 2026-05-07
