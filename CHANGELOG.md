@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.102] - 2026-05-08
+
+### Backend - Hotfix Render migration race
+
+- API : durcissement des migrations publiques `2026_05_02_000003_create_company_requests_table.php` et `2026_05_02_100001_create_users_and_company_requests_tables.php` pour absorber les courses concurrentes PostgreSQL sur Render.
+- API : gestion explicite des erreurs SQLSTATE `42P07` pendant les `Schema::create(...)` ; si la table apparait entre le test et la creation, la migration devient un no-op au lieu de faire echouer le deploiement.
+- Ops : documentation ajoutee dans `AGENTS.md` pour rappeler que `Schema::hasTable()` n'est pas atomique sur Render et qu'une migration publique sensible doit traiter la duplication concurrente comme un cas idempotent.
+
 ## [4.1.101] - 2026-05-07
 
 ### Internationalisation - Socle enterprise centralise
@@ -1681,4 +1689,6 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schÃ©ma SQL de base.
 - Structure initiale des dossiers.
+
+
 
