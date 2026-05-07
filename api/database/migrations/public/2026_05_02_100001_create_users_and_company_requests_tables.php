@@ -119,7 +119,7 @@ return new class extends Migration
         try {
             Schema::create($table, $callback);
         } catch (QueryException $exception) {
-            if ($this->isDuplicateTableRace($exception, $table) && Schema::hasTable($table)) {
+            if ($this->isDuplicateTableRace($exception, $table)) {
                 return;
             }
 
