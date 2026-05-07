@@ -112,7 +112,11 @@ class AttendanceAnomaliesTest extends TestCase
 
     public function test_employee_cannot_view_attendance_anomalies(): void
     {
-        $employee = Employee::factory()->create(['role' => 'employee']);
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
 
         Sanctum::actingAs($employee);
 
