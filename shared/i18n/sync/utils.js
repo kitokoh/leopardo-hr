@@ -77,8 +77,14 @@ function writePhpArray(filePath, payload) {
 
 function updateVersions() {
   const versions = readJson(versionsPath);
-  versions.generated_at = new Date().toISOString();
-  for (const { locale, data } of localeCatalogs()) {
+  const catalogs = localeCatalogs();
+  const generatedAt = catalogs
+    .map(({ data }) => data._updated_at)
+    .filter(Boolean)
+    .sort()
+    .at(-1) || versions.generated_at;
+  versions.generated_at = generatedAt;
+  for (const { locale, data } of catalogs) {
     const flattened = flatten(data);
     versions.locales[locale] = versions.locales[locale] || {};
     versions.locales[locale].checksum = checksum(flattened);
