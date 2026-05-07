@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -13,29 +14,27 @@ return new class extends Migration
             DB::statement('SET search_path TO public');
         }
 
-        if (! Schema::hasTable('users')) {
-            Schema::create('users', function (Blueprint $table): void {
-                $table->id();
-                $table->string('first_name');
-                $table->string('last_name');
-                $table->string('email')->unique();
-                $table->string('phone')->nullable();
-                $table->string('password_hash')->nullable();
-                $table->string('google_id')->nullable()->unique();
-                $table->string('avatar_url')->nullable();
-                $table->string('provider')->default('email');
-                $table->string('preferred_language', 2)->default('fr');
-                $table->string('status')->default('active');
-                $table->timestamp('email_verified_at')->nullable();
-                $table->timestamp('last_login_at')->nullable();
-                $table->integer('failed_login_attempts')->default(0);
-                $table->timestamp('locked_until')->nullable();
-                $table->timestamps();
-            });
-        }
+        $this->createTableIfMissing('users', function (Blueprint $table): void {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('password_hash')->nullable();
+            $table->string('google_id')->nullable()->unique();
+            $table->string('avatar_url')->nullable();
+            $table->string('provider')->default('email');
+            $table->string('preferred_language', 2)->default('fr');
+            $table->string('status')->default('active');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->integer('failed_login_attempts')->default(0);
+            $table->timestamp('locked_until')->nullable();
+            $table->timestamps();
+        });
 
         if (! Schema::hasTable('company_requests')) {
-            Schema::create('company_requests', function (Blueprint $table): void {
+            $this->createTableIfMissing('company_requests', function (Blueprint $table): void {
                 $table->id();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
                 $table->string('company_name');
@@ -91,19 +90,17 @@ return new class extends Migration
             }
         }
 
-        if (! Schema::hasTable('user_employee_links')) {
-            Schema::create('user_employee_links', function (Blueprint $table): void {
-                $table->id();
-                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-                $table->unsignedBigInteger('employee_id');
-                $table->foreignUuid('company_id')->constrained('companies');
-                $table->string('status')->default('pending');
-                $table->timestamp('linked_at')->nullable();
-                $table->timestamps();
+        $this->createTableIfMissing('user_employee_links', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('employee_id');
+            $table->foreignUuid('company_id')->constrained('companies');
+            $table->string('status')->default('pending');
+            $table->timestamp('linked_at')->nullable();
+            $table->timestamps();
 
-                $table->unique(['user_id', 'company_id']);
-            });
-        }
+            $table->unique(['user_id', 'company_id']);
+        });
     }
 
     public function down(): void
@@ -111,5 +108,32 @@ return new class extends Migration
         Schema::dropIfExists('user_employee_links');
         Schema::dropIfExists('company_requests');
         Schema::dropIfExists('users');
+    }
+
+    private function createTableIfMissing(string $table, \Closure $callback): void
+    {
+        if (Schema::hasTable($table)) {
+            return;
+        }
+
+        try {
+            Schema::create($table, $callback);
+        } catch (QueryException $exception) {
+            if ($this->isDuplicateTableRace($exception, $table) && Schema::hasTable($table)) {
+                return;
+            }
+
+            throw $exception;
+        }
+    }
+
+    private function isDuplicateTableRace(QueryException $exception, string $table): bool
+    {
+        $sqlState = $exception->errorInfo[0] ?? null;
+        $message = $exception->getMessage();
+
+        return $sqlState === '42P07'
+            || str_contains($message, sprintf('relation "%s" already exists', $table))
+            || str_contains($message, 'Base table or view already exists');
     }
 };
