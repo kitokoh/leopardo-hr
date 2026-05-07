@@ -134,6 +134,7 @@ Procedure recommandee :
 - Le PDF inspirant `Leopardo_RH_Production_Creative.pdf` doit etre conserve dans `GOTO_MARKET/00_inspiration/` et sert de base creative IA-first.
 - Les prochaines actions GTM doivent rester connectees au wedge produit prioritaire : pointage, anomalies, rapport mensuel, onboarding et ROI client mesurable.
 - `GOTO_MARKET/` est aussi le centre de reflexion sur la viabilite globale : utiliser la tech pour repondre a un besoin actuel, gagner de l'argent, et ne pas hesiter a repositionner ou moderniser le produit/offre quand le marche l'exige.
+- Les fichiers destines a presenter Leopardo RH au public doivent aller dans `GOTO_MARKET/public/` avec un sous-dossier par canal : `social/`, `landing/`, `video/`, `press/`, `partners/`, `ads/`, `content_calendar/`, `metrics/`.
 
 ### 2026-05-07 - Federation de PR ouvertes
 
