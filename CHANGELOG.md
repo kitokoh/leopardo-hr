@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.97] - 2026-05-07
+
+### ⚡ Bolt - Performance et optimisation Cabinet
+
+- API : optimisation de `CabinetDocumentController@index` par l'ajout de `select()`, évitant ainsi la récupération de colonnes non utilisées (`path`, `disk`) lors de la liste des documents.
+- Tests : mise à jour de `CreatesMvpSchema` pour inclure les tables du module Cabinet (`cabinet_folders`, `cabinet_documents`) dans l'environnement de test SQLite.
+
 ## [4.1.96] - 2026-05-07
 
 ### Mobile - Fondation i18n

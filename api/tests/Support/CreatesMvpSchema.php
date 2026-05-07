@@ -442,6 +442,30 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create($this->tenantTable('cabinet_folders'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('parent_id')->nullable()->index();
+            $table->string('name', 255);
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('cabinet_documents'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('folder_id')->nullable()->index();
+            $table->string('name', 255);
+            $table->string('original_name', 255);
+            $table->string('mime_type', 127);
+            $table->unsignedBigInteger('size');
+            $table->string('disk', 50)->default('local');
+            $table->string('path', 500);
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create($this->tenantTable('departments'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -619,6 +643,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "features"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "cabinet_documents"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "cabinet_folders"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absence_types"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "employees"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "schedules"'.$cascade);
