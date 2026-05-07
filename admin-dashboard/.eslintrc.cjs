@@ -24,7 +24,11 @@ module.exports = {
   ],
   rules: {
     'no-console': 'off',
+    'no-undef': 'off',
     'no-unused-vars': 'warn',
+    'vue/no-mutating-props': 'warn',
+    'vue/no-side-effects-in-computed-properties': 'warn',
+    'vue/require-toggle-inside-transition': 'warn',
     'vue/multi-word-component-names': 'off',
   },
 }
