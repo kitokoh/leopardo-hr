@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.103] - 2026-05-08
+
+### Backend - Hotfix transaction PostgreSQL Render
+
+- API : correction du hotfix Render sur `company_requests` pour ne plus executer de `Schema::hasTable(...)` dans une transaction PostgreSQL deja invalidee.
+- API : en cas de `SQLSTATE[42P07]`, les migrations publiques traitent maintenant le conflit comme une course gagnee par un autre processus sans relancer une requete qui provoquerait `SQLSTATE[25P02]`.
+- Ops : le correctif vise explicitement les deploys Render concurrents ou plusieurs processus de migration passent sur la meme table publique au meme instant.
+
 ## [4.1.102] - 2026-05-08
 
 ### Backend - Hotfix Render migration race
@@ -1689,6 +1697,5 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schÃ©ma SQL de base.
 - Structure initiale des dossiers.
-
 
 

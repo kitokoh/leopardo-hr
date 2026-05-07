@@ -95,8 +95,13 @@ Procedure recommandee :
 
 - Le hotfix idempotent base uniquement sur `Schema::hasTable()` ne suffit pas sur Render quand plusieurs processus de migration courent en parallele.
 - Symptome observe sur le deploy du commit `fed92d684274e9bbf52b6b4d81785b8e851ac221` : `2026_05_02_000003_create_company_requests_table.php` echoue avec `SQLSTATE[42P07] Duplicate table` alors que la table vient juste d'etre creee par un autre processus.
-- Pour une migration publique sensible, entourer `Schema::create(...)` d'un `try/catch QueryException` et traiter `42P07` comme un no-op si `Schema::hasTable(...)` est devenu vrai au moment du catch.
+- Pour une migration publique sensible, entourer `Schema::create(...)` d'un `try/catch QueryException` et traiter `42P07` comme un no-op de course concurrente, sans relancer de requete SQL dans le `catch`.
 - Appliquer la meme protection aux autres tables publiques exposees a la course (`users`, `company_requests`, `user_employee_links`) afin que le rattrapage Render et les retries du point d'entree restent vraiment idempotents.
+
+### 2026-05-08 - Render et transaction PostgreSQL abort
+
+- Sur PostgreSQL, une migration Laravel executee dans la transaction du migrateur ne doit pas lancer de requete de verification apres une erreur SQL, sinon on tombe sur `SQLSTATE[25P02] current transaction is aborted`.
+- Concretement, apres un `42P07 Duplicate table`, ne pas appeler `Schema::hasTable(...)` dans le `catch`. Il faut considerer le code SQLSTATE et sortir directement, sinon le correctif de course reintroduit un echec.
 
 ### 2026-05-07 - I18N enterprise partage
 
@@ -167,5 +172,3 @@ Procedure recommandee :
 - Le script `tools/check-governance.ps1` doit echouer si une surface fonctionnelle change sans mise a jour de cette base de scenarios. Cela evite qu'une feature apparaisse sans etre rattachee a une couverture attendue.
 - Le deploiement auto doit raisonner par SHA et non seulement par nom de workflow : pour un commit `main`, on ne deploie que si les workflows requis pour ce SHA sont conclus avec succes.
 - Pour le web admin, Playwright doit continuer a fournir des artefacts exploitables en cas d'echec: HTML, JUnit, traces et videos retenues sur echec.
-
-
