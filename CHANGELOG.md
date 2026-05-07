@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.97] - 2026-05-08
+
+### Sentinel - Renforcement de la sécurité Evaluation
+
+- API : Introduction de `StoreEvaluationRequest` et `UpdateEvaluationRequest` pour durcir la validation des évaluations, incluant une vérification tenant-scoped sur `employee_id`.
+- API : Création de `EvaluationPolicy` pour centraliser l'isolation tenant et les règles RBAC sur le module évaluations.
+- API : Refactorisation de `EvaluationController` pour utiliser les nouveaux FormRequests et la Policy, éliminant les vulnérabilités IDOR potentielles.
+- Tests : Ajout de `api/tests/Feature/Security/EvaluationSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module évaluations.
+
 ## [4.1.96] - 2026-05-07
 
 ### Mobile - Fondation i18n
