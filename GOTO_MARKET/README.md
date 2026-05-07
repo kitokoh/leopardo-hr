@@ -32,12 +32,14 @@ Transformer les 10 premiers clients payants en machine commerciale repetable :
 10. `09_TEMPLATES_OPERATIONNELS.md` - CRM, pilote, interviews, recap demo.
 11. `10_VIABILITE_ET_REPOSITIONNEMENT.md` - boussole business, modernisation et decisions dures.
 12. `11_SYSTEME_PUBLICATION_PUBLIQUE.md` - structure des fichiers publics, reseaux sociaux, landing, videos, partenaires et ads.
+13. `12_PACK_LANCEMENT_ACQUISITION.md` - supports de lancement pour acquisition via nos propres canaux.
 
 ## Dossiers actifs
 
 - `00_inspiration/` - documents source et inspirations.
 - `assets/` - supports commerciaux selectionnes.
 - `public/` - contenus et fichiers destines a presenter Leopardo RH au public.
+- `product_marketing_automation/` - vision produit future pour automatiser le marketing des entreprises clientes.
 
 ## Regle simple
 

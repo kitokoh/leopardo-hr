@@ -20,6 +20,8 @@
 - Docs : integration du document inspirant `Leopardo_RH_Production_Creative.pdf` comme source de production creative IA-first, sans creer de dossier nomme `marketing`.
 - Docs : ajout d'une boussole de viabilite et repositionnement pour rappeler que le projet doit utiliser la tech afin de repondre a des besoins actuels, generer du revenu et accepter les modernisations necessaires.
 - Docs : ajout de `GOTO_MARKET/public/` pour structurer les contenus publics de presentation sur LinkedIn, WhatsApp, Instagram/Facebook, landing pages, videos, presse, partenaires, ads, calendrier editorial et metriques.
+- Docs : ajout d'un pack lancement acquisition avec scripts video, sequence email pilote, lead magnet checklist, messages WhatsApp, posts LinkedIn, copies ads et playbook owned channels.
+- Produit : documentation d'une future brique `product_marketing_automation/`, non implementee, pour cadrer l'idee d'aider les entreprises clientes a gerer et automatiser leur marketing.
 
 ## [4.1.98] - 2026-05-07
 
