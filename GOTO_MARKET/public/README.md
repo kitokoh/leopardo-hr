@@ -22,6 +22,9 @@ Il couvre :
 - `press/` - kit presse, communiques, presentation courte.
 - `partners/` - one-pagers et messages revendeurs/integrateurs.
 - `ads/` - tests paid, copies, audiences, resultats.
+- `email/` - sequences d'acquisition, pilote et conversion.
+- `lead_magnets/` - checklists, guides et supports de capture lead.
+- `owned_channels/` - playbooks pour acquerir depuis nos propres canaux.
 - `content_calendar/` - calendrier editorial et planning publication.
 - `metrics/` - suivi des performances par canal.
 

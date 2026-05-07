@@ -154,18 +154,41 @@ final routerProvider = Provider<GoRouter>((ref) {
 class LeopardoApp extends ConsumerWidget {
   const LeopardoApp({super.key});
 
+  Locale _resolveLocale(String rawLocale) {
+    final normalized = rawLocale.trim().replaceAll('_', '-');
+    final parts =
+        normalized.split('-').where((part) => part.isNotEmpty).toList();
+
+    if (parts.isEmpty) {
+      return const Locale('fr');
+    }
+
+    final languageCode = parts.first.toLowerCase();
+    final countryCode = parts.length > 1 ? parts[1].toUpperCase() : null;
+
+    if (!const {'fr', 'ar', 'tr', 'en'}.contains(languageCode)) {
+      return const Locale('fr');
+    }
+
+    return countryCode == null || countryCode.isEmpty
+        ? Locale(languageCode)
+        : Locale(languageCode, countryCode);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
     final deviceLanguage =
-        PlatformDispatcher.instance.locale.languageCode.toLowerCase();
-    final languageCode = authState.employee?.language ??
+        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
     final isRtl = authState.employee?.isRtl ?? preferences.isRtl;
+    final locale = _resolveLocale(languageCode);
 
     return MaterialApp.router(
       title: 'Leopardo RH',
@@ -174,12 +197,20 @@ class LeopardoApp extends ConsumerWidget {
       themeMode: ThemeMode.light,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
-      locale: Locale(languageCode),
+      locale: locale,
       supportedLocales: const [
         Locale('fr'),
+        Locale('fr', 'FR'),
+        Locale('fr', 'BE'),
+        Locale('fr', 'CA'),
         Locale('ar'),
+        Locale('ar', 'SA'),
+        Locale('ar', 'MA'),
         Locale('tr'),
+        Locale('tr', 'TR'),
         Locale('en'),
+        Locale('en', 'US'),
+        Locale('en', 'GB'),
       ],
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -192,6 +223,33 @@ class LeopardoApp extends ConsumerWidget {
           textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           child: child ?? const SizedBox.shrink(),
         );
+      },
+      localeResolutionCallback: (requestedLocale, supportedLocales) {
+        if (requestedLocale == null) {
+          return const Locale('fr');
+        }
+
+        final normalized = _resolveLocale(
+          requestedLocale.countryCode == null
+              ? requestedLocale.languageCode
+              : '${requestedLocale.languageCode}-${requestedLocale.countryCode}',
+        );
+
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == normalized.languageCode &&
+              (supported.countryCode == null ||
+                  supported.countryCode == normalized.countryCode)) {
+            return supported;
+          }
+        }
+
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == normalized.languageCode) {
+            return supported;
+          }
+        }
+
+        return const Locale('fr');
       },
     );
   }
