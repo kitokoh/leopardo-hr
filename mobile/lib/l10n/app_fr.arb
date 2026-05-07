@@ -1,0 +1,17 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Leopardo RH",
+  "welcomeBrandSubtitle": "Conversationnelle, mobile-first, modulaire.",
+  "welcomeHeroTitle": "Votre journee commence ici, pas dans un back-office.",
+  "welcomeHeroDescription": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible.",
+  "welcomeStoryClarityTitle": "Une home qui vous parle avant de vous noyer",
+  "welcomeStoryClarityBody": "Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent.",
+  "welcomeStoryFieldTitle": "Mobile-first pour le terrain",
+  "welcomeStoryFieldBody": "Le telephone est la surface principale de l employe. Votre pointage, vos absences et vos documents vivent ici.",
+  "welcomeStoryModulesTitle": "Modules actifs, feuille de route visible",
+  "welcomeStoryModulesBody": "Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible.",
+  "login": "Se connecter",
+  "employeeInvitationAccess": "Acces employe (invitation)",
+  "createPersonalAccount": "Creer un compte personnel",
+  "personalAccountExplanation": "Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace."
+}
