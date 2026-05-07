@@ -160,7 +160,7 @@ class AuthController extends Controller
             return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
         }
 
-        $employee = Employee::where('email', $googleUser->getEmail())->first();
+        $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
             $employee = Employee::create([
@@ -197,7 +197,7 @@ class AuthController extends Controller
             return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
         }
 
-        $employee = Employee::where('email', $googleUser->getEmail())->first();
+        $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
             $employee = Employee::create([
