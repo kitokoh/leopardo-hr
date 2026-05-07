@@ -1,0 +1,17 @@
+{
+  "@@locale": "ar",
+  "appTitle": "ليوباردو للموارد البشرية",
+  "welcomeBrandSubtitle": "تجربة محادثية، موجهة للهاتف، وقابلة للتوسع.",
+  "welcomeHeroTitle": "يبدأ يومك من هنا، وليس من مكتب خلفي.",
+  "welcomeHeroDescription": "الحضور، المتابعة الشخصية، ووحدات الموارد البشرية النشطة تظهر أولا على الهاتف بتجربة بسيطة وواضحة.",
+  "welcomeStoryClarityTitle": "واجهة رئيسية ترشدك قبل أن تربكك",
+  "welcomeStoryClarityBody": "يبدأ ليوباردو بخطوات واضحة: تسجيل الحضور، متابعة الشهر، والوصول إلى المعلومات المهمة.",
+  "welcomeStoryFieldTitle": "تجربة هاتف أولا لفرق الميدان",
+  "welcomeStoryFieldBody": "الهاتف هو الواجهة الأساسية للموظف. الحضور، الغيابات، والمستندات كلها هنا.",
+  "welcomeStoryModulesTitle": "وحدات نشطة وخارطة طريق واضحة",
+  "welcomeStoryModulesBody": "يفتح المنتج أولا ما يفيد اليوم، ثم يحافظ على مسار واضح للمالية، الأمان، وليو.",
+  "login": "تسجيل الدخول",
+  "employeeInvitationAccess": "دخول الموظف (بدعوة)",
+  "createPersonalAccount": "إنشاء حساب شخصي",
+  "personalAccountExplanation": "الحساب الشخصي: نظم مستنداتك، ثم أنشئ شركة أو انضم إليها من مساحتك."
+}
