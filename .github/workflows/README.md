@@ -1,119 +1,54 @@
 # GitHub Actions Workflows
 
-Ce dossier contient les workflows CI/CD automatisés pour la vitrine Leopardo.
+Ce dossier contient les workflows CI/CD actifs de Leopardo RH.
 
-## Workflows
+## Workflows actifs
 
-### 1. **test.yml** - Tests Automatiques
-- **Déclencheur**: Push et PR sur main, develop, staging
-- **Actions**:
-  - Installation des dépendances
-  - Exécution des tests unitaires (Jest)
-  - Exécution des tests E2E (Playwright)
-  - Upload des rapports de couverture vers Codecov
-  - Archivage des résultats de test
+### `tests.yml` - Backend, mobile et gouvernance
 
-**Matrices testées**: Node.js 18.x et 20.x
+Ce workflow centralise :
 
-### 2. **lint.yml** - Linting & Type Checking
-- **Déclencheur**: Push et PR sur main, develop, staging
-- **Actions**:
-  - Vérification ESLint
-  - Type checking TypeScript (strict mode)
-  - Vérification des console.log en production
-  - Upload du rapport ESLint
+- backend PostgreSQL + Redis
+- audit Composer
+- qualité PHP (Pint, syntaxe, PHPStan/Larastan)
+- couverture backend visible via Clover + artifact HTML
+- qualité mobile Flutter avec couverture et seuil
+- gouvernance documentaire
+- rapport CI unifié
 
-### 3. **build.yml** - Build & Déploiement
-- **Déclencheur**: Push et PR sur main, develop, staging
-- **Actions**:
-  - Installation des dépendances
-  - Linting et type checking
-  - Exécution des tests
-  - Build Next.js
-  - Déploiement sur Vercel (staging ou production selon la branche)
-  - Commentaires PR avec URL de déploiement
+### `web-ci.yml` - Admin dashboard
 
-**Déploiements**:
-- `staging` → https://staging.leopardo.com
-- `main` → https://leopardo.com (production)
+Ce workflow remplace les anciens `build.yml`, `lint.yml` et `test.yml`.
 
-### 4. **lighthouse.yml** - Lighthouse CI
-- **Déclencheur**: Push et PR sur main, develop, staging
-- **Actions**:
-  - Build Next.js
-  - Démarrage du serveur
-  - Exécution de Lighthouse sur toutes les pages
-  - Vérification des scores (> 90)
-  - Commentaires PR avec résultats
-  - Archivage des rapports
+Il ne s'exécute que sur :
 
-**Pages testées**:
-- Landing page
-- Gestion Employés
-- Gestion Documents
-- Comptabilité & Paie
-- Marketing Digital
-- Pricing
-- À Propos
-- Blog
+- `admin-dashboard/**`
+- `.github/workflows/web-ci.yml`
 
-## Configuration Requise
+Jobs inclus :
 
-### Secrets GitHub
+- `web-lint`
+- `web-build`
+- `web-e2e-playwright`
 
-Les secrets suivants doivent être configurés dans les paramètres du repository:
+### `secret-scan.yml` - Scan de secrets
 
-```
-VERCEL_TOKEN              # Token d'authentification Vercel
-VERCEL_ORG_ID             # ID de l'organisation Vercel
-VERCEL_PROJECT_ID         # ID du projet Vercel
-NEXT_PUBLIC_ANALYTICS_ID  # ID Google Analytics 4
-NEXT_PUBLIC_MIXPANEL_TOKEN # Token Mixpanel
-```
+Scan TruffleHog sur push et pull request pour bloquer les secrets verifiés ou inconnus avant merge.
 
-### Variables d'Environnement
+### `codeql.yml`
 
-Les variables d'environnement doivent être configurées dans `.env.local` (développement) et dans Vercel (production/staging).
+Analyse statique de securite GitHub CodeQL.
 
-## Statuts de Build
+### `deploy-main.yml`
 
-Les statuts des workflows sont affichés dans le README principal du projet.
+Pipeline de deploiement principal.
 
-## Optimisations
+### `lighthouse.yml`
 
-### Caching
-- Les dépendances npm sont cachées pour accélérer les builds
-- Le cache est basé sur `package-lock.json`
+Workflow de performance web conserve en declenchement manuel pour eviter le bruit CI.
 
-### Parallélisation
-- Les tests unitaires et E2E s'exécutent en parallèle
-- Les vérifications de linting et type checking s'exécutent en parallèle
+## Notes importantes
 
-### Artifacts
-- Les rapports de test sont archivés pendant 30 jours
-- Les rapports Lighthouse sont archivés pendant 30 jours
-- Les builds Next.js sont archivés pendant 7 jours
-
-## Dépannage
-
-### Build échoue avec "Module not found"
-- Vérifier que toutes les dépendances sont listées dans `package.json`
-- Exécuter `npm ci` localement pour reproduire
-
-### Tests échouent en CI mais pas localement
-- Vérifier les variables d'environnement
-- Vérifier les chemins de fichiers (sensibilité à la casse)
-- Vérifier les timeouts (augmenter si nécessaire)
-
-### Déploiement Vercel échoue
-- Vérifier les secrets Vercel
-- Vérifier les variables d'environnement dans Vercel
-- Vérifier les logs de build dans Vercel
-
-## Ressources
-
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Vercel GitHub Integration](https://vercel.com/docs/git/vercel-for-github)
-- [Lighthouse CI Documentation](https://github.com/GoogleChrome/lighthouse-ci)
-- [Jest Documentation](https://jestjs.io/)
-- [Playwright Documentation](https://playwright.dev/)
+- Le frontend versionne dans ce depot est `admin-dashboard/`, pas `web/`.
+- Le statut externe `Vercel` peut etre rouge sans que les GitHub Actions utiles soient en echec.
+- Les workflows doivent rester limites par `paths:` quand cela permet d'eviter des executions inutiles.
