@@ -4,6 +4,11 @@
 
 ## [4.1.96] - 2026-05-07
 
+### Mobile - Ameliorations UX et accessibilite
+
+- Mobile : amelioration de l'accessibilite de la liste des avances de salaire avec labels semantiques unifies (montant, motif, statut) et tooltip de retour.
+- Mobile : ajout d'un rafraichissement manuel (`RefreshIndicator`) et d'etats vides/erreur scrollables sur l'ecran des avances.
+
 ### Mobile - Fondation i18n
 
 - Mobile : ajout de la configuration `gen-l10n`, des premiers catalogues ARB FR/EN/TR/AR et du helper `context.l10n`.
