@@ -183,3 +183,11 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Conges / approbations en CI
 - Payroll access control en CI
 - Utilisateur bloque distinct de l'etat archive en CI
+
+### 13. Catalogue de traductions distant et variantes de locale
+
+- GET /api/v1/i18n/catalog retourne les variantes supportees, checksums et metadata de version.
+- GET /api/v1/i18n/catalog/{locale} normalise r-CA, r-BE, r-SA, r-MA, 	r-TR, en-US, en-GB vers leur langue canonique.
+- Le endpoint retourne ETag, checksum, allback_locale et tl de facon stable.
+- Une requete If-None-Match valide doit repondre 304 sans payload parasite.
+- Les catalogues invalides ou absents ne doivent jamais provoquer une erreur 500 silencieuse.

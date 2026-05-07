@@ -72,3 +72,12 @@ En revanche, elles doivent etre conservees automatiquement en cas d'echec Playwr
 
 - GO: lint + build + Playwright verts
 - NO GO: echec auth critique, navigation protegee cassée, rendering blank, ou artefacts d'echec manquants
+
+## Extension i18n enterprise
+
+### 6. Locales, dictionnaires et direction
+
+- Les dictionnaires generes dans dmin-dashboard/src/i18n/locales/ restent synchronises avec shared/i18n/locales/.
+- Une locale variante (r-CA, en-GB, r-SA) est normalisee sans casser le rendu.
+- La direction tl est resolue correctement pour l'arabe.
+- Aucun import ou helper i18n ne doit casser le build quand la surface web change avec shared/i18n/**.
