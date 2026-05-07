@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
+use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,8 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
+        Route::get('/i18n/catalog', [TranslationCatalogController::class, 'index']);
+        Route::get('/i18n/catalog/{locale}', [TranslationCatalogController::class, 'show']);
     });
 
     // Module 6 — Public Onboarding (sans auth, throttle strict)

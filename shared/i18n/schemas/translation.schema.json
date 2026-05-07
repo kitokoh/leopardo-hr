@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://leopardo-rh/shared/i18n/translation.schema.json",
+  "title": "Leopardo RH enterprise locale catalog",
+  "type": "object",
+  "required": ["_version", "_updated_at", "_locale"],
+  "properties": {
+    "_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "_locale": {
+      "type": "string",
+      "pattern": "^[a-z]{2}$"
+    }
+  },
+  "additionalProperties": {
+    "$ref": "#/$defs/node"
+  },
+  "$defs": {
+    "node": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z0-9_\\-]+$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/node"
+          }
+        }
+      ]
+    }
+  }
+}
