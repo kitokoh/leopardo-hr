@@ -2,6 +2,28 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.95] - 2026-05-07
+
+### Backend - Intelligence pointage
+
+- API : ajout de `GET /api/v1/attendance/anomalies` pour donner aux managers un resume actionnable des retards, sorties manquantes, corrections manuelles, heures supplementaires elevees et pointages rapproches sur un meme appareil.
+- API : ajout de la detection avancee des pointages hors zone autorisee (`company.metadata.attendance_geofence`) et des pointages a heure trop repetitive.
+- API : ajout de `GET /api/v1/attendance/monthly-report` en JSON, CSV et PDF pour produire le rapport mensuel comptable/manager.
+- API : ajout de `GET /api/v1/onboarding/checklist` pour exposer la progression d'installation client (societe, manager, equipe, biometrie, kiosque).
+- Platform : ajout de `GET/PATCH /api/v1/platform/companies/{company}/features` pour piloter les modules actifs par entreprise via `companies.features`.
+- Tests : couverture de l'acces manager, du refus employe et de l'isolation tenant sur les anomalies de pointage.
+
+## [4.1.95] - 2026-05-07
+
+### CI/CD - Realignement executable
+
+- CI : remplacement des anciens workflows web cibles sur `web/**` par un workflow unique `web-ci.yml` aligne sur `admin-dashboard/**`.
+- CI : ajout d'un smoke test Playwright dedie au dashboard d'administration avec artifacts de debug en cas d'echec.
+- CI : ajout d'une couverture backend visible dans `tests.yml` avec artifact Clover, rapport HTML et seuil progressif configurable via `BACKEND_COVERAGE_MIN`.
+- CI : ajout d'un cache Composer base sur `api/composer.lock` pour les jobs backend lourds.
+- Securite : ajout d'un workflow TruffleHog pour le scan automatique des secrets.
+- Docs : simplification du runbook backup/restore autour d'une procedure minimale explicite (backup hebdomadaire, restore mensuel).
+
 ## [4.1.94] - 2026-05-07
 
 ### Mobile - Mise a jour dependances Flutter
