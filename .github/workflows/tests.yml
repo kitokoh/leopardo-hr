@@ -904,8 +904,10 @@ jobs:
           - Dependency Review: ${{ needs.dependency-review.result }}
 
           ## Scenario References
+          - Test registry: docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md
           - Backend API scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md
           - Mobile Flutter scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md
+          - Web admin scenarios: docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md
           - Backend quality artifacts: backend-quality-reports
           - Backend quality summary artifact: backend-quality-summary
           - Backend coverage artifacts: backend-coverage-reports
@@ -922,6 +924,7 @@ jobs:
           - PHP static analysis: PHPStan + Larastan with versioned baseline support
           - Backend coverage: clover + HTML artifact + threshold summary
           - Mobile tests: machine-readable output + coverage summary artifact
+          - Deploy policy: main deploy is allowed only after the required workflows for the same SHA conclude successfully
           EOF
 
           if [[ -f "${BACKEND_SUMMARY}" ]]; then

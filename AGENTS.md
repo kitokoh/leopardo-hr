@@ -142,3 +142,10 @@ Procedure recommandee :
 - Les PR purement documentaires ou de synchronisation de version (`docs/AUDITS/*`, simple bump `PILOTAGE.md` / `api/config/app.php`) ne doivent pas bloquer un lot fonctionnel plus utile ; elles peuvent etre fermees comme supersedees apres integration du vrai contenu produit.
 - Pour les lots mixtes backend/mobile, les conflits les plus probables sont `CHANGELOG.md`, `PILOTAGE.md` et `api/config/app.php`. Les absorber une seule fois en fin de federation fait gagner beaucoup de temps.
 - Avant de conserver un fichier cache bot ou journal interne (`.jules/*`), verifier qu'il apporte une connaissance de projet exploitable par les humains ; sinon le retirer du lot merge.
+
+### 2026-05-07 - Gouvernance de scenarios et deploiement
+
+- Toute nouvelle feature sur `api/`, `mobile/` ou `admin-dashboard/` doit maintenant mettre a jour la base de scenarios correspondante (`SCENARIOS_TEST_API_GITHUB_ACTIONS.md`, `SCENARIOS_TEST_MOBILE_FLUTTER.md`, `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`) ou le `REGISTRE_SCENARIOS_TESTS.md`.
+- Le script `tools/check-governance.ps1` doit echouer si une surface fonctionnelle change sans mise a jour de cette base de scenarios. Cela evite qu'une feature apparaisse sans etre rattachee a une couverture attendue.
+- Le deploiement auto doit raisonner par SHA et non seulement par nom de workflow : pour un commit `main`, on ne deploie que si les workflows requis pour ce SHA sont conclus avec succes.
+- Pour le web admin, Playwright doit continuer a fournir des artefacts exploitables en cas d'echec: HTML, JUnit, traces et videos retenues sur echec.
