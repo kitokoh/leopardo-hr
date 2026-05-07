@@ -75,3 +75,9 @@ Quand un domaine gagne une feature significative, ajouter:
 - les erreurs de validation,
 - les cas de resilience,
 - l'artefact CI attendu.
+
+## Extension 2026-05-07 - I18N enterprise partage
+
+| Domaine transverse | Base de scenarios | Workflow source de verite | Artefacts minimums | Gate de deploiement |
+|---|---|---|---|---|
+| I18N partage backend/web/mobile | SCENARIOS_TEST_API_GITHUB_ACTIONS.md + SCENARIOS_TEST_MOBILE_FLUTTER.md + SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md | I18N Enterprise + workflows de surface | catalogues generes, checksums ersions.json, validation locale, endpoint distant syntaxiquement valide | Obligatoire si shared/i18n/** ou une surface synchronisee change |
