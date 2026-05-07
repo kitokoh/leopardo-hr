@@ -38,7 +38,7 @@ return new class extends Migration
                 $table->timestampTz('updated_at')->useCurrent();
             });
         } catch (QueryException $exception) {
-            if ($this->isDuplicateTableRace($exception) && Schema::hasTable('company_requests')) {
+            if ($this->isDuplicateTableRace($exception)) {
                 return;
             }
 
