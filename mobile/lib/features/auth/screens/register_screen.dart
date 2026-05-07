@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
@@ -32,6 +33,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
+    HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
 
     final success = await ref
@@ -165,6 +167,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
                                     color: Colors.white,
+                                    semanticsLabel: 'Création de compte en cours...',
                                   ),
                                 )
                                 : const Text('Créer mon compte'),
