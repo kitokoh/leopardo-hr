@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Language;
+use App\Support\I18nCatalog;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,13 +31,13 @@ class SetLocale
                 ?? null;
 
             if ($userLocale && Language::isSupported($userLocale)) {
-                return strtolower($userLocale);
+                return I18nCatalog::normalizeLocale($userLocale);
             }
         }
 
         // 2. Accept-Language header
         $header = $request->header('Accept-Language', '');
-        $lang = strtolower(substr($header, 0, 2));
+        $lang = I18nCatalog::normalizeLocale($header);
 
         if (Language::isSupported($lang)) {
             return $lang;

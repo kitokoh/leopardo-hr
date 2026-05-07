@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Language extends Model
 {
@@ -37,12 +38,12 @@ class Language extends Model
 
     public static function isSupported(string $code): bool
     {
-        return in_array(strtolower($code), self::activeCodes(), true);
+        return in_array(strtolower(Str::substr(str_replace('_', '-', $code), 0, 2)), self::activeCodes(), true);
     }
 
     public static function isRtl(string $code): bool
     {
-        $code = strtolower($code);
+        $code = strtolower(Str::substr(str_replace('_', '-', $code), 0, 2));
 
         if (! self::publicLanguagesTableExists()) {
             return $code === 'ar';
