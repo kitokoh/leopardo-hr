@@ -1,6 +1,7 @@
 name: Web CI - Leopardo Admin
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, develop, staging]
     paths:
