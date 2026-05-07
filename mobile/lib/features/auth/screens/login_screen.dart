@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -171,6 +172,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       color: Colors.white,
+                                      semanticsLabel: 'Connexion en cours...',
                                     ),
                                   )
                                   : const Text('Entrer dans Leopardo RH'),
@@ -180,10 +182,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed:
                               authState.isLoading
                                   ? null
-                                  : () =>
+                                  : () {
+                                      HapticFeedback.lightImpact();
                                       ref
                                           .read(authProvider.notifier)
-                                          .loginWithGoogle(),
+                                          .loginWithGoogle();
+                                    },
                           icon: const Icon(Icons.login),
                           label: const Text('Continuer avec Google'),
                         ),
@@ -239,6 +243,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
+    HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
     ref
         .read(authProvider.notifier)
