@@ -27,6 +27,7 @@ import 'package:leopardo_rh/features/user_auth/screens/user_register_screen.dart
 import 'package:leopardo_rh/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_rh/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_rh/features/user_auth/screens/company_request_screen.dart';
+import 'package:leopardo_rh/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
@@ -160,8 +161,7 @@ class LeopardoApp extends ConsumerWidget {
     final preferences = ref.watch(appPreferencesProvider);
     final deviceLanguage =
         PlatformDispatcher.instance.locale.languageCode.toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
@@ -182,6 +182,7 @@ class LeopardoApp extends ConsumerWidget {
         Locale('en'),
       ],
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
