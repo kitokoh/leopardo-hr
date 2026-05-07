@@ -10,6 +10,10 @@ node_modules/
 # Logs and temp files
 *.log
 *.tmp
+/backend_log*.txt
+/mobile_log*.txt
+/phpstan_log.txt
+/backend_quality*.txt
 
 # Editors
 .vscode/
