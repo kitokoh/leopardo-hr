@@ -75,7 +75,8 @@ class TranslationSyncService {
       );
     } on DioException catch (error) {
       if (error.response?.statusCode == 304) {
-        final cachedCatalog = _cache.readCatalog(resolvedLocale) ?? <String, dynamic>{};
+        final cachedCatalog =
+            _cache.readCatalog(resolvedLocale) ?? <String, dynamic>{};
         return TranslationSyncResult(
           locale: resolvedLocale,
           version: _cache.readVersion(resolvedLocale) ?? '1.0.0',
