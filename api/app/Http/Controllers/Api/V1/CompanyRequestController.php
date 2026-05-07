@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class CompanyRequestController extends Controller
 {
@@ -57,7 +58,25 @@ class CompanyRequestController extends Controller
             ], 422);
         }
 
-        $companyRequest = $user->companyRequests()->create($validated);
+        $payload = $validated;
+        $employee = $request->user();
+        if ($employee instanceof Employee) {
+            $payload['employee_id'] = $employee->id;
+        }
+
+        if (Schema::hasColumn('company_requests', 'manager_name')) {
+            $payload['manager_name'] = $user->fullName();
+        }
+
+        if (Schema::hasColumn('company_requests', 'manager_phone') && ! empty($validated['phone'])) {
+            $payload['manager_phone'] = $validated['phone'];
+        }
+
+        if (Schema::hasColumn('company_requests', 'notes') && ! empty($validated['description'])) {
+            $payload['notes'] = $validated['description'];
+        }
+
+        $companyRequest = $user->companyRequests()->create($payload);
 
         return new JsonResponse([
             'data' => [

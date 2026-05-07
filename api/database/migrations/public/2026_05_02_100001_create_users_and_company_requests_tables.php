@@ -51,6 +51,44 @@ return new class extends Migration
                 $table->timestamp('reviewed_at')->nullable();
                 $table->timestamps();
             });
+        } else {
+            Schema::table('company_requests', function (Blueprint $table): void {
+                if (! Schema::hasColumn('company_requests', 'user_id')) {
+                    $table->foreignId('user_id')->nullable()->after('id')->constrained('users')->nullOnDelete();
+                }
+
+                if (! Schema::hasColumn('company_requests', 'email')) {
+                    $table->string('email')->nullable()->after('city');
+                }
+
+                if (! Schema::hasColumn('company_requests', 'phone')) {
+                    $table->string('phone')->nullable()->after('email');
+                }
+
+                if (! Schema::hasColumn('company_requests', 'description')) {
+                    $table->text('description')->nullable()->after('phone');
+                }
+
+                if (! Schema::hasColumn('company_requests', 'approved_company_id')) {
+                    $table->uuid('approved_company_id')->nullable()->after('status');
+                }
+
+                if (! Schema::hasColumn('company_requests', 'admin_notes')) {
+                    $table->text('admin_notes')->nullable()->after('approved_company_id');
+                }
+
+                if (! Schema::hasColumn('company_requests', 'reviewed_at')) {
+                    $table->timestamp('reviewed_at')->nullable()->after('admin_notes');
+                }
+            });
+
+            if (Schema::hasColumn('company_requests', 'employee_id')) {
+                if (DB::getDriverName() === 'pgsql') {
+                    DB::statement('ALTER TABLE public.company_requests ALTER COLUMN employee_id DROP NOT NULL');
+                } elseif (DB::getDriverName() === 'mysql') {
+                    DB::statement('ALTER TABLE company_requests MODIFY employee_id INT NULL');
+                }
+            }
         }
 
         if (! Schema::hasTable('user_employee_links')) {
