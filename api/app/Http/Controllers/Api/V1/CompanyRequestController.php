@@ -57,7 +57,13 @@ class CompanyRequestController extends Controller
             ], 422);
         }
 
-        $companyRequest = $user->companyRequests()->create($validated);
+        $payload = $validated;
+        $employee = $request->user();
+        if ($employee instanceof Employee) {
+            $payload['employee_id'] = $employee->id;
+        }
+
+        $companyRequest = $user->companyRequests()->create($payload);
 
         return new JsonResponse([
             'data' => [
