@@ -191,3 +191,13 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 - 0 crash sur auth, présence, congé, employés
 - Aucun accès non autorisé observé
 - Backend tests verts + mobile tests verts + smoke build vert
+
+## Extension i18n enterprise
+
+### 11) Locales, variantes et fallback distant
+
+- L'application accepte les variantes r-FR, r-BE, r-CA, r-SA, r-MA, 	r-TR, en-US, en-GB sans crash.
+- Une variante est resolue vers une langue supportee quand aucun catalogue specifique n'existe encore.
+- La direction RTL reste correcte pour l'arabe quel que soit le couple langue/pays.
+- Un echec reseau sur le catalogue distant laisse l'application utilisable grace au catalogue embarque ou au dernier cache valide.
+- Un 304 Not Modified reutilise bien le checksum et le cache local sans retelechargement inutile.
