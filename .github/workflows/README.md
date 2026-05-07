@@ -31,6 +31,13 @@ Jobs inclus :
 - `web-build`
 - `web-e2e-playwright`
 
+Artefacts utiles :
+
+- rapport HTML Playwright
+- `test-results/junit.xml`
+- traces Playwright au premier retry
+- videos Playwright retenues en echec
+
 ### `secret-scan.yml` - Scan de secrets
 
 Scan TruffleHog sur push et pull request pour bloquer les secrets verifiés ou inconnus avant merge.
@@ -42,6 +49,12 @@ Analyse statique de securite GitHub CodeQL.
 ### `deploy-main.yml`
 
 Pipeline de deploiement principal.
+
+Le deploiement automatique ne part que si :
+
+- `Tests - Leopardo RH` est vert sur le SHA de `main`
+- `Web CI - Leopardo Admin` est aussi vert si le SHA touche `admin-dashboard/**`
+- les workflows requis sont bien conclus sur le meme SHA
 
 ### `lighthouse.yml`
 

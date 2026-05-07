@@ -52,6 +52,10 @@ $requiredFiles = @(
     "docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md",
     "docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md",
     "docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md",
+    "docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md",
+    "docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md",
+    "docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md",
+    "docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md",
     "docs/notes/archive/EXECUTION_BLOCKERS_AND_NEXT.md",
     "docs/notes/archive/08_FEUILLE_DE_ROUTE.md",
     "docs/notes/archive/CU-01_ET_AGENTS.md",
@@ -109,6 +113,53 @@ if ($requiresChangelog) {
     Pass "CHANGELOG updated for critical scope."
 } else {
     Pass "No critical scope change requiring changelog."
+}
+
+$changedList = @($changed | Where-Object { $_ -and $_.Trim() -ne "" })
+
+$apiFeatureChanged = $false
+$mobileFeatureChanged = $false
+$webFeatureChanged = $false
+
+foreach ($line in $changedList) {
+    if ($line -match '^(api/app/Http/Controllers/|api/routes/|api/app/Services/|api/app/Policies/|api/app/Http/Requests/Api/)') {
+        $apiFeatureChanged = $true
+    }
+    if ($line -match '^(mobile/lib/features/|mobile/integration_test/|mobile/test/features/)') {
+        $mobileFeatureChanged = $true
+    }
+    if ($line -match '^(admin-dashboard/src/|admin-dashboard/e2e/|admin-dashboard/playwright\.config\.js)') {
+        $webFeatureChanged = $true
+    }
+}
+
+function Assert-ScenarioUpdate([string]$ScenarioFile, [string]$Label) {
+    $updated = $false
+    foreach ($line in $changedList) {
+        if ($line -eq $ScenarioFile -or $line -eq "docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md") {
+            $updated = $true
+            break
+        }
+    }
+
+    if (-not $updated) {
+        Fail "$Label changed but neither $ScenarioFile nor docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md was updated."
+    }
+}
+
+if ($apiFeatureChanged) {
+    Assert-ScenarioUpdate "docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md" "API feature surface"
+    Pass "API scenario governance updated."
+}
+
+if ($mobileFeatureChanged) {
+    Assert-ScenarioUpdate "docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md" "Mobile feature surface"
+    Pass "Mobile scenario governance updated."
+}
+
+if ($webFeatureChanged) {
+    Assert-ScenarioUpdate "docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md" "Web admin feature surface"
+    Pass "Web scenario governance updated."
 }
 
 Pass "Governance checks passed."
