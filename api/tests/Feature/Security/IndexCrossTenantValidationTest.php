@@ -37,7 +37,7 @@ class IndexCrossTenantValidationTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
-        $response->assertJsonPath('errors.employee_id.0', 'Employé introuvable dans votre entreprise.');
+        $response->assertJsonPath('errors.employee_id.0', "Employ\u{00E9} introuvable dans votre entreprise.");
     }
 
     public function test_absence_index_rejects_cross_tenant_employee_id(): void
@@ -53,7 +53,7 @@ class IndexCrossTenantValidationTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
-        $response->assertJsonPath('errors.employee_id.0', 'Employé introuvable dans votre entreprise.');
+        $response->assertJsonPath('errors.employee_id.0', "Employ\u{00E9} introuvable dans votre entreprise.");
     }
 
     public function test_evaluation_index_rejects_cross_tenant_employee_id(): void
@@ -69,7 +69,7 @@ class IndexCrossTenantValidationTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
-        $response->assertJsonPath('errors.employee_id.0', 'Employé introuvable dans votre entreprise.');
+        $response->assertJsonPath('errors.employee_id.0', "Employ\u{00E9} introuvable dans votre entreprise.");
     }
 
     public function test_evaluation_index_rejects_cross_tenant_evaluator_id(): void
@@ -85,7 +85,7 @@ class IndexCrossTenantValidationTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['evaluator_id']);
-        $response->assertJsonPath('errors.evaluator_id.0', 'Évaluateur introuvable dans votre entreprise.');
+        $response->assertJsonPath('errors.evaluator_id.0', "\u{00C9}valuateur introuvable dans votre entreprise.");
     }
 
     private function createCompany(string $name): Company

@@ -10,6 +10,7 @@ class CompanyRequest extends Model
     protected $table = 'company_requests';
 
     protected $fillable = [
+        'employee_id',
         'user_id',
         'company_name',
         'sector',

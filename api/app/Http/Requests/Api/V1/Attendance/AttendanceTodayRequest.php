@@ -29,7 +29,7 @@ class AttendanceTodayRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'employee_id.exists' => 'Employé introuvable dans votre entreprise.',
+            'employee_id.exists' => "Employ\u{00E9} introuvable dans votre entreprise.",
         ];
     }
 }
