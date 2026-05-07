@@ -203,6 +203,7 @@ jobs:
         run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
 
       - name: Run backend unit tests
+        id: backend_unit_tests
         continue-on-error: true
         working-directory: ./api
         env:
@@ -213,6 +214,7 @@ jobs:
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
       - name: Run backend feature tests
+        id: backend_feature_tests
         continue-on-error: true
         working-directory: ./api
         env:
@@ -231,6 +233,18 @@ jobs:
             api/storage/test-results/*.xml
             api/storage/logs/*.log
           if-no-files-found: ignore
+
+      - name: Fail backend job if unit tests failed
+        if: steps.backend_unit_tests.outcome == 'failure'
+        run: |
+          echo "Backend unit tests failed."
+          exit 1
+
+      - name: Fail backend job if feature tests failed
+        if: steps.backend_feature_tests.outcome == 'failure'
+        run: |
+          echo "Backend feature tests failed."
+          exit 1
 
   backend-security:
     name: Backend Security (Composer Audit)
