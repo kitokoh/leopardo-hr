@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.104] - 2026-05-08
+
+### Backend - Migrations publiques Render hors transaction
+
+- API : les migrations publiques `2026_05_02_000003_create_company_requests_table.php` et `2026_05_02_100001_create_users_and_company_requests_tables.php` desactivent maintenant l'encapsulation transactionnelle Laravel via `withinTransaction = false`.
+- API : ce choix evite qu'une course concurrente `42P07` sur Render laisse toute la migration suivante dans un etat PostgreSQL `25P02 current transaction is aborted`.
+- Ops : pour les migrations publiques idempotentes exposees aux demarrages concurrents, preferer des operations non transactionnelles plus des gardes/catches explicites plutot qu'une transaction globale du migrateur.
+
 ## [4.1.103] - 2026-05-08
 
 ### Backend - Hotfix transaction PostgreSQL Render
@@ -1697,5 +1705,4 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schÃ©ma SQL de base.
 - Structure initiale des dossiers.
-
 
