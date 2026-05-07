@@ -1,0 +1,134 @@
+{
+  "payroll": {
+    "category": "finance",
+    "context": "Payroll cycle, generation and validation workflows.",
+    "locked": true,
+    "translations": {
+      "fr": "paie",
+      "ar": "الرواتب",
+      "tr": "bordro",
+      "en": "payroll"
+    }
+  },
+  "net_salary": {
+    "category": "finance",
+    "context": "Salary after taxes and deductions.",
+    "locked": true,
+    "translations": {
+      "fr": "salaire net",
+      "ar": "صافي الراتب",
+      "tr": "net maas",
+      "en": "net salary"
+    }
+  },
+  "gross_salary": {
+    "category": "finance",
+    "context": "Salary before taxes and deductions.",
+    "locked": true,
+    "translations": {
+      "fr": "salaire brut",
+      "ar": "الراتب الاجمالي",
+      "tr": "brut maas",
+      "en": "gross salary"
+    }
+  },
+  "attendance": {
+    "category": "time_tracking",
+    "context": "Clock-in, clock-out and attendance anomaly workflows.",
+    "locked": true,
+    "translations": {
+      "fr": "pointage",
+      "ar": "الحضور",
+      "tr": "puantaj",
+      "en": "attendance"
+    }
+  },
+  "check_in": {
+    "category": "time_tracking",
+    "context": "Employee clock-in action.",
+    "locked": true,
+    "translations": {
+      "fr": "entree",
+      "ar": "تسجيل الدخول",
+      "tr": "giris",
+      "en": "check in"
+    }
+  },
+  "check_out": {
+    "category": "time_tracking",
+    "context": "Employee clock-out action.",
+    "locked": true,
+    "translations": {
+      "fr": "sortie",
+      "ar": "تسجيل الخروج",
+      "tr": "cikis",
+      "en": "check out"
+    }
+  },
+  "absence": {
+    "category": "hr_operations",
+    "context": "Leave and absence requests.",
+    "locked": true,
+    "translations": {
+      "fr": "absence",
+      "ar": "الغياب",
+      "tr": "izin",
+      "en": "absence"
+    }
+  },
+  "employee": {
+    "category": "identity",
+    "context": "Employee user and profile references.",
+    "locked": true,
+    "translations": {
+      "fr": "employe",
+      "ar": "الموظف",
+      "tr": "calisan",
+      "en": "employee"
+    }
+  },
+  "company": {
+    "category": "identity",
+    "context": "Tenant company and organization references.",
+    "locked": true,
+    "translations": {
+      "fr": "entreprise",
+      "ar": "الشركة",
+      "tr": "sirket",
+      "en": "company"
+    }
+  },
+  "approval": {
+    "category": "workflow",
+    "context": "Manager validation or acceptance state.",
+    "locked": true,
+    "translations": {
+      "fr": "approbation",
+      "ar": "موافقة",
+      "tr": "onay",
+      "en": "approval"
+    }
+  },
+  "rejection": {
+    "category": "workflow",
+    "context": "Manager rejection or refusal state.",
+    "locked": true,
+    "translations": {
+      "fr": "rejet",
+      "ar": "رفض",
+      "tr": "red",
+      "en": "rejection"
+    }
+  },
+  "payslip": {
+    "category": "finance",
+    "context": "Payroll document delivered to employee.",
+    "locked": true,
+    "translations": {
+      "fr": "bulletin de paie",
+      "ar": "كشف الراتب",
+      "tr": "maas pusulasi",
+      "en": "payslip"
+    }
+  }
+}

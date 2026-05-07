@@ -1,6 +1,17 @@
-# CHANGELOG — LEOPARDO RH
+﻿# CHANGELOG - LEOPARDO RH
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
+
+## [4.1.101] - 2026-05-07
+
+### Internationalisation - Socle enterprise centralise
+
+- I18N : ajout d'une source de verite partagee shared/i18n/ avec catalogues versionnes FR/AR/TR/EN, glossaire metier verrouille, schema et checksums.
+- I18N : ajout des scripts validate.js, sync-mobile.js, sync-web.js et sync-backend.js pour valider puis generer les sorties Flutter ARB, web JSON et Laravel lang/ depuis une base unique.
+- API : ajout d'un endpoint public GET /api/v1/i18n/catalog{/{locale}} avec normalisation de variantes (fr-CA, en-GB, ar-SA), ETag, checksum, metadata et fallback distant.
+- Mobile : preparation du cache local de catalogues distants et extension du support de locales variantes/RTL dans l'application Flutter.
+- CI : ajout du workflow GitHub Actions i18n-enterprise.yml pour rendre la validation et la synchronisation i18n bloquantes.
+- Docs : ajout de docs/GESTION_PROJET/ARCHITECTURE_I18N_ENTERPRISE_2026-05-07.md pour cadrer l'architecture cible, la migration et les risques.
 
 ## [4.1.100] - 2026-05-07
 
@@ -20,6 +31,8 @@
 - Docs : integration du document inspirant `Leopardo_RH_Production_Creative.pdf` comme source de production creative IA-first, sans creer de dossier nomme `marketing`.
 - Docs : ajout d'une boussole de viabilite et repositionnement pour rappeler que le projet doit utiliser la tech afin de repondre a des besoins actuels, generer du revenu et accepter les modernisations necessaires.
 - Docs : ajout de `GOTO_MARKET/public/` pour structurer les contenus publics de presentation sur LinkedIn, WhatsApp, Instagram/Facebook, landing pages, videos, presse, partenaires, ads, calendrier editorial et metriques.
+- Docs : ajout d'un pack lancement acquisition avec scripts video, sequence email pilote, lead magnet checklist, messages WhatsApp, posts LinkedIn, copies ads et playbook owned channels.
+- Produit : documentation d'une future brique `product_marketing_automation/`, non implementee, pour cadrer l'idee d'aider les entreprises clientes a gerer et automatiser leur marketing.
 
 ## [4.1.98] - 2026-05-07
 
@@ -35,25 +48,25 @@
 
 ## [4.1.97] - 2026-05-08
 
-### Sentinel - Renforcement de la sécurité Evaluation
+### Sentinel - Renforcement de la sÃ©curitÃ© Evaluation
 
-- API : Introduction de `StoreEvaluationRequest` et `UpdateEvaluationRequest` pour durcir la validation des évaluations, incluant une vérification tenant-scoped sur `employee_id`.
-- API : Création de `EvaluationPolicy` pour centraliser l'isolation tenant et les règles RBAC sur le module évaluations.
-- API : Refactorisation de `EvaluationController` pour utiliser les nouveaux FormRequests et la Policy, éliminant les vulnérabilités IDOR potentielles.
-- Tests : Ajout de `api/tests/Feature/Security/EvaluationSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module évaluations.
+- API : Introduction de `StoreEvaluationRequest` et `UpdateEvaluationRequest` pour durcir la validation des Ã©valuations, incluant une vÃ©rification tenant-scoped sur `employee_id`.
+- API : CrÃ©ation de `EvaluationPolicy` pour centraliser l'isolation tenant et les rÃ¨gles RBAC sur le module Ã©valuations.
+- API : Refactorisation de `EvaluationController` pour utiliser les nouveaux FormRequests et la Policy, Ã©liminant les vulnÃ©rabilitÃ©s IDOR potentielles.
+- Tests : Ajout de `api/tests/Feature/Security/EvaluationSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module Ã©valuations.
 ## [4.1.97] - 2026-05-07
 
-### ⚡ Bolt - Performance et optimisation Cabinet
+### âš¡ Bolt - Performance et optimisation Cabinet
 
-- API : optimisation de `CabinetDocumentController@index` par l'ajout de `select()`, évitant ainsi la récupération de colonnes non utilisées (`path`, `disk`) lors de la liste des documents.
-- Tests : mise à jour de `CreatesMvpSchema` pour inclure les tables du module Cabinet (`cabinet_folders`, `cabinet_documents`) dans l'environnement de test SQLite.
+- API : optimisation de `CabinetDocumentController@index` par l'ajout de `select()`, Ã©vitant ainsi la rÃ©cupÃ©ration de colonnes non utilisÃ©es (`path`, `disk`) lors de la liste des documents.
+- Tests : mise Ã  jour de `CreatesMvpSchema` pour inclure les tables du module Cabinet (`cabinet_folders`, `cabinet_documents`) dans l'environnement de test SQLite.
 
 ## [4.1.96] - 2026-05-07
 
 ### Tests - Guardrails d'authentification
 
-- Tests : ajout de `api/tests/Feature/Security/AuthenticatedGuardrailsTest.php` pour verrouiller le blocage immédiat des sessions actives lorsque le statut de l'employé ou de l'entreprise devient invalide (archivé, suspendu, expiré).
-- API : correction de `Company::booted` pour assurer la compatibilité avec SQLite dans les environnements de test lors de la mise à jour du statut de l'entreprise.
+- Tests : ajout de `api/tests/Feature/Security/AuthenticatedGuardrailsTest.php` pour verrouiller le blocage immÃ©diat des sessions actives lorsque le statut de l'employÃ© ou de l'entreprise devient invalide (archivÃ©, suspendu, expirÃ©).
+- API : correction de `Company::booted` pour assurer la compatibilitÃ© avec SQLite dans les environnements de test lors de la mise Ã  jour du statut de l'entreprise.
 ### Mobile - Ameliorations UX et accessibilite
 
 - Mobile : amelioration de l'accessibilite de la liste des avances de salaire avec labels semantiques unifies (montant, motif, statut) et tooltip de retour.
@@ -87,7 +100,7 @@
 - CI : ajout d'un cache Composer base sur `api/composer.lock` pour les jobs backend lourds.
 - CI : le job backend remonte maintenant un echec reel si les suites Unit/Feature cassent au lieu de laisser `continue-on-error` masquer le probleme.
 - API : la migration publique `2026_05_02_100001_create_users_and_company_requests_tables.php` met maintenant a niveau une table `company_requests` legacy pour aligner le schema attendu (`user_id`, `email`, `phone`, `description`, `admin_notes`, `reviewed_at`) avec les controllers actuels.
-- API/Tests : normalisation UTF-8 des messages FR et des assertions backend pour eviter les faux rouges lies au mojibake (`EmployÃ©`, `RÃ©cupÃ¨re`, etc.).
+- API/Tests : normalisation UTF-8 des messages FR et des assertions backend pour eviter les faux rouges lies au mojibake (`EmployÃƒÂ©`, `RÃƒÂ©cupÃƒÂ¨re`, etc.).
 - Securite : ajout d'un workflow TruffleHog pour le scan automatique des secrets.
 - Docs : simplification du runbook backup/restore autour d'une procedure minimale explicite (backup hebdomadaire, restore mensuel).
 
@@ -151,83 +164,83 @@
 
 ## [4.1.85] - 2026-05-02
 
-### CI/CD - Résolution des problèmes de pipeline et tests
+### CI/CD - RÃ©solution des problÃ¨mes de pipeline et tests
 
-- API : Correction de la compatibilité SQLite dans `api/tests/TestCase.php` — gestion du driver PostgreSQL vs SQLite pour `SET search_path`
+- API : Correction de la compatibilitÃ© SQLite dans `api/tests/TestCase.php` â€” gestion du driver PostgreSQL vs SQLite pour `SET search_path`
 - Mobile : Formatage complet des fichiers Dart (7 fichiers) avec `dart format`
-- Docs : Ajout de `MOBILE_API_SYNC_CI_CD_FIXES.md` avec documentation complète des fixes et instructions Docker
-- Tests : Safeguards ajoutés dans `FeatureDetector` pour éviter les boucles infinies lors du scan de routes
+- Docs : Ajout de `MOBILE_API_SYNC_CI_CD_FIXES.md` avec documentation complÃ¨te des fixes et instructions Docker
+- Tests : Safeguards ajoutÃ©s dans `FeatureDetector` pour Ã©viter les boucles infinies lors du scan de routes
 
-### Admin Dashboard - Implémentation complète Phase 1, 2, 3
+### Admin Dashboard - ImplÃ©mentation complÃ¨te Phase 1, 2, 3
 
-- Frontend : Création du dashboard d'administration interne avec Vue.js 3, Pinia, Tailwind CSS
+- Frontend : CrÃ©ation du dashboard d'administration interne avec Vue.js 3, Pinia, Tailwind CSS
 - Phase 1 (Foundation) : Architecture de base, authentification, WebSocket, layout responsive
-- Phase 2 (Intelligence) : Analytics avancées, prédictions de churn, revenue forecasting, gestion utilisateurs
-- Phase 3 (Automation) : Administration système, tâches automatisées, backups, monitoring sécurité, auto-scaling
-- Composants : 47 fichiers, 9981 insertions — tous les composants fonctionnels avec données mock
+- Phase 2 (Intelligence) : Analytics avancÃ©es, prÃ©dictions de churn, revenue forecasting, gestion utilisateurs
+- Phase 3 (Automation) : Administration systÃ¨me, tÃ¢ches automatisÃ©es, backups, monitoring sÃ©curitÃ©, auto-scaling
+- Composants : 47 fichiers, 9981 insertions â€” tous les composants fonctionnels avec donnÃ©es mock
 
-### Web - Modules et dépendances
+### Web - Modules et dÃ©pendances
 
-- Web : Ajout de modules vitrine (landing page) avec composants réutilisables
-- Web : Mise à jour des dépendances (package.json, package-lock.json)
+- Web : Ajout de modules vitrine (landing page) avec composants rÃ©utilisables
+- Web : Mise Ã  jour des dÃ©pendances (package.json, package-lock.json)
 - Web : Sections Hero, Features, Pricing, Testimonials, FAQ, CTA avec animations
 ## [4.1.85] - 2026-05-03
 
 ### Auth - Self-registration, Google Sign-In & Company Requests
 
 - API : nouveau modele `User` (schema public) pour les comptes ordinaires sans entreprise, avec support Sanctum et Google ID.
-- API : `UserAuthService` — inscription email/mot de passe, connexion, Google Sign-In avec emission de tokens et verrouillage de compte.
-- API : `UserAuthController` — register, login, googleSignIn, me, updateProfile, changePassword, logout.
-- API : `CompanyRequestController` — soumission et consultation de demandes de creation d'entreprise (scope user).
-- API : `UserEmployeeLinkController` — liaison d'un compte ordinaire a un employe par le manager.
-- API : `PlatformCompanyRequestController` — validation/rejet des demandes par le super-admin.
-- API : migration `2026_05_02_100001` — tables `users`, `company_requests`, `user_employee_links`.
+- API : `UserAuthService` â€” inscription email/mot de passe, connexion, Google Sign-In avec emission de tokens et verrouillage de compte.
+- API : `UserAuthController` â€” register, login, googleSignIn, me, updateProfile, changePassword, logout.
+- API : `CompanyRequestController` â€” soumission et consultation de demandes de creation d'entreprise (scope user).
+- API : `UserEmployeeLinkController` â€” liaison d'un compte ordinaire a un employe par le manager.
+- API : `PlatformCompanyRequestController` â€” validation/rejet des demandes par le super-admin.
+- API : migration `2026_05_02_100001` â€” tables `users`, `company_requests`, `user_employee_links`.
 - API : guard `user_api` (Sanctum + users provider) dans `config/auth.php`.
 - API : routes `/v1/user/*` et `/v1/platform/company-requests/*`.
 - API : i18n fr, en, tr, ar pour le module user.
 - Mobile : packages `flutter_animate`, `google_sign_in`, `cached_network_image`, `flutter_haptic`.
-- Mobile : `UserRegisterScreen` — inscription avec email/mot de passe + Google Sign-In, design moderne avec animations.
-- Mobile : `UserLoginScreen` — connexion compte personnel avec Google Sign-In.
-- Mobile : `UserHomeScreen` — espace personnel avec acces Placard, creation d'entreprise, liens employe.
-- Mobile : `CompanyRequestScreen` — formulaire de soumission de creation d'entreprise.
+- Mobile : `UserRegisterScreen` â€” inscription avec email/mot de passe + Google Sign-In, design moderne avec animations.
+- Mobile : `UserLoginScreen` â€” connexion compte personnel avec Google Sign-In.
+- Mobile : `UserHomeScreen` â€” espace personnel avec acces Placard, creation d'entreprise, liens employe.
+- Mobile : `CompanyRequestScreen` â€” formulaire de soumission de creation d'entreprise.
 - Mobile : modele `AppUser`, `UserAuthRepository`, `UserAuthProvider` (Riverpod StateNotifier).
 - Mobile : `WelcomeScreen` mis a jour avec bouton "Creer un compte personnel".
 - Mobile : `LoginScreen` mis a jour avec lien "Connexion compte personnel".
 ## [4.1.87] - 2026-05-05
 
-### Janitor - Hygiène du dépôt
+### Janitor - HygiÃ¨ne du dÃ©pÃ´t
 
-- Dépôt : Normalisation des marqueurs historiques dans `docs/notes/archive/` pour assurer la conformité avec le protocole d'archivage (usage systématique du préfixe 📦).
+- DÃ©pÃ´t : Normalisation des marqueurs historiques dans `docs/notes/archive/` pour assurer la conformitÃ© avec le protocole d'archivage (usage systÃ©matique du prÃ©fixe ðŸ“¦).
 ## [4.1.86] - 2026-05-03
 
 ### DocKeeper - Alignement documentation
 
-- Ops : Mise à jour du `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` (v1.1) pour l'aligner sur l'infrastructure Render + Neon (PaaS), remplaçant les instructions VPS obsolètes.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.86` dans `PILOTAGE.md`, `CHANGELOG.md`, `docs/README.md` et `api/config/app.php`.
-- Gouvernance : Mise à jour de la date de dernière mise à jour dans `PILOTAGE.md` (2026-05-03).
+- Ops : Mise Ã  jour du `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` (v1.1) pour l'aligner sur l'infrastructure Render + Neon (PaaS), remplaÃ§ant les instructions VPS obsolÃ¨tes.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` Ã  `4.1.86` dans `PILOTAGE.md`, `CHANGELOG.md`, `docs/README.md` et `api/config/app.php`.
+- Gouvernance : Mise Ã  jour de la date de derniÃ¨re mise Ã  jour dans `PILOTAGE.md` (2026-05-03).
 
 ## [4.1.84] - 2026-04-30 
-### Mobile-API Synchronization - Système de synchronisation automatique des fonctionnalités
+### Mobile-API Synchronization - SystÃ¨me de synchronisation automatique des fonctionnalitÃ©s
 
-- API : Implémentation complète du système de synchronisation mobile-API avec détection automatique des nouvelles fonctionnalités
-- API : Nouveau modèle `Feature` avec table `features` pour l'inventaire centralisé des fonctionnalités API
-- API : Service `FeatureRegistry` pour la gestion du registre des fonctionnalités avec cache intelligent
-- API : Service `FeatureDetector` utilisant la réflexion PHP pour détecter automatiquement les nouvelles routes API
-- API : Contrôleur `FeatureManifestController` avec endpoints `/api/v1/features/manifest`, `/api/v1/features/compatible/{version}`, `/api/v1/features/{key}`
+- API : ImplÃ©mentation complÃ¨te du systÃ¨me de synchronisation mobile-API avec dÃ©tection automatique des nouvelles fonctionnalitÃ©s
+- API : Nouveau modÃ¨le `Feature` avec table `features` pour l'inventaire centralisÃ© des fonctionnalitÃ©s API
+- API : Service `FeatureRegistry` pour la gestion du registre des fonctionnalitÃ©s avec cache intelligent
+- API : Service `FeatureDetector` utilisant la rÃ©flexion PHP pour dÃ©tecter automatiquement les nouvelles routes API
+- API : ContrÃ´leur `FeatureManifestController` avec endpoints `/api/v1/features/manifest`, `/api/v1/features/compatible/{version}`, `/api/v1/features/{key}`
 - API : Endpoints d'administration `/api/v1/features/admin/statistics` et `/api/v1/features/admin/synchronize` pour les super-admins
-- API : Attributs PHP `#[ApiFeature]`, `#[MobileCompatible]`, `#[RequiresPermission]` pour l'annotation des contrôleurs
-- API : Services `AnnotationReader` et `ReflectionService` pour l'analyse des métadonnées des contrôleurs
-- Mobile : Modèles `Feature`, `FeatureManifest`, `FormSchema`, `ListSchema` pour la synchronisation
+- API : Attributs PHP `#[ApiFeature]`, `#[MobileCompatible]`, `#[RequiresPermission]` pour l'annotation des contrÃ´leurs
+- API : Services `AnnotationReader` et `ReflectionService` pour l'analyse des mÃ©tadonnÃ©es des contrÃ´leurs
+- Mobile : ModÃ¨les `Feature`, `FeatureManifest`, `FormSchema`, `ListSchema` pour la synchronisation
 - Mobile : Service `SynchronizationEngine` avec synchronisation intelligente et gestion des versions
-- Mobile : Générateur d'interface `DynamicUIGenerator` pour créer automatiquement les écrans mobiles
-- Mobile : Cache local avec `Hive` et signatures cryptographiques pour l'intégrité des données
+- Mobile : GÃ©nÃ©rateur d'interface `DynamicUIGenerator` pour crÃ©er automatiquement les Ã©crans mobiles
+- Mobile : Cache local avec `Hive` et signatures cryptographiques pour l'intÃ©gritÃ© des donnÃ©es
 - Mobile : Support complet des formulaires dynamiques, listes et actions avec validation
-- Tests : Suite complète de tests unitaires et d'intégration pour tous les composants
-- Tests : Tests de propriétés (Property-Based Testing) pour la validation des invariants
-- Docs : Documentation technique complète du système de synchronisation
-- Sécurité : Signatures cryptographiques des manifestes et gestion des permissions par fonctionnalité
+- Tests : Suite complÃ¨te de tests unitaires et d'intÃ©gration pour tous les composants
+- Tests : Tests de propriÃ©tÃ©s (Property-Based Testing) pour la validation des invariants
+- Docs : Documentation technique complÃ¨te du systÃ¨me de synchronisation
+- SÃ©curitÃ© : Signatures cryptographiques des manifestes et gestion des permissions par fonctionnalitÃ©
 - Performance : Cache intelligent avec invalidation automatique et synchronisation < 5 secondes
-- Compatibilité : Support des 3 dernières versions mobiles majeures avec migration automatique
+- CompatibilitÃ© : Support des 3 derniÃ¨res versions mobiles majeures avec migration automatique
 
 ## [4.1.84] - 2026-04-30
 
@@ -239,7 +252,7 @@
 - Mobile : realignement de `welcome`, `login`, `home` et `modules hub` sur l'experience mobile-first documentee, avec consommation directe du payload backend (`features` + `mobile_experience`).
 - Mobile : ajout des modeles `MobileExperience`, `MobileModule`, `MobileQuickAction` et du mapping d'icones associe pour garder une navigation coherente avec les routes reelles de l'application.
 - Web : suppression de la dependance au telechargement Google Fonts au build, correction des effets React penalises par linter, et fallback API aligne sur `https://gestionemployerbackend.onrender.com/api/v1`.
-- Web : remplacement des liens dashboard cassés par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
+- Web : remplacement des liens dashboard cassÃ©s par de vraies pages RH branchees a l'API pour `employees`, `attendance` et `absences`.
 
 ### API - Performance et durcissement multi-tenant
 
@@ -248,11 +261,11 @@
 - API : protection des creations d'absences et de bulletins contre les references inter-tenant via des validations `exists` scopees au `company_id` courant.
 - Tests : ajout de `api/tests/Feature/Security/CrossTenantValidationTest.php` et enrichissement de `CreatesMvpSchema` pour couvrir correctement `payrolls`, `payment_method` et `leave_balance`.
 
-### Sentinel - Sécurisation des index et tests de régression Salary Advance
+### Sentinel - SÃ©curisation des index et tests de rÃ©gression Salary Advance
 
-- API : Durcissement des requêtes de liste (IndexRequest) pour les modules `Absences`, `Payroll`, `Attendance` et `SalaryAdvances` via l'ajout d'une validation `exists` systématiquement scopée au tenant de l'utilisateur pour le champ `employee_id`.
-- Tests : Création de `SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module des avances sur salaire.
-- Tests : Ajout de tests de régression dans `AbsenceIndexTest` et `TodayAndHistoryTest` pour vérifier la protection contre le filtrage par `employee_id` hors-tenant.
+- API : Durcissement des requÃªtes de liste (IndexRequest) pour les modules `Absences`, `Payroll`, `Attendance` et `SalaryAdvances` via l'ajout d'une validation `exists` systÃ©matiquement scopÃ©e au tenant de l'utilisateur pour le champ `employee_id`.
+- Tests : CrÃ©ation de `SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC du module des avances sur salaire.
+- Tests : Ajout de tests de rÃ©gression dans `AbsenceIndexTest` et `TodayAndHistoryTest` pour vÃ©rifier la protection contre le filtrage par `employee_id` hors-tenant.
 
 ### Mobile - Contrat attendance et UX absences
 
@@ -266,70 +279,70 @@
 
 ### DocKeeper - Alignement documentation
 
-- Gouvernance : Mise à jour du `PULL_REQUEST_TEMPLATE.md` pour refléter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
-- Gouvernance : Archivage définitif des documents de pilotage historiques à la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
-- Gouvernance : Ajout de `GO_NO_GO_MVP.md` comme source de vérité canonique dans `PILOTAGE.md` et `docs/README.md`.
-- Gouvernance : Mise à jour de `CODE_VERSION` à `0.1.0` dans `PILOTAGE.md` (release MVP prête).
-- Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigée en 2026-04-24).
-- Dépôt : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
+- Gouvernance : Mise Ã  jour du `PULL_REQUEST_TEMPLATE.md` pour reflÃ©ter la structure canonique post-MVP (substitution de `INDEX_CANONIQUE.md` par `PILOTAGE.md`).
+- Gouvernance : Archivage dÃ©finitif des documents de pilotage historiques Ã  la racine (`08_FEUILLE_DE_ROUTE.md`, `CU-01_ET_AGENTS.md`, `ARBORESCENCE_PROJET_COMPLET.md`) vers `docs/notes/archive/`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` Ã  `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Ajout de `GO_NO_GO_MVP.md` comme source de vÃ©ritÃ© canonique dans `PILOTAGE.md` et `docs/README.md`.
+- Gouvernance : Mise Ã  jour de `CODE_VERSION` Ã  `0.1.0` dans `PILOTAGE.md` (release MVP prÃªte).
+- Gouvernance : Correction d'une anomalie chronologique pour la version `[4.1.71]` (date corrigÃ©e en 2026-04-24).
+- DÃ©pÃ´t : Synchronisation des dates et versions dans `docs/README.md` (v4.1.84 | Mai 2026).
 
 ## [4.1.84] - 2026-05-01
 
 ### Performance - Optimisation des index Absence et Evaluation
 
-- API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `absenceType`, évitant ainsi le sur-récupération de données.
-- API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `employee` et `evaluator`.
+- API : Optimisation de `AbsenceController@index` via l'ajout de `select()` et du chargement liÃ© (`with`) limitÃ© en colonnes pour `absenceType`, Ã©vitant ainsi le sur-rÃ©cupÃ©ration de donnÃ©es.
+- API : Optimisation de `EvaluationController@index` via l'ajout de `select()` et du chargement liÃ© (`with`) limitÃ© en colonnes pour `employee` et `evaluator`.
 ## [4.1.84] - 2026-05-02 module placard 
 
-### Sentinel - Sécurisation des validations et tests d'isolation
+### Sentinel - SÃ©curisation des validations et tests d'isolation
 
-- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empêcher les attaques par IDOR (Insecure Direct Object Reference) en vérifiant systématiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifié.
-- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modèles supplémentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
-- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de données inter-tenant lors de la création de ressources.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- API : Renforcement de la validation dans `StoreAbsenceRequest` et `StorePayrollRequest` pour empÃªcher les attaques par IDOR (Insecure Direct Object Reference) en vÃ©rifiant systÃ©matiquement l'appartenance des IDs (absence_type_id, employee_id) au tenant de l'utilisateur authentifiÃ©.
+- Tests : Extension massive de `TenantModelIsolationTest` pour couvrir 10 modÃ¨les supplÃ©mentaires (Employee, Absence, Payroll, Task, etc.), garantissant une isolation stricte entre les entreprises.
+- Tests : Ajout de `CrossTenantValidationTest` pour verrouiller les nouvelles protections contre les fuites de donnÃ©es inter-tenant lors de la crÃ©ation de ressources.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` Ã  `4.1.84` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.87] - 2026-05-05
 
-### ⚡ Bolt - Performance et optimisation HR Referentials
+### âš¡ Bolt - Performance et optimisation HR Referentials
 
-- API : optimisation de `DepartmentController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `manager`, évitant ainsi la sur-récupération de données.
-- API : optimisation de `PositionController@index` par l'ajout de `select()` et du chargement lié (`with`) limité en colonnes pour `department`, évitant ainsi la sur-récupération de données.
+- API : optimisation de `DepartmentController@index` par l'ajout de `select()` et du chargement liÃ© (`with`) limitÃ© en colonnes pour `manager`, Ã©vitant ainsi la sur-rÃ©cupÃ©ration de donnÃ©es.
+- API : optimisation de `PositionController@index` par l'ajout de `select()` et du chargement liÃ© (`with`) limitÃ© en colonnes pour `department`, Ã©vitant ainsi la sur-rÃ©cupÃ©ration de donnÃ©es.
 
 ## [4.1.86] - 2026-05-03
 
 
 ### Auth - Auto-inscription, Google Sign-In, espace personnel et demandes d'entreprise
 
-- API : ajout du rôle `ordinary` pour les utilisateurs sans entreprise immédiate (Espace Personnel).
+- API : ajout du rÃ´le `ordinary` pour les utilisateurs sans entreprise immÃ©diate (Espace Personnel).
 - API : migration pour rendre `company_id` nullable dans `employees` et `user_lookups`.
-- API : implémentation de `POST /api/v1/auth/register` pour l'auto-inscription en tant que compte ordinaire.
-- API : intégration de Laravel Socialite pour Google Sign-In avec endpoints `redirectToGoogle`, `handleGoogleCallback` et `handleGoogleToken` (mobile).
-- API : création du modèle `CompanyRequest` et des endpoints associés pour permettre aux comptes ordinaires de demander la création d'une entreprise (incluant les détails du manager).
-- API : mise à jour de `TenantMiddleware` pour autoriser l'accès à l'API aux utilisateurs `ordinary` sans contexte d'entreprise.
-- Mobile : ajout des dépendances `google_sign_in` et `url_launcher`.
-- Mobile : implémentation de `PersonalSpaceScreen` (accueil pour comptes sans entreprise) et `CompanyRequestScreen` (formulaire de demande enrichi).
+- API : implÃ©mentation de `POST /api/v1/auth/register` pour l'auto-inscription en tant que compte ordinaire.
+- API : intÃ©gration de Laravel Socialite pour Google Sign-In avec endpoints `redirectToGoogle`, `handleGoogleCallback` et `handleGoogleToken` (mobile).
+- API : crÃ©ation du modÃ¨le `CompanyRequest` et des endpoints associÃ©s pour permettre aux comptes ordinaires de demander la crÃ©ation d'une entreprise (incluant les dÃ©tails du manager).
+- API : mise Ã  jour de `TenantMiddleware` pour autoriser l'accÃ¨s Ã  l'API aux utilisateurs `ordinary` sans contexte d'entreprise.
+- Mobile : ajout des dÃ©pendances `google_sign_in` et `url_launcher`.
+- Mobile : implÃ©mentation de `PersonalSpaceScreen` (accueil pour comptes sans entreprise) et `CompanyRequestScreen` (formulaire de demande enrichi).
 - Mobile : ajout du bouton "Continuer avec Google" sur `LoginScreen` et activation du formulaire sur `RegisterScreen`.
-- Mobile : mise à jour du routeur pour gérer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
-- CI : résolution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
+- Mobile : mise Ã  jour du routeur pour gÃ©rer les redirections vers l'espace personnel pour les utilisateurs `ordinary`.
+- CI : rÃ©solution d'un bug de `flutter pub get` via un fallback `--offline` dans le workflow de test.
 ## [4.1.87] - 2026-05-03
 
 ### Sentinel - Durcissement de l'isolation tenant sur les filtres d'index
 
-- API : Renforcement de la validation dans `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationIndexRequest` pour empêcher les fuites de données inter-tenant (ID Enumeration) en vérifiant systématiquement l'appartenance de `employee_id` et `evaluator_id` au tenant de l'utilisateur.
-- Tests : Ajout de `SalaryAdvanceSecurityTest` et `IndexCrossTenantValidationTest` pour verrouiller l'impossibilité de probe ou filtrer des ressources d'un autre tenant via les paramètres de requête.
-### 🛡️ Sentinel - Renforcement de la sécurité multi-tenant (SalaryAdvance)
+- API : Renforcement de la validation dans `SalaryAdvanceIndexRequest`, `AbsenceIndexRequest` et `EvaluationIndexRequest` pour empÃªcher les fuites de donnÃ©es inter-tenant (ID Enumeration) en vÃ©rifiant systÃ©matiquement l'appartenance de `employee_id` et `evaluator_id` au tenant de l'utilisateur.
+- Tests : Ajout de `SalaryAdvanceSecurityTest` et `IndexCrossTenantValidationTest` pour verrouiller l'impossibilitÃ© de probe ou filtrer des ressources d'un autre tenant via les paramÃ¨tres de requÃªte.
+### ðŸ›¡ï¸ Sentinel - Renforcement de la sÃ©curitÃ© multi-tenant (SalaryAdvance)
 
-- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empêchant l'énumération d'identifiants inter-tenant.
+- API : Durcissement de `SalaryAdvanceIndexRequest` par l'ajout d'une validation tenant-scoped sur `employee_id`, empÃªchant l'Ã©numÃ©ration d'identifiants inter-tenant.
 - Tests : Ajout de `api/tests/Feature/Security/SalaryAdvanceSecurityTest.php` pour verrouiller l'isolation des avances sur salaire et la validation des filtres.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` Ã  `4.1.87` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ## [4.1.86] - 2026-05-03
-### Janitor - Hygiène du dépôt
+### Janitor - HygiÃ¨ne du dÃ©pÃ´t
 
-- Dépôt : Archivage de la version obsolète de la stratégie CI/CD (o2switch/VPS) `docs/dossierdeConception/10_deploiement_cicd/19_CICD_ET_GIT.md` vers `docs/notes/archive/19_CICD_ET_GIT_O2SWITCH.md` pour éliminer la confusion avec la version Render active.
+- DÃ©pÃ´t : Archivage de la version obsolÃ¨te de la stratÃ©gie CI/CD (o2switch/VPS) `docs/dossierdeConception/10_deploiement_cicd/19_CICD_ET_GIT.md` vers `docs/notes/archive/19_CICD_ET_GIT_O2SWITCH.md` pour Ã©liminer la confusion avec la version Render active.
 
-### ⚡ Bolt - Performance et optimisation Employee
+### âš¡ Bolt - Performance et optimisation Employee
 
 - API : optimisation de `EmployeeController@index` et `EmployeeController@show` par l'ajout de `with('company')` pour eliminer les requetes N+1 lors de la resolution de la ressource.
 - API : ajout explicite de `preferred_language` et `extra_data` dans le `select()` de `EmployeeController@index` pour garantir l'integrite du payload `EmployeeResource` et des services associes.
@@ -337,12 +350,12 @@
 ## [4.1.85] - 2026-05-02
 ## [4.1.82] - 2026-04-29
 
-### Janitor - Hygiène du dépôt et sécurité
+### Janitor - HygiÃ¨ne du dÃ©pÃ´t et sÃ©curitÃ©
 
-- Mobile : Retrait des fichiers d'environnement (`.env.local`, `.env.production`, `.env.staging`) du suivi Git pour éviter la fuite de configurations locales ou sensibles.
-- Mobile : Création de `mobile/.env.example` comme modèle de configuration.
-- Dépôt : Mise à jour du `.gitignore` racine pour ignorer systématiquement les fichiers d'environnement mobile tout en autorisant le modèle `.env.example`.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.82` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Mobile : Retrait des fichiers d'environnement (`.env.local`, `.env.production`, `.env.staging`) du suivi Git pour Ã©viter la fuite de configurations locales ou sensibles.
+- Mobile : CrÃ©ation de `mobile/.env.example` comme modÃ¨le de configuration.
+- DÃ©pÃ´t : Mise Ã  jour du `.gitignore` racine pour ignorer systÃ©matiquement les fichiers d'environnement mobile tout en autorisant le modÃ¨le `.env.example`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` Ã  `4.1.82` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
 
 ### API - Maintenance dependances frontend
 
@@ -355,43 +368,43 @@
 
 ## [4.1.81] - 2026-04-28
 
-### Janitor - Hygiène du dépôt et synchronisation
+### Janitor - HygiÃ¨ne du dÃ©pÃ´t et synchronisation
 
-- Dépôt : Suppression du fichier généré accidentellement `api/test-results.xml` du suivi Git.
-- Dépôt : Ajout de `test-results.xml` au fichier `api/.gitignore`.
-- Gouvernance : Synchronisation de `PROGRAM_VERSION` à `4.1.81` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
-- Gouvernance : Correction d'une anomalie de date dans l'entrée `4.1.79` du CHANGELOG (2026-05-22 → 2026-04-27).
+- DÃ©pÃ´t : Suppression du fichier gÃ©nÃ©rÃ© accidentellement `api/test-results.xml` du suivi Git.
+- DÃ©pÃ´t : Ajout de `test-results.xml` au fichier `api/.gitignore`.
+- Gouvernance : Synchronisation de `PROGRAM_VERSION` Ã  `4.1.81` dans `PILOTAGE.md`, `CHANGELOG.md` et `api/config/app.php`.
+- Gouvernance : Correction d'une anomalie de date dans l'entrÃ©e `4.1.79` du CHANGELOG (2026-05-22 â†’ 2026-04-27).
 
 ### API - Super-Admin 2FA & Hardening Cameras
 
-- API : Implémentation du second facteur d'authentification (2FA) pour les Super-Admins (`setup`, `enable`, `disable`) avec génération de secret TOTP et QR Code.
-- API : Renforcement de `CameraPolicy` avec vérification systématique de l'expiration des permissions via le helper `activePermission`.
+- API : ImplÃ©mentation du second facteur d'authentification (2FA) pour les Super-Admins (`setup`, `enable`, `disable`) avec gÃ©nÃ©ration de secret TOTP et QR Code.
+- API : Renforcement de `CameraPolicy` avec vÃ©rification systÃ©matique de l'expiration des permissions via le helper `activePermission`.
 - API : Alignement des routes `platform/auth` et correction du binding `PublicCameraViewerController`.
-- Docs : Mise à jour majeure de `api/openapi.yaml` pour refléter les modules `Tasks`, `Evaluations` et `Notifications` (82+ endpoints synchronisés).
+- Docs : Mise Ã  jour majeure de `api/openapi.yaml` pour reflÃ©ter les modules `Tasks`, `Evaluations` et `Notifications` (82+ endpoints synchronisÃ©s).
 - Tests : Ajout de `PlatformAuthTest` couvrant le workflow 2FA complet.
 
 ## [4.1.80] - 2026-04-27
 
-### API - Module Evaluations (module 7 complément)
+### API - Module Evaluations (module 7 complÃ©ment)
 
-- API : ajout du modèle `Evaluation` avec trait `BelongsToCompany`, scopes (`draft`, `submitted`, `forEmployee`) et relations `employee`/`evaluator`.
-- API : ajout de `EvaluationController` avec 8 endpoints REST couvrant le workflow complet `draft → submitted → acknowledged`.
-- API : `GET /api/v1/evaluations` — manager voit toutes les évaluations, employé voit uniquement les siennes.
-- API : `POST /api/v1/evaluations` — manager crée une évaluation en statut `draft` (validation doublon employee+evaluator+period).
-- API : `PUT /api/v1/evaluations/{id}/submit` — manager soumet une évaluation (`draft → submitted`).
-- API : `PUT /api/v1/evaluations/{id}/acknowledge` — employé accuse réception (`submitted → acknowledged`).
-- API : `DELETE /api/v1/evaluations/{id}` — manager supprime uniquement les évaluations `draft`.
-- API : protection contre modification après `acknowledged` et contre suppression si non-`draft`.
+- API : ajout du modÃ¨le `Evaluation` avec trait `BelongsToCompany`, scopes (`draft`, `submitted`, `forEmployee`) et relations `employee`/`evaluator`.
+- API : ajout de `EvaluationController` avec 8 endpoints REST couvrant le workflow complet `draft â†’ submitted â†’ acknowledged`.
+- API : `GET /api/v1/evaluations` â€” manager voit toutes les Ã©valuations, employÃ© voit uniquement les siennes.
+- API : `POST /api/v1/evaluations` â€” manager crÃ©e une Ã©valuation en statut `draft` (validation doublon employee+evaluator+period).
+- API : `PUT /api/v1/evaluations/{id}/submit` â€” manager soumet une Ã©valuation (`draft â†’ submitted`).
+- API : `PUT /api/v1/evaluations/{id}/acknowledge` â€” employÃ© accuse rÃ©ception (`submitted â†’ acknowledged`).
+- API : `DELETE /api/v1/evaluations/{id}` â€” manager supprime uniquement les Ã©valuations `draft`.
+- API : protection contre modification aprÃ¨s `acknowledged` et contre suppression si non-`draft`.
 
 ## [4.1.79] - 2026-04-27
 
 ### Documentation & Outils - Standardisation des Mocks API
 
-- Docs : Création de `docs/api-mock-data/` contenant des exemples de réponses JSON pour tous les endpoints de l'API, facilitant le développement offline.
-- Outils : Ajout de `tools/generate_api_examples.py`, un utilitaire Python permettant de régénérer les fichiers de mock à partir de la spécification OpenAPI (`api/openapi.yaml`).
-- Mobile : Synchronisation des assets de mock (`mobile/assets/mock/`) avec les nouveaux schémas standardisés.
-- Mobile : Refactorisation de `MockInterceptor` pour charger dynamiquement les fichiers JSON standardisés au lieu d'utiliser des données codées en dur.
-- Docs : Mise à jour du `mobile/README.md` et création d'un `README.md` dans `docs/api-mock-data/` pour documenter la source de vérité des mocks.
+- Docs : CrÃ©ation de `docs/api-mock-data/` contenant des exemples de rÃ©ponses JSON pour tous les endpoints de l'API, facilitant le dÃ©veloppement offline.
+- Outils : Ajout de `tools/generate_api_examples.py`, un utilitaire Python permettant de rÃ©gÃ©nÃ©rer les fichiers de mock Ã  partir de la spÃ©cification OpenAPI (`api/openapi.yaml`).
+- Mobile : Synchronisation des assets de mock (`mobile/assets/mock/`) avec les nouveaux schÃ©mas standardisÃ©s.
+- Mobile : Refactorisation de `MockInterceptor` pour charger dynamiquement les fichiers JSON standardisÃ©s au lieu d'utiliser des donnÃ©es codÃ©es en dur.
+- Docs : Mise Ã  jour du `mobile/README.md` et crÃ©ation d'un `README.md` dans `docs/api-mock-data/` pour documenter la source de vÃ©ritÃ© des mocks.
 
 ## [4.1.78] - 2026-04-27
 
@@ -403,22 +416,22 @@
 
 ### Contractor - Alignement contract API/mobile (attendance)
 
-- API : Mise à jour de `AttendanceTodayResource` pour inclure le `matricule` et les champs d'estimation (`base_gain`, `overtime_gain`, `total_estimated`, `currency`) résolus via `EstimationService`.
-- API : Mise à jour de `AttendanceLogResource` pour inclure un objet `employee` imbriqué (id, name, matricule, photo_url) dans l'historique des pointages.
-- API : Optimisation de `AttendanceController@index` par le chargement lié (`with`) de la relation `employee` pour éviter les requêtes N+1.
-- API : Standardisation des types de retour pour `hours_worked` et `overtime_hours` (float) dans les ressources de présence.
-- Mobile : Mise à jour du modèle `DailySummary` pour inclure et parser `hoursWorked` et `overtimeHours`.
+- API : Mise Ã  jour de `AttendanceTodayResource` pour inclure le `matricule` et les champs d'estimation (`base_gain`, `overtime_gain`, `total_estimated`, `currency`) rÃ©solus via `EstimationService`.
+- API : Mise Ã  jour de `AttendanceLogResource` pour inclure un objet `employee` imbriquÃ© (id, name, matricule, photo_url) dans l'historique des pointages.
+- API : Optimisation de `AttendanceController@index` par le chargement liÃ© (`with`) de la relation `employee` pour Ã©viter les requÃªtes N+1.
+- API : Standardisation des types de retour pour `hours_worked` et `overtime_hours` (float) dans les ressources de prÃ©sence.
+- Mobile : Mise Ã  jour du modÃ¨le `DailySummary` pour inclure et parser `hoursWorked` et `overtimeHours`.
 - Tests : Renforcement de `MobilePayloadContractTest` avec une couverture explicite de `/api/v1/me/daily-summary` et verrouillage des nouveaux champs du contrat.
-- Tests : Sécurisation de `CreatesMvpSchema` pour la compatibilité SQLite (garde `SET search_path`).
+- Tests : SÃ©curisation de `CreatesMvpSchema` pour la compatibilitÃ© SQLite (garde `SET search_path`).
 
 ## [4.1.77] - 2026-04-27
 
 ### Documentation - Gouvernance premium et gestion projet
-### Sécurité & Performance - Stabilisation multi-tenant et standardisation API
+### SÃ©curitÃ© & Performance - Stabilisation multi-tenant et standardisation API
 
-- API : Sécurisation des commandes `SET search_path` PostgreSQL via l'introduction de `Company::getSafeSearchPath()` pour prévenir les injections SQL.
-- API : Refactorisation de `MeController` pour utiliser les `JsonResource` standardisées de Laravel (`AttendanceLogResource`, `AttendanceTodayResource`).
-- API : Optimisation des requêtes dans `EstimationService` par l'ajout de clauses `select()` limitant les colonnes récupérées sur `AttendanceLog`.
+- API : SÃ©curisation des commandes `SET search_path` PostgreSQL via l'introduction de `Company::getSafeSearchPath()` pour prÃ©venir les injections SQL.
+- API : Refactorisation de `MeController` pour utiliser les `JsonResource` standardisÃ©es de Laravel (`AttendanceLogResource`, `AttendanceTodayResource`).
+- API : Optimisation des requÃªtes dans `EstimationService` par l'ajout de clauses `select()` limitant les colonnes rÃ©cupÃ©rÃ©es sur `AttendanceLog`.
 
 - Docs : `docs/README.md` est realigne avec la structure canonique actuelle, complete avec `GUIDES/` et `notes/`, et enrichi d'un bloc de standards documentaires.
 - Docs : creation des points d'entree `docs/GESTION_PROJET/README.md`, `docs/notes/README.md` et `docs/PROMPTS_EXECUTION/README.md` pour rendre la navigation plus senior et explicite.
@@ -428,29 +441,29 @@
 
 ## [4.1.76] - 2026-04-27
 
-### Qualité & Robustesse - Plan d'Action Amélioration Phase 2, 3 & 4
+### QualitÃ© & Robustesse - Plan d'Action AmÃ©lioration Phase 2, 3 & 4
 
 - API : Centralisation de la gestion multi-tenant via `TenantManager` service (isolation `search_path` robuste avec `withinTenant`).
-- API : Introduction des DTOs (`CreateEmployeeDTO`, `UpdateEmployeeDTO`, `CheckInDTO`) pour typer les échanges entre contrôleurs et services.
-- API : Refactorisation complète des contrôleurs vers `JsonResource` (`EmployeeResource`, `AttendanceLogResource`, etc.) pour une sérialisation standardisée.
+- API : Introduction des DTOs (`CreateEmployeeDTO`, `UpdateEmployeeDTO`, `CheckInDTO`) pour typer les Ã©changes entre contrÃ´leurs et services.
+- API : Refactorisation complÃ¨te des contrÃ´leurs vers `JsonResource` (`EmployeeResource`, `AttendanceLogResource`, etc.) pour une sÃ©rialisation standardisÃ©e.
 - API : Configuration du Rate Limiting dynamique par entreprise (300 req/min) et par IP (60 req/min) dans `AppServiceProvider`.
-- API : Gel du mode "schema" Enterprise via un observer `creating` sur le modèle `Company` pour sécuriser le MVP.
-- API : Internationalisation complète du Dashboard Blade et création des fichiers `lang/{fr,en}/dashboard.php`.
-- Web : Pagination des employés sur le dashboard manager pour améliorer les performances sur les gros comptes.
-- Ops : Ajout d'un hook de **rollback automatique** dans le workflow GitHub Action `deploy-main.yml` en cas d'échec du smoke test post-déploiement sur Render.
-- Docs : Mise à jour de `PLAN_ACTION_AMELIORATION.md` (Actions 6, 7, 8, 10, 11, 12, 13, 14, 15 marquées terminées).
+- API : Gel du mode "schema" Enterprise via un observer `creating` sur le modÃ¨le `Company` pour sÃ©curiser le MVP.
+- API : Internationalisation complÃ¨te du Dashboard Blade et crÃ©ation des fichiers `lang/{fr,en}/dashboard.php`.
+- Web : Pagination des employÃ©s sur le dashboard manager pour amÃ©liorer les performances sur les gros comptes.
+- Ops : Ajout d'un hook de **rollback automatique** dans le workflow GitHub Action `deploy-main.yml` en cas d'Ã©chec du smoke test post-dÃ©ploiement sur Render.
+- Docs : Mise Ã  jour de `PLAN_ACTION_AMELIORATION.md` (Actions 6, 7, 8, 10, 11, 12, 13, 14, 15 marquÃ©es terminÃ©es).
 
 ## [4.1.75] - 2026-04-27
 
-### Sécurité - Plan d'Action Amélioration Phase 1 (P0)
+### SÃ©curitÃ© - Plan d'Action AmÃ©lioration Phase 1 (P0)
 
-- API : Implémentation du chiffrement `EncryptedCast` sur les colonnes sensibles (`iban`, `bank_account`, `national_id`) dans le modèle `Employee`.
-- API : Migration `encrypt_existing_sensitive_data` pour sécuriser les données existantes en base.
+- API : ImplÃ©mentation du chiffrement `EncryptedCast` sur les colonnes sensibles (`iban`, `bank_account`, `national_id`) dans le modÃ¨le `Employee`.
+- API : Migration `encrypt_existing_sensitive_data` pour sÃ©curiser les donnÃ©es existantes en base.
 - API : Configuration explicite du middleware CORS dans `config/cors.php` pour autoriser le frontend web et l'application mobile.
-- API : Système de lockout anti-brute-force — verrouillage du compte après 5 tentatives échouées pendant 15 minutes (`failed_login_attempts`, `locked_until`).
-- API : Nouvelle exception `AccountLockedException` (HTTP 423) et mise à jour d' `AuthService` pour gérer le verrouillage.
-- Mobile/API : Retrait de `google-services.json` du suivi Git et mise à jour du `.gitignore`.
-- Docs : Mise à jour de `PILOTAGE.md` et `PLAN_ACTION_AMELIORATION.md` pour refléter la complétion de la Phase 1.
+- API : SystÃ¨me de lockout anti-brute-force â€” verrouillage du compte aprÃ¨s 5 tentatives Ã©chouÃ©es pendant 15 minutes (`failed_login_attempts`, `locked_until`).
+- API : Nouvelle exception `AccountLockedException` (HTTP 423) et mise Ã  jour d' `AuthService` pour gÃ©rer le verrouillage.
+- Mobile/API : Retrait de `google-services.json` du suivi Git et mise Ã  jour du `.gitignore`.
+- Docs : Mise Ã  jour de `PILOTAGE.md` et `PLAN_ACTION_AMELIORATION.md` pour reflÃ©ter la complÃ©tion de la Phase 1.
 
 ## [4.1.75] - 2026-04-27
 
@@ -492,25 +505,25 @@
 
 ### Multilinguisme - Support complet FR/AR(RTL)/TR/EN
 
-- API : Migration `create_languages_table` — table `public.languages` (code CHAR(2) PK, name_fr, name_native, is_rtl, is_active) avec seeding des 4 langues supportees.
-- API : Migration `add_preferred_language_to_employees` — champ `preferred_language CHAR(2)` nullable sur la table tenant `employees`, permettant un override personnel de la langue entreprise.
+- API : Migration `create_languages_table` â€” table `public.languages` (code CHAR(2) PK, name_fr, name_native, is_rtl, is_active) avec seeding des 4 langues supportees.
+- API : Migration `add_preferred_language_to_employees` â€” champ `preferred_language CHAR(2)` nullable sur la table tenant `employees`, permettant un override personnel de la langue entreprise.
 - API : Modele `Language` avec constantes `SUPPORTED` (fr/ar/tr/en) et `DEFAULT` (fr), methodes statiques `isSupported()` et `isRtl()`.
-- API : Middleware `SetLocale` enregistre en prepend sur le stack API — resolution de la locale par priorite : preference utilisateur > langue entreprise > header `Accept-Language` > defaut `fr`. Configure `App::setLocale()` et `Carbon::setLocale()`.
-- API : Integration `bootstrap/app.php` — les handlers DomainException, ValidationException, ModelNotFoundException, AuthorizationException et HttpException utilisent desormais `__('errors.CODE')` pour retourner des messages traduits selon la locale active.
+- API : Middleware `SetLocale` enregistre en prepend sur le stack API â€” resolution de la locale par priorite : preference utilisateur > langue entreprise > header `Accept-Language` > defaut `fr`. Configure `App::setLocale()` et `Carbon::setLocale()`.
+- API : Integration `bootstrap/app.php` â€” les handlers DomainException, ValidationException, ModelNotFoundException, AuthorizationException et HttpException utilisent desormais `__('errors.CODE')` pour retourner des messages traduits selon la locale active.
 - API : 36 fichiers de traduction (9 fichiers x 4 langues) dans `lang/{fr,ar,tr,en}/` : errors, auth, attendance, employees, finance, emails, pdf, cameras, validation.
-- API : Endpoint `PATCH /api/v1/auth/language` — permet a l'employe authentifie de changer sa langue preferee (validation `in:fr,ar,tr,en`).
+- API : Endpoint `PATCH /api/v1/auth/language` â€” permet a l'employe authentifie de changer sa langue preferee (validation `in:fr,ar,tr,en`).
 - API : Champ `language` ajoute au serializer employee (retourne dans login/me), resolu comme `preferred_language ?? company.language ?? 'fr'`.
 - API : Remplacement des messages hardcodes dans AuthController, InvitationController et PlatformAuthController par des appels `__()`.
-- Docs : `api/MULTILANG.md` — guide architecture i18n, usage `__()`, procedure d'ajout de nouvelles langues.
-- Pilotage : `PILOTAGE.md` — statut langues mis a jour de « i18n prepare (1 langue seulement) » a « FR+AR+TR+EN production-ready ».
+- Docs : `api/MULTILANG.md` â€” guide architecture i18n, usage `__()`, procedure d'ajout de nouvelles langues.
+- Pilotage : `PILOTAGE.md` â€” statut langues mis a jour de Â« i18n prepare (1 langue seulement) Â» a Â« FR+AR+TR+EN production-ready Â».
 ## [4.1.73] - 2026-04-27
 
 ### Web - Initialisation de l'application Next.js et site vitrine
 
 - Web : Initialisation d'un projet Next.js 16 dans le dossier `web/` avec TypeScript, Tailwind CSS (v4) et App Router.
-- Web : Mise en place d'un site vitrine (landing page) avec sections Hero, Fonctionnalités et Tarifs conformément à la stratégie marketing.
-- Web : Implémentation d'un squelette d'authentification (page de connexion) et d'un tableau de bord (layout + page d'accueil) pour les futurs développements.
-- Docs : Mise à jour de `ARBORESCENCE_PROJET_COMPLET.md`, `README.md` et `PILOTAGE.md` pour intégrer la nouvelle application web dans l'architecture du monorepo.
+- Web : Mise en place d'un site vitrine (landing page) avec sections Hero, FonctionnalitÃ©s et Tarifs conformÃ©ment Ã  la stratÃ©gie marketing.
+- Web : ImplÃ©mentation d'un squelette d'authentification (page de connexion) et d'un tableau de bord (layout + page d'accueil) pour les futurs dÃ©veloppements.
+- Docs : Mise Ã  jour de `ARBORESCENCE_PROJET_COMPLET.md`, `README.md` et `PILOTAGE.md` pour intÃ©grer la nouvelle application web dans l'architecture du monorepo.
 - Pilotage : Transition officielle du frontend web de Blade/Alpine vers Next.js pour le dashboard et la vitrine.
 
 ## [4.1.72] - 2026-04-25
@@ -537,7 +550,7 @@
 
 - API : `api/database/seeders/DemoCompanyOnceSeeder.php` versionne desormais le verrou de seed demo (`demo_company_seed_v2`) afin que le nouveau jeu de donnees de demonstration soit rejoue automatiquement au prochain deploiement avec `DEMO_SEED_ONCE=true`.
 - API : `api/database/seeders/DemoCompanySeeder.php` cree desormais un jeu de donnees multi-company beaucoup plus riche pour les tests manuels et E2E : managers `principal` / `rh` / `dept` / `comptable` / `superviseur`, employes `active` / `suspended` / `archived`, plusieurs types d'absences, historiques de conges, paies et exports, projets, taches, commentaires, evaluations, notifications et audit logs.
-- API : `api/database/seeders/DemoCompanySeeder.php` aligne maintenant toutes les insertions groupées dans `absences` sur le meme jeu de colonnes SQL, afin d'eviter l'erreur PostgreSQL `VALUES lists must all be the same length` pendant le seed de demonstration sur Render.
+- API : `api/database/seeders/DemoCompanySeeder.php` aligne maintenant toutes les insertions groupÃ©es dans `absences` sur le meme jeu de colonnes SQL, afin d'eviter l'erreur PostgreSQL `VALUES lists must all be the same length` pendant le seed de demonstration sur Render.
 - API : `api/database/seeders/DemoCompanySeeder.php` cible maintenant explicitement `public.*` et `shared_tenants.*` pour ses lectures/ecritures critiques, afin d'eviter qu'une bascule ou une restauration imparfaite du `search_path` ne fasse echouer le seed avec des erreurs du type `relation "employees" does not exist`.
 - API : `api/database/seeders/DemoCompanySeeder.php` force aussi desormais, au demarrage, la suppression de l'ancienne unicite globale sur `public.companies.schema_name` et la recreation de l'index unique partiel reserve au mode `schema`, afin que plusieurs societes de demo en `shared_tenants` puissent etre recreees meme si un ancien etat de contrainte persiste encore sur Render.
 - Deploy : `api/docker-entrypoint.sh` accepte maintenant un reset complet one-shot de la base de test via `RESET_TEST_DB_ONCE=true`, memorise par un verrou `public.seed_locks` (configurable via `RESET_TEST_DB_LOCK_KEY`) pour qu'un redeploiement suivant ne repete pas le wipe.
@@ -567,14 +580,14 @@
 - `docs/GESTION_PROJET/PLAN_ACTION_AMELIORATION.md` : ajout du plan d'action detaillant les 15 ameliorations identifiees lors de l'audit technique, organise en 4 phases (Securite, Qualite, Robustesse, Scalabilite) avec instructions d'implementation, code d'exemple et criteres d'acceptation pour chaque action.
 ### Pointage - Corrections CRITIQUES (rapport Leopardo_RH_Pointage_Validation_Finale)
 
-- API : `app/Exceptions/AlreadyCheckedInException.php` et `app/Exceptions/MissingCheckInException.php` renvoient désormais HTTP **422** (au lieu de 409) — alignement avec les règles R-PT-03 / R-PT-04 / PT-08 / PT-17.
-- API : `app/Services/AttendanceService.php` (`checkOut`, `importExternalPunch`) — `hours_worked` soustrait désormais `schedule.break_minutes` (R-PT-06 / PT-13→PT-16). Pour 08:00→17:00 avec pause 60 min, on passe de 9.00 h à 8.00 h.
-- API : `app/Services/AttendanceService.php` (`checkIn`, `checkOut`, `importExternalPunch`) — `late_minutes = max(0, in − start − tolerance)` (R-PT-08 / PT-02). Un check-in à 08:10 avec tolérance 15 min renvoie désormais `late_minutes=0`.
-- API : `app/Policies/AttendancePolicy.php` — `checkIn`/`checkOut` exigent désormais `role='employee'` ; les managers reçoivent **403 FORBIDDEN** (PT-10).
-- API : `app/Http/Controllers/Api/V1/AttendanceController.php` — `today()` (vue manager) filtre `where('status', 'active')` et n'expose plus les employés archivés/suspendus (PT-29 / PT-43).
-- API : `app/Http/Middleware/TenantMiddleware.php` — bloque désormais les employés `suspended` en plus d'`archived` (`EMPLOYEE_SUSPENDED`, 403) — PT-68.
-- Contrat : `openapi.yaml` mis à jour pour le statut 422 sur `/attendance/check-in` (consolidation `ALREADY_CHECKED_IN` + `GPS_OUTSIDE_ZONE`).
-- Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis à jour pour refléter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
+- API : `app/Exceptions/AlreadyCheckedInException.php` et `app/Exceptions/MissingCheckInException.php` renvoient dÃ©sormais HTTP **422** (au lieu de 409) â€” alignement avec les rÃ¨gles R-PT-03 / R-PT-04 / PT-08 / PT-17.
+- API : `app/Services/AttendanceService.php` (`checkOut`, `importExternalPunch`) â€” `hours_worked` soustrait dÃ©sormais `schedule.break_minutes` (R-PT-06 / PT-13â†’PT-16). Pour 08:00â†’17:00 avec pause 60 min, on passe de 9.00 h Ã  8.00 h.
+- API : `app/Services/AttendanceService.php` (`checkIn`, `checkOut`, `importExternalPunch`) â€” `late_minutes = max(0, in âˆ’ start âˆ’ tolerance)` (R-PT-08 / PT-02). Un check-in Ã  08:10 avec tolÃ©rance 15 min renvoie dÃ©sormais `late_minutes=0`.
+- API : `app/Policies/AttendancePolicy.php` â€” `checkIn`/`checkOut` exigent dÃ©sormais `role='employee'` ; les managers reÃ§oivent **403 FORBIDDEN** (PT-10).
+- API : `app/Http/Controllers/Api/V1/AttendanceController.php` â€” `today()` (vue manager) filtre `where('status', 'active')` et n'expose plus les employÃ©s archivÃ©s/suspendus (PT-29 / PT-43).
+- API : `app/Http/Middleware/TenantMiddleware.php` â€” bloque dÃ©sormais les employÃ©s `suspended` en plus d'`archived` (`EMPLOYEE_SUSPENDED`, 403) â€” PT-68.
+- Contrat : `openapi.yaml` mis Ã  jour pour le statut 422 sur `/attendance/check-in` (consolidation `ALREADY_CHECKED_IN` + `GPS_OUTSIDE_ZONE`).
+- Tests : `tests/Feature/Attendance/CheckInTest.php`, `tests/Feature/Attendance/CheckOutTest.php`, `tests/Unit/AttendanceServiceTest.php` mis Ã  jour pour reflÃ©ter les nouveaux statuts (422) et les nouvelles valeurs `hours_worked`/`overtime_hours`.
 - Suite locale : 11/11 Unit + 87/87 Feature OK.
 
 ## [4.1.71] - 2026-04-24
@@ -590,7 +603,7 @@
 ## [4.1.71] - 2026-04-23
 ### Janitor: Archivage documentation historique et synchronisation
 
-- Docs : archivage de 8 fichiers marques `📦 HISTORIQUE` dans `PILOTAGE.md` vers `docs/notes/archive/` (`ORCHESTRATION_MAITRE.md`, `INDEX_CANONIQUE.md`, `CONTEXTE_SESSION_IA.md`, `JOURNAL_DE_BORD.md`, `BACKLOG_PHASE1_UNIQUE.md`, `CONTINUE.md`, `SUIVI_PROMPTS.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`)
+- Docs : archivage de 8 fichiers marques `ðŸ“¦ HISTORIQUE` dans `PILOTAGE.md` vers `docs/notes/archive/` (`ORCHESTRATION_MAITRE.md`, `INDEX_CANONIQUE.md`, `CONTEXTE_SESSION_IA.md`, `JOURNAL_DE_BORD.md`, `BACKLOG_PHASE1_UNIQUE.md`, `CONTINUE.md`, `SUIVI_PROMPTS.md`, `EXECUTION_BLOCKERS_AND_NEXT.md`)
 - Governance : mise a jour de `tools/check-governance.ps1` pour refleter les nouveaux emplacements des fichiers requis
 - Pilotage : mise a jour de `PILOTAGE.md` (bump version `4.1.71`, mise a jour de la table de statut documentaire, validation C-6)
 - API : bump `APP_VERSION` default de `4.1.70` a `4.1.71` dans `api/config/app.php`
@@ -621,7 +634,7 @@
 
 - `PILOTAGE.md` : en-tete re-aligne sur `PROGRAM_VERSION = 4.1.70 | 2026-04-23` (precedemment `4.1.58 | 14 Mai 2025`, date erronee), date MAJ corrigee, bloc "CONVENTION DE VERSIONING" precise que la version doit rester synchrone entre CHANGELOG.md, `api/config/app.php` et `/api/v1/health`
 - `api/config/app.php` : bump `APP_VERSION` default de `4.1.68` a `4.1.70` pour respecter la regle de synchronisation introduite dans PILOTAGE (PROGRAM_VERSION == config('app.version') == champ `version` de `/api/v1/health`)
-- `PILOTAGE.md` : avertissement explicite en tete du document sur la divergence entre la section "SCOPE MVP VERROUILLE" (schema mode interdit, 2 roles, 2 pages Blade, VPS) et le code livre sur main (schema mode actif, 6 sous-roles manager, plusieurs pages Blade, hebergement Render) — la decision produit reste a prendre, mais le document ne peut plus etre lu comme "source de verite" sans cet avertissement
+- `PILOTAGE.md` : avertissement explicite en tete du document sur la divergence entre la section "SCOPE MVP VERROUILLE" (schema mode interdit, 2 roles, 2 pages Blade, VPS) et le code livre sur main (schema mode actif, 6 sous-roles manager, plusieurs pages Blade, hebergement Render) â€” la decision produit reste a prendre, mais le document ne peut plus etre lu comme "source de verite" sans cet avertissement
 - `docs/GESTION_PROJET/CORRECTIONS.md` : audit 2026-04-22 des 7 corrections Sprint 0. Toutes sont deja appliquees sur main (C-1 `/auth/refresh` supprime d openapi.yaml, C-2 `is_active` remplace par `status`, C-3 `user_lookups` PK email, C-4 prix Starter 29 EUR, C-5 trait unique `BelongsToCompany`, C-6 archive, C-7 `bon-fixed/`). Tableau STATUT coche avec preuves ligne par ligne. Version du doc passe a `5.1`
 - Aucun changement fonctionnel, aucun schema DB, aucune migration. Rollback = `git revert` de la PR
 ### DocKeeper - Alignement documentation infra (GO MVP)
@@ -928,7 +941,7 @@
 - Objectif: garantir que les tables publiques (dont plans) sont creees avant l'execution des seeders de base
 
 ## [4.1.38] - 2026-04-17
-### CI/CD automatisée PR -> main -> deploy
+### CI/CD automatisÃ©e PR -> main -> deploy
 
 - Renforcement de `.github/workflows/tests.yml` : backend, securite Composer, mobile (format/analyze/test/build smoke), governance et dependency review
 - Ajout de `.github/workflows/deploy-main.yml` pour deployer automatiquement Render apres succes des checks sur `main`
@@ -955,13 +968,13 @@
 - Ajout d'une migration corrective pour convertir les bases deja deployees vers l'unicite globale de `employees.email`
 
 ## [4.1.34] - 2026-04-12
-### Déploiement Cloud & Alignement Repository
+### DÃ©ploiement Cloud & Alignement Repository
 
-- **Infrastructure Target** : Basculement officiel de o2switch vers le couple **Render (App) + Neon (PostgreSQL)** pour la phase de développement et Beta.
-- **Production Config** : Ajout de `api/Dockerfile.prod` (FrankenPHP) optimisé pour les services Cloud managés. Fix tag Docker vers `latest-php8.4-alpine`.
-- **Nettoyage Automatisé** : Suppression du workflow `deploy.yml` (o2switch) et de toutes ses références obsolètes dans les diagrammes et guides techniques.
-- **Documentation Setup** : Création du guide `RENDER_SETUP.md` pour le déploiement "Zero-Card" sans carte bancaire.
-- **Alignement CI/CD** : Mise à jour de `19_CICD_ET_GIT.md` pour refléter le flux de déploiement automatique sur Render.
+- **Infrastructure Target** : Basculement officiel de o2switch vers le couple **Render (App) + Neon (PostgreSQL)** pour la phase de dÃ©veloppement et Beta.
+- **Production Config** : Ajout de `api/Dockerfile.prod` (FrankenPHP) optimisÃ© pour les services Cloud managÃ©s. Fix tag Docker vers `latest-php8.4-alpine`.
+- **Nettoyage AutomatisÃ©** : Suppression du workflow `deploy.yml` (o2switch) et de toutes ses rÃ©fÃ©rences obsolÃ¨tes dans les diagrammes et guides techniques.
+- **Documentation Setup** : CrÃ©ation du guide `RENDER_SETUP.md` pour le dÃ©ploiement "Zero-Card" sans carte bancaire.
+- **Alignement CI/CD** : Mise Ã  jour de `19_CICD_ET_GIT.md` pour reflÃ©ter le flux de dÃ©ploiement automatique sur Render.
 
 ---
 
@@ -979,31 +992,31 @@ CODE_VERSION     = Version release applicative (git tag)
 ### Restructuration gouvernance (historique, nomenclature retiree)
 
 **Gouvernance :**
-- Nouveau fichier maître unique : `PILOTAGE.md` (remplace ORCHESTRATION_MAITRE, INDEX_CANONIQUE, CONTEXTE_SESSION, CONTINUE, JOURNAL_DE_BORD, BACKLOG)
-- Nouveau fichier règles : `docs/GESTION_PROJET/GARDE_FOUS.md` (8 garde-fous)
+- Nouveau fichier maÃ®tre unique : `PILOTAGE.md` (remplace ORCHESTRATION_MAITRE, INDEX_CANONIQUE, CONTEXTE_SESSION, CONTINUE, JOURNAL_DE_BORD, BACKLOG)
+- Nouveau fichier rÃ¨gles : `docs/GESTION_PROJET/GARDE_FOUS.md` (8 garde-fous)
 - Nouveau fichier corrections : `docs/GESTION_PROJET/CORRECTIONS.md`
 - Convention de versioning : PROGRAM_VERSION / DOC_VERSION / CODE_VERSION
-- 7 fichiers marqués 📦 HISTORIQUE avec bannière interdisant l'utilisation comme instruction
+- 7 fichiers marquÃ©s ðŸ“¦ HISTORIQUE avec banniÃ¨re interdisant l'utilisation comme instruction
 
-**Filière prompts :**
-- Nouvelle filière active : `docs/PROMPTS_EXECUTION/v3/MVP-01 à MVP-06` (6 prompts)
-- Ancienne filière `v2/CC-*` et `v2/JU-*` marquée LEGACY (non exécutable)
-- Réduction de 10 prompts backend + patches → 6 prompts MVP unifiés
+**FiliÃ¨re prompts :**
+- Nouvelle filiÃ¨re active : `docs/PROMPTS_EXECUTION/v3/MVP-01 Ã  MVP-06` (6 prompts)
+- Ancienne filiÃ¨re `v2/CC-*` et `v2/JU-*` marquÃ©e LEGACY (non exÃ©cutable)
+- RÃ©duction de 10 prompts backend + patches â†’ 6 prompts MVP unifiÃ©s
 
-**Corrections documentaires appliquées (Sprint 0) :**
-- C-1 : Supprimé `/auth/refresh` de `api/openapi.yaml` (obsolète depuis v4.0.3)
-- C-2 : Corrigé `is_active` → `status` dans `08_MULTITENANCY_STRATEGY.md`
-- C-3 : Aligné `user_lookups` PK = email dans `08_MULTITENANCY_STRATEGY.md` (conforme au SQL)
-- C-4 : Corrigé "Starter Gratuit" → "Starter 29€/mois" dans `18_MARKETING_ET_VENTES.md`
-- C-6 : Déplacé `AUDIT_COMPLET_MANQUES.md` → `docs/notes/archive/`
-- C-7 : Supprimé répertoire vide `bon-fixed/`
-- C-5 (trait HasCompanyScope bug double boot) : documenté, sera corrigé en MVP-01
+**Corrections documentaires appliquÃ©es (Sprint 0) :**
+- C-1 : SupprimÃ© `/auth/refresh` de `api/openapi.yaml` (obsolÃ¨te depuis v4.0.3)
+- C-2 : CorrigÃ© `is_active` â†’ `status` dans `08_MULTITENANCY_STRATEGY.md`
+- C-3 : AlignÃ© `user_lookups` PK = email dans `08_MULTITENANCY_STRATEGY.md` (conforme au SQL)
+- C-4 : CorrigÃ© "Starter Gratuit" â†’ "Starter 29â‚¬/mois" dans `18_MARKETING_ET_VENTES.md`
+- C-6 : DÃ©placÃ© `AUDIT_COMPLET_MANQUES.md` â†’ `docs/notes/archive/`
+- C-7 : SupprimÃ© rÃ©pertoire vide `bon-fixed/`
+- C-5 (trait HasCompanyScope bug double boot) : documentÃ©, sera corrigÃ© en MVP-01
 
-**Scope MVP verrouillé :**
-- ~15 endpoints (vs 82+ en vision complète)
-- 2 rôles (vs 7)
+**Scope MVP verrouillÃ© :**
+- ~15 endpoints (vs 82+ en vision complÃ¨te)
+- 2 rÃ´les (vs 7)
 - 1 langue, 1 pays
-- Mode shared uniquement (pas de schéma)
+- Mode shared uniquement (pas de schÃ©ma)
 - File cache/sync queue (pas Redis/Horizon)
 - Blade + Alpine.js (pas Vue.js/Inertia)
 
@@ -1012,7 +1025,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ## [4.1.36] - 2026-04-16
 ### Governance - PR codex/ci-node24-mobile-workflow
 
-- Trace de conformité pour la PR `codex/ci-node24-mobile-workflow` (scope critique mobile/api/.github)
+- Trace de conformitÃ© pour la PR `codex/ci-node24-mobile-workflow` (scope critique mobile/api/.github)
 - Correctifs inclus dans la PR: `MainActivity` Android, `DemoCompanySeeder`, et workflow mobile Node24
 
 ---
@@ -1020,9 +1033,9 @@ CODE_VERSION     = Version release applicative (git tag)
 ## [4.1.35] - 2026-04-14
 ### CI mobile - migration Node 24
 
-- Workflow mobile `mobile-distribute.yml` aligné sur Node 24 (`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`)
-- Actions GitHub migrées vers versions récentes: `actions/checkout@v5`, `actions/setup-java@v5`, `actions/upload-artifact@v5`
-- Objectif: supprimer l’avertissement de dépréciation Node 20 et sécuriser la compatibilité runners 2026
+- Workflow mobile `mobile-distribute.yml` alignÃ© sur Node 24 (`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`)
+- Actions GitHub migrÃ©es vers versions rÃ©centes: `actions/checkout@v5`, `actions/setup-java@v5`, `actions/upload-artifact@v5`
+- Objectif: supprimer lâ€™avertissement de dÃ©prÃ©ciation Node 20 et sÃ©curiser la compatibilitÃ© runners 2026
 
 ---
 
@@ -1030,40 +1043,40 @@ CODE_VERSION     = Version release applicative (git tag)
 ### Governance - validation PR mobile distribute
 
 - Trace explicite de la PR `kitokoh-patch-6` pour satisfaire le gate `CHANGELOG.md` sur scope critique CI/mobile
-- Aucun changement fonctionnel métier ajouté dans cette entrée
+- Aucun changement fonctionnel mÃ©tier ajoutÃ© dans cette entrÃ©e
 
 ---
 
 ## [4.1.33] - 2026-04-11
-### Alignement anti-blocage: PHP 8.4 + Docker local versionné
+### Alignement anti-blocage: PHP 8.4 + Docker local versionnÃ©
 
-- Uniformisation des intitulés/versions backend dans la CI: check backend renommé en `PHP 8.4` et étape `Setup PHP 8.4` alignée
-- Workflow de déploiement mis en PHP 8.4 pour rester cohérent avec le lock Composer actuel
-- Ajout d'une stack Docker locale versionnée dans `api/docker-compose.yml` (service `app` + PostgreSQL 16)
-- Ajout d'un Dockerfile minimal `api/docker/php84/Dockerfile` pour éviter la chaîne Sail lourde qui bloquait le build local
-- Ajout d'un script `api/start-local.ps1` pour démarrer l'environnement local en une commande (option seed démo + tests)
-- Mise à jour du runbook local Docker (`RUNBOOK_LOCAL_TESTS.md`) avec commandes officielles et attentes de performance (premier build lent, redémarrages rapides)
-- Mise à jour de `PILOTAGE.md`, `api/README.md` et `.github/BRANCH_PROTECTION_REQUIRED.md` pour supprimer les incohérences 8.3/8.4
-- Durcissement du workflow mobile `.github/workflows/mobile-distribute.yml` (détection d'environnement, contrôle des secrets, vérification d'artefact, upload strict, distribution Firebase staging)
-- Ajout d'un fallback workflow pour copier `google-services.json` depuis la racine (ou `api/`) vers `mobile/android/app` si présent
-- Ajout d'une note de démarrage App Distribution dans `README.md`
+- Uniformisation des intitulÃ©s/versions backend dans la CI: check backend renommÃ© en `PHP 8.4` et Ã©tape `Setup PHP 8.4` alignÃ©e
+- Workflow de dÃ©ploiement mis en PHP 8.4 pour rester cohÃ©rent avec le lock Composer actuel
+- Ajout d'une stack Docker locale versionnÃ©e dans `api/docker-compose.yml` (service `app` + PostgreSQL 16)
+- Ajout d'un Dockerfile minimal `api/docker/php84/Dockerfile` pour Ã©viter la chaÃ®ne Sail lourde qui bloquait le build local
+- Ajout d'un script `api/start-local.ps1` pour dÃ©marrer l'environnement local en une commande (option seed dÃ©mo + tests)
+- Mise Ã  jour du runbook local Docker (`RUNBOOK_LOCAL_TESTS.md`) avec commandes officielles et attentes de performance (premier build lent, redÃ©marrages rapides)
+- Mise Ã  jour de `PILOTAGE.md`, `api/README.md` et `.github/BRANCH_PROTECTION_REQUIRED.md` pour supprimer les incohÃ©rences 8.3/8.4
+- Durcissement du workflow mobile `.github/workflows/mobile-distribute.yml` (dÃ©tection d'environnement, contrÃ´le des secrets, vÃ©rification d'artefact, upload strict, distribution Firebase staging)
+- Ajout d'un fallback workflow pour copier `google-services.json` depuis la racine (ou `api/`) vers `mobile/android/app` si prÃ©sent
+- Ajout d'une note de dÃ©marrage App Distribution dans `README.md`
 
 ---
 
 ## [4.1.32] - 2026-04-09
-### Post-rapport v2 - fiabilité tests et modèle settings
+### Post-rapport v2 - fiabilitÃ© tests et modÃ¨le settings
 
-- `phpunit.xml` complète désormais la configuration PostgreSQL de test (`DB_CONNECTION`, hôte, port, base, utilisateur, mot de passe)
-- Ajout du modèle Eloquent `CompanySetting` pour la table `company_settings` (clé primaire string, `updated_at` géré, `created_at` absent)
+- `phpunit.xml` complÃ¨te dÃ©sormais la configuration PostgreSQL de test (`DB_CONNECTION`, hÃ´te, port, base, utilisateur, mot de passe)
+- Ajout du modÃ¨le Eloquent `CompanySetting` pour la table `company_settings` (clÃ© primaire string, `updated_at` gÃ©rÃ©, `created_at` absent)
 
 ---
 
 ## [4.1.31] - 2026-04-09
 ### Hardening post-rapport v2
 
-- Optimisation de `GET /attendance/today` manager : chargement des logs filtré sur les employés de la page courante
-- Activation de `Model::preventLazyLoading()` en local dans `AppServiceProvider` pour détecter les N+1 plus tôt
-- Remplacement de la page `welcome.blade.php` Laravel de démonstration par une page backend minimale orientée Beta
+- Optimisation de `GET /attendance/today` manager : chargement des logs filtrÃ© sur les employÃ©s de la page courante
+- Activation de `Model::preventLazyLoading()` en local dans `AppServiceProvider` pour dÃ©tecter les N+1 plus tÃ´t
+- Remplacement de la page `welcome.blade.php` Laravel de dÃ©monstration par une page backend minimale orientÃ©e Beta
 
 ---
 
@@ -1072,116 +1085,116 @@ CODE_VERSION     = Version release applicative (git tag)
 ### Gouvernance locale - Docker d'abord pour les tests backend
 
 - Ajout de `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` pour imposer la validation backend locale via Docker avant push
-- Mise à jour de `PILOTAGE.md`, `README.md` et `EXECUTION_BLOCKERS_AND_NEXT.md` pour rendre cette règle visible
-- Trace explicite du constat local : `docker context ls` répond, mais `docker version` / `docker ps` expirent encore sur cette machine
+- Mise Ã  jour de `PILOTAGE.md`, `README.md` et `EXECUTION_BLOCKERS_AND_NEXT.md` pour rendre cette rÃ¨gle visible
+- Trace explicite du constat local : `docker context ls` rÃ©pond, mais `docker version` / `docker ps` expirent encore sur cette machine
 
 ---
 
 ## [4.1.29] - 2026-04-09
-### Beta finale - Alignement mobile et cohérence API
+### Beta finale - Alignement mobile et cohÃ©rence API
 
-- Mobile : alignement du mock login sur le vrai payload API, extraction de token robuste et enrichissement du modèle `Employee`
-- Mobile : stabilisation du `GoRouter` via un provider Riverpod dédié au lieu d'une recréation à chaque rebuild
-- Attendance API : normalisation de `/attendance/today` pour renvoyer un objet `data` cohérent en mode single ou collection
-- Estimation API : ajout d'une limite de période max (365 jours) sur `quick-estimate`
-- Tests : remplacement des stubs Flutter par des tests utiles de parsing/alignement, et mise à jour des feature tests backend associés
+- Mobile : alignement du mock login sur le vrai payload API, extraction de token robuste et enrichissement du modÃ¨le `Employee`
+- Mobile : stabilisation du `GoRouter` via un provider Riverpod dÃ©diÃ© au lieu d'une recrÃ©ation Ã  chaque rebuild
+- Attendance API : normalisation de `/attendance/today` pour renvoyer un objet `data` cohÃ©rent en mode single ou collection
+- Estimation API : ajout d'une limite de pÃ©riode max (365 jours) sur `quick-estimate`
+- Tests : remplacement des stubs Flutter par des tests utiles de parsing/alignement, et mise Ã  jour des feature tests backend associÃ©s
 
 ---
 
 ## [4.1.28] - 2026-04-07
-### Couverture unitaire des services métier
+### Couverture unitaire des services mÃ©tier
 
-- Ajout de tests unitaires dédiés pour `AuthService` (login, token metadata, statuts bloqués)
-- Ajout de tests unitaires dédiés pour `AttendanceService` (double check-in, check-out sans session, calcul heures/overtime)
-- Ajout de tests unitaires dédiés pour `EstimationService` (absence, `work_days`, taux de déduction HR template)
-- Alignement du schéma de test `CreatesMvpSchema` avec les colonnes `Schedule` réellement utilisées
+- Ajout de tests unitaires dÃ©diÃ©s pour `AuthService` (login, token metadata, statuts bloquÃ©s)
+- Ajout de tests unitaires dÃ©diÃ©s pour `AttendanceService` (double check-in, check-out sans session, calcul heures/overtime)
+- Ajout de tests unitaires dÃ©diÃ©s pour `EstimationService` (absence, `work_days`, taux de dÃ©duction HR template)
+- Alignement du schÃ©ma de test `CreatesMvpSchema` avec les colonnes `Schedule` rÃ©ellement utilisÃ©es
 
 ---
 
 ## [4.1.5] - 2026-04-04
 ### Hygiene docs + renforcement gouvernance
 
-- Alignement des points d'entrée repo sur `PILOTAGE.md` + prompts `v3` (README + docs/README)
-- `tools/check-governance.ps1` renforcé: inclut `PILOTAGE.md`, `.github/*`, et `docs/GESTION_PROJET/*` comme scope critique
-- Ajout `bon-fixed/` à `.gitignore` (évite le bruit local sur répertoire historique)
-- Normalisation encodage docs sous Windows (UTF-8 BOM sur les `.md` clés + `.editorconfig`)
+- Alignement des points d'entrÃ©e repo sur `PILOTAGE.md` + prompts `v3` (README + docs/README)
+- `tools/check-governance.ps1` renforcÃ©: inclut `PILOTAGE.md`, `.github/*`, et `docs/GESTION_PROJET/*` comme scope critique
+- Ajout `bon-fixed/` Ã  `.gitignore` (Ã©vite le bruit local sur rÃ©pertoire historique)
+- Normalisation encodage docs sous Windows (UTF-8 BOM sur les `.md` clÃ©s + `.editorconfig`)
 
 ---
 
 ## [4.1.6] - 2026-04-04
 ### Gouvernance anti-conflits (scribe)
 
-- Ajout règle “scribe” dans `docs/GESTION_PROJET/GARDE_FOUS.md` : un seul agent édite `PILOTAGE.md` + `CHANGELOG.md`
-- Bump `PROGRAM_VERSION` à `4.1.6` dans `PILOTAGE.md`
+- Ajout rÃ¨gle â€œscribeâ€ dans `docs/GESTION_PROJET/GARDE_FOUS.md` : un seul agent Ã©dite `PILOTAGE.md` + `CHANGELOG.md`
+- Bump `PROGRAM_VERSION` Ã  `4.1.6` dans `PILOTAGE.md`
 
 ---
 
 ## [4.1.7] - 2026-04-04
-### MVP-02 — Auth + Employés
+### MVP-02 â€” Auth + EmployÃ©s
 
 - Ajout endpoints Auth : `/api/v1/auth/login`, `/api/v1/auth/logout`, `/api/v1/auth/me`
-- Ajout CRUD employés : list/create/show/update/archive avec RBAC (manager vs self)
-- Ajout policies + services + FormRequests (pas de logique métier dans controllers)
-- Tests : auth, RBAC employés, isolation tenant
+- Ajout CRUD employÃ©s : list/create/show/update/archive avec RBAC (manager vs self)
+- Ajout policies + services + FormRequests (pas de logique mÃ©tier dans controllers)
+- Tests : auth, RBAC employÃ©s, isolation tenant
 
 ---
 
 ## [4.1.8] - 2026-04-04
-### CI — Gouvernance unifiée
+### CI â€” Gouvernance unifiÃ©e
 
-- CI: `Governance Gates` exécute `tools/check-governance.ps1` (plus de logique bash dupliquée)
-- Scope critique étendu à `mobile/` (PR Flutter ⇒ `CHANGELOG.md` requis)
+- CI: `Governance Gates` exÃ©cute `tools/check-governance.ps1` (plus de logique bash dupliquÃ©e)
+- Scope critique Ã©tendu Ã  `mobile/` (PR Flutter â‡’ `CHANGELOG.md` requis)
 
 ---
 
 ## [4.1.9] - 2026-04-04
-### CI — Stabilisation des checks PR
+### CI â€” Stabilisation des checks PR
 
-- Backend CI: ajout `gd` aux extensions PHP (dépendance requise par `barryvdh/laravel-dompdf`)
-- Backend CI: exécution temporaire sous PHP 8.4 (le `composer.lock` actuel exige Symfony v8 → PHP >= 8.4)
-- Mobile CI: alignement du nom du job sur `Mobile Flutter (Stable Channel)` (conforme aux règles de protection de branche)
+- Backend CI: ajout `gd` aux extensions PHP (dÃ©pendance requise par `barryvdh/laravel-dompdf`)
+- Backend CI: exÃ©cution temporaire sous PHP 8.4 (le `composer.lock` actuel exige Symfony v8 â†’ PHP >= 8.4)
+- Mobile CI: alignement du nom du job sur `Mobile Flutter (Stable Channel)` (conforme aux rÃ¨gles de protection de branche)
 
 ---
 
 ## [4.1.12] - 2026-04-05
-### MVP-04 — Estimation rapide + Reçu PDF
+### MVP-04 â€” Estimation rapide + ReÃ§u PDF
 
 - Ajout endpoints estimation:
   - `GET /api/v1/employees/{id}/daily-summary`
   - `GET /api/v1/employees/{id}/quick-estimate` (manager only)
   - `GET /api/v1/employees/{id}/receipt` (PDF, manager only)
-- Calcul estimation (MVP): base + heures sup (taux 1.25), déduction DZ 9% (CNAS)
+- Calcul estimation (MVP): base + heures sup (taux 1.25), dÃ©duction DZ 9% (CNAS)
 - Ajout template PDF avec disclaimer "NON OFFICIEL"
-- Ajout tests feature estimation + mise à jour schema de tests
+- Ajout tests feature estimation + mise Ã  jour schema de tests
 
 ---
 
 ## [4.1.13] - 2026-04-05
-### Gouvernance — Branch protection
+### Gouvernance â€” Branch protection
 
-- Mise à jour `.github/BRANCH_PROTECTION_REQUIRED.md` : alignement des checks requis (notamment `Mobile Flutter (Stable Channel)`) et note anti-"Expected"
+- Mise Ã  jour `.github/BRANCH_PROTECTION_REQUIRED.md` : alignement des checks requis (notamment `Mobile Flutter (Stable Channel)`) et note anti-"Expected"
 
 ---
 
 ## [4.1.14] - 2026-04-05
-### MVP-05 — Dashboard Web (Blade + Alpine.js)
+### MVP-05 â€” Dashboard Web (Blade + Alpine.js)
 
-- Ajout auth web (session) : `/login` → `/dashboard` (manager only)
-- Ajout dashboard manager : présence du jour + total estimé + retard + table employés
-- Ajout page employé : quick estimate (Alpine) + téléchargement PDF + historique 30 derniers logs
+- Ajout auth web (session) : `/login` â†’ `/dashboard` (manager only)
+- Ajout dashboard manager : prÃ©sence du jour + total estimÃ© + retard + table employÃ©s
+- Ajout page employÃ© : quick estimate (Alpine) + tÃ©lÃ©chargement PDF + historique 30 derniers logs
 
 ---
 
 ## [4.1.15] - 2026-04-05
-### Gouvernance — Alignement post-merges + Beta
+### Gouvernance â€” Alignement post-merges + Beta
 
-- Mise à jour `PILOTAGE.md` : MVP-01 à MVP-06 marqués comme mergés, Sprint 4 défini comme prochaine phase active
+- Mise Ã  jour `PILOTAGE.md` : MVP-01 Ã  MVP-06 marquÃ©s comme mergÃ©s, Sprint 4 dÃ©fini comme prochaine phase active
 - Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ACCEPTANCE.md` pour la validation end-to-end avant ouverture Beta
 
 ---
 
 ## [4.1.16] - 2026-04-05
-### Beta — Hardening auth web manager
+### Beta â€” Hardening auth web manager
 
 - Blocage du login web pour les comptes employe, inactifs, ou rattaches a une societe suspendue/expiree
 - Ajout de tests feature web pour la redirection guest, le login manager et les refus d'acces Beta
@@ -1189,7 +1202,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.17] - 2026-04-05
-### Beta — Web polish et couverture manager
+### Beta â€” Web polish et couverture manager
 
 - Correction des libelles web corrompus dans les vues Blade du dashboard et de la fiche employe
 - Ajout de tests feature pour l'acces manager au dashboard, au detail employe, au quick estimate et au PDF
@@ -1198,7 +1211,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.18] - 2026-04-05
-### Beta — Config MVP par defaut
+### Beta â€” Config MVP par defaut
 
 - Alignement des fallbacks Laravel sur le MVP reel: `SESSION_DRIVER=file`, `CACHE_STORE=file`, `QUEUE_CONNECTION=sync`
 - Remplacement de `api/.env.example` pour retirer les defaults Redis/Horizon et autres options hors scope Beta
@@ -1206,13 +1219,13 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.19] - 2026-04-05
-### Beta — Docs deploiement alignees MVP
+### Beta â€” Docs deploiement alignees MVP
 
 - Mise a jour de `api/README.md` pour refleter le stack MVP reel et les checks utiles
 - Mise a jour de `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` avec verifications post-deploy web, PDF et session
 
 ## [4.1.20] - 2026-04-06
-### Beta — Stabilisation mobile
+### Beta â€” Stabilisation mobile
 
 - Durcissement UX mobile sur erreurs reseau, timeout, 401 et 403
 - Nettoyage du flow login mobile (trim email, dispose des controllers)
@@ -1221,7 +1234,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.21] - 2026-04-06
-### Beta — Ops readiness
+### Beta â€” Ops readiness
 
 - Ajout `docs/GESTION_PROJET/RUNBOOK_BETA_ENV_SETUP.md` pour preparer l'environnement Beta reel
 - Ajout `docs/GESTION_PROJET/BETA_VALIDATION_REPORT_TEMPLATE.md` pour standardiser les rapports de recette
@@ -1230,7 +1243,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.22] - 2026-04-06
-### Beta — Unicite email multi-tenant
+### Beta â€” Unicite email multi-tenant
 
 - Validation `email` employees scopee par `company_id` a la creation et a la mise a jour
 - Schema de tests et migration tenant alignes sur une unicite composite `company_id + email`
@@ -1239,7 +1252,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.23] - 2026-04-07
-### Audit v3 — Correctifs critiques batch 1
+### Audit v3 â€” Correctifs critiques batch 1
 
 - CI backend basculee sur PostgreSQL de test avec migrations reelles avant `php artisan test`
 - Auth API branchee sur `user_lookups` avec resynchronisation automatique lors des sauvegardes employees
@@ -1252,7 +1265,7 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.24] - 2026-04-07
-### Audit v4 — Correctifs securite batch 2
+### Audit v4 â€” Correctifs securite batch 2
 
 - Revoque tous les tokens Sanctum lors de l'archivage d'un employe et bloque les comptes archives dans `TenantMiddleware`
 - Supprime le fallback production `sqlite` au profit de `pgsql` dans `config/database.php`
@@ -1263,14 +1276,14 @@ CODE_VERSION     = Version release applicative (git tag)
 ---
 
 ## [4.1.25] - 2026-04-07
-### Audit v4 — Alignement CI PostgreSQL
+### Audit v4 â€” Alignement CI PostgreSQL
 
-- Retire le forçage SQLite de `phpunit.xml` pour laisser la CI backend utiliser PostgreSQL
+- Retire le forÃ§age SQLite de `phpunit.xml` pour laisser la CI backend utiliser PostgreSQL
 - Ajoute un default `CURRENT_DATE` a `contract_start` dans la migration employees et le schema de tests
 
 ---
 ## [4.1.26] - 2026-04-07
-### Batch 1 — Tenant hardening
+### Batch 1 â€” Tenant hardening
 
 - Validation `matricule` scopee par `company_id` a la creation et a la mise a jour
 - Migration employees et schema de tests alignes sur une unicite composite `company_id + matricule`
@@ -1280,7 +1293,7 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 ## [4.1.27] - 2026-04-07
-### Batch 2 — Domaine et handler d'erreurs
+### Batch 2 â€” Domaine et handler d'erreurs
 
 - Remplacement des `abort()` metier dans `AuthService` et `AttendanceService` par des exceptions domaine
 - Ajout d'un handler global JSON pour erreurs domaine, validation, not found et authorization
@@ -1288,20 +1301,20 @@ CODE_VERSION     = Version release applicative (git tag)
 
 ---
 ## [4.1.11] - 2026-04-05
-### MVP-06 — App Flutter (bootstrap)
+### MVP-06 â€” App Flutter (bootstrap)
 
 - Ajout app Flutter sous `mobile/` : login, pointage (today/history), navigation (GoRouter) et state (Riverpod)
 - Couche API Dio + `flutter_secure_storage` (token auto + redirection login sur 401)
-- Mock interceptor + cache Hive + écrans shimmer + polish UI (pulse button, i18n format)
-- Post-MVP-06: branchement sur backend réel (parsing `token` + alignements endpoints attendance)
+- Mock interceptor + cache Hive + Ã©crans shimmer + polish UI (pulse button, i18n format)
+- Post-MVP-06: branchement sur backend rÃ©el (parsing `token` + alignements endpoints attendance)
 
 ---
 
 ## [4.1.10] - 2026-04-05
-### MVP-03 — Pointage (attendance)
+### MVP-03 â€” Pointage (attendance)
 
 - Ajout endpoints pointage (check-in/check-out/today/history) sous `/api/v1/attendance/*`
-- Ajout modèle/service/policy `AttendanceLog` + `Schedule` (multitenancy shared via scope `company_id`)
+- Ajout modÃ¨le/service/policy `AttendanceLog` + `Schedule` (multitenancy shared via scope `company_id`)
 - Ajout tests feature pointage (dup check-in, check-out sans check-in, heures/HS, RBAC manager vs employee, isolation tenant)
 
 ---
@@ -1393,234 +1406,234 @@ CODE_VERSION     = Version release applicative (git tag)
 ### Corrections globales post-audit (hors DB-only)
 
 - attendance_logs : ajout `schedule_id` (snapshot planning actif au pointage) dans SQL + ERD
-- languages : structure unifiée (`code`, `name_fr`, `name_native`, `is_rtl`, `is_active`) dans SQL + ERD
-- auth : suppression de `/auth/refresh` (Sanctum opaque, stratégie 401 puis relogin)
-- super_admin : spécification d'impersonation tenant en lecture seule (`X-Leopardo-Impersonate`)
-- ERD : renommage `2fa_secret` → `two_fa_secret` (alignement SQL)
+- languages : structure unifiÃ©e (`code`, `name_fr`, `name_native`, `is_rtl`, `is_active`) dans SQL + ERD
+- auth : suppression de `/auth/refresh` (Sanctum opaque, stratÃ©gie 401 puis relogin)
+- super_admin : spÃ©cification d'impersonation tenant en lecture seule (`X-Leopardo-Impersonate`)
+- ERD : renommage `2fa_secret` â†’ `two_fa_secret` (alignement SQL)
 - company_settings defaults : ajout `payroll.penalty_mode` et `payroll.penalty_brackets`
 
 ---
 
 ## [4.0.2] - 2026-04-04
-### Corrections schéma base de données (post-audit)
+### Corrections schÃ©ma base de donnÃ©es (post-audit)
 
-- companies.schema_name : VARCHAR(50/60) → VARCHAR(63) (limite PostgreSQL)
-- user_lookups.schema_name : VARCHAR(60) → VARCHAR(63) (alignement)
-- ERD : tenancy_type corrigé vers ['shared'|'schema'] (suppression de 'enterprise')
-- ERD : user_lookups PK corrigée (email PK, suppression colonne id)
+- companies.schema_name : VARCHAR(50/60) â†’ VARCHAR(63) (limite PostgreSQL)
+- user_lookups.schema_name : VARCHAR(60) â†’ VARCHAR(63) (alignement)
+- ERD : tenancy_type corrigÃ© vers ['shared'|'schema'] (suppression de 'enterprise')
+- ERD : user_lookups PK corrigÃ©e (email PK, suppression colonne id)
 - payrolls : ajout colonne penalty_deduction DECIMAL(12,2) DEFAULT 0
 - projects : ajout index GIN sur members JSONB (`idx_proj_members`)
-- company_settings : ajout du commentaire de contrat sur les clés valides
-- TenantService spec : ajout de la règle source de vérité `getDefaultSettings()`
+- company_settings : ajout du commentaire de contrat sur les clÃ©s valides
+- TenantService spec : ajout de la rÃ¨gle source de vÃ©ritÃ© `getDefaultSettings()`
 
 ---
 
 ## [4.0.1] - 2026-04-04
 ### Corrections post-audit critique
 
-- AUDIT_COMPLET_MANQUES.md : marqué ARCHIVÉ (obsolète depuis v3.3.0)
-- ORCHESTRATION_MAITRE.md : chemins fichiers corrigés, Manus retiré,
-  responsabilités frontend clarifiées
-- 03_MODELE_ECONOMIQUE.md : pricing multi-devises (DZD/MAD/TND) + TVA locale ajoutés
-- 08_FEUILLE_DE_ROUTE.md : buffer de réalité + jalons révisés ajoutés
+- AUDIT_COMPLET_MANQUES.md : marquÃ© ARCHIVÃ‰ (obsolÃ¨te depuis v3.3.0)
+- ORCHESTRATION_MAITRE.md : chemins fichiers corrigÃ©s, Manus retirÃ©,
+  responsabilitÃ©s frontend clarifiÃ©es
+- 03_MODELE_ECONOMIQUE.md : pricing multi-devises (DZD/MAD/TND) + TVA locale ajoutÃ©s
+- 08_FEUILLE_DE_ROUTE.md : buffer de rÃ©alitÃ© + jalons rÃ©visÃ©s ajoutÃ©s
 - NOUVEAU : 08_multitenancy/TENANT_MIGRATION_SERVICE_SPEC.md
-  (migration shared → schema, 7 étapes transactionnelles + tests)
-- CU-01_ET_AGENTS.md : règle de responsabilité frontend définitive ajoutée
+  (migration shared â†’ schema, 7 Ã©tapes transactionnelles + tests)
+- CU-01_ET_AGENTS.md : rÃ¨gle de responsabilitÃ© frontend dÃ©finitive ajoutÃ©e
 
 ---
 
 ## [4.0.0] - 2026-03-31
-### Gestion de projet + Dossier API complet (première tâche backend)
+### Gestion de projet + Dossier API complet (premiÃ¨re tÃ¢che backend)
 
 #### Gestion de projet robuste (docs/GESTION_PROJET/)
-- **`JOURNAL_DE_BORD.md`** — Source de vérité opérationnelle : tableau d'avancement B1-B12/M1-M4/F1, log de sessions (template), décisions architecturales figées (12 décisions), index des fichiers
-- **`CONTEXTE_SESSION_IA.md`** — À copier en début de chaque session IA : 12 règles absolues, état actuel, structure repo, convention de commits, fichiers de référence
-- **`SUIVI_PROMPTS.md`** — Checklist détaillée par session : Sprint 0 infra (14 items), CC-01 à CC-12 (backend), JU-01 à JU-04 (mobile), CU-01 (frontend), déploiement
+- **`JOURNAL_DE_BORD.md`** â€” Source de vÃ©ritÃ© opÃ©rationnelle : tableau d'avancement B1-B12/M1-M4/F1, log de sessions (template), dÃ©cisions architecturales figÃ©es (12 dÃ©cisions), index des fichiers
+- **`CONTEXTE_SESSION_IA.md`** â€” Ã€ copier en dÃ©but de chaque session IA : 12 rÃ¨gles absolues, Ã©tat actuel, structure repo, convention de commits, fichiers de rÃ©fÃ©rence
+- **`SUIVI_PROMPTS.md`** â€” Checklist dÃ©taillÃ©e par session : Sprint 0 infra (14 items), CC-01 Ã  CC-12 (backend), JU-01 Ã  JU-04 (mobile), CU-01 (frontend), dÃ©ploiement
 
-#### Dossier API — Migrations complètes (api/database/migrations/)
+#### Dossier API â€” Migrations complÃ¨tes (api/database/migrations/)
 
-**Schéma public (public/) :**
-- `000001_create_plans_table` — plans avec features JSONB (excel_export corrigé Starter)
-- `000002_create_companies_table` — UUID, tenancy_type, timezone, currency, status
-- `000003_create_public_support_tables` — super_admins, user_lookups (employee_id unifié), languages, hr_model_templates, invoices, billing_transactions
+**SchÃ©ma public (public/) :**
+- `000001_create_plans_table` â€” plans avec features JSONB (excel_export corrigÃ© Starter)
+- `000002_create_companies_table` â€” UUID, tenancy_type, timezone, currency, status
+- `000003_create_public_support_tables` â€” super_admins, user_lookups (employee_id unifiÃ©), languages, hr_model_templates, invoices, billing_transactions
 
-**Schéma tenant (tenant/) :**
-- `000100` — departments (sans manager_id), positions, schedules (work_days JSONB, HS thresholds), sites (GPS)
-- `000101` — employees : manager_id (décision figée, PAS supervisor_id), status VARCHAR (PAS is_active), zkteco_id, salary_base, EncryptedCast pour iban/bank_account/national_id
-- `000102` — departments.manager_id (résolution dépendance circulaire), employee_devices (FCM — décision: table séparée, PAS JSONB), devices (ZKTeco/QR)
-- `000103` — attendance_logs (session_number split-shift, contrainte UNIQUE corrigée, commentaire timezone UTC→tz entreprise), absence_types, absences (CHECK end>=start), leave_balance_logs, salary_advances (statut 'active' présent, amount_remaining)
-- `000104` — projects, tasks, task_comments, evaluations, payrolls (gross_salary champ calculé ≠ salary_base), payroll_export_batches, company_settings (onboarding 4 étapes), audit_logs (Observer Eloquent), notifications
+**SchÃ©ma tenant (tenant/) :**
+- `000100` â€” departments (sans manager_id), positions, schedules (work_days JSONB, HS thresholds), sites (GPS)
+- `000101` â€” employees : manager_id (dÃ©cision figÃ©e, PAS supervisor_id), status VARCHAR (PAS is_active), zkteco_id, salary_base, EncryptedCast pour iban/bank_account/national_id
+- `000102` â€” departments.manager_id (rÃ©solution dÃ©pendance circulaire), employee_devices (FCM â€” dÃ©cision: table sÃ©parÃ©e, PAS JSONB), devices (ZKTeco/QR)
+- `000103` â€” attendance_logs (session_number split-shift, contrainte UNIQUE corrigÃ©e, commentaire timezone UTCâ†’tz entreprise), absence_types, absences (CHECK end>=start), leave_balance_logs, salary_advances (statut 'active' prÃ©sent, amount_remaining)
+- `000104` â€” projects, tasks, task_comments, evaluations, payrolls (gross_salary champ calculÃ© â‰  salary_base), payroll_export_batches, company_settings (onboarding 4 Ã©tapes), audit_logs (Observer Eloquent), notifications
 
-#### Dossier API — Seeders (api/database/seeders/)
-- **`PlanSeeder`** — 3 plans avec TOUTES les features (excel_export=true Starter, evaluations, schema_isolation)
-- **`LanguageSeeder`** — fr/ar(RTL)/en/tr (JAMAIS es)
-- **`HrModelSeeder`** — 5 modèles pays complets : DZ/MA/TN/FR/TR (cotisations salariales+patronales, tranches IR, règles congés, jours fériés, seuils HS)
-- **`SuperAdminSeeder`** — Premier admin depuis .env, idempotent, sécurisé
-- **`DatabaseSeeder`** — Orchestrateur avec messages clairs + conseils post-seed
-- **`DemoCompanySeeder`** — Local uniquement : 7 employés + 20j pointages + absences + avance + paie
+#### Dossier API â€” Seeders (api/database/seeders/)
+- **`PlanSeeder`** â€” 3 plans avec TOUTES les features (excel_export=true Starter, evaluations, schema_isolation)
+- **`LanguageSeeder`** â€” fr/ar(RTL)/en/tr (JAMAIS es)
+- **`HrModelSeeder`** â€” 5 modÃ¨les pays complets : DZ/MA/TN/FR/TR (cotisations salariales+patronales, tranches IR, rÃ¨gles congÃ©s, jours fÃ©riÃ©s, seuils HS)
+- **`SuperAdminSeeder`** â€” Premier admin depuis .env, idempotent, sÃ©curisÃ©
+- **`DatabaseSeeder`** â€” Orchestrateur avec messages clairs + conseils post-seed
+- **`DemoCompanySeeder`** â€” Local uniquement : 7 employÃ©s + 20j pointages + absences + avance + paie
 
-#### Dossier API — Factories (api/database/factories/)
-- **`CompanyFactory`** — États: withPlan(), enterprise(), trial(), suspended(), inGracePeriod(), algeria()
-- **`EmployeeFactory`** — États: manager(), managerRh(), managerDept(), archived(), withBiometric(), createWithToken()
-- **`TenantFactories`** — AttendanceLogFactory (late, withOvertime, manual), AbsenceFactory (approved, rejected, past), SalaryAdvanceFactory (active/repaid avec calcul mensualités), PayrollFactory (validated, withAdvanceDeduction)
-- **`api/database/README.md`** — Guide complet : architecture, ordre migrations, commandes, factories usage, connexions démo
+#### Dossier API â€” Factories (api/database/factories/)
+- **`CompanyFactory`** â€” Ã‰tats: withPlan(), enterprise(), trial(), suspended(), inGracePeriod(), algeria()
+- **`EmployeeFactory`** â€” Ã‰tats: manager(), managerRh(), managerDept(), archived(), withBiometric(), createWithToken()
+- **`TenantFactories`** â€” AttendanceLogFactory (late, withOvertime, manual), AbsenceFactory (approved, rejected, past), SalaryAdvanceFactory (active/repaid avec calcul mensualitÃ©s), PayrollFactory (validated, withAdvanceDeduction)
+- **`api/database/README.md`** â€” Guide complet : architecture, ordre migrations, commandes, factories usage, connexions dÃ©mo
 
 ---
 
 ## [3.3.3] - 2026-03-31
-### Complétion des 8% manquants — Approche 100% de couverture
+### ComplÃ©tion des 8% manquants â€” Approche 100% de couverture
 
-#### Diagrammes UML (19_diagrammes_uml/ — 9 fichiers Mermaid)
-- **`08_use_case_diagramme.md`** : Diagramme Use Case complet — 7 acteurs, 49 use cases, 11 modules fonctionnels, tableaux détaillés par acteur
-- **`09_public_registration_sequence.md`** : Diagramme de séquence inscription publique — flux `POST /public/register` avec TenantService 7 étapes, 3 chemins alternatifs (422/409/429)
+#### Diagrammes UML (19_diagrammes_uml/ â€” 9 fichiers Mermaid)
+- **`08_use_case_diagramme.md`** : Diagramme Use Case complet â€” 7 acteurs, 49 use cases, 11 modules fonctionnels, tableaux dÃ©taillÃ©s par acteur
+- **`09_public_registration_sequence.md`** : Diagramme de sÃ©quence inscription publique â€” flux `POST /public/register` avec TenantService 7 Ã©tapes, 3 chemins alternatifs (422/409/429)
 
-#### Spécification OpenAPI/Swagger (api/openapi.yaml)
-- **`openapi.yaml`** : Spécification OpenAPI 3.0.3 complète — 76 endpoints, 57 schemas composants, 22 tags, exemples de payloads, codes HTTP francisés, références croisées `$ref`
+#### SpÃ©cification OpenAPI/Swagger (api/openapi.yaml)
+- **`openapi.yaml`** : SpÃ©cification OpenAPI 3.0.3 complÃ¨te â€” 76 endpoints, 57 schemas composants, 22 tags, exemples de payloads, codes HTTP francisÃ©s, rÃ©fÃ©rences croisÃ©es `$ref`
 
 #### Nouvelles specs techniques
-- **`08_multitenancy/10_TENANT_MIGRATION_SERVICE.md`** : Spec TenantMigrationService — migration shared → dedicated schema (Enterprise upgrade), 8 étapes avec rollback transactionnel, backup pre-migration, vérification intégrité, temps estimé < 30s/500 employés
-- **`07_securite_rbac/14_PAYMENT_WEBHOOKS_SPEC.md`** : Spec Webhooks Paiement — Stripe + Paydunya (SN, CI, ML, BF, CM, GN), 4 événements, vérification signature (Stripe SDK + HMAC-SHA256), queue async, retry exponentiel 3x
-- **`07_securite_rbac/15_SUPERADMIN_MIDDLEWARE_SPEC.md`** : Spec SuperAdminMiddleware — double provider Sanctum (super_admin_tokens public vs personal_access_tokens tenant), fallback employee → super_admin, routes /admin/* protégées
+- **`08_multitenancy/10_TENANT_MIGRATION_SERVICE.md`** : Spec TenantMigrationService â€” migration shared â†’ dedicated schema (Enterprise upgrade), 8 Ã©tapes avec rollback transactionnel, backup pre-migration, vÃ©rification intÃ©gritÃ©, temps estimÃ© < 30s/500 employÃ©s
+- **`07_securite_rbac/14_PAYMENT_WEBHOOKS_SPEC.md`** : Spec Webhooks Paiement â€” Stripe + Paydunya (SN, CI, ML, BF, CM, GN), 4 Ã©vÃ©nements, vÃ©rification signature (Stripe SDK + HMAC-SHA256), queue async, retry exponentiel 3x
+- **`07_securite_rbac/15_SUPERADMIN_MIDDLEWARE_SPEC.md`** : Spec SuperAdminMiddleware â€” double provider Sanctum (super_admin_tokens public vs personal_access_tokens tenant), fallback employee â†’ super_admin, routes /admin/* protÃ©gÃ©es
 
 #### Corrections SQL
-- **`07_SCHEMA_SQL_COMPLET.sql`** : Ajout `CONSTRAINT chk_absence_dates CHECK (end_date >= start_date)` dans la table `absences` du schéma tenant
+- **`07_SCHEMA_SQL_COMPLET.sql`** : Ajout `CONSTRAINT chk_absence_dates CHECK (end_date >= start_date)` dans la table `absences` du schÃ©ma tenant
 
-#### Documents mis à jour
-- **`ARBORESCENCE_PROJET_COMPLET.md`** : version 3.1 → 3.3.2, ajout `19_diagrammes_uml/`, `TenantMigrationService`, `SuperAdminMiddleware` dans la structure
-- **`README.md`** : ajout `api/openapi.yaml` et `19_diagrammes_uml/` dans les sources de vérité et la documentation
-- **`ORCHESTRATION_MAITRE.md`** : mise à jour index fichiers, score docs, endpoints 70→82+
+#### Documents mis Ã  jour
+- **`ARBORESCENCE_PROJET_COMPLET.md`** : version 3.1 â†’ 3.3.2, ajout `19_diagrammes_uml/`, `TenantMigrationService`, `SuperAdminMiddleware` dans la structure
+- **`README.md`** : ajout `api/openapi.yaml` et `19_diagrammes_uml/` dans les sources de vÃ©ritÃ© et la documentation
+- **`ORCHESTRATION_MAITRE.md`** : mise Ã  jour index fichiers, score docs, endpoints 70â†’82+
 
 ---
 
 ## [3.3.2] - 2026-03-31
-### Rétrospection finale — Lacunes comblées avant top départ
+### RÃ©trospection finale â€” Lacunes comblÃ©es avant top dÃ©part
 
-#### Corrections de cohérence (audit final v3.3.2)
-- **README.md** : version corrigée 3.1 → 3.3.2, compteur endpoints 70 → 82+
-- **API contrats header** : « 70/70 » → « 82+/82+ », version 2.0 → 2.1
-- **ARBORESCENCE_PROJET_COMPLET.md** : compteur endpoints 70 → 82+
-- **Dart Project model** : `ProjectStatus` enum corrigé — suppression `paused`/`cancelled` (inexistants SQL), alignement sur `active|completed|archived`
-- **22_ERREURS_ET_LOGS.md** v1.1 : ajout section complète « Stratégie de remplissage audit_logs » (Observer Eloquent, modèles observés, rétention 24 mois, exclusion champs sensibles)
-- **22_ERREURS_ET_LOGS.md** v1.1 : ajout section « Gestion des timezones dans les calculs » (conversion UTC ↔ timezone entreprise, règles obligatoires pour développeurs, impact sur rapports)
-- **CC-03 Module Pointage** : ajout règle §0 conversion timezone obligatoire avant toute comparaison métier (référence 22_ERREURS_ET_LOGS.md §4)
+#### Corrections de cohÃ©rence (audit final v3.3.2)
+- **README.md** : version corrigÃ©e 3.1 â†’ 3.3.2, compteur endpoints 70 â†’ 82+
+- **API contrats header** : Â« 70/70 Â» â†’ Â« 82+/82+ Â», version 2.0 â†’ 2.1
+- **ARBORESCENCE_PROJET_COMPLET.md** : compteur endpoints 70 â†’ 82+
+- **Dart Project model** : `ProjectStatus` enum corrigÃ© â€” suppression `paused`/`cancelled` (inexistants SQL), alignement sur `active|completed|archived`
+- **22_ERREURS_ET_LOGS.md** v1.1 : ajout section complÃ¨te Â« StratÃ©gie de remplissage audit_logs Â» (Observer Eloquent, modÃ¨les observÃ©s, rÃ©tention 24 mois, exclusion champs sensibles)
+- **22_ERREURS_ET_LOGS.md** v1.1 : ajout section Â« Gestion des timezones dans les calculs Â» (conversion UTC â†” timezone entreprise, rÃ¨gles obligatoires pour dÃ©veloppeurs, impact sur rapports)
+- **CC-03 Module Pointage** : ajout rÃ¨gle Â§0 conversion timezone obligatoire avant toute comparaison mÃ©tier (rÃ©fÃ©rence 22_ERREURS_ET_LOGS.md Â§4)
 
-#### Endpoints manquants ajoutés dans API_CONTRATS (02_API_CONTRATS_COMPLET.md)
-- **Profil employé** : `GET /profile`, `PUT /profile`, `POST /profile/photo`, `PUT /profile/password` (4 endpoints)
-- **Notifications SSE** : `GET /notifications/stream` — Content-Type text/event-stream, note Nginx (1 endpoint)
+#### Endpoints manquants ajoutÃ©s dans API_CONTRATS (02_API_CONTRATS_COMPLET.md)
+- **Profil employÃ©** : `GET /profile`, `PUT /profile`, `POST /profile/photo`, `PUT /profile/password` (4 endpoints)
+- **Notifications SSE** : `GET /notifications/stream` â€” Content-Type text/event-stream, note Nginx (1 endpoint)
 - **Onboarding** : `GET /onboarding/status`, `POST /onboarding/complete` (2 endpoints)
 - **Admin langues** : `GET /admin/languages`, `PUT /admin/languages/{id}` (2 endpoints)
 - **Admin HR models** : `GET /admin/hr-models`, `GET /admin/hr-models/{country_code}` (2 endpoints)
-- **Total API : 82+ endpoints** (était 70)
+- **Total API : 82+ endpoints** (Ã©tait 70)
 
-#### PayrollService corrigé (CC-03_A_CC-06_MODULES.md)
-- Ajout étape 7 : `calculateLatePenalties()` avec règle plafond = 1 journée de salaire
-- Retour de `penalty_deduction` dans le tableau de résultat (cohérence avec 05_REGLES_METIER.md §3)
-- Numérotation des étapes mise à jour (9 → 11 étapes)
+#### PayrollService corrigÃ© (CC-03_A_CC-06_MODULES.md)
+- Ajout Ã©tape 7 : `calculateLatePenalties()` avec rÃ¨gle plafond = 1 journÃ©e de salaire
+- Retour de `penalty_deduction` dans le tableau de rÃ©sultat (cohÃ©rence avec 05_REGLES_METIER.md Â§3)
+- NumÃ©rotation des Ã©tapes mise Ã  jour (9 â†’ 11 Ã©tapes)
 
-#### Modèle Dart corrigé (20_MODELES_DART_COMPLET.md)
-- `AttendanceLog` : ajout de `sessionNumber` (int, défaut 1) + `fromJson` mis à jour
+#### ModÃ¨le Dart corrigÃ© (20_MODELES_DART_COMPLET.md)
+- `AttendanceLog` : ajout de `sessionNumber` (int, dÃ©faut 1) + `fromJson` mis Ã  jour
 
-#### mock_payroll.json mis à jour
-- `penalty_deduction: 0` ajouté dans `deductions` de chaque bulletin (cohérence avec PayrollService)
+#### mock_payroll.json mis Ã  jour
+- `penalty_deduction: 0` ajoutÃ© dans `deductions` de chaque bulletin (cohÃ©rence avec PayrollService)
 
-#### ORCHESTRATION_MAITRE.md mis à jour (v3.3.1)
+#### ORCHESTRATION_MAITRE.md mis Ã  jour (v3.3.1)
 - Date : 31 Mars 2026
-- Index des fichiers : chemins réels de la structure actuelle (docs/dossierdeConception/...)
-- Score documentation : 31/31 (était 23/23 — périmé)
-- Checklist finale mise à jour
+- Index des fichiers : chemins rÃ©els de la structure actuelle (docs/dossierdeConception/...)
+- Score documentation : 31/31 (Ã©tait 23/23 â€” pÃ©rimÃ©)
+- Checklist finale mise Ã  jour
 
 #### README.md
-- Compte endpoints corrigé : 70 → 82+
+- Compte endpoints corrigÃ© : 70 â†’ 82+
 
 ---
 
 ## [3.3.1] - 2026-03-31
-### Corrections bugs signalés par pair review
+### Corrections bugs signalÃ©s par pair review
 
-- **`CC-03_A_CC-06_MODULES.md`** : `$employee->salary_base` (supprimé le fantôme `gross_salary` — champ inexistant sur le modèle Employee)
-- **`JU-01_A_JU-04_FLUTTER.md`** : `l10n/ (fr, ar, en, tr)` — turc, pas espagnol
-- **`CC-01_INIT_LARAVEL.md`** : `LanguageSeeder (fr, ar, tr, en)` — supprimé `es` (espagnol non supporté)
-- **`12_SECURITY_SPEC_COMPLETE.md`** : `national_id` rechiffré AES-256 via `EncryptedCast` (conformité légale RGPD / Loi 18-07 DZ / 09-08 MA)
-- **`07_SCHEMA_SQL_COMPLET.sql`** : `session_number SMALLINT DEFAULT 1` + `UNIQUE(employee_id, date, session_number)` — support split-shift; commentaire chiffrement `national_id`
-- **`04_architecture_erd/03_ERD_COMPLET.md`** : `session_number` ajouté dans `attendance_logs`, contrainte UNIQUE corrigée, annotation `national_id` chiffré, annotation `payrolls.gross_salary` ≠ `employees.salary_base`
-- **`01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`** : 5 occurrences `gross_salary` → `salary_base` dans les endpoints Employee (POST /employees, GET /employees/{id}, PUT /employees, CSV import) — `gross_salary` conservé uniquement dans les réponses de bulletin de paie (correct)
-- **Mocks attendance** : 3 fichiers JSON réécrits au format `sessions[]` cohérent avec le nouveau schéma `session_number` — exemple split-shift inclus (09/04)
+- **`CC-03_A_CC-06_MODULES.md`** : `$employee->salary_base` (supprimÃ© le fantÃ´me `gross_salary` â€” champ inexistant sur le modÃ¨le Employee)
+- **`JU-01_A_JU-04_FLUTTER.md`** : `l10n/ (fr, ar, en, tr)` â€” turc, pas espagnol
+- **`CC-01_INIT_LARAVEL.md`** : `LanguageSeeder (fr, ar, tr, en)` â€” supprimÃ© `es` (espagnol non supportÃ©)
+- **`12_SECURITY_SPEC_COMPLETE.md`** : `national_id` rechiffrÃ© AES-256 via `EncryptedCast` (conformitÃ© lÃ©gale RGPD / Loi 18-07 DZ / 09-08 MA)
+- **`07_SCHEMA_SQL_COMPLET.sql`** : `session_number SMALLINT DEFAULT 1` + `UNIQUE(employee_id, date, session_number)` â€” support split-shift; commentaire chiffrement `national_id`
+- **`04_architecture_erd/03_ERD_COMPLET.md`** : `session_number` ajoutÃ© dans `attendance_logs`, contrainte UNIQUE corrigÃ©e, annotation `national_id` chiffrÃ©, annotation `payrolls.gross_salary` â‰  `employees.salary_base`
+- **`01_API_CONTRATS_COMPLETS/02_API_CONTRATS_COMPLET.md`** : 5 occurrences `gross_salary` â†’ `salary_base` dans les endpoints Employee (POST /employees, GET /employees/{id}, PUT /employees, CSV import) â€” `gross_salary` conservÃ© uniquement dans les rÃ©ponses de bulletin de paie (correct)
+- **Mocks attendance** : 3 fichiers JSON rÃ©Ã©crits au format `sessions[]` cohÃ©rent avec le nouveau schÃ©ma `session_number` â€” exemple split-shift inclus (09/04)
 
 ---
 
 ## [3.3.0] - 2026-03-31
-### Intégration pull ami — Specs manquantes critiques
+### IntÃ©gration pull ami â€” Specs manquantes critiques
 
 #### Nouveaux fichiers
-- **`08_multitenancy/09_TENANT_SERVICE_SPEC.md`** : implémentation complète `TenantService` en 7 étapes transactionnelles (création schéma, settings RH, planning par défaut, types d'absence, manager, user_lookups, email bienvenue) + méthode `purgeExpiredTenant` + 2 tests Pest
-- **`07_securite_rbac/13_CHECK_SUBSCRIPTION_SPEC.md`** : spec `CheckSubscription` middleware — période de grâce 3 jours, header `X-Subscription-Grace`, crons `subscriptions:check`, `SubscriptionExpiredScreen` Flutter, 3 tests Pest
-- **`20_templates_pdf/25_TEMPLATE_BULLETIN_PAIE.md`** : template Blade complet bulletin de paie (DomPDF), mentions légales par pays (NIF/RC/MF/Vergi No), support RTL arabe (police DejaVu Sans)
-- **`20_templates_pdf/26_FORMATS_EXPORT_BANCAIRE.md`** : formats CSV/XML export virement bancaire par pays — DZ_GENERIC (Phase 1), MA_CIH, FR_SEPA ISO 20022, TN/TR génériques (Phase 2)
+- **`08_multitenancy/09_TENANT_SERVICE_SPEC.md`** : implÃ©mentation complÃ¨te `TenantService` en 7 Ã©tapes transactionnelles (crÃ©ation schÃ©ma, settings RH, planning par dÃ©faut, types d'absence, manager, user_lookups, email bienvenue) + mÃ©thode `purgeExpiredTenant` + 2 tests Pest
+- **`07_securite_rbac/13_CHECK_SUBSCRIPTION_SPEC.md`** : spec `CheckSubscription` middleware â€” pÃ©riode de grÃ¢ce 3 jours, header `X-Subscription-Grace`, crons `subscriptions:check`, `SubscriptionExpiredScreen` Flutter, 3 tests Pest
+- **`20_templates_pdf/25_TEMPLATE_BULLETIN_PAIE.md`** : template Blade complet bulletin de paie (DomPDF), mentions lÃ©gales par pays (NIF/RC/MF/Vergi No), support RTL arabe (police DejaVu Sans)
+- **`20_templates_pdf/26_FORMATS_EXPORT_BANCAIRE.md`** : formats CSV/XML export virement bancaire par pays â€” DZ_GENERIC (Phase 1), MA_CIH, FR_SEPA ISO 20022, TN/TR gÃ©nÃ©riques (Phase 2)
 
 #### Fichiers enrichis
 - **`.env.example`** (api/ + 15_CICD_ET_CONFIG/) : ajout `SUBSCRIPTION_GRACE_DAYS`, `SANCTUM_TOKEN_EXPIRATION_DAYS`, commentaires crons (subscriptions:check, leave:accrue, payroll:overtime, audit:purge), `TENANCY_DEFAULT_TYPE`
-- **`09_tests_qualite/16_STRATEGIE_TESTS.md`** : ajout des tests `CreateTenantTest` et `SubscriptionTest` (5 scénarios supplémentaires)
-- **`ARBORESCENCE_PROJET_COMPLET.md`** : mise à jour avec `20_templates_pdf/`, `SubscriptionService`, annotations des nouveaux fichiers
-- **`README.md`** : 4 nouvelles sources de vérité ajoutées dans le tableau
+- **`09_tests_qualite/16_STRATEGIE_TESTS.md`** : ajout des tests `CreateTenantTest` et `SubscriptionTest` (5 scÃ©narios supplÃ©mentaires)
+- **`ARBORESCENCE_PROJET_COMPLET.md`** : mise Ã  jour avec `20_templates_pdf/`, `SubscriptionService`, annotations des nouveaux fichiers
+- **`README.md`** : 4 nouvelles sources de vÃ©ritÃ© ajoutÃ©es dans le tableau
 
 ---
 
 ## [3.2.0] - 2026-03-31
-### Nettoyage et consolidation finale (pré-codage)
+### Nettoyage et consolidation finale (prÃ©-codage)
 
 #### Suppressions (doublons et parasites)
-- **`gestionemployer_CLEAN/`** : dossier export ZIP supprimé du repo (ne jamais mettre d'archives dans le repo)
-- **`19_data/`** : dossier supprimé (contenait uniquement des doublons de 09, 10, 11)
-- **`{backend,mobile,...},06_ORCHESTRATION}/`** : dossier au nom cassé supprimé
-- **`04_architecture_erd/05_SEEDERS_ET_DONNEES_INITIALES.md`** : doublon supprimé (source de vérité = `18_schemas_sql/`)
-- **`docs/17_MOCK_JSON/mock_*.json`** : 9 JSON supprimés (source de vérité = `mobile/assets/mock/`)
-- **`docs/PROMPTS_EXECUTION/99_prompts_execution/PROMPT_MASTER_CLAUDE_CODE.md`** : doublon supprimé
-- **`docs/dossierdeConception/15_CICD_ET_CONFIG/deploy.yml` + `tests.yml`** : doublons supprimés (source de vérité = `.github/workflows/`)
+- **`gestionemployer_CLEAN/`** : dossier export ZIP supprimÃ© du repo (ne jamais mettre d'archives dans le repo)
+- **`19_data/`** : dossier supprimÃ© (contenait uniquement des doublons de 09, 10, 11)
+- **`{backend,mobile,...},06_ORCHESTRATION}/`** : dossier au nom cassÃ© supprimÃ©
+- **`04_architecture_erd/05_SEEDERS_ET_DONNEES_INITIALES.md`** : doublon supprimÃ© (source de vÃ©ritÃ© = `18_schemas_sql/`)
+- **`docs/17_MOCK_JSON/mock_*.json`** : 9 JSON supprimÃ©s (source de vÃ©ritÃ© = `mobile/assets/mock/`)
+- **`docs/PROMPTS_EXECUTION/99_prompts_execution/PROMPT_MASTER_CLAUDE_CODE.md`** : doublon supprimÃ©
+- **`docs/dossierdeConception/15_CICD_ET_CONFIG/deploy.yml` + `tests.yml`** : doublons supprimÃ©s (source de vÃ©ritÃ© = `.github/workflows/`)
 
 #### Corrections
-- **ERD v2.0** : `tenancy_type` ajouté dans `companies`, `zkteco_id` dans `employees`, statut `active` dans `salary_advances`, table `user_lookups` complète avec politique de synchronisation
-- **`docs/dossierdeConception/PROMPTcONCEPTion.md`** : archivé dans `00_docs/NOTES_CONCEPTION_INITIALES.md`
+- **ERD v2.0** : `tenancy_type` ajoutÃ© dans `companies`, `zkteco_id` dans `employees`, statut `active` dans `salary_advances`, table `user_lookups` complÃ¨te avec politique de synchronisation
+- **`docs/dossierdeConception/PROMPTcONCEPTion.md`** : archivÃ© dans `00_docs/NOTES_CONCEPTION_INITIALES.md`
 
 #### Ajouts
-- **`docs/dossierdeConception/13_i18n/11_I18N_STRATEGIE_COMPLETE.md`** : stratégie i18n complète (fr/ar/en/tr, RTL Flutter + Vue.js, ARB, formats dates/montants, bulletins PDF multilingues)
-- **`docs/dossierdeConception/14_glossaire/21_GLOSSAIRE_ET_DICTIONNAIRE.md`** : glossaire A-Z de 40+ termes métier et techniques
-- **`docs/dossierdeConception/15_CICD_ET_CONFIG/README_CONFIG.md`** : clarification rôle du dossier vs `.github/workflows/`
-- **`.gitignore`** : ajouté à la racine (exclut *.zip, *_CLEAN/, vendor/, build/, .env)
+- **`docs/dossierdeConception/13_i18n/11_I18N_STRATEGIE_COMPLETE.md`** : stratÃ©gie i18n complÃ¨te (fr/ar/en/tr, RTL Flutter + Vue.js, ARB, formats dates/montants, bulletins PDF multilingues)
+- **`docs/dossierdeConception/14_glossaire/21_GLOSSAIRE_ET_DICTIONNAIRE.md`** : glossaire A-Z de 40+ termes mÃ©tier et techniques
+- **`docs/dossierdeConception/15_CICD_ET_CONFIG/README_CONFIG.md`** : clarification rÃ´le du dossier vs `.github/workflows/`
+- **`.gitignore`** : ajoutÃ© Ã  la racine (exclut *.zip, *_CLEAN/, vendor/, build/, .env)
 
-#### Mises à jour
-- **`ARBORESCENCE_PROJET_COMPLET.md`** : réécrite en v3.1, reflète la structure réelle avec `api/`, `mobile/`, `docs/`
-- **`README.md`** (racine) : réécrit, tableau des sources de vérité, ordre de démarrage
-- **`docs/README.md`** : réécrit, périmé depuis migration vers docs/
+#### Mises Ã  jour
+- **`ARBORESCENCE_PROJET_COMPLET.md`** : rÃ©Ã©crite en v3.1, reflÃ¨te la structure rÃ©elle avec `api/`, `mobile/`, `docs/`
+- **`README.md`** (racine) : rÃ©Ã©crit, tableau des sources de vÃ©ritÃ©, ordre de dÃ©marrage
+- **`docs/README.md`** : rÃ©Ã©crit, pÃ©rimÃ© depuis migration vers docs/
 
 ---
 
 ## [3.1.0] - 2026-03-30
 ### Corrections critiques (bugs bloquants)
-- **SQL** `salary_advances.status` : ajout du statut `'active'` dans le CHECK constraint (était absent, causait un crash PayrollService)
-- **SQL** `user_lookups` : renommage `user_id` → `employee_id` (alignement ERD ↔ SQL)
+- **SQL** `salary_advances.status` : ajout du statut `'active'` dans le CHECK constraint (Ã©tait absent, causait un crash PayrollService)
+- **SQL** `user_lookups` : renommage `user_id` â†’ `employee_id` (alignement ERD â†” SQL)
 - **ERD** `employees` : suppression de `supervisor_id` (doublon de `manager_id`), ajout de `manager_id` et `zkteco_id` manquants
 - **ERD** `employees` : remplacement de `is_active BOOL` par `status VARCHAR(20)` (alignement SQL)
-- **ERD** `salary_advances` : renommage `repaid_amount` → `amount_remaining` (alignement SQL), ajout de `decision_comment`
-- **Seeders** `PlanSeeder` : correction `excel_export: false → true` pour le plan Starter (source de vérité: modèle économique)
+- **ERD** `salary_advances` : renommage `repaid_amount` â†’ `amount_remaining` (alignement SQL), ajout de `decision_comment`
+- **Seeders** `PlanSeeder` : correction `excel_export: false â†’ true` pour le plan Starter (source de vÃ©ritÃ©: modÃ¨le Ã©conomique)
 - **Seeders** `PlanSeeder` : ajout des features `evaluations` et `schema_isolation` dans les 3 plans
 - **Dart** `AdvanceStatus` : ajout du statut `active` dans l'enum + getter `isActive` sur `SalaryAdvance`
 
-### Ajouts manquants (avant démarrage du code)
-- **API** : Endpoint `POST /public/register` (auto-onboarding Trial sans Super Admin) — spec complète avec payload, validations, comportement backend
-- **API** : Endpoint `POST /devices/{id}/rotate-token` (rotation sécurisée des tokens ZKTeco)
-- **API** : Réponse 403 `PLAN_EMPLOYEE_LIMIT_REACHED` sur `POST /employees`
-- **Nouveau fichier** `07_securite_rbac/11_PLAN_LIMIT_MIDDLEWARE.md` — spec + implémentation Laravel + 3 tests Pest
-- **Nouveau fichier** `11_ux_wireframes/24_ONBOARDING_GUIDE.md` — 4 étapes onboarding, API endpoints, composant Vue.js, séquence emails
-- **Notifications** : Stratégie SSE (Server-Sent Events) pour notifications temps réel web — spec Laravel + Nginx + Vue.js composable
-- **Stockage** : Décision tranchée Phase 1 = local (storage Laravel o2switch), Phase 2 = Cloudflare R2 — calcul taille estimée 8GB
+### Ajouts manquants (avant dÃ©marrage du code)
+- **API** : Endpoint `POST /public/register` (auto-onboarding Trial sans Super Admin) â€” spec complÃ¨te avec payload, validations, comportement backend
+- **API** : Endpoint `POST /devices/{id}/rotate-token` (rotation sÃ©curisÃ©e des tokens ZKTeco)
+- **API** : RÃ©ponse 403 `PLAN_EMPLOYEE_LIMIT_REACHED` sur `POST /employees`
+- **Nouveau fichier** `07_securite_rbac/11_PLAN_LIMIT_MIDDLEWARE.md` â€” spec + implÃ©mentation Laravel + 3 tests Pest
+- **Nouveau fichier** `11_ux_wireframes/24_ONBOARDING_GUIDE.md` â€” 4 Ã©tapes onboarding, API endpoints, composant Vue.js, sÃ©quence emails
+- **Notifications** : StratÃ©gie SSE (Server-Sent Events) pour notifications temps rÃ©el web â€” spec Laravel + Nginx + Vue.js composable
+- **Stockage** : DÃ©cision tranchÃ©e Phase 1 = local (storage Laravel o2switch), Phase 2 = Cloudflare R2 â€” calcul taille estimÃ©e 8GB
 - **deploy.yml** : Backup automatique PostgreSQL avant chaque `php artisan migrate --force`
-- **CICD** `19_CICD_ET_GIT.md` : Procédure de rollback complète (code + DB + migration)
-- **.env.example** : Variables ajoutées (`BACKUP_PATH`, `PLAN_LIMIT_ENABLED`, `SSE_*`, `ONBOARDING_TRIAL_DAYS`)
-- **RTL** `CU-01_ET_AGENTS.md` : Stratégie support arabe RTL pour Vue.js/Inertia (Tailwind rtl:, dir HTML, Inertia shared data)
-- **Multitenancy** `TenantMigrationService` : Version robuste avec transaction DB + rollback automatique + backup pre-migration + notification Super Admin en cas d'échec
-- **Tests** `16_STRATEGIE_TESTS.md` : Tests ajoutés pour PlanLimit, PublicRegister, SSE, AdvanceStatus transitions
+- **CICD** `19_CICD_ET_GIT.md` : ProcÃ©dure de rollback complÃ¨te (code + DB + migration)
+- **.env.example** : Variables ajoutÃ©es (`BACKUP_PATH`, `PLAN_LIMIT_ENABLED`, `SSE_*`, `ONBOARDING_TRIAL_DAYS`)
+- **RTL** `CU-01_ET_AGENTS.md` : StratÃ©gie support arabe RTL pour Vue.js/Inertia (Tailwind rtl:, dir HTML, Inertia shared data)
+- **Multitenancy** `TenantMigrationService` : Version robuste avec transaction DB + rollback automatique + backup pre-migration + notification Super Admin en cas d'Ã©chec
+- **Tests** `16_STRATEGIE_TESTS.md` : Tests ajoutÃ©s pour PlanLimit, PublicRegister, SSE, AdvanceStatus transitions
 
-### Convention de commit Git (à appliquer dès le premier commit)
+### Convention de commit Git (Ã  appliquer dÃ¨s le premier commit)
 ```
 type(scope): description courte
 
@@ -1636,35 +1649,36 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 ---
 
 ## [3.0.0] - 2026-03-20
-### Ajouté
+### AjoutÃ©
 - Transition vers une architecture **Monorepo** regroupant `api/`, `mobile/` et `docs/`.
-- Stratégie de **Multi-tenancy Hybride** (Isolation Schéma vs Shared Table).
-- Table `user_lookups` dans le schéma public pour optimiser les performances de login.
-- Documentation complète des **Workflows CI/CD** (GitHub Actions).
-- Stratégie de **Cache Redis** détaillée.
+- StratÃ©gie de **Multi-tenancy Hybride** (Isolation SchÃ©ma vs Shared Table).
+- Table `user_lookups` dans le schÃ©ma public pour optimiser les performances de login.
+- Documentation complÃ¨te des **Workflows CI/CD** (GitHub Actions).
+- StratÃ©gie de **Cache Redis** dÃ©taillÃ©e.
 - Pyramide de tests et document `16_STRATEGIE_TESTS.md`.
-- Données de simulation JSON pour le mobile (`17_MOCK_DATA_MOBILE.md`).
-- Définition du tunnel de vente et landing page (`18_MARKETING_ET_VENTES.md`).
-- Modèles Dart pour Flutter (`20_MODELES_DART.md`).
-- Complétion de 100% des contrats d'API (`02_API_CONTRATS.md`).
+- DonnÃ©es de simulation JSON pour le mobile (`17_MOCK_DATA_MOBILE.md`).
+- DÃ©finition du tunnel de vente et landing page (`18_MARKETING_ET_VENTES.md`).
+- ModÃ¨les Dart pour Flutter (`20_MODELES_DART.md`).
+- ComplÃ©tion de 100% des contrats d'API (`02_API_CONTRATS.md`).
 
-### Corrigé
+### CorrigÃ©
 - Suppression de la contrainte unique sur `attendance_logs` pour supporter les split-shifts.
-- Ajout du `zkteco_id` dans la table `employees` pour la biométrie.
+- Ajout du `zkteco_id` dans la table `employees` pour la biomÃ©trie.
 
 ---
 
 ## [2.0.0] - 2026-03-10
-### Ajouté
-- Documentation RBAC complète (7 rôles).
-- Spécifications de sécurité (Sanctum tokens opaques).
-- User Flows détaillés.
+### AjoutÃ©
+- Documentation RBAC complÃ¨te (7 rÃ´les).
+- SpÃ©cifications de sÃ©curitÃ© (Sanctum tokens opaques).
+- User Flows dÃ©taillÃ©s.
 - Guide d'ajout de nouveaux pays.
 
 ---
 
 ## [1.0.0] - 2026-02-15
-### Ajouté
+### AjoutÃ©
 - Initialisation de la conception technique.
-- Premier ERD et schéma SQL de base.
+- Premier ERD et schÃ©ma SQL de base.
 - Structure initiale des dossiers.
+
