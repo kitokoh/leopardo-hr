@@ -6,7 +6,9 @@ use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\OnboardingController;
+use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
+use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +60,8 @@ Route::prefix('v1')->group(function (): void {
         // Company requests for ordinary users
         Route::get('/company-requests', [CompanyRequestController::class, 'index']);
         Route::post('/company-requests', [CompanyRequestController::class, 'store']);
+
+        Route::get('/onboarding/checklist', OnboardingChecklistController::class);
     });
 
     // APV L.08 — Modules Leopardo, chaque module a son propre route group.
@@ -80,6 +84,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
+        Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
+        Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
 
         Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
         Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
