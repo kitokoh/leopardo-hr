@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.100] - 2026-05-07
+
+### CI/CD - Gouvernance de scenarios et deploiement bloque par preuves
+
+- CI : ajout d'un registre canonique `docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md` pour lier domaines, workflows, artefacts et gates de deploiement.
+- CI : ajout de `docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md` pour formaliser la couverture Playwright du dashboard admin.
+- Gouvernance : `tools/check-governance.ps1` bloque maintenant une PR si une surface fonctionnelle API, mobile ou web evolue sans mise a jour de sa base de scenarios ou du registre central.
+- Web CI : enrichissement des artefacts Playwright avec `junit.xml`, rapport HTML, traces et videos retenues en echec.
+- Deploiement : `deploy-main.yml` ne part plus simplement parce qu'un workflow s'est termine ; il verifie maintenant que les workflows requis pour le meme SHA de `main` sont bien conclus avec succes avant de deployer.
+
 ## [4.1.99] - 2026-05-07
 
 ### Go-To-Market - Viabilite globale

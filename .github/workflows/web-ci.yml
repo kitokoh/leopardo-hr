@@ -20,6 +20,9 @@ concurrency:
   group: web-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PLAYWRIGHT_HTML_REPORT: playwright-report
+
 jobs:
   web-lint:
     name: Web Lint
@@ -111,6 +114,24 @@ jobs:
         env:
           CI: true
         run: npx playwright test
+
+      - name: Build web E2E summary
+        if: always()
+        working-directory: ./admin-dashboard
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results
+          cat > test-results/web-e2e-summary.md <<'EOF'
+          - Scenario base: docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md
+          - Primary smoke focus: auth, routing, protected access, basic admin rendering
+          - Artifacts:
+            - playwright-report/
+            - test-results/
+            - videos retained on failure
+            - traces retained on first retry
+            - junit.xml for machine-readable CI parsing
+          EOF
 
       - name: Upload Playwright report
         if: always()

@@ -2,12 +2,13 @@ name: Deploy - Leopardo RH
 
 on:
   workflow_run:
-    workflows: ["Tests - Leopardo RH"]
+    workflows: ["Tests - Leopardo RH", "Web CI - Leopardo Admin"]
     types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -23,9 +24,10 @@ jobs:
     name: Prepare deployment context
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.context.outputs.should_deploy }}
+      should_deploy: ${{ steps.final.outputs.should_deploy }}
       ref: ${{ steps.context.outputs.ref }}
       sha: ${{ steps.context.outputs.sha }}
+      web_changed: ${{ steps.final.outputs.web_changed }}
     steps:
       - name: Resolve deployment source
         id: context
@@ -40,20 +42,118 @@ jobs:
               echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
             echo "ref=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
             echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if [[ "${{ github.event.workflow_run.conclusion }}" == "success" && "${{ github.event.workflow_run.event }}" == "push" && "${{ github.event.workflow_run.head_branch }}" == "main" ]]; then
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
             echo "ref=main" >> "$GITHUB_OUTPUT"
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           else
             echo "should_deploy=false" >> "$GITHUB_OUTPUT"
             echo "ref=" >> "$GITHUB_OUTPUT"
             echo "sha=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout deployment SHA
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.context.outputs.sha }}
+          fetch-depth: 2
+
+      - name: Detect changed areas for deployment gating
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sha="${{ steps.context.outputs.sha }}"
+          parent="$(git rev-list --parents -n 1 "${sha}" | awk '{print $2}')"
+          changed_files=""
+
+          if [[ -n "${parent}" ]]; then
+            changed_files="$(git diff --name-only "${parent}" "${sha}")"
+          else
+            changed_files="$(git show --name-only --pretty='' "${sha}")"
+          fi
+
+          web_changed=false
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(admin-dashboard/|\.github/workflows/web-ci\.yml|\.github/workflows/deploy-main\.yml|docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS\.md|docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS\.md)'; then
+            web_changed=true
+          fi
+
+          echo "web_changed=${web_changed}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify required workflow conclusions for deployment SHA
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: workflow_gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = `${{ steps.context.outputs.sha }}`;
+            const webChanged = `${{ steps.changes.outputs.web_changed }}` === 'true';
+            const { owner, repo } = context.repo;
+
+            const allRuns = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+              owner,
+              repo,
+              branch: 'main',
+              event: 'push',
+              per_page: 100,
+            });
+
+            const runsForSha = allRuns.filter((run) => run.head_sha === sha);
+
+            const getConclusion = (workflowName) => {
+              const match = runsForSha.find((run) => run.name === workflowName);
+              return match ? match.conclusion : null;
+            };
+
+            const testsConclusion = getConclusion('Tests - Leopardo RH');
+            const webConclusion = getConclusion('Web CI - Leopardo Admin');
+
+            core.info(`Deployment SHA: ${sha}`);
+            core.info(`Tests workflow conclusion: ${testsConclusion}`);
+            core.info(`Web workflow conclusion: ${webConclusion}`);
+            core.info(`Web changed: ${webChanged}`);
+
+            let shouldDeploy = testsConclusion === 'success';
+            if (webChanged) {
+              shouldDeploy = shouldDeploy && webConclusion === 'success';
+            }
+
+            core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
+            core.setOutput('web_conclusion', webConclusion ?? 'not-required');
+            core.setOutput('should_deploy', shouldDeploy ? 'true' : 'false');
+
+      - name: Finalize deployment decision
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: decision
+        shell: bash
+        run: |
+          echo "should_deploy=${{ steps.workflow_gate.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
+
+      - name: Expose validated deployment decision
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        shell: bash
+        run: |
+          echo "Deployment gate resolved for ${{ steps.context.outputs.sha }}."
+
+      - name: Export final prepare outputs
+        id: final
+        shell: bash
+        run: |
+          if [[ "${{ steps.context.outputs.should_deploy }}" == "pending-validation" ]]; then
+            echo "should_deploy=${{ steps.decision.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
+            echo "web_changed=${{ steps.changes.outputs.web_changed }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_deploy=${{ steps.context.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
+            echo "web_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
   deploy-api:
