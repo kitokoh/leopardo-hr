@@ -49,6 +49,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
     Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
+    Route::get('/attendance/anomalies', [AttendanceController::class, 'anomalies']);
+    Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog');
 
