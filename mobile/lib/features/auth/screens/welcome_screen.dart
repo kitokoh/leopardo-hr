@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/l10n/l10n.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -15,29 +16,30 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  static const List<_StoryCardData> _stories = <_StoryCardData>[
-    _StoryCardData(
-      title: 'Une home qui vous parle avant de vous noyer',
-      body:
-          'Leopardo RH commence par quelques actions claires: pointer, suivre le mois et retrouver les informations qui comptent.',
-      domain: 'ia',
-      icon: Icons.forum_outlined,
-    ),
-    _StoryCardData(
-      title: 'Mobile-first pour le terrain',
-      body:
-          'Le telephone est la surface principale de l employe. Votre pointage, vos absences et vos documents vivent ici.',
-      domain: 'rh',
-      icon: Icons.phone_android_outlined,
-    ),
-    _StoryCardData(
-      title: 'Modules actifs, feuille de route visible',
-      body:
-          'Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible.',
-      domain: 'finance',
-      icon: Icons.dashboard_customize_outlined,
-    ),
-  ];
+  static List<_StoryCardData> _stories(BuildContext context) {
+    final l10n = context.l10n;
+
+    return <_StoryCardData>[
+      _StoryCardData(
+        title: l10n.welcomeStoryClarityTitle,
+        body: l10n.welcomeStoryClarityBody,
+        domain: 'ia',
+        icon: Icons.forum_outlined,
+      ),
+      _StoryCardData(
+        title: l10n.welcomeStoryFieldTitle,
+        body: l10n.welcomeStoryFieldBody,
+        domain: 'rh',
+        icon: Icons.phone_android_outlined,
+      ),
+      _StoryCardData(
+        title: l10n.welcomeStoryModulesTitle,
+        body: l10n.welcomeStoryModulesBody,
+        domain: 'finance',
+        icon: Icons.dashboard_customize_outlined,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -49,6 +51,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     final background = AppColors.backgroundFor(context);
     final compact = MediaQuery.of(context).size.height < 740;
+    final stories = _stories(context);
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: background,
@@ -75,19 +79,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: _stories.length,
+                  itemCount: stories.length,
                   onPageChanged: (index) {
                     setState(() {
                       _currentPage = index;
                     });
                   },
                   itemBuilder: (context, index) {
-                    return _StoryCard(story: _stories[index]);
+                    return _StoryCard(story: stories[index]);
                   },
                 ),
               ),
               const SizedBox(height: 12),
-              _Dots(count: _stories.length, current: _currentPage),
+              _Dots(count: stories.length, current: _currentPage),
               Padding(
                 padding: EdgeInsets.fromLTRB(
                     24, compact ? 10 : 16, 24, compact ? 14 : 24),
@@ -97,7 +101,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () => context.go('/login'),
-                        child: const Text('Se connecter'),
+                        child: Text(l10n.login),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -105,7 +109,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () => context.go('/register'),
-                        child: const Text('Acces employe (invitation)'),
+                        child: Text(l10n.employeeInvitationAccess),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -114,7 +118,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       child: TextButton.icon(
                         onPressed: () => context.go('/user-register'),
                         icon: const Icon(Icons.person_add_outlined, size: 18),
-                        label: const Text('Creer un compte personnel'),
+                        label: Text(l10n.createPersonalAccount),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.ia,
                         ),
@@ -122,7 +126,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace.',
+                      l10n.personalAccountExplanation,
                       textAlign: TextAlign.center,
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textSecondaryFor(context),
@@ -197,12 +201,12 @@ class _WelcomeHero extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Leopardo RH',
+                      context.l10n.appTitle,
                       style: AppTypography.title.copyWith(color: text),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Conversationnelle, mobile-first, modulaire.',
+                      context.l10n.welcomeBrandSubtitle,
                       style: AppTypography.bodySmall.copyWith(color: muted),
                     ),
                   ],
@@ -212,7 +216,7 @@ class _WelcomeHero extends StatelessWidget {
           ),
           SizedBox(height: compact ? 12 : 22),
           Text(
-            'Votre journee commence ici, pas dans un back-office.',
+            context.l10n.welcomeHeroTitle,
             style: AppTypography.display.copyWith(
               color: text,
               fontSize: compact ? 24 : 30,
@@ -220,7 +224,7 @@ class _WelcomeHero extends StatelessWidget {
           ),
           SizedBox(height: compact ? 6 : 10),
           Text(
-            'Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible.',
+            context.l10n.welcomeHeroDescription,
             style: AppTypography.body.copyWith(color: muted),
           ),
         ],
