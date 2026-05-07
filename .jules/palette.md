@@ -17,3 +17,7 @@ This journal contains critical UX and accessibility learnings for the Leopardo R
 ## 2026-05-20 - Pull-to-Refresh in Empty States
 **Learning:** In Flutter, `RefreshIndicator` only works with scrollable widgets. When a screen is in an empty or error state, it often loses its scrollability, making it impossible for users to refresh.
 **Action:** Always wrap `EmptyState` or error messages in a `ListView` or `SingleChildScrollView` with `physics: AlwaysScrollableScrollPhysics()` to ensure pull-to-refresh remains functional. Use a `SizedBox(height: 80)` as the first child for consistent spacing.
+
+## 2026-05-20 - Unified List Item Semantics
+**Learning:** List items with multiple text children (title, subtitle, trailing) can be noisy for screen readers if read as separate elements.
+**Action:** Wrap the entire list item card or `ListTile` in a `Semantics(container: true, label: '...')` that provides a cohesive, translated announcement. Use `ExcludeSemantics` on the children to prevent redundant readings. This ensures the user gets the full context (e.g., amount, reason, and status) in a single, clear announcement.
