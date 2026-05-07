@@ -1,4 +1,4 @@
-# AGENTS.md - Guide de travail Leopardo RH
+﻿# AGENTS.md - Guide de travail Leopardo RH
 
 Derniere mise a jour : 2026-05-07
 
@@ -91,9 +91,18 @@ Procedure recommandee :
 
 ## Historique utile
 
+### 2026-05-07 - I18N enterprise partage
+
+- Ne pas repartir d'abord d'un framework i18n web ou mobile. Pour Leopardo RH, la vraie source de verite doit vivre dans shared/i18n/locales/*.json, puis etre synchronisee vers backend, web et mobile.
+- Les variantes de locale (fr-CA, fr-BE, ar-SA, en-GB) doivent etre normalisees vers une langue canonique tant que le contenu reste mutualise. Cela donne tout de suite une meilleure compatibilite sans dupliquer les catalogues.
+- Pour le mobile Flutter, garder les ARB comme artefacts generes tant que l'UI depend de gen-l10n; ne pas essayer d'imposer un JSON runtime partout d'un coup.
+- Pour le backend Laravel, migrer progressivement les domaines communs vers des fichiers generes (shared.php, emails.enterprise.php) au lieu de casser tout lang/ en big bang.
+- Le cache mobile de traductions distantes doit rester non bloquant: en cas d'echec reseau, toujours revenir au catalogue embarque ou au dernier cache valide.
+- La validation i18n doit verifier au minimum: cles manquantes, placeholders, mojibake/RTL, longueurs critiques et checksum de catalogue.
+
 ### 2026-05-07 - Mobile i18n
 
-- Avant d'estimer un chantier i18n mobile, verifier l'etat reel sur `origin/main` : `flutter_localizations`, `intl`, locale et RTL peuvent etre branches sans que `gen-l10n`, `l10n.yaml`, les `.arb` et `context.l10n` existent deja.
+- Avant d'estimer un chantier i18n mobile, verifier l'etat reel sur `origin/main` : `flutter_localizations`, `intl`, locale et RTL peuvent etre branches sans que `gen-l10n`, `l10n.yaml`, les `ARB` et `context.l10n` existent deja.
 - Ne pas migrer 500+ cles d'un coup. La sequence la plus sure est : fondation `gen-l10n`, un ecran prioritaire, CI mobile, puis extension par lots verticaux.
 - Pour l'arabe, tester explicitement les petits viewports : les textes traduits peuvent casser les `Column` avec `Spacer`; preferer des zones scrollables bornees ou des layouts qui degradent proprement.
 - Les plans i18n doivent distinguer les cles reellement utilisees dans le code des cles "catalogue" prevues plus tard, sinon la progression annoncee devient trompeuse.
@@ -117,7 +126,7 @@ Procedure recommandee :
 - La coverage backend doit etre publiee en artifact et resume CI avant de devenir une gate stricte ; un seuil configurable via variable GitHub est preferable a une valeur codee en dur trop ambitieuse.
 - Attention au schema public `company_requests` : la migration historique `2026_05_02_000003_*` cree l'ancienne forme basee sur `employee_id`, alors que les controllers et le modele `User` attendent la forme moderne basee sur `user_id`. La migration `2026_05_02_100001_*` doit donc aussi mettre a niveau une table existante, pas seulement la creer.
 - Dans `tests.yml`, un `continue-on-error` sur Unit/Feature ou coverage peut masquer un vrai rouge applicatif si aucun step final ne re-propage l'echec. Toujours ajouter un step final explicite qui fait echouer le job quand la suite de tests a casse.
-- Quand des assertions FR cassent avec `EmployÃ©` ou `RÃ©cupÃ¨re`, verifier tout de suite un probleme d'encodage UTF-8/mojibake dans les tests ou les messages de validation avant de soupconner la logique metier.
+- Quand des assertions FR cassent avec `EmployÃƒÂ©` ou `RÃƒÂ©cupÃƒÂ¨re`, verifier tout de suite un probleme d'encodage UTF-8/mojibake dans les tests ou les messages de validation avant de soupconner la logique metier.
 
 ### 2026-05-07 - Cap 10 clients payants
 
@@ -151,3 +160,4 @@ Procedure recommandee :
 - Le script `tools/check-governance.ps1` doit echouer si une surface fonctionnelle change sans mise a jour de cette base de scenarios. Cela evite qu'une feature apparaisse sans etre rattachee a une couverture attendue.
 - Le deploiement auto doit raisonner par SHA et non seulement par nom de workflow : pour un commit `main`, on ne deploie que si les workflows requis pour ce SHA sont conclus avec succes.
 - Pour le web admin, Playwright doit continuer a fournir des artefacts exploitables en cas d'echec: HTML, JUnit, traces et videos retenues sur echec.
+
