@@ -150,6 +150,9 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/platform/auth/me` retourne un shape stable pour hydrater la session admin sans hypothese cote frontend
 - `POST /api/v1/platform/auth/logout` invalide le token courant sans exiger de mecanisme de refresh fantome
 - Aucun contrat admin ne doit reintroduire des routes `/admin/auth/*` inexistantes
+- `GET /api/v1/platform/companies/{company}/health` retourne plan/MRR, features, adoption pointage 30 jours, onboarding, anomalies et next actions
+- Le health client classe clairement le risque (`low`, `medium`, `high`) et reste reserve au guard `super_admin_api`
+- Les metriques health ne doivent jamais lire les donnees d'un autre tenant ni dependre d'un `current_company` applicatif
 
 ### 14. Catalogue de traductions distant et variantes de locale
 
@@ -188,6 +191,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Estimation daily summary / quick estimate / PDF
 - Contrats JSON critiques pour le mobile
 - Contrats d'auth plateforme et cas `TWO_FA_REQUIRED`
+- Contrat health plateforme pour adoption, retention et upsell client
 - Health endpoint
 
 ### Suites a ajouter ou durcir progressivement
