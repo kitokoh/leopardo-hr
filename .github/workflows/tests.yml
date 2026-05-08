@@ -325,7 +325,6 @@ jobs:
 
       - name: Run PHPStan + Larastan
         id: phpstan
-        continue-on-error: true
         working-directory: ./api
         shell: bash
         run: |
@@ -378,6 +377,12 @@ jobs:
             api/phpstan.neon
             api/phpstan-baseline.neon
           if-no-files-found: ignore
+
+      - name: Fail backend quality job if PHPStan failed
+        if: steps.phpstan.outcome == 'failure'
+        run: |
+          echo "PHPStan/Larastan failed."
+          exit 1
 
   backend-coverage:
     name: Backend Coverage (PHPUnit)
@@ -673,13 +678,11 @@ jobs:
 
       - name: Analyze
         id: mobile_analyze
-        continue-on-error: true
         working-directory: ./mobile
         run: flutter analyze
 
       - name: Run Flutter tests
         id: mobile_tests
-        continue-on-error: true
         working-directory: ./mobile
         shell: bash
         run: |
@@ -710,7 +713,6 @@ jobs:
 
       - name: Enforce mobile coverage threshold
         id: mobile_coverage_gate
-        continue-on-error: true
         working-directory: ./mobile
         shell: bash
         env:
@@ -745,7 +747,6 @@ jobs:
 
       - name: Build Android smoke artifact
         id: mobile_smoke_build
-        continue-on-error: true
         working-directory: ./mobile
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
@@ -796,6 +797,30 @@ jobs:
             mobile/quality-summary.md
             mobile/test/**/*
           if-no-files-found: ignore
+
+      - name: Fail mobile job if analyze failed
+        if: steps.mobile_analyze.outcome == 'failure'
+        run: |
+          echo "Flutter analyze failed."
+          exit 1
+
+      - name: Fail mobile job if tests failed
+        if: steps.mobile_tests.outcome == 'failure'
+        run: |
+          echo "Flutter tests failed."
+          exit 1
+
+      - name: Fail mobile job if coverage gate failed
+        if: steps.mobile_coverage_gate.outcome == 'failure'
+        run: |
+          echo "Mobile coverage threshold not met."
+          exit 1
+
+      - name: Fail mobile job if smoke build failed
+        if: steps.mobile_smoke_build.outcome == 'failure'
+        run: |
+          echo "Android smoke build failed."
+          exit 1
 
   governance-gates:
     name: Governance Gates (changelog + canonical files)
