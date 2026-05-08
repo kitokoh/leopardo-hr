@@ -30,18 +30,27 @@
               placeholder="Adresse email"
             />
           </div>
-          <div>
+          <div class="relative">
             <label for="password" class="sr-only">Mot de passe</label>
             <input
               id="password"
               v-model="form.password"
               name="password"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               autocomplete="current-password"
               required
-              class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              class="relative block w-full rounded-b-md border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               placeholder="Mot de passe"
             />
+            <button
+              type="button"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 z-20 text-gray-400 hover:text-gray-600 focus:outline-none"
+              @click="showPassword = !showPassword"
+              :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+            >
+              <EyeIcon v-if="!showPassword" class="h-5 w-5" aria-hidden="true" />
+              <EyeSlashIcon v-else class="h-5 w-5" aria-hidden="true" />
+            </button>
           </div>
         </div>
 
@@ -130,7 +139,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { LockClosedIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import { LockClosedIcon, ExclamationTriangleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -143,6 +152,7 @@ const form = reactive({
 })
 
 const isLoading = ref(false)
+const showPassword = ref(false)
 const error = ref('')
 
 async function handleLogin() {
