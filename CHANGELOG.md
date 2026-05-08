@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.114] - 2026-05-08
+
+### Plateforme - Catalogue plans API
+
+- API : ajout de `GET /api/v1/platform/plans` pour exposer au super-admin le catalogue des plans disponibles.
+- API : le catalogue plans retourne prix mensuel/annuel, plafond employes, features, jours d'essai et statut actif afin d'alimenter les formulaires d'abonnement.
+- Tests : ajout d'une couverture Feature verifiant l'ordre par prix et le decodage des features de plan.
+
 ## [4.1.113] - 2026-05-08
 
 ### Plateforme - Contrat abonnement client
