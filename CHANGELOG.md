@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.106] - 2026-05-08
+
+### Web - Pattern Vercel functions corrige
+
+- Web : suppression du bloc `functions.api/**` de `web/vercel.json`, qui ne correspondait plus a la structure Next.js actuelle et faisait echouer Vercel avec `The pattern "api/**" defined in functions doesn't match any Serverless Functions`.
+- Ops : dans ce projet, les route handlers Next sont sous `web/src/app/api/**`; ne pas garder de pattern `functions` Vercel s'il n'est pas aligne sur les vraies fonctions generees.
+
 ## [4.1.105] - 2026-05-08
 
 ### Web - Compatibilite Vercel
