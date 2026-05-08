@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
@@ -23,51 +24,77 @@ class EvaluationListScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
-          onPressed: () => Navigator.of(context).pop(),
+          tooltip: 'Retour',
+          onPressed: () => context.pop(),
         ),
       ),
-      body: evaluationsAsync.when(
-        data:
-            (evaluations) =>
-                evaluations.isEmpty
-                    ? const EmptyState(
-                      icon: Icons.assignment_turned_in,
-                      title: 'Aucune évaluation',
-                      description:
-                          'Vous n\'avez pas encore d\'évaluation enregistrée.',
-                    )
-                    : ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: evaluations.length,
-                      itemBuilder: (context, index) {
-                        final evaluation = evaluations[index];
-                        return Card(
-                          color: AppColors.cardDark,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: ListTile(
-                            title: Text(
-                              'Période: ${evaluation.period}',
-                              style: AppTypography.subtitle.copyWith(
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Score: ${evaluation.score ?? "N/A"}',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textMutedDark,
-                              ),
-                            ),
-                            trailing: Text(
-                              evaluation.status,
-                              style: TextStyle(
-                                color: _getStatusColor(evaluation.status),
-                              ),
-                            ),
+      body: RefreshIndicator(
+        onRefresh: () async => ref.refresh(evaluationsProvider.future),
+        child: evaluationsAsync.when(
+          data:
+              (evaluations) =>
+                  evaluations.isEmpty
+                      ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: const [
+                          SizedBox(height: 80),
+                          EmptyState(
+                            icon: Icons.assignment_turned_in,
+                            title: 'Aucune évaluation',
+                            description:
+                                'Vous n\'avez pas encore d\'évaluation enregistrée.',
                           ),
-                        );
-                      },
-                    ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+                        ],
+                      )
+                      : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(20),
+                        itemCount: evaluations.length,
+                        itemBuilder: (context, index) {
+                          final evaluation = evaluations[index];
+                          final period = evaluation.period;
+                          final score = evaluation.score?.toString() ?? "non définie";
+                          final status = _getStatusLabel(evaluation.status);
+
+                          return Semantics(
+                            label:
+                                'Évaluation pour la période $period, score $score, statut $status.',
+                            container: true,
+                            child: ExcludeSemantics(
+                              child: Card(
+                                color: AppColors.cardDark,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                child: ListTile(
+                                  title: Text(
+                                    'Période: $period',
+                                    style: AppTypography.subtitle.copyWith(
+                                      color: AppColors.textDark,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    'Score: ${evaluation.score ?? "N/A"}',
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: AppColors.textMutedDark,
+                                    ),
+                                  ),
+                                  trailing: Text(
+                                    evaluation.status,
+                                    style: TextStyle(
+                                      color: _getStatusColor(evaluation.status),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+          loading:
+              () => const Center(
+                child: CircularProgressIndicator(
+                  semanticsLabel: 'Chargement des évaluations...',
+                ),
+              ),
         error:
             (e, _) => Center(
               child: Text(
@@ -75,8 +102,22 @@ class EvaluationListScreen extends ConsumerWidget {
                 style: const TextStyle(color: Colors.red),
               ),
             ),
+        ),
       ),
     );
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status) {
+      case 'acknowledged':
+        return 'reçue';
+      case 'submitted':
+        return 'soumise';
+      case 'draft':
+        return 'brouillon';
+      default:
+        return status;
+    }
   }
 
   Color _getStatusColor(String status) {

@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.119] - 2026-05-09
+
+### Mobile - Micro-UX et AccessibilitÃ© Evaluations
+
+- Mobile : amÃ©lioration de l'accessibilitÃ© de la liste des Ã©valuations avec labels sÃ©mantiques unifiÃ©s (pÃ©riode, score, statut) et tooltip de retour.
+- Mobile : ajout d'un rafraÃ®chissement manuel (`RefreshIndicator`) et d'Ã©tats vides scrollables sur l'Ã©cran des Ã©valuations.
+- Mobile : ajout de labels sÃ©mantiques sur l'indicateur de chargement des Ã©valuations.
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients
