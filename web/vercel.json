@@ -3,38 +3,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
   "framework": "nextjs",
-  "env": {
-    "NEXT_PUBLIC_API_URL": {
-      "description": "API endpoint URL"
-    },
-    "NEXT_PUBLIC_GA_ID": {
-      "description": "Google Analytics 4 ID"
-    },
-    "NEXT_PUBLIC_MIXPANEL_TOKEN": {
-      "description": "Mixpanel token for analytics"
-    },
-    "SENDGRID_API_KEY": {
-      "description": "SendGrid API key for email"
-    },
-    "NEXT_PUBLIC_SITE_URL": {
-      "description": "Site URL for SEO and canonical URLs"
-    },
-    "NEXT_PUBLIC_SITE_NAME": {
-      "description": "Site name for metadata"
-    },
-    "NEXT_PUBLIC_ENVIRONMENT": {
-      "description": "Environment name (staging, production)"
-    },
-    "NEXTAUTH_SECRET": {
-      "description": "NextAuth secret for authentication"
-    },
-    "NEXTAUTH_URL": {
-      "description": "NextAuth URL"
-    },
-    "NEXT_PUBLIC_SENTRY_DSN": {
-      "description": "Sentry DSN for error tracking"
-    }
-  },
   "regions": ["cdg1"],
   "functions": {
     "api/**": {
