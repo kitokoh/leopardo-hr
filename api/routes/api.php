@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Api\V1\PlatformCompanySubscriptionController;
+use App\Http\Controllers\Api\V1\PlatformPlanController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -87,6 +88,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/setup', [PlatformAuthController::class, 'setup2fa']);
         Route::post('/auth/2fa/enable', [PlatformAuthController::class, 'enable2fa']);
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
+        Route::get('/plans', PlatformPlanController::class);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index']);
