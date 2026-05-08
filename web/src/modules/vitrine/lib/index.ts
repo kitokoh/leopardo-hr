@@ -18,3 +18,6 @@ export * from "./env";
 
 // Utils
 export * from "./utils";
+
+// Locale
+export * from "./vitrine-locale";
