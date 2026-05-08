@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.119] - 2026-05-08
+
+### Sentinel - Durcissement de l'isolation tenant (Tâches, Projets et Cabinet)
+
+- API : Introduction de `TaskIndexRequest`, `StoreTaskRequest` et `UpdateTaskRequest` pour durcir la validation des tâches, incluant une vérification tenant-scoped sur `project_id` et `assigned_to`.
+- API : Introduction de `ProjectIndexRequest`, `StoreProjectRequest` et `UpdateProjectRequest` pour durcir la validation des projets, incluant une vérification tenant-scoped sur les membres du projet.
+- API : Durcissement des FormRequests du module Cabinet (`StoreDocumentRequest`, `UpdateDocumentRequest`, `MoveDocumentRequest`, `StoreFolderRequest`, `UpdateFolderRequest`) avec une validation tenant-scoped systématique sur `folder_id` et `parent_id`.
+- Tests : Ajout de `api/tests/Feature/Security/TaskSecurityTest.php` et `api/tests/Feature/Security/ProjectSecurityTest.php` pour verrouiller l'isolation inter-tenant de ces modules.
+- Tests : Mise à jour de `CreatesMvpSchema` pour inclure les tables `projects`, `tasks` et `task_comments` dans l'environnement de test SQLite.
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients

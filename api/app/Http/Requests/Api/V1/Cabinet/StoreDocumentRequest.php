@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Cabinet;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreDocumentRequest extends FormRequest
 {
@@ -16,9 +17,15 @@ class StoreDocumentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $companyId = $this->user()?->company_id;
+
         return [
             'file' => ['required', 'file', 'max:20480'],
-            'folder_id' => ['nullable', 'integer', 'exists:cabinet_folders,id'],
+            'folder_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('cabinet_folders', 'id')->where('company_id', $companyId),
+            ],
             'name' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Task\StoreTaskRequest;
+use App\Http\Requests\Api\V1\Task\TaskIndexRequest;
+use App\Http\Requests\Api\V1\Task\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\TaskComment;
 use Illuminate\Http\JsonResponse;
@@ -10,20 +13,20 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(TaskIndexRequest $request): JsonResponse
     {
         $actor = $request->user();
-        $request->validate(['project_id' => ['nullable', 'integer', 'min:1'], 'status' => ['nullable', 'in:todo,inprogress,review,done,rejected,cancelled'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'assigned_to' => ['nullable', 'integer', 'min:1'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
+        $validated = $request->validated();
 
         $query = Task::query();
 
         if (! $actor->isManager()) {
             $query->where(fn ($q) => $q->whereJsonContains('assigned_to', $actor->id)->orWhere('created_by', $actor->id));
-        } elseif ($request->filled('assigned_to')) {
+        } elseif (! empty($validated['assigned_to'])) {
             $query->whereJsonContains('assigned_to', $request->integer('assigned_to'));
         }
 
-        if ($request->filled('project_id')) {
+        if (! empty($validated['project_id'])) {
             $query->where('project_id', $request->integer('project_id'));
         }
         if ($request->filled('status')) {
@@ -42,10 +45,10 @@ class TaskController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
         $actor = $request->user();
-        $data = $request->validate(['title' => ['required', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['nullable', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['required', 'date'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['nullable', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $data = $request->validated();
 
         $task = Task::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'assigned_to' => $data['assigned_to'] ?? [], 'status' => 'todo', 'priority' => $data['priority'] ?? 'normal', 'visibility' => $data['visibility'] ?? 'visible', ...$data]);
 
@@ -65,7 +68,7 @@ class TaskController extends Controller
         return response()->json(['data' => $this->serialize($task->load('comments.author'))]);
     }
 
-    public function update(Request $request, Task $task): JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) {
@@ -77,7 +80,7 @@ class TaskController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['title' => ['sometimes', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['sometimes', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['sometimes', 'date'], 'priority' => ['sometimes', 'in:low,normal,high,urgent'], 'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['sometimes', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $data = $request->validated();
         $task->update($data);
 
         return response()->json(['data' => $this->serialize($task->fresh())]);

@@ -1,5 +1,5 @@
 ﻿# ðŸ“‘ PILOTAGE â€” LEOPARDO RH
-# PROGRAM_VERSION = 4.1.104 | 2026-05-08
+# PROGRAM_VERSION = 4.1.119 | 2026-05-08
 # CE FICHIER EST LA SEULE SOURCE DE VÃ‰RITÃ‰ OPÃ‰RATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.1.87   â†’ Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.1.119  â†’ Version globale du projet/pilotage (ce fichier fait foi)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (derniÃ¨re entrÃ©e)

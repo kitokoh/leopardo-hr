@@ -410,8 +410,19 @@ trait CreatesMvpSchema
             $table->unsignedSmallInteger('period_month');
             $table->unsignedSmallInteger('period_year');
             $table->decimal('gross_salary', 12, 2)->default(0);
+            $table->decimal('overtime_amount', 12, 2)->default(0);
+            $table->json('bonuses')->nullable();
+            $table->json('deductions')->nullable();
+            $table->json('cotisations')->nullable();
+            $table->decimal('ir_amount', 12, 2)->default(0);
+            $table->decimal('advance_deduction', 12, 2)->default(0);
+            $table->decimal('absence_deduction', 12, 2)->default(0);
+            $table->decimal('penalty_deduction', 12, 2)->default(0);
             $table->decimal('net_salary', 12, 2)->default(0);
+            $table->string('pdf_path', 255)->nullable();
             $table->string('status', 20)->default('draft');
+            $table->unsignedInteger('validated_by')->nullable();
+            $table->timestamp('validated_at')->nullable();
             $table->timestamps();
         });
 
@@ -419,17 +430,39 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
+            $table->text('description')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->json('members')->nullable();
+            $table->string('status', 20)->default('active');
             $table->unsignedInteger('created_by');
-            $table->timestamps();
+            $table->timestamp('created_at')->nullable();
         });
 
         Schema::create($this->tenantTable('tasks'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('title', 200);
+            $table->text('description')->nullable();
             $table->unsignedInteger('created_by');
-            $table->timestampTz('due_date');
+            $table->json('assigned_to')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
+            $table->timestamp('due_date');
+            $table->string('priority', 20)->default('normal');
+            $table->string('status', 20)->default('todo');
+            $table->string('category', 100)->nullable();
+            $table->json('checklist')->nullable();
+            $table->string('visibility', 20)->default('visible');
             $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('task_comments'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('task_id');
+            $table->unsignedInteger('author_id');
+            $table->text('content');
+            $table->timestamp('created_at')->nullable();
         });
 
         Schema::create($this->tenantTable('notifications'), function (Blueprint $table): void {
@@ -645,6 +678,9 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "cabinet_documents"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "cabinet_folders"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "task_comments"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "tasks"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "projects"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absence_types"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "employees"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "schedules"'.$cascade);
