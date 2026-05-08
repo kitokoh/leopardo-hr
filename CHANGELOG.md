@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.112] - 2026-05-08
+
+### Plateforme - Portefeuille clients
+
+- API : ajout de `GET /api/v1/platform/companies/health` pour donner au super-admin une vue portefeuille des clients.
+- API : le portefeuille agrège nombre de clients, clients actifs, MRR, repartition des risques et prochaine action prioritaire par client.
+- Tests : ajout d'un scenario Feature couvrant un client sain upsellable et un client suspendu dans la vue portefeuille.
+
 ## [4.1.111] - 2026-05-08
 
 ### Plateforme - Pilotage adoption client
