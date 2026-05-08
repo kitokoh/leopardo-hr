@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
+use App\Http\Controllers\Api\V1\PlatformCompanySubscriptionController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index']);
         Route::get('/companies/{company}/health', PlatformCompanyHealthController::class);
+        Route::get('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'show']);
+        Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
 
