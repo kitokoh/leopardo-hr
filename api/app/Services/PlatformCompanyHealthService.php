@@ -17,6 +17,52 @@ class PlatformCompanyHealthService
     /**
      * @return array<string, mixed>
      */
+    public function portfolio(int $limit = 50): array
+    {
+        $companies = Company::query()
+            ->latest()
+            ->limit(max(1, min(100, $limit)))
+            ->get();
+
+        $items = $companies
+            ->map(function (Company $company): array {
+                $health = $this->build($company)['data'];
+
+                return [
+                    'company' => $health['company'],
+                    'plan' => $health['plan'],
+                    'subscription' => $health['subscription'],
+                    'health_score' => $health['adoption']['health_score'],
+                    'risk_level' => $health['adoption']['risk_level'],
+                    'employees_active' => $health['adoption']['employees']['active'],
+                    'attendance_logs_30d' => $health['adoption']['attendance']['logs_30d'],
+                    'last_punch_at' => $health['adoption']['attendance']['last_punch_at'],
+                    'critical_anomalies_30d' => $health['adoption']['anomalies']['critical_30d'],
+                    'next_action' => $health['next_actions'][0] ?? null,
+                ];
+            })
+            ->values();
+
+        return [
+            'data' => [
+                'summary' => [
+                    'companies' => $items->count(),
+                    'active_companies' => $items->where('company.status', 'active')->count(),
+                    'mrr' => round((float) $items->sum(fn (array $item): float => (float) ($item['subscription']['mrr'] ?? 0)), 2),
+                    'risk' => [
+                        'high' => $items->where('risk_level', 'high')->count(),
+                        'medium' => $items->where('risk_level', 'medium')->count(),
+                        'low' => $items->where('risk_level', 'low')->count(),
+                    ],
+                ],
+                'items' => $items,
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function build(Company $company): array
     {
         return $this->withTenantSearchPath($company, function () use ($company): array {
