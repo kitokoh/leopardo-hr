@@ -64,11 +64,11 @@ jobs:
             api_changed=true
           fi
 
-          if printf '%s\n' "${changed_files}" | grep -Eq '^(mobile/|\.github/workflows/tests\.yml)'; then
+          if printf '%s\n' "${changed_files}" | grep -Eq '^mobile/'; then
             mobile_changed=true
           fi
 
-          if printf '%s\n' "${changed_files}" | grep -Eq '^(admin-dashboard/|\.github/workflows/web-ci\.yml|\.github/workflows/tests\.yml)'; then
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(admin-dashboard/|\.github/workflows/web-ci\.yml)'; then
             web_changed=true
           fi
 
@@ -113,6 +113,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup PHP 8.4
         uses: shivammathur/setup-php@v2
@@ -325,9 +327,11 @@ jobs:
 
       - name: Run PHPStan + Larastan
         id: phpstan
-        continue-on-error: true
         working-directory: ./api
         shell: bash
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           cat > phpstan.ci.neon <<EOF
@@ -336,7 +340,39 @@ jobs:
               - vendor/larastan/larastan/extension.neon
           EOF
           mkdir -p storage/test-results
-          ./vendor/bin/phpstan analyse -c phpstan.ci.neon --no-progress --error-format=raw | tee storage/test-results/phpstan.txt
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            if git rev-parse HEAD~1 >/dev/null 2>&1; then
+              base_sha="$(git rev-parse HEAD~1)"
+            else
+              base_sha="$(git rev-parse HEAD)"
+            fi
+          fi
+
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+
+          mapfile -t changed_php_files < <(
+            git diff --name-only "${base_sha}" "${head_sha}" \
+              | grep -E '^api/(app|routes|tests)/.*\.php$' \
+              | sort -u || true
+          )
+
+          if [[ ${#changed_php_files[@]} -eq 0 ]]; then
+            echo "No changed backend PHP files matched the PHPStan gate." | tee storage/test-results/phpstan.txt
+            exit 0
+          fi
+
+          printf '%s\n' "${changed_php_files[@]}" > storage/test-results/phpstan-targets.txt
+          phpstan_targets=()
+          while IFS= read -r file; do
+            phpstan_targets+=("${file#api/}")
+          done < storage/test-results/phpstan-targets.txt
+
+          ./vendor/bin/phpstan analyse -c phpstan.ci.neon --no-progress --error-format=raw "${phpstan_targets[@]}" | tee storage/test-results/phpstan.txt
 
       - name: Build backend quality summary
         if: always()
@@ -349,6 +385,10 @@ jobs:
           if [[ -f storage/test-results/phpstan.txt ]]; then
             findings="$(awk 'END { print NR }' storage/test-results/phpstan.txt)"
           fi
+          target_scope="full backend scope"
+          if [[ -f storage/test-results/phpstan-targets.txt ]]; then
+            target_scope="$(tr '\n' ',' < storage/test-results/phpstan-targets.txt | sed 's/,$//')"
+          fi
           cat > storage/test-results/backend-quality-summary.md <<EOF
           - Composer validate: ${{ steps.validate_composer.outcome }}
           - Composer install: ${{ steps.install_composer.outcome }}
@@ -356,6 +396,7 @@ jobs:
           - PHP syntax lint: ${{ steps.php_lint.outcome }}
           - PHPStan/Larastan: ${{ steps.phpstan.outcome }}
           - PHPStan findings captured: ${findings}
+          - PHPStan scope: ${target_scope}
           - Baseline support: api/phpstan.neon + api/phpstan-baseline.neon
           EOF
 
@@ -374,10 +415,17 @@ jobs:
           name: backend-quality-reports
           path: |
             api/storage/test-results/phpstan.txt
+            api/storage/test-results/phpstan-targets.txt
             api/storage/test-results/backend-quality-summary.md
             api/phpstan.neon
             api/phpstan-baseline.neon
           if-no-files-found: ignore
+
+      - name: Fail backend quality job if PHPStan failed
+        if: steps.phpstan.outcome == 'failure'
+        run: |
+          echo "PHPStan/Larastan failed."
+          exit 1
 
   backend-coverage:
     name: Backend Coverage (PHPUnit)
@@ -673,13 +721,11 @@ jobs:
 
       - name: Analyze
         id: mobile_analyze
-        continue-on-error: true
         working-directory: ./mobile
         run: flutter analyze
 
       - name: Run Flutter tests
         id: mobile_tests
-        continue-on-error: true
         working-directory: ./mobile
         shell: bash
         run: |
@@ -710,7 +756,6 @@ jobs:
 
       - name: Enforce mobile coverage threshold
         id: mobile_coverage_gate
-        continue-on-error: true
         working-directory: ./mobile
         shell: bash
         env:
@@ -745,7 +790,6 @@ jobs:
 
       - name: Build Android smoke artifact
         id: mobile_smoke_build
-        continue-on-error: true
         working-directory: ./mobile
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
@@ -796,6 +840,30 @@ jobs:
             mobile/quality-summary.md
             mobile/test/**/*
           if-no-files-found: ignore
+
+      - name: Fail mobile job if analyze failed
+        if: steps.mobile_analyze.outcome == 'failure'
+        run: |
+          echo "Flutter analyze failed."
+          exit 1
+
+      - name: Fail mobile job if tests failed
+        if: steps.mobile_tests.outcome == 'failure'
+        run: |
+          echo "Flutter tests failed."
+          exit 1
+
+      - name: Fail mobile job if coverage gate failed
+        if: steps.mobile_coverage_gate.outcome == 'failure'
+        run: |
+          echo "Mobile coverage threshold not met."
+          exit 1
+
+      - name: Fail mobile job if smoke build failed
+        if: steps.mobile_smoke_build.outcome == 'failure'
+        run: |
+          echo "Android smoke build failed."
+          exit 1
 
   governance-gates:
     name: Governance Gates (changelog + canonical files)

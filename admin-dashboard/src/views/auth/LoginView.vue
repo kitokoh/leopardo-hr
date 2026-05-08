@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
-      <!-- Logo and title -->
       <div>
         <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-lg bg-indigo-600">
           <span class="text-xl font-bold text-white">LRH</span>
@@ -10,11 +9,10 @@
           Administration Leopardo RH
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
-          Connectez-vous à votre espace d'administration
+          Connectez-vous a votre espace d'administration
         </p>
       </div>
 
-      <!-- Login form -->
       <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
@@ -39,13 +37,29 @@
               type="password"
               autocomplete="current-password"
               required
-              class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              :class="[
+                'relative block w-full border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
+                requiresTwoFactor ? '' : 'rounded-b-md'
+              ]"
               placeholder="Mot de passe"
+            />
+          </div>
+          <div v-if="requiresTwoFactor">
+            <label for="two-factor-code" class="sr-only">Code de verification</label>
+            <input
+              id="two-factor-code"
+              v-model="form.twoFactorCode"
+              name="two-factor-code"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              required
+              class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              placeholder="Code de verification a 6 chiffres"
             />
           </div>
         </div>
 
-        <!-- Remember me and forgot password -->
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input
@@ -62,12 +76,11 @@
 
           <div class="text-sm">
             <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-              Mot de passe oublié ?
+              Mot de passe oublie ?
             </a>
           </div>
         </div>
 
-        <!-- Error message -->
         <div v-if="error" class="rounded-md bg-red-50 p-4">
           <div class="flex">
             <ExclamationTriangleIcon class="h-5 w-5 text-red-400" />
@@ -82,7 +95,6 @@
           </div>
         </div>
 
-        <!-- Submit button -->
         <div>
           <button
             type="submit"
@@ -102,10 +114,9 @@
           </button>
         </div>
 
-        <!-- System status -->
         <div class="mt-6 border-t border-gray-200 pt-6">
           <div class="text-center">
-            <p class="text-xs text-gray-500">Statut du système</p>
+            <p class="text-xs text-gray-500">Statut du systeme</p>
             <div class="mt-2 flex items-center justify-center space-x-4 text-xs">
               <div class="flex items-center">
                 <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
@@ -113,7 +124,7 @@
               </div>
               <div class="flex items-center">
                 <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">Base de données</span>
+                <span class="text-gray-600">Base de donnees</span>
               </div>
               <div class="flex items-center">
                 <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
@@ -128,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { LockClosedIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
@@ -139,11 +150,13 @@ const authStore = useAuthStore()
 const form = reactive({
   email: '',
   password: '',
-  remember: false
+  twoFactorCode: '',
+  remember: false,
 })
 
 const isLoading = ref(false)
 const error = ref('')
+const requiresTwoFactor = ref(false)
 
 async function handleLogin() {
   if (isLoading.value) return
@@ -155,12 +168,17 @@ async function handleLogin() {
     const result = await authStore.login({
       email: form.email,
       password: form.password,
-      remember: form.remember
+      remember: form.remember,
+      two_fa_code: form.twoFactorCode || undefined,
     })
 
     if (result.success) {
-      // Redirect to dashboard
+      requiresTwoFactor.value = false
+      form.twoFactorCode = ''
       router.push('/')
+    } else if (result.requiresTwoFactor) {
+      requiresTwoFactor.value = true
+      error.value = result.message || 'Un code de verification est requis.'
     } else {
       error.value = result.message || 'Erreur de connexion'
     }
