@@ -88,6 +88,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
+        Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index']);
         Route::get('/companies/{company}/health', PlatformCompanyHealthController::class);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
