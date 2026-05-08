@@ -152,8 +152,10 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Aucun contrat admin ne doit reintroduire des routes `/admin/auth/*` inexistantes
 - `GET /api/v1/platform/companies/{company}/health` retourne plan/MRR, features, adoption pointage 30 jours, onboarding, anomalies et next actions
 - `GET /api/v1/platform/companies/health` retourne le portefeuille client avec MRR total, repartition des risques et prochaine action par company
+- `GET/PATCH /api/v1/platform/companies/{company}/subscription` lit et met a jour plan, statut, dates d'abonnement et notes client
 - Le health client classe clairement le risque (`low`, `medium`, `high`) et reste reserve au guard `super_admin_api`
 - Les metriques health ne doivent jamais lire les donnees d'un autre tenant ni dependre d'un `current_company` applicatif
+- Le contrat abonnement refuse les statuts inconnus, les plans inexistants et les dates incoherentes
 
 ### 14. Catalogue de traductions distant et variantes de locale
 
@@ -193,6 +195,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Contrats JSON critiques pour le mobile
 - Contrats d'auth plateforme et cas `TWO_FA_REQUIRED`
 - Contrat health plateforme pour adoption, retention et upsell client
+- Contrat abonnement plateforme pour upgrade, suspension, expiration et notes client
 - Health endpoint
 
 ### Suites a ajouter ou durcir progressivement

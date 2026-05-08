@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.113] - 2026-05-08
+
+### Plateforme - Contrat abonnement client
+
+- API : ajout de `GET/PATCH /api/v1/platform/companies/{company}/subscription` pour lire et mettre a jour plan, statut, dates d'abonnement et notes client.
+- API : le contrat abonnement expose les informations plan utiles au billing futur (`price_monthly`, `price_yearly`, `max_employees`) sans integrer de fournisseur de paiement.
+- Tests : ajout d'une couverture Feature super-admin pour lecture, upgrade de plan et validations de statut/dates.
+
 ## [4.1.112] - 2026-05-08
 
 ### Plateforme - Portefeuille clients
