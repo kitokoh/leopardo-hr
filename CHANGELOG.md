@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.116] - 2026-05-08
+
+### Admin dashboard - Intake clients
+
+- Admin : remplacement de la page Support mockee par une file de demandes clients branchee sur `GET /api/v1/platform/company-requests`.
+- Admin : ajout des filtres statut, compteurs pending/approved/rejected, notes internes et actions approuver/rejeter via `PATCH /api/v1/platform/company-requests/{id}`.
+- Gouvernance : les scenarios web admin incluent maintenant la qualification des demandes entrantes sans donnees mockees.
+
 ## [4.1.115] - 2026-05-08
 
 ### Admin dashboard - Cockpit plateforme
