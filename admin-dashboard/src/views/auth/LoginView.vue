@@ -30,19 +30,31 @@
           </div>
           <div>
             <label for="password" class="sr-only">Mot de passe</label>
-            <input
-              id="password"
-              v-model="form.password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              required
-              :class="[
-                'relative block w-full border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                requiresTwoFactor ? '' : 'rounded-b-md'
-              ]"
-              placeholder="Mot de passe"
-            />
+            <div class="relative">
+              <input
+                id="password"
+                v-model="form.password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                required
+                :class="[
+                  'relative block w-full border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
+                  requiresTwoFactor ? '' : 'rounded-b-md'
+                ]"
+                placeholder="Mot de passe"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 transition hover:text-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                :title="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                @click="showPassword = !showPassword"
+              >
+                <EyeSlashIcon v-if="showPassword" class="h-5 w-5" aria-hidden="true" />
+                <EyeIcon v-else class="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
           </div>
           <div v-if="requiresTwoFactor">
             <label for="two-factor-code" class="sr-only">Code de verification</label>
@@ -141,7 +153,12 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { LockClosedIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import {
+  LockClosedIcon,
+  ExclamationTriangleIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -157,6 +174,7 @@ const form = reactive({
 const isLoading = ref(false)
 const error = ref('')
 const requiresTwoFactor = ref(false)
+const showPassword = ref(false)
 
 async function handleLogin() {
   if (isLoading.value) return
