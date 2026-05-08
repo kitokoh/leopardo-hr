@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.105] - 2026-05-08
+
+### Web - Compatibilite Vercel
+
+- Web : suppression du bloc `env` invalide de `web/vercel.json` qui cassait les builds Vercel avec l'erreur `env.NEXT_PUBLIC_API_URL should be string`.
+- Ops : les variables `NEXT_PUBLIC_*`, `NEXTAUTH_*` et secrets web doivent rester configurees dans le dashboard Vercel, pas decrites comme objets metadata dans `vercel.json`.
+
 ## [4.1.104] - 2026-05-08
 
 ### Backend - Migrations publiques Render hors transaction
@@ -1705,4 +1712,3 @@ docs(erd): unify manager_id and remove supervisor_id from employees
 - Initialisation de la conception technique.
 - Premier ERD et schÃ©ma SQL de base.
 - Structure initiale des dossiers.
-
