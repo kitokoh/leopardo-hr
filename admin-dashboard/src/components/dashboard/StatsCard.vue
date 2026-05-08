@@ -63,6 +63,7 @@ import {
   CreditCardIcon,
   CurrencyEuroIcon,
   ChartBarIcon,
+  ChatBubbleLeftRightIcon,
   ArrowUpIcon,
   ArrowDownIcon
 } from '@heroicons/vue/24/outline'
@@ -105,7 +106,8 @@ const iconMap = {
   BuildingOfficeIcon,
   CreditCardIcon,
   CurrencyEuroIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  ChatBubbleLeftRightIcon
 }
 
 const iconComponent = computed(() => iconMap[props.icon] || ChartBarIcon)

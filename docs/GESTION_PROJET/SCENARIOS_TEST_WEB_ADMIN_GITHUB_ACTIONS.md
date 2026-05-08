@@ -68,6 +68,14 @@ Donner une base de scenarios stable pour le dashboard `admin-dashboard/`, avec u
 - la vue Abonnements affiche le catalogue `/api/v1/platform/plans`, le MRR portefeuille et les clients prioritaires
 - les etats loading/error restent lisibles si l'API plateforme est indisponible
 
+### 7. Intake demandes clients
+
+- la vue Support charge les demandes via `/api/v1/platform/company-requests`
+- les filtres pending/approved/rejected mettent a jour la file de qualification
+- les compteurs statut restent visibles pour suivre le pipe commercial
+- les actions approuver/rejeter envoient `PATCH /api/v1/platform/company-requests/{id}` avec notes internes
+- une demande deja traitee ne propose plus d'action de decision
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
@@ -88,7 +96,7 @@ En revanche, elles doivent etre conservees automatiquement en cas d'echec Playwr
 
 ## Extension i18n enterprise
 
-### 7. Locales, dictionnaires et direction
+### 8. Locales, dictionnaires et direction
 
 - Les dictionnaires generes dans `admin-dashboard/src/i18n/locales/` restent synchronises avec `shared/i18n/locales/`
 - Une locale variante (`fr-CA`, `en-GB`, `ar-SA`) est normalisee sans casser le rendu
