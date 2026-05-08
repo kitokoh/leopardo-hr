@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.115] - 2026-05-08
+
+### Admin dashboard - Cockpit plateforme
+
+- Admin : remplacement des placeholders Entreprises par un cockpit portefeuille branche sur `GET /api/v1/platform/companies/health`.
+- Admin : ajout du detail entreprise avec health client, actions prioritaires et formulaire abonnement branche sur les endpoints `health`, `subscription` et `plans`.
+- Admin : enrichissement de la page Abonnements avec catalogue plans API, MRR portefeuille et clients prioritaires a traiter.
+- Gouvernance : les scenarios web admin couvrent maintenant le cockpit plateforme et ses contrats backend v5.0.
+
 ## [4.1.114] - 2026-05-08
 
 ### Plateforme - Catalogue plans API

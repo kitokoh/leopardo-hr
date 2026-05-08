@@ -181,6 +181,7 @@ Procedure recommandee :
 - La vue portefeuille `GET /api/v1/platform/companies/health` doit rester compacte : resume MRR/risques en haut, puis une action prioritaire par client. Eviter d'en faire un export lourd ; le detail appartient au health d'une seule company.
 - Le contrat abonnement `GET/PATCH /api/v1/platform/companies/{company}/subscription` est volontairement fournisseur-agnostique : plan/statut/dates/notes seulement. Brancher Stripe/PayPal/local PSP plus tard derriere ce contrat, pas dans le premier lot.
 - `GET /api/v1/platform/plans` fournit le catalogue a utiliser par l'admin-dashboard pour les formulaires d'abonnement ; ne pas hardcoder les `plan_id` cote frontend.
+- Le cockpit `admin-dashboard` doit consommer les contrats plateforme reels (`/platform/companies/health`, `/platform/companies/{id}/health`, `/subscription`, `/plans`) avant toute nouvelle statistique mockee.
 
 ### 2026-05-07 - Dossier Go-To-Market racine
 
