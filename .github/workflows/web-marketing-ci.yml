@@ -1,0 +1,70 @@
+name: Web CI - Leopardo Vitrine
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop, staging]
+    paths:
+      - 'web/**'
+      - '.github/workflows/web-marketing-ci.yml'
+  pull_request:
+    branches: [main, develop, staging]
+    paths:
+      - 'web/**'
+      - '.github/workflows/web-marketing-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-marketing-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web-marketing-lint:
+    name: Web Marketing Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./web
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./web
+        run: npm run lint
+
+  web-marketing-build:
+    name: Web Marketing Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./web
+        run: npm ci
+
+      - name: Build Next.js vitrine
+        working-directory: ./web
+        env:
+          NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
+        run: npm run build

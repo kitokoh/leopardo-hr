@@ -1,45 +1,36 @@
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
-// Configuration de base
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    Accept: 'application/json',
+  },
 })
 
-// Intercepteur de requête
 api.interceptors.request.use(
   (config) => {
-    // Ajouter le token d'authentification
     const token = localStorage.getItem('admin_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
 
-    // Ajouter un timestamp pour éviter le cache
     if (config.method === 'get') {
       config.params = {
         ...config.params,
-        _t: Date.now()
+        _t: Date.now(),
       }
     }
 
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error),
 )
 
-// Intercepteur de réponse
 api.interceptors.response.use(
-  (response) => {
-    return response
-  },
+  (response) => response,
   async (error) => {
     const toast = useToast()
     const originalRequest = error.config
@@ -49,69 +40,54 @@ api.interceptors.response.use(
 
       switch (status) {
         case 401:
-          // Token expiré ou invalide
-          if (!originalRequest._retry) {
+          if (!originalRequest?._retry) {
             originalRequest._retry = true
+            localStorage.removeItem('admin_token')
+            delete api.defaults.headers.common.Authorization
 
-            try {
-              // Tenter de rafraîchir le token
-              const refreshResponse = await api.post('/admin/auth/refresh')
-              const { token } = refreshResponse.data
-
-              localStorage.setItem('admin_token', token)
-              api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
-              // Relancer la requête originale
-              return api(originalRequest)
-            } catch (refreshError) {
-              // Échec du rafraîchissement, rediriger vers login
-              localStorage.removeItem('admin_token')
+            if (window.location.pathname !== '/login') {
               window.location.href = '/login'
-              return Promise.reject(refreshError)
             }
           }
           break
 
         case 403:
-          toast.error('Accès refusé. Permissions insuffisantes.')
+          toast.error('Acces refuse. Permissions insuffisantes.')
           break
 
         case 404:
-          toast.error('Ressource non trouvée.')
+          toast.error('Ressource non trouvee.')
           break
 
         case 422:
-          // Erreurs de validation
           if (data.errors) {
-            Object.values(data.errors).flat().forEach(message => {
-              toast.error(message)
-            })
+            Object.values(data.errors)
+              .flat()
+              .forEach((message) => toast.error(message))
           } else {
-            toast.error(data.message || 'Données invalides.')
+            toast.error(data.message || 'Donnees invalides.')
           }
           break
 
         case 429:
-          toast.error('Trop de requêtes. Veuillez patienter.')
+          toast.error('Trop de requetes. Veuillez patienter.')
           break
 
         case 500:
-          toast.error('Erreur serveur. Veuillez réessayer plus tard.')
+          toast.error('Erreur serveur. Veuillez reessayer plus tard.')
           break
 
         default:
           toast.error(data.message || 'Une erreur est survenue.')
       }
     } else if (error.request) {
-      // Erreur réseau
-      toast.error('Erreur de connexion. Vérifiez votre connexion internet.')
+      toast.error('Erreur de connexion. Verifiez votre connexion internet.')
     } else {
-      // Autre erreur
       toast.error('Une erreur inattendue est survenue.')
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 
 export default api

@@ -60,6 +60,8 @@ class PlatformAuthController extends Controller
                 'id' => $superAdmin->id,
                 'name' => $superAdmin->name,
                 'email' => $superAdmin->email,
+                'role' => 'super_admin',
+                'two_fa_enabled' => (bool) $superAdmin->two_fa_secret,
             ],
             'token' => $token,
             'token_type' => 'Bearer',
@@ -76,6 +78,8 @@ class PlatformAuthController extends Controller
                 'id' => $superAdmin->id,
                 'name' => $superAdmin->name,
                 'email' => $superAdmin->email,
+                'role' => 'super_admin',
+                'two_fa_enabled' => (bool) $superAdmin->two_fa_secret,
             ],
         ]);
     }

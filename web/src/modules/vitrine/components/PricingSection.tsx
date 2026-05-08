@@ -1,38 +1,44 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
-import { pricingPlans } from '../data/pricing';
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
+import { getPricingPlans } from '../data/pricing'
+import { useVitrineLocale } from '../lib/vitrine-locale'
+
+function showsCurrency(price: string) {
+  return !['Sur devis', 'Custom', 'Teklif', 'حسب الطلب'].includes(price)
+}
 
 export function PricingSection() {
+  const { copy, locale } = useVitrineLocale()
+  const pricingPlans = getPricingPlans(locale)
+
   return (
     <section id="tarifs" className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/80 to-white dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-20 gsap-reveal">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/15 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-            Tarifs
+            {copy.pricing.badge}
           </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
-            Des prix{' '}
+            {copy.pricing.title}{' '}
             <span className="bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
-              transparents
+              {copy.pricing.titleHighlight}
             </span>
           </h2>
           <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-            Sans engagement. Sans surprise. Commencez gratuitement.
+            {copy.pricing.subtitle}
           </p>
         </div>
 
-        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {pricingPlans.map((plan, index) => (
             <motion.div
-              key={index}
+              key={`${plan.name}-${index}`}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -48,7 +54,7 @@ export function PricingSection() {
                 {plan.popular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                     <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-black uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/30">
-                      Recommande
+                      {copy.pricing.recommended}
                     </span>
                   </div>
                 )}
@@ -57,7 +63,7 @@ export function PricingSection() {
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{plan.name}</h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{plan.description}</p>
                   <div className="flex items-baseline justify-center gap-1">
-                    {plan.price !== 'Sur devis' && <span className="text-sm text-slate-500">EUR</span>}
+                    {showsCurrency(plan.price) && <span className="text-sm text-slate-500">{copy.pricing.currency}</span>}
                     <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
                       {plan.price}
                     </span>
@@ -66,8 +72,8 @@ export function PricingSection() {
                 </div>
 
                 <ul className="space-y-3.5 mb-8">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={`${plan.name}-feature-${featureIndex}`} className="flex items-center gap-3">
                       <CheckCircle2 className={`w-4 h-4 flex-shrink-0 ${plan.popular ? 'text-emerald-500' : 'text-slate-400'}`} />
                       <span className="text-sm text-slate-700 dark:text-slate-300">{feature}</span>
                     </li>
@@ -91,5 +97,5 @@ export function PricingSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }
