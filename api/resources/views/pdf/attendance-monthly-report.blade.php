@@ -13,6 +13,7 @@
         .metrics { margin-top: 16px; }
         .metric { display: inline-block; width: 23%; margin-right: 1%; padding: 8px; background: #f6f8fb; }
         .metric strong { display: block; font-size: 16px; }
+        .note { margin-top: 8px; padding: 8px; background: #fff7ed; border: 1px solid #fed7aa; }
     </style>
 </head>
 <body>
@@ -26,17 +27,25 @@
         <div class="metric"><span>Retard min</span><strong>{{ $report['totals']['late_minutes'] }}</strong></div>
     </div>
 
+    <div class="note">
+        Estimation paie terrain : {{ $report['totals']['estimated_gross_payroll'] }} {{ $report['company']['currency'] }}
+        dont heures sup estimees : {{ $report['totals']['estimated_overtime_pay'] }} {{ $report['company']['currency'] }}.
+        A verifier avant cloture.
+    </div>
+
     <h2>Detail par employe</h2>
     <table>
         <thead>
             <tr>
                 <th>Matricule</th>
                 <th>Nom</th>
+                <th>Jours</th>
                 <th>Heures</th>
                 <th>Heures sup</th>
                 <th>Retard min</th>
                 <th>Sorties manquantes</th>
                 <th>Corrections</th>
+                <th>Estimation</th>
             </tr>
         </thead>
         <tbody>
@@ -44,11 +53,13 @@
                 <tr>
                     <td>{{ $employee['matricule'] }}</td>
                     <td>{{ $employee['name'] }}</td>
+                    <td>{{ $employee['worked_days'] }}</td>
                     <td>{{ $employee['worked_hours'] }}</td>
                     <td>{{ $employee['overtime_hours'] }}</td>
                     <td>{{ $employee['late_minutes'] }}</td>
                     <td>{{ $employee['missing_check_outs'] }}</td>
                     <td>{{ $employee['manual_corrections'] }}</td>
+                    <td>{{ $employee['estimated_gross_amount'] }}</td>
                 </tr>
             @endforeach
         </tbody>

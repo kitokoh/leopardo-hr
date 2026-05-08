@@ -109,6 +109,11 @@ class AttendanceAnomaliesTest extends TestCase
         $response->assertJsonPath('data.summary.by_type.excessive_overtime', 1);
         $response->assertJsonPath('data.summary.by_type.rapid_device_sequence', 1);
         $response->assertJsonPath('data.summary.by_type.repeated_exact_check_in', 3);
+        $response->assertJsonPath('data.summary.business_impact.late_minutes', 20);
+        $response->assertJsonPath('data.summary.business_impact.missing_check_outs', 1);
+        $response->assertJsonPath('data.summary.business_impact.manual_corrections', 1);
+        $response->assertJsonPath('data.items.0.requires_manager_action', true);
+        $this->assertNotEmpty($response->json('data.items.0.recommended_action'));
     }
 
     public function test_employee_cannot_view_attendance_anomalies(): void
