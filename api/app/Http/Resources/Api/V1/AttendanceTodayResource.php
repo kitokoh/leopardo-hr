@@ -42,6 +42,8 @@ class AttendanceTodayResource extends JsonResource
             'employee_id' => $employee->id,
             'matricule' => $employee->matricule,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'photo_url' => $employee->photo_path,
+            'photo_path' => $employee->photo_path,
             'checked_in' => (bool) $this->log?->check_in,
             'check_in_time' => $this->log?->check_in?->setTimezone($this->timezone)->format('H:i'),
             'check_out_time' => $this->log?->check_out?->setTimezone($this->timezone)->format('H:i'),

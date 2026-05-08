@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.119] - 2026-05-08
+
+### Contractor - [API/mobile contract guard]
+
+- API : Alignement de `AttendanceTodayResource` et `AttendanceLogResource` pour inclure `photo_url` et `photo_path` (nécessaire pour la cohérence UI mobile).
+- API : Durcissement de `AttendanceLogResource` avec un cast explicite en `(float)` pour `hours_worked` et `overtime_hours` afin d'éviter les désynchronisations de types avec Flutter.
+- API : Mise à jour de `AttendanceController@today` pour sélectionner `matricule` et `photo_path` lors de la récupération de la collection manager.
+- Mobile : Durcissement du modèle `DailySummary` avec un helper `_parseDouble` robuste tolérant les types `num` et `String` pour les champs monétaires et de durée.
+- Tests : Mise à jour de `MobilePayloadContractTest` pour verrouiller ces nouveaux champs dans le contrat de présence.
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients

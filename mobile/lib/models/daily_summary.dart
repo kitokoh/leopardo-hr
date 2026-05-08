@@ -17,27 +17,19 @@ class DailySummary {
 
   factory DailySummary.fromJson(Map<String, dynamic> json) {
     return DailySummary(
-      hoursWorked:
-          json['hours_worked'] != null
-              ? (json['hours_worked'] as num).toDouble()
-              : 0.0,
-      overtimeHours:
-          json['overtime_hours'] != null
-              ? (json['overtime_hours'] as num).toDouble()
-              : 0.0,
-      baseGain:
-          json['base_gain'] != null
-              ? (json['base_gain'] as num).toDouble()
-              : 0.0,
-      overtimeGain:
-          json['overtime_gain'] != null
-              ? (json['overtime_gain'] as num).toDouble()
-              : 0.0,
-      totalEstimated:
-          json['total_estimated'] != null
-              ? (json['total_estimated'] as num).toDouble()
-              : 0.0,
-      currency: json['currency'] ?? 'DA',
+      hoursWorked: _parseDouble(json['hours_worked']),
+      overtimeHours: _parseDouble(json['overtime_hours']),
+      baseGain: _parseDouble(json['base_gain']),
+      overtimeGain: _parseDouble(json['overtime_gain']),
+      totalEstimated: _parseDouble(json['total_estimated']),
+      currency: json['currency']?.toString() ?? 'DA',
     );
+  }
+
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
   }
 }
