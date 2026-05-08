@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.119] - 2026-05-08
+
+### DocKeeper - Alignement documentation
+
+- Gouvernance : synchronisation de `PROGRAM_VERSION` a `4.1.119` dans `PILOTAGE.md`, `CHANGELOG.md`, `docs/README.md` et `api/config/app.php`.
+- Gouvernance : mise a jour de la date de derniere mise a jour et du suivi du scope dans `PILOTAGE.md`.
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients
