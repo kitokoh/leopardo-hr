@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
+use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
@@ -87,6 +88,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);
+        Route::get('/companies/{company}/health', PlatformCompanyHealthController::class);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
 

@@ -173,6 +173,12 @@ Procedure recommandee :
 - Le rapport mensuel est le support de vente le plus concret : conserver les champs d'estimation paie (`estimated_gross_payroll`, `estimated_overtime_pay`, montants par employe) et les baser sur `hourly_rate` ou, a defaut, sur `salary_base / 173.33`.
 - La checklist onboarding doit mesurer le go-live client : equipe active, paie renseignee, geofence, biometrie/kiosque. Eviter d'ajouter une etape si elle n'aide pas un client a pointer et preparer sa paie plus vite.
 
+### 2026-05-08 - Plateforme health client
+
+- Pour aller vers v5.0 commercial, chaque nouvelle brique plateforme doit aider a piloter adoption, retention ou upsell. `GET /api/v1/platform/companies/{company}/health` est le contrat de reference pour lire plan/MRR, usage pointage 30 jours, onboarding, anomalies et next actions.
+- Le score health doit rester explicable et conservateur : ne pas le remplacer par une logique opaque tant qu'on n'a pas de donnees churn reelles.
+- Les dashboards super-admin doivent consommer ce contrat avant d'ajouter un billing complet ; il donne deja les signaux minimaux pour relancer un client, aider l'onboarding ou proposer un module Business.
+
 ### 2026-05-07 - Dossier Go-To-Market racine
 
 - Le dossier racine de strategie commerciale s'appelle `GOTO_MARKET/`, pas `marketing/`, sur demande explicite.
