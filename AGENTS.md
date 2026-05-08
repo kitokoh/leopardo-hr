@@ -183,6 +183,7 @@ Procedure recommandee :
 - `GET /api/v1/platform/plans` fournit le catalogue a utiliser par l'admin-dashboard pour les formulaires d'abonnement ; ne pas hardcoder les `plan_id` cote frontend.
 - Le cockpit `admin-dashboard` doit consommer les contrats plateforme reels (`/platform/companies/health`, `/platform/companies/{id}/health`, `/subscription`, `/plans`) avant toute nouvelle statistique mockee.
 - La page Support admin sert maintenant d'intake demandes clients via `/platform/company-requests`; ne pas y remettre de tickets mockes tant qu'un vrai module support n'a pas son API dediee.
+- Le dashboard d'accueil admin doit rester une synthese des contrats plateforme existants. Eviter les endpoints `/admin/dashboard/*` tant qu'ils n'existent pas cote API.
 
 ### 2026-05-07 - Dossier Go-To-Market racine
 
