@@ -60,6 +60,14 @@ Donner une base de scenarios stable pour le dashboard `admin-dashboard/`, avec u
 - saisie du code 2FA sans perdre l'email deja renseigne
 - toggle afficher / masquer le mot de passe visible, accessible au clavier et coherent avec les labels ARIA
 
+### 6. Cockpit plateforme v5.0
+
+- la vue Entreprises charge le portefeuille via `/api/v1/platform/companies/health`
+- le detail Entreprise charge health client, abonnement et catalogue plans
+- le formulaire abonnement met a jour plan, statut, dates et notes sans hardcoder les `plan_id`
+- la vue Abonnements affiche le catalogue `/api/v1/platform/plans`, le MRR portefeuille et les clients prioritaires
+- les etats loading/error restent lisibles si l'API plateforme est indisponible
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
@@ -80,7 +88,7 @@ En revanche, elles doivent etre conservees automatiquement en cas d'echec Playwr
 
 ## Extension i18n enterprise
 
-### 6. Locales, dictionnaires et direction
+### 7. Locales, dictionnaires et direction
 
 - Les dictionnaires generes dans `admin-dashboard/src/i18n/locales/` restent synchronises avec `shared/i18n/locales/`
 - Une locale variante (`fr-CA`, `en-GB`, `ar-SA`) est normalisee sans casser le rendu
