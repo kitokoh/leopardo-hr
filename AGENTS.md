@@ -184,6 +184,7 @@ Procedure recommandee :
 - Le cockpit `admin-dashboard` doit consommer les contrats plateforme reels (`/platform/companies/health`, `/platform/companies/{id}/health`, `/subscription`, `/plans`) avant toute nouvelle statistique mockee.
 - La page Support admin sert maintenant d'intake demandes clients via `/platform/company-requests`; ne pas y remettre de tickets mockes tant qu'un vrai module support n'a pas son API dediee.
 - Le dashboard d'accueil admin doit rester une synthese des contrats plateforme existants. Eviter les endpoints `/admin/dashboard/*` tant qu'ils n'existent pas cote API.
+- Approuver une `company_request` doit declencher le provisioning partage via `CompanyProvisioningService` et remplir `approved_company_id`; ne pas se limiter a changer le statut.
 
 ### 2026-05-07 - Dossier Go-To-Market racine
 
