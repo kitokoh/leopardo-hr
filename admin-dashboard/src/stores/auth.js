@@ -1,40 +1,61 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import api from '@/services/api'
 
+const PLATFORM_AUTH_BASE = '/platform/auth'
+const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
+
 export const useAuthStore = defineStore('auth', () => {
-  // State
   const user = ref(null)
   const token = ref(localStorage.getItem('admin_token'))
   const isLoading = ref(false)
 
-  // Getters
   const isAuthenticated = computed(() => !!token.value && !!user.value)
   const userRole = computed(() => user.value?.role || null)
   const userName = computed(() => user.value?.name || '')
   const userEmail = computed(() => user.value?.email || '')
 
-  // Actions
   async function login(credentials) {
     isLoading.value = true
-    try {
-      const response = await api.post('/admin/auth/login', credentials)
-      const { token: authToken, user: userData } = response.data
 
-      // Stocker le token et les données utilisateur
+    try {
+      const response = await api.post(`${PLATFORM_AUTH_BASE}/login`, {
+        ...credentials,
+        device_name: credentials.device_name || PLATFORM_DEVICE_NAME,
+      })
+
+      if (response.status === 202 || response.data?.error === 'TWO_FA_REQUIRED') {
+        return {
+          success: false,
+          requiresTwoFactor: true,
+          message: response.data?.message || 'Un code de verification est requis.',
+        }
+      }
+
+      const authToken = response.data?.token
+      const userData = response.data?.data
+
+      if (!authToken || !userData) {
+        return {
+          success: false,
+          requiresTwoFactor: false,
+          message: 'La reponse de connexion est incomplete.',
+        }
+      }
+
       token.value = authToken
       user.value = userData
       localStorage.setItem('admin_token', authToken)
-
-      // Configurer le token par défaut pour les futures requêtes
-      api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
+      api.defaults.headers.common.Authorization = `Bearer ${authToken}`
 
       return { success: true }
     } catch (error) {
       console.error('Erreur de connexion:', error)
+
       return {
         success: false,
-        message: error.response?.data?.message || 'Erreur de connexion'
+        requiresTwoFactor: false,
+        message: error.response?.data?.message || 'Erreur de connexion',
       }
     } finally {
       isLoading.value = false
@@ -43,15 +64,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() {
     try {
-      await api.post('/admin/auth/logout')
+      if (token.value) {
+        await api.post(`${PLATFORM_AUTH_BASE}/logout`)
+      }
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error)
+      console.error('Erreur lors de la deconnexion:', error)
     } finally {
-      // Nettoyer les données locales
       token.value = null
       user.value = null
       localStorage.removeItem('admin_token')
-      delete api.defaults.headers.common['Authorization']
+      delete api.defaults.headers.common.Authorization
     }
   }
 
@@ -61,55 +83,28 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      // Configurer le token pour la requête
-      api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+      api.defaults.headers.common.Authorization = `Bearer ${token.value}`
+      const response = await api.get(`${PLATFORM_AUTH_BASE}/me`)
+      user.value = response.data?.data || null
 
-      // Vérifier la validité du token
-      const response = await api.get('/admin/auth/me')
-      user.value = response.data.user
-
-      return true
+      return !!user.value
     } catch (error) {
       console.error('Token invalide:', error)
-      // Token invalide, nettoyer
-      await logout()
-      return false
-    }
-  }
-
-  async function refreshToken() {
-    try {
-      const response = await api.post('/admin/auth/refresh')
-      const { token: newToken } = response.data
-
-      token.value = newToken
-      localStorage.setItem('admin_token', newToken)
-      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`
-
-      return true
-    } catch (error) {
-      console.error('Erreur lors du rafraîchissement du token:', error)
       await logout()
       return false
     }
   }
 
   return {
-    // State
     user,
     token,
     isLoading,
-
-    // Getters
     isAuthenticated,
     userRole,
     userName,
     userEmail,
-
-    // Actions
     login,
     logout,
     checkAuth,
-    refreshToken
   }
 })
