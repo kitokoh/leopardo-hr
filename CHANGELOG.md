@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.111] - 2026-05-08
+
+### Plateforme - Pilotage adoption client
+
+- API : ajout de `GET /api/v1/platform/companies/{company}/health` pour donner au super-admin une vue adoption/risque par client.
+- API : le health client expose plan, MRR, features actives, usage pointage 30 jours, progression onboarding, anomalies et prochaines actions prioritaires.
+- Tests : ajout d'une couverture Feature pour un client sain upsellable et un client suspendu a risque eleve.
+- Gouvernance : ajout du nouveau contrat health plateforme dans les scenarios API critiques.
+
 ## [4.1.110] - 2026-05-08
 
 ### Backend - Valeur terrain attendance
