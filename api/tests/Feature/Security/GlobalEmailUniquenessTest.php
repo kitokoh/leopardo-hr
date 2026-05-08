@@ -83,6 +83,26 @@ class GlobalEmailUniquenessTest extends TestCase
         $this->assertEquals(123, $lookup->employee_id);
     }
 
+    public function test_self_registration_is_protected_against_global_email_collision(): void
+    {
+        $companyA = $this->createCompany('Company A');
+        $victim = $this->createEmployee($companyA, 'employee', null, 'victim@test.com');
+        $victim->syncUserLookup();
+
+        $response = $this->postJson('/api/v1/auth/register', [
+            'first_name' => 'Attacker',
+            'last_name' => 'User',
+            'email' => 'victim@test.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['email']);
+        $errors = $response->json('errors.email');
+        $this->assertContains('Cet email est déjà utilisé par un utilisateur sur la plateforme (GLOBAL_COLLISION).', $errors);
+    }
+
     private function createCompany(string $name): Company
     {
         return Company::query()->create([

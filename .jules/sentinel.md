@@ -9,3 +9,8 @@
 **Vulnerability:** The platform used a global `user_lookups` table for authentication routing (email -> company_id) but only enforced email uniqueness at the local company level. This allowed an attacker in one tenant to "claim" an email already used in another tenant, overwriting the routing record and hijacking the authentication flow.
 **Learning:** In multi-tenant systems with centralized authentication registries, uniqueness must be enforced globally across the registry, not just within isolated tenant silos. Validation rules must check the global registry, and the registry synchronization logic must have defensive checks against overwriting records belonging to different internal IDs.
 **Prevention:** Use a `GlobalEmailUnique` validation rule that queries the centralized lookup table. Implement "defense in depth" in model observers/sync methods to ensure a tenant-specific update cannot affect a global record owned by another tenant.
+
+## 2026-05-06 - Missing Global Validation in Public Registration & Password DoS
+**Vulnerability:** The `StoreRegistrationRequest` used for public self-registration was missing the `GlobalEmailUnique` validation rule, allowing collisions that were previously fixed only for internal employee creation. Additionally, password fields lacked a maximum length limit.
+**Learning:** Security fixes applied to internal management endpoints must be consistently propagated to public-facing endpoints (like self-registration). Furthermore, unbounded password lengths can be exploited for DoS attacks due to the high CPU cost of hashing long strings (BCrypt/Argon2).
+**Prevention:** Audit all entry points for user data to ensure security rules are applied universally. Always enforce a reasonable `max:255` limit on password fields.
