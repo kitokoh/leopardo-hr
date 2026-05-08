@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.117] - 2026-05-08
+
+### Admin dashboard - Accueil cockpit
+
+- Admin : remplacement du dashboard d'accueil base sur endpoints inexistants/mockes par une synthese branchee sur `companies/health`, `plans` et `company-requests`.
+- Admin : ajout des priorites clients, demandes entrantes, adoption terrain, ARPA et raccourcis cockpit depuis la page d'accueil.
+- Gouvernance : documentation des scenarios dashboard v5.0 relies aux contrats plateforme reels.
+
 ## [4.1.116] - 2026-05-08
 
 ### Admin dashboard - Intake clients
