@@ -124,6 +124,66 @@ class PlatformCompanyHealthApiTest extends TestCase
         $response->assertJsonPath('data.next_actions.0.key', 'reactivate_subscription');
     }
 
+    public function test_super_admin_can_view_portfolio_health_summary(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-08 10:00:00', 'UTC'));
+
+        DB::table('plans')->insert([
+            ['id' => 1, 'name' => 'Starter', 'price_monthly' => 29, 'price_yearly' => 290, 'trial_days' => 14, 'is_active' => true],
+            ['id' => 2, 'name' => 'Pro', 'price_monthly' => 99, 'price_yearly' => 990, 'trial_days' => 14, 'is_active' => true],
+        ]);
+
+        $healthy = Company::factory()->create([
+            'plan_id' => 2,
+            'timezone' => 'UTC',
+            'metadata' => [
+                'attendance_geofence' => [
+                    'lat' => 36.7525,
+                    'lng' => 3.0420,
+                    'radius_meters' => 100,
+                ],
+            ],
+        ]);
+        $risky = Company::factory()->suspended()->create([
+            'plan_id' => 1,
+            'timezone' => 'UTC',
+        ]);
+
+        $employee = Employee::factory()->create(['company_id' => $healthy->id, 'salary_base' => 173330]);
+
+        app()->instance('current_company', $healthy);
+        AttendanceLog::factory()->create([
+            'company_id' => $healthy->id,
+            'employee_id' => $employee->id,
+            'date' => '2026-05-08',
+            'check_in' => Carbon::parse('2026-05-08 08:00:00', 'UTC'),
+            'check_out' => Carbon::parse('2026-05-08 17:00:00', 'UTC'),
+        ]);
+        app()->forgetInstance('current_company');
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        $response = $this->getJson('/api/v1/platform/companies/health?limit=10');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.summary.companies', 2);
+        $response->assertJsonPath('data.summary.active_companies', 1);
+        $response->assertJsonPath('data.summary.mrr', 128);
+        $response->assertJsonPath('data.summary.risk.high', 1);
+        $response->assertJsonPath('data.summary.risk.low', 1);
+
+        $items = collect($response->json('data.items'));
+        $healthyItem = $items->firstWhere('company.id', $healthy->id);
+        $riskyItem = $items->firstWhere('company.id', $risky->id);
+
+        $this->assertSame('low', $healthyItem['risk_level']);
+        $this->assertSame('prepare_upsell', $healthyItem['next_action']['key']);
+        $this->assertSame('high', $riskyItem['risk_level']);
+        $this->assertSame('reactivate_subscription', $riskyItem['next_action']['key']);
+
+        Carbon::setTestNow();
+    }
+
     private function superAdmin(): SuperAdmin
     {
         return SuperAdmin::query()->create([
