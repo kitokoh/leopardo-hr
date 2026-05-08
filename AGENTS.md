@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-07
+Derniere mise a jour : 2026-05-08
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -30,7 +30,11 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
-- Le frontend versionne dans ce depot est `admin-dashboard/`, pas `web/`. Si un workflow pointe encore vers `web/**`, il est probablement obsolete ou desynchronise.
+- Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
+- Pour `admin-dashboard/`, garder `web-ci.yml` cible sur `admin-dashboard/**` avec lint/build/Playwright.
+- Pour `web/`, utiliser un workflow dedie vitrine (`web-marketing-ci.yml`) sur `web/**` au lieu de recycler les checks admin.
+- Dans `tests.yml`, ne pas faire porter la dette mobile historique a des PR backend/web en declenchant `mobile-tests` uniquement parce que le workflow lui-meme change. Le job mobile doit rester cale sur `mobile/**` tant que la base n'est pas completement assainie.
+- Pour `Backend Quality`, un scope PHPStan diff-aware sur les fichiers PHP backend modifies est preferable a un faux vert ou a un blocage par dette historique hors perimetre. Garder les artefacts et la visibilite du baseline.
 - Le depot contient deja beaucoup de tests backend critiques (auth, guardrails, RBAC, absences, attendance, contrats mobile). Avant d'ajouter de nouveaux tests, verifier d'abord si le manque reel n'est pas plutot la visibilite CI (coverage, artifacts, reporting).
 
 ## Pieges connus
@@ -101,6 +105,14 @@ Procedure recommandee :
 - Symptome observe sur le deploy du commit `fed92d684274e9bbf52b6b4d81785b8e851ac221` : `2026_05_02_000003_create_company_requests_table.php` echoue avec `SQLSTATE[42P07] Duplicate table` alors que la table vient juste d'etre creee par un autre processus.
 - Pour une migration publique sensible, entourer `Schema::create(...)` d'un `try/catch QueryException` et traiter `42P07` comme un no-op de course concurrente, sans relancer de requete SQL dans le `catch`.
 - Appliquer la meme protection aux autres tables publiques exposees a la course (`users`, `company_requests`, `user_employee_links`) afin que le rattrapage Render et les retries du point d'entree restent vraiment idempotents.
+
+### 2026-05-08 - Admin plateforme + vitrine multilingue
+
+- Le dashboard plateforme ne doit plus inventer ses routes d'auth. Le backend expose `/api/v1/platform/auth/login`, `/me`, `/logout`; il n'existe pas de refresh token `/admin/auth/refresh`.
+- `PlatformAuthController` retourne maintenant aussi `role=super_admin` et `two_fa_enabled` pour eviter les hypothese cote frontend.
+- Si un compte super-admin a le 2FA active, l'API renvoie `202 TWO_FA_REQUIRED`; le frontend doit traiter ce cas comme une etape de login et non comme un succes silencieux.
+- La vitrine publique `web/` a maintenant un vrai rail de locale client (`FR/EN/TR/AR`) sur la landing page. Pour les prochaines evolutions, reutiliser ce socle au lieu de rehardcoder des textes dans chaque composant.
+- Desormais, quand `web/**` change, les checks de lint/build doivent partir via `web-marketing-ci.yml`; ne pas se reposer uniquement sur le workflow admin.
 
 ### 2026-05-08 - Render et transaction PostgreSQL abort
 
