@@ -35,6 +35,8 @@ class AttendanceMonthlyReportTest extends TestCase
             'first_name' => 'Nadia',
             'last_name' => 'Kaci',
             'matricule' => 'EMP-001',
+            'salary_base' => 173330,
+            'hourly_rate' => null,
         ]);
 
         app()->instance('current_company', $company);
@@ -56,12 +58,19 @@ class AttendanceMonthlyReportTest extends TestCase
         $json->assertOk();
         $json->assertJsonPath('data.period.month', '2026-05');
         $json->assertJsonPath('data.totals.worked_hours', 9);
+        $json->assertJsonPath('data.totals.worked_days', 1);
+        $json->assertJsonPath('data.totals.estimated_gross_payroll', 9000);
+        $json->assertJsonPath('data.totals.estimated_overtime_pay', 1500);
         $json->assertJsonPath('data.employees.1.name', 'Nadia Kaci');
+        $json->assertJsonPath('data.employees.1.worked_days', 1);
+        $json->assertJsonPath('data.employees.1.estimated_hourly_rate', 1000);
+        $json->assertJsonPath('data.employees.1.estimated_gross_amount', 9000);
 
         $csv = $this->get('/api/v1/attendance/monthly-report?month=2026-05&format=csv');
         $csv->assertOk();
         $csv->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
         $csv->assertSee('EMP-001');
+        $csv->assertSee('estimated_gross_amount');
     }
 
     public function test_employee_cannot_get_monthly_attendance_report(): void

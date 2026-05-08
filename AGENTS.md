@@ -167,6 +167,12 @@ Procedure recommandee :
 - Les anomalies avancees utilisent `company.metadata.attendance_geofence` avec `{lat,lng,radius_meters}` pour detecter les pointages hors zone, et signalent aussi les pointages a heure trop repetitive.
 - Pour les prochaines PR, privilegier les features qui donnent un ROI client visible : reduction fraude/erreurs, temps admin economise, exports comptables, alertes manager simples.
 
+### 2026-05-08 - Valeur terrain attendance
+
+- Les endpoints attendance doivent parler en actions manager, pas seulement en donnees brutes : `attendance/anomalies` expose `business_impact`, `requires_manager_action` et `recommended_action` pour prioriser les corrections avant paie.
+- Le rapport mensuel est le support de vente le plus concret : conserver les champs d'estimation paie (`estimated_gross_payroll`, `estimated_overtime_pay`, montants par employe) et les baser sur `hourly_rate` ou, a defaut, sur `salary_base / 173.33`.
+- La checklist onboarding doit mesurer le go-live client : equipe active, paie renseignee, geofence, biometrie/kiosque. Eviter d'ajouter une etape si elle n'aide pas un client a pointer et preparer sa paie plus vite.
+
 ### 2026-05-07 - Dossier Go-To-Market racine
 
 - Le dossier racine de strategie commerciale s'appelle `GOTO_MARKET/`, pas `marketing/`, sur demande explicite.

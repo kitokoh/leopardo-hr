@@ -74,6 +74,12 @@ class AttendanceAnomalyService
                     'warning' => $items->where('severity', 'warning')->count(),
                     'info' => $items->where('severity', 'info')->count(),
                     'by_type' => (object) $counts,
+                    'business_impact' => [
+                        'late_minutes' => (int) $items->sum(fn (array $item): int => (int) ($item['details']->late_minutes ?? 0)),
+                        'missing_check_outs' => $items->where('type', 'missing_check_out')->count(),
+                        'manual_corrections' => $items->where('type', 'manual_correction')->count(),
+                        'critical_actions' => $items->where('requires_manager_action', true)->count(),
+                    ],
                 ],
                 'items' => $items->take($limit)->values(),
             ],
@@ -261,6 +267,8 @@ class AttendanceAnomalyService
             'type' => $type,
             'severity' => $severity,
             'title' => $title,
+            'requires_manager_action' => $severity !== 'info',
+            'recommended_action' => $this->recommendedAction($type),
             'attendance_log_id' => $log->id,
             'employee_id' => $log->employee_id,
             'employee' => [
@@ -272,5 +280,19 @@ class AttendanceAnomalyService
             'detected_at' => $log->check_in?->toIso8601String() ?? $log->date?->toDateString(),
             'details' => (object) $details,
         ];
+    }
+
+    private function recommendedAction(string $type): string
+    {
+        return match ($type) {
+            'late_arrival' => 'Verifier le motif du retard et confirmer son impact avant la paie.',
+            'missing_check_out' => 'Completer ou faire confirmer l heure de sortie avant cloture mensuelle.',
+            'manual_correction' => 'Controler la note de correction et conserver la trace pour audit.',
+            'excessive_overtime' => 'Valider les heures supplementaires avec le superviseur avant paiement.',
+            'rapid_device_sequence' => 'Verifier l appareil et les employes concernes pour exclure un pointage de complaisance.',
+            'repeated_exact_check_in' => 'Comparer avec le planning ou le kiosque pour confirmer que le pointage est reel.',
+            'out_of_geofence' => 'Demander une justification terrain ou corriger le site autorise.',
+            default => 'Verifier cette anomalie avant la cloture mensuelle.',
+        };
     }
 }
