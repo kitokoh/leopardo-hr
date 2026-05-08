@@ -51,6 +51,8 @@ Le statut externe `Vercel` peut echouer immediatement vers une page de configura
 
 Le workflow GitHub `Build & Deploiement` a aussi porte une integration `vercel/action@v4` introuvable cote Actions. Si ce workflow redevient rouge pour `Unable to resolve action vercel/action`, conserver seulement le job de build jusqu'a ce qu'une integration Vercel valide soit configuree.
 
+Pour le frontend `web/`, ne pas declarer dans `vercel.json` un bloc `env` avec des objets de description. Vercel attend des chaines de caracteres si `env` est present. Si les variables sont deja gerees dans le dashboard Vercel, supprimer completement ce bloc du fichier pour eviter l'erreur `env.<VAR> should be string`.
+
 ### Main local divergent
 
 Le poste local peut avoir un `main` divergent (`ahead`/`behind`). Dans ce cas :
