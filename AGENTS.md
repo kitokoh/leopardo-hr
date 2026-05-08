@@ -179,6 +179,7 @@ Procedure recommandee :
 - Le score health doit rester explicable et conservateur : ne pas le remplacer par une logique opaque tant qu'on n'a pas de donnees churn reelles.
 - Les dashboards super-admin doivent consommer ce contrat avant d'ajouter un billing complet ; il donne deja les signaux minimaux pour relancer un client, aider l'onboarding ou proposer un module Business.
 - La vue portefeuille `GET /api/v1/platform/companies/health` doit rester compacte : resume MRR/risques en haut, puis une action prioritaire par client. Eviter d'en faire un export lourd ; le detail appartient au health d'une seule company.
+- Le contrat abonnement `GET/PATCH /api/v1/platform/companies/{company}/subscription` est volontairement fournisseur-agnostique : plan/statut/dates/notes seulement. Brancher Stripe/PayPal/local PSP plus tard derriere ce contrat, pas dans le premier lot.
 
 ### 2026-05-07 - Dossier Go-To-Market racine
 
