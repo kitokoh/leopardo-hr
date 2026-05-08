@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.108] - 2026-05-08
+
+### CI - Gates proportionnees au perimetre modifie
+
+- CI : le job mobile du workflow `Tests - Leopardo RH` ne se declenche plus sur un simple changement de `.github/workflows/tests.yml`; il reste reserve aux vraies modifications `mobile/**`.
+- CI : `Backend Quality` garde maintenant une gate PHPStan/Larastan bloquante, mais son scope est limite aux fichiers PHP backend modifies par le diff afin d'eviter qu'une dette historique hors perimetre empeche un lot propre d'etre merge.
+- Gouvernance : mise a jour des scenarios backend/admin et du registre canonique pour couvrir explicitement le contrat d'auth plateforme, le cas `TWO_FA_REQUIRED` et la place de la vitrine multilingue dans la CI.
+
 ## [4.1.107] - 2026-05-08
 
 ### Plateforme admin - Contrat API aligne

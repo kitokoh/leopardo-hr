@@ -12,6 +12,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Parcours critiques RH
 - Endpoints techniques et resilients
 - Contrats JSON consommes par le mobile
+- Contrats d'auth et de session de la plateforme admin
 
 ## Roles a couvrir
 
@@ -111,7 +112,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Quick estimate retourne structure et montants attendus
 - Daily summary respecte les donnees filtrees
 - PDF recu genere un fichier telechargeable valide
-- Erreurs de generation PDF geres sans crash global
+- Erreurs de generation PDF gerees sans crash global
 
 ### 10. Notifications / evenements / audit
 
@@ -135,6 +136,23 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Les listes paginees gardent une structure constante
 - Les enums / statuts attendus par le mobile restent stables
 
+### 13. Contrats API pour la plateforme admin
+
+- `POST /api/v1/platform/auth/login` accepte `email`, `password`, `device_name` et optionnellement `two_fa_code`
+- Un super-admin sans 2FA obtient `200` avec `data`, `token`, `token_type`, `role=super_admin` et `two_fa_enabled`
+- Un super-admin avec 2FA active et sans code valide obtient `202` avec `code=TWO_FA_REQUIRED` au lieu d'un faux succes silencieux
+- `GET /api/v1/platform/auth/me` retourne un shape stable pour hydrater la session admin sans hypothese cote frontend
+- `POST /api/v1/platform/auth/logout` invalide le token courant sans exiger de mecanisme de refresh fantome
+- Aucun contrat admin ne doit reintroduire des routes `/admin/auth/*` inexistantes
+
+### 14. Catalogue de traductions distant et variantes de locale
+
+- `GET /api/v1/i18n/catalog` retourne les variantes supportees, checksums et metadata de version
+- `GET /api/v1/i18n/catalog/{locale}` normalise `fr-CA`, `fr-BE`, `ar-SA`, `ar-MA`, `tr-TR`, `en-US`, `en-GB` vers leur langue canonique
+- L'endpoint retourne `ETag`, `checksum`, `fallback_locale` et `rtl` de facon stable
+- Une requete `If-None-Match` valide doit repondre `304` sans payload parasite
+- Les catalogues invalides ou absents ne doivent jamais provoquer une erreur `500` silencieuse
+
 ## Mapping attendu vers les suites GitHub Actions
 
 ### Suite `Unit`
@@ -153,6 +171,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Attendance check-in / check-out / history
 - Estimation daily summary / quick estimate / PDF
 - Contrats JSON critiques pour le mobile
+- Contrats d'auth plateforme et cas `TWO_FA_REQUIRED`
 - Health endpoint
 
 ### Suites a ajouter ou durcir progressivement
@@ -161,6 +180,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `tests/Feature/Leave/LeaveApprovalTest.php`
 - `tests/Feature/Payroll/PayrollAccessTest.php`
 - `tests/Feature/Security/BlockedUserTest.php`
+- `tests/Feature/Platform/PlatformAuthTest.php`
 
 ## Sortie attendue dans GitHub Actions
 
@@ -168,14 +188,14 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Rapport JUnit Feature
 - Logs applicatifs en artefact
 - Rapport CI central mentionnant:
-- couverture backend executee
-- scenarios backend de reference
-- gaps connus restant a fermer
+  - couverture backend executee
+  - scenarios backend de reference
+  - gaps connus restant a fermer
 
 ## Critere GO / NO GO
 
 - GO: tous les tests Unit + Feature passent, aucun test critique securite/isolation en echec
-- NO GO: echec auth, RBAC, multitenant, attendance critique, payload contrat mobile ou payroll securite
+- NO GO: echec auth, RBAC, multitenant, attendance critique, payload contrat mobile, contrat admin plateforme ou payroll securite
 
 ## Gaps actuels a fermer en priorite
 
@@ -183,11 +203,4 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Conges / approbations en CI
 - Payroll access control en CI
 - Utilisateur bloque distinct de l'etat archive en CI
-
-### 13. Catalogue de traductions distant et variantes de locale
-
-- GET /api/v1/i18n/catalog retourne les variantes supportees, checksums et metadata de version.
-- GET /api/v1/i18n/catalog/{locale} normalise r-CA, r-BE, r-SA, r-MA, 	r-TR, en-US, en-GB vers leur langue canonique.
-- Le endpoint retourne ETag, checksum, allback_locale et tl de facon stable.
-- Une requete If-None-Match valide doit repondre 304 sans payload parasite.
-- Les catalogues invalides ou absents ne doivent jamais provoquer une erreur 500 silencieuse.
+- Suite dediee a l'auth plateforme avec 2FA
