@@ -3,12 +3,21 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\CompanyRequest;
+use App\Models\SuperAdmin;
+use App\Services\CompanyProvisioningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class PlatformCompanyRequestController extends Controller
 {
+    public function __construct(
+        private readonly CompanyProvisioningService $companyProvisioningService,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         $query = CompanyRequest::with('user:id,first_name,last_name,email')
@@ -78,12 +87,17 @@ class PlatformCompanyRequestController extends Controller
 
     public function updateStatus(Request $request, int $id): JsonResponse
     {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO public');
+        }
+
         $validated = $request->validate([
             'status' => ['required', 'in:approved,rejected'],
             'admin_notes' => ['nullable', 'string', 'max:2000'],
+            'plan_id' => ['nullable', 'integer', Rule::exists('plans', 'id')],
         ]);
 
-        $companyRequest = CompanyRequest::findOrFail($id);
+        $companyRequest = CompanyRequest::with('user:id,first_name,last_name,email,phone')->findOrFail($id);
 
         if (! $companyRequest->isPending()) {
             return new JsonResponse([
@@ -92,9 +106,22 @@ class PlatformCompanyRequestController extends Controller
             ], 422);
         }
 
+        $approvedCompany = null;
+        if ($validated['status'] === 'approved') {
+            /** @var SuperAdmin $superAdmin */
+            $superAdmin = $request->user('super_admin_api');
+            $approvedCompany = $this->provisionCompanyFromRequest(
+                companyRequest: $companyRequest,
+                superAdmin: $superAdmin,
+                planId: $validated['plan_id'] ?? null,
+                notes: $validated['admin_notes'] ?? null,
+            );
+        }
+
         $companyRequest->update([
             'status' => $validated['status'],
             'admin_notes' => $validated['admin_notes'] ?? null,
+            'approved_company_id' => $approvedCompany?->id,
             'reviewed_at' => now(),
         ]);
 
@@ -102,9 +129,55 @@ class PlatformCompanyRequestController extends Controller
             'data' => [
                 'id' => $companyRequest->id,
                 'status' => $companyRequest->status,
+                'approved_company_id' => $companyRequest->approved_company_id,
                 'admin_notes' => $companyRequest->admin_notes,
                 'reviewed_at' => $companyRequest->reviewed_at?->toIso8601String(),
             ],
         ]);
+    }
+
+    private function provisionCompanyFromRequest(
+        CompanyRequest $companyRequest,
+        SuperAdmin $superAdmin,
+        ?int $planId,
+        ?string $notes,
+    ): Company {
+        $resolvedPlanId = $planId
+            ?? DB::table('plans')->where('is_active', true)->orderBy('id')->value('id')
+            ?? DB::table('plans')->orderBy('id')->value('id');
+
+        if (! $resolvedPlanId) {
+            abort(422, 'Aucun plan actif disponible pour approuver cette demande.');
+        }
+
+        $managerName = trim($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal');
+        $nameParts = preg_split('/\s+/', $managerName, 2) ?: ['Manager'];
+
+        $email = $companyRequest->email ?: $companyRequest->user?->email;
+        if (! $email) {
+            abort(422, 'Un email de contact est requis pour approuver cette demande.');
+        }
+
+        $country = strtoupper((string) ($companyRequest->country ?: 'DZ'));
+        if (strlen($country) !== 2) {
+            $country = 'DZ';
+        }
+
+        $result = $this->companyProvisioningService->provisionSharedCompany([
+            'name' => $companyRequest->company_name,
+            'sector' => $companyRequest->sector ?: 'Non precise',
+            'country' => $country,
+            'city' => $companyRequest->city ?: 'Non precise',
+            'email' => $email,
+            'phone' => $companyRequest->phone ?: $companyRequest->user?->phone,
+            'plan_id' => $resolvedPlanId,
+            'notes' => $notes ?: $companyRequest->description,
+            'manager_first_name' => $nameParts[0] ?: 'Manager',
+            'manager_last_name' => $nameParts[1] ?? 'Principal',
+            'manager_email' => $companyRequest->user?->email ?: $email,
+            'manager_phone' => $companyRequest->manager_phone ?: $companyRequest->user?->phone ?: $companyRequest->phone,
+        ], $superAdmin);
+
+        return $result['company'];
     }
 }
