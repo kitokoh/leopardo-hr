@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.109] - 2026-05-08
+
+### Plateforme admin - Confort de login
+
+- Admin : ajout d'un toggle afficher / masquer le mot de passe sur l'ecran de login, avec labels ARIA dynamiques et conservation du flux 2FA existant.
+- Tests : ajout d'un scenario Playwright dedie pour verifier le changement de type `password` <-> `text` sans casser les selecteurs du login admin.
+
 ## [4.1.108] - 2026-05-08
 
 ### CI - Gates proportionnees au perimetre modifie
