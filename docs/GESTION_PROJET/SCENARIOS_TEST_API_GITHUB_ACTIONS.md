@@ -89,6 +89,9 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Historique presence retourne des donnees coherentes
 - Resume du jour correct selon fuseau et etat
 - Conflits ou doublons geres sans corruption des donnees
+- `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
+- Chaque anomalie attendance expose une action manager recommandee et un flag `requires_manager_action`
+- Les anomalies geofence, heures supplementaires et sequences rapides restent scopees au tenant courant
 
 ### 7. Conges / absences
 
@@ -113,6 +116,9 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Daily summary respecte les donnees filtrees
 - PDF recu genere un fichier telechargeable valide
 - Erreurs de generation PDF gerees sans crash global
+- Rapport mensuel attendance JSON expose jours travailles, heures, retards et estimations paie terrain
+- Export CSV du rapport mensuel conserve les colonnes d'estimation paie et reste exploitable par comptable
+- PDF du rapport mensuel affiche les indicateurs de cloture et l'estimation globale sans casser le rendu
 
 ### 10. Notifications / evenements / audit
 
@@ -153,6 +159,13 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Une requete `If-None-Match` valide doit repondre `304` sans payload parasite
 - Les catalogues invalides ou absents ne doivent jamais provoquer une erreur `500` silencieuse
 
+### 15. Onboarding go-live client
+
+- `GET /api/v1/onboarding/checklist` reste reserve aux managers autorises
+- La checklist couvre creation societe, manager actif, equipe ajoutee/active, bases de paie, geofence, biometrie et kiosque
+- Le payload expose `go_live_ready` et `next_actions` pour guider l'installation client sans interpretation cote frontend
+- Les metriques de progression ne doivent pas compter une etape paie complete si aucun salaire ou taux horaire n'est renseigne
+
 ## Mapping attendu vers les suites GitHub Actions
 
 ### Suite `Unit`
@@ -169,6 +182,9 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - RBAC employees
 - Isolation tenant
 - Attendance check-in / check-out / history
+- Attendance anomalies business impact / recommended actions
+- Attendance monthly report JSON / CSV / PDF payroll estimates
+- Onboarding checklist go-live readiness
 - Estimation daily summary / quick estimate / PDF
 - Contrats JSON critiques pour le mobile
 - Contrats d'auth plateforme et cas `TWO_FA_REQUIRED`
