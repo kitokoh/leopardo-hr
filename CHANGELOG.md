@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.110] - 2026-05-08
+
+### Backend - Valeur terrain attendance
+
+- API : `GET /api/v1/attendance/anomalies` expose maintenant un bloc `business_impact` et une `recommended_action` par anomalie pour transformer les signaux de pointage en actions manager avant la paie.
+- API : `GET /api/v1/attendance/monthly-report` ajoute les jours travailles et une estimation paie terrain (`estimated_gross_payroll`, `estimated_overtime_pay`, montants par employe) basee sur `hourly_rate` ou `salary_base`.
+- API : l'export CSV et le PDF du rapport mensuel incluent les nouveaux indicateurs de jours travailles et d'estimation paie.
+- Onboarding : `GET /api/v1/onboarding/checklist` ajoute les etapes `payroll_ready` et `geofence_configured`, un statut `go_live_ready` et les prochaines actions prioritaires.
+- Tests : couverture Feature ciblee pour figer les nouveaux champs business des anomalies, rapports mensuels et checklist go-live.
+
 ## [4.1.109] - 2026-05-08
 
 ### Plateforme admin - Confort de login
