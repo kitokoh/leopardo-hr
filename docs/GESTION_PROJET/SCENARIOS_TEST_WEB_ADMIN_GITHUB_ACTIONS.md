@@ -58,6 +58,7 @@ Donner une base de scenarios stable pour le dashboard `admin-dashboard/`, avec u
 - prevention du double submit sur action critique
 - messages d'erreur stables
 - saisie du code 2FA sans perdre l'email deja renseigne
+- toggle afficher / masquer le mot de passe visible, accessible au clavier et coherent avec les labels ARIA
 
 ## Artefacts obligatoires
 
