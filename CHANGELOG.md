@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.118] - 2026-05-08
+
+### Plateforme - Provisioning depuis demandes clients
+
+- API : l'approbation `PATCH /api/v1/platform/company-requests/{id}` provisionne maintenant la company, cree le manager principal et lie `approved_company_id`.
+- API : l'approbation accepte un `plan_id` optionnel et utilise le premier plan actif par defaut pour eviter une validation commerciale bloquee.
+- Tests : ajout d'un scenario feature couvrant approbation, creation company, manager principal et invitation.
+
 ## [4.1.117] - 2026-05-08
 
 ### Admin dashboard - Accueil cockpit
