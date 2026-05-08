@@ -27,7 +27,15 @@ class OnboardingChecklistTest extends TestCase
 
     public function test_manager_can_view_client_onboarding_checklist(): void
     {
-        $company = Company::factory()->create();
+        $company = Company::factory()->create([
+            'metadata' => [
+                'attendance_geofence' => [
+                    'lat' => 36.7525,
+                    'lng' => 3.0420,
+                    'radius_meters' => 100,
+                ],
+            ],
+        ]);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         app()->instance('current_company', $company);
@@ -48,9 +56,10 @@ class OnboardingChecklistTest extends TestCase
         $response = $this->getJson('/api/v1/onboarding/checklist');
 
         $response->assertOk();
-        $response->assertJsonPath('data.total_steps', 6);
+        $response->assertJsonPath('data.total_steps', 8);
         $response->assertJsonPath('data.steps.0.key', 'company_created');
-        $this->assertGreaterThanOrEqual(80, $response->json('data.progress_percent'));
+        $response->assertJsonPath('data.go_live_ready', true);
+        $this->assertGreaterThanOrEqual(90, $response->json('data.progress_percent'));
     }
 
     public function test_employee_cannot_view_client_onboarding_checklist(): void

@@ -18,7 +18,7 @@ class AttendanceMonthlyReportService
         $end = $start->copy()->endOfMonth();
 
         $employees = Employee::query()
-            ->select(['id', 'company_id', 'first_name', 'last_name', 'matricule', 'status'])
+            ->select(['id', 'company_id', 'first_name', 'last_name', 'matricule', 'status', 'salary_type', 'salary_base', 'hourly_rate'])
             ->where('company_id', $company->id)
             ->orderBy('id')
             ->get();
@@ -41,6 +41,9 @@ class AttendanceMonthlyReportService
             'late_minutes' => (int) $logs->sum(fn (AttendanceLog $log): int => (int) $log->late_minutes),
             'missing_check_outs' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null && $log->check_out === null)->count(),
             'manual_corrections' => $logs->filter(fn (AttendanceLog $log): bool => $log->method === 'manual' || $log->corrected_by !== null)->count(),
+            'worked_days' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null)->pluck('date')->map(fn ($date): string => $date->format('Y-m-d'))->unique()->count(),
+            'estimated_gross_payroll' => round((float) $rows->sum(fn (array $row): float => (float) $row['estimated_gross_amount']), 2),
+            'estimated_overtime_pay' => round((float) $rows->sum(fn (array $row): float => (float) $row['estimated_overtime_amount']), 2),
         ];
 
         return [
@@ -70,18 +73,22 @@ class AttendanceMonthlyReportService
             abort(500, 'Unable to build CSV export.');
         }
 
-        fputcsv($handle, ['employee_id', 'matricule', 'name', 'worked_hours', 'overtime_hours', 'late_minutes', 'missing_check_outs', 'manual_corrections']);
+        fputcsv($handle, ['employee_id', 'matricule', 'name', 'worked_days', 'worked_hours', 'overtime_hours', 'late_minutes', 'missing_check_outs', 'manual_corrections', 'estimated_hourly_rate', 'estimated_gross_amount', 'estimated_overtime_amount']);
 
         foreach ($report['data']['employees'] as $row) {
             fputcsv($handle, [
                 $row['employee_id'],
                 $row['matricule'],
                 $row['name'],
+                $row['worked_days'],
                 $row['worked_hours'],
                 $row['overtime_hours'],
                 $row['late_minutes'],
                 $row['missing_check_outs'],
                 $row['manual_corrections'],
+                $row['estimated_hourly_rate'],
+                $row['estimated_gross_amount'],
+                $row['estimated_overtime_amount'],
             ]);
         }
 
@@ -112,11 +119,54 @@ class AttendanceMonthlyReportService
             'employee_id' => $employee->id,
             'matricule' => $employee->matricule,
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'worked_days' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null)
+                ->pluck('date')
+                ->map(fn ($date): string => $date->format('Y-m-d'))
+                ->unique()
+                ->count(),
             'worked_hours' => round((float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->hours_worked), 2),
             'overtime_hours' => round((float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->overtime_hours), 2),
             'late_minutes' => (int) $logs->sum(fn (AttendanceLog $log): int => (int) $log->late_minutes),
             'missing_check_outs' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null && $log->check_out === null)->count(),
             'manual_corrections' => $logs->filter(fn (AttendanceLog $log): bool => $log->method === 'manual' || $log->corrected_by !== null)->count(),
+            'estimated_hourly_rate' => $this->estimatedHourlyRate($employee),
+            'estimated_gross_amount' => $this->estimatedGrossAmount($employee, $logs),
+            'estimated_overtime_amount' => $this->estimatedOvertimeAmount($employee, $logs),
         ];
+    }
+
+    private function estimatedGrossAmount(Employee $employee, Collection $logs): float
+    {
+        $workedHours = (float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->hours_worked);
+
+        if ($workedHours <= 0) {
+            return 0.0;
+        }
+
+        return round($workedHours * $this->estimatedHourlyRate($employee), 2);
+    }
+
+    private function estimatedOvertimeAmount(Employee $employee, Collection $logs): float
+    {
+        $overtimeHours = (float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->overtime_hours);
+
+        if ($overtimeHours <= 0) {
+            return 0.0;
+        }
+
+        return round($overtimeHours * $this->estimatedHourlyRate($employee) * 1.5, 2);
+    }
+
+    private function estimatedHourlyRate(Employee $employee): float
+    {
+        if ((float) $employee->hourly_rate > 0) {
+            return round((float) $employee->hourly_rate, 2);
+        }
+
+        if ((float) $employee->salary_base <= 0) {
+            return 0.0;
+        }
+
+        return round((float) $employee->salary_base / 173.33, 2);
     }
 }
