@@ -215,15 +215,35 @@ class PlatformCompanyHealthService
     }
 
     /**
+     * @var array<int, object|null>
+     */
+    private array $plansCache = [];
+
+    /**
      * @return array<string, mixed>
      */
     private function plan(Company $company): array
     {
-        $plan = DB::table('plans')->where('id', $company->plan_id)->first();
+        $planId = $company->plan_id;
+
+        if ($planId === null) {
+            return [
+                'id' => null,
+                'name' => null,
+                'price_monthly' => null,
+                'price_yearly' => null,
+            ];
+        }
+
+        if (! array_key_exists($planId, $this->plansCache)) {
+            $this->plansCache[$planId] = DB::table('plans')->where('id', $planId)->first();
+        }
+
+        $plan = $this->plansCache[$planId];
 
         return [
-            'id' => $company->plan_id,
-            'name' => $plan->name ?? null,
+            'id' => $planId,
+            'name' => $plan?->name ?? null,
             'price_monthly' => isset($plan->price_monthly) ? (float) $plan->price_monthly : null,
             'price_yearly' => isset($plan->price_yearly) ? (float) $plan->price_yearly : null,
         ];

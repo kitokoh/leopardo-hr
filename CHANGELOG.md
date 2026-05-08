@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.119] - 2026-05-08
+
+### ⚡ Bolt - Optimisation de performance plateforme
+
+- API : optimisation de `PlatformCompanyHealthService` par l'implémentation d'un cache au niveau de l'instance pour les plans, éliminant les requêtes N+1 lors de la génération du rapport de santé du portefeuille.
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients
