@@ -4,11 +4,6 @@
   "installCommand": "npm ci",
   "framework": "nextjs",
   "regions": ["cdg1"],
-  "functions": {
-    "api/**": {
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
