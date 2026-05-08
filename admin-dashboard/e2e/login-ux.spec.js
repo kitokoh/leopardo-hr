@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('password visibility toggle works on the admin login form', async ({ page }) => {
   await page.goto('/login')
 
-  const passwordInput = page.getByLabel(/Mot de passe/i)
+  const passwordInput = page.locator('#password')
   const toggleButton = page.getByRole('button', { name: /Afficher le mot de passe/i })
 
   await passwordInput.fill('MotDePasseTresSecret123')
