@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.119] - 2026-05-09
+
+### Branding - Professionnalisation Enterprise-grade du dépôt
+
+- Docs : refonte complète du `README.md` racine en vitrine SaaS moderne avec badges dynamiques, diagrammes d'architecture et hub documentaire.
+- Docs : création de `ARCHITECTURE.md`, `SECURITY.md`, `AI_ARCHITECTURE.md`, `TESTING.md`, `DEPLOYMENT_GUIDE.md`, `ROADMAP.md` et `QUICKSTART.md` à la racine.
+- Docs : organisation du hub documentaire dans `/docs/` (Architecture, API, Mobile, Web, AI, Sécurité, Contributing, Deployment, Testing).
+- Gouvernance : implémentation des templates standards GitHub (Bug Report, Feature Request, Pull Request) et des fichiers communautaires (`CODE_OF_CONDUCT.md`, `SUPPORT.md`).
+- DevExp : ajout du script `scripts/bootstrap.sh` pour l'initialisation automatique des environnements API et Web.
+- API : initialisation de la spécification OpenAPI v1 dans `openapi/v1.yaml`.
+- Branding : ajout de diagrammes Mermaid illustrant l'authentification multi-tenant et la topologie de la base de données.
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients
