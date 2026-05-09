@@ -1,156 +1,193 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="space-y-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Cockpit plateforme</h1>
-        <p class="mt-1 text-sm text-gray-500">
-          Synthese commerciale, adoption terrain et demandes entrantes.
+        <div class="flex items-center gap-2 text-brand-600 mb-1">
+          <RocketLaunchIcon class="h-5 w-5" />
+          <span class="text-xs font-bold uppercase tracking-widest">Aperçu Global</span>
+        </div>
+        <h1 class="text-3xl font-extrabold text-zinc-900 tracking-tight">Cockpit Stratégique</h1>
+        <p class="mt-2 text-zinc-500 max-w-2xl">
+          Pilotage de la performance, monitoring de la rétention et gestion des opportunités entrantes en temps réel.
         </p>
       </div>
-      <button class="btn-secondary" :disabled="isLoading" @click="loadDashboard">
-        Actualiser
-      </button>
+      <div class="flex items-center gap-3">
+        <button
+          class="btn-secondary group"
+          :disabled="isLoading"
+          @click="loadDashboard"
+        >
+          <ArrowPathIcon :class="['h-4 w-4 mr-2 transition-transform duration-500', isLoading ? 'animate-spin' : 'group-hover:rotate-180']" />
+          Actualiser les données
+        </button>
+        <button class="btn-primary">
+          <PlusIcon class="h-4 w-4 mr-2" />
+          Nouveau Rapport
+        </button>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard title="MRR portefeuille" :value="formatCurrency(summary.mrr)" icon="CurrencyEuroIcon" color="purple" />
-      <StatsCard title="Clients actifs" :value="summary.active_companies" icon="BuildingOfficeIcon" color="green" />
-      <StatsCard title="Risque eleve" :value="summary.risk.high" icon="ChartBarIcon" color="red" />
-      <StatsCard title="Demandes a traiter" :value="pendingRequests" icon="ChatBubbleLeftRightIcon" color="yellow" />
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <StatsCard title="Portefeuille MRR" :value="summary.mrr" icon="CurrencyEuroIcon" color="brand" :change="2.4" changeLabel="vs mois dernier" />
+      <StatsCard title="Clients Actifs" :value="summary.active_companies" icon="BuildingOfficeIcon" color="emerald" :change="1.2" />
+      <StatsCard title="Indice de Risque" :value="summary.risk.high" icon="ChartBarIcon" color="rose" :change="-5" />
+      <StatsCard title="Demandes Support" :value="pendingRequests" icon="ChatBubbleLeftRightIcon" color="amber" />
     </div>
 
-    <div v-if="isLoading" class="rounded-lg bg-white p-6 text-sm text-gray-500 shadow">
-      Chargement du cockpit...
-    </div>
-    <div v-else-if="errorMessage" class="rounded-lg bg-white p-6 text-sm text-red-600 shadow">
-      {{ errorMessage }}
-    </div>
-
-    <div v-else class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-      <section class="rounded-lg bg-white shadow xl:col-span-2">
-        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 gap-8 xl:grid-cols-3">
+      <!-- Priority Companies (Left/Center) -->
+      <section class="card xl:col-span-2">
+        <div class="card-header bg-zinc-50/50">
           <div>
-            <h2 class="text-lg font-semibold text-gray-900">Priorites clients</h2>
-            <p class="text-sm text-gray-500">Actions qui protegent la retention et l'activation terrain.</p>
+            <h2 class="text-lg font-bold text-zinc-900">Priorités Clients & Rétention</h2>
+            <p class="text-xs font-medium text-zinc-500 mt-0.5">Focus sur les comptes nécessitant une attention immédiate.</p>
           </div>
-          <router-link class="text-sm font-medium text-indigo-600 hover:text-indigo-800" to="/companies">
-            Voir portefeuille
+          <router-link class="btn-ghost text-brand-600 px-3 py-1.5" to="/companies">
+            Tout voir
           </router-link>
         </div>
 
-        <div class="divide-y divide-gray-200">
-          <article v-for="item in priorityCompanies" :key="item.company.id" class="p-6">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <div class="flex flex-wrap items-center gap-3">
-                  <h3 class="font-semibold text-gray-900">{{ item.company.name }}</h3>
-                  <span :class="riskClass(item.risk_level)">{{ riskLabel(item.risk_level) }}</span>
-                  <span class="text-sm font-semibold text-gray-900">{{ item.health_score }}/100</span>
+        <div class="divide-y divide-zinc-100">
+          <article
+            v-for="item in priorityCompanies"
+            :key="item.company.id"
+            class="group p-6 hover:bg-zinc-50/50 transition-colors"
+          >
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-center">
+              <!-- Company Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-3 mb-2">
+                  <div class="h-10 w-10 rounded-xl bg-zinc-100 flex items-center justify-center font-bold text-zinc-500 border border-zinc-200">
+                    {{ item.company.name[0] }}
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-zinc-900 truncate">{{ item.company.name }}</h3>
+                    <div class="flex items-center gap-2 mt-0.5">
+                      <span :class="riskClass(item.risk_level)">{{ riskLabel(item.risk_level) }}</span>
+                      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{{ item.plan.name || 'FREE' }}</span>
+                    </div>
+                  </div>
                 </div>
-                <p class="mt-1 text-sm text-gray-500">
-                  {{ item.plan.name || 'Sans plan' }} · {{ item.employees_active }} employes actifs · {{ item.attendance_logs_30d }} pointages 30j
-                </p>
-                <p class="mt-3 text-sm text-gray-700">
-                  {{ item.next_action?.label || 'Aucune action prioritaire detectee.' }}
+
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                  <div class="rounded-xl bg-zinc-50 p-2 border border-zinc-100">
+                    <p class="text-[10px] font-bold text-zinc-400 uppercase">Santé</p>
+                    <p class="text-sm font-bold text-zinc-900">{{ item.health_score }}/100</p>
+                  </div>
+                  <div class="rounded-xl bg-zinc-50 p-2 border border-zinc-100">
+                    <p class="text-[10px] font-bold text-zinc-400 uppercase">Usage 30j</p>
+                    <p class="text-sm font-bold text-zinc-900">{{ item.attendance_logs_30d }} pts</p>
+                  </div>
+                  <div class="rounded-xl bg-zinc-50 p-2 border border-zinc-100">
+                    <p class="text-[10px] font-bold text-zinc-400 uppercase">Staff</p>
+                    <p class="text-sm font-bold text-zinc-900">{{ item.employees_active }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recommendation -->
+              <div class="lg:w-72 bg-brand-50/30 rounded-2xl p-4 border border-brand-100/50">
+                <div class="flex items-center gap-2 text-brand-700 mb-1">
+                  <SparklesIcon class="h-4 w-4" />
+                  <span class="text-[10px] font-bold uppercase tracking-wider">IA Recommendation</span>
+                </div>
+                <p class="text-xs font-medium text-zinc-700 leading-relaxed">
+                  {{ item.next_action?.label || 'Continuer le monitoring standard. Pas d\'anomalie détectée.' }}
                 </p>
               </div>
-              <router-link class="btn-secondary justify-center" :to="`/companies/${item.company.id}`">
-                Ouvrir
+
+              <!-- Action -->
+              <router-link class="btn-primary whitespace-nowrap lg:self-center shadow-md group-hover:scale-105 transition-transform" :to="`/companies/${item.company.id}`">
+                Piloter
               </router-link>
             </div>
           </article>
-          <div v-if="priorityCompanies.length === 0" class="p-6 text-sm text-gray-500">
-            Aucun client prioritaire.
-          </div>
-        </div>
-      </section>
 
-      <section class="rounded-lg bg-white shadow">
-        <div class="border-b border-gray-200 px-6 py-4">
-          <h2 class="text-lg font-semibold text-gray-900">Demandes entrantes</h2>
-          <p class="text-sm text-gray-500">Nouveaux comptes a qualifier.</p>
-        </div>
-        <div class="divide-y divide-gray-200">
-          <article v-for="request in pendingCompanyRequests" :key="request.id" class="p-4">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <h3 class="font-medium text-gray-900">{{ request.company_name }}</h3>
-                <p class="text-sm text-gray-500">{{ request.sector || 'Secteur non precise' }}</p>
-              </div>
-              <span class="rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-semibold text-yellow-800">
-                A traiter
-              </span>
+          <div v-if="priorityCompanies.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="h-16 w-16 rounded-full bg-zinc-50 flex items-center justify-center mb-4">
+              <CheckBadgeIcon class="h-8 w-8 text-emerald-500" />
             </div>
-            <p class="mt-2 text-sm text-gray-600">{{ request.email || request.user?.email || 'Contact non renseigne' }}</p>
-          </article>
-          <div v-if="pendingCompanyRequests.length === 0" class="p-6 text-sm text-gray-500">
-            Aucune demande en attente.
+            <p class="text-zinc-500 font-medium">Tout est sous contrôle.<br/>Aucun client ne nécessite d'action urgente.</p>
           </div>
         </div>
-        <div class="border-t border-gray-200 px-6 py-4">
-          <router-link class="text-sm font-medium text-indigo-600 hover:text-indigo-800" to="/support">
-            Traiter les demandes
-          </router-link>
-        </div>
-      </section>
-    </div>
-
-    <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <section class="rounded-lg bg-white p-6 shadow">
-        <h2 class="text-lg font-semibold text-gray-900">Adoption</h2>
-        <dl class="mt-4 space-y-4 text-sm">
-          <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Pointages 30j</dt>
-            <dd class="font-semibold text-gray-900">{{ adoption.attendance_logs }}</dd>
-          </div>
-          <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Employes actifs</dt>
-            <dd class="font-semibold text-gray-900">{{ adoption.active_employees }}</dd>
-          </div>
-          <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Clients a risque</dt>
-            <dd class="font-semibold text-gray-900">{{ summary.risk.high + summary.risk.medium }}</dd>
-          </div>
-        </dl>
       </section>
 
-      <section class="rounded-lg bg-white p-6 shadow">
-        <h2 class="text-lg font-semibold text-gray-900">Revenus</h2>
-        <dl class="mt-4 space-y-4 text-sm">
-          <div class="flex items-center justify-between">
-            <dt class="text-gray-500">MRR</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(summary.mrr) }}</dd>
+      <!-- Sidebar widgets -->
+      <div class="space-y-8">
+        <!-- Requests -->
+        <section class="card overflow-visible">
+          <div class="card-header border-b-0 pb-0">
+            <h2 class="text-lg font-bold text-zinc-900">Demandes Entrantes</h2>
+            <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">NEW</span>
           </div>
-          <div class="flex items-center justify-between">
-            <dt class="text-gray-500">ARPA</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(averageRevenuePerAccount) }}</dd>
-          </div>
-          <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Plans actifs</dt>
-            <dd class="font-semibold text-gray-900">{{ activePlansCount }}</dd>
-          </div>
-        </dl>
-      </section>
 
-      <section class="rounded-lg bg-white p-6 shadow">
-        <h2 class="text-lg font-semibold text-gray-900">Raccourcis</h2>
-        <div class="mt-4 grid grid-cols-1 gap-3 text-sm">
-          <router-link class="btn-secondary justify-center" to="/companies">Portefeuille clients</router-link>
-          <router-link class="btn-secondary justify-center" to="/subscriptions">Abonnements</router-link>
-          <router-link class="btn-secondary justify-center" to="/support">Demandes clients</router-link>
-        </div>
-      </section>
+          <div class="px-6 py-4">
+            <div class="space-y-4">
+              <article
+                v-for="request in pendingCompanyRequests.slice(0, 4)"
+                :key="request.id"
+                class="relative flex items-center gap-3 p-3 rounded-2xl hover:bg-zinc-50 transition-colors border border-transparent hover:border-zinc-100"
+              >
+                <div class="h-10 w-10 flex-shrink-0 rounded-xl bg-brand-100 flex items-center justify-center font-bold text-brand-600">
+                  {{ request.company_name[0] }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-bold text-zinc-900 truncate">{{ request.company_name }}</h3>
+                  <p class="text-xs text-zinc-500 truncate">{{ request.sector || 'Secteur indéfini' }}</p>
+                </div>
+                <button class="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-zinc-400 hover:text-brand-600 transition-all">
+                  <ChevronRightIcon class="h-4 w-4" />
+                </button>
+              </article>
+
+              <div v-if="pendingCompanyRequests.length === 0" class="py-10 text-center text-zinc-400 text-sm font-medium">
+                Aucune demande en attente
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer px-6 py-4 bg-zinc-50/50 border-t border-zinc-100 rounded-b-2xl">
+            <router-link class="flex items-center justify-center w-full text-sm font-bold text-brand-600 hover:text-brand-700 gap-2" to="/support">
+              Gérer les demandes
+              <ArrowRightIcon class="h-3.5 w-3.5" />
+            </router-link>
+          </div>
+        </section>
+
+        <!-- Intelligence Widget -->
+        <section class="brand-gradient rounded-2xl p-6 text-white shadow-xl shadow-brand-200">
+          <SparklesIcon class="h-8 w-8 opacity-50 mb-4" />
+          <h2 class="text-xl font-bold mb-2 leading-tight">Leopardo AI Insights</h2>
+          <p class="text-brand-50 text-sm leading-relaxed mb-6 opacity-90">
+            L'analyse des tendances suggère une croissance de 12% du MRR d'ici la fin du trimestre basée sur le pipeline actuel.
+          </p>
+          <button class="w-full bg-white/20 backdrop-blur-md hover:bg-white/30 text-white font-bold py-2.5 rounded-xl transition-all border border-white/20">
+            Voir les prédictions
+          </button>
+        </section>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import {
+  RocketLaunchIcon,
+  ArrowPathIcon,
+  PlusIcon,
+  SparklesIcon,
+  ChevronRightIcon,
+  ArrowRightIcon,
+  CheckBadgeIcon
+} from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 
 const isLoading = ref(false)
-const errorMessage = ref('')
 const summary = ref({
   active_companies: 0,
   companies: 0,
@@ -159,7 +196,6 @@ const summary = ref({
 })
 const portfolioItems = ref([])
 const pendingCompanyRequests = ref([])
-const plans = ref([])
 const pendingRequests = ref(0)
 
 const priorityCompanies = computed(() => {
@@ -169,61 +205,39 @@ const priorityCompanies = computed(() => {
       const riskDiff = (rank[a.risk_level] ?? 3) - (rank[b.risk_level] ?? 3)
       return riskDiff !== 0 ? riskDiff : a.health_score - b.health_score
     })
-    .slice(0, 5)
+    .slice(0, 4)
 })
-const activePlansCount = computed(() => plans.value.filter((plan) => plan.is_active).length)
-const averageRevenuePerAccount = computed(() => {
-  if (!summary.value.active_companies) return 0
-  return Number(summary.value.mrr || 0) / summary.value.active_companies
-})
-const adoption = computed(() => portfolioItems.value.reduce((totals, item) => ({
-  attendance_logs: totals.attendance_logs + Number(item.attendance_logs_30d || 0),
-  active_employees: totals.active_employees + Number(item.employees_active || 0),
-}), { attendance_logs: 0, active_employees: 0 }))
 
 async function loadDashboard() {
   isLoading.value = true
-  errorMessage.value = ''
-
   try {
-    const [portfolioResponse, plansResponse, requestsResponse] = await Promise.all([
+    const [portfolioResponse, requestsResponse] = await Promise.all([
       api.get('/platform/companies/health'),
-      api.get('/platform/plans'),
       api.get('/platform/company-requests', { params: { status: 'pending' } }),
     ])
 
     summary.value = portfolioResponse.data?.data?.summary || summary.value
     portfolioItems.value = portfolioResponse.data?.data?.items || []
-    plans.value = plansResponse.data?.data?.items || []
     pendingCompanyRequests.value = requestsResponse.data?.data || []
     pendingRequests.value = requestsResponse.data?.meta?.total || pendingCompanyRequests.value.length
   } catch (error) {
     console.error('Failed to load platform dashboard:', error)
-    errorMessage.value = 'Impossible de charger le cockpit plateforme.'
   } finally {
     isLoading.value = false
   }
 }
 
-function formatCurrency(value) {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0))
-}
-
 function riskClass(risk) {
   const classes = {
-    high: 'rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700',
-    medium: 'rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-semibold text-yellow-800',
-    low: 'rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700',
+    high: 'inline-flex items-center rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 uppercase tracking-wider',
+    medium: 'inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 uppercase tracking-wider',
+    low: 'inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 uppercase tracking-wider',
   }
   return classes[risk] || classes.medium
 }
 
 function riskLabel(risk) {
-  const labels = { high: 'Risque eleve', medium: 'Risque moyen', low: 'Risque faible' }
+  const labels = { high: 'Critique', medium: 'Vigilance', low: 'Sain' }
   return labels[risk] || risk
 }
 

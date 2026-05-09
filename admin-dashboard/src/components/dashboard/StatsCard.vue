@@ -1,56 +1,73 @@
 <template>
-  <div class="bg-white overflow-hidden shadow rounded-lg">
-    <div class="p-5">
-      <div class="flex items-center">
-        <div class="flex-shrink-0">
+  <div class="stat-card group">
+    <!-- Decorative background element -->
+    <div
+      :class="[
+        'absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-10 transition-transform duration-500 group-hover:scale-150',
+        colorClasses.bg
+      ]"
+    ></div>
+
+    <div class="relative flex items-start justify-between">
+      <div class="flex-1">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+          {{ title }}
+        </p>
+
+        <div class="flex items-baseline gap-2">
+          <h3 class="text-2xl font-bold text-zinc-900 tracking-tight">
+            {{ formattedValue }}
+          </h3>
+
           <div
+            v-if="change !== undefined"
             :class="[
-              'flex items-center justify-center h-8 w-8 rounded-md',
-              colorClasses.bg
+              'flex items-center text-xs font-bold px-1.5 py-0.5 rounded-lg transition-colors',
+              change >= 0 ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'
             ]"
           >
             <component
-              :is="iconComponent"
-              :class="['h-5 w-5', colorClasses.icon]"
+              :is="changeIcon"
+              class="h-3 w-3 mr-0.5"
             />
+            <span>{{ Math.abs(change) }}%</span>
           </div>
         </div>
-        <div class="ml-5 w-0 flex-1">
-          <dl>
-            <dt class="text-sm font-medium text-gray-500 truncate">
-              {{ title }}
-            </dt>
-            <dd class="flex items-baseline">
-              <div class="text-2xl font-semibold text-gray-900">
-                {{ formattedValue }}
-              </div>
-              <div
-                v-if="change !== undefined"
-                :class="[
-                  'ml-2 flex items-baseline text-sm font-semibold',
-                  changeColor
-                ]"
-              >
-                <component
-                  :is="changeIcon"
-                  class="self-center flex-shrink-0 h-4 w-4"
-                />
-                <span class="ml-1">
-                  {{ Math.abs(change) }}
-                </span>
-              </div>
-            </dd>
-            <dd v-if="changeLabel" class="text-xs text-gray-500 mt-1">
-              {{ changeLabel }}
-            </dd>
-          </dl>
-        </div>
+
+        <p v-if="changeLabel" class="text-[10px] font-medium text-zinc-400 mt-1.5 flex items-center">
+          <ClockIcon class="h-3 w-3 mr-1" />
+          {{ changeLabel }}
+        </p>
+      </div>
+
+      <div
+        :class="[
+          'flex h-12 w-12 items-center justify-center rounded-2xl shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6',
+          colorClasses.gradient
+        ]"
+      >
+        <component
+          :is="iconComponent"
+          class="h-6 w-6 text-white"
+        />
       </div>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="isLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+    <!-- Progress bar if needed (visual fluff) -->
+    <div class="mt-5 h-1 w-full bg-zinc-100 rounded-full overflow-hidden">
+      <div
+        :class="['h-full transition-all duration-1000 ease-out rounded-full', colorClasses.bg]"
+        :style="{ width: isLoading ? '30%' : '100%' }"
+      ></div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div v-if="isLoading" class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center transition-opacity duration-300">
+      <div class="flex gap-1">
+        <div class="h-1.5 w-1.5 bg-brand-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+        <div class="h-1.5 w-1.5 bg-brand-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+        <div class="h-1.5 w-1.5 bg-brand-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -65,7 +82,8 @@ import {
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
   ArrowUpIcon,
-  ArrowDownIcon
+  ArrowDownIcon,
+  ClockIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -91,8 +109,8 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: 'blue',
-    validator: (value) => ['blue', 'green', 'purple', 'yellow', 'red'].includes(value)
+    default: 'brand',
+    validator: (value) => ['brand', 'blue', 'emerald', 'amber', 'rose', 'purple'].includes(value)
   },
   isLoading: {
     type: Boolean,
@@ -112,37 +130,35 @@ const iconMap = {
 
 const iconComponent = computed(() => iconMap[props.icon] || ChartBarIcon)
 
-// Color classes
+// Color classes mapping to our new theme
 const colorClasses = computed(() => {
-  const colors = {
+  const configs = {
+    brand: {
+      bg: 'bg-brand-500',
+      gradient: 'brand-gradient shadow-brand-200/50'
+    },
     blue: {
       bg: 'bg-blue-500',
-      icon: 'text-white'
+      gradient: 'bg-gradient-to-br from-blue-600 to-blue-400 shadow-blue-200/50'
     },
-    green: {
-      bg: 'bg-green-500',
-      icon: 'text-white'
+    emerald: {
+      bg: 'bg-emerald-500',
+      gradient: 'bg-gradient-to-br from-emerald-600 to-emerald-400 shadow-emerald-200/50'
+    },
+    amber: {
+      bg: 'bg-amber-500',
+      gradient: 'bg-gradient-to-br from-amber-600 to-amber-400 shadow-amber-200/50'
+    },
+    rose: {
+      bg: 'bg-rose-500',
+      gradient: 'bg-gradient-to-br from-rose-600 to-rose-400 shadow-rose-200/50'
     },
     purple: {
       bg: 'bg-purple-500',
-      icon: 'text-white'
-    },
-    yellow: {
-      bg: 'bg-yellow-500',
-      icon: 'text-white'
-    },
-    red: {
-      bg: 'bg-red-500',
-      icon: 'text-white'
+      gradient: 'bg-gradient-to-br from-purple-600 to-purple-400 shadow-purple-200/50'
     }
   }
-  return colors[props.color] || colors.blue
-})
-
-// Change indicator
-const changeColor = computed(() => {
-  if (props.change === undefined) return ''
-  return props.change >= 0 ? 'text-green-600' : 'text-red-600'
+  return configs[props.color] || configs.brand
 })
 
 const changeIcon = computed(() => {
@@ -150,19 +166,14 @@ const changeIcon = computed(() => {
   return props.change >= 0 ? ArrowUpIcon : ArrowDownIcon
 })
 
-// Format value
+// Advanced formatting
 const formattedValue = computed(() => {
-  if (typeof props.value === 'string') {
-    return props.value
-  }
+  if (typeof props.value === 'string') return props.value
 
-  // Format numbers with locale
-  if (props.value >= 1000000) {
-    return (props.value / 1000000).toFixed(1) + 'M'
-  } else if (props.value >= 1000) {
-    return (props.value / 1000).toFixed(1) + 'K'
-  }
+  const num = Number(props.value)
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K'
 
-  return props.value.toLocaleString('fr-FR')
+  return num.toLocaleString('fr-FR')
 })
 </script>

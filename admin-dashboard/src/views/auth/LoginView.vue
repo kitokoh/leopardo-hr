@@ -1,151 +1,147 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-lg bg-indigo-600">
-          <span class="text-xl font-bold text-white">LRH</span>
+  <div class="min-h-screen flex items-center justify-center bg-zinc-50/50 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Background dynamic elements -->
+    <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-brand-50 blur-[120px] opacity-60"></div>
+    <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-indigo-50 blur-[120px] opacity-60"></div>
+
+    <div class="max-w-md w-full space-y-10 relative z-10 animate-fade-in">
+      <div class="text-center">
+        <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-2xl brand-gradient shadow-2xl shadow-brand-200">
+          <span class="text-2xl font-black text-white tracking-tighter">L</span>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          Administration Leopardo RH
+        <h2 class="mt-8 text-3xl font-extrabold tracking-tight text-zinc-900">
+          Leopardo RH
         </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-          Connectez-vous a votre espace d'administration
+        <p class="mt-2 text-sm font-medium text-zinc-500 uppercase tracking-widest">
+          Console d'Administration
         </p>
       </div>
 
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email" class="sr-only">Adresse email</label>
-            <input
-              id="email"
-              v-model="form.email"
-              name="email"
-              type="email"
-              autocomplete="email"
-              required
-              class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="Adresse email"
-            />
-          </div>
-          <div>
-            <label for="password" class="sr-only">Mot de passe</label>
-            <div class="relative">
+      <div class="card p-8 bg-white/80 backdrop-blur-xl shadow-2xl border-white/40">
+        <form class="space-y-6" @submit.prevent="handleLogin">
+          <div class="space-y-4">
+            <div>
+              <label for="email" class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5 px-1">Identifiant Email</label>
+              <div class="relative group">
+                <EnvelopeIcon class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-brand-500 transition-colors" />
+                <input
+                  id="email"
+                  v-model="form.email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  class="block w-full pl-11 pr-4 py-3 rounded-2xl border-zinc-200 bg-zinc-50/50 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
+                  placeholder="nom@leopardo.io"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="password" class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5 px-1">Mot de passe</label>
+              <div class="relative group">
+                <LockClosedIcon class="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-brand-500 transition-colors" />
+                <input
+                  id="password"
+                  v-model="form.password"
+                  name="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  required
+                  class="block w-full pl-11 pr-12 py-3 rounded-2xl border-zinc-200 bg-zinc-50/50 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400 hover:text-brand-600 transition-colors"
+                  @click="showPassword = !showPassword"
+                >
+                  <EyeSlashIcon v-if="showPassword" class="h-4 w-4" />
+                  <EyeIcon v-else class="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div v-if="requiresTwoFactor">
+              <label for="two-factor-code" class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5 px-1">Code MFA</label>
               <input
-                id="password"
-                v-model="form.password"
-                name="password"
-                :type="showPassword ? 'text' : 'password'"
-                autocomplete="current-password"
+                id="two-factor-code"
+                v-model="form.twoFactorCode"
+                name="two-factor-code"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
                 required
-                :class="[
-                  'relative block w-full border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                  requiresTwoFactor ? '' : 'rounded-b-md'
-                ]"
-                placeholder="Mot de passe"
+                class="block w-full px-4 py-3 rounded-2xl border-zinc-200 bg-zinc-50/50 text-sm font-bold text-center tracking-[0.5em] focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all"
+                placeholder="000000"
               />
-              <button
-                type="button"
-                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 transition hover:text-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
-                :title="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
-                @click="showPassword = !showPassword"
-              >
-                <EyeSlashIcon v-if="showPassword" class="h-5 w-5" aria-hidden="true" />
-                <EyeIcon v-else class="h-5 w-5" aria-hidden="true" />
-              </button>
             </div>
           </div>
-          <div v-if="requiresTwoFactor">
-            <label for="two-factor-code" class="sr-only">Code de verification</label>
-            <input
-              id="two-factor-code"
-              v-model="form.twoFactorCode"
-              name="two-factor-code"
-              type="text"
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              required
-              class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="Code de verification a 6 chiffres"
-            />
-          </div>
-        </div>
 
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              v-model="form.remember"
-              name="remember-me"
-              type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-            />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-              Se souvenir de moi
-            </label>
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center">
+              <input
+                id="remember-me"
+                v-model="form.remember"
+                name="remember-me"
+                type="checkbox"
+                class="h-4 w-4 rounded-lg border-zinc-300 text-brand-600 focus:ring-brand-500 transition-all"
+              />
+              <label for="remember-me" class="ml-2 block text-xs font-bold text-zinc-600">
+                Rester connecté
+              </label>
+            </div>
+
+            <div class="text-xs">
+              <a href="#" class="font-bold text-brand-600 hover:text-brand-500 transition-colors">
+                Oubli ?
+              </a>
+            </div>
           </div>
 
-          <div class="text-sm">
-            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-              Mot de passe oublie ?
-            </a>
-          </div>
-        </div>
-
-        <div v-if="error" class="rounded-md bg-red-50 p-4">
-          <div class="flex">
-            <ExclamationTriangleIcon class="h-5 w-5 text-red-400" />
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">
-                Erreur de connexion
-              </h3>
-              <div class="mt-2 text-sm text-red-700">
-                {{ error }}
+          <div v-if="error" class="rounded-2xl bg-rose-50 p-4 border border-rose-100 animate-slide-up">
+            <div class="flex">
+              <ExclamationTriangleIcon class="h-5 w-5 text-rose-500 flex-shrink-0" />
+              <div class="ml-3">
+                <p class="text-xs font-bold text-rose-800">
+                  {{ error }}
+                </p>
               </div>
             </div>
           </div>
-        </div>
 
-        <div>
           <button
             type="submit"
             :disabled="isLoading"
-            class="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="group w-full btn-primary py-3 px-4 rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all"
           >
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-              <LockClosedIcon
-                :class="[
-                  'h-5 w-5',
-                  isLoading ? 'animate-spin' : 'group-hover:text-indigo-400'
-                ]"
-                aria-hidden="true"
-              />
+            <span class="mr-2" v-if="isLoading">
+              <ArrowPathIcon class="h-4 w-4 animate-spin" />
             </span>
-            {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+            {{ isLoading ? 'Authentification...' : 'Accéder au Dashboard' }}
           </button>
-        </div>
 
-        <div class="mt-6 border-t border-gray-200 pt-6">
-          <div class="text-center">
-            <p class="text-xs text-gray-500">Statut du systeme</p>
-            <div class="mt-2 flex items-center justify-center space-x-4 text-xs">
-              <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">API</span>
-              </div>
-              <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">Base de donnees</span>
-              </div>
-              <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">WebSocket</span>
+          <div class="pt-6 border-t border-zinc-100">
+            <div class="text-center">
+              <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Health Status</p>
+              <div class="flex items-center justify-center gap-6">
+                <div class="flex items-center gap-1.5">
+                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                  <span class="text-[10px] font-bold text-zinc-500 uppercase">API</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                  <span class="text-[10px] font-bold text-zinc-500 uppercase">Realtime</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
+
+      <p class="text-center text-[10px] font-medium text-zinc-400 uppercase tracking-widest">
+        &copy; 2026 Leopardo Technologies. Security Hardened.
+      </p>
     </div>
   </div>
 </template>
@@ -158,6 +154,8 @@ import {
   ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
+  EnvelopeIcon,
+  ArrowPathIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 
@@ -198,10 +196,10 @@ async function handleLogin() {
       requiresTwoFactor.value = true
       error.value = result.message || 'Un code de verification est requis.'
     } else {
-      error.value = result.message || 'Erreur de connexion'
+      error.value = result.message || 'Identifiants incorrects'
     }
   } catch (err) {
-    error.value = 'Une erreur inattendue est survenue'
+    error.value = 'Service momentanément indisponible'
     console.error('Login error:', err)
   } finally {
     isLoading.value = false
