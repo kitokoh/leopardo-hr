@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.120] - 2026-05-10
+
+### Sentinel - Sécurisation des modules Project et Task
+
+- API : introduction de `ProjectIndexRequest`, `StoreProjectRequest` et `UpdateProjectRequest` pour durcir la validation du module Projets, avec vérification tenant-scoped sur les `members`.
+- API : introduction de `TaskIndexRequest`, `StoreTaskRequest` et `UpdateTaskRequest` pour durcir la validation du module Tâches, avec vérification tenant-scoped sur `assigned_to` et `project_id`.
+- API : migration de la logique RBAC des contrôleurs `ProjectController` et `TaskController` vers les nouveaux FormRequests pour une meilleure maintenabilité et sécurité.
+- Tests : ajout de `api/tests/Feature/Security/ProjectTaskSecurityTest.php` pour verrouiller l'isolation inter-tenant et le RBAC des modules projets et tâches.
+
 ## [4.1.119] - 2026-05-09
 
 ### Branding - Professionnalisation Enterprise-grade du dépôt

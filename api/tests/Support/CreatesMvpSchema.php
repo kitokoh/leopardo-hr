@@ -419,6 +419,11 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
+            $table->text('description')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->json('members')->nullable();
+            $table->string('status', 20)->default('active');
             $table->unsignedInteger('created_by');
             $table->timestamps();
         });
@@ -427,8 +432,16 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('title', 200);
-            $table->unsignedInteger('created_by');
+            $table->text('description')->nullable();
+            $table->json('assigned_to')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
             $table->timestampTz('due_date');
+            $table->string('priority', 20)->default('normal');
+            $table->string('status', 20)->default('todo');
+            $table->string('category', 100)->nullable();
+            $table->json('checklist')->nullable();
+            $table->string('visibility', 20)->default('visible');
+            $table->unsignedInteger('created_by');
             $table->timestamps();
         });
 

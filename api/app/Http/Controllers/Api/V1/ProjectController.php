@@ -3,16 +3,18 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Project\ProjectIndexRequest;
+use App\Http\Requests\Api\V1\Project\StoreProjectRequest;
+use App\Http\Requests\Api\V1\Project\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ProjectIndexRequest $request): JsonResponse
     {
         $actor = $request->user();
-        $request->validate(['status' => ['nullable', 'in:active,completed,archived'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
 
         $query = Project::query();
         if (! $actor->isManager()) {
@@ -31,14 +33,10 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProjectRequest $request): JsonResponse
     {
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-
-        $data = $request->validate(['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d', 'gte:start_date'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
+        $data = $request->validated();
         $project = Project::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'members' => $data['members'] ?? [], 'status' => $data['status'] ?? 'active', ...$data]);
 
         return response()->json(['data' => $this->serialize($project)], 201);
@@ -57,17 +55,14 @@ class ProjectController extends Controller
         return response()->json(['data' => $this->serialize($project)]);
     }
 
-    public function update(Request $request, Project $project): JsonResponse
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
         $actor = $request->user();
         if ($project->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
-        $data = $request->validate(['name' => ['sometimes', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
+        $data = $request->validated();
         $project->update($data);
 
         return response()->json(['data' => $this->serialize($project->fresh())]);
