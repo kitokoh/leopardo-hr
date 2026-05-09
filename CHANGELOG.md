@@ -2,6 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+
 ## [4.1.118] - 2026-05-08
 
 ### Plateforme - Provisioning depuis demandes clients
