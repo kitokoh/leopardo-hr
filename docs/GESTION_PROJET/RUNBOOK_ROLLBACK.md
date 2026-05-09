@@ -1,6 +1,6 @@
 # RUNBOOK - ROLLBACK PRODUCTION
 
-Version 4.1.67 | 2026-04-22
+Version 4.1.120 | 2026-05-10
 
 ## 1. Declencheurs
 
@@ -54,7 +54,7 @@ A privilegier si **aucune migration** n'a ete appliquee par le deploy en cours.
    - `GET /api/v1/auth/me` avec le token -> 200 + payload employe
    - `GET /api/v1/me/monthly-summary?year=YYYY&month=MM` -> 200 + totaux non zero
 
-6. **Ouvrir un ticket** (meme si resolu) + completer `JOURNAL_DE_BORD.md`.
+6. **Ouvrir un ticket** (meme si resolu) + completer `JOURNAL_RACINE.md`.
 
 ### Temps cible : < 10 min depuis la detection
 
@@ -105,7 +105,7 @@ A utiliser si le deploy incriminé **a applique des migrations destructrices**
 ## 5. Regle operationnelle
 
 - Aucun rollback sans **ticket d'incident** ouvert au prealable
-- Toute execution de ce runbook est tracee dans `JOURNAL_DE_BORD.md`
+- Toute execution de ce runbook est tracee dans `JOURNAL_RACINE.md`
 - Le post-mortem suit le template de `RUNBOOK_INCIDENT_P1.md`
 
 ## 6. References
@@ -113,4 +113,4 @@ A utiliser si le deploy incriminé **a applique des migrations destructrices**
 - Deploy : `RUNBOOK_DEPLOY.md`
 - Backup : `RUNBOOK_BACKUP_RESTORE.md`
 - Incident P1 : `RUNBOOK_INCIDENT_P1.md`
-- Journal : `JOURNAL_DE_BORD.md`
+- Journal : `JOURNAL_RACINE.md`
