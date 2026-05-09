@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.120] - 2026-05-09
+
+### ⚡ Bolt - Performance and Platform Health Optimization
+
+- Platform: Optimized `PlatformCompanyHealthService` by implementing an instance-level cache (`$plansCache`) for plan lookups. This eliminates N+1 queries when fetching subscription data for a portfolio of companies.
+- Platform: Refactored `employees()` health metrics to use a single `selectRaw` aggregate query instead of multiple `count()` database roundtrips per company.
+
 ## [4.1.119] - 2026-05-09
 
 ### Branding - Professionnalisation Enterprise-grade du dépôt

@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyHealthService
 {
+    /**
+     * @var array<int, object|null>
+     */
+    private array $plansCache = [];
+
     public function __construct(
         private readonly AttendanceAnomalyService $anomalyService,
     ) {}
@@ -116,26 +121,19 @@ class PlatformCompanyHealthService
      */
     private function employees(Company $company): array
     {
-        $total = Employee::withoutGlobalScopes()
+        $stats = Employee::withoutGlobalScopes()
             ->where('company_id', $company->id)
-            ->count();
-        $active = Employee::withoutGlobalScopes()
-            ->where('company_id', $company->id)
-            ->where('status', 'active')
-            ->count();
-        $payrollReady = Employee::withoutGlobalScopes()
-            ->where('company_id', $company->id)
-            ->where(function ($query): void {
-                $query
-                    ->where('salary_base', '>', 0)
-                    ->orWhere('hourly_rate', '>', 0);
-            })
-            ->count();
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status = \'active\' THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN salary_base > 0 OR hourly_rate > 0 THEN 1 ELSE 0 END) as payroll_ready
+            ')
+            ->first();
 
         return [
-            'total' => $total,
-            'active' => $active,
-            'payroll_ready' => $payrollReady,
+            'total' => (int) ($stats->total ?? 0),
+            'active' => (int) ($stats->active ?? 0),
+            'payroll_ready' => (int) ($stats->payroll_ready ?? 0),
         ];
     }
 
@@ -219,13 +217,28 @@ class PlatformCompanyHealthService
      */
     private function plan(Company $company): array
     {
-        $plan = DB::table('plans')->where('id', $company->plan_id)->first();
+        $planId = $company->plan_id;
+
+        if ($planId === null) {
+            return [
+                'id' => null,
+                'name' => null,
+                'price_monthly' => null,
+                'price_yearly' => null,
+            ];
+        }
+
+        if (! array_key_exists($planId, $this->plansCache)) {
+            $this->plansCache[$planId] = DB::table('plans')->where('id', $planId)->first();
+        }
+
+        $plan = $this->plansCache[$planId];
 
         return [
-            'id' => $company->plan_id,
-            'name' => $plan->name ?? null,
-            'price_monthly' => isset($plan->price_monthly) ? (float) $plan->price_monthly : null,
-            'price_yearly' => isset($plan->price_yearly) ? (float) $plan->price_yearly : null,
+            'id' => $planId,
+            'name' => $plan?->name ?? null,
+            'price_monthly' => isset($plan?->price_monthly) ? (float) $plan->price_monthly : null,
+            'price_yearly' => isset($plan?->price_yearly) ? (float) $plan->price_yearly : null,
         ];
     }
 
