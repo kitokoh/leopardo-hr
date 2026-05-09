@@ -1,0 +1,27 @@
+openapi: 3.0.0
+info:
+  title: Leopardo RH API
+  description: Modern, Multi-tenant HR Management API.
+  version: 1.0.0
+servers:
+  - url: https://api.leopardo-rh.com/api/v1
+    description: Production Server
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /auth/login:
+    post:
+      summary: User Login
+      responses:
+        '200':
+          description: Success
+  /employees:
+    get:
+      summary: List Employees
+      responses:
+        '200':
+          description: Success

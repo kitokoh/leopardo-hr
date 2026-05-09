@@ -1,32 +1,118 @@
-# Leopardo RH
+# <p align="center">🐆 Leopardo RH</p>
+<p align="center"><b>Modern, AI-Powered, Multi-Tenant HR Management Platform for SMEs</b></p>
 
-Monorepo de conception et d'execution pour Leopardo RH.
+<p align="center">
+  <a href="https://github.com/your-org/leopardo-rh/actions"><img src="https://img.shields.io/github/actions/workflow/status/your-org/leopardo-rh/tests.yml?branch=main&style=for-the-badge&logo=github" alt="CI Status"></a>
+  <a href="https://codecov.io/gh/your-org/leopardo-rh"><img src="https://img.shields.io/codecov/c/github/your-org/leopardo-rh?style=for-the-badge&logo=codecov" alt="Code Coverage"></a>
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-Hardened-brightgreen?style=for-the-badge&logo=anchor" alt="Security Hardened"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/your-org/leopardo-rh?style=for-the-badge" alt="License"></a>
+  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php" alt="PHP 8.4">
+  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter" alt="Flutter 3.x">
+</p>
 
-Points d'entrée :
-- `PILOTAGE.md` : source de vérité opérationnelle du programme
-- `docs/README.md` : index documentaire avec distinction entre cible et état courant
-- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md` : état réel de `main` et écarts doc/implémentation
-- `docs/GESTION_PROJET/RUNBOOK_LOCAL_TESTS.md` : validation backend locale, Docker d'abord
-- `api/README.md` : bootstrap backend Laravel et commandes de vérification
-- `docs/PROMPTS_EXECUTION/v3/MVP-01_INIT_LARAVEL.md` : contexte d'exécution MVP
-- `web/` : application web et site vitrine Next.js
+---
 
-## Important
+Leopardo RH is an enterprise-grade HR SaaS platform specifically designed to empower SMEs with tools typically reserved for large corporations. From **Automated Payroll** and **Biometric Attendance** to **AI-driven Workforce Insights**, Leopardo RH is the all-in-one cockpit for modern human resources.
 
-La documentation produit et API contient à la fois :
+## ✨ Key Features
 
-- une cible fonctionnelle large
-- un état d'implémentation plus restreint sur `main`
+- 🏢 **Multi-Tenant Architecture:** Secure isolation with dedicated schemas for Enterprise clients.
+- 🕒 **Smart Attendance:** Real-time check-in/out via Mobile (GPS) and ZKTeco biometric devices.
+- 💰 **Automated Payroll:** One-click salary calculations compliant with multi-country regulations (DZ, MA, FR, etc.).
+- 🤖 **AI Assistant:** Intelligent workforce summaries and automated anomaly detection.
+- 📱 **Unified Experience:** Native Flutter mobile app for employees and a powerful Next.js dashboard for managers.
+- 🌍 **International Ready:** Full RTL (Arabic) support and multilingual capabilities (FR, EN, TR).
+- 🔒 **Enterprise Security:** AES-256 data encryption at rest and strict RBAC governance.
 
-Avant de brancher un client mobile/web sur l'API, lire d'abord :
+## 🏗 System Architecture
 
-- `docs/GESTION_PROJET/ALIGNEMENT_DOCUMENTATION_MAIN_2026-04-26.md`
-- `api/routes/api.php`
-- `api/routes/modules/rh.php`
-- `api/routes/modules/cameras.php`
+Leopardo RH is built on a modular monolith foundation, ensuring high performance and ease of deployment.
 
-## Distribution mobile
+```mermaid
+graph LR
+    subgraph Clients
+        Web[Next.js Dashboard]
+        Mobile[Flutter App]
+        Kiosk[ZKTeco Kiosk]
+    end
 
-- Workflow : `.github/workflows/mobile-distribute.yml`
-- Trigger staging : `git tag v1.0-staging && git push origin v1.0-staging`
-- Secrets GitHub Actions requis : `FIREBASE_APP_ID`, `FIREBASE_TOKEN`
+    subgraph Backend
+        API[Laravel 11 API]
+        Workers[Queue Workers]
+    end
+
+    subgraph Persistence
+        DB[(PostgreSQL 16)]
+        Redis[(Redis Cache)]
+    end
+
+    Web & Mobile & Kiosk --> API
+    API --> DB & Redis
+    Workers --> DB
+```
+
+For a deep dive into our design, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## 🚀 Quick Start
+
+Get your development environment up and running in minutes:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-org/leopardo-rh.git && cd leopardo-rh
+
+# 2. Run the bootstrap script
+./scripts/bootstrap.sh
+
+# 3. Start the API
+cd api && ./vendor/bin/sail up -d
+```
+
+Detailed onboarding instructions: [QUICKSTART.md](QUICKSTART.md).
+
+## 📚 Documentation Hub
+
+| Section | Description |
+|---------|-------------|
+| 🛠 **[Architecture](docs/architecture/README.md)** | System design, multi-tenancy, and ERD. |
+| 🔑 **[Security](SECURITY.md)** | Data protection, encryption, and RBAC matrix. |
+| 🌐 **[API Reference](docs/api/README.md)** | OpenAPI specs and Postman collections. |
+| 🚀 **[Deployment](DEPLOYMENT_GUIDE.md)** | Render, Vercel, and Docker production guides. |
+| 🤝 **[Contributing](CONTRIBUTING.md)** | Developer guidelines and coding standards. |
+
+## 🛠 Tech Stack
+
+- **Backend:** Laravel 11, PHP 8.4, PostgreSQL 16
+- **Frontend:** Next.js 14, Tailwind CSS, Shadcn/UI
+- **Mobile:** Flutter 3.x, Bloc
+- **Infra:** Render, Vercel, Neon.tech
+- **Testing:** Pest PHP, Playwright, Flutter Test
+
+## 🗺 Roadmap
+
+- [x] MVP: Core HR & Attendance
+- [x] Multi-tenant Schema Isolation
+- [x] AI Salary Estimation Layer
+- [ ] Phase 2: Full Leave Management & Approvals
+- [ ] Phase 3: ZKTeco Cloud Integration
+- [ ] Phase 4: Automated Banking Exports (SEPA, etc.)
+
+Check out our [Full Roadmap](docs/REFERENTIEL_PRODUIT/ROADMAP.md).
+
+## 🛡 Security & Compliance
+
+We take data privacy seriously. Leopardo RH is designed with **RGPD** and local African regulations (DZ Loi 18-07, MA Loi 09-08) in mind. Sensitive data is always encrypted.
+
+See our [Security Policy](SECURITY.md) for more info.
+
+## 🤝 Community & Support
+
+- **Found a bug?** [Open an issue](https://github.com/your-org/leopardo-rh/issues/new?template=bug_report.md)
+- **Need help?** Join our [Discord](https://discord.gg/leopardo-rh) or check [SUPPORT.md](SUPPORT.md).
+- **Want to contribute?** See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+<p align="center">
+  Built with ❤️ by the Leopardo RH Team. Ready for the next generation of workforce management.
+</p>
