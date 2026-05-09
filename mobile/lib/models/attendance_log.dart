@@ -11,6 +11,11 @@ class AttendanceLog {
   final String? employeeName;
   final String? employeePhotoUrl;
 
+  final double? baseGain;
+  final double? overtimeGain;
+  final double? totalEstimated;
+  final String? currency;
+
   AttendanceLog({
     required this.id,
     required this.employeeId,
@@ -23,6 +28,10 @@ class AttendanceLog {
     this.lateMinutes,
     this.employeeName,
     this.employeePhotoUrl,
+    this.baseGain,
+    this.overtimeGain,
+    this.totalEstimated,
+    this.currency,
   });
 
   factory AttendanceLog.fromJson(Map<String, dynamic> json) {
@@ -60,6 +69,17 @@ class AttendanceLog {
       lateMinutes: lateRaw != null ? int.tryParse(lateRaw.toString()) : null,
       employeeName: employeeName,
       employeePhotoUrl: employeePhotoUrl,
+      baseGain: _parseDouble(json['base_gain']),
+      overtimeGain: _parseDouble(json['overtime_gain']),
+      totalEstimated: _parseDouble(json['total_estimated']),
+      currency: json['currency']?.toString(),
     );
+  }
+
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }

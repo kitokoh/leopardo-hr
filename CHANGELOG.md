@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.120] - 2026-05-10
+
+### Contractor 📐 - API/Mobile Contract Hardening
+
+- API: Mise à jour de `MobilePayloadContractTest` pour verrouiller la présence des champs d'estimation dans `/attendance/today` et la devise dans `/auth/me`.
+- Mobile: Durcissement du modèle `Employee` pour parser la devise (`currency`) depuis l'objet `company` imbriqué ou la racine.
+- Mobile: Enrichissement du modèle `AttendanceLog` et du décodeur `AttendanceRepository` pour capturer les champs d'estimation (`base_gain`, `overtime_gain`, `total_estimated`, `currency`) directement depuis `/attendance/today`.
+- Mobile: Standardisation de la devise par défaut à `DZD` (ISO) au lieu de `DA` dans les modèles de synthèse pour cohérence avec le backend.
+
 ## [4.1.119] - 2026-05-09
 
 ### Branding - Professionnalisation Enterprise-grade du dépôt

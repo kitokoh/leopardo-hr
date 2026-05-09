@@ -67,7 +67,7 @@ class MonthlySummary {
       gross: _d(totals['gross']),
       deductions: _d(totals['deductions']),
       net: _d(totals['net']),
-      currency: (json['currency'] ?? 'DA') as String,
+      currency: (json['currency'] ?? 'DZD') as String,
       breakdown: breakdown,
       disclaimer: (json['disclaimer'] ?? '') as String,
     );

@@ -153,9 +153,20 @@ class AttendanceRepository {
             : null,
         employeeName: today['name']?.toString(),
         employeePhotoUrl: (today['photo_url'] ?? today['photo_path'])?.toString(),
+        baseGain: _parseDouble(today['base_gain']),
+        overtimeGain: _parseDouble(today['overtime_gain']),
+        totalEstimated: _parseDouble(today['total_estimated']),
+        currency: today['currency']?.toString(),
       ),
       'context': context,
     };
+  }
+
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 
   static DateTime? _parseLocalTime(String? hhmm) {

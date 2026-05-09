@@ -37,7 +37,7 @@ class DailySummary {
           json['total_estimated'] != null
               ? (json['total_estimated'] as num).toDouble()
               : 0.0,
-      currency: json['currency'] ?? 'DA',
+      currency: json['currency'] ?? 'DZD',
     );
   }
 }

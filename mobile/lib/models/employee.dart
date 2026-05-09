@@ -102,7 +102,8 @@ class Employee {
       salaryType: json['salary_type'] as String?,
       hourlyRate: _parseDouble(json['hourly_rate']),
       salaryBase: _parseDouble(json['salary_base']),
-      currency: json['currency'] as String?,
+      currency: json['currency']?.toString() ??
+          json['company']?['currency']?.toString(),
       language: (json['language'] ?? 'fr') as String,
       isRtl: json['is_rtl'] == true,
       features: features,

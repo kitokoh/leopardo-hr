@@ -108,6 +108,7 @@ class MobilePayloadContractTest extends TestCase
         $response->assertJsonPath('data.matricule', 'EMP-NORA');
         $response->assertJsonPath('data.role', 'employee');
         $response->assertJsonPath('data.company.name', 'Company A');
+        $response->assertJsonPath('data.company.currency', 'DZD');
         $response->assertJsonPath('data.features.rh', true);
         $response->assertJsonPath('data.mobile_experience.stage', 'regular');
         $modules = $response->json('data.mobile_experience.modules');
@@ -189,6 +190,62 @@ class MobilePayloadContractTest extends TestCase
         $this->assertSame(9.0, (float) $response->json('data.hours_worked'));
         $this->assertSame(1.0, (float) $response->json('data.overtime_hours'));
         $this->assertSame(100 * 8 + 100 * 1 * 1.25, (float) $response->json('data.total_estimated'));
+    }
+
+    public function test_attendance_today_single_payload_matches_mobile_contract(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'timezone' => 'UTC',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Sami',
+            'last_name' => 'Employee',
+            'email' => 'employee@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($employee);
+        $this->travelTo(Carbon::parse('2026-04-18 09:00:00', 'UTC'));
+
+        $response = $this->getJson('/api/v1/attendance/today');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.mode', 'single');
+        $response->assertJsonStructure([
+            'data' => [
+                'mode',
+                'item' => [
+                    'id',
+                    'employee_id',
+                    'matricule',
+                    'name',
+                    'checked_in',
+                    'check_in_time',
+                    'check_out_time',
+                    'hours_worked',
+                    'overtime_hours',
+                    'status',
+                    'late_minutes',
+                    'base_gain',
+                    'overtime_gain',
+                    'total_estimated',
+                    'currency',
+                ],
+            ],
+        ]);
     }
 
     public function test_attendance_today_collection_payload_matches_mobile_contract(): void
