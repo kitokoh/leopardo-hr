@@ -14,6 +14,14 @@
 - API : initialisation de la spécification OpenAPI v1 dans `openapi/v1.yaml`.
 - Branding : ajout de diagrammes Mermaid illustrant l'authentification multi-tenant et la topologie de la base de données.
 
+## [4.1.120] - 2026-05-10
+
+### Mobile - Améliorations UX et accessibilité
+
+- Mobile : amélioration de l'accessibilité de l'écran d'accueil avec l'ajout de labels `Semantics` sur les raccourcis, les modules et les fonctionnalités à venir.
+- Mobile : balisage de la salutation de l'écran d'accueil comme en-tête (`Semantics.header`) pour une meilleure navigation au lecteur d'écran.
+- Mobile : correction massive des accents manquants dans les interfaces françaises (Paramètres, Réessayer, Déconnexion, équipe, présence, etc.) pour un rendu "Enterprise-grade".
+
 ### Janitor - Hygiène du dépôt
 
 - Gouvernance : correction du Mojibake (corruption d'encodage UTF-8) dans `CHANGELOG.md` et `PILOTAGE.md` pour restaurer la lisibilité des accents français et des emojis.

@@ -82,7 +82,7 @@ class HomeScreen extends ConsumerWidget {
                       subtitle:
                           stage == 'new'
                               ? 'Leo vous montre l essentiel pour bien commencer.'
-                              : 'Vos raccourcis les plus utiles sont regroupes ici.',
+                              : 'Vos raccourcis les plus utiles sont regroupés ici.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -90,7 +90,7 @@ class HomeScreen extends ConsumerWidget {
                     _SectionTitle(
                       title: 'Modules actifs',
                       subtitle:
-                          'Votre entreprise et votre role determinent ce que vous voyez.',
+                          'Votre entreprise et votre rôle déterminent ce que vous voyez.',
                     ),
                     const SizedBox(height: 12),
                     _ModulesScroller(modules: activeModules),
@@ -147,7 +147,7 @@ class _HeaderRow extends StatelessWidget {
         IconButton.filledTonal(
           onPressed: () => context.push('/settings'),
           icon: const Icon(Icons.tune),
-          tooltip: 'Parametres',
+          tooltip: 'Paramètres',
         ),
       ],
     );
@@ -206,11 +206,14 @@ class _HeroHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Text(
-            firstName.isEmpty
-                ? _greetingForHour(DateTime.now().hour)
-                : '${_greetingForHour(DateTime.now().hour)}, $firstName',
-            style: AppTypography.display.copyWith(color: text, fontSize: 30),
+          Semantics(
+            header: true,
+            child: Text(
+              firstName.isEmpty
+                  ? _greetingForHour(DateTime.now().hour)
+                  : '${_greetingForHour(DateTime.now().hour)}, $firstName',
+              style: AppTypography.display.copyWith(color: text, fontSize: 30),
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -224,7 +227,7 @@ class _HeroHeader extends StatelessWidget {
 
   static String _greetingForHour(int hour) {
     if (hour < 12) return 'Bonjour';
-    if (hour < 18) return 'Bon apres-midi';
+    if (hour < 18) return 'Bon après-midi';
     return 'Bonsoir';
   }
 }
@@ -251,7 +254,7 @@ class _LeoCard extends StatelessWidget {
             : 'Leo garde le contexte, puis vous bascule vers la bonne action sans vous perdre dans un dashboard massif.';
     final focus =
         canManageTeam
-            ? 'Aujourd hui, gardez l oeil sur le pointage, les validations RH et l activite de votre equipe.'
+            ? 'Aujourd hui, gardez l oeil sur le pointage, les validations RH et l activité de votre équipe.'
             : 'Aujourd hui, tout part du pointage, puis de la consultation de votre mois et de vos documents RH.';
 
     return Container(
@@ -294,12 +297,12 @@ class _LeoCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Leo vous ouvre la journee',
+                      'Leo vous ouvre la journée',
                       style: AppTypography.subtitle.copyWith(color: text),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Conversationnelle, mobile-first et guidee.',
+                      'Conversationnelle, mobile-first et guidée.',
                       style: AppTypography.caption.copyWith(color: muted),
                     ),
                   ],
@@ -350,7 +353,7 @@ class _AlertStack extends StatelessWidget {
           padding: EdgeInsets.only(top: 10),
           child: AlertBanner(
             message:
-                'Les workflows equipe et invitations restent disponibles sans quitter l experience mobile.',
+                'Les workflows équipe et invitations restent disponibles sans quitter l experience mobile.',
             level: AlertLevel.success,
             icon: Icons.groups_2_outlined,
           ),
@@ -441,55 +444,59 @@ class _QuickActionCard extends StatelessWidget {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(24),
-      onTap: () => context.push(action.route),
-      child: Ink(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.tint(
-                      context,
-                      color,
-                      lightAlpha: 0.16,
-                      darkAlpha: 0.24,
+    return Semantics(
+      button: true,
+      label: 'Action : ${action.title}. ${action.description}',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () => context.push(action.route),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceFor(context),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.borderFor(context)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.tint(
+                        context,
+                        color,
+                        lightAlpha: 0.16,
+                        darkAlpha: 0.24,
+                      ),
+                    ),
+                    child: Icon(
+                      MobileExperienceIcons.forAction(action.key, action.icon),
+                      color: color,
                     ),
                   ),
-                  child: Icon(
-                    MobileExperienceIcons.forAction(action.key, action.icon),
-                    color: color,
-                  ),
-                ),
-                const Spacer(),
-                Icon(Icons.arrow_outward, color: muted, size: 18),
-              ],
-            ),
-            const Spacer(),
-            Text(
-              action.title,
-              style: AppTypography.subtitle.copyWith(color: text),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              action.description,
-              style: AppTypography.bodySmall.copyWith(color: muted),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+                  const Spacer(),
+                  Icon(Icons.arrow_outward, color: muted, size: 18),
+                ],
+              ),
+              const Spacer(),
+              Text(
+                action.title,
+                style: AppTypography.subtitle.copyWith(color: text),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                action.description,
+                style: AppTypography.bodySmall.copyWith(color: muted),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -532,50 +539,54 @@ class _ModuleCard extends StatelessWidget {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
 
-    return InkWell(
-      onTap: module.isActive ? () => context.push(module.route!) : null,
-      borderRadius: BorderRadius.circular(24),
-      child: Ink(
-        width: 206,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.tint(
-                  context,
-                  color,
-                  lightAlpha: 0.16,
-                  darkAlpha: 0.24,
+    return Semantics(
+      button: module.isActive,
+      label: 'Module : ${module.title}. ${module.description}',
+      child: InkWell(
+        onTap: module.isActive ? () => context.push(module.route!) : null,
+        borderRadius: BorderRadius.circular(24),
+        child: Ink(
+          width: 206,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceFor(context),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.borderFor(context)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.tint(
+                    context,
+                    color,
+                    lightAlpha: 0.16,
+                    darkAlpha: 0.24,
+                  ),
+                ),
+                child: Icon(
+                  MobileExperienceIcons.forModule(module.key),
+                  color: color,
                 ),
               ),
-              child: Icon(
-                MobileExperienceIcons.forModule(module.key),
-                color: color,
+              const SizedBox(height: 14),
+              Text(
+                module.title,
+                style: AppTypography.subtitle.copyWith(color: text),
               ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              module.title,
-              style: AppTypography.subtitle.copyWith(color: text),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              module.description,
-              style: AppTypography.bodySmall.copyWith(color: muted),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+              const SizedBox(height: 6),
+              Text(
+                module.description,
+                style: AppTypography.bodySmall.copyWith(color: muted),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -609,56 +620,59 @@ class _UpcomingModulePill extends StatelessWidget {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
 
-    return Container(
-      width: 170,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderFor(context)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: AppColors.tint(
-                context,
-                color,
-                lightAlpha: 0.16,
-                darkAlpha: 0.22,
+    return Semantics(
+      label: 'Module bientôt disponible : ${module.title}',
+      child: Container(
+        width: 170,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceFor(context),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.borderFor(context)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: AppColors.tint(
+                  context,
+                  color,
+                  lightAlpha: 0.16,
+                  darkAlpha: 0.22,
+                ),
+                shape: BoxShape.circle,
               ),
-              shape: BoxShape.circle,
+              child: Icon(
+                MobileExperienceIcons.forModule(module.key),
+                size: 18,
+                color: color,
+              ),
             ),
-            child: Icon(
-              MobileExperienceIcons.forModule(module.key),
-              size: 18,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  module.title,
-                  style: AppTypography.bodySmall.copyWith(
-                    color: text,
-                    fontWeight: FontWeight.w600,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    module.title,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: text,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  'Bientot disponible',
-                  style: AppTypography.caption.copyWith(color: muted),
-                ),
-              ],
+                  const SizedBox(height: 3),
+                  Text(
+                    'Bientôt disponible',
+                    style: AppTypography.caption.copyWith(color: muted),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -683,7 +697,7 @@ class _ManagerDigestCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'A surveiller aujourd hui',
+            'A surveiller aujourd’hui',
             style: AppTypography.subtitle.copyWith(color: text),
           ),
           const SizedBox(height: 14),
@@ -716,7 +730,7 @@ class _ManagerDigestCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'La home reste legere: elle montre les signaux utiles, puis renvoie vers les modules pour agir.',
+            'La home reste légère: elle montre les signaux utiles, puis renvoie vers les modules pour agir.',
             style: AppTypography.bodySmall.copyWith(color: muted),
           ),
         ],

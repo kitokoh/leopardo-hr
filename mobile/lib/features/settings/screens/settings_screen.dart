@@ -36,9 +36,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _fingerprintDeviceController =
       TextEditingController();
   static const Map<String, String> _languageLabels = {
-    'fr': 'Francais',
+    'fr': 'Français',
     'ar': 'العربية',
-    'tr': 'Turkce',
+    'tr': 'Türkçe',
     'en': 'English',
   };
 
@@ -124,7 +124,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Parametres'),
+        title: const Text('Paramètres'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Retour',
@@ -150,7 +150,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildIdentityCard(BuildContext context, String? role) {
+  Widget _buildIdentityCard(BuildContext context, String? rôle) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -161,14 +161,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Acces mobile',
+            'Accès mobile',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            role == 'manager'
-                ? 'Profil RH / manager: acces au suivi de l equipe et a l historique.'
-                : 'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
+            rôle == 'manager'
+                ? 'Profil RH / manager : accès au suivi de l\'équipe et à l\'historique.'
+                : 'Profil employé : accès au pointage, à l\'historique personnel et aux paramètres de préparation biométrie.',
             style: const TextStyle(color: AppColors.textMuted),
           ),
         ],
@@ -199,7 +199,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               validator:
                   (value) =>
                       (value == null || value.trim().isEmpty)
-                          ? 'Prenom requis'
+                          ? 'Prénom requis'
                           : null,
             ),
             const SizedBox(height: 12),
@@ -263,13 +263,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.',
+            'Cette préférence est synchronisée avec votre compte et pilote aussi le mode RTL.',
             style: TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _selectedLanguage,
-            decoration: const InputDecoration(labelText: 'Langue preferee'),
+            decoration: const InputDecoration(labelText: 'Langue préférée'),
             items:
                 _languageLabels.entries
                     .map(
@@ -320,7 +320,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Securite',
+              'Sécurité',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -399,12 +399,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Preparation biometrie',
+            'Préparation biométrie',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            'Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.',
+            'Le visage peut être capturée depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas accès au gabarit brut; l'activation effective cote pointage restera donc approuvée puis exploitee par la borne entreprise.',
             style: const TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 12),
@@ -416,7 +416,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           if (_latestEnrollment != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Derniere demande: ${_latestEnrollment!.status.toUpperCase()}',
+              'Dernière demande : ${_latestEnrollment!.status.toUpperCase()}',
               style: TextStyle(
                 color:
                     _latestEnrollment!.status == 'approved'
@@ -444,7 +444,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Empreinte digitale souhaitee'),
+            title: const Text('Empreinte digitale souhaitée'),
             value: _fingerprintEnabled,
             onChanged:
                 _biometricEnabled
@@ -454,7 +454,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Reconnaissance faciale souhaitee'),
+            title: const Text('Reconnaissance faciale souhaitée'),
             value: _faceEnabled,
             onChanged:
                 _biometricEnabled
@@ -486,7 +486,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             decoration: const InputDecoration(
               labelText: 'Notes et consentement',
               hintText:
-                  'Exemple: selfie autorise, prefere borne entree principale, accord photo visage...',
+                  'Exemple: selfie autorisé, préfère borne entrée principale, accord photo visage...',
             ),
           ),
           const SizedBox(height: 16),
@@ -496,7 +496,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             label: Text(
               _selectedFaceImage == null
                   ? 'Capturer / choisir mon visage'
-                  : 'Image visage selectionnee',
+                  : 'Image visage sélectionnée',
             ),
           ),
           if (_selectedFaceImage != null)
@@ -531,7 +531,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
+            'Une fois soumises, vos données biométrie restent en attente. Toute premiere activation ou modification nécessite une approbation manager/RH.',
             style: TextStyle(color: AppColors.textMuted, fontSize: 12),
           ),
         ],
@@ -557,7 +557,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (success) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Profil mis a jour.')));
+      ).showSnackBar(const SnackBar(content: Text('Profil mis à jour.')));
     }
   }
 
@@ -582,7 +582,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Mot de passe mis a jour.')));
+      ).showSnackBar(const SnackBar(content: Text('Mot de passe mis à jour.')));
     }
   }
 
@@ -598,7 +598,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (success) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Langue mise a jour.')));
+      ).showSnackBar(const SnackBar(content: Text('Langue mise à jour.')));
     }
   }
 
@@ -621,7 +621,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _preferencesSaving = false);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Preparation biometrie enregistree localement.'),
+        content: Text('Préparation biométrie enregistrée localement.'),
       ),
     );
   }
@@ -643,7 +643,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!_biometricEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Active d abord la preparation biometrie.'),
+          content: Text('Active d'abord la preparation biometrie.'),
         ),
       );
       return;
@@ -661,7 +661,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_faceEnabled && _selectedFaceImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ajoute une capture visage avant soumission.'),
+          content: Text('Ajoutez une capture visage avant soumission.'),
         ),
       );
       return;
@@ -671,7 +671,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final localAuth = LocalAuthentication();
       final authenticated = await localAuth.authenticate(
         localizedReason:
-            'Confirmer votre identite pour soumettre votre demande biometrie',
+            'Confirmer votre identité pour soumettre votre demande biometrie',
         options: const AuthenticationOptions(
           biometricOnly: true,
           stickyAuth: true,
@@ -682,7 +682,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Verification biometrie locale annulee.'),
+            content: Text('Vérification biométrie locale annulée.'),
           ),
         );
         return;
@@ -707,14 +707,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Demande envoyee au manager / RH pour validation.'),
+          content: Text('Demande envoyée au manager / RH pour validation.'),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec de soumission: $e')));
+      ).showSnackBar(SnackBar(content: Text('Échec de soumission : $e')));
     } finally {
       if (mounted) {
         setState(() => _biometricSubmitting = false);

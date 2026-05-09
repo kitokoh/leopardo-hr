@@ -63,7 +63,7 @@ class AttendanceScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Fonction bientot disponible',
+            'Fonction bientôt disponible',
             style: TextStyle(fontSize: 20),
           ),
           const SizedBox(height: 16),
@@ -71,7 +71,7 @@ class AttendanceScreen extends ConsumerWidget {
             onPressed: () {
               ref.read(attendanceProvider.notifier).loadTodayData();
             },
-            child: const Text('Reessayer'),
+            child: const Text('Réessayer'),
           ),
           const SizedBox(height: 16),
           TextButton(
@@ -79,7 +79,7 @@ class AttendanceScreen extends ConsumerWidget {
               ref.read(authProvider.notifier).logout();
             },
             child: const Text(
-              'Deconnexion',
+              'Déconnexion',
               style: TextStyle(color: AppColors.danger),
             ),
           ),
@@ -162,7 +162,7 @@ class AttendanceScreen extends ConsumerWidget {
           const SizedBox(height: 32),
           if (state.isLoading && state.todayLog == null) ...[
             const Text(
-              'Chargement de votre presence du jour...',
+              'Chargement de votre présence du jour...',
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.textMuted),
             ),
@@ -176,7 +176,7 @@ class AttendanceScreen extends ConsumerWidget {
             OutlinedButton(
               onPressed:
                   () => ref.read(attendanceProvider.notifier).loadTodayData(),
-              child: const Text('Reessayer'),
+              child: const Text('Réessayer'),
             ),
           ] else if (state.todayLog?.checkIn != null)
             Text(
@@ -217,7 +217,7 @@ class AttendanceScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Suivi de l equipe',
+            'Suivi de l équipe',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -235,7 +235,7 @@ class AttendanceScreen extends ConsumerWidget {
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Chargement du suivi d equipe...',
+                    'Chargement du suivi d équipe...',
                     style: TextStyle(color: AppColors.textMuted),
                   ),
                 ),
@@ -245,7 +245,7 @@ class AttendanceScreen extends ConsumerWidget {
             Text(
               employees.isEmpty
                   ? 'Le suivi du jour sera disponible apres actualisation.'
-                  : '${employees.length} collaborateurs charges, $checkedInCount deja pointes aujourd hui.',
+                  : '${employees.length} collaborateurs chargés, $checkedInCount déjà pointés aujourd'hui.',
               style: const TextStyle(color: AppColors.textMuted),
             ),
             const SizedBox(height: 16),
@@ -391,7 +391,7 @@ class AttendanceScreen extends ConsumerWidget {
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          child: const Text('Parametres'),
+          child: const Text('Paramètres'),
         ),
         const SizedBox(height: 16),
         TextButton(
@@ -399,7 +399,7 @@ class AttendanceScreen extends ConsumerWidget {
             ref.read(authProvider.notifier).logout();
           },
           child: const Text(
-            'Deconnexion',
+            'Déconnexion',
             style: TextStyle(color: AppColors.danger),
           ),
         ),

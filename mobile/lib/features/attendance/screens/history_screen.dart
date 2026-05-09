@@ -58,7 +58,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Parametres',
+            tooltip: 'Paramètres',
             onPressed: () => context.push('/settings'),
           ),
         ],
@@ -107,7 +107,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   Center(
                     child: Padding(
                       padding: EdgeInsets.all(24),
-                      child: Text('Compte suspendu ou acces refuse.'),
+                      child: Text('Compte suspendu ou accès refusé.'),
                     ),
                   ),
                 ],
@@ -165,7 +165,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     icon: Icons.history_toggle_off,
                     title: 'Aucun historique',
                     description:
-                        'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
+                        'Rien ici pour le moment. Vos pointages apparaîtront au fur et à mesure.',
                   ),
                 ],
               );

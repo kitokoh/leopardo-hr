@@ -7,9 +7,9 @@ import 'package:leopardo_rh/features/attendance/providers/attendance_provider.da
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
 /// Ecran "Mon mois" — l'employe voit :
-///  - ses heures travaillees du mois
-///  - ses heures supplementaires
-///  - son gain brut et son du net estimes
+///  - ses heures travaillées du mois
+///  - ses heures supplémentaires
+///  - son gain brut et son du net estimés
 ///
 /// Alimente par GET /api/v1/me/monthly-summary.
 class MonthlySummaryScreen extends ConsumerStatefulWidget {
@@ -95,7 +95,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         IconButton(
           onPressed: () => _shiftMonth(-1),
           icon: const Icon(Icons.chevron_left),
-          tooltip: 'Mois precedent',
+          tooltip: 'Mois précédent',
         ),
         Text(label, style: Theme.of(context).textTheme.titleLarge),
         IconButton(
@@ -140,16 +140,16 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         _metricCard(
           context,
           icon: Icons.schedule,
-          label: 'Heures travaillees',
+          label: 'Heures travaillées',
           value: '${summary.hours.toStringAsFixed(2)} h',
           sub:
-              '${summary.daysPresent} jours presents / ${summary.workingDays} ouvres',
+              '${summary.daysPresent} jours présents / ${summary.workingDays} ouvrés',
         ),
         const SizedBox(height: 12),
         _metricCard(
           context,
           icon: Icons.timelapse,
-          label: 'Heures supplementaires',
+          label: 'Heures supplémentaires',
           value: '${summary.overtimeHours.toStringAsFixed(2)} h',
           sub: 'Incluses dans le gain brut',
           accent: AppColors.warning,
@@ -277,13 +277,13 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           const Icon(Icons.error_outline, size: 56, color: AppColors.danger),
           const SizedBox(height: 12),
           Text(
-            'Impossible de charger les donnees : $err',
+            'Impossible de charger les données : $err',
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => ref.refresh(monthlySummaryProvider(_month)),
-            child: const Text('Reessayer'),
+            child: const Text('Réessayer'),
           ),
         ],
       ),
