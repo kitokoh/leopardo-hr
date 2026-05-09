@@ -6,6 +6,8 @@
         <button
           @click="$emit('toggle-sidebar')"
           class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 lg:hidden"
+          aria-label="Mobile menu"
+          title="Open menu"
         >
           <Bars3Icon class="h-6 w-6" />
         </button>
@@ -34,7 +36,11 @@
         <!-- Right side -->
         <div class="flex items-center space-x-4">
           <!-- Real-time connection status -->
-          <div class="flex items-center">
+          <div
+            class="flex items-center"
+            role="status"
+            :title="realtimeStore.isConnected ? 'Server connected' : 'Server disconnected'"
+          >
             <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
@@ -67,6 +73,8 @@
             <button
               @click="showNotifications = !showNotifications"
               class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-label="Notifications"
+              title="View notifications"
             >
               <BellIcon class="h-6 w-6" />
               <span
@@ -140,6 +148,8 @@
             v-if="dashboardStore.criticalAlerts.length > 0"
             @click="showAlerts = !showAlerts"
             class="relative rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
+            aria-label="System alerts"
+            title="View system alerts"
           >
             <ExclamationTriangleIcon class="h-5 w-5" />
             <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
@@ -152,6 +162,8 @@
             @click="refreshData"
             :disabled="isRefreshing"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 disabled:opacity-50"
+            aria-label="Refresh data"
+            title="Refresh"
           >
             <ArrowPathIcon
               :class="[
