@@ -1,45 +1,61 @@
-# Security Policy — Leopardo RH
+# Security & Compliance — Leopardo RH
 
-Leopardo RH is committed to the highest standards of data security and tenant isolation. As an enterprise HR platform, we handle sensitive personal and financial data, making security our top priority.
+Leopardo RH is built on the principle of **Zero Trust** for data isolation. As an enterprise HR SaaS handling sensitive PII (Personally Identifiable Information) and financial data, security is not a feature—it is the foundation.
 
-## 🛡️ Security Pillars
+## 🛡️ The Security Model
 
-### 1. Multi-Tenant Isolation
-Leopardo RH uses a hybrid isolation strategy to ensure data never leaks between companies:
-- **Logical Isolation (Shared Mode):** Strict Row-Level Security enforced via Laravel Global Scopes and `company_id` mandatory fields.
-- **Physical Isolation (Enterprise Mode):** Dedicated PostgreSQL schemas for every enterprise tenant. Isolation is enforced at the database level using `search_path`.
+### 1. Multi-Tenant Guardrails
+Isolation is enforced at the lowest possible level to prevent cross-tenant data leaks (IDORs):
+- **Shared Tenants:** Every query is automatically scoped via the `BelongsToCompany` trait.
+- **Enterprise Tenants:** Physical isolation via dedicated PostgreSQL schemas.
+- **Global Registry:** Authenticated users are verified against a global identity registry before any tenant-specific context is loaded.
 
-### 2. Data Encryption at Rest
-Sensitive employee information is encrypted using **AES-256-CBC** before being stored in the database:
-- **Encrypted Fields:** National ID, IBAN, Bank Account Number, Personal Contact Details.
-- **Implementation:** Automated via Laravel's `EncryptedCast`. Even in the event of a database breach, this data remains unreadable without the application key.
+### 2. Encryption & Data Privacy
+- **At Rest:** Sensitive fields (National IDs, IBANs, Home Addresses) are encrypted using **AES-256-GCM**.
+- **In Transit:** Mandatory TLS 1.3 for all API communication.
+- **Key Rotation:** Support for per-tenant encryption keys for Enterprise customers.
 
-### 3. Authentication & Session Management
-- **Centralized Registry:** A global `user_lookups` table prevents email collisions and facilitates secure cross-tenant authentication routing.
-- **Opaque Tokens:** We use Laravel Sanctum with opaque tokens for mobile and web clients, avoiding the risks associated with stateless JWTs (e.g., difficult revocation).
-- **Session Revocation:** Administrators can instantly revoke sessions for specific devices or across the entire organization in case of compromise.
-- **MFA:** Multi-Factor Authentication is mandatory for all Super Admin accounts.
+### 3. Identity & Access Management (IAM)
+- **Sanctum Authentication:** Secure, stateful tokens for web and mobile clients.
+- **Strict RBAC:** 7 hierarchal roles (from Employee to Principal Manager) with granular permission checks.
+- **Session Governance:** Real-time session monitoring and instant revocation capabilities for IT administrators.
 
-### 4. Infrastructure Security
-- **Secure Communication:** All data in transit is protected via TLS 1.3+.
-- **Rate Limiting:** Aggressive rate limiting is applied to authentication and sensitive endpoints to prevent brute-force and DoS attacks.
-- **Sanitization:** All inputs are strictly validated via Laravel FormRequests, and database queries are parameterized via Eloquent to prevent SQL injection.
+## 👥 Role-Based Access Control (RBAC)
 
-## 🔍 Security Governance (Sentinel)
+The platform uses a layered RBAC approach. For a detailed breakdown of permissions, see the [RBAC Matrix](docs/security/RBAC_SYSTEM.md).
 
-We maintain a dedicated security journal (`.jules/sentinel.md`) to track and mitigate architectural security gaps:
-- **Safe Schema Switching:** All PostgreSQL `search_path` operations use whitelisted and quoted identifiers.
-- **Global Uniqueness:** Email uniqueness is enforced globally across the platform to prevent identity hijacking.
+| Role | Access Level | Context |
+|------|--------------|---------|
+| **Super Admin** | System | Platform-wide (Billing, Infrastructure, Global Settings) |
+| **Manager Principal** | Tenant | Full Ownership (Financials, Settings, ALL Data) |
+| **Manager HR** | Tenant | Operational HR (Employee lifecycle, Documents) |
+| **Manager Dept** | Tenant | Departmental (Restricted to their own team) |
+| **Employee** | Personal | Self-Service (My Attendance, My Payslips) |
 
-## 🛡️ Role-Based Access Control (RBAC)
+## 🛡️ Infrastructure Hardening
 
-Leopardo RH implements a fine-grained RBAC system with 7 distinct levels:
-- **Super Admin:** Platform management and billing.
-- **Manager (Principal/HR/Dept/Comptable/Supervisor):** Specialized administrative access within a tenant.
-- **Employee:** Restricted access to personal records and attendance tools.
+- **Rate Limiting:** IP-based and User-based throttling on all sensitive endpoints (Auth, Exports).
+- **Audit Logging:** Immutible logs for all administrative actions (Who changed what, and when).
+- **SQL Injection Prevention:** 100% Eloquent/Query Builder coverage with no raw query usage for tenant data.
+- **Environment Protection:** Automated dependency scanning (Dependabot) and SAST (CodeQL).
 
-For a detailed permission matrix, see [RBAC System Documentation](docs/security/RBAC_SYSTEM.md).
+## 🌍 Compliance Standards
 
-## 🚀 Reporting Vulnerabilities
+Leopardo RH is designed to be compliant with:
+- **GDPR (EU):** Right to erasure, data portability, and strict processing logs.
+- **Loi 18-07 (Algeria):** Protection of personal data for Algerian entities.
+- **Loi 09-08 (Morocco):** Protection of individuals with regard to the processing of personal data.
 
-If you discover a security vulnerability, please do not open a public issue. Instead, send an email to `security@leopardo-rh.com`. We aim to respond to all reports within 24 hours.
+## 🚀 Reporting a Vulnerability
+
+We value the work of security researchers. If you find a vulnerability, please report it via `security@leopardo-rh.com`. We commit to:
+1. Acknowledging your report within 12 hours.
+2. Providing a fix for P0 vulnerabilities within 48 hours.
+3. Keeping you updated throughout the remediation process.
+
+---
+
+### Internal Security Resources
+- [RBAC System Deep-Dive](docs/security/RBAC_SYSTEM.md)
+- [Multi-Tenancy Strategy](docs/architecture/MULTITENANCY.md)
+- [Security Testing Protocol](docs/testing/REGRESSION_SUITE.md)

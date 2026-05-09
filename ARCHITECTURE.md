@@ -1,118 +1,95 @@
-# System Architecture — Leopardo RH
+# Technical Architecture — Leopardo RH
 
-Leopardo RH is an enterprise-grade HR management SaaS designed for SMEs and growing organizations. The platform features a robust multi-tenant architecture, modular backend design, and a unified experience across Web, Mobile, and Kiosk interfaces.
+Leopardo RH is an enterprise-grade Human Resources Management System (HRMS) designed for global scalability. The platform is built on a **Modular Monolith** foundation, combining the ease of deployment of a monolith with the domain isolation of microservices.
 
-## 🏗 High-Level Architecture
+## 🏛 Core Architectural Principles
 
-Leopardo RH follows a **Clean Architecture** approach with a modular monolith backend, ensuring scalability, maintainability, and clear separation of concerns.
+- **Domain-Driven Design (DDD):** Logic is organized into autonomous modules (HR, Payroll, Attendance).
+- **Multi-Tenant First:** Built-in support for both shared and isolated database schemas.
+- **Client Agnostic:** A unified RESTful API serving Web, Mobile, and hardware Kiosks.
+- **Security by Design:** Row-level security and mandatory tenant context at every layer.
+
+## 🏗 High-Level System Design
 
 ```mermaid
 graph TD
-    User((Users))
-    Web[Next.js Dashboard]
-    Mobile[Flutter App]
-    Kiosk[ZKTeco Kiosk]
-
-    API[Laravel API Gateway / Modular Monolith]
-
-    subgraph "Backend Modules"
-        HR[HR & Employee Module]
-        Payroll[Payroll & Finance]
-        Attendance[Time & Attendance]
-        Cameras[Security & AI Vision]
-        Platform[SaaS Platform & Billing]
+    subgraph "Clients Layer"
+        Web[Next.js Admin Dashboard]
+        Mobile[Flutter Employee App]
+        Kiosk[ZKTeco Biometric Kiosk]
     end
 
-    subgraph "Infrastructure"
-        DB[(PostgreSQL 16)]
-        Cache[(Redis/File Cache)]
-        Storage[Cloud Storage]
+    subgraph "Application Layer (Laravel 11)"
+        API[API Gateway / Auth]
+        subgraph "Modules"
+            HR[HR & Employee Domain]
+            Finance[Payroll & Billing]
+            Attendance[Time & Attendance]
+            AI[AI Intelligence Layer]
+        end
+        Jobs[Background Workers]
     end
 
-    User --> Web
-    User --> Mobile
-    User --> Kiosk
+    subgraph "Persistence Layer"
+        Postgres[(PostgreSQL 16)]
+        Redis[(Redis Cache/Queue)]
+        S3[(Cloud Object Storage)]
+    end
 
-    Web --> API
-    Mobile --> API
-    Kiosk --> API
+    Web & Mobile & Kiosk --> API
+    API --> HR & Finance & Attendance & AI
+    HR & Finance & Attendance & AI --> Postgres
+    Jobs --> Redis & Postgres
+    API --> Redis
+```
 
-    API --> HR
-    API --> Payroll
-    API --> Attendance
-    API --> Cameras
-    API --> Platform
+## 🌍 Multi-Tenancy Engine
 
-    HR --> DB
-    Payroll --> DB
-    Attendance --> DB
-    Cameras --> DB
-    Platform --> DB
+Leopardo RH implements a **Hybrid Multi-Tenancy** strategy, allowing businesses to grow from a shared infrastructure to dedicated enterprise-grade isolation seamlessly.
+
+- **Standard Isolation (Shared):** Data is isolated logically using a mandatory `company_id` and enforced via Laravel Global Scopes.
+- **Enterprise Isolation (Schema):** High-compliance tenants receive a dedicated PostgreSQL schema, enforced at the database level via `search_path`.
+
+For a deep dive into our tenancy logic, see [Multi-Tenancy Details](docs/architecture/MULTITENANCY.md).
+
+## 🧩 Domain Modules
+
+1.  **HR Module:** Manages the employee lifecycle, contract types, and organizational hierarchies.
+2.  **Attendance Module:** Real-time synchronization with biometric devices (ZKTeco) and GPS-validated mobile check-ins.
+3.  **Payroll Module:** Automated calculation engine supporting multi-country regulations (starting with Algeria, Morocco, and France).
+4.  **AI Intelligence (Leo AI):** A natural language processing layer for workforce analytics and anomaly detection.
+
+## 🔄 Core Workflows
+
+### Biometric Synchronization Flow
+```mermaid
+sequenceDiagram
+    participant Device as ZKTeco Kiosk
+    participant KProxy as Kiosk Proxy (Go)
+    participant API as Leopardo API
+    participant DB as Tenant Schema
+
+    Device->>KProxy: Push New Punch (User 123)
+    KProxy->>API: POST /api/v1/kiosks/punch {uid, timestamp}
+    API->>API: Resolve Tenant Context
+    API->>DB: Record Attendance (Employee 45)
+    DB-->>API: Success
+    API-->>KProxy: 201 Created
 ```
 
 ## 🛠 Tech Stack
 
-- **Backend:** Laravel 11 + PHP 8.4
-- **Database:** PostgreSQL 16 (Multi-schema & Shared Isolation)
-- **Frontend:** Next.js 14+ (App Router, Tailwind CSS, Shadcn/UI)
-- **Mobile:** Flutter (iOS & Android)
-- **Infrastructure:** Render (Web Service), Neon.tech (Managed Postgres)
-- **Testing:** Pest PHP, Playwright (E2E), Flutter Test
-
-## 🌍 Multi-Tenancy Strategy
-
-Leopardo RH implements a hybrid multi-tenancy model to balance cost-efficiency for SMEs and strict isolation for Enterprise clients.
-
-- **Shared Mode (Standard):** Logical isolation using `company_id` and global scopes within a shared PostgreSQL schema.
-- **Schema Mode (Enterprise):** Physical isolation using dedicated PostgreSQL schemas per tenant.
-
-For deep dive into tenancy implementation, see [Multi-Tenancy Documentation](docs/architecture/MULTITENANCY.md).
-
-## 🧩 Modular Domain Design
-
-The backend is organized into autonomous modules, each following the Domain-Driven Design (DDD) principles:
-
-- **Domain:** Pure business logic, entities, and value objects.
-- **Application:** Use cases, commands, queries, and DTOs.
-- **Infrastructure:** Eloquent models, repositories, and third-party integrations.
-- **Interfaces:** API Controllers, Web Controllers, and Resources.
-
-### Core Modules
-- **HR Module:** Employee lifecycle, contracts, and department hierarchy.
-- **Attendance Module:** Real-time check-in/out, GPS validation, and schedule management.
-- **Payroll Module:** Automated salary calculations, deductions, and banking exports.
-- **AI Vision:** Integration with ZKTeco devices and RTSP streams for biometric verification.
-
-## 🔄 Core Workflows
-
-### Multi-Tenant Authentication Flow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant App as Client (Web/Mobile)
-    participant API as Laravel API Gateway
-    participant UL as User Lookups (Public)
-    participant TenantDB as Tenant Schema
-
-    App->>API: POST /auth/login {email, password}
-    API->>UL: Find tenant for email
-    UL-->>API: {company_id, schema_name}
-    API->>API: SET search_path TO schema_name
-    API->>TenantDB: Validate employee credentials
-    TenantDB-->>API: Employee Profile
-    API-->>App: 200 OK + Sanctum Token
-```
-
-## 🔒 Security & Data Isolation
-
-- **Tenant Isolation:** Enforced at the middleware level using PostgreSQL `search_path`.
-- **RBAC:** Fine-grained role-based access control (Manager, HR, Finance, Supervisor, Employee).
-- **Encryption:** Sensitive data (IBAN, National ID) is encrypted at rest using AES-256.
+- **Backend:** Laravel 11, PHP 8.4
+- **Database:** PostgreSQL 16 (Managed via Neon.tech)
+- **Frontend:** Next.js 14, Tailwind CSS, Shadcn/UI
+- **Mobile:** Flutter 3.x, BLoC Architecture
+- **Infrastrucutre:** Render (Compute), Redis (Cache), Cloudflare (Edge)
+- **Testing:** Pest PHP, Playwright, Flutter Test
 
 ---
 
-For more details on specific components, refer to:
-- [API Reference](docs/api/README.md)
-- [Security Policy](SECURITY.md)
+### Further Reading
+- [System Design Deep-Dive](SYSTEM_DESIGN.md)
+- [Security & RBAC](docs/security/RBAC_SYSTEM.md)
+- [API Documentation](docs/api/README.md)
 - [Database Schema (ERD)](docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md)

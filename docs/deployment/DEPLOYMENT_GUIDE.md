@@ -14,7 +14,7 @@ Leopardo RH is designed for modern cloud environments. Our primary stack is opti
    - `DB_SEARCH_PATH`: `shared_tenants,public`.
    - `RUN_MIGRATIONS`: `true`.
 
-Detailed Render setup: [RENDER_GUIDE.md](docs/deployment/RENDER_GUIDE.md).
+Detailed Render setup: [RENDER_GUIDE.md](RENDER_GUIDE.md).
 
 ### 2. Frontend Dashboard (Vercel)
 1. Connect your fork to Vercel.
@@ -46,8 +46,8 @@ cd api
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-Ensure your reverse proxy (Nginx/Traefik) is correctly configured with security headers as specified in [SECURITY.md](SECURITY.md).
+Ensure your reverse proxy (Nginx/Traefik) is correctly configured with security headers as specified in [SECURITY.md](../../SECURITY.md).
 
 ---
 
-For monitoring and incident response, see [OBSERVABILITY.md](docs/GESTION_PROJET/RUNBOOK_OBSERVABILITY.md).
+For monitoring and incident response, see [OBSERVABILITY.md](../GESTION_PROJET/RUNBOOK_OBSERVABILITY.md).

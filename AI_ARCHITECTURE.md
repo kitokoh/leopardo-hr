@@ -1,60 +1,66 @@
-# AI & Smart Workforce Architecture
+# AI & Workforce Intelligence — Leopardo RH
 
-Leopardo RH integrates an AI-ready infrastructure designed to provide actionable insights for managers and personalized assistance for employees.
+Leopardo RH integrates a sophisticated AI layer designed to transform raw HR data into actionable workforce intelligence. Our AI strategy focuses on **Augmentation**, not replacement—empowering managers with real-time insights.
 
-## 🤖 The Leo AI Layer
+## 🤖 Leo AI: The Intelligence Engine
 
-Leo AI is not just a chatbot; it is a workforce intelligence engine that sits on top of our modular API.
+Leo AI is the platform's central intelligence orchestration layer. It bridges the gap between structured HR data (SQL) and natural language interaction.
 
-### Core AI Features
-- **Conversational Queries:** Managers can ask "Who is late today?" or "Summarize the payroll risk for this month" in natural language.
-- **Anomaly Detection:** Automated detection of unusual attendance patterns or salary discrepancies.
-- **Smart Onboarding:** AI-guided data entry and document verification during employee setup.
+### Core Capabilities
+- **Predictive Payroll:** Analyzes historical attendance and salary patterns to predict end-of-month financial liabilities.
+- **Anomaly Detection:** Automatically flags unusual clock-in patterns, potential fraud, or labor law compliance risks.
+- **Workforce Summaries:** Generates instant, natural-language executive summaries of department performance.
+- **Intelligent Onboarding:** Assists in document OCR and automated data extraction during employee registration.
 
-## 🏗 AI Orchestration Diagram
+## 🏗 AI Orchestration Architecture
 
 ```mermaid
 graph TD
-    User((Manager/Employee))
-    Interface[Mobile/Web Interface]
-    Gateway[Laravel API Gateway]
+    User((Manager))
+    UI[Web/Mobile Dashboard]
+    API[Laravel API Gateway]
 
-    subgraph "AI Orchestration Layer"
-        Parser[Query Parser & Intent Discovery]
-        Context[Tenant Context Injection]
-        Agent[Task Agent]
+    subgraph "Leo AI Intelligence Layer"
+        Parser[Semantic Query Parser]
+        Router[Context-Aware Router]
+        Agent[Domain-Specific AI Agent]
     end
 
-    subgraph "Data Sources"
-        DB[(Tenant Database)]
-        Logs[(Attendance Logs)]
+    subgraph "Knowledge Base"
+        TenantDB[(Tenant SQL Data)]
+        PolicyDB[(Local Labor Laws)]
     end
 
-    LLM[External LLM Service / Local Model]
+    LLM[External LLM / Enterprise Private Model]
 
-    User --> Interface
-    Interface --> Gateway
-    Gateway --> Parser
-    Parser --> Context
-    Context --> Agent
-    Agent --> DB & Logs
+    User --> UI
+    UI --> API
+    API --> Parser
+    Parser --> Router
+    Router --> Agent
+    Agent --> TenantDB & PolicyDB
     Agent --> LLM
     LLM --> Agent
-    Agent --> Gateway
+    Agent --> API
 ```
 
-## 🔒 Security & Privacy in AI
+## 🔒 Privacy & Ethical AI (The "Sentinel" Protocol)
 
-1. **Context Isolation:** AI agents only receive data from the current tenant's schema. Data from Company A never feeds into queries for Company B.
-2. **PII Filtering:** Sensitive personal information (like IBANs or National IDs) is redacted before being processed by any external LLM service.
-3. **Auditability:** Every AI-generated action or report is logged in the tenant's audit trail.
+1. **Strict Context Isolation:** Our AI agents are "tenant-locked." Data from Tenant A never leaves its schema and is never used to train or inform queries for Tenant B.
+2. **PII Anonymization:** Before any data is sent to an external LLM, sensitive fields (Names, IDs, IBANs) are pseudonymized.
+3. **Deterministic Verification:** Every AI-generated financial summary is double-checked by a deterministic rules-based engine to ensure 100% accuracy in payroll.
+4. **Human-in-the-loop:** AI-suggested changes to employee records or payroll must be manually approved by an HR Manager.
 
 ## 🗺 AI Roadmap
-- **Current:** Placeholder UI and intent analysis framework.
-- **Phase 2:** Real-time workforce summary generation.
-- **Phase 3:** Automated payroll anomaly detection.
-- **Phase 4:** Multi-lingual voice commands for on-site managers.
+
+- **Phase 1 (Current):** Semantic search and daily workforce summaries.
+- **Phase 2:** Advanced anomaly detection and "Smart Alerts" for managers.
+- **Phase 3:** Predictive attrition modeling and career path recommendations.
+- **Phase 4:** Voice-driven attendance and task management via Kiosk and Mobile.
 
 ---
 
-For technical integration details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+### Technical Resources
+- [Main Architecture](ARCHITECTURE.md)
+- [System Design](SYSTEM_DESIGN.md)
+- [Data Security Policy](SECURITY.md)

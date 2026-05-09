@@ -1,28 +1,31 @@
-name: 🚀 Feature Request
-description: Suggest an idea for Leopardo RH
-labels: ["enhancement"]
-body:
-  - type: textarea
-    id: problem
-    attributes:
-      label: Is your feature request related to a problem?
-      description: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
-    validations:
-      required: true
-  - type: textarea
-    id: solution
-    attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what you want to happen.
-    validations:
-      required: true
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Describe alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
-  - type: textarea
-    id: context
-    attributes:
-      label: Additional context
-      description: Add any other context or screenshots about the feature request here.
+---
+name: "🚀 Feature Request"
+about: Suggest an idea or enhancement for Leopardo RH
+title: "[FEAT] <Short Title>"
+labels: enhancement
+assignees: ''
+
+---
+
+### 🎯 Problem Statement
+Is your feature request related to a problem? Please describe.
+> e.g., "I'm frustrated when I have to manually export payroll to CSV..."
+
+### ✨ Proposed Solution
+Describe the solution you'd like to see.
+> How should it work? What does the UI look like?
+
+### 🧩 Use Case
+Who is this feature for?
+- [ ] Employees
+- [ ] HR Managers
+- [ ] Accountants
+- [ ] Super Admins
+
+### 🛠 Technical Impact (Optional)
+If you've thought about how to implement this:
+- Does it require a new database table?
+- Does it change an existing API contract?
+
+### 📎 Additional Context
+Add any other context, mockups, or screenshots here.

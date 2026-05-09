@@ -6,7 +6,7 @@ If you're looking for help with Leopardo RH, here are the best ways to get assis
 Before seeking support, please check our comprehensive documentation:
 - [Quick Start Guide](QUICKSTART.md)
 - [Architecture Overview](ARCHITECTURE.md)
-- [Deployment Guide](DEPLOYMENT_GUIDE.md)
+- [Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md)
 - [FAQ & Knowledge Base](docs/README.md)
 
 ## 💬 Community Support

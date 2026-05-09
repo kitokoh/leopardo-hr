@@ -1,27 +1,17 @@
-## 📝 Description
+### 🏗 Change Description
+A clear and concise description of what this PR does and why.
 
-Please include a summary of the change and which issue is fixed. List any dependencies that are required for this change.
-
+### 🎯 Related Issue
 Fixes # (issue number)
 
-## 🧪 How Has This Been Tested?
+### 🧪 Quality Checklist
+- [ ] **Tests:** I have added tests that prove my fix is effective or that my feature works.
+- [ ] **Linting:** My code follows the project's coding standards (PSR-12 for PHP).
+- [ ] **Documentation:** I have updated the documentation (`.md` files) to reflect my changes.
+- [ ] **Migration:** (If applicable) I have included database migrations.
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce.
+### 📸 Visual Proof (Optional)
+For UI changes, please attach screenshots or a short video recording.
 
-- [ ] Unit Tests
-- [ ] Feature/Integration Tests
-- [ ] E2E / Manual Verification
-
-## 🚩 Checklist:
-
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
-
-## 📷 Screenshots (if applicable)
-Add any visual proof of your changes here.
+### 🛠 Technical Notes
+Are there any specific implementation details or architectural decisions reviewers should be aware of?

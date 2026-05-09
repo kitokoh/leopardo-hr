@@ -1,54 +1,120 @@
-# Architecture Visuals
+# System Diagrams — Leopardo RH
 
-This directory contains diagrams and visual assets explaining the Leopardo RH internal mechanics.
+This document centralizes all architectural and workflow diagrams for the platform, providing a visual reference for developers and architects.
 
-## 🔑 Multi-Tenant Authentication
-The following diagram explains how we route a single login request to the correct tenant schema in our multi-tenant PostgreSQL database.
+## 🏗 High-Level Architecture
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant App as Mobile App (Flutter)
-    participant AC as AuthController
-    participant UL as user_lookups (public)
-    participant EM as employees (tenant schema)
-    participant CSM as CheckSubscription Middleware
-
-    App->>AC: POST /auth/login
-    AC->>UL: SELECT * FROM user_lookups WHERE email = :email
-    UL-->>AC: {company_id, schema_name, employee_id}
-    AC->>AC: SET search_path TO schema_name
-    AC->>EM: Validate Password
-    EM-->>AC: OK
-    AC->>CSM: Verify Subscription
-    CSM-->>AC: Active
-    AC-->>App: 200 OK + Token
-```
-
-## 📊 Database Topology
-Our database is organized to scale while maintaining strict isolation.
+The 3-tier Modular Monolith structure.
 
 ```mermaid
 graph TD
-    DB[(PostgreSQL 16 Instance)]
+    subgraph "Clients"
+        Web[Next.js Dashboard]
+        Mobile[Flutter App]
+        Kiosk[ZKTeco Kiosk]
+    end
 
-    Public[Public Schema]
-    Shared[Shared Tenants Schema]
-    Enterprise1[Enterprise Tenant A Schema]
-    Enterprise2[Enterprise Tenant B Schema]
+    subgraph "Application Layer (Laravel)"
+        API[Unified API Gateway]
+        subgraph Modules
+            HR[HR Domain]
+            Finance[Finance Domain]
+            Attendance[Attendance Domain]
+        end
+    end
 
-    DB --> Public
-    DB --> Shared
-    DB --> Enterprise1
-    DB --> Enterprise2
+    subgraph "Infrastructure"
+        DB[(PostgreSQL)]
+        Cache[(Redis)]
+    end
 
-    Public --> Plans
-    Public --> Companies
-    Public --> UserLookups
-
-    Shared --> SME1[Company SME-1 Data]
-    Shared --> SME2[Company SME-2 Data]
-
-    Enterprise1 --> EntA[Company Ent-A Data]
-    Enterprise2 --> EntB[Company Ent-B Data]
+    Web & Mobile & Kiosk --> API
+    API --> HR & Finance & Attendance
+    HR & Finance & Attendance --> DB
+    API --> Cache
 ```
+
+## 🌍 Multi-Tenant Isolation
+
+How we handle Shared vs. Enterprise tenants.
+
+```mermaid
+graph LR
+    Request[Incoming Request]
+    Middleware[Tenant Middleware]
+    Registry[Global User Lookup]
+
+    subgraph "Database Routing"
+        Shared[(Shared Schema)]
+        SchemaA[(Enterprise A Schema)]
+        SchemaB[(Enterprise B Schema)]
+    end
+
+    Request --> Middleware
+    Middleware --> Registry
+    Registry --> Middleware
+    Middleware -- "Shared Mode" --> Shared
+    Middleware -- "Schema Mode" --> SchemaA
+    Middleware -- "Schema Mode" --> SchemaB
+```
+
+## 🕒 Attendance Synchronization
+
+Workflow for hardware-to-cloud synchronization.
+
+```mermaid
+sequenceDiagram
+    participant Device as ZKTeco Device
+    participant API as Leopardo API
+    participant DB as Tenant Database
+
+    Device->>API: POST /api/v1/kiosks/punch
+    Note right of API: Resolve tenant context
+    API->>DB: Check Employee ID
+    DB-->>API: Valid
+    API->>DB: Insert Punch Record
+    API->>API: Dispatch Event (AttendanceRegistered)
+    API-->>Device: 201 Created
+```
+
+## 🤖 Leo AI Orchestration
+
+Intent parsing and domain-specific data retrieval.
+
+```mermaid
+graph TD
+    Query[Manager Query: 'Who is late?']
+    NLP[Leo NLP Parser]
+    Context[Tenant Context Binder]
+    Agent[Attendance Agent]
+    Result[Natural Language Answer]
+
+    Query --> NLP
+    NLP --> Context
+    Context --> Agent
+    Agent --> DB[(Tenant DB)]
+    DB --> Agent
+    Agent --> Result
+```
+
+## 💳 Subscription & Billing
+
+Platform-level billing workflow.
+
+```mermaid
+graph LR
+    Owner[Company Owner]
+    Platform[Platform Service]
+    Stripe[Payment Gateway]
+    Limits[Quota Manager]
+
+    Owner --> Platform
+    Platform --> Stripe
+    Stripe -- "Webhook: Success" --> Platform
+    Platform --> Limits
+    Limits -- "Enforce" --> TenantApp[Tenant Operations]
+```
+
+---
+
+*Note: All diagrams are maintained using Mermaid.js syntax.*

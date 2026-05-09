@@ -1,58 +1,75 @@
-# ⚡ Quick Start Guide
+# ⚡ Quick Start for Developers
 
-Welcome to the Leopardo RH developer community! Follow this guide to get your local environment running in under 5 minutes.
+Leopardo RH is designed to be developer-friendly. This guide will help you set up a full multi-tenant environment on your local machine.
 
 ## 📋 Prerequisites
-- **Docker Desktop** (Recommended)
-- **Node.js 18+** & **NPM**
-- **PHP 8.4** & **Composer** (Optional if using Docker)
 
-## 🚀 1. The One-Command Setup
+-   **Docker** & **Docker Compose**
+-   **Node.js 18+**
+-   **Git**
 
-Run the bootstrap script from the repository root to initialize environment files and install dependencies:
+---
+
+## 🚀 1. Automated Setup
+
+The fastest way to get started is using our bootstrap script, which handles environment files, dependencies, and key generation.
 
 ```bash
 chmod +x scripts/bootstrap.sh
 ./scripts/bootstrap.sh
 ```
 
-## 🐘 2. Start the Backend (API)
+## 🐘 2. Backend & Database (Laravel Sail)
 
-We recommend using **Laravel Sail** for a consistent Docker-based experience:
+We use Laravel Sail (Docker) to ensure everyone has the same environment.
 
 ```bash
 cd api
+
+# Start the environment
 ./vendor/bin/sail up -d
+
+# Run migrations and seed the 'shared' and 'tenant' data
 ./vendor/bin/sail artisan migrate --seed
 ```
 
-Your API is now live at `http://localhost:8000`.
+The API is now available at [http://localhost:8000](http://localhost:8000).
 
-## ⚛️ 3. Start the Frontend (Web)
-
-Launch the Next.js development server:
+## ⚛️ 3. Web Dashboard (Next.js)
 
 ```bash
 cd web
+npm install
 npm run dev
 ```
 
-The dashboard is now live at `http://localhost:3000`.
+The admin dashboard is now available at [http://localhost:3000](http://localhost:3000).
 
-## 🧪 4. Verify the Installation
+## 🧪 4. Verify Your Setup
 
-Run the backend test suite to ensure everything is configured correctly:
+Run the test suite to confirm isolation and core logic are working as expected:
 
 ```bash
 cd api
-./vendor/bin/sail artisan test
+./vendor/bin/sail artisan test --group isolation
 ```
-
-## 🛠 Next Steps
-- Read the [Architecture Overview](ARCHITECTURE.md).
-- Learn about [Multi-Tenancy Implementation](docs/architecture/MULTITENANCY.md).
-- Explore the [API Reference](docs/api/README.md).
 
 ---
 
-Need help? Join our [Discord Community](https://discord.gg/leopardo-rh) or check the [Support Guide](SUPPORT.md).
+## 🏗 Key Entry Points
+
+*   **API Routes:** `api/routes/api.php` (Core) & `api/routes/modules/` (Domains).
+*   **Tenant Logic:** `api/app/Http/Middleware/TenantMiddleware.php`.
+*   **Frontend Components:** `web/components/ui/`.
+*   **Seeders:** Use `api/database/seeders/DatabaseSeeder.php` to create demo tenants.
+
+## 🛠 Pro Tips
+
+*   **Mailhog:** Visit [http://localhost:8025](http://localhost:8025) to catch all outgoing emails.
+*   **Redis:** Sail includes a Redis instance for caching and queues.
+*   **Logs:** Use `tail -f api/storage/logs/laravel.log` to watch the backend in real-time.
+
+---
+
+### Need Help?
+Check the [Contributing Guide](CONTRIBUTING.md) or join our [Discord](https://discord.gg/leopardo-rh).

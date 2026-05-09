@@ -267,9 +267,9 @@ if (result.success) {
 
 ## 📚 Documentation
 
-- [Requirements](../../.kiro/specs/vitrine-restructure/requirements.md)
-- [Design](../../.kiro/specs/vitrine-restructure/design.md)
-- [Tasks](../../.kiro/specs/vitrine-restructure/tasks.md)
+- [Requirements](../../../../.kiro/specs/vitrine-restructure/requirements.md)
+- [Design](../../../../.kiro/specs/vitrine-restructure/design.md)
+- [Tasks](../../../../.kiro/specs/vitrine-restructure/tasks.md)
 
 ## 🤝 Contribution
 

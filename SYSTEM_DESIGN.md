@@ -1,28 +1,57 @@
-# System Design
+# Modular Monolith Design — Leopardo RH
 
-Leopardo RH is designed as a **Modular Monolith** using Laravel 11. This choice provides the best balance between speed of development and architectural clarity.
+Leopardo RH adopts a **Modular Monolith** architecture. This design pattern allows us to maintain a clean separation of business domains while avoiding the operational complexity of microservices.
 
-## 📐 Design Philosophy
+## 📐 Structural Overview
 
-### 1. Separation of Concerns
-We strictly separate the domain logic (Domain) from the application workflows (Application) and technical details (Infrastructure).
+The application is divided into autonomous modules, each owning its logic, data structure, and interfaces.
 
-### 2. Multi-tenant Context
-The system is built to be "tenant-blind" at the controller level. The context is automatically injected and enforced by the database layer.
+```text
+api/app/
+├── Models/             # Shared entities (Company, UserLookup)
+├── Modules/            # Autonomous Domain Units
+│   ├── HR/             # Employee, Contract, Department
+│   ├── Attendance/     # Clock-in, Biometrics, Schedules
+│   ├── Finance/        # Payroll, Advances, Expenses
+│   └── Platform/       # Subscription, Billing, Health
+├── Http/
+│   ├── Controllers/    # Thin controllers delegating to Services
+│   └── Middleware/     # Tenancy, RBAC, i18n
+└── Services/           # Cross-module orchestration
+```
 
-### 3. API-First Strategy
-The core engine is 100% API-driven. Web, Mobile, and Hardware clients consume the same unified JSON API.
+## 🚀 Key Design Patterns
 
-## 🏗 High-Level Components
+### 1. Automatic Tenant Context
+Developers don't need to manually filter queries by `company_id`. The context is resolved by `TenantMiddleware` and applied globally via the `BelongsToCompany` trait.
 
-- **The Gateway (Laravel):** Handles routing, authentication, and request orchestration.
-- **The Domain Modules:** Autonomous logic units (HR, Payroll, Attendance).
-- **The Worker Layer:** Asynchronous processing for PDF generation and email delivery.
-- **The Frontend (Next.js):** High-performance dashboard with server-side rendering.
-- **The Mobile App (Flutter):** Native experience with real-time biometric capabilities.
+### 2. Service-Layer Orchestration
+Controllers are kept "thin." Business logic resides in **Service Classes**, which are injected via Laravel's Service Container. This ensures testability and reuse between Web and API routes.
 
-## 🔄 Data Persistence
-We use PostgreSQL for its robust schema management and multi-tenant capabilities (search_path). Redis is utilized for caching and session management.
+### 3. Contract-Driven API
+All API responses are transformed via **Eloquent Resources**. This decouples the internal database schema from the public API contract, allowing for schema refactoring without breaking mobile or third-party clients.
+
+### 4. Event-Driven Decoupling
+Modules communicate via **Laravel Events & Listeners**.
+*Example:* When an `AttendanceRegistered` event is fired, the `Finance` module listens to update the daily payroll estimation asynchronously.
+
+## 🔄 Data Architecture
+
+Leopardo RH uses **PostgreSQL** as its primary engine, leveraging its advanced schema and JSON capabilities.
+
+- **Relational Integrity:** Strict foreign keys and constraints.
+- **Hybrid JSONB:** Used for `extra_data` and flexible configuration without schema migrations.
+- **Search Path Isolation:** Used for Enterprise tenants to provide 100% database-level data separation.
+
+## 🛠 Developer Workflow
+
+- **Testing:** We prioritize **Feature Tests** using Pest PHP to verify end-to-end business flows with tenant isolation.
+- **Documentation:** OpenAPI (Swagger) specs are kept in sync with the codebase in `api/openapi.yaml`.
+- **Standards:** PSR-12 compliance and strict type hinting in PHP 8.4.
 
 ---
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed diagrams.
+
+### See Also
+- [High-Level Architecture](ARCHITECTURE.md)
+- [Multi-Tenancy Strategy](docs/architecture/MULTITENANCY.md)
+- [Database ERD](docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md)
