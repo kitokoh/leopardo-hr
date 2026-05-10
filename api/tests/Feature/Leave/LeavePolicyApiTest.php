@@ -120,6 +120,7 @@ class LeavePolicyApiTest extends TestCase
         Sanctum::actingAs($manager);
 
         $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
             'code' => 'ANNUAL',
             'name' => 'Annual Leave',
             'requires_approval' => true,
@@ -146,6 +147,7 @@ class LeavePolicyApiTest extends TestCase
         Sanctum::actingAs($manager);
 
         $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
             'code' => 'SICK',
             'name' => 'Sick Leave',
             'requires_approval' => true,
@@ -171,6 +173,7 @@ class LeavePolicyApiTest extends TestCase
         Sanctum::actingAs($manager);
 
         $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
             'code' => 'COMP',
             'name' => 'Compensatory',
             'requires_approval' => false,
