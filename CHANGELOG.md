@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.1.120] - 2026-05-10
+
+### DocKeeper - Alignement documentaire
+
+- Docs : alignement de `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md` avec la gouvernance actuelle (remplacement des références à `JOURNAL_DE_BORD.md` par `JOURNAL_RACINE.md`).
+- Gouvernance : synchronisation de la version globale du projet à `4.1.120` dans `PILOTAGE.md`, `api/config/app.php` et `CHANGELOG.md`.
+
 ## [4.1.119] - 2026-05-09
 
 ### Branding - Professionnalisation Enterprise-grade du dépôt
