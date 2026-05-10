@@ -269,11 +269,11 @@ jobs:
           fi
 
       - name: Flutter pub get
-        working-directory: ./mobile
+        working-directory: front/mobile
         run: flutter pub get
 
       - name: Build release APK for staging
-        working-directory: ./mobile
+        working-directory: front/mobile
         shell: bash
         run: |
           set -euo pipefail
