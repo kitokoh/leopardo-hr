@@ -37,11 +37,11 @@ jobs:
           cache-dependency-path: 'front/web/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./web
+        working-directory: front/web
         run: npm ci
 
       - name: Run ESLint
-        working-directory: ./web
+        working-directory: front/web
         run: npm run lint
 
   web-marketing-build:
