@@ -25,12 +25,12 @@ ciblant l'Algérie, le Maroc et la Turquie.
 
 Le projet est organisé en **monorepo** avec trois grandes zones :
 - `api/` → Backend Laravel 11 + Vue.js 3 (domaine de Claude Code)
-- `mobile/` → Application Flutter (domaine de Jules)
+- `front/mobile/` → Application Flutter (domaine de Jules)
 - `docs/` → Documentation de conception (source de vérité)
 
 **Règle absolue :** Tu ne touches JAMAIS les dossiers en dehors de ta zone.
 Si tu es Claude Code → uniquement `api/` et `docs/`.
-Si tu es Jules → uniquement `mobile/`.
+Si tu es Jules → uniquement `front/mobile/`.
 
 ---
 

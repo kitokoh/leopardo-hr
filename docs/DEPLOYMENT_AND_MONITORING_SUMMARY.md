@@ -40,21 +40,21 @@ La Phase 8 (Déploiement & Monitoring) complète la restructuration de la vitrin
 
 ### 2. Configuration Vercel
 
-#### `web/vercel.json`
+#### `front/web/vercel.json`
 - Configuration du build et du déploiement
 - Headers de sécurité (HSTS, CSP, X-Frame-Options, etc.)
 - Caching strategy pour images et assets
 - Redirects et rewrites
 - Régions de déploiement (CDG1 - Paris)
 
-#### `web/.env.staging`
+#### `front/web/.env.staging`
 - Variables d'environnement pour staging
 - API URL: https://api-staging.leopardo.com
 - Google Analytics ID: G-STAGING123456
 - Mixpanel token: staging_token_xyz123
 - Sentry DSN: staging
 
-#### `web/.env.production`
+#### `front/web/.env.production`
 - Variables d'environnement pour production
 - API URL: https://api.leopardo.com
 - Google Analytics ID: G-PRODUCTION123456
@@ -63,7 +63,7 @@ La Phase 8 (Déploiement & Monitoring) complète la restructuration de la vitrin
 
 ### 3. Configuration Lighthouse
 
-#### `web/lighthouserc.json`
+#### `front/web/lighthouserc.json`
 - Configuration de Lighthouse CI
 - Pages à tester: Landing, Employes, Documents, Comptabilite, Marketing, Pricing, About, Blog
 - Assertions: Performance > 90, Accessibility > 90, Best Practices > 90, SEO > 90
@@ -71,7 +71,7 @@ La Phase 8 (Déploiement & Monitoring) complète la restructuration de la vitrin
 
 ### 4. Monitoring
 
-#### `web/src/lib/monitoring.ts`
+#### `front/web/src/lib/monitoring.ts`
 - Initialisation de Google Analytics 4
 - Initialisation de Mixpanel
 - Initialisation de Sentry
@@ -82,7 +82,7 @@ La Phase 8 (Déploiement & Monitoring) complète la restructuration de la vitrin
 - Tracking des performances
 - Hooks React pour le monitoring
 
-#### `web/src/types/monitoring.ts`
+#### `front/web/src/types/monitoring.ts`
 - Types TypeScript pour le monitoring
 - Types pour Google Analytics, Mixpanel, Sentry
 - Types pour les conversions, performances, erreurs

@@ -18,7 +18,7 @@ Detailed Render setup: [RENDER_GUIDE.md](docs/deployment/RENDER_GUIDE.md).
 
 ### 2. Frontend Dashboard (Vercel)
 1. Connect your fork to Vercel.
-2. Set the root directory to `web/`.
+2. Set the root directory to `front/web/`.
 3. Configure environment variables:
    - `NEXT_PUBLIC_API_URL`: URL of your Render API.
 

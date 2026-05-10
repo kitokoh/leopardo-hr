@@ -42,7 +42,7 @@ Le dashboard est intégré au projet Laravel (Blade + Tailwind).
 
 ## 3. 📱 Application Mobile (Flutter)
 
-1.  Ouvrez un terminal dans le dossier `mobile/`.
+1.  Ouvrez un terminal dans le dossier `front/mobile/`.
 2.  Installez les dépendances :
     ```bash
     flutter pub get

@@ -22,7 +22,7 @@ Accepter seulement si toutes les reponses sont oui:
 - Le changement est petit, lisible et mono-sujet.
 - La PR ne modifie pas l architecture sans justification.
 - Les checks requis passent ou l echec est explique et corrige.
-- `CHANGELOG.md` est mis a jour si le changement touche `api/`, `mobile/`, `docs/GESTION_PROJET/`, `.github/` ou les outils.
+- `CHANGELOG.md` est mis a jour si le changement touche `api/`, `front/mobile/`, `docs/GESTION_PROJET/`, `.github/` ou les outils.
 - Aucun fichier genere inutile n est modifie.
 - Aucun secret, token, mot de passe ou URL privee n est ajoute.
 - La PR peut etre revert sans migration dangereuse.

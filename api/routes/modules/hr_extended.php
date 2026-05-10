@@ -5,6 +5,7 @@
  * formation, prêts, frais, organigramme, rapports, webhooks, audit.
  */
 
+use App\Http\Controllers\Api\V1\ApprovalController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\ContractController;
 use App\Http\Controllers\Api\V1\EmployeeLoanController;
@@ -24,7 +25,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::post('/leave-policies', [LeavePolicyController::class, 'store']);
     Route::get('/leave-policies/{leavePolicy}', [LeavePolicyController::class, 'show']);
     Route::put('/leave-policies/{leavePolicy}', [LeavePolicyController::class, 'update']);
+    Route::delete('/leave-policies/{leavePolicy}', [LeavePolicyController::class, 'destroy']);
     Route::get('/leave-balances', [LeavePolicyController::class, 'balances']);
+    Route::get('/me/leave-balances', [LeavePolicyController::class, 'myBalances']);
+    Route::get('/leave-accruals', [LeavePolicyController::class, 'accruals']);
+    Route::post('/leave-accruals', [LeavePolicyController::class, 'storeAccrual']);
 
     // ── Module B — Contracts ────────────────────────────────────────────────
     Route::get('/contracts', [ContractController::class, 'index']);
@@ -32,8 +37,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::get('/contracts/expiring', [ContractController::class, 'expiring']);
     Route::get('/contracts/{contract}', [ContractController::class, 'show']);
     Route::put('/contracts/{contract}', [ContractController::class, 'update']);
+    Route::post('/contracts/{contract}/activate', [ContractController::class, 'activate']);
+    Route::post('/contracts/{contract}/suspend', [ContractController::class, 'suspend']);
+    Route::post('/contracts/{contract}/terminate', [ContractController::class, 'terminate']);
+    Route::post('/contracts/{contract}/renew', [ContractController::class, 'renew']);
     Route::get('/contracts/{contract}/amendments', [ContractController::class, 'amendments']);
     Route::post('/contracts/{contract}/amendments', [ContractController::class, 'storeAmendment']);
+    Route::get('/contracts/{contract}/generate-pdf', [ContractController::class, 'generatePdf']);
+    Route::get('/me/contracts', [ContractController::class, 'myContracts']);
 
     // ── Module C — Recruitment / ATS ────────────────────────────────────────
     Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);
@@ -97,4 +108,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     // ── Module J — Audit Trail ──────────────────────────────────────────────
     Route::get('/audit-logs', [AuditLogController::class, 'index']);
     Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show']);
+
+    // ── Module K — Approval Workflows ────────────────────────────────────────
+    Route::get('/approval-workflows', [ApprovalController::class, 'indexWorkflows']);
+    Route::post('/approval-workflows', [ApprovalController::class, 'storeWorkflow']);
+    Route::put('/approval-workflows/{approvalWorkflow}', [ApprovalController::class, 'updateWorkflow']);
+    Route::delete('/approval-workflows/{approvalWorkflow}', [ApprovalController::class, 'destroyWorkflow']);
+    Route::get('/approvals/pending', [ApprovalController::class, 'pending']);
+    Route::post('/approvals/{approvalRequest}/approve', [ApprovalController::class, 'approve']);
+    Route::post('/approvals/{approvalRequest}/reject', [ApprovalController::class, 'reject']);
+    Route::get('/approvals/history', [ApprovalController::class, 'history']);
 });
