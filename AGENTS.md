@@ -188,13 +188,13 @@ Procedure recommandee :
 
 ### 2026-05-07 - Dossier Go-To-Market racine
 
-- Le dossier racine de strategie commerciale s'appelle `GOTO_MARKET/`, pas `marketing/`, sur demande explicite.
-- Le PDF inspirant `Leopardo_RH_Production_Creative.pdf` doit etre conserve dans `GOTO_MARKET/00_inspiration/` et sert de base creative IA-first.
+- Le dossier racine de strategie commerciale s'appelle `docs/GOTO_MARKET/`, pas `marketing/`, sur demande explicite.
+- Le PDF inspirant `Leopardo_RH_Production_Creative.pdf` doit etre conserve dans `docs/GOTO_MARKET/00_inspiration/` et sert de base creative IA-first.
 - Les prochaines actions GTM doivent rester connectees au wedge produit prioritaire : pointage, anomalies, rapport mensuel, onboarding et ROI client mesurable.
-- `GOTO_MARKET/` est aussi le centre de reflexion sur la viabilite globale : utiliser la tech pour repondre a un besoin actuel, gagner de l'argent, et ne pas hesiter a repositionner ou moderniser le produit/offre quand le marche l'exige.
-- Les fichiers destines a presenter Leopardo RH au public doivent aller dans `GOTO_MARKET/public/` avec un sous-dossier par canal : `social/`, `landing/`, `video/`, `press/`, `partners/`, `ads/`, `content_calendar/`, `metrics/`.
-- Le pack de lancement acquisition vit dans `GOTO_MARKET/12_PACK_LANCEMENT_ACQUISITION.md` et les supports associes (`public/email`, `public/lead_magnets`, `public/owned_channels`, etc.).
-- La vision "Leopardo RH peut aussi aider une entreprise a gerer et automatiser son marketing" est documentee dans `GOTO_MARKET/product_marketing_automation/`, mais elle n'est pas implementee dans le depot et ne doit pas distraire du wedge pointage tant qu'il n'est pas solidement vendu.
+- `docs/GOTO_MARKET/` est aussi le centre de reflexion sur la viabilite globale : utiliser la tech pour repondre a un besoin actuel, gagner de l'argent, et ne pas hesiter a repositionner ou moderniser le produit/offre quand le marche l'exige.
+- Les fichiers destines a presenter Leopardo RH au public doivent aller dans `docs/GOTO_MARKET/public/` avec un sous-dossier par canal : `social/`, `landing/`, `video/`, `press/`, `partners/`, `ads/`, `content_calendar/`, `metrics/`.
+- Le pack de lancement acquisition vit dans `docs/GOTO_MARKET/12_PACK_LANCEMENT_ACQUISITION.md` et les supports associes (`public/email`, `public/lead_magnets`, `public/owned_channels`, etc.).
+- La vision "Leopardo RH peut aussi aider une entreprise a gerer et automatiser son marketing" est documentee dans `docs/GOTO_MARKET/product_marketing_automation/`, mais elle n'est pas implementee dans le depot et ne doit pas distraire du wedge pointage tant qu'il n'est pas solidement vendu.
 
 ### 2026-05-07 - Federation de PR ouvertes
 
@@ -218,3 +218,21 @@ Procedure recommandee :
 - Les endpoints `/api/v1/health/live` et `/api/v1/health/ready` sont maintenant disponibles pour les sondes Kubernetes/Render.
 - `DEVELOPMENT.md` a la racine contient le guide de setup rapide. Le maintenir a jour a chaque ajout de dependance.
 - `config/sentry.php` configure le traces_sample_rate via `SENTRY_TRACES_SAMPLE_RATE` (defaut 0.2 en prod).
+- En Laravel 11, `EventServiceProvider` doit etre enregistre explicitement dans `bootstrap/providers.php` pour que les listeners soient actifs. L'auto-discovery ne fonctionne plus pour les providers custom.
+- Les listeners `ShouldQueue` s'executent en mode sync pendant les tests (queue=sync). Toujours proteger les ecritures DB dans les listeners avec un try-catch pour ne pas casser l'operation metier parente.
+- La governance gate CI exige que `SCENARIOS_TEST_API_GITHUB_ACTIONS.md` soit mis a jour quand de nouveaux endpoints API sont ajoutes. Ne pas oublier cette etape avant de push.
+- Le repo a ete renomme de `gestionemployerBackend` a `leopardo-hr` sur GitHub. Utiliser `kitokoh/leopardo-hr` pour les operations PR/CI.
+
+### 2026-05-10 - Reorganisation arborescence repo
+
+- Les dossiers `.jules/` et `.kiro/` sont des artefacts d'agents IA. Ils doivent rester dans `.gitignore` et ne pas etre commites.
+- `docs/GOTO_MARKET/` a ete deplace dans `docs/GOTO_MARKET/` pour centraliser toute la documentation.
+- Les frontends (`mobile/`, `web/`, `admin-dashboard/`, `zkteco-kiosk/`) sont regroupes dans `front/`.
+- Quand on deplace des dossiers references par les workflows CI (`.github/workflows/*.yml`), il faut systematiquement mettre a jour les filtres `paths:` et les chemins `working-directory:` dans chaque workflow concerne.
+- Les fichiers `.md` techniques (DEPLOYMENT, MONITORING, etc.) vont dans `docs/` ; ne garder a la racine que README, CHANGELOG, AGENTS, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT, DEVELOPMENT, LICENSE.
+
+### 2026-05-10 - Sprint 5-6 conges avances + contrats
+
+- Les modeles LeavePolicy, LeaveBalance, LeaveAccrual, Contract, ContractAmendment, ApprovalWorkflow/Request/Decision existaient deja en tant que modeles. Verifier les routes et controllers avant de creer du code duplique.
+- `hr_extended.php` centralise toutes les routes des modules etendus (conges, contrats, recrutement, formation, loans, frais, webhooks, audit).
+- Le trait `Approvable` est un pattern reutilisable pour brancher le workflow d'approbation sur n'importe quel modele (Absence, ExpenseClaim, etc.).

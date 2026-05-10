@@ -161,7 +161,7 @@ Détermine le périmètre des permissions dans la matrice RBAC.
 
 **Mock JSON**
 Fichiers JSON statiques simulant les réponses de l'API, utilisés par Flutter en mode développement.
-Stockés dans `mobile/assets/mock/`. Permettent de développer le mobile sans API réelle.
+Stockés dans `front/mobile/assets/mock/`. Permettent de développer le mobile sans API réelle.
 Bascule via une variable d'environnement Flutter (`USE_MOCK=true`).
 
 **Mode Schema (Enterprise)**
@@ -174,7 +174,7 @@ Stratégie multitenancy où toutes les entreprises partagent le même schéma `s
 L'isolation est logique : colonne `company_id` sur chaque table + Global Scope automatique.
 
 **Monorepo**
-Structure où le code backend (`api/`), mobile (`mobile/`) et la documentation (`docs/`)
+Structure où le code backend (`api/`), mobile (`front/mobile/`) et la documentation (`docs/`)
 coexistent dans un seul dépôt Git. Facilite la cohérence pour les agents IA qui voient
 l'ensemble du projet en même temps.
 

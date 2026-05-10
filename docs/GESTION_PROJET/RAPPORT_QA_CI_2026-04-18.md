@@ -27,10 +27,10 @@ Renforcer la qualite des validations backend/mobile en CI, fiabiliser le reset S
 
 ### 2) Mobile CI
 
-- Mobile ne s'execue que si des fichiers `mobile/**` ont change.
+- Mobile ne s'execue que si des fichiers `front/mobile/**` ont change.
 - Si mobile execute:
   - `flutter test --coverage`
-  - artefact couverture: `mobile/coverage/lcov.info`
+  - artefact couverture: `front/mobile/coverage/lcov.info`
 - Scenarios mobile de reference documentes:
   - `docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md`
 

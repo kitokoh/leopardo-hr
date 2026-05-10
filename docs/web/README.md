@@ -12,4 +12,4 @@ Internal tool for platform operators to manage tenants and billing.
 - **Path:** `/admin-dashboard`
 
 ---
-Check the root level `web/README.md` and `admin-dashboard/README.md` for specific setup instructions.
+Check the root level `front/web/README.md` and `front/admin-dashboard/README.md` for specific setup instructions.

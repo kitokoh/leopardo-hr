@@ -2,6 +2,39 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.3.0] - 2026-05-10
+
+### Reorganisation structure depot
+
+- Structure : Suppression `.jules/` et `.kiro/` (artifacts agents IA), ajout au `.gitignore`
+- Structure : `GOTO_MARKET/` deplace dans `docs/GOTO_MARKET/`
+- Structure : Frontends (`mobile/`, `web/`, `admin-dashboard/`, `zkteco-kiosk/`) regroupes dans `front/`
+- Structure : 19 fichiers `.md` techniques deplaces de la racine vers `docs/`
+- CI : Tous les workflows GitHub Actions mis a jour pour les nouveaux chemins `front/`
+- Docs : Toutes les references internes mises a jour (AGENTS.md, README.md, DEVELOPMENT.md, PLAN_ACTION, etc.)
+- README : URLs corrigees (`your-org/leopardo-rh` → `kitokoh/leopardo-hr`)
+
+### Open Source (Plan 10)
+
+- Docker : `docker-compose.yml` a la racine (api + postgres + redis + dashboard + web)
+- DevContainer : `.devcontainer/devcontainer.json` pour GitHub Codespaces
+- Scripts : `scripts/setup-labels.sh` pour creer les 23 labels GitHub organises
+
+### Sprint 5-6 — Conges avances + Contrats
+
+- Leave : DELETE /leave-policies (desactivation douce)
+- Leave : GET /me/leave-balances (self-service employe)
+- Leave : GET/POST /leave-accruals (historique + cumul manuel)
+- Leave : Commande `leave:accrue` (scheduleur quotidien, accumulation le 1er du mois)
+- Contracts : POST /contracts/{id}/activate, /suspend, /terminate, /renew
+- Contracts : GET /me/contracts (self-service)
+- Contracts : GET /contracts/{id}/generate-pdf
+- Contracts : Commande `contracts:alert-expiring` (alertes a 30/15/7 jours)
+- Approvals : ApprovalController complet (CRUD workflows, pending/approve/reject/history)
+- Approvals : Trait `Approvable` pour integration polymorphique
+- Tests : LeavePolicyApiTest, ContractWorkflowTest, AccrueLeaveBalancesTest
+- Scheduler : Commandes enregistrees dans `bootstrap/app.php`
+
 ## [4.2.1] - 2026-05-10
 
 ### Sprint 1-2 Completion — Fondations manquantes

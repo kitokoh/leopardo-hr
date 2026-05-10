@@ -158,19 +158,19 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 
 ### Widget tests (PR)
 
-- `mobile/test/features/auth/*`
-- `mobile/test/features/attendance/*`
-- `mobile/test/features/leave/*`
-- `mobile/test/features/employees/*`
-- `mobile/test/features/payroll/*` (si module actif)
+- `front/mobile/test/features/auth/*`
+- `front/mobile/test/features/attendance/*`
+- `front/mobile/test/features/leave/*`
+- `front/mobile/test/features/employees/*`
+- `front/mobile/test/features/payroll/*` (si module actif)
 
 ### Integration tests (PR sur mobile)
 
-- `mobile/integration_test/auth_role_matrix_test.dart`
-- `mobile/integration_test/employee_crud_flow_test.dart`
-- `mobile/integration_test/attendance_and_leave_flow_test.dart`
-- `mobile/integration_test/payroll_access_control_test.dart`
-- `mobile/integration_test/offline_timeout_error_flow_test.dart`
+- `front/mobile/integration_test/auth_role_matrix_test.dart`
+- `front/mobile/integration_test/employee_crud_flow_test.dart`
+- `front/mobile/integration_test/attendance_and_leave_flow_test.dart`
+- `front/mobile/integration_test/payroll_access_control_test.dart`
+- `front/mobile/integration_test/offline_timeout_error_flow_test.dart`
 
 ### Smoke build (toujours)
 

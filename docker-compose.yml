@@ -1,0 +1,86 @@
+# Full-stack dev environment — run from repo root:
+#   docker compose up -d
+#   docker compose exec api php artisan migrate --seed
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: docker/php84/Dockerfile
+    container_name: leopardo-api
+    working_dir: /var/www/html
+    volumes:
+      - ./api:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: leopardo
+      DB_USERNAME: leopardo
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: leopardo-postgres
+    environment:
+      POSTGRES_DB: leopardo
+      POSTGRES_USER: leopardo
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./api/docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leopardo -d leopardo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: leopardo-redis
+    ports:
+      - "6379:6379"
+
+  dashboard:
+    build:
+      context: ./front/admin-dashboard
+      dockerfile: Dockerfile.dev
+    container_name: leopardo-dashboard
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front/admin-dashboard:/app
+      - /app/node_modules
+    profiles:
+      - full
+
+  web:
+    build:
+      context: ./front/web
+      dockerfile: Dockerfile.dev
+    container_name: leopardo-web
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./front/web:/app
+      - /app/node_modules
+    profiles:
+      - full
+
+volumes:
+  pgdata:

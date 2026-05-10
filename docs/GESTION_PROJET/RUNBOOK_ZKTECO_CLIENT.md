@@ -31,7 +31,7 @@ Le flux metier vise est le suivant :
 ### 2.2 Architecture logique
 
 - la borne ZKTeco capture les evenements de pointage
-- le PC local execute le pont local `zkteco-kiosk/desktop-bridge/bridge.py`
+- le PC local execute le pont local `front/zkteco-kiosk/desktop-bridge/bridge.py`
 - le pont local stocke les pointages dans une base SQLite locale
 - si internet est disponible, le pont envoie automatiquement les evenements a l API
 - si internet est indisponible, le pont garde les evenements en attente
@@ -123,7 +123,7 @@ Exemple de configuration :
 
 ### 6.3 Etape 3 - lancer le pont local
 
-Depuis le dossier `zkteco-kiosk/desktop-bridge` :
+Depuis le dossier `front/zkteco-kiosk/desktop-bridge` :
 
 ```powershell
 python bridge.py ..\config.local.json
@@ -138,8 +138,8 @@ Le pont local :
 
 ### 6.4 Etape 4 - ouvrir les interfaces locales
 
-- borne locale navigateur : `zkteco-kiosk/index.html`
-- console locale manager/RH : `zkteco-kiosk/admin.html`
+- borne locale navigateur : `front/zkteco-kiosk/index.html`
+- console locale manager/RH : `front/zkteco-kiosk/admin.html`
 
 L interface locale peut etre servie en fichier statique ou via un petit serveur HTTP local selon le contexte client.
 
