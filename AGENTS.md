@@ -229,7 +229,9 @@ Procedure recommandee :
 - `docs/GOTO_MARKET/` a ete deplace dans `docs/GOTO_MARKET/` pour centraliser toute la documentation.
 - Les frontends (`mobile/`, `web/`, `admin-dashboard/`, `zkteco-kiosk/`) sont regroupes dans `front/`.
 - Quand on deplace des dossiers references par les workflows CI (`.github/workflows/*.yml`), il faut systematiquement mettre a jour les filtres `paths:` et les chemins `working-directory:` dans chaque workflow concerne.
-- Les fichiers `.md` techniques (DEPLOYMENT, MONITORING, etc.) vont dans `docs/` ; ne garder a la racine que README, CHANGELOG, AGENTS, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT, DEVELOPMENT, LICENSE.
+- ATTENTION: Le token OAuth Devin n'a PAS le scope `workflow`. Les fichiers `.github/workflows/` ne peuvent pas etre pushes par l'agent. Le proprietaire du repo doit mettre a jour les workflows manuellement ou accorder le scope.
+- `PILOTAGE.md` est un fichier de gouvernance obligatoire a la racine. Ne PAS le deplacer dans `docs/`.
+- Les fichiers `.md` techniques (DEPLOYMENT, MONITORING, etc.) vont dans `docs/` ; ne garder a la racine que README, CHANGELOG, AGENTS, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT, DEVELOPMENT, LICENSE, PILOTAGE.
 
 ### 2026-05-10 - Sprint 5-6 conges avances + contrats
 
