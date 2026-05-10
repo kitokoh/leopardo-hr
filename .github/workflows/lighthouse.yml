@@ -18,15 +18,15 @@ jobs:
           cache-dependency-path: 'front/web/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./web
+        working-directory: front/web
         run: npm ci
 
       - name: Build Next.js
-        working-directory: ./web
+        working-directory: front/web
         run: npm run build
 
       - name: Start Next.js server
-        working-directory: ./web
+        working-directory: front/web
         run: |
           npm run start &
           sleep 5
