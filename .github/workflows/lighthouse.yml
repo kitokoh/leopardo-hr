@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'web/package-lock.json'
+          cache-dependency-path: 'front/web/package-lock.json'
 
       - name: Install dependencies
         working-directory: ./web
@@ -34,7 +34,7 @@ jobs:
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v10
         with:
-          configPath: './web/lighthouserc.json'
+          configPath: './front/web/lighthouserc.json'
           uploadArtifacts: true
           temporaryPublicStorage: true
 
@@ -43,5 +43,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-reports
-          path: web/.lighthouseci/
+          path: front/web/.lighthouseci/
           retention-days: 30
