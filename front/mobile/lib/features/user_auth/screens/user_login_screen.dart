@@ -48,9 +48,8 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     HapticFeedback.lightImpact();
 
     try {
-      final googleSignIn = GoogleSignIn();
-      final account = await googleSignIn.signIn();
-      if (account == null) return;
+      final googleSignIn = GoogleSignIn.instance;
+      final account = await googleSignIn.authenticate();
 
       final ok = await ref
           .read(userAuthProvider.notifier)
