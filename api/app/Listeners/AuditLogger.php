@@ -52,17 +52,24 @@ class AuditLogger implements ShouldQueue
         $companyId = $model->company_id ?? null;
         $userId = $this->resolveUserId($event);
 
-        AuditLog::create([
-            'company_id' => $companyId,
-            'user_id' => $userId,
-            'action' => $mapping['action'],
-            'auditable_type' => $model->getMorphClass(),
-            'auditable_id' => $model->getKey(),
-            'old_values' => null,
-            'new_values' => $model->toArray(),
-            'ip_address' => request()?->ip(),
-            'user_agent' => request()?->userAgent(),
-        ]);
+        try {
+            AuditLog::create([
+                'company_id' => $companyId,
+                'user_id' => $userId,
+                'action' => $mapping['action'],
+                'auditable_type' => $model->getMorphClass(),
+                'auditable_id' => $model->getKey(),
+                'old_values' => null,
+                'new_values' => $model->toArray(),
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('AuditLogger: failed to write audit log', [
+                'event' => $class,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function resolveUserId(object $event): ?int

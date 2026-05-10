@@ -6,6 +6,7 @@ namespace App\Listeners;
 
 use App\Services\WebhookDispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class WebhookListener implements ShouldQueue
 {
@@ -45,7 +46,14 @@ class WebhookListener implements ShouldQueue
             return;
         }
 
-        $this->dispatcher->dispatch($companyId, $eventName, $model->toArray());
+        try {
+            $this->dispatcher->dispatch($companyId, $eventName, $model->toArray());
+        } catch (\Throwable $e) {
+            Log::error('WebhookListener: failed to dispatch webhook', [
+                'event' => $eventName,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function resolveModel(object $event): ?object
