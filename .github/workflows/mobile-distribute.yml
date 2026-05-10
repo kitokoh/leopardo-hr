@@ -101,13 +101,13 @@ jobs:
           set -euo pipefail
           ROOT_FILE="google-services.json"
           API_FILE="api/google-services.json"
-          APP_FILE="mobile/android/app/google-services.json"
+          APP_FILE="front/mobile/android/app/google-services.json"
           if [[ -f "$ROOT_FILE" && ! -f "$APP_FILE" ]]; then
             cp "$ROOT_FILE" "$APP_FILE"
-            echo "google-services.json copied from repo root to mobile/android/app/"
+            echo "google-services.json copied from repo root to front/mobile/android/app/"
           elif [[ -f "$API_FILE" && ! -f "$APP_FILE" ]]; then
             cp "$API_FILE" "$APP_FILE"
-            echo "google-services.json copied from api/ to mobile/android/app/"
+            echo "google-services.json copied from api/ to front/mobile/android/app/"
           fi
 
       - name: Flutter pub get
@@ -129,14 +129,14 @@ jobs:
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
               --build-number="${BUILD_NUMBER}"
-            echo "BUILD_FILE=mobile/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
+            echo "BUILD_FILE=front/mobile/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
           else
             echo "API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1" > .env.build
             flutter build apk --release \
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
               --build-number="${BUILD_NUMBER}"
-            echo "BUILD_FILE=mobile/build/app/outputs/flutter-apk/app-release.apk" >> "$GITHUB_ENV"
+            echo "BUILD_FILE=front/mobile/build/app/outputs/flutter-apk/app-release.apk" >> "$GITHUB_ENV"
           fi
 
       - name: Verify build output exists
