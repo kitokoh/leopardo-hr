@@ -40,15 +40,15 @@ jobs:
           cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm ci
 
       - name: Install ESLint parsers
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm install --no-save vue-eslint-parser @babel/eslint-parser
 
       - name: Run ESLint
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm run lint
 
   web-build:
@@ -67,11 +67,11 @@ jobs:
           cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm ci
 
       - name: Build admin dashboard
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm run build
 
       - name: Upload build artifact
@@ -98,26 +98,26 @@ jobs:
           cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm ci
 
       - name: Install Playwright test runner
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm install --no-save @playwright/test
 
       - name: Install Chromium
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright smoke tests
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         env:
           CI: true
         run: npx playwright test
 
       - name: Build web E2E summary
         if: always()
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         shell: bash
         run: |
           set -euo pipefail
