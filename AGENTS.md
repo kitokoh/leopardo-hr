@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-08
+Derniere mise a jour : 2026-05-10
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -209,3 +209,12 @@ Procedure recommandee :
 - Le script `tools/check-governance.ps1` doit echouer si une surface fonctionnelle change sans mise a jour de cette base de scenarios. Cela evite qu'une feature apparaisse sans etre rattachee a une couverture attendue.
 - Le deploiement auto doit raisonner par SHA et non seulement par nom de workflow : pour un commit `main`, on ne deploie que si les workflows requis pour ce SHA sont conclus avec succes.
 - Pour le web admin, Playwright doit continuer a fournir des artefacts exploitables en cas d'echec: HTML, JUnit, traces et videos retenues sur echec.
+
+### 2026-05-10 - Sprint 1-2 completion
+
+- Les 8 domain events existaient mais n'etaient cables a aucun listener. Il faut toujours verifier que les events ont un `EventServiceProvider` et des listeners actifs, pas seulement des classes event.
+- Les services (`EmployeeService`, `AbsenceService`, etc.) sont le bon endroit pour dispatcher les events, pas les controllers.
+- La commande `php artisan make:module {Name}` est disponible pour scaffolder la structure DDD.
+- Les endpoints `/api/v1/health/live` et `/api/v1/health/ready` sont maintenant disponibles pour les sondes Kubernetes/Render.
+- `DEVELOPMENT.md` a la racine contient le guide de setup rapide. Le maintenir a jour a chaque ajout de dependance.
+- `config/sentry.php` configure le traces_sample_rate via `SENTRY_TRACES_SAMPLE_RATE` (defaut 0.2 en prod).
