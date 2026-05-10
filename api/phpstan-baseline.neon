@@ -1201,6 +1201,138 @@ parameters:
 			path: app/Http/Controllers/Api/V1/AuthController.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\BankExport\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\BankExport\:\:\$file_path\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$period_start\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$net_salary\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Binary operation "\+\=" between float and mixed results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem\:\:download\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\BankExport\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Cannot access property \$first_name on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Cannot access property \$last_name on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Cannot call method format\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\BankExportController\:\:download\(\) should return Illuminate\\Http\\JsonResponse\|Symfony\\Component\\HttpFoundation\\StreamedResponse but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Contracts\\Filesystem\\Filesystem\:\:exists\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Parameter \#3 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Parameter \#4 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
+			message: '#^Parameter \#5 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/BankExportController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\BiometricEnrollmentRequest\:\:\$approved_at\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3823,6 +3955,114 @@ parameters:
 			path: app/Http/Controllers/Api/V1/OrgChartController.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$employee_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\PaySlip\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method currentPage\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method items\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method lastPage\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method orderByDesc\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method paginate\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method perPage\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method total\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method where\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method whereIn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PaySlipController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Payroll\:\:\$absence_deduction\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4091,6 +4331,132 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V1/PayrollController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$employee_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_deductions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_employer_cost\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_gross\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$total_net\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$employee_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$gross_salary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$net_salary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$total_cost\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\PayrollRun\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 7
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Cannot access property \$first_name on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Cannot access property \$last_name on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 7
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Controllers/Api/V1/PayrollRunController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$email\.$#'
@@ -4903,6 +5269,120 @@ parameters:
 			path: app/Http/Controllers/Api/V1/SalaryAdvanceController.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\SalaryComponent\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\SalaryComponent\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\SalaryComponent\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 5
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Cannot call method active\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 5
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Cannot call method orderBy\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Cannot call method where\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Api/V1/SalaryComponentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SalaryStructure\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\SalaryStructure\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\SalaryStructure\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 5
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot call method active\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 5
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot call method orderBy\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot call method where\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
+			message: '#^Cannot call method withCount\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SalaryStructureController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Schedule\:\:\$break_minutes\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5149,6 +5629,30 @@ parameters:
 			path: app/Http/Controllers/Api/V1/SiteController.php
 
 		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\SocialContribution\>\:\:forCountry\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/SocialContributionController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\SocialContribution\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/SocialContributionController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/SocialContributionController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: app/Http/Controllers/Api/V1/SocialContributionController.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\Task\:\:\$assigned_to\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5357,6 +5861,30 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\TaxSlab\>\:\:forCountry\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TaxSlabController.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\TaxSlab\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TaxSlabController.php
+
+		-
+			message: '#^Cannot access property \$company_id on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/TaxSlabController.php
+
+		-
+			message: '#^Cannot call method isManager\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: app/Http/Controllers/Api/V1/TaxSlabController.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\TrainingCourse\:\:\$company_id\.$#'
@@ -8056,6 +8584,24 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
+			path: app/Models/BankExport.php
+
+		-
+			message: '#^Method App\\Models\\BankExport\:\:payrollRun\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/BankExport.php
+
+		-
+			message: '#^Property App\\Models\\BankExport\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/BankExport.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
 			path: app/Models/BiometricEnrollmentRequest.php
 
 		-
@@ -9040,6 +9586,84 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:employee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:lines\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:lines\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany but returns Illuminate\\Database\\Query\\Builder\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:payrollRun\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:scopeForEmployee\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:scopeForEmployee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:scopeValidated\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlip\:\:scopeValidated\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Property App\\Models\\PaySlip\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/PaySlip.php
+
+		-
+			message: '#^Method App\\Models\\PaySlipLine\:\:paySlip\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlipLine.php
+
+		-
+			message: '#^Method App\\Models\\PaySlipLine\:\:salaryComponent\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PaySlipLine.php
+
+		-
+			message: '#^Property App\\Models\\PaySlipLine\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/PaySlipLine.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
 			path: app/Models/Payroll.php
 
 		-
@@ -9113,6 +9737,72 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Payroll.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:bankExports\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:paySlips\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:scopeCalculated\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:scopeCalculated\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:scopeDraft\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:scopeDraft\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:scopeValidated\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:scopeValidated\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Method App\\Models\\PayrollRun\:\:validatedBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PayrollRun.php
+
+		-
+			message: '#^Property App\\Models\\PayrollRun\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/PayrollRun.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
@@ -9250,6 +9940,120 @@ parameters:
 			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:salaryStructure\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeActive\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeDeductions\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeDeductions\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeEarnings\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeEarnings\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeEmployerContributions\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Method App\\Models\\SalaryComponent\:\:scopeEmployerContributions\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Property App\\Models\\SalaryComponent\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/SalaryComponent.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Method App\\Models\\SalaryStructure\:\:components\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Method App\\Models\\SalaryStructure\:\:components\(\) should return Illuminate\\Database\\Eloquent\\Relations\\HasMany but returns Illuminate\\Database\\Query\\Builder\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Method App\\Models\\SalaryStructure\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Method App\\Models\\SalaryStructure\:\:scopeActive\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Method App\\Models\\SalaryStructure\:\:scopeForCountry\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Method App\\Models\\SalaryStructure\:\:scopeForCountry\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Property App\\Models\\SalaryStructure\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/SalaryStructure.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
 			path: app/Models/Schedule.php
 
 		-
@@ -9281,6 +10085,60 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/Site.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeEffective\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeEffective\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeEmployee\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeEmployee\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeEmployer\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeEmployer\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeForCountry\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Method App\\Models\\SocialContribution\:\:scopeForCountry\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/SocialContribution.php
+
+		-
+			message: '#^Property App\\Models\\SocialContribution\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/SocialContribution.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\SuperAdmin\:\:\$password_hash\.$#'
@@ -9371,6 +10229,36 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/TaskComment.php
+
+		-
+			message: '#^Method App\\Models\\TaxSlab\:\:scopeEffective\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/TaxSlab.php
+
+		-
+			message: '#^Method App\\Models\\TaxSlab\:\:scopeEffective\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/TaxSlab.php
+
+		-
+			message: '#^Method App\\Models\\TaxSlab\:\:scopeForCountry\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/TaxSlab.php
+
+		-
+			message: '#^Method App\\Models\\TaxSlab\:\:scopeForCountry\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/TaxSlab.php
+
+		-
+			message: '#^Property App\\Models\\TaxSlab\:\:\$casts type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/TaxSlab.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Company\:\:\$id\.$#'
@@ -13727,6 +14615,276 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Services/MobileExperienceService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Employee\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$gross_salary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$net_salary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$total_cost\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaySlip\:\:\$total_deductions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$country_code\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$period_end\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PayrollRun\:\:\$period_start\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SalaryComponent\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SalaryComponent\:\:\$calculation_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SalaryComponent\:\:\$percentage\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SalaryStructure\:\:\$base_salary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SalaryStructure\:\:\$components\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 3
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Binary operation "\+" between mixed and float results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Binary operation "\+\=" between float and mixed results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 5
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Binary operation "\+\=" between mixed and float results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Binary operation "\-" between mixed and float results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\Employee\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\PaySlip\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\PaySlipLine\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Call to an undefined static method App\\Models\\SalaryStructure\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot access property \$id on mixed\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot access property \$name on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot access property \$percentage on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot access property \$type on mixed\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot call method first\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot call method keyBy\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot call method sortBy\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot call method where\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 3
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Method App\\Services\\Payroll\\CountryRulesInterface\:\:calculateIncomeTax\(\) invoked with 1 parameter, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Method App\\Services\\Payroll\\PayrollCalculator\:\:calculateSlip\(\) should return App\\Models\\PaySlip but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#1 \$component of method App\\Services\\Payroll\\PayrollCalculator\:\:computeComponentAmount\(\) expects App\\Models\\SalaryComponent, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#1 \$countryCode of method App\\Services\\Payroll\\PayrollCalculator\:\:getRules\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#1 \$grossSalary of method App\\Services\\Payroll\\CountryRulesInterface\:\:calculateSocialCharges\(\) expects float, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#1 \$num of function round expects float\|int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#2 \$baseSalary of method App\\Services\\Payroll\\PayrollCalculator\:\:computeComponentAmount\(\) expects float, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#2 \$employee of method App\\Services\\Payroll\\PayrollCalculator\:\:calculateSlip\(\) expects App\\Models\\Employee, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#3 \$grossSalary of method App\\Services\\Payroll\\PayrollCalculator\:\:computeComponentAmount\(\) expects float, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Services/Payroll/PayrollCalculator.php
+
+		-
+			message: '#^Parameter \#3 \$structure of method App\\Services\\Payroll\\PayrollCalculator\:\:calculateSlip\(\) expects App\\Models\\SalaryStructure, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Payroll/PayrollCalculator.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\Employee\:\:\$company_id\.$#'
