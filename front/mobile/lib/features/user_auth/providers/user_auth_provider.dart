@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_rh/core/api/api_exceptions.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:leopardo_rh/features/user_auth/data/user_auth_repository.dart';
