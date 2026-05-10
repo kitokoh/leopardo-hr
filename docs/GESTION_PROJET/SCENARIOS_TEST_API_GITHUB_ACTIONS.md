@@ -230,3 +230,67 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Payroll access control en CI
 - Utilisateur bloque distinct de l'etat archive en CI
 - Suite dediee a l'auth plateforme avec 2FA
+
+## Modules API etendus (v4.2.0)
+
+### Module A — Conges avances
+- `GET /api/v1/leave-policies` retourne la liste des politiques actives
+- `POST /api/v1/leave-policies` cree une politique (manager RH uniquement)
+- `GET /api/v1/leave-balances?year=2026` retourne les soldes par employe et annee
+- RBAC : employe non-manager ne voit que ses propres soldes
+
+### Module B — Contrats
+- `POST /api/v1/contracts` cree un contrat en statut draft (manager RH)
+- `PUT /api/v1/contracts/{id}` passe un contrat de draft a active (signed_at auto)
+- `GET /api/v1/contracts/expiring?days=30` liste les contrats expirant dans 30 jours
+- `POST /api/v1/contracts/{id}/amendments` cree un avenant
+- RBAC : employe voit uniquement ses propres contrats
+
+### Module C — Recrutement/ATS
+- `POST /api/v1/recruitment/jobs` cree une offre d'emploi (manager RH)
+- `PUT /api/v1/recruitment/jobs/{id}` publie une offre (status draft -> published, published_at auto)
+- `POST /api/v1/recruitment/jobs/{id}/applicants` ajoute un candidat
+- `POST /api/v1/recruitment/applicants/{id}/interviews` planifie un entretien
+- RBAC : employes non-managers recoivent 403 sur toutes les routes recrutement
+
+### Module D — Formation/LMS
+- `POST /api/v1/training/courses` cree un cours (manager RH)
+- `POST /api/v1/training/courses/{id}/sessions` planifie une session
+- `POST /api/v1/training/sessions/{id}/enroll` inscrit un employe
+- `PUT /api/v1/training/enrollments/{id}` complete une inscription (score, feedback)
+
+### Module E — Prets employes
+- `POST /api/v1/loans` cree un pret avec echeancier auto-genere
+- `PUT /api/v1/loans/{id}/approve` approuve un pret (manager RH)
+- `PUT /api/v1/loans/{id}/disburse` debloque les fonds (apres approbation)
+- Validation : un pret non approuve ne peut pas etre debloque (422)
+
+### Module F — Notes de frais
+- `POST /api/v1/expense-claims` cree une note avec items
+- `PUT /api/v1/expense-claims/{id}/submit` soumet pour approbation
+- `PUT /api/v1/expense-claims/{id}/approve` approuve (manager RH)
+- Validation : seul le draft peut etre soumis, seul le submitted peut etre approuve
+
+### Module G — Organigramme
+- `GET /api/v1/org-chart` retourne l'arbre hierarchique complet
+- `GET /api/v1/org-chart/{id}/subordinates` retourne les subordonnes directs
+- `GET /api/v1/org-chart/{id}/manager-chain` retourne la chaine manageriale ascendante
+
+### Module H — Rapports RH
+- `GET /api/v1/reports/headcount` retourne effectifs par departement, type contrat, genre
+- `GET /api/v1/reports/turnover?months=12` retourne embauches/departs par mois
+- `GET /api/v1/reports/absenteeism?month=5&year=2026` retourne jours absence par type
+- `GET /api/v1/reports/payroll-summary` retourne masse salariale brute/nette
+- RBAC : uniquement managers
+
+### Module I — Webhooks
+- `POST /api/v1/webhooks` cree un endpoint avec secret genere (principal)
+- `GET /api/v1/webhooks/events` retourne la liste des evenements disponibles
+- `GET /api/v1/webhooks/{id}` inclut les 20 dernieres livraisons
+- `DELETE /api/v1/webhooks/{id}` supprime un endpoint
+- RBAC : uniquement principal
+
+### Module J — Audit Trail
+- `GET /api/v1/audit-logs` retourne les logs filtres par action, type, user, date
+- `GET /api/v1/audit-logs/{id}` retourne le detail avec old/new values
+- RBAC : uniquement principal
