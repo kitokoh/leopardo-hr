@@ -60,11 +60,11 @@ jobs:
           cache-dependency-path: 'front/web/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./web
+        working-directory: front/web
         run: npm ci
 
       - name: Build Next.js vitrine
-        working-directory: ./web
+        working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
         run: npm run build
