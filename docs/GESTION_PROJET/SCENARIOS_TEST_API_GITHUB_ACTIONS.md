@@ -327,3 +327,55 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/audit-logs` retourne les logs filtres par action, type, user, date
 - `GET /api/v1/audit-logs/{id}` retourne le detail avec old/new values
 - RBAC : uniquement principal
+
+## Paie Complete Multi-Pays (v4.3.0)
+
+### Salary Structures
+- `GET /api/v1/salary-structures` retourne les structures salariales de la company
+- `POST /api/v1/salary-structures` cree une structure (manager RH)
+- `GET /api/v1/salary-structures/{id}` retourne la structure avec ses composants
+- `PUT /api/v1/salary-structures/{id}` met a jour une structure
+- `DELETE /api/v1/salary-structures/{id}` supprime une structure
+- RBAC : managers uniquement
+
+### Salary Components
+- `POST /api/v1/salary-components` cree un composant (earning, deduction, employer_contribution)
+- `GET /api/v1/salary-components?type=earning` filtre par type
+- Validation : code unique par company + structure
+- RBAC : managers uniquement
+
+### Tax Slabs
+- `GET /api/v1/tax-slabs?country_code=DZ` retourne les tranches fiscales par pays
+- `POST /api/v1/tax-slabs` cree une tranche avec effective_from/to
+- RBAC : managers uniquement
+
+### Social Contributions
+- `GET /api/v1/social-contributions?country_code=DZ&type=employee` filtre par pays et type
+- `POST /api/v1/social-contributions` cree une cotisation avec code unique
+- RBAC : managers uniquement
+
+### Payroll Runs
+- `POST /api/v1/payroll-runs` cree un run en draft (period_start, period_end, country_code)
+- `POST /api/v1/payroll-runs/{id}/calculate` lance le calcul (genere les pay_slips)
+- `POST /api/v1/payroll-runs/{id}/validate` valide le run (status calculated -> validated)
+- `POST /api/v1/payroll-runs/{id}/cancel` annule un run (interdit si paid)
+- `GET /api/v1/payroll-runs/{id}/summary` retourne le resume avec totaux et liste employes
+- Validation : seul un run calculated peut etre valide, seul un run draft/calculated peut etre recalcule
+- RBAC : managers uniquement
+
+### Pay Slips
+- `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager)
+- `GET /api/v1/pay-slips/{id}` detail bulletin avec lignes (manager ou employe concerne)
+- RBAC : manager voit tout, employe voit uniquement ses bulletins
+
+### Self-service
+- `GET /api/v1/me/pay-slips` retourne les bulletins valides/envoyes de l'employe connecte
+- `GET /api/v1/me/pay-slips/{id}` detail bulletin avec lignes (uniquement si validated/sent)
+- RBAC : employe connecte, ses propres bulletins uniquement
+
+### Bank Exports
+- `POST /api/v1/payroll-runs/{id}/bank-export` genere un fichier export (format: sepa_xml, ccp_dz, virement_ma, csv_generic)
+- `GET /api/v1/bank-exports/{id}` detail de l'export
+- `GET /api/v1/bank-exports/{id}/download` telecharge le fichier genere
+- Validation : payroll run doit etre validated ou paid
+- RBAC : managers uniquement
