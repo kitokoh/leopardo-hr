@@ -38,9 +38,13 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 ### 1. Sante technique et bootstrap
 
 - `GET /api/health` retourne 200 avec structure attendue
+- `GET /api/v1/health/live` retourne 200 (liveness probe, pas de verification DB)
+- `GET /api/v1/health/ready` retourne 200 si DB accessible, 503 sinon (readiness probe)
 - Application demarre avec migrations `public` puis `tenant`
 - Redis / cache / queue sync ne cassent pas les endpoints critiques
 - Une erreur de bootstrap ne fuit pas d'informations sensibles
+- Le middleware `RequestIdMiddleware` ajoute un header `X-Request-Id` a chaque reponse API
+- Un `X-Request-Id` fourni dans la requete est reechoe dans la reponse
 
 ### 2. Auth publique et onboarding
 
@@ -125,6 +129,10 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Evenement metier declenche la notification attendue
 - Endpoint de lecture marque lu / non lu correctement
 - Journalisation des actions sensibles disponible si prevue
+- `AuditLogger` listener ecoute les 8 domain events et ecrit dans `audit_logs`
+- `WebhookListener` dispatche les events vers les endpoints webhook du tenant
+- Les events sont dispatches depuis les services (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
+- `EventServiceProvider` cable chaque event aux listeners AuditLogger et WebhookListener
 
 ### 11. Resilience et erreurs
 
