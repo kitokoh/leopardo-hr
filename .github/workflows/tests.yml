@@ -698,7 +698,7 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        working-directory: ./mobile
+        working-directory: front/bile
         run: flutter pub get --offline || flutter pub get
 
       - name: Place google-services.json if provided in repo
