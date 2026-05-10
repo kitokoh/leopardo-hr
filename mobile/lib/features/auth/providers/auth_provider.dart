@@ -25,11 +25,14 @@ class AuthState {
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _repository;
+class AuthNotifier extends Notifier<AuthState> {
+  late final AuthRepository _repository;
 
-  AuthNotifier(this._repository) : super(AuthState()) {
+  @override
+  AuthState build() {
+    _repository = ref.read(authRepositoryProvider);
     checkAuth();
+    return AuthState();
   }
 
   Future<void> checkAuth() async {
@@ -166,6 +169,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authRepositoryProvider));
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
+  return AuthNotifier();
 });

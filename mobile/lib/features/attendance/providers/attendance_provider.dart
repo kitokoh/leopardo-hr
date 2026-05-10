@@ -45,12 +45,16 @@ class AttendanceState {
   }
 }
 
-class AttendanceNotifier extends StateNotifier<AttendanceState> {
-  final AttendanceRepository _repository;
-  final Ref _ref;
+class AttendanceNotifier extends Notifier<AttendanceState> {
+  late final AttendanceRepository _repository;
+  late final Ref _ref;
 
-  AttendanceNotifier(this._repository, this._ref) : super(AttendanceState()) {
+  @override
+  AttendanceState build() {
+    _repository = ref.read(attendanceRepositoryProvider);
+    _ref = ref;
     loadTodayData();
+    return AttendanceState();
   }
 
   Future<void> loadTodayData() async {
@@ -146,8 +150,8 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 }
 
 final attendanceProvider =
-    StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+    NotifierProvider<AttendanceNotifier, AttendanceState>(() {
+      return AttendanceNotifier();
     });
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((
