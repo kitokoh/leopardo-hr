@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_rh/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_rh/models/attendance_log.dart';
