@@ -2,6 +2,35 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.2.0] - 2026-05-10
+
+### Architecture & Fondations (Plan 01)
+
+- Architecture : 8 domain events (EmployeeCreated, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated, EmployeeArchived)
+- Architecture : systeme AuditLog avec migration `audit_logs` et trait `Auditable` pour auto-logging CRUD
+- Architecture : systeme Webhook complet (migration `webhook_endpoints`/`webhook_deliveries`, service `WebhookDispatcher`, job `DispatchWebhook` avec retry 3x)
+- Architecture : middleware `RequestIdMiddleware` pour tracabilite des requetes API
+- Architecture : migration indexes de performance (composites sur employees, absences, attendance_logs, payrolls)
+
+### Modules API manquants (Plan 02) — ~50 nouveaux endpoints, 21 modeles
+
+- Module A : Conges avances — `LeavePolicy`, `LeaveBalance`, `LeaveAccrual`, `ApprovalWorkflow`, `ApprovalRequest`, `ApprovalDecision`
+- Module B : Contrats de travail — `Contract`, `ContractAmendment` avec endpoint contrats expirants
+- Module C : Recrutement/ATS — `JobPosting`, `Applicant`, `Interview` avec workflow complet
+- Module D : Formation/LMS — `TrainingCourse`, `TrainingSession`, `TrainingEnrollment`
+- Module E : Prets employes — `EmployeeLoan`, `LoanRepayment` avec echeancier auto-genere
+- Module F : Notes de frais — `ExpenseClaim`, `ExpenseItem` avec soumission/approbation
+- Module G : Organigramme — endpoints arbre hierarchique, subordonnes, chaine managers
+- Module H : Rapports RH — effectifs, turnover, absenteisme, masse salariale, heures supplementaires
+- Module I : Webhooks API — CRUD endpoints, liste evenements disponibles, historique livraisons
+- Module J : Audit Trail — liste filtrable paginee avec detail par entree
+- Routes : nouveau fichier `routes/modules/hr_extended.php` enregistre dans `api.php`
+- PHPStan : baseline regeneree pour inclure les nouveaux fichiers
+
+### Plan d'action documentaire
+
+- Docs : 13 fichiers dans `docs/PLAN_ACTION/` couvrant architecture, modules, paie, IA, tracking, interfaces, monitoring, tests, onboarding, open source, GTM, roadmap
+
 ## [4.1.120] - 2026-05-10
 
 ### DocKeeper - Alignement documentaire
