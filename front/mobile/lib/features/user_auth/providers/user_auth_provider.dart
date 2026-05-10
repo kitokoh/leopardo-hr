@@ -27,9 +27,12 @@ class UserAuthState {
 }
 
 class UserAuthNotifier extends StateNotifier<UserAuthState> {
+  final Ref ref;
   final UserAuthRepository _repository;
 
-  UserAuthNotifier(this._repository) : super(UserAuthState());
+  UserAuthNotifier({required this.ref, required UserAuthRepository repository})
+      : _repository = repository,
+        super(UserAuthState());
 
   Future<void> checkAuth() async {
     state = state.copyWith(isLoading: true);
@@ -113,6 +116,9 @@ class UserAuthNotifier extends StateNotifier<UserAuthState> {
 
 final userAuthProvider = StateNotifierProvider<UserAuthNotifier, UserAuthState>(
   (ref) {
-    return UserAuthNotifier(ref.watch(userAuthRepositoryProvider));
+    return UserAuthNotifier(
+      ref: ref,
+      repository: ref.watch(userAuthRepositoryProvider),
+    );
   },
 );

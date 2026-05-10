@@ -46,10 +46,12 @@ class AttendanceState {
 }
 
 class AttendanceNotifier extends StateNotifier<AttendanceState> {
+  final Ref ref;
   final AttendanceRepository _repository;
-  final Ref _ref;
 
-  AttendanceNotifier(this._repository, this._ref) : super(AttendanceState()) {
+  AttendanceNotifier({required this.ref, required AttendanceRepository repository})
+      : _repository = repository,
+        super(AttendanceState()) {
     loadTodayData();
   }
 
@@ -66,13 +68,13 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         context: data['context'],
         isLoading: false,
       );
-      final authState = _ref.read(authProvider);
+      final authState = ref.read(authProvider);
       if (authState.employee != null && !authState.employee!.isManager) {
         _loadSummary();
       }
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
-        await _ref.read(authProvider.notifier).logout();
+        await ref.read(authProvider.notifier).logout();
         return;
       }
       if (_isRecoverableLoadError(e)) {
@@ -89,7 +91,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }
 
   Future<void> _loadSummary() async {
-    final authState = _ref.read(authProvider);
+    final authState = ref.read(authProvider);
     if (authState.employee != null) {
       try {
         final summary = await _repository.getMyDailySummary();
@@ -108,7 +110,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       _loadSummary();
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
-        await _ref.read(authProvider.notifier).logout();
+        await ref.read(authProvider.notifier).logout();
         return;
       }
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -123,7 +125,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       _loadSummary();
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
-        await _ref.read(authProvider.notifier).logout();
+        await ref.read(authProvider.notifier).logout();
         return;
       }
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -147,7 +149,10 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
 final attendanceProvider =
     StateNotifierProvider<AttendanceNotifier, AttendanceState>((ref) {
-      return AttendanceNotifier(ref.watch(attendanceRepositoryProvider), ref);
+      return AttendanceNotifier(
+        ref: ref,
+        repository: ref.watch(attendanceRepositoryProvider),
+      );
     });
 
 final historyProvider = FutureProvider.family<List<AttendanceLog>, DateTime>((

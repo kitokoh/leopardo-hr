@@ -26,9 +26,12 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
+  final Ref ref;
   final AuthRepository _repository;
 
-  AuthNotifier(this._repository) : super(AuthState()) {
+  AuthNotifier({required this.ref, required AuthRepository repository})
+      : _repository = repository,
+        super(AuthState()) {
     checkAuth();
   }
 
@@ -167,5 +170,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authRepositoryProvider));
+  return AuthNotifier(
+    ref: ref,
+    repository: ref.watch(authRepositoryProvider),
+  );
 });

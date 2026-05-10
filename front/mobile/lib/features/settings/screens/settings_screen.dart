@@ -11,6 +11,7 @@ import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_rh/features/settings/data/settings_repository.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -675,6 +676,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         options: const AuthenticationOptions(
           biometricOnly: true,
           stickyAuth: true,
+          useErrorDialogs: true,
         ),
       );
 
