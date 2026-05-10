@@ -2,6 +2,22 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.3.0] - 2026-05-10
+
+### Paie Complete Multi-Pays (Plan 03)
+
+- Paie : moteur de calcul configurable par pays avec interface `CountryRulesInterface`
+- Paie : 6 implementations pays — Algerie (DZ), Maroc (MA), Tunisie (TN), France (FR), Turquie (TR), Senegal (SN)
+- Paie : `PayrollCalculator` service avec calcul automatique des cotisations sociales et impots
+- Paie : modeles `SalaryStructure`, `SalaryComponent`, `PayrollRun`, `PaySlip`, `PaySlipLine`, `TaxSlab`, `SocialContribution`, `BankExport`
+- Paie : migration idempotente pour 8 nouvelles tables (salary_structures, salary_components, tax_slabs, social_contributions, payroll_runs, pay_slips, pay_slip_lines, bank_exports)
+- Paie : controllers CRUD pour structures salariales, composants, tranches impots, cotisations sociales
+- Paie : workflow payroll run complet (draft -> calculating -> calculated -> validated -> paid/cancelled)
+- Paie : generation bulletins de paie avec lignes detaillees (gains, deductions, cotisations patronales)
+- Paie : self-service `/me/pay-slips` pour les employes
+- Paie : generation export bancaire (CSV generique, SEPA, CCP Algerie, virement Maroc)
+- Routes : nouveau fichier `routes/modules/payroll_engine.php` (~30 endpoints)
+
 ## [4.2.0] - 2026-05-10
 
 ### Architecture & Fondations (Plan 01)

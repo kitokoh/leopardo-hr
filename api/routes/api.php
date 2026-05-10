@@ -76,6 +76,7 @@ Route::prefix('v1')->group(function (): void {
     // companies.features lors de leur implementation.
     require __DIR__.'/modules/rh.php';
     require __DIR__.'/modules/hr_extended.php';
+    require __DIR__.'/modules/payroll_engine.php';
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
     require __DIR__.'/modules/user.php';
