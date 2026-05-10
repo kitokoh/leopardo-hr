@@ -111,15 +111,15 @@ jobs:
           fi
 
       - name: Flutter pub get
-        working-directory: ./mobile
+        working-directory: front/mobile
         run: flutter pub get
 
       - name: Flutter analyze
-        working-directory: ./mobile
+        working-directory: front/mobile
         run: flutter analyze --no-fatal-infos
 
       - name: Build release binary
-        working-directory: ./mobile
+        working-directory: front/mobile
         shell: bash
         run: |
           set -euo pipefail
