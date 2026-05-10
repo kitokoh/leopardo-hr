@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\PayrollValidated;
 use App\Exceptions\PayrollAlreadyValidatedException;
 use App\Exceptions\PayrollPeriodConflictException;
 use App\Models\Employee;
@@ -85,6 +86,8 @@ class PayrollService
         });
 
         $payroll->refresh();
+
+        PayrollValidated::dispatch($payroll);
 
         return $payroll;
     }

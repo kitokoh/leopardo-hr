@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\DTOs\CheckInDTO;
+use App\Events\AttendanceCheckedIn;
+use App\Events\AttendanceCheckedOut;
 use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
 use App\Models\AttendanceLog;
@@ -45,7 +47,7 @@ class AttendanceService
             $status = $lateMinutes > 0 ? 'late' : 'ontime';
         }
 
-        return AttendanceLog::query()->create([
+        $log = AttendanceLog::query()->create([
             'employee_id' => $employee->id,
             'schedule_id' => $schedule?->id,
             'date' => $today,
@@ -57,6 +59,10 @@ class AttendanceService
             'gps_lat' => $dto->gps_lat,
             'gps_lng' => $dto->gps_lng,
         ]);
+
+        AttendanceCheckedIn::dispatch($log);
+
+        return $log;
     }
 
     public function checkOut(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
@@ -107,6 +113,8 @@ class AttendanceService
         }
 
         $log->save();
+
+        AttendanceCheckedOut::dispatch($log);
 
         return $log;
     }
