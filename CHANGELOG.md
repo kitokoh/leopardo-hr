@@ -2,6 +2,21 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.2.1] - 2026-05-10
+
+### Sprint 1-2 Completion — Fondations manquantes
+
+- Architecture : `AuditLogger` listener implementé — écoute les 8 domain events et écrit automatiquement dans `audit_logs`
+- Architecture : `WebhookListener` implementé — dispatche automatiquement les domain events vers les webhook endpoints configurés par tenant
+- Architecture : Appels `event()` ajoutés dans `EmployeeService`, `AbsenceService`, `AttendanceService`, `PayrollService`
+- Architecture : `EventServiceProvider` créé pour câbler listeners aux events
+- Architecture : Template module DDD dans `stubs/module-template/` avec structure complète
+- Architecture : Commande Artisan `php artisan make:module {Name}` pour scaffolding DDD
+- Monitoring : Endpoints `/api/v1/health/live` (liveness) et `/api/v1/health/ready` (readiness) ajoutés
+- Monitoring : Config Sentry performance (`config/sentry.php`) avec traces et profiling
+- Docs : `DEVELOPMENT.md` créé — guide setup rapide (Docker + local), structure projet, commandes utiles
+- Tests : `HealthLiveReadyTest`, `RequestIdMiddlewareTest`, `AuditLoggerListenerTest`, `MakeModuleCommandTest`
+
 ## [4.2.0] - 2026-05-10
 
 ### Architecture & Fondations (Plan 01)
