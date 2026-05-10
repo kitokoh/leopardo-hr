@@ -5,12 +5,12 @@ on:
   push:
     branches: [main, develop, staging]
     paths:
-      - 'admin-dashboard/**'
+      - 'front/admin-dashboard/**'
       - '.github/workflows/web-ci.yml'
   pull_request:
     branches: [main, develop, staging]
     paths:
-      - 'admin-dashboard/**'
+      - 'front/admin-dashboard/**'
       - '.github/workflows/web-ci.yml'
 
 permissions:
@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'admin-dashboard/package-lock.json'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
         working-directory: ./admin-dashboard
@@ -64,7 +64,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'admin-dashboard/package-lock.json'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
         working-directory: ./admin-dashboard
@@ -78,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: admin-dashboard-dist
-          path: admin-dashboard/dist/
+          path: front/admin-dashboard/dist/
           if-no-files-found: error
           retention-days: 7
 
@@ -95,7 +95,7 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'admin-dashboard/package-lock.json'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
         working-directory: ./admin-dashboard
@@ -139,7 +139,7 @@ jobs:
         with:
           name: playwright-report
           path: |
-            admin-dashboard/playwright-report/
-            admin-dashboard/test-results/
+            front/admin-dashboard/playwright-report/
+            front/admin-dashboard/test-results/
           if-no-files-found: ignore
           retention-days: 14
