@@ -244,15 +244,40 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 ### Module A — Conges avances
 - `GET /api/v1/leave-policies` retourne la liste des politiques actives
 - `POST /api/v1/leave-policies` cree une politique (manager RH uniquement)
+- `GET /api/v1/leave-policies/{id}` retourne le detail d'une politique
+- `PUT /api/v1/leave-policies/{id}` modifie une politique (manager RH)
+- `DELETE /api/v1/leave-policies/{id}` desactive une politique (manager RH)
 - `GET /api/v1/leave-balances?year=2026` retourne les soldes par employe et annee
+- `GET /api/v1/me/leave-balances` retourne les soldes de l'employe connecte
+- `GET /api/v1/leave-accruals` retourne l'historique des cumuls
+- `POST /api/v1/leave-accruals` cree un cumul manuel (manager RH)
 - RBAC : employe non-manager ne voit que ses propres soldes
+- Scheduler : `leave:accrue` accumule les soldes le 1er de chaque mois
 
 ### Module B — Contrats
 - `POST /api/v1/contracts` cree un contrat en statut draft (manager RH)
-- `PUT /api/v1/contracts/{id}` passe un contrat de draft a active (signed_at auto)
+- `PUT /api/v1/contracts/{id}` modifie un contrat
+- `POST /api/v1/contracts/{id}/activate` active un contrat draft (signed_at auto)
+- `POST /api/v1/contracts/{id}/suspend` suspend un contrat actif
+- `POST /api/v1/contracts/{id}/terminate` resilie avec motif obligatoire
+- `POST /api/v1/contracts/{id}/renew` renouvelle (cree nouveau + expire ancien)
 - `GET /api/v1/contracts/expiring?days=30` liste les contrats expirant dans 30 jours
+- `GET /api/v1/contracts/{id}/amendments` liste les avenants
 - `POST /api/v1/contracts/{id}/amendments` cree un avenant
+- `GET /api/v1/contracts/{id}/generate-pdf` genere les donnees PDF
+- `GET /api/v1/me/contracts` retourne les contrats de l'employe connecte
 - RBAC : employe voit uniquement ses propres contrats
+- Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
+
+### Module K — Workflows d'approbation
+- `GET /api/v1/approval-workflows` liste les workflows (admin RH)
+- `POST /api/v1/approval-workflows` cree un workflow
+- `PUT /api/v1/approval-workflows/{id}` modifie un workflow
+- `DELETE /api/v1/approval-workflows/{id}` desactive un workflow
+- `GET /api/v1/approvals/pending` liste les approbations en attente
+- `POST /api/v1/approvals/{id}/approve` approuve avec commentaire
+- `POST /api/v1/approvals/{id}/reject` rejette avec commentaire obligatoire
+- `GET /api/v1/approvals/history` historique des decisions
 
 ### Module C — Recrutement/ATS
 - `POST /api/v1/recruitment/jobs` cree une offre d'emploi (manager RH)

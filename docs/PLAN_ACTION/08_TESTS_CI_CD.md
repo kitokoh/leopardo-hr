@@ -208,7 +208,7 @@ Commencer a 40%, monter de 5% par mois.
 | PHPStan | `phpstan-baseline.yml` | Push/PR sur api/** |
 | CodeQL | `codeql.yml` | Push/PR |
 | Secret scan | `secret-scan.yml` | Push/PR |
-| Web CI | `web-ci.yml` | Push/PR sur admin-dashboard/** |
+| Web CI | `web-ci.yml` | Push/PR sur front/admin-dashboard/** |
 | Web marketing | `web-marketing-ci.yml` | Push/PR sur web/** |
 | Mobile | `mobile-distribute.yml` | Push/PR sur mobile/** |
 | Deploy | `deploy-main.yml` | Push sur main |
@@ -286,7 +286,7 @@ jobs:
 name: E2E Tests
 on:
   pull_request:
-    paths: ['admin-dashboard/**', 'api/**']
+    paths: ['front/admin-dashboard/**', 'api/**']
 
 jobs:
   e2e:
@@ -305,18 +305,18 @@ jobs:
           php artisan serve &
       - name: Setup Dashboard
         run: |
-          cd admin-dashboard && npm ci && npm run build
+          cd front/admin-dashboard && npm ci && npm run build
           npx serve -s out -p 3000 &
       - name: Run Playwright
         run: |
-          cd admin-dashboard
+          cd front/admin-dashboard
           npx playwright install --with-deps
           npx playwright test
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: playwright-report
-          path: admin-dashboard/playwright-report/
+          path: front/admin-dashboard/playwright-report/
 ```
 
 #### 3. Mobile CI
@@ -326,9 +326,9 @@ jobs:
 name: Mobile CI
 on:
   push:
-    paths: ['mobile/**']
+    paths: ['front/mobile/**']
   pull_request:
-    paths: ['mobile/**']
+    paths: ['front/mobile/**']
 
 jobs:
   analyze-test:

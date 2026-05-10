@@ -36,7 +36,7 @@ Toutes les 4 tâches de Phase 8 ont été complétées avec succès.
    - Commentaires PR avec résultats
    - Archivage des rapports
 
-5. **`web/lighthouserc.json`**
+5. **`front/web/lighthouserc.json`**
    - Configuration de Lighthouse CI
    - Pages à tester: 8 pages principales
    - Assertions: Performance, Accessibility, Best Practices, SEO > 90
@@ -70,14 +70,14 @@ NEXT_PUBLIC_MIXPANEL_TOKEN # Token Mixpanel
 
 ### Fichiers Créés
 
-1. **`web/vercel.json`**
+1. **`front/web/vercel.json`**
    - Configuration du build et du déploiement
    - Headers de sécurité (HSTS, CSP, X-Frame-Options, etc.)
    - Caching strategy pour images et assets
    - Redirects et rewrites
    - Régions de déploiement (CDG1 - Paris)
 
-2. **`web/.env.staging`**
+2. **`front/web/.env.staging`**
    - Variables d'environnement pour staging
    - API URL: https://api-staging.leopardo.com
    - Google Analytics ID: G-STAGING123456
@@ -115,7 +115,7 @@ NEXT_PUBLIC_MIXPANEL_TOKEN # Token Mixpanel
 
 ### Fichiers Créés
 
-1. **`web/.env.production`**
+1. **`front/web/.env.production`**
    - Variables d'environnement pour production
    - API URL: https://api.leopardo.com
    - Google Analytics ID: G-PRODUCTION123456
@@ -161,7 +161,7 @@ NEXT_PUBLIC_MIXPANEL_TOKEN # Token Mixpanel
 
 ### Fichiers Créés
 
-1. **`web/src/lib/monitoring.ts`**
+1. **`front/web/src/lib/monitoring.ts`**
    - Initialisation de Google Analytics 4
    - Initialisation de Mixpanel
    - Initialisation de Sentry
@@ -172,7 +172,7 @@ NEXT_PUBLIC_MIXPANEL_TOKEN # Token Mixpanel
    - Tracking des performances
    - Hooks React pour le monitoring
 
-2. **`web/src/types/monitoring.ts`**
+2. **`front/web/src/types/monitoring.ts`**
    - Types TypeScript pour le monitoring
    - Types pour Google Analytics, Mixpanel, Sentry
    - Types pour les conversions, performances, erreurs
