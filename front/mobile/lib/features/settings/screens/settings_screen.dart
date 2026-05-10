@@ -672,10 +672,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final authenticated = await localAuth.authenticate(
         localizedReason:
             'Confirmer votre identite pour soumettre votre demande biometrie',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-        ),
+        biometricOnly: true,
+        persistAcrossBackgrounding: true,
       );
 
       if (!authenticated) {
