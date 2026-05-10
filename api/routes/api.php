@@ -5,8 +5,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\HealthController;
-use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
+use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
@@ -75,6 +75,7 @@ Route::prefix('v1')->group(function (): void {
     // (finance, cameras, muhasebe, leo_ai) seront inclus ici derriere un gate
     // companies.features lors de leur implementation.
     require __DIR__.'/modules/rh.php';
+    require __DIR__.'/modules/hr_extended.php';
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
     require __DIR__.'/modules/user.php';

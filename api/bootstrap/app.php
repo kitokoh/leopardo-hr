@@ -3,6 +3,7 @@
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
@@ -28,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [SetLocale::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
