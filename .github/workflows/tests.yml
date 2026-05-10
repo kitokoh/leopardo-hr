@@ -64,7 +64,7 @@ jobs:
             api_changed=true
           fi
 
-          if printf '%s\n' "${changed_files}" | grep -Eq '^mobile/'; then
+          if printf '%s\n' "${changed_files}" | grep -Eq '^front/mobile/'; then
             mobile_changed=true
           fi
 
@@ -707,7 +707,7 @@ jobs:
           set -euo pipefail
           ROOT_FILE="google-services.json"
           API_FILE="api/google-services.json"
-          APP_FILE="mobile/android/app/google-services.json"
+          APP_FILE="front/mobile/android/app/google-services.json"
           if [[ -f "$ROOT_FILE" && ! -f "$APP_FILE" ]]; then
             cp "$ROOT_FILE" "$APP_FILE"
           elif [[ -f "$API_FILE" && ! -f "$APP_FILE" ]]; then
@@ -824,7 +824,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mobile-quality-summary
-          path: mobile/quality-summary.md
+          path: front/mobile/quality-summary.md
           if-no-files-found: error
 
       - name: Upload mobile test artifacts
@@ -833,12 +833,12 @@ jobs:
         with:
           name: mobile-test-reports
           path: |
-            mobile/coverage/lcov.info
-            mobile/coverage/summary.txt
-            mobile/coverage/threshold.txt
-            mobile/test-results.json
-            mobile/quality-summary.md
-            mobile/test/**/*
+            front/mobile/coverage/lcov.info
+            front/mobile/coverage/summary.txt
+            front/mobile/coverage/threshold.txt
+            front/mobile/test-results.json
+            front/mobile/quality-summary.md
+            front/mobile/test/**/*
           if-no-files-found: ignore
 
       - name: Fail mobile job if analyze failed
