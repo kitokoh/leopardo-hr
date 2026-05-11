@@ -26,8 +26,8 @@ Source de verite active:
 | Couche | Techno | Dossier | Etat |
 |--------|--------|---------|------|
 | Backend API | Laravel 11 / PHP 8.2+ / PostgreSQL | `api/` | Production |
-| Application mobile | Flutter 3.3+ / Dart | `mobile/` | Production |
-| Application web | Next.js (App Router) | `web/` | En developpement |
+| Application mobile | Flutter 3.3+ / Dart | `front/mobile/` | Production |
+| Application web | Next.js (App Router) | `front/web/` | En developpement |
 
 Le projet gere les ressources humaines (pointage, absences, paie, evaluations, etc.) avec une architecture multi-tenant basee sur les schemas PostgreSQL.
 
@@ -222,7 +222,7 @@ L'Employee a un champ `language` qui peut surcharger la preference.
 
 ---
 
-## 3. Architecture mobile (`mobile/`)
+## 3. Architecture mobile (`front/mobile/`)
 
 ### 3.1 Stack technique
 
@@ -379,7 +379,7 @@ La redirection automatique envoie vers `/welcome` si non authentifie, et vers `/
 
 ---
 
-## 4. Application web (`web/`)
+## 4. Application web (`front/web/`)
 
 - **Framework :** Next.js (App Router avec `(dashboard)` et `(landing)` route groups)
 - **Etat :** En cours de developpement (12 fichiers TS/TSX)

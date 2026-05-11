@@ -5,8 +5,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\HealthController;
-use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
+use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
@@ -22,6 +22,8 @@ Route::prefix('v1')->group(function (): void {
     // et la supervision externe. 503 si la DB tombe, 200 sinon (Redis et storage
     // peuvent etre degrades sans bloquer l'API).
     Route::get('/health', HealthController::class);
+    Route::get('/health/live', [HealthController::class, 'live']);
+    Route::get('/health/ready', [HealthController::class, 'ready']);
 
     // Auth (core, hors module)
     Route::middleware(['throttle:10,1'])->group(function (): void {
@@ -75,6 +77,8 @@ Route::prefix('v1')->group(function (): void {
     // (finance, cameras, muhasebe, leo_ai) seront inclus ici derriere un gate
     // companies.features lors de leur implementation.
     require __DIR__.'/modules/rh.php';
+    require __DIR__.'/modules/hr_extended.php';
+    require __DIR__.'/modules/payroll_engine.php';
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
     require __DIR__.'/modules/user.php';

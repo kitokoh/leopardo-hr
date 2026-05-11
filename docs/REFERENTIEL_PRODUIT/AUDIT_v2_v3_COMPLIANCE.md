@@ -1,7 +1,7 @@
 # AUDIT — Conformité code actuel vs APV v2 + Design System v3
 
 > Date : avril 2026
-> Portée : `api/` + `mobile/` sur `main`
+> Portée : `api/` + `front/mobile/` sur `main`
 > Objectif : identifier ce qui aligne avec la vision cible (APV v2 + Design v3) et ce qui contredit.
 
 ## Légende
@@ -31,7 +31,7 @@
 
 | Sujet | État | Verdict | Action |
 |---|---|---|---|
-| `mobile/lib/` monolithique | Pas encore de packages séparés | ⚠️ | Acceptable en Phase 1. Split en packages = Phase 2. |
+| `front/mobile/lib/` monolithique | Pas encore de packages séparés | ⚠️ | Acceptable en Phase 1. Split en packages = Phase 2. |
 | `AppTheme` avec couleurs dark hardcodées | `Color(0xFF0F172A)` etc. | ⚠️ | Remplacer par `AppColors` tokens domaine |
 | Font `Roboto` | Hardcodée | ⚠️ | Remplacer par `Inter` (aligné avec web) |
 | Stades d'apprentissage | Absent | — | Phase 2, stade simplifié 2 paliers accepté |

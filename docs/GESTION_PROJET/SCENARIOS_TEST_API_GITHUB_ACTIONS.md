@@ -38,9 +38,13 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 ### 1. Sante technique et bootstrap
 
 - `GET /api/health` retourne 200 avec structure attendue
+- `GET /api/v1/health/live` retourne 200 (liveness probe, pas de verification DB)
+- `GET /api/v1/health/ready` retourne 200 si DB accessible, 503 sinon (readiness probe)
 - Application demarre avec migrations `public` puis `tenant`
 - Redis / cache / queue sync ne cassent pas les endpoints critiques
 - Une erreur de bootstrap ne fuit pas d'informations sensibles
+- Le middleware `RequestIdMiddleware` ajoute un header `X-Request-Id` a chaque reponse API
+- Un `X-Request-Id` fourni dans la requete est reechoe dans la reponse
 
 ### 2. Auth publique et onboarding
 
@@ -125,6 +129,10 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Evenement metier declenche la notification attendue
 - Endpoint de lecture marque lu / non lu correctement
 - Journalisation des actions sensibles disponible si prevue
+- `AuditLogger` listener ecoute les 8 domain events et ecrit dans `audit_logs`
+- `WebhookListener` dispatche les events vers les endpoints webhook du tenant
+- Les events sont dispatches depuis les services (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
+- `EventServiceProvider` cable chaque event aux listeners AuditLogger et WebhookListener
 
 ### 11. Resilience et erreurs
 
@@ -230,3 +238,144 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Payroll access control en CI
 - Utilisateur bloque distinct de l'etat archive en CI
 - Suite dediee a l'auth plateforme avec 2FA
+
+## Modules API etendus (v4.2.0)
+
+### Module A — Conges avances
+- `GET /api/v1/leave-policies` retourne la liste des politiques actives
+- `POST /api/v1/leave-policies` cree une politique (manager RH uniquement)
+- `GET /api/v1/leave-policies/{id}` retourne le detail d'une politique
+- `PUT /api/v1/leave-policies/{id}` modifie une politique (manager RH)
+- `DELETE /api/v1/leave-policies/{id}` desactive une politique (manager RH)
+- `GET /api/v1/leave-balances?year=2026` retourne les soldes par employe et annee
+- `GET /api/v1/me/leave-balances` retourne les soldes de l'employe connecte
+- `GET /api/v1/leave-accruals` retourne l'historique des cumuls
+- `POST /api/v1/leave-accruals` cree un cumul manuel (manager RH)
+- RBAC : employe non-manager ne voit que ses propres soldes
+- Scheduler : `leave:accrue` accumule les soldes le 1er de chaque mois
+
+### Module B — Contrats
+- `POST /api/v1/contracts` cree un contrat en statut draft (manager RH)
+- `PUT /api/v1/contracts/{id}` modifie un contrat
+- `POST /api/v1/contracts/{id}/activate` active un contrat draft (signed_at auto)
+- `POST /api/v1/contracts/{id}/suspend` suspend un contrat actif
+- `POST /api/v1/contracts/{id}/terminate` resilie avec motif obligatoire
+- `POST /api/v1/contracts/{id}/renew` renouvelle (cree nouveau + expire ancien)
+- `GET /api/v1/contracts/expiring?days=30` liste les contrats expirant dans 30 jours
+- `GET /api/v1/contracts/{id}/amendments` liste les avenants
+- `POST /api/v1/contracts/{id}/amendments` cree un avenant
+- `GET /api/v1/contracts/{id}/generate-pdf` genere les donnees PDF
+- `GET /api/v1/me/contracts` retourne les contrats de l'employe connecte
+- RBAC : employe voit uniquement ses propres contrats
+- Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
+
+### Module K — Workflows d'approbation
+- `GET /api/v1/approval-workflows` liste les workflows (admin RH)
+- `POST /api/v1/approval-workflows` cree un workflow
+- `PUT /api/v1/approval-workflows/{id}` modifie un workflow
+- `DELETE /api/v1/approval-workflows/{id}` desactive un workflow
+- `GET /api/v1/approvals/pending` liste les approbations en attente
+- `POST /api/v1/approvals/{id}/approve` approuve avec commentaire
+- `POST /api/v1/approvals/{id}/reject` rejette avec commentaire obligatoire
+- `GET /api/v1/approvals/history` historique des decisions
+
+### Module C — Recrutement/ATS
+- `POST /api/v1/recruitment/jobs` cree une offre d'emploi (manager RH)
+- `PUT /api/v1/recruitment/jobs/{id}` publie une offre (status draft -> published, published_at auto)
+- `POST /api/v1/recruitment/jobs/{id}/applicants` ajoute un candidat
+- `POST /api/v1/recruitment/applicants/{id}/interviews` planifie un entretien
+- RBAC : employes non-managers recoivent 403 sur toutes les routes recrutement
+
+### Module D — Formation/LMS
+- `POST /api/v1/training/courses` cree un cours (manager RH)
+- `POST /api/v1/training/courses/{id}/sessions` planifie une session
+- `POST /api/v1/training/sessions/{id}/enroll` inscrit un employe
+- `PUT /api/v1/training/enrollments/{id}` complete une inscription (score, feedback)
+
+### Module E — Prets employes
+- `POST /api/v1/loans` cree un pret avec echeancier auto-genere
+- `PUT /api/v1/loans/{id}/approve` approuve un pret (manager RH)
+- `PUT /api/v1/loans/{id}/disburse` debloque les fonds (apres approbation)
+- Validation : un pret non approuve ne peut pas etre debloque (422)
+
+### Module F — Notes de frais
+- `POST /api/v1/expense-claims` cree une note avec items
+- `PUT /api/v1/expense-claims/{id}/submit` soumet pour approbation
+- `PUT /api/v1/expense-claims/{id}/approve` approuve (manager RH)
+- Validation : seul le draft peut etre soumis, seul le submitted peut etre approuve
+
+### Module G — Organigramme
+- `GET /api/v1/org-chart` retourne l'arbre hierarchique complet
+- `GET /api/v1/org-chart/{id}/subordinates` retourne les subordonnes directs
+- `GET /api/v1/org-chart/{id}/manager-chain` retourne la chaine manageriale ascendante
+
+### Module H — Rapports RH
+- `GET /api/v1/reports/headcount` retourne effectifs par departement, type contrat, genre
+- `GET /api/v1/reports/turnover?months=12` retourne embauches/departs par mois
+- `GET /api/v1/reports/absenteeism?month=5&year=2026` retourne jours absence par type
+- `GET /api/v1/reports/payroll-summary` retourne masse salariale brute/nette
+- RBAC : uniquement managers
+
+### Module I — Webhooks
+- `POST /api/v1/webhooks` cree un endpoint avec secret genere (principal)
+- `GET /api/v1/webhooks/events` retourne la liste des evenements disponibles
+- `GET /api/v1/webhooks/{id}` inclut les 20 dernieres livraisons
+- `DELETE /api/v1/webhooks/{id}` supprime un endpoint
+- RBAC : uniquement principal
+
+### Module J — Audit Trail
+- `GET /api/v1/audit-logs` retourne les logs filtres par action, type, user, date
+- `GET /api/v1/audit-logs/{id}` retourne le detail avec old/new values
+- RBAC : uniquement principal
+
+## Paie Complete Multi-Pays (v4.3.0)
+
+### Salary Structures
+- `GET /api/v1/salary-structures` retourne les structures salariales de la company
+- `POST /api/v1/salary-structures` cree une structure (manager RH)
+- `GET /api/v1/salary-structures/{id}` retourne la structure avec ses composants
+- `PUT /api/v1/salary-structures/{id}` met a jour une structure
+- `DELETE /api/v1/salary-structures/{id}` supprime une structure
+- RBAC : managers uniquement
+
+### Salary Components
+- `POST /api/v1/salary-components` cree un composant (earning, deduction, employer_contribution)
+- `GET /api/v1/salary-components?type=earning` filtre par type
+- Validation : code unique par company + structure
+- RBAC : managers uniquement
+
+### Tax Slabs
+- `GET /api/v1/tax-slabs?country_code=DZ` retourne les tranches fiscales par pays
+- `POST /api/v1/tax-slabs` cree une tranche avec effective_from/to
+- RBAC : managers uniquement
+
+### Social Contributions
+- `GET /api/v1/social-contributions?country_code=DZ&type=employee` filtre par pays et type
+- `POST /api/v1/social-contributions` cree une cotisation avec code unique
+- RBAC : managers uniquement
+
+### Payroll Runs
+- `POST /api/v1/payroll-runs` cree un run en draft (period_start, period_end, country_code)
+- `POST /api/v1/payroll-runs/{id}/calculate` lance le calcul (genere les pay_slips)
+- `POST /api/v1/payroll-runs/{id}/validate` valide le run (status calculated -> validated)
+- `POST /api/v1/payroll-runs/{id}/cancel` annule un run (interdit si paid)
+- `GET /api/v1/payroll-runs/{id}/summary` retourne le resume avec totaux et liste employes
+- Validation : seul un run calculated peut etre valide, seul un run draft/calculated peut etre recalcule
+- RBAC : managers uniquement
+
+### Pay Slips
+- `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager)
+- `GET /api/v1/pay-slips/{id}` detail bulletin avec lignes (manager ou employe concerne)
+- RBAC : manager voit tout, employe voit uniquement ses bulletins
+
+### Self-service
+- `GET /api/v1/me/pay-slips` retourne les bulletins valides/envoyes de l'employe connecte
+- `GET /api/v1/me/pay-slips/{id}` detail bulletin avec lignes (uniquement si validated/sent)
+- RBAC : employe connecte, ses propres bulletins uniquement
+
+### Bank Exports
+- `POST /api/v1/payroll-runs/{id}/bank-export` genere un fichier export (format: sepa_xml, ccp_dz, virement_ma, csv_generic)
+- `GET /api/v1/bank-exports/{id}` detail de l'export
+- `GET /api/v1/bank-exports/{id}/download` telecharge le fichier genere
+- Validation : payroll run doit etre validated ou paid
+- RBAC : managers uniquement

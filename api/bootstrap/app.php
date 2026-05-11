@@ -3,6 +3,7 @@
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
@@ -21,6 +22,10 @@ use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('leave:accrue')->daily();
+        $schedule->command('contracts:alert-expiring')->daily();
+    })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
         web: __DIR__.'/../routes/web.php',
@@ -28,7 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [SetLocale::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,

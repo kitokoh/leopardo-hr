@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\DTOs\CreateEmployeeDTO;
 use App\DTOs\UpdateEmployeeDTO;
+use App\Events\EmployeeArchived;
+use App\Events\EmployeeCreated;
 use App\Models\Employee;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
@@ -49,6 +51,8 @@ class EmployeeService
         $this->applyBiometricConsent($payload);
 
         $employee = Employee::query()->create($payload);
+
+        EmployeeCreated::dispatch($employee);
 
         if ($sendInvitation || ! $providedPassword) {
             $company = $employee->company;
@@ -113,6 +117,8 @@ class EmployeeService
         $employee->status = 'archived';
         $employee->save();
         $employee->tokens()->delete();
+
+        EmployeeArchived::dispatch($employee);
 
         return $employee;
     }
