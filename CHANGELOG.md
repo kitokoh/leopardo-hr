@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.13.0] - 2026-05-11
+
+### Open Source — Attractivite communautaire
+
+- CONTRIBUTING.md : guide complet pour les nouveaux contributeurs (prereqs, workflow, conventions)
+- CODE_OF_CONDUCT.md : Contributor Covenant v2.1
+- Good First Issue template : .github/ISSUE_TEMPLATE/good_first_issue.md
+- RELEASE_PROCESS.md : documentation du processus de release et versioning
+
 ## [4.10.0] - 2026-05-11
 
 ### Mise a jour PLAN_ACTION — Bilan post sprints 1-18
