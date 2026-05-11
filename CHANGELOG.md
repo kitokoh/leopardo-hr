@@ -3,7 +3,7 @@
 # Versioning : Semantic Versioning (semver.org)
 
 ## [4.10.0] - 2026-05-11
-
+ 
 ### Mise a jour PLAN_ACTION — Bilan post sprints 1-18
 
 - PLAN_ACTION : Mise a jour 00_SOMMAIRE.md v2.0 avec etat reel de chaque module (fait/reste)
