@@ -27,8 +27,8 @@ The API is available at `http://localhost:8000/api/v1/health`.
 
 ```bash
 # 1. Clone
-git clone https://github.com/kitokoh/gestionemployerBackend.git
-cd gestionemployerBackend/api
+git clone https://github.com/kitokoh/leopardo-hr.git
+cd leopardo-hr/api
 
 # 2. Install dependencies
 composer install

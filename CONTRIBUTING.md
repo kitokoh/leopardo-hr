@@ -15,35 +15,62 @@ Thank you for your interest in contributing to Leopardo RH! We welcome contribut
 - Outline the proposed implementation if possible.
 
 ### 3. Submitting Pull Requests
+- **Fork the Repository:** Create your own fork and work on a branch.
 - **Branch Naming:** Use `feat/`, `fix/`, `docs/`, or `refactor/` prefixes.
 - **Atomic Commits:** Keep PRs focused on a single issue.
 - **Testing:** Ensure all tests pass locally before submitting.
 - **Documentation:** Update relevant `.md` files if you change logic or APIs.
+- **Sync with Main:** Ensure your branch is up to date with `origin/main` before submitting.
 
 ## 🛠 Local Development Setup
 
-To get started quickly, run our bootstrap script:
+To get started quickly, we recommend using Docker:
 
 ```bash
-./scripts/bootstrap.sh
+docker compose up -d
+docker compose exec api php artisan migrate --seed
 ```
 
-For manual setup instructions, see the [Quick Start Guide](QUICKSTART.md).
+The API will be available at `http://localhost:8000`.
+
+For detailed manual setup and per-platform instructions, see the [Development Guide](DEVELOPMENT.md).
 
 ## 📏 Coding Standards
 
-- **Backend (Laravel):** Follow PSR-12, use FormRequests for validation, and keep controllers thin.
-- **Frontend (Next.js):** Use TypeScript, functional components, and Tailwind CSS for styling.
-- **Mobile (Flutter):** Follow official linting rules and use Bloc/Provider for state management.
+- **Backend (Laravel):**
+  - Follow PSR-12 strict.
+  - Use `declare(strict_types=1)` in all new files.
+  - Explicit return types on all public methods.
+  - Use FormRequests for validation and API Resources for serialization.
+  - Keep controllers thin by using Service classes.
+- **Frontend (Vue/Next.js):**
+  - Use TypeScript and functional components.
+  - Use Tailwind CSS for styling.
+  - Follow ESLint and Prettier configurations.
+- **Mobile (Flutter):**
+  - Follow official linting rules.
+  - Use Bloc for state management.
 
 ## 🧪 Testing Requirements
 
 We maintain high test coverage. Every PR should include:
 - **Unit Tests** for new logic.
-- **Feature Tests** for new endpoints or user flows.
+- **Feature/E2E Tests** for new endpoints or user flows.
 - **Regression Checks** to ensure existing functionality remains intact.
 
-For more details on running tests, see [TESTING.md](TESTING.md).
+### Running Tests
+
+- **API:** `cd api && php artisan test`
+- **Admin Dashboard:** `cd front/admin-dashboard && npm run test:e2e`
+- **Web:** `cd front/web && npm run test`
+
+## 🏷 Issue Labels
+
+We use labels to organize our work. Look for the following when starting:
+- `good first issue`: Ideal for new contributors.
+- `help wanted`: Complex issues needing community expertise.
+- `bug`: Something that needs fixing.
+- `enhancement`: New features or improvements.
 
 ## 📜 Code of Conduct
 
@@ -51,4 +78,4 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
-Need help? Contact the maintainers at `dev@leopardo-rh.com` or join our [Community Discord](https://discord.gg/leopardo-rh).
+Need help? Join our [Community Discord](https://discord.gg/leopardo-rh) or check [SUPPORT.md](SUPPORT.md).
