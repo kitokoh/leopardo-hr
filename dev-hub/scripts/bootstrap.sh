@@ -1,11 +1,15 @@
 #!/bin/bash
 
 # Leopardo RH Bootstrap Script
-# Automates the setup of the API and Web environments.
+# Automates the setup of the API, Web and Admin environments.
 
 set -e
 
 echo "🐆 Starting Leopardo RH Bootstrap..."
+
+# Determine the root directory relative to the script's location
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$ROOT_DIR"
 
 # 1. Backend (API) Setup
 if [ -d "api" ]; then
@@ -21,16 +25,18 @@ if [ -d "api" ]; then
     else
         echo "⚠️ Composer not found. Skipping PHP dependencies."
     fi
-    cd ..
+    cd "$ROOT_DIR"
 fi
 
 # 2. Frontend (Web) Setup
-if [ -d "web" ]; then
+if [ -d "front/web" ]; then
     echo "📦 Setting up Web..."
-    cd web
+    cd front/web
     if [ ! -f ".env.local" ]; then
-        cp .env.example .env.local
-        echo "✅ Created web/.env.local"
+        if [ -f ".env.example" ]; then
+            cp .env.example .env.local
+            echo "✅ Created front/web/.env.local"
+        fi
     fi
     # Check if npm is installed
     if command -v npm &> /dev/null; then
@@ -38,7 +44,20 @@ if [ -d "web" ]; then
     else
         echo "⚠️ NPM not found. Skipping Node dependencies."
     fi
-    cd ..
+    cd "$ROOT_DIR"
+fi
+
+# 3. Admin Dashboard Setup
+if [ -d "front/admin-dashboard" ]; then
+    echo "📦 Setting up Admin Dashboard..."
+    cd front/admin-dashboard
+    # Check if npm is installed
+    if command -v npm &> /dev/null; then
+        npm install
+    else
+        echo "⚠️ NPM not found. Skipping Node dependencies."
+    fi
+    cd "$ROOT_DIR"
 fi
 
 echo "🚀 Bootstrap complete! Check the documentation for next steps."

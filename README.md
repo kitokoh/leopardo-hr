@@ -62,13 +62,13 @@ Get your development environment up and running in minutes:
 git clone https://github.com/kitokoh/leopardo-hr.git && cd leopardo-hr
 
 # 2. Run the bootstrap script
-./scripts/bootstrap.sh
+./dev-hub/scripts/bootstrap.sh
 
 # 3. Start the API
 cd api && ./vendor/bin/sail up -d
 ```
 
-Detailed onboarding instructions: [DEVELOPMENT.md](DEVELOPMENT.md).
+Detailed onboarding instructions: [DEVELOPMENT.md](dev-hub/DEVELOPMENT.md).
 
 ## 📚 Documentation Hub
 
@@ -78,7 +78,7 @@ Detailed onboarding instructions: [DEVELOPMENT.md](DEVELOPMENT.md).
 | 🔑 **[Security](SECURITY.md)** | Data protection, encryption, and RBAC matrix. |
 | 🌐 **[API Reference](docs/api/README.md)** | OpenAPI specs and Postman collections. |
 | 🚀 **[Deployment](docs/DEPLOYMENT_GUIDE.md)** | Render, Vercel, and Docker production guides. |
-| 🤝 **[Contributing](CONTRIBUTING.md)** | Developer guidelines and coding standards. |
+| 🤝 **[Contributing](dev-hub/CONTRIBUTING.md)** | Developer guidelines and coding standards. |
 
 ## 🛠 Tech Stack
 
@@ -109,7 +109,7 @@ See our [Security Policy](SECURITY.md) for more info.
 
 - **Found a bug?** [Open an issue](https://github.com/kitokoh/leopardo-hr/issues/new?template=bug_report.md)
 - **Need help?** Join our [Discord](https://discord.gg/leopardo-rh) or check [SUPPORT.md](SUPPORT.md).
-- **Want to contribute?** See [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Want to contribute?** See [CONTRIBUTING.md](dev-hub/CONTRIBUTING.md).
 
 ---
 

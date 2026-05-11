@@ -12,14 +12,14 @@
 - Documentation abondante (40+ fichiers)
 - CI/CD en place (10 workflows)
 - Templates GitHub (bug report, feature request, PR)
-- CODE_OF_CONDUCT.md et CONTRIBUTING.md presents
+- CODE_OF_CONDUCT.md et ../../dev-hub/CONTRIBUTING.md presents
 - SECURITY.md present
 
 ### Points faibles pour attirer des devs
 
 - Pas de `good first issue` tagges
 - Pas de labels organises
-- Pas de DEVELOPMENT.md clair pour les nouveaux contributeurs
+- Pas de ../../dev-hub/DEVELOPMENT.md clair pour les nouveaux contributeurs
 - Pas de Docker Compose pour le setup en 1 commande
 - Dependencies non triviales a installer (PHP 8.4, PostgreSQL 16, Flutter)
 - Pas de Gitpod/Codespaces/DevContainer configuration
@@ -175,7 +175,7 @@ Creer au moins 10 issues taguees `good first issue` :
 9. Ajouter le middleware RequestId pour les logs
 10. Creer le seeder pour les TaxSlabs de l'Algerie
 
-### 2.5 DEVELOPMENT.md
+### 2.5 ../../dev-hub/DEVELOPMENT.md
 
 ```markdown
 # Development Guide
@@ -187,8 +187,8 @@ Creer au moins 10 issues taguees `good first issue` :
 
 ## Quick Start (Docker)
 
-    git clone https://github.com/kitokoh/gestionemployerBackend.git
-    cd gestionemployerBackend
+    git clone https://github.com/kitokoh/leopardo-hr.git
+    cd leopardo-hr
     docker compose up -d
     docker compose exec api php artisan migrate --seed
 
@@ -221,11 +221,11 @@ Creer au moins 10 issues taguees `good first issue` :
     front/zkteco-kiosk/         # Biometric kiosk
     shared/               # Shared i18n catalogs
     docs/                 # Documentation
-    scripts/              # Utility scripts
+    ../../dev-hub/scripts/              # Utility scripts
 
 ## Contributing
 
-See CONTRIBUTING.md for guidelines.
+See ../../dev-hub/CONTRIBUTING.md for guidelines.
 ```
 
 ### 2.6 Releases GitHub
@@ -253,7 +253,7 @@ Lier les issues aux items du board.
 
 ### 2.8 README corrections
 
-- Remplacer `your-org/leopardo-rh` par `kitokoh/gestionemployerBackend`
+- Remplacer `your-org/leopardo-rh` par `kitokoh/leopardo-hr`
 - Ajouter un GIF de demo ou screenshot du dashboard
 - Ajouter les liens Discord/Telegram pour la communaute
 - Ajouter la section "Star History"
@@ -289,8 +289,8 @@ Recommandation : rester MIT pour attirer des contributeurs. La valeur est dans l
 
 - [ ] **T-OSS-01** : Creer `docker-compose.yml` et les Dockerfiles
 - [ ] **T-OSS-02** : Creer `.devcontainer/devcontainer.json`
-- [ ] **T-OSS-03** : Creer `DEVELOPMENT.md`
-- [ ] **T-OSS-04** : Creer les labels GitHub (script `scripts/setup-labels.sh`)
+- [ ] **T-OSS-03** : Creer `../../dev-hub/DEVELOPMENT.md`
+- [ ] **T-OSS-04** : Creer les labels GitHub (script `../../dev-hub/scripts/setup-labels.sh`)
 - [ ] **T-OSS-05** : Creer 10 issues "good first issue"
 - [ ] **T-OSS-06** : Corriger les URLs dans le README
 - [ ] **T-OSS-07** : Ajouter des screenshots/GIF au README
