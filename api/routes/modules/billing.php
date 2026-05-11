@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * Routes Billing, Onboarding & Feature Flags — Sprint 13-14.
+ */
+
+use App\Http\Controllers\Api\V1\BillingController;
+use App\Http\Controllers\Api\V1\FeatureFlagController;
+use App\Http\Controllers\Api\V1\OnboardingStepController;
+use App\Http\Controllers\Api\V1\PaymentWebhookController;
+use Illuminate\Support\Facades\Route;
+
+// ── Authenticated routes ──────────────────────────────────────────────────────
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
+
+    // Billing
+    Route::get('/billing/subscription', [BillingController::class, 'subscription']);
+    Route::post('/billing/subscription/upgrade', [BillingController::class, 'upgrade']);
+    Route::post('/billing/subscription/cancel', [BillingController::class, 'cancel']);
+    Route::post('/billing/subscription/renew', [BillingController::class, 'renew']);
+    Route::get('/billing/invoices', [BillingController::class, 'invoices']);
+    Route::get('/billing/invoices/{id}', [BillingController::class, 'showInvoice'])->whereNumber('id');
+    Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'invoicePdf'])->whereNumber('id');
+
+    // Onboarding
+    Route::get('/onboarding/checklist', [OnboardingStepController::class, 'checklist']);
+    Route::get('/onboarding/progress', [OnboardingStepController::class, 'progress']);
+    Route::patch('/onboarding/checklist/{stepKey}/complete', [OnboardingStepController::class, 'complete']);
+    Route::patch('/onboarding/checklist/{stepKey}/skip', [OnboardingStepController::class, 'skip']);
+
+    // Feature Flags
+    Route::get('/features/matrix', [FeatureFlagController::class, 'matrix']);
+    Route::get('/features/check/{featureKey}', [FeatureFlagController::class, 'check']);
+    Route::put('/features/matrix', [FeatureFlagController::class, 'updateMatrix']);
+});
+
+// ── Public webhook endpoints (no auth) ────────────────────────────────────────
+Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe']);
+Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);

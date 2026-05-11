@@ -452,3 +452,33 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `AIFeatureCheck` : bloque si `AI_ENABLED=false`
 - `AITenantInjector` : injecte company_id et user_id dans le request
 - `AIRateLimiter` : quota mensuel par entreprise
+
+---
+
+## Billing, Onboarding & Feature Flags (Sprint 13-14)
+
+### Billing / Abonnements
+- `GET /api/v1/billing/subscription` detail abonnement courant
+- `POST /api/v1/billing/subscription/upgrade` changer de plan (starter/business/enterprise)
+- `POST /api/v1/billing/subscription/cancel` annuler abonnement avec raison
+- `POST /api/v1/billing/subscription/renew` renouveler abonnement annule
+- `GET /api/v1/billing/invoices` liste factures paginee
+- `GET /api/v1/billing/invoices/{id}` detail facture avec paiements
+- `GET /api/v1/billing/invoices/{id}/pdf` lien PDF facture
+- RBAC : upgrade/cancel/renew reserves aux managers
+
+### Webhooks paiement
+- `POST /api/v1/webhooks/stripe` webhook Stripe (invoice.paid, payment_failed, subscription.deleted)
+- `POST /api/v1/webhooks/chargily` webhook Chargily (checkout.paid)
+- Pas d'authentification requise (endpoints publics)
+
+### Onboarding enrichi
+- `GET /api/v1/onboarding/checklist` checklist dynamique (auto-seed 10 etapes si vide)
+- `GET /api/v1/onboarding/progress` pourcentage progression
+- `PATCH /api/v1/onboarding/checklist/{stepKey}/complete` marquer etape complete
+- `PATCH /api/v1/onboarding/checklist/{stepKey}/skip` sauter etape (non-required seulement)
+
+### Feature Flags
+- `GET /api/v1/features/matrix` matrice complete features x plans
+- `GET /api/v1/features/check/{featureKey}` verifier si feature active pour company
+- `PUT /api/v1/features/matrix` mettre a jour entree matrice (admin)
