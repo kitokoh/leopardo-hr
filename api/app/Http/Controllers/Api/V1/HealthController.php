@@ -34,17 +34,25 @@ class HealthController extends Controller
         $database = $this->checkDatabase();
         $redis = $this->checkRedis();
         $storage = $this->checkStorage();
+        $queue = $this->checkQueue();
+        $memory = $this->checkMemory();
 
         $globalOk = $database['ok'];
 
         $payload = [
             'status' => $globalOk ? 'ok' : 'fail',
             'version' => $version,
+            'environment' => app()->environment(),
             'checks' => [
                 'database' => $database,
                 'redis' => $redis,
                 'storage' => $storage,
+                'queue' => $queue,
+                'memory' => $memory,
             ],
+            'uptime_seconds' => defined('LARAVEL_START')
+                ? (int) round(microtime(true) - LARAVEL_START)
+                : null,
             'timestamp' => now()->toIso8601String(),
         ];
 
@@ -172,6 +180,65 @@ class HealthController extends Controller
             'checks' => ['database' => $database],
             'timestamp' => now()->toIso8601String(),
         ], $code);
+    }
+
+    /**
+     * @return array{ok: bool, driver?: string, size?: int}
+     */
+    private function checkQueue(): array
+    {
+        $driver = (string) config('queue.default', 'sync');
+
+        if ($driver === 'sync') {
+            return ['ok' => true, 'driver' => 'sync'];
+        }
+
+        try {
+            $size = app('queue')->connection()->size();
+
+            return [
+                'ok' => true,
+                'driver' => $driver,
+                'size' => $size,
+            ];
+        } catch (Throwable) {
+            return ['ok' => false, 'driver' => $driver];
+        }
+    }
+
+    /**
+     * @return array{ok: bool, usage_mb: int, peak_mb: int, limit_mb: int|null}
+     */
+    private function checkMemory(): array
+    {
+        $usage = memory_get_usage(true);
+        $peak = memory_get_peak_usage(true);
+        $limit = $this->parseMemoryLimit(ini_get('memory_limit') ?: '-1');
+
+        return [
+            'ok' => $limit < 0 || $usage < $limit * 0.9,
+            'usage_mb' => (int) round($usage / 1048576),
+            'peak_mb' => (int) round($peak / 1048576),
+            'limit_mb' => $limit > 0 ? (int) round($limit / 1048576) : null,
+        ];
+    }
+
+    private function parseMemoryLimit(string $limit): int
+    {
+        $limit = trim($limit);
+        if ($limit === '-1') {
+            return -1;
+        }
+
+        $value = (int) $limit;
+        $unit = strtolower(substr($limit, -1));
+
+        return match ($unit) {
+            'g' => $value * 1073741824,
+            'm' => $value * 1048576,
+            'k' => $value * 1024,
+            default => $value,
+        };
     }
 
     private function stringConfigValue(mixed $value): string

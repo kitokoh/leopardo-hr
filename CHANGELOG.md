@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.12.0] - 2026-05-11
+
+### DevOps — Health enrichi, Metrics, Structured Logging
+
+- Health : checks queue (driver + size) et memory (usage_mb, peak_mb, limit_mb)
+- Health : ajout environment et uptime_seconds dans la reponse
+- Metrics : GET /api/v1/metrics — companies, employees, system info
+- Logging : middleware StructuredLogging enregistre chaque requete API en JSON
+- Logging : channels `structured` (daily JSON, 14j) et `audit` (daily JSON, 90j)
+- Logging : exclusion automatique des endpoints /health du logging
+
 ## [4.10.0] - 2026-05-11
 
 ### Mise a jour PLAN_ACTION — Bilan post sprints 1-18
