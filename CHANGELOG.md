@@ -1,7 +1,25 @@
-﻿# CHANGELOG - LEOPARDO RH
+﻿# CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.13.0] - 2026-05-11
+
+### Open Source — Attractivite communautaire
+
+- CONTRIBUTING.md : guide complet pour les nouveaux contributeurs (prereqs, workflow, conventions)
+- CODE_OF_CONDUCT.md : Contributor Covenant v2.1
+- Good First Issue template : .github/ISSUE_TEMPLATE/good_first_issue.md
+- RELEASE_PROCESS.md : documentation du processus de release et versioning
+## [4.12.0] - 2026-05-11
+
+### DevOps — Health enrichi, Metrics, Structured Logging
+
+- Health : checks queue (driver + size) et memory (usage_mb, peak_mb, limit_mb)
+- Health : ajout environment et uptime_seconds dans la reponse
+- Metrics : GET /api/v1/metrics — companies, employees, system info
+- Logging : middleware StructuredLogging enregistre chaque requete API en JSON
+- Logging : channels `structured` (daily JSON, 14j) et `audit` (daily JSON, 90j)
+- Logging : exclusion automatique des endpoints /health du logging
 ## [4.11.0] - 2026-05-11
 
 ### Paie avancee — PDF, exports bancaires, billing, carry-forward

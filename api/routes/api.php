@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function (): void {
     Route::get('/health', HealthController::class);
     Route::get('/health/live', [HealthController::class, 'live']);
     Route::get('/health/ready', [HealthController::class, 'ready']);
+    Route::get('/metrics', \App\Http\Controllers\Api\V1\MetricsController::class);
 
     // Auth (core, hors module)
     Route::middleware(['throttle:10,1'])->group(function (): void {
