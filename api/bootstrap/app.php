@@ -5,6 +5,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
@@ -33,7 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class, StructuredLogging::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
