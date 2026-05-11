@@ -455,6 +455,51 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 ---
 
+## Modules RH Avances (Sprint 11-12)
+
+### Recrutement — Actions avancees
+- `POST /api/v1/recruitment/jobs/{id}/publish` publier une offre (draft -> published)
+- `POST /api/v1/recruitment/jobs/{id}/close` fermer une offre (published -> closed)
+- `DELETE /api/v1/recruitment/jobs/{id}` supprimer (draft uniquement)
+- `GET /api/v1/recruitment/applicants/{id}` detail candidat avec entretiens
+- `PATCH /api/v1/recruitment/applicants/{id}/status` changer statut pipeline
+- `DELETE /api/v1/recruitment/applicants/{id}` supprimer candidat
+- `PATCH /api/v1/recruitment/interviews/{id}/feedback` ajouter feedback + notation
+- `DELETE /api/v1/recruitment/interviews/{id}` annuler entretien
+
+### Self-service employe
+- `GET /api/v1/me/trainings` mes inscriptions formations avec details cours/session
+- `POST /api/v1/me/trainings/{sessionId}/enroll` auto-inscription a une session
+- `GET /api/v1/me/loans` mes prets avec compteur echeances
+- `GET /api/v1/me/loans/{id}/repayments` echeancier de mon pret
+
+### Rapports avances
+- `GET /api/v1/reports/recruitment-pipeline` candidats par statut
+- `GET /api/v1/reports/training-completion` inscriptions par statut
+- `GET /api/v1/reports/loan-summary` montants prets par statut
+- `GET /api/v1/reports/demographics` effectifs par departement et type contrat
+- `GET /api/v1/reports/cost-analysis` analyse couts (prets, formations) par annee
+
+---
+
+## Dashboard, Notifications & Exports (Sprint 15-16)
+
+### Dashboard
+- `GET /api/v1/dashboard/summary` resume (employes, departements, pointage today, absences pending)
+- `GET /api/v1/dashboard/recent-activity` activite recente depuis audit_logs
+- `GET /api/v1/dashboard/kpi` KPI mensuel (turnover, new hires, absence rate)
+
+### Notifications
+- `GET /api/v1/notifications` liste paginee avec unread_count
+- `GET /api/v1/notifications/unread` non-lues uniquement
+- `PATCH /api/v1/notifications/{id}/read` marquer comme lue
+- `POST /api/v1/notifications/mark-all-read` tout marquer comme lu
+
+### Exports
+- `GET /api/v1/export/employees` export JSON ou CSV des employes
+- `GET /api/v1/export/attendance` export pointage avec filtre dates
+
+
 ## Billing, Onboarding & Feature Flags (Sprint 13-14)
 
 ### Billing / Abonnements

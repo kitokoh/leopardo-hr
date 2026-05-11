@@ -52,6 +52,14 @@
 - Analytics IA : Usage par tenant, couts par periode/provider, outils top, taux erreur
 - Config : config/ai.php enrichi avec voice providers et agent settings
 - Routes : ~9 nouveaux endpoints dans routes/ai.php
+## [4.8.0] - 2026-05-11
+
+### Sprint 15-16 — Dashboard API, Notifications & Exports
+
+- Dashboard : DashboardController (summary, recent-activity, KPI mensuel)
+- Dashboard : NotificationController (liste paginee, unread, mark read, mark all)
+- Dashboard : ExportController (export employes JSON/CSV, export attendance JSON/CSV)
+- Routes : ~9 nouveaux endpoints dans modules/dashboard.php
 
 ## [4.5.0] - 2026-05-11
 

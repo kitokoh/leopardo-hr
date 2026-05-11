@@ -3,68 +3,57 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class NotificationController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $actor = $request->user();
-        $request->validate(['unread_only' => ['nullable', 'boolean'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
+        $user = $request->user();
 
-        $query = Notification::forEmployee($actor->id);
-        if ($request->boolean('unread_only')) {
-            $query->unread();
-        }
-
-        $perPage = $request->integer('per_page', 20);
-        $paginated = $query->orderByDesc('created_at')->paginate($perPage);
+        $notifications = $user->notifications()
+            ->orderByDesc('created_at')
+            ->paginate($request->integer('per_page', 20));
 
         return response()->json([
-            'data' => $paginated->map(fn ($n) => $this->serialize($n)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total(), 'unread_count' => Notification::forEmployee($actor->id)->unread()->count()],
+            'data' => $notifications->items(),
+            'meta' => [
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
+                'per_page' => $notifications->perPage(),
+                'total' => $notifications->total(),
+                'unread_count' => $user->unreadNotifications()->count(),
+            ],
         ]);
     }
 
-    public function markRead(Request $request, Notification $notification): JsonResponse
+    public function unread(Request $request): JsonResponse
     {
-        $actor = $request->user();
-        if ($notification->employee_id !== $actor->id) {
-            abort(403);
-        }
+        $user = $request->user();
 
-        if (! $notification->is_read) {
-            $notification->update(['is_read' => true, 'read_at' => Carbon::now()]);
-        }
+        $unread = $user->unreadNotifications()
+            ->orderByDesc('created_at')
+            ->limit(50)
+            ->get();
 
-        return response()->json(['data' => $this->serialize($notification->fresh())]);
+        return response()->json(['data' => $unread]);
+    }
+
+    public function markRead(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $notification = $user->notifications()->where('id', $id)->firstOrFail();
+        $notification->markAsRead();
+
+        return response()->json(['data' => $notification->fresh()]);
     }
 
     public function markAllRead(Request $request): JsonResponse
     {
-        $actor = $request->user();
-        Notification::forEmployee($actor->id)->unread()->update(['is_read' => true, 'read_at' => Carbon::now()]);
+        $user = $request->user();
+        $user->unreadNotifications->markAsRead();
 
-        return response()->json(['message' => 'All notifications marked as read']);
-    }
-
-    public function destroy(Request $request, Notification $notification): JsonResponse
-    {
-        $actor = $request->user();
-        if ($notification->employee_id !== $actor->id) {
-            abort(403);
-        }
-
-        $notification->delete();
-
-        return response()->json(['message' => 'Notification deleted successfully']);
-    }
-
-    private function serialize(Notification $n): array
-    {
-        return ['id' => $n->id, 'type' => $n->type, 'title' => $n->title, 'body' => $n->body, 'data' => $n->data, 'is_read' => $n->is_read, 'read_at' => $n->read_at?->toIso8601String(), 'created_at' => $n->created_at?->toIso8601String()];
+        return response()->json(['message' => 'All notifications marked as read.']);
     }
 }
