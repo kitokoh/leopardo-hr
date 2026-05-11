@@ -428,3 +428,27 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/fleet/reports/fuel` rapport consommation carburant
 - `GET /api/v1/fleet/reports/mileage` rapport kilometrage
 - `GET /api/v1/fleet/reports/maintenance-due` maintenances a venir (30 jours)
+## Module IA (Sprint 7-8)
+
+### Chat IA
+- `POST /api/ai/chat` envoie un message, retourne la reponse IA avec conversation_id
+- `POST /api/ai/chat` avec `conversation_id` existant continue la conversation
+- Validation : `message` requis, max 2000 caracteres
+- Rate limiting : quota par plan SaaS (trial: 10, starter: 50, business: 200/mois)
+- Feature flag : retourne 403 si `AI_ENABLED=false`
+- RBAC : authentification Sanctum requise
+
+### Historique conversations
+- `GET /api/ai/chat/history` retourne les conversations paginées de l'utilisateur
+- `DELETE /api/ai/chat/{conversationId}` supprime une conversation
+- Isolation tenant : chaque utilisateur ne voit que ses conversations dans son entreprise
+
+### Tool Registry
+- `GET /api/ai/tools` liste les outils IA actifs (debug/admin)
+- Les outils sont filtrés par role (employee, manager, admin)
+- 15 outils enregistrés : get_employees, search_employees, get_departments, get_headcount, etc.
+
+### Middlewares IA
+- `AIFeatureCheck` : bloque si `AI_ENABLED=false`
+- `AITenantInjector` : injecte company_id et user_id dans le request
+- `AIRateLimiter` : quota mensuel par entreprise
