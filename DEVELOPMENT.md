@@ -72,11 +72,13 @@ api/                    # Laravel backend (PHP 8.4)
     api.php             # Main API routes
     modules/            # Per-module route files
   tests/                # Pest/PHPUnit tests
-admin-dashboard/        # React admin dashboard
-web/                    # Next.js marketing site
-mobile/                 # Flutter mobile app
-zkteco-kiosk/           # Kiosk application
+front/
+  admin-dashboard/      # React admin dashboard
+  web/                  # Next.js marketing site
+  mobile/               # Flutter mobile app
+  zkteco-kiosk/         # Kiosk application
 shared/                 # Shared resources (i18n)
+docs/                   # All documentation
 ```
 
 ## Creating a New Module

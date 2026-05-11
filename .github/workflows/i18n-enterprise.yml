@@ -4,8 +4,8 @@ on:
   pull_request:
     paths:
       - 'shared/i18n/**'
-      - 'mobile/lib/l10n/**'
-      - 'admin-dashboard/src/i18n/**'
+      - 'front/mobile/lib/l10n/**'
+      - 'front/admin-dashboard/src/i18n/**'
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'
   push:
@@ -13,8 +13,8 @@ on:
       - main
     paths:
       - 'shared/i18n/**'
-      - 'mobile/lib/l10n/**'
-      - 'admin-dashboard/src/i18n/**'
+      - 'front/mobile/lib/l10n/**'
+      - 'front/admin-dashboard/src/i18n/**'
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'
 

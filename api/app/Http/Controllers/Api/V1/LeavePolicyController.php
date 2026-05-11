@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\LeaveAccrual;
 use App\Models\LeaveBalance;
 use App\Models\LeavePolicy;
 use Illuminate\Http\JsonResponse;
@@ -110,5 +111,90 @@ class LeavePolicyController extends Controller
         }
 
         return response()->json(['data' => $query->get()]);
+    }
+
+    public function destroy(Request $request, LeavePolicy $leavePolicy): JsonResponse
+    {
+        $actor = $request->user();
+        if ($leavePolicy->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $leavePolicy->update(['active' => false]);
+
+        return response()->json(['message' => 'Policy deactivated.']);
+    }
+
+    public function myBalances(Request $request): JsonResponse
+    {
+        $actor = $request->user();
+        $year = $request->integer('year', (int) now()->format('Y'));
+
+        $balances = LeaveBalance::query()
+            ->with('absenceType:id,name,code')
+            ->where('employee_id', $actor->id)
+            ->forYear($year)
+            ->get();
+
+        return response()->json(['data' => $balances]);
+    }
+
+    public function accruals(Request $request): JsonResponse
+    {
+        $actor = $request->user();
+
+        $query = LeaveAccrual::query()
+            ->with(['employee:id,first_name,last_name', 'leavePolicy:id,name'])
+            ->orderByDesc('effective_date');
+
+        if (! $actor->isManager()) {
+            $query->where('employee_id', $actor->id);
+        } elseif ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->integer('employee_id'));
+        }
+
+        $perPage = $request->integer('per_page', 25);
+
+        return response()->json($query->paginate($perPage));
+    }
+
+    public function storeAccrual(Request $request): JsonResponse
+    {
+        $actor = $request->user();
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'employee_id' => 'required|integer|exists:employees,id',
+            'leave_policy_id' => 'required|integer|exists:leave_policies,id',
+            'amount' => 'required|numeric',
+            'type' => 'required|in:accrual,adjustment,carry_forward',
+            'description' => 'nullable|string|max:255',
+            'effective_date' => 'required|date',
+        ]);
+
+        $accrual = LeaveAccrual::create([
+            ...$validated,
+            'company_id' => $actor->company_id,
+            'created_by' => $actor->id,
+        ]);
+
+        $balance = LeaveBalance::firstOrCreate(
+            [
+                'company_id' => $actor->company_id,
+                'employee_id' => $validated['employee_id'],
+                'absence_type_id' => $accrual->leavePolicy->absence_type_id,
+                'year' => (int) date('Y', strtotime($validated['effective_date'])),
+            ],
+            ['balance' => 0, 'used' => 0, 'pending' => 0]
+        );
+
+        $balance->increment('balance', (float) $validated['amount']);
+
+        return response()->json(['data' => $accrual->load(['employee:id,first_name,last_name', 'leavePolicy:id,name'])], 201);
     }
 }

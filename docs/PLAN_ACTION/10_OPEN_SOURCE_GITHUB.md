@@ -203,22 +203,22 @@ Creer au moins 10 issues taguees `good first issue` :
     php artisan key:generate && php artisan migrate --seed
     php artisan serve
 
-    cd admin-dashboard && npm install && npm run dev
-    cd web && npm install && npm run dev
+    cd front/admin-dashboard && npm install && npm run dev
+    cd front/web && npm install && npm run dev
 
 ## Running Tests
 
     cd api && vendor/bin/pest
-    cd admin-dashboard && npx playwright test
-    cd mobile && flutter test
+    cd front/admin-dashboard && npx playwright test
+    cd front/mobile && flutter test
 
 ## Project Structure
 
     api/                  # Laravel 11 API (PHP 8.4)
-    admin-dashboard/      # Admin platform (Next.js)
+    front/admin-dashboard/      # Admin platform (Next.js)
     web/                  # Public website (Next.js)
     mobile/               # Employee app (Flutter)
-    zkteco-kiosk/         # Biometric kiosk
+    front/zkteco-kiosk/         # Biometric kiosk
     shared/               # Shared i18n catalogs
     docs/                 # Documentation
     scripts/              # Utility scripts

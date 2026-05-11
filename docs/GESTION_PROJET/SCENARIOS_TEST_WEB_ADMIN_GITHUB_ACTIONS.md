@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Donner une base de scenarios stable pour le dashboard `admin-dashboard/`, avec une execution automatique dans Playwright et des artefacts exploitables en CI.
+Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, avec une execution automatique dans Playwright et des artefacts exploitables en CI.
 
 ## Perimetre
 
@@ -100,7 +100,7 @@ En revanche, elles doivent etre conservees automatiquement en cas d'echec Playwr
 
 ### 8. Locales, dictionnaires et direction
 
-- Les dictionnaires generes dans `admin-dashboard/src/i18n/locales/` restent synchronises avec `shared/i18n/locales/`
+- Les dictionnaires generes dans `front/admin-dashboard/src/i18n/locales/` restent synchronises avec `shared/i18n/locales/`
 - Une locale variante (`fr-CA`, `en-GB`, `ar-SA`) est normalisee sans casser le rendu
 - La direction `rtl` est resolue correctement pour l'arabe
 - Aucun import ou helper i18n ne doit casser le build quand la surface web change avec `shared/i18n/**`

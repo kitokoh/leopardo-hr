@@ -5,12 +5,12 @@ on:
   push:
     branches: [main, develop, staging]
     paths:
-      - 'admin-dashboard/**'
+      - 'front/admin-dashboard/**'
       - '.github/workflows/web-ci.yml'
   pull_request:
     branches: [main, develop, staging]
     paths:
-      - 'admin-dashboard/**'
+      - 'front/admin-dashboard/**'
       - '.github/workflows/web-ci.yml'
 
 permissions:
@@ -37,18 +37,18 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'admin-dashboard/package-lock.json'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm ci
 
       - name: Install ESLint parsers
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm install --no-save vue-eslint-parser @babel/eslint-parser
 
       - name: Run ESLint
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm run lint
 
   web-build:
@@ -64,21 +64,21 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'admin-dashboard/package-lock.json'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm ci
 
       - name: Build admin dashboard
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm run build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: admin-dashboard-dist
-          path: admin-dashboard/dist/
+          path: front/admin-dashboard/dist/
           if-no-files-found: error
           retention-days: 7
 
@@ -95,29 +95,29 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: 'admin-dashboard/package-lock.json'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
 
       - name: Install dependencies
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm ci
 
       - name: Install Playwright test runner
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npm install --no-save @playwright/test
 
       - name: Install Chromium
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright smoke tests
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         env:
           CI: true
         run: npx playwright test
 
       - name: Build web E2E summary
         if: always()
-        working-directory: ./admin-dashboard
+        working-directory: front/admin-dashboard
         shell: bash
         run: |
           set -euo pipefail
@@ -139,7 +139,7 @@ jobs:
         with:
           name: playwright-report
           path: |
-            admin-dashboard/playwright-report/
-            admin-dashboard/test-results/
+            front/admin-dashboard/playwright-report/
+            front/admin-dashboard/test-results/
           if-no-files-found: ignore
           retention-days: 14
