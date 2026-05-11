@@ -18,7 +18,7 @@
 #   RESTORE_DB_URL=postgres://user:pwd@scratch-host/leopardo_drill \
 #   BACKUP_DIR=/tmp/leopardo-drills \
 #   BACKUP_AGE_RECIPIENT="age1example..." \   # optionnel : chiffrement age
-#   ./scripts/backup_drill.sh
+#   ./dev-hub/scripts/backup_drill.sh
 #
 # Sortie :
 #   - un fichier `$BACKUP_DIR/leopardo-YYYYmmdd-HHMMSS.dump[.age]`

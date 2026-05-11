@@ -2,7 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.3.0] - 2026-05-10
+## [4.3.0]  - 2026-05-10
 
 ### Reorganisation structure depot
 
