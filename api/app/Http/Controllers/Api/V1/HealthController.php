@@ -146,6 +146,34 @@ class HealthController extends Controller
         return is_string($disk) || $disk instanceof UnitEnum ? $disk : 'local';
     }
 
+    /**
+     * GET /api/v1/health/live — 200 if the process is running.
+     */
+    public function live(): JsonResponse
+    {
+        return response()->json([
+            'status' => 'ok',
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * GET /api/v1/health/ready — 200 if DB is up.
+     */
+    public function ready(): JsonResponse
+    {
+        $database = $this->checkDatabase();
+
+        $status = $database['ok'] ? 'ok' : 'fail';
+        $code = $database['ok'] ? 200 : 503;
+
+        return response()->json([
+            'status' => $status,
+            'checks' => ['database' => $database],
+            'timestamp' => now()->toIso8601String(),
+        ], $code);
+    }
+
     private function stringConfigValue(mixed $value): string
     {
         if (is_string($value)) {

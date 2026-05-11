@@ -211,7 +211,7 @@ Le runbook local a suivre reste :
 
 Le point d'entree visible dans le depot est :
 
-- `mobile/lib/main.dart`
+- `front/mobile/lib/main.dart`
 
 La documentation courante ne doit donc pas supposer que les points d'entree :
 
@@ -241,7 +241,7 @@ Les URLs backend sont injectees dans le workflow au moment du build.
 
 ### iOS - etat reel
 
-Le projet iOS existe bien dans `mobile/ios/`, donc le support technique n'est pas inexistant.
+Le projet iOS existe bien dans `front/mobile/ios/`, donc le support technique n'est pas inexistant.
 
 En revanche, le depot ne montre pas au meme niveau :
 

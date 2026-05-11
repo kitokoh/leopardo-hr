@@ -309,7 +309,7 @@ Ces données restent dans leur format d'origine sans traduction :
 - [ ] `api/lang/{code}/errors.php` créé et complet
 - [ ] `api/lang/{code}/notifications.php` créé et complet
 - [ ] `api/lang/{code}/pdf.php` créé et complet
-- [ ] `mobile/lib/l10n/app_{code}.arb` créé et complet
+- [ ] `front/mobile/lib/l10n/app_{code}.arb` créé et complet
 - [ ] `Locale('{code}')` ajouté dans `supportedLocales` Flutter
 - [ ] Si RTL : tests visuels sur tous les écrans (login, dashboard, bulletin, pointage)
 - [ ] Format dates et montants validé

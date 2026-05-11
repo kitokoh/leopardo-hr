@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Events\AbsenceApproved;
+use App\Events\AbsenceRejected;
+use App\Events\AbsenceRequested;
 use App\Exceptions\AbsenceDateConflictException;
 use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
@@ -37,7 +40,7 @@ class AbsenceService
             throw new AbsenceDateConflictException;
         }
 
-        return Absence::create([
+        $absence = Absence::create([
             'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'absence_type_id' => $type->id,
@@ -47,6 +50,10 @@ class AbsenceService
             'status' => 'pending',
             'reason' => $data['reason'] ?? null,
         ]);
+
+        AbsenceRequested::dispatch($absence);
+
+        return $absence;
     }
 
     public function approve(Absence $absence, Employee $approver): Absence
@@ -89,7 +96,11 @@ class AbsenceService
             ]);
         });
 
-        return $absence->fresh();
+        $absence = $absence->fresh();
+
+        AbsenceApproved::dispatch($absence, $approver);
+
+        return $absence;
     }
 
     public function reject(Absence $absence, string $reason): Absence
@@ -124,7 +135,11 @@ class AbsenceService
             ]);
         });
 
-        return $absence->fresh();
+        $absence = $absence->fresh();
+
+        AbsenceRejected::dispatch($absence);
+
+        return $absence;
     }
 
     public function cancel(Absence $absence): Absence

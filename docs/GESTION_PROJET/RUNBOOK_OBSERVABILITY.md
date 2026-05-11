@@ -82,7 +82,7 @@ dependencies:
 ```
 
 ```bash
-cd mobile && flutter pub get
+cd front/mobile && flutter pub get
 ```
 
 ### 3.2 Initialisation

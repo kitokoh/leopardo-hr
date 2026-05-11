@@ -22,7 +22,7 @@ Leopardo RH est actuellement structure comme un monorepo contenant:
 
 - une API Laravel multitenant dans `api/`
 - une interface web manager incluse dans l'application Laravel
-- une application mobile Flutter dans `mobile/`
+- une application mobile Flutter dans `front/mobile/`
 - une couche CI/CD GitHub Actions
 - une cible de deploiement cloud basee sur Render pour l'API/web et Firebase App Distribution pour le mobile staging
 
@@ -122,7 +122,7 @@ Le mobile est aligne pour consommer:
 - bootstrap de table `migrations` durci pour eviter les courses au demarrage
 - seeders de base idempotents
 - seed demo sous controle
-- pipeline mobile conditionnelle pour ne lancer les etapes lourdes que si `mobile/**` change
+- pipeline mobile conditionnelle pour ne lancer les etapes lourdes que si `front/mobile/**` change
 
 ## Fonctionnalites partiellement couvertes ou a confirmer
 

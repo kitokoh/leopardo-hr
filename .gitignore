@@ -19,6 +19,11 @@ node_modules/
 .vscode/
 .idea/
 
+# AI agent artifacts
+.jules/
+.kiro/
+.devin/
+
 # Python
 __pycache__/
 *.pyc
