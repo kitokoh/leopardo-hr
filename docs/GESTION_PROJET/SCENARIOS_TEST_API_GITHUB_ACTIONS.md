@@ -382,33 +382,6 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 ---
 
-## Module IA (Sprint 7-8)
-
-### Chat IA
-- `POST /api/ai/chat` envoie un message, retourne la reponse IA avec conversation_id
-- `POST /api/ai/chat` avec `conversation_id` existant continue la conversation
-- Validation : `message` requis, max 2000 caracteres
-- Rate limiting : quota par plan SaaS (trial: 10, starter: 50, business: 200/mois)
-- Feature flag : retourne 403 si `AI_ENABLED=false`
-- RBAC : authentification Sanctum requise
-
-### Historique conversations
-- `GET /api/ai/chat/history` retourne les conversations paginées de l'utilisateur
-- `DELETE /api/ai/chat/{conversationId}` supprime une conversation
-- Isolation tenant : chaque utilisateur ne voit que ses conversations dans son entreprise
-
-### Tool Registry
-- `GET /api/ai/tools` liste les outils IA actifs (debug/admin)
-- Les outils sont filtrés par role (employee, manager, admin)
-- 15 outils enregistrés : get_employees, search_employees, get_departments, get_headcount, etc.
-
-### Middlewares IA
-- `AIFeatureCheck` : bloque si `AI_ENABLED=false`
-- `AITenantInjector` : injecte company_id et user_id dans le request
-- `AIRateLimiter` : quota mensuel par entreprise
-
----
-
 ## Module Tracking Vehicules (Sprint 9-10)
 
 ### Vehicles CRUD
@@ -455,8 +428,25 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/fleet/reports/fuel` rapport consommation carburant
 - `GET /api/v1/fleet/reports/mileage` rapport kilometrage
 - `GET /api/v1/fleet/reports/maintenance-due` maintenances a venir (30 jours)
+## Module IA (Sprint 7-8)
 
----
+### Chat IA
+- `POST /api/ai/chat` envoie un message, retourne la reponse IA avec conversation_id
+- `POST /api/ai/chat` avec `conversation_id` existant continue la conversation
+- Validation : `message` requis, max 2000 caracteres
+- Rate limiting : quota par plan SaaS (trial: 10, starter: 50, business: 200/mois)
+- Feature flag : retourne 403 si `AI_ENABLED=false`
+- RBAC : authentification Sanctum requise
+
+### Historique conversations
+- `GET /api/ai/chat/history` retourne les conversations paginées de l'utilisateur
+- `DELETE /api/ai/chat/{conversationId}` supprime une conversation
+- Isolation tenant : chaque utilisateur ne voit que ses conversations dans son entreprise
+
+### Tool Registry
+- `GET /api/ai/tools` liste les outils IA actifs (debug/admin)
+- Les outils sont filtrés par role (employee, manager, admin)
+- 15 outils enregistrés : get_employees, search_employees, get_departments, get_headcount, etc.
 
 ### Middlewares IA
 - `AIFeatureCheck` : bloque si `AI_ENABLED=false`
@@ -483,38 +473,12 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Pas d'authentification requise (endpoints publics)
 
 ### Onboarding enrichi
-- `GET /api/v1/onboarding/checklist` checklist dynamique (auto-seed 10 etapes si vide)
-- `GET /api/v1/onboarding/progress` pourcentage progression
-- `PATCH /api/v1/onboarding/checklist/{stepKey}/complete` marquer etape complete
-- `PATCH /api/v1/onboarding/checklist/{stepKey}/skip` sauter etape (non-required seulement)
+- `GET /api/v1/onboarding-setup/checklist` checklist dynamique (auto-seed 10 etapes si vide)
+- `GET /api/v1/onboarding-setup/progress` pourcentage progression
+- `PATCH /api/v1/onboarding-setup/{stepKey}/complete` marquer etape complete
+- `PATCH /api/v1/onboarding-setup/{stepKey}/skip` sauter etape (non-required seulement)
 
 ### Feature Flags
-- `GET /api/v1/features/matrix` matrice complete features x plans
-- `GET /api/v1/features/check/{featureKey}` verifier si feature active pour company
-- `PUT /api/v1/features/matrix` mettre a jour entree matrice (admin)
-
-
-## Modules RH Avances (Sprint 11-12)
-
-### Recrutement — Actions avancees
-- `POST /api/v1/recruitment/jobs/{id}/publish` publier une offre (draft -> published)
-- `POST /api/v1/recruitment/jobs/{id}/close` fermer une offre (published -> closed)
-- `DELETE /api/v1/recruitment/jobs/{id}` supprimer (draft uniquement)
-- `GET /api/v1/recruitment/applicants/{id}` detail candidat avec entretiens
-- `PATCH /api/v1/recruitment/applicants/{id}/status` changer statut pipeline
-- `DELETE /api/v1/recruitment/applicants/{id}` supprimer candidat
-- `PATCH /api/v1/recruitment/interviews/{id}/feedback` ajouter feedback + notation
-- `DELETE /api/v1/recruitment/interviews/{id}` annuler entretien
-
-### Self-service employe
-- `GET /api/v1/me/trainings` mes inscriptions formations avec details cours/session
-- `POST /api/v1/me/trainings/{sessionId}/enroll` auto-inscription a une session
-- `GET /api/v1/me/loans` mes prets avec compteur echeances
-- `GET /api/v1/me/loans/{id}/repayments` echeancier de mon pret
-
-### Rapports avances
-- `GET /api/v1/reports/recruitment-pipeline` candidats par statut
-- `GET /api/v1/reports/training-completion` inscriptions par statut
-- `GET /api/v1/reports/loan-summary` montants prets par statut
-- `GET /api/v1/reports/demographics` effectifs par departement et type contrat
-- `GET /api/v1/reports/cost-analysis` analyse couts (prets, formations) par annee
+- `GET /api/v1/feature-flags/matrix` matrice complete features x plans
+- `GET /api/v1/feature-flags/check/{featureKey}` verifier si feature active pour company
+- `PUT /api/v1/feature-flags/matrix` mettre a jour entree matrice (admin)

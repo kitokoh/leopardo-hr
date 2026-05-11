@@ -22,16 +22,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::get('/billing/invoices/{id}', [BillingController::class, 'showInvoice'])->whereNumber('id');
     Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'invoicePdf'])->whereNumber('id');
 
-    // Onboarding
-    Route::get('/onboarding/checklist', [OnboardingStepController::class, 'checklist']);
-    Route::get('/onboarding/progress', [OnboardingStepController::class, 'progress']);
-    Route::patch('/onboarding/checklist/{stepKey}/complete', [OnboardingStepController::class, 'complete']);
-    Route::patch('/onboarding/checklist/{stepKey}/skip', [OnboardingStepController::class, 'skip']);
+    // Onboarding Steps (enriched — distinct from existing /onboarding/checklist)
+    Route::get('/onboarding-setup/checklist', [OnboardingStepController::class, 'checklist']);
+    Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
+    Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete']);
+    Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip']);
 
-    // Feature Flags
-    Route::get('/features/matrix', [FeatureFlagController::class, 'matrix']);
-    Route::get('/features/check/{featureKey}', [FeatureFlagController::class, 'check']);
-    Route::put('/features/matrix', [FeatureFlagController::class, 'updateMatrix']);
+    // Feature Flags (plan matrix)
+    Route::get('/feature-flags/matrix', [FeatureFlagController::class, 'matrix']);
+    Route::get('/feature-flags/check/{featureKey}', [FeatureFlagController::class, 'check']);
+    Route::put('/feature-flags/matrix', [FeatureFlagController::class, 'updateMatrix']);
 });
 
 // ── Public webhook endpoints (no auth) ────────────────────────────────────────
