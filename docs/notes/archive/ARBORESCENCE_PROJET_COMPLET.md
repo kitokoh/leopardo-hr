@@ -53,8 +53,8 @@ leopardo-rh/                          ← Racine du monorepo (Gestion Employer)
 ### Ce qui N'est PAS dans ce repo (généré à l'init)
 - `api/vendor/` — généré par `composer install`
 - `api/node_modules/` — généré par `npm install`
-- `mobile/.dart_tool/` — généré par `flutter pub get`
-- `mobile/build/` — généré par `flutter build`
+- `front/mobile/.dart_tool/` — généré par `flutter pub get`
+- `front/mobile/build/` — généré par `flutter build`
 - `api/.env` — jamais commité (utiliser les secrets Render en production)
 
 ### Infrastructure de Déploiement

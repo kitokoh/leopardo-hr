@@ -2,6 +2,103 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.3.0] - 2026-05-10
+
+### Reorganisation structure depot
+
+- Structure : Suppression `.jules/` et `.kiro/` (artifacts agents IA), ajout au `.gitignore`
+- Structure : `GOTO_MARKET/` deplace dans `docs/GOTO_MARKET/`
+- Structure : Frontends (`mobile/`, `web/`, `admin-dashboard/`, `zkteco-kiosk/`) regroupes dans `front/`
+- Structure : 19 fichiers `.md` techniques deplaces de la racine vers `docs/`
+- CI : Tous les workflows GitHub Actions mis a jour pour les nouveaux chemins `front/`
+- Docs : Toutes les references internes mises a jour (AGENTS.md, README.md, DEVELOPMENT.md, PLAN_ACTION, etc.)
+- README : URLs corrigees (`your-org/leopardo-rh` → `kitokoh/leopardo-hr`)
+
+### Open Source (Plan 10)
+
+- Docker : `docker-compose.yml` a la racine (api + postgres + redis + dashboard + web)
+- DevContainer : `.devcontainer/devcontainer.json` pour GitHub Codespaces
+- Scripts : `scripts/setup-labels.sh` pour creer les 23 labels GitHub organises
+
+### Sprint 5-6 — Conges avances + Contrats
+
+- Leave : DELETE /leave-policies (desactivation douce)
+- Leave : GET /me/leave-balances (self-service employe)
+- Leave : GET/POST /leave-accruals (historique + cumul manuel)
+- Leave : Commande `leave:accrue` (scheduleur quotidien, accumulation le 1er du mois)
+- Contracts : POST /contracts/{id}/activate, /suspend, /terminate, /renew
+- Contracts : GET /me/contracts (self-service)
+- Contracts : GET /contracts/{id}/generate-pdf
+- Contracts : Commande `contracts:alert-expiring` (alertes a 30/15/7 jours)
+- Approvals : ApprovalController complet (CRUD workflows, pending/approve/reject/history)
+- Approvals : Trait `Approvable` pour integration polymorphique
+- Tests : LeavePolicyApiTest, ContractWorkflowTest, AccrueLeaveBalancesTest
+- Scheduler : Commandes enregistrees dans `bootstrap/app.php`
+
+### Paie Complete Multi-Pays (Plan 03)
+
+- Paie : moteur de calcul configurable par pays avec interface `CountryRulesInterface`
+- Paie : 6 implementations pays — Algerie (DZ), Maroc (MA), Tunisie (TN), France (FR), Turquie (TR), Senegal (SN)
+- Paie : `PayrollCalculator` service avec calcul automatique des cotisations sociales et impots
+- Paie : modeles `SalaryStructure`, `SalaryComponent`, `PayrollRun`, `PaySlip`, `PaySlipLine`, `TaxSlab`, `SocialContribution`, `BankExport`
+- Paie : migration idempotente pour 8 nouvelles tables (salary_structures, salary_components, tax_slabs, social_contributions, payroll_runs, pay_slips, pay_slip_lines, bank_exports)
+- Paie : controllers CRUD pour structures salariales, composants, tranches impots, cotisations sociales
+- Paie : workflow payroll run complet (draft -> calculating -> calculated -> validated -> paid/cancelled)
+- Paie : generation bulletins de paie avec lignes detaillees (gains, deductions, cotisations patronales)
+- Paie : self-service `/me/pay-slips` pour les employes
+- Paie : generation export bancaire (CSV generique, SEPA, CCP Algerie, virement Maroc)
+- Routes : nouveau fichier `routes/modules/payroll_engine.php` (~30 endpoints)
+## [4.2.1] - 2026-05-10
+
+### Sprint 1-2 Completion — Fondations manquantes
+
+- Architecture : `AuditLogger` listener implementé — écoute les 8 domain events et écrit automatiquement dans `audit_logs`
+- Architecture : `WebhookListener` implementé — dispatche automatiquement les domain events vers les webhook endpoints configurés par tenant
+- Architecture : Appels `event()` ajoutés dans `EmployeeService`, `AbsenceService`, `AttendanceService`, `PayrollService`
+- Architecture : `EventServiceProvider` créé pour câbler listeners aux events
+- Architecture : Template module DDD dans `stubs/module-template/` avec structure complète
+- Architecture : Commande Artisan `php artisan make:module {Name}` pour scaffolding DDD
+- Monitoring : Endpoints `/api/v1/health/live` (liveness) et `/api/v1/health/ready` (readiness) ajoutés
+- Monitoring : Config Sentry performance (`config/sentry.php`) avec traces et profiling
+- Docs : `DEVELOPMENT.md` créé — guide setup rapide (Docker + local), structure projet, commandes utiles
+- Tests : `HealthLiveReadyTest`, `RequestIdMiddlewareTest`, `AuditLoggerListenerTest`, `MakeModuleCommandTest`
+
+## [4.2.0] - 2026-05-10
+
+### Architecture & Fondations (Plan 01)
+
+- Architecture : 8 domain events (EmployeeCreated, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated, EmployeeArchived)
+- Architecture : systeme AuditLog avec migration `audit_logs` et trait `Auditable` pour auto-logging CRUD
+- Architecture : systeme Webhook complet (migration `webhook_endpoints`/`webhook_deliveries`, service `WebhookDispatcher`, job `DispatchWebhook` avec retry 3x)
+- Architecture : middleware `RequestIdMiddleware` pour tracabilite des requetes API
+- Architecture : migration indexes de performance (composites sur employees, absences, attendance_logs, payrolls)
+
+### Modules API manquants (Plan 02) — ~50 nouveaux endpoints, 21 modeles
+
+- Module A : Conges avances — `LeavePolicy`, `LeaveBalance`, `LeaveAccrual`, `ApprovalWorkflow`, `ApprovalRequest`, `ApprovalDecision`
+- Module B : Contrats de travail — `Contract`, `ContractAmendment` avec endpoint contrats expirants
+- Module C : Recrutement/ATS — `JobPosting`, `Applicant`, `Interview` avec workflow complet
+- Module D : Formation/LMS — `TrainingCourse`, `TrainingSession`, `TrainingEnrollment`
+- Module E : Prets employes — `EmployeeLoan`, `LoanRepayment` avec echeancier auto-genere
+- Module F : Notes de frais — `ExpenseClaim`, `ExpenseItem` avec soumission/approbation
+- Module G : Organigramme — endpoints arbre hierarchique, subordonnes, chaine managers
+- Module H : Rapports RH — effectifs, turnover, absenteisme, masse salariale, heures supplementaires
+- Module I : Webhooks API — CRUD endpoints, liste evenements disponibles, historique livraisons
+- Module J : Audit Trail — liste filtrable paginee avec detail par entree
+- Routes : nouveau fichier `routes/modules/hr_extended.php` enregistre dans `api.php`
+- PHPStan : baseline regeneree pour inclure les nouveaux fichiers
+
+### Plan d'action documentaire
+
+- Docs : 13 fichiers dans `docs/PLAN_ACTION/` couvrant architecture, modules, paie, IA, tracking, interfaces, monitoring, tests, onboarding, open source, GTM, roadmap
+
+## [4.1.120] - 2026-05-10
+
+### DocKeeper - Alignement documentaire
+
+- Docs : alignement de `docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md` avec la gouvernance actuelle (remplacement des références à `JOURNAL_DE_BORD.md` par `JOURNAL_RACINE.md`).
+- Gouvernance : synchronisation de la version globale du projet à `4.1.120` dans `PILOTAGE.md`, `api/config/app.php` et `CHANGELOG.md`.
+
 ## [4.1.119] - 2026-05-09
 
 ### Branding - Professionnalisation Enterprise-grade du dépôt
