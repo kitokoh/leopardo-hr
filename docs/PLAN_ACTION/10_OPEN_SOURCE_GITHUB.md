@@ -187,8 +187,8 @@ Creer au moins 10 issues taguees `good first issue` :
 
 ## Quick Start (Docker)
 
-    git clone https://github.com/kitokoh/gestionemployerBackend.git
-    cd gestionemployerBackend
+    git clone https://github.com/kitokoh/leopardo-hr.git
+    cd leopardo-hr
     docker compose up -d
     docker compose exec api php artisan migrate --seed
 
@@ -253,7 +253,7 @@ Lier les issues aux items du board.
 
 ### 2.8 README corrections
 
-- Remplacer `your-org/leopardo-rh` par `kitokoh/gestionemployerBackend`
+- Remplacer `your-org/leopardo-rh` par `kitokoh/leopardo-hr`
 - Ajouter un GIF de demo ou screenshot du dashboard
 - Ajouter les liens Discord/Telegram pour la communaute
 - Ajouter la section "Star History"
