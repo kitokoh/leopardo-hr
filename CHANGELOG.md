@@ -20,6 +20,15 @@
 - Rapports avances : Analyse couts (prets actifs + inscriptions formations par annee)
 - Routes : ~17 nouveaux endpoints dans hr_extended.php
 
+## [4.8.0] - 2026-05-11
+
+### Sprint 15-16 — Dashboard API, Notifications & Exports
+
+- Dashboard : DashboardController (summary, recent-activity, KPI mensuel)
+- Dashboard : NotificationController (liste paginee, unread, mark read, mark all)
+- Dashboard : ExportController (export employes JSON/CSV, export attendance JSON/CSV)
+- Routes : ~9 nouveaux endpoints dans modules/dashboard.php
+
 ## [4.5.0] - 2026-05-11
 
 ### Sprint 9-10 — Tracking vehicules (Integration Traccar)
