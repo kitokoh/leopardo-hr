@@ -2,6 +2,24 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.6.0] - 2026-05-11
+
+### Sprint 11-12 — Modules RH avances
+
+- Recrutement : Actions publish, close, delete sur JobPosting avec workflow statut
+- Recrutement : Detail candidat avec entretiens, changement statut pipeline, suppression
+- Recrutement : Feedback entretien avec notation, annulation entretien
+- Self-service : GET /me/trainings (mes formations avec sessions et cours)
+- Self-service : POST /me/trainings/{sessionId}/enroll (auto-inscription formation)
+- Self-service : GET /me/loans (mes prets avec compteur echeances)
+- Self-service : GET /me/loans/{id}/repayments (echeancier de mon pret)
+- Rapports avances : Pipeline recrutement (candidats par statut)
+- Rapports avances : Completion formations (inscriptions par statut)
+- Rapports avances : Resume prets (montants par statut)
+- Rapports avances : Demographics (effectifs par departement et type contrat)
+- Rapports avances : Analyse couts (prets actifs + inscriptions formations par annee)
+- Routes : ~17 nouveaux endpoints dans hr_extended.php
+
 ## [4.3.0]  - 2026-05-10
 
 ### Reorganisation structure depot
