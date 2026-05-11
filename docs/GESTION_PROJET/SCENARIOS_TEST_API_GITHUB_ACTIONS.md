@@ -482,3 +482,22 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/reports/loan-summary` montants prets par statut
 - `GET /api/v1/reports/demographics` effectifs par departement et type contrat
 - `GET /api/v1/reports/cost-analysis` analyse couts (prets, formations) par annee
+
+---
+
+## Dashboard, Notifications & Exports (Sprint 15-16)
+
+### Dashboard
+- `GET /api/v1/dashboard/summary` resume (employes, departements, pointage today, absences pending)
+- `GET /api/v1/dashboard/recent-activity` activite recente depuis audit_logs
+- `GET /api/v1/dashboard/kpi` KPI mensuel (turnover, new hires, absence rate)
+
+### Notifications
+- `GET /api/v1/notifications` liste paginee avec unread_count
+- `GET /api/v1/notifications/unread` non-lues uniquement
+- `PATCH /api/v1/notifications/{id}/read` marquer comme lue
+- `POST /api/v1/notifications/mark-all-read` tout marquer comme lu
+
+### Exports
+- `GET /api/v1/export/employees` export JSON ou CSV des employes
+- `GET /api/v1/export/attendance` export pointage avec filtre dates
