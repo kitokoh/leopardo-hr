@@ -5,15 +5,18 @@
  * formation, prêts, frais, organigramme, rapports, webhooks, audit.
  */
 
+use App\Http\Controllers\Api\V1\AdvancedReportController;
 use App\Http\Controllers\Api\V1\ApprovalController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\ContractController;
 use App\Http\Controllers\Api\V1\EmployeeLoanController;
 use App\Http\Controllers\Api\V1\ExpenseClaimController;
 use App\Http\Controllers\Api\V1\HrReportController;
+use App\Http\Controllers\Api\V1\JobPostingActionController;
 use App\Http\Controllers\Api\V1\LeavePolicyController;
 use App\Http\Controllers\Api\V1\OrgChartController;
 use App\Http\Controllers\Api\V1\RecruitmentController;
+use App\Http\Controllers\Api\V1\SelfServiceController;
 use App\Http\Controllers\Api\V1\TrainingController;
 use App\Http\Controllers\Api\V1\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -118,4 +121,29 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function ()
     Route::post('/approvals/{approvalRequest}/approve', [ApprovalController::class, 'approve']);
     Route::post('/approvals/{approvalRequest}/reject', [ApprovalController::class, 'reject']);
     Route::get('/approvals/history', [ApprovalController::class, 'history']);
+
+    // ── Module C bis — Recruitment Actions (Sprint 11-12) ─────────────────
+    Route::post('/recruitment/jobs/{id}/publish', [JobPostingActionController::class, 'publish'])->whereNumber('id');
+    Route::post('/recruitment/jobs/{id}/close', [JobPostingActionController::class, 'close'])->whereNumber('id');
+    Route::delete('/recruitment/jobs/{id}', [JobPostingActionController::class, 'destroy'])->whereNumber('id');
+    Route::get('/recruitment/applicants/{id}', [JobPostingActionController::class, 'showApplicant'])->whereNumber('id');
+    Route::patch('/recruitment/applicants/{id}/status', [JobPostingActionController::class, 'updateApplicantStatus'])->whereNumber('id');
+    Route::delete('/recruitment/applicants/{id}', [JobPostingActionController::class, 'destroyApplicant'])->whereNumber('id');
+    Route::patch('/recruitment/interviews/{id}/feedback', [JobPostingActionController::class, 'interviewFeedback'])->whereNumber('id');
+    Route::delete('/recruitment/interviews/{id}', [JobPostingActionController::class, 'destroyInterview'])->whereNumber('id');
+
+    // ── Self-Service (Sprint 11-12) ───────────────────────────────────────
+    Route::get('/me/trainings', [SelfServiceController::class, 'myTrainings']);
+    Route::post('/me/trainings/{sessionId}/enroll', [SelfServiceController::class, 'selfEnroll'])->whereNumber('sessionId');
+    Route::get('/me/loans', [SelfServiceController::class, 'myLoans']);
+    Route::get('/me/loans/{loanId}/repayments', [SelfServiceController::class, 'myLoanRepayments'])->whereNumber('loanId');
+
+    // ── Advanced Reports (Sprint 11-12) ───────────────────────────────────
+    Route::prefix('reports')->group(function (): void {
+        Route::get('/recruitment-pipeline', [AdvancedReportController::class, 'recruitmentPipeline']);
+        Route::get('/training-completion', [AdvancedReportController::class, 'trainingCompletion']);
+        Route::get('/loan-summary', [AdvancedReportController::class, 'loanSummary']);
+        Route::get('/demographics', [AdvancedReportController::class, 'demographicBreakdown']);
+        Route::get('/cost-analysis', [AdvancedReportController::class, 'costAnalysis']);
+    });
 });
