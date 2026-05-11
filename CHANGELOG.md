@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.5.0] - 2026-05-11
+
+### Sprint 9-10 — Tracking vehicules (Integration Traccar)
+
+- Tracking : Migration idempotente pour 5 tables (vehicles, vehicle_assignments, vehicle_trips, vehicle_alerts, vehicle_maintenances)
+- Tracking : 5 modeles (Vehicle, VehicleAssignment, VehicleTrip, VehicleAlert, VehicleMaintenance)
+- Tracking : TraccarService complet (devices, positions, trips, geofences, events)
+- Tracking : VehicleController CRUD complet avec position GPS, trips, alerts, maintenance sub-resources
+- Tracking : Affectation/desaffectation chauffeurs avec historique
+- Tracking : VehicleTripController (liste paginee, detail)
+- Tracking : VehicleAlertController (liste filtrable, acquittement)
+- Tracking : VehicleMaintenanceController CRUD (enregistrement, suivi, prochaine maintenance)
+- Tracking : FleetController (overview, live-map, rapports fuel/mileage/maintenance-due)
+- Tracking : TrackingSyncController (sync devices, positions, trips depuis Traccar)
+- Tracking : Config config/tracking.php avec feature flag et parametres Traccar
+- Routes : nouveau fichier routes/modules/tracking.php (~25 endpoints)
+
 ## [4.3.0]  - 2026-05-10
 
 ### Reorganisation structure depot
