@@ -5,6 +5,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
@@ -24,7 +25,11 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('leave:accrue')->daily();
+        $schedule->command('leave:carry-forward')->yearlyOn(1, 1, '02:00');
         $schedule->command('contracts:alert-expiring')->daily();
+        $schedule->command('billing:check-trials')->daily();
+        $schedule->command('billing:check-overdue')->daily();
+        $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
@@ -33,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class, StructuredLogging::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,

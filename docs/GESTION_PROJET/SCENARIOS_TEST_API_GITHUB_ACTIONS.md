@@ -1,6 +1,6 @@
-# SCENARIOS DE TEST API POUR GITHUB ACTIONS
+# SCENARIOS DE TEST API POUR GITHUB ACTIONS   
 
-## Objectif
+## Objectif 
 
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
@@ -556,3 +556,52 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/ai/analytics/costs` couts par periode et provider (day/week/month)
 - `GET /api/ai/analytics/tools` outils les plus appeles
 - `GET /api/ai/analytics/errors` taux de succes + erreurs recentes
+
+---
+
+## DevOps — Health enrichi, Metrics, Structured Logging (Post-Sprint)
+
+### Health enrichi
+- `GET /api/v1/health` — Inclut desormais : queue (driver + size), memory (usage_mb, peak_mb, limit_mb), environment, uptime_seconds
+- `GET /api/v1/health/live` — Sonde liveness inchangee
+- `GET /api/v1/health/ready` — Sonde readiness inchangee
+
+### Metrics platform
+- `GET /api/v1/metrics` — Retourne: companies (total, active, trial), employees (total, active), system (php_version, laravel_version, memory_usage_mb, cache_driver, queue_driver, db_driver)
+
+### Structured Logging
+- Middleware `StructuredLogging` enregistre chaque requete API en JSON : method, uri, status, duration_ms, ip, user_agent, user_id, company_id, request_id
+- Channel `structured` : daily JSON logs dans `storage/logs/structured.log`
+- Channel `audit` : daily JSON logs dans `storage/logs/audit.log` (90 jours retention)
+
+## Paie avancee — PDF, Bank Export, Billing (Post-Sprint)
+
+### Bulletin de paie PDF
+- `GET /api/v1/pay-slips/{id}/pdf` telecharger le bulletin en PDF (manager ou employe proprietaire)
+- `GET /api/v1/me/pay-slips/{id}/pdf` telecharger son propre bulletin (self-service)
+- Template Blade adapte par pays (DZ, MA, TN, FR, TR, SN) avec mentions legales
+- DomPDF genere le PDF A4 portrait
+
+### Envoi bulletins
+- `POST /api/v1/payroll-runs/{id}/send-slips` marquer les bulletins comme envoyes (manager)
+- Verifie que le run est valide avant envoi
+
+### Export bancaire reel
+- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, csv_generic
+- SEPA XML : format pain.001.001.03 pour virements europeens
+- CCP Algerie Poste : format texte fixe (entete, detail, total)
+- CSV generique : employee_id, first_name, last_name, iban, bank_name, net_salary, currency, period
+
+### Facture PDF (Billing)
+- `GET /api/v1/billing/invoices/{id}/pdf` telecharger la facture en PDF
+- Numero auto-incremente LEO-2026-XXXX
+- Mentions legales et TVA incluses
+
+### Scheduled jobs billing
+- `billing:check-trials` (daily) : notifier les trials expirant dans 3 jours
+- `billing:check-overdue` (daily) : marquer les factures en retard comme overdue
+- `billing:generate-invoices` (monthly) : generer les factures pour les abonnements actifs
+
+### Leave carry-forward
+- `leave:carry-forward` (annuel) : reporter les soldes non utilises selon LeavePolicy
+- Expiration des reports selon carry_forward_expiry_days
