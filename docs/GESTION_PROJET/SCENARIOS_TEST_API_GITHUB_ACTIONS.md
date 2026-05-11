@@ -14,7 +14,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Contrats JSON consommes par le mobile
 - Contrats d'auth et de session de la plateforme admin
 
-## Roles a couvrir
+## Roles a couvrir 
 
 1. Super Admin
 2. Owner / Company Admin
