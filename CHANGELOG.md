@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.10.0] - 2026-05-11
+
+### Mise a jour PLAN_ACTION — Bilan post sprints 1-18
+
+- PLAN_ACTION : Mise a jour 00_SOMMAIRE.md v2.0 avec etat reel de chaque module (fait/reste)
+- PLAN_ACTION : Mise a jour 12_PRIORITES_ROADMAP.md avec statut par sprint et metriques actuelles
+- PLAN_ACTION : Nouveau fichier 13_RESTANT_POST_SPRINTS.md — consolidation de ~79 taches restantes
+- PLAN_ACTION : Categorisation par priorite (critique/haute/moyenne/basse) et effort estime (~105 jours-dev)
+- PLAN_ACTION : Ordre d'execution recommande en 4 phases (A-D) sur 90+ jours
+
 ## [4.7.0] - 2026-05-11
 
 ### Sprint 13-14 — Billing, Onboarding & Feature Flags
