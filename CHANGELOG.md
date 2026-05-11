@@ -1,4 +1,4 @@
-﻿# CHANGELOG - LEOPARDO RH
+﻿# CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
