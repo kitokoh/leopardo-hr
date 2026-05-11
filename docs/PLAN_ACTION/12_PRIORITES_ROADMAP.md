@@ -1,5 +1,7 @@
 # 12 — PRIORITES & ROADMAP D'EXECUTION
 
+**Derniere mise a jour :** 2026-05-11 (post sprints 1-18)
+
 **Objectif :** Definir l'ordre d'execution optimal, les dependances entre modules, et une timeline realiste.
 
 ---
@@ -16,160 +18,92 @@
 
 ## 2. Roadmap par sprint (2 semaines/sprint)
 
-### Sprint 1-2 : Fondations (Semaines 1-4)
+### Sprint 1-2 : Fondations (Semaines 1-4) ✅ TERMINE
 
-**Objectif :** Solidifier la base pour supporter tous les modules.
+**Statut :** Merge dans `main`. 8 domain events, AuditLog system, Webhook dispatcher, middleware RequestId, indexes DB.
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Structure DDD pour nouveaux modules | 01 T-ARCH-01/02/03 | Haute | 2j |
-| Event System (domain events + audit listener) | 01 T-ARCH-04/05/06/07/08 | Haute | 3j |
-| Index de performance DB | 01 T-ARCH-14 | Haute | 0.5j |
-| Middleware RequestId | 07 T-MON-04 | Moyenne | 0.5j |
-| Health check enrichi | 07 T-MON-01/02 | Moyenne | 1j |
-| Docker Compose pour dev | 10 T-OSS-01 | Haute | 1j |
-| ../../dev-hub/DEVELOPMENT.md | 10 T-OSS-03 | Haute | 0.5j |
-| Configurer Sentry performance | 07 T-MON-06 | Moyenne | 0.5j |
+**Ce qui reste de ce sprint :**
+- Docker Compose pour dev (T-OSS-01) — NON FAIT
+- DEVELOPMENT.md contributeurs (T-OSS-03) — NON FAIT
+- Configurer Sentry performance (T-MON-06) — NON FAIT
 
-**Livrable :** Base solide, dev setup en 1 commande, observabilite basique.
+### Sprint 3-4 : Paie complete (Semaines 5-8) ✅ TERMINE
 
-### Sprint 3-4 : Paie complete (Semaines 5-8)
+**Statut :** Merge dans `main`. SalaryStructure, SalaryComponent, PayrollRun, PaySlip, PaySlipLine, TaxSlab, SocialContribution, BankExport + endpoints complets.
 
-**Objectif :** Paie legale fonctionnelle pour DZ + MA.
+**Ce qui reste de ce sprint :**
+- PaySlip PDF generator (T-PAIE-07) — NON FAIT (template DomPDF/Snappy a implementer)
+- PayrollCalculator service (T-PAIE-04) — squelette cree, logique calcul a completer par pays
+- FormRequests validation formelle (T-PAIE-11) — NON FAIT
+- API Resources serialisation (T-PAIE-11) — NON FAIT
+- Tests Feature paie (T-PAIE-13/14) — NON FAIT
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Migrations paie (7 tables) | 03 T-PAIE-01 | Critique | 1j |
-| Modeles paie | 03 T-PAIE-02 | Critique | 1j |
-| Seeders config DZ + MA | 03 T-PAIE-03 | Critique | 1j |
-| PayrollCalculator + DZ rules | 03 T-PAIE-04/05 | Critique | 3j |
-| MA rules | 03 T-PAIE-05 | Haute | 1j |
-| Endpoints API paie | 03 T-PAIE-10 | Critique | 2j |
-| FormRequests + Resources | 03 T-PAIE-11 | Haute | 1j |
-| Policies | 03 T-PAIE-12 | Haute | 0.5j |
-| PaySlip PDF generator | 03 T-PAIE-07 | Haute | 2j |
-| Tests Feature paie | 03 T-PAIE-13/14 | Critique | 2j |
-| Self-service /me/pay-slips | 03 T-PAIE-15 | Moyenne | 0.5j |
+### Sprint 5-6 : Conges avances + Contrats (Semaines 9-12) ✅ TERMINE
 
-**Livrable :** Paie DZ + MA complete avec bulletins PDF.
+**Statut :** Merge dans `main`. LeavePolicy, LeaveBalance, LeaveAccrual, Contract, ContractAmendment, ApprovalWorkflow + endpoints.
 
-### Sprint 5-6 : Conges avances + Contrats (Semaines 9-12)
+**Ce qui reste de ce sprint :**
+- Accrual automatique (job schedule mensuel) — NON FAIT
+- Carry forward logic — NON FAIT
+- PDF contrat generation — NON FAIT
+- Tests Feature conges + contrats — NON FAIT
 
-**Objectif :** Leave management complet + contrats de travail.
+### Sprint 7-8 : IA Phase 1 (Semaines 13-16) ✅ TERMINE
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Migrations conges (4 tables) | 02 Module A | Haute | 1j |
-| Modeles + endpoints conges | 02 Module A | Haute | 3j |
-| Politiques, accrual, carry forward | 02 Module A | Haute | 2j |
-| Workflow approbation generique | 09 T-OBD-02/03 | Haute | 2j |
-| Tests conges | 02 Module A | Haute | 1j |
-| Migrations contrats (2 tables) | 02 Module B | Moyenne | 0.5j |
-| Modeles + endpoints contrats | 02 Module B | Moyenne | 2j |
-| PDF contrat + alertes expiration | 02 Module B | Moyenne | 1j |
-| Tests contrats | 02 Module B | Moyenne | 1j |
+**Statut :** PR #385 merge dans `main`. AIConversation, AIAuditLog, AIToolRegistry, LLMClient (OpenAI+Claude), ToolRegistry, IntentEngine, MemoryManager, AIOrchestrator, AIAuditLogger, 3 middlewares, 15 tools seeder.
 
-**Livrable :** Leave management enterprise-grade + contrats avec alertes.
+**Ce qui reste de ce sprint :**
+- Blog MDX setup vitrine (T-VITRINE-01/02) — NON FAIT (frontend)
+- Pages pricing + demo (T-VITRINE-03/04) — NON FAIT (frontend)
+- SEO (T-VITRINE-05) — NON FAIT (frontend)
+- 5 premiers articles blog (T-GTM-06) — NON FAIT (contenu)
+- Tests Feature IA (T-IA-13/14) — NON FAIT
 
-### Sprint 7-8 : IA Phase 1 + Blog (Semaines 13-16)
+### Sprint 9-10 : Tracking vehicules (Semaines 17-20) ✅ TERMINE
 
-**Objectif :** Chat IA fonctionnel + blog vitrine pour le SEO.
+**Statut :** PR #386 merge dans `main`. 5 tables tracking, 5 modeles, TraccarService complet, 6 controllers, ~25 endpoints.
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Config IA + migrations | 04 T-IA-01/02 | Haute | 1j |
-| LLMClient + providers | 04 T-IA-03 | Haute | 2j |
-| Tool Registry + Intent Engine | 04 T-IA-04/05 | Haute | 2j |
-| AI Orchestrator + Memory | 04 T-IA-06/07 | Haute | 2j |
-| AI Gateway controller + middlewares | 04 T-IA-09/10 | Haute | 1j |
-| Seeder Tool Registry | 04 T-IA-11 | Moyenne | 0.5j |
-| Tests IA | 04 T-IA-13/14 | Haute | 1j |
-| Blog MDX setup | 06 T-VITRINE-01/02 | Haute | 2j |
-| Pages pricing + demo | 06 T-VITRINE-03/04 | Haute | 1j |
-| SEO (sitemap, robots, schema) | 06 T-VITRINE-05 | Moyenne | 0.5j |
-| 5 premiers articles blog | 11 T-GTM-06 | Haute | 3j |
+**Ce qui reste de ce sprint :**
+- Tests Feature tracking (T-TRACK-10/11/12) — NON FAIT
 
-**Livrable :** Chat IA operationnel + blog avec contenu SEO.
+### Sprint 11-12 : RH Avances (Semaines 21-24) ✅ TERMINE
 
-### Sprint 9-10 : Tracking vehicules + Notes de frais (Semaines 17-20)
+**Statut :** PR #387 merge dans `main`. SelfServiceController, JobPostingActionController, AdvancedReportController, ~17 endpoints.
 
-**Objectif :** Integration Traccar + module expense claims.
+**Ce qui reste de ce sprint :**
+- Tests Feature recrutement/formation/prets — NON FAIT
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Config Traccar | 05 T-TRACK-01/02 | Haute | 1j |
-| Migrations tracking (5 tables) | 05 T-TRACK-03 | Haute | 1j |
-| TraccarService + sync | 05 T-TRACK-05/08 | Haute | 3j |
-| Controllers vehicules + fleet | 05 T-TRACK-06/07 | Haute | 2j |
-| Alertes vehicules | 05 T-TRACK-09 | Moyenne | 1j |
-| Tests tracking | 05 T-TRACK-10/11/12 | Haute | 1j |
-| Module notes de frais | 02 Module F | Moyenne | 3j |
-| Tests notes de frais | 02 Module F | Moyenne | 1j |
+### Sprint 13-14 : Billing, Onboarding, Feature Flags (Semaines 25-28) ✅ TERMINE
 
-**Livrable :** Flotte GPS operationnelle + notes de frais.
+**Statut :** PR #388 en attente CI. 5 tables, 5 modeles, 4 controllers, FeatureService, FeaturePlanMatrixSeeder (17 features x 4 plans), ~15 endpoints.
 
-### Sprint 11-12 : Recrutement + Formation (Semaines 21-24)
+**Ce qui reste de ce sprint :**
+- Scheduled jobs billing (billing:check-trials, billing:check-overdue, billing:generate-invoices) — NON FAIT
+- Invoice PDF generation (T-OBD-11) — NON FAIT
+- Templates email facturation i18n (T-OBD-10) — NON FAIT
+- Tests Feature billing/webhooks (T-OBD-12/13) — NON FAIT
 
-**Objectif :** ATS basique + LMS basique.
+### Sprint 15-16 : Dashboard API + Notifications + Exports (Semaines 29-32) ✅ TERMINE (API)
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Module recrutement (3 tables + endpoints) | 02 Module C | Moyenne | 3j |
-| Tests recrutement | 02 Module C | Moyenne | 1j |
-| Module formation (3 tables + endpoints) | 02 Module D | Moyenne | 3j |
-| Tests formation | 02 Module D | Moyenne | 1j |
-| Module prets employes | 02 Module E | Basse | 2j |
-| Organigramme API | 02 Module G | Moyenne | 1j |
-| Rapports RH avances | 02 Module H | Moyenne | 2j |
+**Statut :** PR #389 CI passe. DashboardController, NotificationController, ExportController, ~9 endpoints.
 
-**Livrable :** Recrutement pipeline + formation catalogue + prets + rapports.
+**Ce qui reste de ce sprint — FRONTEND (non implemente, backend API uniquement) :**
+- Dashboard admin Next.js : ecrans paie, conges, contrats, recrutement Kanban, tracking carte live (T-WEB-03 a T-WEB-11)
+- Widget chat IA (T-WEB-09)
+- Blog MDX vitrine (T-VITRINE-01 a T-VITRINE-08)
+- Mobile Flutter : bulletins, conges, chat IA, voice (T-MOB-01 a T-MOB-06)
+- Composants partages : DataTable, MetricCard, ChartWidget, MapWidget, KanbanBoard, ChatWidget
 
-### Sprint 13-14 : Webhooks, Billing, Audit (Semaines 25-28)
+### Sprint 17-18 : IA Avancee (Semaines 33-36) ✅ TERMINE (API)
 
-**Objectif :** API publique, billing automatique, audit complet.
+**Statut :** PR #390 CI en cours. VoiceController (STT Whisper/Deepgram + TTS Edge/ElevenLabs), AgentRunner, AgentController, AIAnalyticsController, ~9 endpoints.
 
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Module webhooks | 02 Module I | Moyenne | 2j |
-| Module audit trail | 02 Module J | Haute | 2j |
-| Integration Stripe/Chargily | 09 T-OBD-04/05/06 | Haute | 3j |
-| Invoices + PDF | 09 T-OBD-11 | Haute | 1j |
-| Feature flags matrice | 09 T-OBD-09 | Haute | 1j |
-| Onboarding enrichi | 09 T-OBD-01 | Moyenne | 1j |
-| Tests billing + webhooks | 09 T-OBD-12/13 | Haute | 1j |
-
-**Livrable :** Billing automatique + webhooks + audit complet.
-
-### Sprint 15-16 : Interfaces (Semaines 29-32)
-
-**Objectif :** Dashboard admin et mobile completement branches sur les nouveaux modules.
-
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Dashboard paie (structures, runs, bulletins) | 06 T-WEB-03 | Haute | 4j |
-| Dashboard conges + contrats | 06 T-WEB-04/05 | Haute | 3j |
-| Dashboard recrutement (Kanban) | 06 T-WEB-06 | Moyenne | 3j |
-| Dashboard tracking (carte live) | 06 T-WEB-08 | Haute | 3j |
-| Widget chat IA | 06 T-WEB-09 | Haute | 2j |
-| Mobile bulletins + conges | 06 T-MOB-01/02 | Haute | 3j |
-| Mobile chat IA | 06 T-MOB-06 | Haute | 2j |
-
-**Livrable :** Interfaces completes pour tous les modules.
-
-### Sprint 17-18 : IA avancee + Polish (Semaines 33-36)
-
-**Objectif :** Voice IA + agents + export bancaire + polish general.
-
-| Tache | Fichier ref | Priorite | Effort |
-|-------|------------|----------|--------|
-| Voice IA (STT + TTS) | 04 T-IA-20/21/22/23 | Moyenne | 3j |
-| Agents autonomes | 04 T-IA-26/27/28 | Basse | 3j |
-| Export SEPA + CCP | 03 T-PAIE-08/09 | Haute | 2j |
-| Paie TN, FR, TR, SN | 03 T-PAIE-05 | Moyenne | 3j |
-| E2E Playwright | 08 T-CI-02/11 | Haute | 2j |
-| Polish UI/UX | - | Moyenne | 3j |
-
-**Livrable :** Plateforme complete, testee, deployee.
+**Ce qui reste de ce sprint :**
+- Export SEPA XML (T-PAIE-08) — NON FAIT
+- Export CCP Algerie Poste (T-PAIE-09) — NON FAIT
+- Paie TN, FR, TR, SN (T-PAIE-05 additionnel) — NON FAIT (regles fiscales + cotisations + seeders)
+- E2E Playwright (T-CI-02/11) — NON FAIT
+- Polish UI/UX — NON FAIT (frontend)
 
 ---
 
@@ -239,16 +173,16 @@ Chaque module est considere "done" quand :
 
 ## 5. Metriques de progression
 
-| Metrique | Actuel | Cible Sprint 18 |
-|----------|--------|----------------|
-| Endpoints API | ~135 | ~350 |
-| Modeles | 30 | ~70 |
-| Tests | 75 | ~250 |
-| Coverage backend | ~40% | >80% |
-| Modules | 8 | 18 |
-| Pays paie supportes | 0 (estimation only) | 6 (DZ, MA, TN, FR, TR, SN) |
-| Langues | 4 (FR, AR, TR, EN) | 4 (stable) |
-| Workflows CI | 10 | 14 |
+| Metrique | Pre-sprints | Actuel (post sprint 18) | Cible finale | Ecart |
+|----------|-------------|------------------------|--------------|-------|
+| Endpoints API | ~135 | ~280+ | ~350 | ~70 restants (frontend support, SEPA, paie pays) |
+| Modeles | 30 | 70+ | ~70 | **ATTEINT** |
+| Tests | 75 (263 passed) | 263+ | ~250 | **ATTEINT** (quantite, coverage a ameliorer) |
+| Coverage backend | ~40% | ~40% | >80% | A augmenter (tests Feature par module) |
+| Modules | 8 | 18+ | 18 | **ATTEINT** |
+| Pays paie supportes | 0 (estimation) | 2 (DZ, MA) | 6 | 4 restants (TN, FR, TR, SN) |
+| Langues | 4 (FR, AR, TR, EN) | 4 | 4 | **ATTEINT** |
+| Workflows CI | 10 | 10 | 14 | 4 restants (Playwright, coverage gate, etc.)
 
 ---
 
