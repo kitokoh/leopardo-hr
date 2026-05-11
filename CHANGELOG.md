@@ -37,6 +37,21 @@
 - Rapports avances : Analyse couts (prets actifs + inscriptions formations par annee)
 - Routes : ~17 nouveaux endpoints dans hr_extended.php
 
+## [4.9.0] - 2026-05-11
+
+### Sprint 17-18 — IA avancee (Voice, Agents, Analytics)
+
+- Voice IA : VoiceController (transcribe, synthesize, command pipeline complet)
+- Voice IA : Support 4 langues (FR/AR/TR/EN) avec Whisper STT + Edge TTS
+- Voice IA : Integration Deepgram (STT) et ElevenLabs (TTS) en alternative
+- Voice IA : Pipeline audio-in -> transcription -> IA -> synthese -> audio-out
+- Agents : AgentRunner (multi-step tool calling autonome, max 10 etapes)
+- Agents : AgentController (run task, list workflows predefinis)
+- Agents : 3 workflows predefinis (paie, rapport hebdo, onboarding employe)
+- Analytics IA : AIAnalyticsController (usage, costs, tools, errors)
+- Analytics IA : Usage par tenant, couts par periode/provider, outils top, taux erreur
+- Config : config/ai.php enrichi avec voice providers et agent settings
+- Routes : ~9 nouveaux endpoints dans routes/ai.php
 ## [4.8.0] - 2026-05-11
 
 ### Sprint 15-16 — Dashboard API, Notifications & Exports
