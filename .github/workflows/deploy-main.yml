@@ -83,7 +83,7 @@ jobs:
           fi
 
           web_changed=false
-          if printf '%s\n' "${changed_files}" | grep -Eq '^(admin-dashboard/|\.github/workflows/web-ci\.yml|\.github/workflows/deploy-main\.yml|docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS\.md|docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS\.md)'; then
+          if printf '%s\n' "${changed_files}" | grep -Eq '^(front/admin-dashboard/|\.github/workflows/web-ci\.yml|\.github/workflows/deploy-main\.yml|docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS\.md|docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS\.md)'; then
             web_changed=true
           fi
 
@@ -261,7 +261,7 @@ jobs:
           set -euo pipefail
           ROOT_FILE="google-services.json"
           API_FILE="api/google-services.json"
-          APP_FILE="mobile/android/app/google-services.json"
+          APP_FILE="front/mobile/android/app/google-services.json"
           if [[ -f "$ROOT_FILE" && ! -f "$APP_FILE" ]]; then
             cp "$ROOT_FILE" "$APP_FILE"
           elif [[ -f "$API_FILE" && ! -f "$APP_FILE" ]]; then
@@ -269,11 +269,11 @@ jobs:
           fi
 
       - name: Flutter pub get
-        working-directory: ./mobile
+        working-directory: front/mobile
         run: flutter pub get
 
       - name: Build release APK for staging
-        working-directory: ./mobile
+        working-directory: front/mobile
         shell: bash
         run: |
           set -euo pipefail
@@ -287,7 +287,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: leopardo-rh-main-${{ github.run_number }}
-          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          path: front/mobile/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -297,7 +297,7 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testeurs-internes
-          file: mobile/build/app/outputs/flutter-apk/app-release.apk
+          file: front/mobile/build/app/outputs/flutter-apk/app-release.apk
           releaseNotes: |
             Auto deploy from main
             Commit: ${{ needs.prepare.outputs.sha }}
