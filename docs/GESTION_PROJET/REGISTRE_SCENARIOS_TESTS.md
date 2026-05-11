@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Fournir une source de verite unique pour savoir:
+Fournir une source de verite unique  pour savoir:
 
 - quelles surfaces fonctionnelles doivent etre testees
 - dans quel document de scenarios elles sont decrites
