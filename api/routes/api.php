@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/cameras.php';
     require __DIR__.'/modules/cabinet.php';
     require __DIR__.'/modules/user.php';
+    require __DIR__.'/modules/tracking.php';
 
     // IA Module — routes separees /api/ai/*
     require __DIR__.'/ai.php';
