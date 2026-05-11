@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Subscription;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class BillingController extends Controller
 {
@@ -136,15 +139,27 @@ class BillingController extends Controller
         return response()->json(['data' => $invoice]);
     }
 
-    public function invoicePdf(Request $request, int $id): JsonResponse
+    public function invoicePdf(Request $request, int $id): Response
     {
         $user = $request->user();
         $invoice = Invoice::where('company_id', $user->company_id)->findOrFail($id);
+        $company = Company::find($user->company_id);
 
-        if (! $invoice->pdf_path) {
-            return response()->json(['message' => 'PDF not yet generated.'], 404);
-        }
+        $pdf = Pdf::loadView('pdf.invoice', [
+            'invoice' => $invoice,
+            'company' => $company,
+            'legalMentions' => '',
+        ]);
 
-        return response()->json(['data' => ['pdf_url' => $invoice->pdf_path]]);
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = sprintf('facture_%s.pdf',
+            $invoice->invoice_number ?? 'LEO-'.now()->format('Y').'-'.str_pad((string) $invoice->id, 4, '0', STR_PAD_LEFT)
+        );
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
     }
 }
