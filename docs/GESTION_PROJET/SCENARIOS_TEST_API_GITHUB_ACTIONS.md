@@ -482,3 +482,32 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/feature-flags/matrix` matrice complete features x plans
 - `GET /api/v1/feature-flags/check/{featureKey}` verifier si feature active pour company
 - `PUT /api/v1/feature-flags/matrix` mettre a jour entree matrice (admin)
+
+### Rapports avances
+- `GET /api/v1/reports/recruitment-pipeline` candidats par statut
+- `GET /api/v1/reports/training-completion` inscriptions par statut
+- `GET /api/v1/reports/loan-summary` montants prets par statut
+- `GET /api/v1/reports/demographics` effectifs par departement et type contrat
+- `GET /api/v1/reports/cost-analysis` analyse couts (prets, formations) par annee
+
+---
+
+## IA Avancee — Voice, Agents, Analytics (Sprint 17-18)
+
+### Voice IA
+- `POST /api/ai/voice/transcribe` audio -> texte (Whisper ou Deepgram)
+- `POST /api/ai/voice/synthesize` texte -> audio (Edge TTS ou ElevenLabs)
+- `POST /api/ai/voice/command` pipeline complet audio -> IA -> audio
+- Support langues : fr, ar, tr, en
+- Rate limiting applique
+
+### Agents autonomes
+- `POST /api/ai/agent/run` executer une tache multi-step (max 10-20 etapes)
+- `GET /api/ai/agent/workflows` lister les workflows predefinis
+- Workflows : prepare_payroll, weekly_report, new_employee_onboarding
+
+### Analytics IA (super-admin)
+- `GET /api/ai/analytics/usage` utilisation par tenant (requests, tokens, couts)
+- `GET /api/ai/analytics/costs` couts par periode et provider (day/week/month)
+- `GET /api/ai/analytics/tools` outils les plus appeles
+- `GET /api/ai/analytics/errors` taux de succes + erreurs recentes

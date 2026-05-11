@@ -30,4 +30,16 @@ return [
 
     'max_conversation_messages' => 50,
     'context_window_tokens' => 4096,
+
+    'voice' => [
+        'stt_provider' => env('AI_STT_PROVIDER', 'whisper'),
+        'tts_provider' => env('AI_TTS_PROVIDER', 'edge_tts'),
+        'deepgram_key' => env('DEEPGRAM_API_KEY'),
+        'elevenlabs_key' => env('ELEVENLABS_API_KEY'),
+        'elevenlabs_default_voice' => env('ELEVENLABS_DEFAULT_VOICE', '21m00Tcm4TlvDq8ikWAM'),
+    ],
+
+    'agent' => [
+        'max_steps' => (int) env('AI_AGENT_MAX_STEPS', 10),
+    ],
 ];
