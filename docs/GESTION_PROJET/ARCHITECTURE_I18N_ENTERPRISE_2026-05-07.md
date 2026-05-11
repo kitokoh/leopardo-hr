@@ -40,9 +40,9 @@ Chaque fichier locale suit ces regles:
   - genere `api/lang/{locale}/shared.php`
   - genere `api/lang/{locale}/emails.enterprise.php`
 - `sync-web.js`
-  - genere `admin-dashboard/src/i18n/locales/{locale}.json`
+  - genere `front/admin-dashboard/src/i18n/locales/{locale}.json`
 - `sync-mobile.js`
-  - genere `mobile/lib/l10n/app_{locale}.arb`
+  - genere `front/mobile/lib/l10n/app_{locale}.arb`
 
 ## 5. Remote translation updates
 
@@ -104,7 +104,7 @@ Workflow recommande:
 
 ## 11. Plan de migration web
 
-1. brancher `admin-dashboard/src/i18n/index.js`
+1. brancher `front/admin-dashboard/src/i18n/index.js`
 2. remplacer les literals UI critiques
 3. introduire gestion `locale + dir`
 4. ajouter tests RTL et snapshot
