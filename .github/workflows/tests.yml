@@ -877,7 +877,7 @@ jobs:
           fetch-depth: 0
 
       - name: Validate governance and changelog
-        run: pwsh tools/check-governance.ps1 -BaseRef ${{ github.event.pull_request.base.sha }} -HeadRef ${{ github.event.pull_request.head.sha }}
+        run: pwsh dev-hub/tools/check-governance.ps1 -BaseRef ${{ github.event.pull_request.base.sha }} -HeadRef ${{ github.event.pull_request.head.sha }}
 
   dependency-review:
     name: Dependency Review (PR Security)

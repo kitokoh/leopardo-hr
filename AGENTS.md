@@ -231,7 +231,7 @@ Procedure recommandee :
 - Quand on deplace des dossiers references par les workflows CI (`.github/workflows/*.yml`), il faut systematiquement mettre a jour les filtres `paths:` et les chemins `working-directory:` dans chaque workflow concerne.
 - ATTENTION: Le token OAuth Devin n'a PAS le scope `workflow`. Les fichiers `.github/workflows/` ne peuvent pas etre pushes par l'agent. Le proprietaire du repo doit mettre a jour les workflows manuellement ou accorder le scope.
 - `PILOTAGE.md` est un fichier de gouvernance obligatoire a la racine. Ne PAS le deplacer dans `docs/`.
-- Les fichiers `.md` techniques (DEPLOYMENT, MONITORING, etc.) vont dans `docs/` ; ne garder a la racine que README, CHANGELOG, AGENTS, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT, DEVELOPMENT, LICENSE, PILOTAGE.
+- Les fichiers `.md` techniques (DEPLOYMENT, MONITORING, etc.) vont dans `docs/` ; ne garder a la racine que README, CHANGELOG, AGENTS, SECURITY, SUPPORT, LICENSE, PILOTAGE. Les fichiers liés au développement (CONTRIBUTING, CODE_OF_CONDUCT, DEVELOPMENT) et les dossiers techniques (scripts, sdk, openapi, tools, demo, examples) sont regroupés dans `dev-hub/`.
 
 ### 2026-05-10 - Sprint 5-6 conges avances + contrats
 

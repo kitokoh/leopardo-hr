@@ -47,7 +47,7 @@ Les references a utiliser avant le PDF sont :
 | Flutter flavors | `main_dev.dart`, `main_staging.dart`, `main_prod.dart` | Le depot s'appuie surtout sur `main.dart` + `dart-define` dans les workflows | La doc flavors est a corriger |
 | Local dev Docker | API + Postgres + Redis | `api/docker-compose.yml` monte API + PostgreSQL, pas Redis | Le PDF surestime la stack locale actuelle |
 | Queue/cache prod cible | Redis/queue workers prevus | Redis existe dans le code/config, mais l'operationnel actif reste plus simple | A garder comme cible, pas comme acquis partout |
-| Backup | Scripts S3 type `backup-db.sh` / `test-restore.sh` | Le runbook actif s'appuie sur `scripts/backup_drill.sh` | Le runbook courant prime sur les scripts du PDF |
+| Backup | Scripts S3 type `backup-db.sh` / `test-restore.sh` | Le runbook actif s'appuie sur `dev-hub/scripts/backup_drill.sh` | Le runbook courant prime sur les scripts du PDF |
 | Multi-tenancy | Neon/PostgreSQL avec schema tenant evoque | Le depot a deja depasse l'ancien scope MVP et utilise des schemas | La realite code prime sur les sections simplifiees du PDF |
 
 ## Ecarts a corriger dans le PDF
