@@ -52,14 +52,14 @@ Cible :
 
 ## 4. Drill automatise
 
-Un script prêt a l'emploi est livre : `scripts/backup_drill.sh`.
+Un script prêt a l'emploi est livre : `dev-hub/scripts/backup_drill.sh`.
 
 ```bash
 DATABASE_URL="postgres://user:pwd@source/leopardo_db" \
 RESTORE_DB_URL="postgres://user:pwd@scratch/leopardo_drill" \
 BACKUP_DIR="/tmp/leopardo-drills" \
 BACKUP_AGE_RECIPIENT="age1..." \
-./scripts/backup_drill.sh
+./dev-hub/scripts/backup_drill.sh
 ```
 
 Le script :
@@ -130,7 +130,7 @@ pg_restore --no-owner --no-privileges \
 
 ## 9. References
 
-- Script : `scripts/backup_drill.sh`
+- Script : `dev-hub/scripts/backup_drill.sh`
 - Rollback DB : `RUNBOOK_ROLLBACK.md` (option B)
 - Incident P1 : `RUNBOOK_INCIDENT_P1.md`
 - Trace des drills : `RUNBOOK_DRILLS_LOG.md`

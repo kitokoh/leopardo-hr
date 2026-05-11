@@ -266,7 +266,7 @@ La reference actuelle de sauvegarde et restauration est :
 
 Le script actif associe est :
 
-- `scripts/backup_drill.sh`
+- `dev-hub/scripts/backup_drill.sh`
 
 ### Logique de fonctionnement actuelle
 
