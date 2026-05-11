@@ -45,6 +45,7 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> loginWithGoogle() async {
+
     final googleUser = await _googleSignIn.authenticate();
 
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
