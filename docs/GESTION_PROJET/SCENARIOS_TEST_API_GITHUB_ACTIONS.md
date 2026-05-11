@@ -379,3 +379,30 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/v1/bank-exports/{id}/download` telecharge le fichier genere
 - Validation : payroll run doit etre validated ou paid
 - RBAC : managers uniquement
+
+---
+
+## Modules RH Avances (Sprint 11-12)
+
+### Recrutement — Actions avancees
+- `POST /api/v1/recruitment/jobs/{id}/publish` publier une offre (draft -> published)
+- `POST /api/v1/recruitment/jobs/{id}/close` fermer une offre (published -> closed)
+- `DELETE /api/v1/recruitment/jobs/{id}` supprimer (draft uniquement)
+- `GET /api/v1/recruitment/applicants/{id}` detail candidat avec entretiens
+- `PATCH /api/v1/recruitment/applicants/{id}/status` changer statut pipeline
+- `DELETE /api/v1/recruitment/applicants/{id}` supprimer candidat
+- `PATCH /api/v1/recruitment/interviews/{id}/feedback` ajouter feedback + notation
+- `DELETE /api/v1/recruitment/interviews/{id}` annuler entretien
+
+### Self-service employe
+- `GET /api/v1/me/trainings` mes inscriptions formations avec details cours/session
+- `POST /api/v1/me/trainings/{sessionId}/enroll` auto-inscription a une session
+- `GET /api/v1/me/loans` mes prets avec compteur echeances
+- `GET /api/v1/me/loans/{id}/repayments` echeancier de mon pret
+
+### Rapports avances
+- `GET /api/v1/reports/recruitment-pipeline` candidats par statut
+- `GET /api/v1/reports/training-completion` inscriptions par statut
+- `GET /api/v1/reports/loan-summary` montants prets par statut
+- `GET /api/v1/reports/demographics` effectifs par departement et type contrat
+- `GET /api/v1/reports/cost-analysis` analyse couts (prets, formations) par annee
