@@ -12,6 +12,23 @@
 - PLAN_ACTION : Categorisation par priorite (critique/haute/moyenne/basse) et effort estime (~105 jours-dev)
 - PLAN_ACTION : Ordre d'execution recommande en 4 phases (A-D) sur 90+ jours
 
+## [4.7.0] - 2026-05-11
+
+### Sprint 13-14 — Billing, Onboarding & Feature Flags
+
+- Billing : Migration pour 3 tables (subscriptions, invoices, payments)
+- Billing : Modeles Subscription, Invoice, Payment
+- Billing : BillingController (subscription, upgrade, cancel, renew, invoices, PDF)
+- Billing : PaymentWebhookController (Stripe + Chargily webhooks)
+- Onboarding : Migration table onboarding_steps + modele OnboardingStep
+- Onboarding : OnboardingStepController (checklist dynamique, progress, complete, skip)
+- Onboarding : Auto-seed 10 etapes par defaut lors du premier acces
+- Features : Migration table feature_plan_matrix + modele FeaturePlanMatrix
+- Features : FeatureFlagController (matrix CRUD, check par feature/plan)
+- Features : FeatureService avec cache (active/limit par company)
+- Features : FeaturePlanMatrixSeeder avec 17 features x 4 plans
+- Routes : ~15 nouveaux endpoints dans modules/billing.php
+
 ## [4.6.0] - 2026-05-11
 
 ### Sprint 11-12 — Modules RH avances
@@ -29,6 +46,30 @@
 - Rapports avances : Demographics (effectifs par departement et type contrat)
 - Rapports avances : Analyse couts (prets actifs + inscriptions formations par annee)
 - Routes : ~17 nouveaux endpoints dans hr_extended.php
+
+## [4.9.0] - 2026-05-11
+
+### Sprint 17-18 — IA avancee (Voice, Agents, Analytics)
+
+- Voice IA : VoiceController (transcribe, synthesize, command pipeline complet)
+- Voice IA : Support 4 langues (FR/AR/TR/EN) avec Whisper STT + Edge TTS
+- Voice IA : Integration Deepgram (STT) et ElevenLabs (TTS) en alternative
+- Voice IA : Pipeline audio-in -> transcription -> IA -> synthese -> audio-out
+- Agents : AgentRunner (multi-step tool calling autonome, max 10 etapes)
+- Agents : AgentController (run task, list workflows predefinis)
+- Agents : 3 workflows predefinis (paie, rapport hebdo, onboarding employe)
+- Analytics IA : AIAnalyticsController (usage, costs, tools, errors)
+- Analytics IA : Usage par tenant, couts par periode/provider, outils top, taux erreur
+- Config : config/ai.php enrichi avec voice providers et agent settings
+- Routes : ~9 nouveaux endpoints dans routes/ai.php
+## [4.8.0] - 2026-05-11
+
+### Sprint 15-16 — Dashboard API, Notifications & Exports
+
+- Dashboard : DashboardController (summary, recent-activity, KPI mensuel)
+- Dashboard : NotificationController (liste paginee, unread, mark read, mark all)
+- Dashboard : ExportController (export employes JSON/CSV, export attendance JSON/CSV)
+- Routes : ~9 nouveaux endpoints dans modules/dashboard.php
 
 ## [4.5.0] - 2026-05-11
 
