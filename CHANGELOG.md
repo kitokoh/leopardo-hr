@@ -6,7 +6,7 @@
 
 ### Paie avancee — PDF, exports bancaires, billing, carry-forward
 
-- PaySlip PDF :  Bulletin de paie PDF via DomPDF avec template adapte par pays (6 pays)
+- PaySlip PDF :   Bulletin de paie PDF via DomPDF avec template adapte par pays (6 pays)
 - PaySlip PDF : Endpoint GET /pay-slips/{id}/pdf + self-service /me/pay-slips/{id}/pdf
 - PaySlip : Endpoint POST /payroll-runs/{id}/send-slips pour envoi bulletins
 - Bank Export : BankExportGenerator avec 3 formats reels (SEPA XML, CCP DZ, CSV generique)
