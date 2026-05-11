@@ -382,6 +382,52 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 ---
 
+## Module Tracking Vehicules (Sprint 9-10)
+
+### Vehicles CRUD
+- `GET /api/v1/vehicles` liste paginee avec filtres status, type
+- `POST /api/v1/vehicles` creation vehicule
+- `GET /api/v1/vehicles/{id}` detail vehicule
+- `PUT /api/v1/vehicles/{id}` mise a jour
+- `DELETE /api/v1/vehicles/{id}` suppression
+- RBAC : authentification requise, isolation par company_id
+
+### Vehicle Sub-Resources
+- `GET /api/v1/vehicles/{id}/position` position GPS actuelle (via Traccar)
+- `GET /api/v1/vehicles/{id}/trips` historique trajets paginé
+- `GET /api/v1/vehicles/{id}/alerts` alertes du vehicule paginées
+- `GET /api/v1/vehicles/{id}/maintenance` historique maintenance paginé
+
+### Affectations Chauffeurs
+- `POST /api/v1/vehicles/{id}/assign` affecter un chauffeur
+- `POST /api/v1/vehicles/{id}/unassign` retirer affectation
+- `GET /api/v1/vehicles/{id}/assignments` historique affectations
+
+### Trips
+- `GET /api/v1/vehicle-trips` liste trajets filtrable (vehicle, driver, dates)
+- `GET /api/v1/vehicle-trips/{id}` detail trajet
+
+### Alerts
+- `GET /api/v1/vehicle-alerts` liste alertes filtrable (type, acknowledged, vehicle)
+- `POST /api/v1/vehicle-alerts/{id}/acknowledge` acquitter alerte
+
+### Maintenance
+- `GET /api/v1/vehicle-maintenance` liste maintenance filtrable
+- `POST /api/v1/vehicle-maintenance` enregistrer maintenance
+- `PUT /api/v1/vehicle-maintenance/{id}` modifier
+- `DELETE /api/v1/vehicle-maintenance/{id}` supprimer
+
+### Traccar Sync
+- `POST /api/v1/tracking/sync-devices` synchroniser devices depuis Traccar
+- `POST /api/v1/tracking/sync-positions` synchroniser positions
+- `POST /api/v1/tracking/sync-trips` synchroniser trajets
+
+### Fleet Dashboard
+- `GET /api/v1/fleet/overview` statistiques flotte (total, active, maintenance, alertes)
+- `GET /api/v1/fleet/live-map` positions temps reel de tous les vehicules
+- `GET /api/v1/fleet/reports/fuel` rapport consommation carburant
+- `GET /api/v1/fleet/reports/mileage` rapport kilometrage
+- `GET /api/v1/fleet/reports/maintenance-due` maintenances a venir (30 jours)
 ## Module IA (Sprint 7-8)
 
 ### Chat IA
