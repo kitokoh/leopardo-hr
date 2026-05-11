@@ -28,7 +28,7 @@
 | Middleware RequestId | 07 T-MON-04 | Moyenne | 0.5j |
 | Health check enrichi | 07 T-MON-01/02 | Moyenne | 1j |
 | Docker Compose pour dev | 10 T-OSS-01 | Haute | 1j |
-| DEVELOPMENT.md | 10 T-OSS-03 | Haute | 0.5j |
+| ../../dev-hub/DEVELOPMENT.md | 10 T-OSS-03 | Haute | 0.5j |
 | Configurer Sentry performance | 07 T-MON-06 | Moyenne | 0.5j |
 
 **Livrable :** Base solide, dev setup en 1 commande, observabilite basique.

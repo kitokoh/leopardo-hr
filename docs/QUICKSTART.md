@@ -12,8 +12,8 @@ Welcome to the Leopardo RH developer community! Follow this guide to get your lo
 Run the bootstrap script from the repository root to initialize environment files and install dependencies:
 
 ```bash
-chmod +x scripts/bootstrap.sh
-./scripts/bootstrap.sh
+chmod +x ../dev-hub/scripts/bootstrap.sh
+./../dev-hub/scripts/bootstrap.sh
 ```
 
 ## 🐘 2. Start the Backend (API)
