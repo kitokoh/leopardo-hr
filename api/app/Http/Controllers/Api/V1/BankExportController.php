@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\BankExport;
 use App\Models\PayrollRun;
+use App\Services\BankExportGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,41 +28,32 @@ class BankExportController extends Controller
         }
 
         $validated = $request->validate([
-            'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
+            'format' => 'required|in:sepa_xml,ccp_dz,csv_generic',
         ]);
 
-        $slips = $payrollRun->paySlips()
-            ->with('employee:id,first_name,last_name')
-            ->where('status', 'validated')
-            ->get();
+        $generator = new BankExportGenerator();
+        $format = $validated['format'];
+        $content = $generator->generate($payrollRun, $format);
+        $extension = $generator->fileExtension($format);
 
-        $fileName = sprintf('bank_exports/%s_%s_%s.csv',
+        $fileName = sprintf('bank_exports/%s_%s_%s.%s',
             $payrollRun->company_id,
             $payrollRun->period_start->format('Y_m'),
-            $validated['format']
+            $format,
+            $extension
         );
 
-        $csvContent = "employee_id,first_name,last_name,net_salary\n";
-        $totalAmount = 0.0;
-        foreach ($slips as $slip) {
-            $csvContent .= sprintf("%d,%s,%s,%.2f\n",
-                $slip->employee_id,
-                $slip->employee->first_name ?? '',
-                $slip->employee->last_name ?? '',
-                $slip->net_salary
-            );
-            $totalAmount += $slip->net_salary;
-        }
+        Storage::disk('local')->put($fileName, $content);
 
-        Storage::disk('local')->put($fileName, $csvContent);
+        $totalAmount = $payrollRun->paySlips()->where('status', 'validated')->sum('net_salary');
 
         $export = BankExport::create([
             'payroll_run_id' => $payrollRun->id,
             'company_id' => $payrollRun->company_id,
-            'format' => $validated['format'],
+            'format' => $format,
             'file_path' => $fileName,
             'total_amount' => round($totalAmount, 2),
-            'transfer_count' => $slips->count(),
+            'transfer_count' => $payrollRun->paySlips()->where('status', 'validated')->count(),
             'status' => 'generated',
             'generated_at' => now(),
         ]);
