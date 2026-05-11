@@ -1,0 +1,150 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Models\Invoice;
+use App\Models\Subscription;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class BillingController extends Controller
+{
+    public function subscription(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $subscription = Subscription::where('company_id', $user->company_id)
+            ->latest()
+            ->first();
+
+        if (! $subscription) {
+            return response()->json(['data' => null, 'message' => 'No active subscription.'], 404);
+        }
+
+        return response()->json(['data' => $subscription]);
+    }
+
+    public function upgrade(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'plan' => 'required|in:starter,business,enterprise',
+            'payment_method' => 'nullable|in:stripe,chargily,bank_transfer,manual',
+        ]);
+
+        $subscription = Subscription::where('company_id', $user->company_id)
+            ->latest()
+            ->first();
+
+        if (! $subscription) {
+            $subscription = Subscription::create([
+                'company_id' => $user->company_id,
+                'plan' => $validated['plan'],
+                'status' => 'active',
+                'payment_method' => $validated['payment_method'] ?? 'manual',
+                'current_period_start' => now(),
+                'current_period_end' => now()->addMonth(),
+            ]);
+        } else {
+            $subscription->update([
+                'plan' => $validated['plan'],
+                'status' => 'active',
+                'current_period_start' => now(),
+                'current_period_end' => now()->addMonth(),
+            ]);
+        }
+
+        return response()->json(['data' => $subscription->fresh()]);
+    }
+
+    public function cancel(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:1000',
+        ]);
+
+        $subscription = Subscription::where('company_id', $user->company_id)
+            ->latest()
+            ->firstOrFail();
+
+        $subscription->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+            'cancel_reason' => $validated['reason'] ?? null,
+        ]);
+
+        return response()->json(['data' => $subscription->fresh()]);
+    }
+
+    public function renew(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user->isManager()) {
+            abort(403);
+        }
+
+        $subscription = Subscription::where('company_id', $user->company_id)
+            ->latest()
+            ->firstOrFail();
+
+        $subscription->update([
+            'status' => 'active',
+            'cancelled_at' => null,
+            'cancel_reason' => null,
+            'current_period_start' => now(),
+            'current_period_end' => now()->addMonth(),
+        ]);
+
+        return response()->json(['data' => $subscription->fresh()]);
+    }
+
+    public function invoices(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $invoices = Invoice::where('company_id', $user->company_id)
+            ->orderByDesc('created_at')
+            ->paginate($request->integer('per_page', 20));
+
+        return response()->json([
+            'data' => $invoices->items(),
+            'meta' => [
+                'current_page' => $invoices->currentPage(),
+                'last_page' => $invoices->lastPage(),
+                'per_page' => $invoices->perPage(),
+                'total' => $invoices->total(),
+            ],
+        ]);
+    }
+
+    public function showInvoice(Request $request, int $id): JsonResponse
+    {
+        $user = $request->user();
+        $invoice = Invoice::where('company_id', $user->company_id)
+            ->with('payments')
+            ->findOrFail($id);
+
+        return response()->json(['data' => $invoice]);
+    }
+
+    public function invoicePdf(Request $request, int $id): JsonResponse
+    {
+        $user = $request->user();
+        $invoice = Invoice::where('company_id', $user->company_id)->findOrFail($id);
+
+        if (! $invoice->pdf_path) {
+            return response()->json(['message' => 'PDF not yet generated.'], 404);
+        }
+
+        return response()->json(['data' => ['pdf_url' => $invoice->pdf_path]]);
+    }
+}
