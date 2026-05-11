@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.7.0] - 2026-05-11
+
+### Sprint 13-14 — Billing, Onboarding & Feature Flags
+
+- Billing : Migration pour 3 tables (subscriptions, invoices, payments)
+- Billing : Modeles Subscription, Invoice, Payment
+- Billing : BillingController (subscription, upgrade, cancel, renew, invoices, PDF)
+- Billing : PaymentWebhookController (Stripe + Chargily webhooks)
+- Onboarding : Migration table onboarding_steps + modele OnboardingStep
+- Onboarding : OnboardingStepController (checklist dynamique, progress, complete, skip)
+- Onboarding : Auto-seed 10 etapes par defaut lors du premier acces
+- Features : Migration table feature_plan_matrix + modele FeaturePlanMatrix
+- Features : FeatureFlagController (matrix CRUD, check par feature/plan)
+- Features : FeatureService avec cache (active/limit par company)
+- Features : FeaturePlanMatrixSeeder avec 17 features x 4 plans
+- Routes : ~15 nouveaux endpoints dans modules/billing.php
+
 ## [4.6.0] - 2026-05-11
 
 ### Sprint 11-12 — Modules RH avances
