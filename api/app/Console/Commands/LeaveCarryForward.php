@@ -66,7 +66,7 @@ class LeaveCarryForward extends Command
                             'leave_policy_id' => $policy->id,
                             'amount' => $carryAmount,
                             'type' => 'carry_forward',
-                            'description' => "Report de {$carryAmount} jour(s) de {$toYear - 1}",
+                            'description' => "Report de {$carryAmount} jour(s) de ".($toYear - 1),
                             'effective_date' => now()->startOfYear()->toDateString(),
                         ]);
 
