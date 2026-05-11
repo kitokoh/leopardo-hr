@@ -20,6 +20,38 @@
 - Rapports avances : Analyse couts (prets actifs + inscriptions formations par annee)
 - Routes : ~17 nouveaux endpoints dans hr_extended.php
 
+## [4.5.0] - 2026-05-11
+
+### Sprint 9-10 — Tracking vehicules (Integration Traccar)
+
+- Tracking : Migration idempotente pour 5 tables (vehicles, vehicle_assignments, vehicle_trips, vehicle_alerts, vehicle_maintenances)
+- Tracking : 5 modeles (Vehicle, VehicleAssignment, VehicleTrip, VehicleAlert, VehicleMaintenance)
+- Tracking : TraccarService complet (devices, positions, trips, geofences, events)
+- Tracking : VehicleController CRUD complet avec position GPS, trips, alerts, maintenance sub-resources
+- Tracking : Affectation/desaffectation chauffeurs avec historique
+- Tracking : VehicleTripController (liste paginee, detail)
+- Tracking : VehicleAlertController (liste filtrable, acquittement)
+- Tracking : VehicleMaintenanceController CRUD (enregistrement, suivi, prochaine maintenance)
+- Tracking : FleetController (overview, live-map, rapports fuel/mileage/maintenance-due)
+- Tracking : TrackingSyncController (sync devices, positions, trips depuis Traccar)
+- Tracking : Config config/tracking.php avec feature flag et parametres Traccar
+- Routes : nouveau fichier routes/modules/tracking.php (~25 endpoints)
+## [4.4.0] - 2026-05-11
+
+### Sprint 7-8 — Couche IA Phase 1
+
+- IA : Architecture complète avec Orchestrator, IntentEngine, ToolRegistry, MemoryManager, AIAuditLogger
+- IA : LLMClient abstrait avec implémentations OpenAI (GPT-4o) et Claude (Sonnet)
+- IA : 3 middlewares (AIRateLimiter, AITenantInjector, AIFeatureCheck) pour quotas/tenant/feature flag
+- IA : AIGatewayController avec endpoints POST /api/ai/chat, GET /api/ai/chat/history, DELETE /api/ai/chat/{id}, GET /api/ai/tools
+- IA : Migration idempotente pour 3 tables (ai_conversations, ai_audit_logs, ai_tool_registry)
+- IA : 3 modèles (AIConversation, AIAuditLog, AIToolRegistryEntry)
+- IA : 4 DTOs (AIRequest, AIResponse, ToolCall, ToolResult)
+- IA : Seeder avec 15 outils IA (get_employees, search, attendance, absences, payroll, etc.)
+- IA : System prompt multilingue dans resources/ai/system_prompt.md
+- IA : Config config/ai.php avec quotas par plan SaaS et support multi-provider
+- Routes : nouveau fichier routes/ai.php
+
 ## [4.3.0]  - 2026-05-10
 
 ### Reorganisation structure depot
