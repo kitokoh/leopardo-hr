@@ -1,6 +1,6 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS   
 
-## Objectif
+## Objectif 
 
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
@@ -558,6 +558,21 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - `GET /api/ai/analytics/errors` taux de succes + erreurs recentes
 
 ---
+
+## DevOps — Health enrichi, Metrics, Structured Logging (Post-Sprint)
+
+### Health enrichi
+- `GET /api/v1/health` — Inclut desormais : queue (driver + size), memory (usage_mb, peak_mb, limit_mb), environment, uptime_seconds
+- `GET /api/v1/health/live` — Sonde liveness inchangee
+- `GET /api/v1/health/ready` — Sonde readiness inchangee
+
+### Metrics platform
+- `GET /api/v1/metrics` — Retourne: companies (total, active, trial), employees (total, active), system (php_version, laravel_version, memory_usage_mb, cache_driver, queue_driver, db_driver)
+
+### Structured Logging
+- Middleware `StructuredLogging` enregistre chaque requete API en JSON : method, uri, status, duration_ms, ip, user_agent, user_id, company_id, request_id
+- Channel `structured` : daily JSON logs dans `storage/logs/structured.log`
+- Channel `audit` : daily JSON logs dans `storage/logs/audit.log` (90 jours retention)
 
 ## Paie avancee — PDF, Bank Export, Billing (Post-Sprint)
 
