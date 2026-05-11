@@ -25,7 +25,11 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('leave:accrue')->daily();
+        $schedule->command('leave:carry-forward')->yearlyOn(1, 1, '02:00');
         $schedule->command('contracts:alert-expiring')->daily();
+        $schedule->command('billing:check-trials')->daily();
+        $schedule->command('billing:check-overdue')->daily();
+        $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
