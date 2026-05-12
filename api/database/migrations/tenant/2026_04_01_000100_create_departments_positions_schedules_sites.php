@@ -25,30 +25,35 @@ return new class extends Migration
         // ── departments ────────────────────────────────────────────────────────
         // manager_id est ajouté APRÈS employees (migration T-04) pour résoudre
         // la dépendance circulaire departments ↔ employees
-        Schema::create('departments', function (Blueprint $table) {
+        if (! Schema::hasTable('departments')) {
+            Schema::create('departments', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();        // NULL en mode schema isolé
             $table->string('name', 100);
             // manager_id ajouté en migration T-04 (après employees)
             $table->timestampTz('created_at')->useCurrent();
 
-            $table->comment('Départements de l\'entreprise. manager_id ajouté après la table employees (dépendance circulaire)');
-        });
+                $table->comment('Départements de l\'entreprise. manager_id ajouté après la table employees (dépendance circulaire)');
+            });
+        }
 
         DB::statement("COMMENT ON COLUMN departments.company_id IS 'NULL en mode schema (isolation physique). Présent uniquement en mode shared (isolation logique)'");
 
         // ── positions ──────────────────────────────────────────────────────────
-        Schema::create('positions', function (Blueprint $table) {
+        if (! Schema::hasTable('positions')) {
+            Schema::create('positions', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 100);
             $table->unsignedInteger('department_id')->nullable();
             $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
-            $table->timestampTz('created_at')->useCurrent();
-        });
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
 
         // ── schedules ──────────────────────────────────────────────────────────
-        Schema::create('schedules', function (Blueprint $table) {
+        if (! Schema::hasTable('schedules')) {
+            Schema::create('schedules', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 100);
@@ -62,11 +67,13 @@ return new class extends Migration
             $table->boolean('is_default')->default(false);
             $table->timestampTz('created_at')->useCurrent();
 
-            $table->comment('Plannings de travail. work_days: tableau JSON [1-7], 1=Lundi');
-        });
+                $table->comment('Plannings de travail. work_days: tableau JSON [1-7], 1=Lundi');
+            });
+        }
 
         // ── sites ──────────────────────────────────────────────────────────────
-        Schema::create('sites', function (Blueprint $table) {
+        if (! Schema::hasTable('sites')) {
+            Schema::create('sites', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 100);
@@ -74,8 +81,9 @@ return new class extends Migration
             $table->decimal('gps_lat', 10, 8)->nullable();
             $table->decimal('gps_lng', 11, 8)->nullable();
             $table->unsignedSmallInteger('gps_radius_m')->default(100);         // rayon de tolérance GPS
-            $table->timestampTz('created_at')->useCurrent();
-        });
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
     }
 
     public function down(): void

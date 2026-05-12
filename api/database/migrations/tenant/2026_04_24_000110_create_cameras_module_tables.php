@@ -18,6 +18,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('cameras')) {
         Schema::create('cameras', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -36,7 +37,9 @@ return new class extends Migration
             $table->index(['company_id', 'is_active']);
             $table->index(['company_id', 'sort_order']);
         });
+        }
 
+        if (! Schema::hasTable('camera_access_tokens')) {
         Schema::create('camera_access_tokens', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -58,7 +61,9 @@ return new class extends Migration
             $table->index(['camera_id', 'is_revoked'], 'idx_cam_tokens_camera');
             $table->index(['company_id', 'expires_at']);
         });
+        }
 
+        if (! Schema::hasTable('camera_permissions')) {
         Schema::create('camera_permissions', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -75,7 +80,9 @@ return new class extends Migration
             $table->unique(['camera_id', 'employee_id'], 'idx_cam_perms_unique');
             $table->index(['employee_id', 'company_id'], 'idx_cam_perms_employee');
         });
+        }
 
+        if (! Schema::hasTable('camera_access_logs')) {
         Schema::create('camera_access_logs', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -93,6 +100,7 @@ return new class extends Migration
             $table->index(['company_id', 'camera_id', 'created_at'], 'idx_cam_logs_camera');
             $table->index(['company_id', 'created_at'], 'idx_cam_logs_company');
         });
+        }
     }
 
     public function down(): void

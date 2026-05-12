@@ -17,16 +17,19 @@ return new class extends Migration
     public function up(): void
     {
         // ── 1. departments.manager_id — résolution dépendance circulaire ───────
-        Schema::table('departments', function (Blueprint $table) {
-            $table->unsignedInteger('manager_id')->nullable()->after('name');
-            $table->foreign('manager_id')
-                ->references('id')->on('employees')
-                ->nullOnDelete();
-        });
+        if (! Schema::hasColumn('departments', 'manager_id')) {
+            Schema::table('departments', function (Blueprint $table) {
+                $table->unsignedInteger('manager_id')->nullable()->after('name');
+                $table->foreign('manager_id')
+                    ->references('id')->on('employees')
+                    ->nullOnDelete();
+            });
+        }
 
         // ── 2. employee_devices ────────────────────────────────────────────────
         // DÉCISION ARCHITECTURALE : table séparée (PAS fcm_tokens JSONB dans employees)
         // Raison : scalable multi-device, permet last_seen par appareil, révocation ciblée
+        if (! Schema::hasTable('employee_devices')) {
         Schema::create('employee_devices', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -42,8 +45,10 @@ return new class extends Migration
             $table->index('employee_id');
             $table->comment('Tokens FCM par appareil. DÉCISION: table séparée (pas JSONB dans employees). Permet multi-device et révocation ciblée');
         });
+        }
 
         // ── 3. devices (appareils ZKTeco / QR) ────────────────────────────────
+        if (! Schema::hasTable('devices')) {
         Schema::create('devices', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -58,6 +63,7 @@ return new class extends Migration
             $table->timestampTz('last_sync_at')->nullable();
             $table->timestampTz('created_at')->useCurrent();
         });
+        }
     }
 
     public function down(): void
