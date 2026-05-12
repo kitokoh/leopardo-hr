@@ -122,7 +122,10 @@ class EvaluationController extends Controller
 
         $evaluation->update($data);
 
-        return response()->json(['data' => $this->serialize($evaluation->fresh()->load('employee', 'evaluator'))]);
+        /** @var Evaluation $fresh */
+        $fresh = $evaluation->fresh();
+
+        return response()->json(['data' => $this->serialize($fresh->load('employee', 'evaluator'))]);
     }
 
     public function submit(Request $request, Evaluation $evaluation): JsonResponse
@@ -135,7 +138,10 @@ class EvaluationController extends Controller
 
         $evaluation->update(['status' => 'submitted']);
 
-        return response()->json(['data' => $this->serialize($evaluation->fresh()->load('employee', 'evaluator'))]);
+        /** @var Evaluation $fresh */
+        $fresh = $evaluation->fresh();
+
+        return response()->json(['data' => $this->serialize($fresh->load('employee', 'evaluator'))]);
     }
 
     public function acknowledge(Request $request, Evaluation $evaluation): JsonResponse
@@ -148,7 +154,10 @@ class EvaluationController extends Controller
 
         $evaluation->update(['status' => 'acknowledged', 'acknowledged_at' => Carbon::now()]);
 
-        return response()->json(['data' => $this->serialize($evaluation->fresh()->load('employee', 'evaluator'))]);
+        /** @var Evaluation $fresh */
+        $fresh = $evaluation->fresh();
+
+        return response()->json(['data' => $this->serialize($fresh->load('employee', 'evaluator'))]);
     }
 
     public function destroy(Request $request, Evaluation $evaluation): JsonResponse
@@ -169,9 +178,9 @@ class EvaluationController extends Controller
         return [
             'id' => $e->id,
             'employee_id' => $e->employee_id,
-            'employee' => $e->relationLoaded('employee') ? ['id' => $e->employee->id, 'first_name' => $e->employee->first_name, 'last_name' => $e->employee->last_name, 'email' => $e->employee->email] : null,
+            'employee' => $e->relationLoaded('employee') && $e->employee ? ['id' => $e->employee->id, 'first_name' => $e->employee->first_name, 'last_name' => $e->employee->last_name, 'email' => $e->employee->email] : null,
             'evaluator_id' => $e->evaluator_id,
-            'evaluator' => $e->relationLoaded('evaluator') ? ['id' => $e->evaluator->id, 'first_name' => $e->evaluator->first_name, 'last_name' => $e->evaluator->last_name] : null,
+            'evaluator' => $e->relationLoaded('evaluator') && $e->evaluator ? ['id' => $e->evaluator->id, 'first_name' => $e->evaluator->first_name, 'last_name' => $e->evaluator->last_name] : null,
             'period' => $e->period,
             'score' => $e->score,
             'criteria' => $e->criteria,
