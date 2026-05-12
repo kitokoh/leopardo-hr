@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\Position;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,7 +12,9 @@ class PositionController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -32,19 +35,23 @@ class PositionController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
         $data = $request->validate(['name' => ['required', 'string', 'max:100'], 'department_id' => ['nullable', 'integer', 'min:1']]);
-        $pos = Position::create(['company_id' => $request->user()->company_id, ...$data]);
+        $pos = Position::create(['company_id' => $user->company_id, ...$data]);
 
         return response()->json(['data' => $this->serialize($pos)], 201);
     }
 
     public function show(Request $request, Position $position): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -53,7 +60,9 @@ class PositionController extends Controller
 
     public function update(Request $request, Position $position): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -65,7 +74,9 @@ class PositionController extends Controller
 
     public function destroy(Request $request, Position $position): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
