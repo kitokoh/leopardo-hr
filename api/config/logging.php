@@ -145,6 +145,35 @@ return [
             'formatter' => Monolog\Formatter\JsonFormatter::class,
         ],
 
+        'production' => [
+            'driver' => 'stack',
+            'channels' => ['daily', 'structured', 'alerting'],
+            'ignore_exceptions' => false,
+        ],
+
+        'discord' => [
+            'driver' => 'monolog',
+            'level' => 'error',
+            'handler' => \Monolog\Handler\SlackWebhookHandler::class,
+            'handler_with' => [
+                'webhookUrl' => env('LOG_DISCORD_WEBHOOK_URL'),
+                'channel' => null,
+                'username' => env('LOG_DISCORD_USERNAME', 'Leopardo Alerts'),
+                'useShortAttachment' => true,
+                'includeContextAndExtra' => true,
+            ],
+            'processors' => [PsrLogMessageProcessor::class],
+        ],
+
+        'alerting' => [
+            'driver' => 'stack',
+            'channels' => array_filter([
+                env('LOG_SLACK_WEBHOOK_URL') ? 'slack' : null,
+                env('LOG_DISCORD_WEBHOOK_URL') ? 'discord' : null,
+            ]),
+            'level' => 'error',
+        ],
+
     ],
 
 ];

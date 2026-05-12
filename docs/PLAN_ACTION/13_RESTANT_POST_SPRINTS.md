@@ -156,26 +156,26 @@ Chaque module a besoin de tests Pest Feature couvrant les cas positifs et RBAC.
 ```
 Fichiers a creer dans tests/Feature/ :
 
-- [ ] BillingControllerTest.php (~10 tests : subscription CRUD, upgrade, cancel, invoices)
-- [ ] OnboardingStepControllerTest.php (~6 tests : checklist, progress, complete, skip, auto-seed)
-- [ ] FeatureFlagControllerTest.php (~6 tests : matrix, check, updateMatrix, RBAC)
-- [ ] PaymentWebhookControllerTest.php (~4 tests : stripe valid, stripe invalid, chargily valid, chargily invalid)
-- [ ] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
-- [ ] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
-- [ ] ExportControllerTest.php (~4 tests : employees JSON, employees CSV, attendance JSON, attendance CSV)
-- [ ] VoiceControllerTest.php (~4 tests : transcribe, synthesize, command, RBAC)
-- [ ] AgentControllerTest.php (~4 tests : run, workflows, max steps, RBAC)
-- [ ] AIAnalyticsControllerTest.php (~4 tests : usage, costs, tools, errors)
-- [ ] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
-- [ ] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
-- [ ] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
-- [ ] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
-- [ ] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
-- [ ] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
-- [ ] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
-- [ ] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
-- [ ] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
-- [ ] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
+- [x] BillingControllerTest.php (~10 tests : subscription CRUD, upgrade, cancel, invoices)
+- [x] OnboardingStepControllerTest.php (~6 tests : checklist, progress, complete, skip, auto-seed)
+- [x] FeatureFlagControllerTest.php (~6 tests : matrix, check, updateMatrix, RBAC)
+- [x] PaymentWebhookControllerTest.php (~4 tests : stripe valid, stripe invalid, chargily valid, chargily invalid)
+- [x] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
+- [x] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
+- [x] ExportControllerTest.php (~4 tests : employees JSON, employees CSV, attendance JSON, attendance CSV)
+- [x] VoiceControllerTest.php (~4 tests : transcribe, synthesize, command, RBAC)
+- [x] AgentControllerTest.php (~4 tests : run, workflows, max steps, RBAC)
+- [x] AIAnalyticsControllerTest.php (~4 tests : usage, costs, tools, errors)
+- [x] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
+- [x] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
+- [x] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
+- [x] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
+- [x] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
+- [x] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
+- [x] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
+- [x] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
+- [x] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
+- [x] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
 
 Total estime : ~110 nouveaux tests -> coverage backend > 70%
 ```
@@ -269,10 +269,10 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ### Monitoring production
 
 ```
-- [ ] Health check enrichi : GET /api/v1/health -> JSON {status, db, redis, queue, disk, uptime}
-- [ ] Logging JSON structure : channel production avec Monolog JsonFormatter
-- [ ] Sentry APM : performance traces sur endpoints critiques (paie, IA)
-- [ ] Alerting Slack/Discord : erreurs 5xx, queue backed up, disk > 80%
+- [x] Health check enrichi : GET /api/v1/health -> JSON {status, db, redis, queue, disk, uptime}
+- [x] Logging JSON structure : channel production avec Monolog JsonFormatter
+- [x] Sentry APM : performance traces sur endpoints critiques (paie, IA)
+- [x] Alerting Slack/Discord : erreurs 5xx, queue backed up, disk > 80%
 ```
 
 ---
