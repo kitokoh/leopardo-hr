@@ -6,6 +6,14 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $task_id
+ * @property int|null $author_id
+ * @property string|null $content
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class TaskComment extends Model
 {
     use BelongsToCompany;
@@ -20,11 +28,13 @@ class TaskComment extends Model
 
     protected $casts = ['created_at' => 'datetime'];
 
+    /** @return BelongsTo<Task, $this> */
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class, 'task_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function author(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'author_id');

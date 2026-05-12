@@ -10,6 +10,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $job_posting_id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property string|null $phone
+ * @property string|null $resume_path
+ * @property string|null $cover_letter
+ * @property string $source
+ * @property string $status
+ * @property string|null $rating
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $applied_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Applicant extends Model
 {
     use BelongsToCompany;
@@ -36,11 +54,13 @@ class Applicant extends Model
         'applied_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<JobPosting, $this> */
     public function jobPosting(): BelongsTo
     {
         return $this->belongsTo(JobPosting::class, 'job_posting_id');
     }
 
+    /** @return HasMany<Interview, $this> */
     public function interviews(): HasMany
     {
         return $this->hasMany(Interview::class, 'applicant_id');

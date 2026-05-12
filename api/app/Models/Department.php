@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property int|null $manager_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class Department extends Model
 {
     use BelongsToCompany;
@@ -23,11 +30,13 @@ class Department extends Model
 
     protected $casts = ['created_at' => 'datetime'];
 
+    /** @return BelongsTo<Employee, $this> */
     public function manager(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'manager_id');
     }
 
+    /** @return HasMany<Position, $this> */
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class, 'department_id');

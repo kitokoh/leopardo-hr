@@ -4,6 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $description
+ * @property array<mixed> $parameters
+ * @property array<mixed> $required_permissions
+ * @property string|null $required_role
+ * @property string|null $module
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class AIToolRegistryEntry extends Model
 {
     protected $table = 'ai_tool_registry';

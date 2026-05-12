@@ -7,6 +7,18 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property string $type
+ * @property string $title
+ * @property string|null $body
+ * @property array<mixed> $data
+ * @property bool $is_read
+ * @property \Illuminate\Support\Carbon|null $read_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class Notification extends Model
 {
     use BelongsToCompany;
@@ -21,6 +33,7 @@ class Notification extends Model
 
     protected $casts = ['data' => 'array', 'is_read' => 'boolean', 'read_at' => 'datetime', 'created_at' => 'datetime'];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
