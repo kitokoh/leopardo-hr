@@ -27,7 +27,7 @@ class EmployeeService
 
         $companyId = $payload['company_id']
             ?? $actor?->company_id
-            ?? (app()->bound('current_company') ? app('current_company')->id : null);
+            ?? (app()->bound('current_company') ? currentCompany()->id : null);
 
         $password = $providedPassword ?: Str::random(32);
         $payload['password_hash'] = Hash::make($password);

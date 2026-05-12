@@ -18,7 +18,7 @@ class MyDashboardController extends Controller
     public function index(Request $request): View
     {
         $employee = $request->user();
-        $company = app()->bound('current_company') ? app('current_company') : $employee->company;
+        $company = app()->bound('current_company') ? currentCompany() : $employee->company;
 
         $timezone = $company?->timezone ?? 'Africa/Algiers';
         $today = now('UTC')->setTimezone($timezone)->toDateString();

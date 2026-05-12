@@ -14,7 +14,7 @@ class DashboardController extends Controller
 
     public function index(): View
     {
-        $company = app('current_company');
+        $company = currentCompany();
         $today = now('UTC')->setTimezone($company->timezone)->toDateString();
 
         // 1. Statistiques globales (sur tous les employés actifs)
