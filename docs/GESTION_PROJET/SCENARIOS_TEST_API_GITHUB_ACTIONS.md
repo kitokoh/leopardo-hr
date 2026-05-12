@@ -589,10 +589,11 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Verifie que le run est valide avant envoi
 
 ### Export bancaire reel
-- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, csv_generic
+- `POST /api/v1/payroll-runs/{id}/bank-export` avec format : sepa_xml, ccp_dz, virement_ma, csv_generic
 - SEPA XML : format pain.001.001.03 pour virements europeens
 - CCP Algerie Poste : format texte fixe (entete, detail, total)
-- CSV generique : employee_id, first_name, last_name, iban, bank_name, net_salary, currency, period
+- CSV generique / virement_ma : employee_id, first_name, last_name, iban, bank_account, net_salary, currency, period
+- Les tests doivent couvrir que l'export ne selectionne pas de colonnes employees inexistantes (`rib`, `bank_name`)
 
 ### Facture PDF (Billing)
 - `GET /api/v1/billing/invoices/{id}/pdf` telecharger la facture en PDF
