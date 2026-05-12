@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.4] - 2026-05-12
+
+### Backend — API Contract Hardening (Lot 1)
+
+- Tests Feature : ajout de couvertures ciblees pour webhooks Stripe/Chargily, dashboard tenant, notifications et contrats IA.
+- Notifications : ajout des relations `Employee::notifications()` / `unreadNotifications()` et d'un marquage lu compatible avec le modele Notification interne.
+- Dashboard : KPI mensuels rendus compatibles SQLite/PostgreSQL via fenetre de dates, sans `to_char()` specifique PostgreSQL.
+- IA : analytics branchees sur les colonnes reelles (`input_tokens`, `output_tokens`, `cost_cents`, `duration_ms`, `error`, `tools_called`) et scopees au tenant authentifie.
+- IA : clients OpenAI/Claude tolerent une cle API absente afin que les endpoints metadata/history ne tombent pas a l'instanciation de l'orchestrateur.
+- Tests : fixture `CreatesMvpSchema` completee pour les tables critiques post-sprints (`payments`, `audit_logs`, `ai_*`, notifications modernes, `archived_at`).
+
 ## [4.16.3] - 2026-05-12
 
 ### Backend — Migration Safety (Partie 4 stabilisation)
