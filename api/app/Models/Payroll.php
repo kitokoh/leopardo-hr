@@ -8,6 +8,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property int $period_month
+ * @property int $period_year
+ * @property float $gross_salary
+ * @property float $overtime_amount
+ * @property array<mixed> $bonuses
+ * @property array<mixed> $deductions
+ * @property array<mixed> $cotisations
+ * @property float $ir_amount
+ * @property float $advance_deduction
+ * @property float $absence_deduction
+ * @property float $penalty_deduction
+ * @property float $net_salary
+ * @property string|null $pdf_path
+ * @property string $status
+ * @property string|null $validated_by
+ * @property \Illuminate\Support\Carbon|null $validated_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Payroll extends Model
 {
     use BelongsToCompany, HasFactory;
@@ -29,11 +52,13 @@ class Payroll extends Model
         'net_salary' => 'float', 'validated_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function validator(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'validated_by');

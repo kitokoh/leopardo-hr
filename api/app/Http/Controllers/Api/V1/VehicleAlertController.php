@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\VehicleAlert;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class VehicleAlertController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $query = VehicleAlert::where('company_id', $user->company_id);
 
@@ -40,6 +42,7 @@ class VehicleAlertController extends Controller
 
     public function acknowledge(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $alert = VehicleAlert::where('company_id', $user->company_id)->findOrFail($id);
 

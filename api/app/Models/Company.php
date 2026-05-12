@@ -8,6 +8,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property string $id
+ * @property string $name
+ * @property string $slug
+ * @property string $sector
+ * @property string $country
+ * @property string $city
+ * @property string|null $address
+ * @property string $email
+ * @property string|null $phone
+ * @property int|null $plan_id
+ * @property string $schema_name
+ * @property string $tenancy_type
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $subscription_start
+ * @property \Illuminate\Support\Carbon $subscription_end
+ * @property string $language
+ * @property string $timezone
+ * @property string $currency
+ * @property string|null $notes
+ * @property array<mixed> $features
+ * @property array<mixed> $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Company extends Model
 {
     use HasFactory;
@@ -139,16 +164,19 @@ class Company extends Model
         });
     }
 
+    /** @return HasMany<Employee, $this> */
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class, 'company_id');
     }
 
+    /** @return HasMany<BiometricEnrollmentRequest, $this> */
     public function biometricRequests(): HasMany
     {
         return $this->hasMany(BiometricEnrollmentRequest::class, 'company_id');
     }
 
+    /** @return HasMany<AttendanceKiosk, $this> */
     public function attendanceKiosks(): HasMany
     {
         return $this->hasMany(AttendanceKiosk::class, 'company_id');

@@ -8,6 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $payroll_run_id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property int|null $contract_id
+ * @property \Illuminate\Support\Carbon $period_start
+ * @property \Illuminate\Support\Carbon $period_end
+ * @property float $gross_salary
+ * @property float $total_deductions
+ * @property float $net_salary
+ * @property float $employer_contributions
+ * @property float $total_cost
+ * @property float $working_days
+ * @property float $actual_days_worked
+ * @property float $overtime_hours
+ * @property string $status
+ * @property string|null $pdf_path
+ * @property \Illuminate\Support\Carbon|null $sent_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class PaySlip extends Model
 {
     use BelongsToCompany;
@@ -34,16 +56,19 @@ class PaySlip extends Model
         'sent_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<PayrollRun, $this> */
     public function payrollRun(): BelongsTo
     {
         return $this->belongsTo(PayrollRun::class, 'payroll_run_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return HasMany<PaySlipLine, $this> */
     public function lines(): HasMany
     {
         return $this->hasMany(PaySlipLine::class, 'pay_slip_id')->orderBy('order');

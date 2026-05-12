@@ -3,24 +3,18 @@
 namespace App\AI;
 
 use App\AI\DTOs\AIRequest;
-use App\AI\Providers\ClaudeClient;
-use App\AI\Providers\OpenAIClient;
 use App\Models\Employee;
 use Illuminate\Support\Facades\File;
 
 class Orchestrator
 {
-    private LLMClient $client;
-
     public function __construct(
         private readonly ToolRegistry $toolRegistry,
         private readonly IntentEngine $intentEngine,
         private readonly MemoryManager $memoryManager,
         private readonly AIAuditLogger $auditLogger,
-    ) {
-        $provider = (string) config('ai.provider', 'openai');
-        $this->client = $provider === 'claude' ? new ClaudeClient : new OpenAIClient;
-    }
+        private readonly LLMClient $client,
+    ) {}
 
     /**
      * @return array{conversation_id: int, response: string, tools_used: array<int, string>, tokens: array{input: int, output: int}}
@@ -127,7 +121,7 @@ class Orchestrator
             return 'employee';
         }
 
-        if (method_exists($employee, 'isManager') && $employee->isManager()) {
+        if ($employee->isManager()) {
             return 'manager';
         }
 

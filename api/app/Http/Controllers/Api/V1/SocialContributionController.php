@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class SocialContributionController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -33,6 +35,7 @@ class SocialContributionController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -66,6 +69,7 @@ class SocialContributionController extends Controller
 
     public function update(Request $request, SocialContribution $socialContribution): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -87,6 +91,7 @@ class SocialContributionController extends Controller
 
     public function destroy(Request $request, SocialContribution $socialContribution): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);

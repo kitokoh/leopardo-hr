@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Applicant;
 use App\Models\Interview;
@@ -13,6 +14,7 @@ class JobPostingActionController extends Controller
 {
     public function publish(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -34,6 +36,7 @@ class JobPostingActionController extends Controller
 
     public function close(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -52,6 +55,7 @@ class JobPostingActionController extends Controller
 
     public function destroy(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -70,6 +74,7 @@ class JobPostingActionController extends Controller
 
     public function showApplicant(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -84,6 +89,7 @@ class JobPostingActionController extends Controller
 
     public function updateApplicantStatus(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -101,6 +107,7 @@ class JobPostingActionController extends Controller
 
     public function destroyApplicant(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -114,6 +121,7 @@ class JobPostingActionController extends Controller
 
     public function interviewFeedback(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $interview = Interview::where('company_id', $user->company_id)->findOrFail($id);
@@ -130,6 +138,7 @@ class JobPostingActionController extends Controller
 
     public function destroyInterview(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->hasManagerRole('principal', 'rh')) {
             abort(403);

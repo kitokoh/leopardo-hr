@@ -9,6 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property string $description
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property array<mixed> $members
+ * @property string $status
+ * @property string|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class Project extends Model
 {
     use BelongsToCompany;
@@ -24,11 +36,13 @@ class Project extends Model
 
     protected $casts = ['start_date' => 'date', 'end_date' => 'date', 'members' => 'array', 'created_at' => 'datetime'];
 
+    /** @return BelongsTo<Employee, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
 
+    /** @return HasMany<Task, $this> */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class, 'project_id');

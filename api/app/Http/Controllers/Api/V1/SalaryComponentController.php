@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\SalaryComponent;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class SalaryComponentController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -37,6 +39,7 @@ class SalaryComponentController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -77,6 +80,7 @@ class SalaryComponentController extends Controller
 
     public function show(Request $request, SalaryComponent $salaryComponent): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryComponent->company_id !== $actor->company_id) {
             abort(404);
@@ -90,6 +94,7 @@ class SalaryComponentController extends Controller
 
     public function update(Request $request, SalaryComponent $salaryComponent): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryComponent->company_id !== $actor->company_id) {
             abort(404);
@@ -119,6 +124,7 @@ class SalaryComponentController extends Controller
 
     public function destroy(Request $request, SalaryComponent $salaryComponent): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryComponent->company_id !== $actor->company_id) {
             abort(404);

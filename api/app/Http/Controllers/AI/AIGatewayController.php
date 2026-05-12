@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AI;
 
 use App\AI\DTOs\AIRequest;
 use App\AI\Orchestrator;
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ class AIGatewayController extends Controller
             'conversation_id' => 'nullable|integer',
         ]);
 
+        /** @var Employee $user */
         $user = $request->user();
 
         $aiRequest = new AIRequest(
@@ -36,6 +38,7 @@ class AIGatewayController extends Controller
 
     public function history(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $conversations = DB::table('ai_conversations')
@@ -58,6 +61,7 @@ class AIGatewayController extends Controller
 
     public function deleteConversation(Request $request, int $conversationId): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $deleted = DB::table('ai_conversations')
@@ -75,6 +79,7 @@ class AIGatewayController extends Controller
 
     public function tools(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $tools = DB::table('ai_tool_registry')

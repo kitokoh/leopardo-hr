@@ -7,6 +7,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property int|null $schedule_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property int $session_number
+ * @property \Illuminate\Support\Carbon $check_in
+ * @property \Illuminate\Support\Carbon $check_out
+ * @property string $method
+ * @property string|null $source_device_code
+ * @property string|null $external_event_id
+ * @property string $biometric_type
+ * @property bool $synced_from_offline
+ * @property string $status
+ * @property string $hours_worked
+ * @property string $overtime_hours
+ * @property int $late_minutes
+ * @property string $gps_lat
+ * @property string $gps_lng
+ * @property string|null $corrected_by
+ * @property string|null $correction_note
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class AttendanceLog extends Model
 {
     use BelongsToCompany;
@@ -49,11 +74,13 @@ class AttendanceLog extends Model
         'gps_lng' => 'decimal:8',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Schedule, $this> */
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');

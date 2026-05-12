@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
@@ -13,6 +14,7 @@ class SelfServiceController extends Controller
 {
     public function myTrainings(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $enrollments = TrainingEnrollment::where('employee_id', $user->id)
@@ -34,6 +36,7 @@ class SelfServiceController extends Controller
 
     public function selfEnroll(Request $request, int $sessionId): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $exists = TrainingEnrollment::where('training_session_id', $sessionId)
@@ -56,6 +59,7 @@ class SelfServiceController extends Controller
 
     public function myLoans(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $loans = EmployeeLoan::where('employee_id', $user->id)
@@ -77,6 +81,7 @@ class SelfServiceController extends Controller
 
     public function myLoanRepayments(Request $request, int $loanId): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $loan = EmployeeLoan::where('employee_id', $user->id)

@@ -6,6 +6,23 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $user_id
+ * @property int|null $conversation_id
+ * @property string $prompt
+ * @property string $response
+ * @property array<mixed> $tools_called
+ * @property string $provider
+ * @property string|null $model
+ * @property int $input_tokens
+ * @property int $output_tokens
+ * @property int $cost_cents
+ * @property int $duration_ms
+ * @property string|null $error
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class AIAuditLog extends Model
 {
     use BelongsToCompany;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Models\VehicleAlert;
@@ -15,6 +16,7 @@ class FleetController extends Controller
 {
     public function overview(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
 
@@ -37,6 +39,7 @@ class FleetController extends Controller
 
     public function liveMap(Request $request, TraccarService $traccar): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $vehicles = Vehicle::where('company_id', $user->company_id)
@@ -63,6 +66,7 @@ class FleetController extends Controller
 
     public function fuelReport(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $from = $request->input('from', now()->startOfMonth()->toDateString());
         $to = $request->input('to', now()->toDateString());
@@ -79,6 +83,7 @@ class FleetController extends Controller
 
     public function mileageReport(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $from = $request->input('from', now()->startOfMonth()->toDateString());
         $to = $request->input('to', now()->toDateString());
@@ -94,6 +99,7 @@ class FleetController extends Controller
 
     public function maintenanceDue(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $upcoming = VehicleMaintenance::where('company_id', $user->company_id)

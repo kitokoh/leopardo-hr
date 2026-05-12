@@ -6,6 +6,18 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $invoice_id
+ * @property int|null $company_id
+ * @property string $amount
+ * @property string $currency
+ * @property string $method
+ * @property string|null $provider_reference
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class Payment extends Model
 {
     use BelongsToCompany;

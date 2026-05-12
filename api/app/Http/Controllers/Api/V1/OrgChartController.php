@@ -26,6 +26,7 @@ class OrgChartController extends Controller
 
     public function subordinates(Request $request, int $employeeId): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $directReports = Employee::query()
