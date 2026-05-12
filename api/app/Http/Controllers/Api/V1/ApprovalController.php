@@ -146,7 +146,9 @@ class ApprovalController extends Controller
             $approvalRequest->update(['current_level' => $approvalRequest->current_level + 1]);
         }
 
-        return response()->json(['data' => $approvalRequest->fresh()->load('decisions')]);
+        /** @var ApprovalRequest $approvalRequestFresh */
+        $approvalRequestFresh = $approvalRequest->fresh();
+        return response()->json(['data' => $approvalRequestFresh->load('decisions')]);
     }
 
     public function reject(Request $request, ApprovalRequest $approvalRequest): JsonResponse
@@ -175,7 +177,9 @@ class ApprovalController extends Controller
 
         $approvalRequest->update(['status' => 'rejected']);
 
-        return response()->json(['data' => $approvalRequest->fresh()->load('decisions')]);
+        /** @var ApprovalRequest $approvalRequestFresh */
+        $approvalRequestFresh = $approvalRequest->fresh();
+        return response()->json(['data' => $approvalRequestFresh->load('decisions')]);
     }
 
     public function history(Request $request): JsonResponse
