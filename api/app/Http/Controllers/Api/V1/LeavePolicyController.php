@@ -59,7 +59,9 @@ class LeavePolicyController extends Controller
 
     public function show(Request $request, LeavePolicy $leavePolicy): JsonResponse
     {
-        if ($leavePolicy->company_id !== $request->user()->company_id) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if ($leavePolicy->company_id !== $user->company_id) {
             abort(404);
         }
 

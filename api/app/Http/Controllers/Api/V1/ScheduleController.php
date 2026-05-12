@@ -12,7 +12,9 @@ class ScheduleController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -40,7 +42,9 @@ class ScheduleController extends Controller
 
     public function show(Request $request, Schedule $schedule): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
 
@@ -68,7 +72,9 @@ class ScheduleController extends Controller
 
     public function destroy(Request $request, Schedule $schedule): JsonResponse
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
         if ($schedule->is_default) {
