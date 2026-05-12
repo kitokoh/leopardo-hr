@@ -122,7 +122,9 @@ class ContractController extends Controller
 
         $contract->update($validated);
 
-        return response()->json(['data' => $contract->fresh()->load(['employee:id,first_name,last_name', 'department:id,name'])]);
+        /** @var Contract $contractFresh */
+        $contractFresh = $contract->fresh();
+        return response()->json(['data' => $contractFresh->load(['employee:id,first_name,last_name', 'department:id,name'])]);
     }
 
     public function amendments(Request $request, Contract $contract): JsonResponse
@@ -196,7 +198,9 @@ class ContractController extends Controller
 
         $contract->update(['status' => 'active', 'signed_at' => now()]);
 
-        return response()->json(['data' => $contract->fresh()->load('employee:id,first_name,last_name')]);
+        /** @var Contract $contractFresh */
+        $contractFresh = $contract->fresh();
+        return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
     }
 
     public function suspend(Request $request, Contract $contract): JsonResponse
@@ -215,7 +219,9 @@ class ContractController extends Controller
 
         $contract->update(['status' => 'suspended']);
 
-        return response()->json(['data' => $contract->fresh()->load('employee:id,first_name,last_name')]);
+        /** @var Contract $contractFresh */
+        $contractFresh = $contract->fresh();
+        return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
     }
 
     public function terminate(Request $request, Contract $contract): JsonResponse
@@ -242,7 +248,9 @@ class ContractController extends Controller
             'terminated_at' => now(),
         ]);
 
-        return response()->json(['data' => $contract->fresh()->load('employee:id,first_name,last_name')]);
+        /** @var Contract $contractFresh */
+        $contractFresh = $contract->fresh();
+        return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
     }
 
     public function renew(Request $request, Contract $contract): JsonResponse
