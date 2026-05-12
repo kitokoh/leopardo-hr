@@ -37,14 +37,15 @@ class EmployeeLoanControllerTest extends TestCase
 
         $response = $this->postJson('/api/v1/loans', [
             'amount' => 50000,
-            'currency' => 'DZD',
-            'reason' => 'Achat immobilier',
-            'repayment_months' => 12,
+            'loan_type' => 'housing',
+            'installments' => 12,
+            'start_date' => now()->addMonth()->toDateString(),
+            'notes' => 'Achat immobilier',
         ]);
 
         $response->assertCreated();
         $response->assertJsonPath('data.amount', 50000);
-        $response->assertJsonPath('data.status', 'pending');
+        $response->assertJsonPath('data.status', 'draft');
     }
 
     public function test_employee_can_list_own_loans(): void
@@ -60,7 +61,9 @@ class EmployeeLoanControllerTest extends TestCase
             'employee_id' => $employee->id,
             'amount' => 30000,
             'currency' => 'DZD',
-            'repayment_months' => 6,
+            'installments' => 6,
+            'installment_amount' => 5000,
+            'start_date' => now()->addMonth(),
             'status' => 'approved',
         ]);
 
@@ -73,7 +76,7 @@ class EmployeeLoanControllerTest extends TestCase
     public function test_manager_can_approve_loan(): void
     {
         $company = Company::factory()->create();
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -84,13 +87,15 @@ class EmployeeLoanControllerTest extends TestCase
             'employee_id' => $employee->id,
             'amount' => 20000,
             'currency' => 'DZD',
-            'repayment_months' => 6,
-            'status' => 'pending',
+            'installments' => 6,
+            'installment_amount' => 3333.33,
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
         ]);
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson("/api/v1/loans/{$loan->id}/approve");
+        $response = $this->putJson("/api/v1/loans/{$loan->id}/approve");
         $response->assertOk();
         $response->assertJsonPath('data.status', 'approved');
     }
@@ -108,12 +113,14 @@ class EmployeeLoanControllerTest extends TestCase
             'employee_id' => $employee->id,
             'amount' => 10000,
             'currency' => 'DZD',
-            'repayment_months' => 3,
-            'status' => 'pending',
+            'installments' => 3,
+            'installment_amount' => 3333.33,
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
         ]);
 
         Sanctum::actingAs($employee);
 
-        $this->postJson("/api/v1/loans/{$loan->id}/approve")->assertStatus(403);
+        $this->putJson("/api/v1/loans/{$loan->id}/approve")->assertStatus(403);
     }
 }

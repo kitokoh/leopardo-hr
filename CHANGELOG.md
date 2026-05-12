@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.14.0] - 2026-05-12
+
+### Backend — Stabilisation tests modules post-sprints
+
+- Tests Feature : correction des tests Devin billing, prets, frais, exports, formation pour utiliser les routes et contrats API actuels.
+- Tests Feature : `CreatesMvpSchema` reconstruit maintenant le schema minimal des modules post-sprints testes (billing, paie, recrutement, formation, prets, frais, vehicules).
+- Migrations : rattrapage idempotent du contrat `audit_logs` moderne quand l'ancienne table tenant existe deja.
+- Migrations : ajout d'un rattrapage `updated_at` pour les anciennes factures publiques.
+- Exports : correction des exports employes/attendance pour ne plus selectionner des colonnes absentes du schema courant.
+
 ## [4.13.0] - 2026-05-11
 
 ### Open Source — Attractivite communautaire
