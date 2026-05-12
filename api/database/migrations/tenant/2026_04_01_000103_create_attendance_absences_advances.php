@@ -14,6 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         // ── attendance_logs ────────────────────────────────────────────────────
+        if (! Schema::hasTable('attendance_logs')) {
         Schema::create('attendance_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -48,11 +49,13 @@ return new class extends Migration
             $table->index(['employee_id', 'date']);
             $table->index(['date', 'status']);
         });
+        }
 
         DB::statement("COMMENT ON COLUMN attendance_logs.session_number IS 'Support split-shift. 1=journée normale. 2+=demi-journées séparées'");
         DB::statement("COMMENT ON COLUMN attendance_logs.check_in IS 'Stocké en UTC. TOUJOURS calculer les retards/HS en timezone entreprise via Carbon::setTimezone(company->timezone)'");
 
         // ── absence_types ──────────────────────────────────────────────────────
+        if (! Schema::hasTable('absence_types')) {
         Schema::create('absence_types', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -64,8 +67,10 @@ return new class extends Migration
             $table->unsignedSmallInteger('max_days_once')->nullable(); // Limite par demande
             $table->timestampTz('created_at')->useCurrent();
         });
+        }
 
         // ── absences ───────────────────────────────────────────────────────────
+        if (! Schema::hasTable('absences')) {
         Schema::create('absences', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -89,11 +94,13 @@ return new class extends Migration
             $table->index(['employee_id', 'status']);
             $table->index(['start_date', 'end_date']);
         });
+        }
 
         // Contrainte check dates (PostgreSQL spécifique)
-        DB::statement('ALTER TABLE absences ADD CONSTRAINT chk_absence_dates CHECK (end_date >= start_date)');
+        DB::statement("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_absence_dates') THEN ALTER TABLE absences ADD CONSTRAINT chk_absence_dates CHECK (end_date >= start_date); END IF; END $$");
 
         // ── leave_balance_logs ────────────────────────────────────────────────
+        if (! Schema::hasTable('leave_balance_logs')) {
         Schema::create('leave_balance_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -107,8 +114,10 @@ return new class extends Migration
 
             $table->index('employee_id');
         });
+        }
 
         // ── salary_advances ────────────────────────────────────────────────────
+        if (! Schema::hasTable('salary_advances')) {
         Schema::create('salary_advances', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -135,6 +144,7 @@ return new class extends Migration
 
             $table->index(['employee_id', 'status']);
         });
+        }
 
         DB::statement("COMMENT ON COLUMN salary_advances.status IS 'pending→approved→active→repaid. active=en cours de remboursement. PayrollService filtre WHERE status=active'");
         DB::statement("COMMENT ON COLUMN salary_advances.amount_remaining IS 'Mis à jour par PayrollService à chaque déduction mensuelle. 0=totalement remboursé→status devient repaid'");
