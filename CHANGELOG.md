@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.0] - 2026-05-12
+
+### Backend — Type Safety & Architecture (Partie 1 stabilisation)
+
+- Models : annotations `@property` PHPDoc sur les 71 modeles Eloquent (1167 lignes ajoutees)
+- Models : annotations `@return` generics sur 82+ methodes de relation (HasMany, BelongsTo, etc.)
+- Services : helper type `currentCompany()` remplace les 31 appels `app('current_company')` non types
+- Services : `PayrollCalculator` accepte les country rules via injection de dependances
+- Services : `Orchestrator` accepte `LLMClient` via DI, binding enregistre dans AppServiceProvider
+- Controllers : 207 annotations `@var Employee` sur les `$request->user()` dans 47 controllers
+- Architecture : nouveau `app/helpers.php` enregistre dans `composer.json` autoload files
+
 ## [4.15.0] - 2026-05-12
  
 ### Paie avancee — Premier lot urgent
