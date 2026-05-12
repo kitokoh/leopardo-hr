@@ -1,6 +1,6 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS   
 
-## Objectif 
+## Objectif   
 
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
