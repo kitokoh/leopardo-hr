@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.17.0] - 2026-05-12
+
+### Frontend — Blog vitrine MDX + SEO + Demo
+
+- MDX : ajout `lib/mdx.ts` — utilitaires pour lire les articles `.md` avec frontmatter (gray-matter, reading-time). Fonctions `getAllBlogPosts`, `getBlogPost`, `getRelatedPosts`, `extractHeadings`.
+- Page /demo : nouvelle page avec formulaire complet (nom, email, entreprise, telephone, nombre employes, date preferee). Connecte a l'API `/api/forms/demo`.
+- Social Share : composant `SocialShare.tsx` avec boutons Twitter, LinkedIn, Facebook, WhatsApp et copie du lien. Integre dans `BlogArticle`.
+- JSON-LD : composants `JsonLd.tsx` — `ArticleJsonLd` sur chaque article blog, `OrganizationJsonLd` en layout racine, `FAQJsonLd` disponible pour pricing.
+- SEO : `metadataBase`, Open Graph et Twitter Card ajoutes au layout racine. Meta OG sur les pages demo, blog, pricing.
+- Sitemap dynamique : `api/sitemap/route.ts` genere maintenant les URLs blog depuis `getAllBlogPosts()` au lieu d'entrees hardcodees. Page `/demo` ajoutee.
+- Newsletter : composant `NewsletterForm.tsx` connecte a `/api/forms/newsletter`. Remplace le formulaire statique sur la page blog.
+- Plan d'action : mise a jour fichier 13 — section 5 Blog vitrine MDX cochee.
+
 ## [4.15.0] - 2026-05-12
  
 ### Paie avancee — Premier lot urgent
