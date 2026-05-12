@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property int|null $absence_type_id
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property int $days_count
+ * @property string $status
+ * @property string|null $reason
+ * @property string|null $proof_path
+ * @property string|null $approved_by
+ * @property string|null $rejected_reason
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Absence extends Model
 {
     use BelongsToCompany;
@@ -34,16 +50,19 @@ class Absence extends Model
         'end_date' => 'date',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<AbsenceType, $this> */
     public function absenceType(): BelongsTo
     {
         return $this->belongsTo(AbsenceType::class, 'absence_type_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');

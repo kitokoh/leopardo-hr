@@ -9,6 +9,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $training_course_id
+ * @property int|null $company_id
+ * @property int|null $trainer_id
+ * @property string|null $external_trainer
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property \Illuminate\Support\Carbon|null $end_date
+ * @property string $location
+ * @property string $status
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class TrainingSession extends Model
 {
     use BelongsToCompany;
@@ -32,16 +46,19 @@ class TrainingSession extends Model
         'end_date' => 'date',
     ];
 
+    /** @return BelongsTo<TrainingCourse, $this> */
     public function course(): BelongsTo
     {
         return $this->belongsTo(TrainingCourse::class, 'training_course_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function trainer(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'trainer_id');
     }
 
+    /** @return HasMany<TrainingEnrollment, $this> */
     public function enrollments(): HasMany
     {
         return $this->hasMany(TrainingEnrollment::class, 'training_session_id');

@@ -8,6 +8,23 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $title
+ * @property string $description
+ * @property string|null $category
+ * @property string $type
+ * @property string $provider
+ * @property float $duration_hours
+ * @property string|null $max_participants
+ * @property float $cost_per_participant
+ * @property string $currency
+ * @property string|null $materials_path
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class TrainingCourse extends Model
 {
     use BelongsToCompany;
@@ -35,6 +52,7 @@ class TrainingCourse extends Model
         'active' => 'boolean',
     ];
 
+    /** @return HasMany<TrainingSession, $this> */
     public function sessions(): HasMany
     {
         return $this->hasMany(TrainingSession::class, 'training_course_id');

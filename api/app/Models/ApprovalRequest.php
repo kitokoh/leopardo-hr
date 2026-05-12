@@ -11,6 +11,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $workflow_id
+ * @property string $approvable_type
+ * @property int|null $approvable_id
+ * @property int|null $requester_id
+ * @property int $current_level
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class ApprovalRequest extends Model
 {
     use BelongsToCompany;
@@ -27,6 +39,7 @@ class ApprovalRequest extends Model
         'status',
     ];
 
+    /** @return BelongsTo<ApprovalWorkflow, $this> */
     public function workflow(): BelongsTo
     {
         return $this->belongsTo(ApprovalWorkflow::class, 'workflow_id');
@@ -37,11 +50,13 @@ class ApprovalRequest extends Model
         return $this->morphTo();
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function requester(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'requester_id');
     }
 
+    /** @return HasMany<ApprovalDecision, $this> */
     public function decisions(): HasMany
     {
         return $this->hasMany(ApprovalDecision::class, 'approval_request_id');

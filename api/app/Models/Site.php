@@ -6,6 +6,16 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property string|null $address
+ * @property float $gps_lat
+ * @property float $gps_lng
+ * @property int $gps_radius_m
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class Site extends Model
 {
     use BelongsToCompany;

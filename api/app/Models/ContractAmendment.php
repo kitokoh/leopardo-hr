@@ -8,6 +8,18 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $contract_id
+ * @property int|null $company_id
+ * @property string $amendment_type
+ * @property array<mixed> $changes
+ * @property \Illuminate\Support\Carbon $effective_date
+ * @property string|null $reason
+ * @property string|null $approved_by
+ * @property string|null $document_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class ContractAmendment extends Model
 {
     use BelongsToCompany;
@@ -33,11 +45,13 @@ class ContractAmendment extends Model
         'created_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Contract, $this> */
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class, 'contract_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');

@@ -6,6 +6,27 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $vehicle_id
+ * @property int|null $company_id
+ * @property int|null $driver_id
+ * @property \Illuminate\Support\Carbon $start_time
+ * @property \Illuminate\Support\Carbon $end_time
+ * @property mixed $start_lat
+ * @property mixed $start_lng
+ * @property string|null $start_address
+ * @property mixed $end_lat
+ * @property mixed $end_lng
+ * @property string|null $end_address
+ * @property string $distance_km
+ * @property int $duration_minutes
+ * @property string $max_speed_kmh
+ * @property string $avg_speed_kmh
+ * @property string $fuel_consumed
+ * @property int|null $traccar_trip_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class VehicleTrip extends Model
 {
     use BelongsToCompany;
