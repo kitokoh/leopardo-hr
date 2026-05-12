@@ -17,17 +17,11 @@ class OpenAIClient implements LLMClient
 
     public function __construct()
     {
-        /** @var string $key */
-        $key = config('ai.providers.openai.key', '');
-        $this->apiKey = $key;
+        $this->apiKey = (string) (config('ai.providers.openai.key') ?? '');
 
-        /** @var string $model */
-        $model = config('ai.providers.openai.model', 'gpt-4o');
-        $this->model = $model;
+        $this->model = (string) (config('ai.providers.openai.model') ?? 'gpt-4o');
 
-        /** @var string $baseUrl */
-        $baseUrl = config('ai.providers.openai.base_url', 'https://api.openai.com/v1');
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = (string) (config('ai.providers.openai.base_url') ?? 'https://api.openai.com/v1');
     }
 
     public function chat(array $messages, array $tools = []): AIResponse

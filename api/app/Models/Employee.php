@@ -235,6 +235,18 @@ class Employee extends Authenticatable
         return $this->hasMany(CabinetDocument::class, 'employee_id');
     }
 
+    /** @return HasMany<Notification, $this> */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'employee_id');
+    }
+
+    /** @return HasMany<Notification, $this> */
+    public function unreadNotifications(): HasMany
+    {
+        return $this->notifications()->unread();
+    }
+
     public function syncUserLookup(): void
     {
         if (! $this->canSyncUserLookup()) {

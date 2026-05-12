@@ -132,6 +132,7 @@ CREATE TABLE shared_tenants.employees (
     manager_id integer NULL,
     leave_balance numeric(6, 2) NOT NULL DEFAULT 0,
     status varchar(20) NOT NULL DEFAULT 'active',
+    archived_at timestamptz NULL,
     preferred_language char(2) NULL,
     photo_path varchar(255) NULL,
     iban varchar(255) NULL,
@@ -315,6 +316,26 @@ CREATE TABLE shared_tenants.camera_access_logs (
     created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE shared_tenants.audit_logs (
+    id bigserial PRIMARY KEY,
+    company_id uuid NULL,
+    user_id integer NULL,
+    action varchar(100) NOT NULL,
+    auditable_type varchar(100) NULL,
+    auditable_id bigint NULL,
+    old_values jsonb NULL,
+    new_values jsonb NULL,
+    ip_address varchar(45) NULL,
+    user_agent varchar(255) NULL,
+    metadata jsonb NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX audit_logs_company_id_created_at_index
+    ON shared_tenants.audit_logs (company_id, created_at);
+CREATE INDEX audit_logs_auditable_type_auditable_id_index
+    ON shared_tenants.audit_logs (auditable_type, auditable_id);
+
 CREATE TABLE shared_tenants.absence_types (
     id serial PRIMARY KEY,
     company_id uuid NOT NULL,
@@ -469,11 +490,16 @@ CREATE TABLE shared_tenants.notifications (
     type varchar(100) NOT NULL,
     title varchar(200) NOT NULL,
     body text NOT NULL,
-    created_at timestamp NULL,
-    updated_at timestamp NULL
+    data jsonb NULL,
+    is_read boolean NOT NULL DEFAULT false,
+    read_at timestamptz NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX notifications_company_id_index ON shared_tenants.notifications (company_id);
+CREATE INDEX notifications_employee_id_is_read_index
+    ON shared_tenants.notifications (employee_id, is_read);
+CREATE INDEX notifications_created_at_index ON shared_tenants.notifications (created_at);
 
 CREATE TABLE shared_tenants.departments (
     id serial PRIMARY KEY,
