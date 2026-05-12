@@ -14,6 +14,7 @@ class AdvancedReportController extends Controller
 {
     public function recruitmentPipeline(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -31,6 +32,7 @@ class AdvancedReportController extends Controller
 
     public function trainingCompletion(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -48,6 +50,7 @@ class AdvancedReportController extends Controller
 
     public function loanSummary(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -65,6 +68,7 @@ class AdvancedReportController extends Controller
 
     public function demographicBreakdown(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -94,6 +98,7 @@ class AdvancedReportController extends Controller
 
     public function costAnalysis(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);

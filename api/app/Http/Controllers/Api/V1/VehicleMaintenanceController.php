@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\VehicleMaintenance;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class VehicleMaintenanceController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $query = VehicleMaintenance::where('company_id', $user->company_id);
 
@@ -50,6 +52,7 @@ class VehicleMaintenanceController extends Controller
             'provider' => 'nullable|string|max:200',
         ]);
 
+        /** @var Employee $user */
         $user = $request->user();
         $validated['company_id'] = $user->company_id;
 
@@ -60,6 +63,7 @@ class VehicleMaintenanceController extends Controller
 
     public function update(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $record = VehicleMaintenance::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -82,6 +86,7 @@ class VehicleMaintenanceController extends Controller
 
     public function destroy(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $record = VehicleMaintenance::where('company_id', $user->company_id)->findOrFail($id);
         $record->delete();

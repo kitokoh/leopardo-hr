@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\SalaryStructure;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class SalaryStructureController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -34,6 +36,7 @@ class SalaryStructureController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -62,6 +65,7 @@ class SalaryStructureController extends Controller
 
     public function show(Request $request, SalaryStructure $salaryStructure): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryStructure->company_id !== $actor->company_id) {
             abort(404);
@@ -77,6 +81,7 @@ class SalaryStructureController extends Controller
 
     public function update(Request $request, SalaryStructure $salaryStructure): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryStructure->company_id !== $actor->company_id) {
             abort(404);
@@ -101,6 +106,7 @@ class SalaryStructureController extends Controller
 
     public function destroy(Request $request, SalaryStructure $salaryStructure): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryStructure->company_id !== $actor->company_id) {
             abort(404);

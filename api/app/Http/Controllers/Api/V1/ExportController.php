@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ class ExportController extends Controller
 {
     public function employees(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -68,6 +70,7 @@ class ExportController extends Controller
 
     public function attendance(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\ExpenseClaim;
 use App\Models\ExpenseItem;
@@ -14,6 +15,7 @@ class ExpenseClaimController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $query = ExpenseClaim::query()->with('employee:id,first_name,last_name');
 
@@ -32,6 +34,7 @@ class ExpenseClaimController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $validated = $request->validate([
@@ -69,6 +72,7 @@ class ExpenseClaimController extends Controller
 
     public function show(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($expenseClaim->company_id !== $actor->company_id) {
             abort(404);
@@ -82,6 +86,7 @@ class ExpenseClaimController extends Controller
 
     public function submit(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($expenseClaim->company_id !== $actor->company_id) {
             abort(404);
@@ -103,6 +108,7 @@ class ExpenseClaimController extends Controller
 
     public function approve(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($expenseClaim->company_id !== $actor->company_id) {
             abort(404);
@@ -125,6 +131,7 @@ class ExpenseClaimController extends Controller
 
     public function reject(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($expenseClaim->company_id !== $actor->company_id) {
             abort(404);

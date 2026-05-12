@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\TrainingCourse;
 use App\Models\TrainingEnrollment;
@@ -28,6 +29,7 @@ class TrainingController extends Controller
 
     public function storeCourse(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -64,6 +66,7 @@ class TrainingController extends Controller
 
     public function updateCourse(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($trainingCourse->company_id !== $actor->company_id) {
             abort(404);
@@ -102,6 +105,7 @@ class TrainingController extends Controller
 
     public function storeSession(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($trainingCourse->company_id !== $actor->company_id) {
             abort(404);
@@ -130,6 +134,7 @@ class TrainingController extends Controller
 
     public function updateSession(Request $request, TrainingSession $trainingSession): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($trainingSession->company_id !== $actor->company_id) {
             abort(404);
@@ -157,6 +162,7 @@ class TrainingController extends Controller
 
     public function enroll(Request $request, TrainingSession $trainingSession): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($trainingSession->company_id !== $actor->company_id) {
             abort(404);
@@ -182,6 +188,7 @@ class TrainingController extends Controller
 
     public function updateEnrollment(Request $request, TrainingEnrollment $trainingEnrollment): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($trainingEnrollment->company_id !== $actor->company_id) {
             abort(404);

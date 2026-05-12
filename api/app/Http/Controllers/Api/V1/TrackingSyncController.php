@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Models\VehicleTrip;
@@ -14,6 +15,7 @@ class TrackingSyncController extends Controller
 {
     public function syncDevices(Request $request, TraccarService $traccar): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $devices = $traccar->getDevices();
 
@@ -43,6 +45,7 @@ class TrackingSyncController extends Controller
 
     public function syncPositions(Request $request, TraccarService $traccar): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $vehicles = Vehicle::where('company_id', $user->company_id)
@@ -66,6 +69,7 @@ class TrackingSyncController extends Controller
 
     public function syncTrips(Request $request, TraccarService $traccar): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $from = Carbon::parse($request->input('from', now()->startOfDay()));
         $to = Carbon::parse($request->input('to', now()));
