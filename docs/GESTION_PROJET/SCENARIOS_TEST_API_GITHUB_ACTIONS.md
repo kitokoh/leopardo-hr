@@ -14,7 +14,7 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 - Contrats JSON consommes par le mobile
 - Contrats d'auth et de session de la plateforme admin
 
-## Roles a couvrir
+## Roles a couvrir 
 
 1. Super Admin
 2. Owner / Company Admin
@@ -32,6 +32,8 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 3. Tests critiques par domaine metier
 4. Tests de securite / isolation
 5. Rapport CI lisible avec mapping vers les scenarios
+
+Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier les routes reelles (`/billing/subscription/*`, `/training/courses/{id}/sessions`, actions `PUT` pour prets/frais) et rester alignes avec le schema `CreatesMvpSchema`.
 
 ## Matrice complete des scenarios backend
 

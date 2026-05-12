@@ -77,6 +77,7 @@ return new class extends Migration
             $table->string('payment_method', 50)->nullable();
             $table->text('notes')->nullable();
             $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->nullable();
             $table->index('company_id');
             $table->index('status');
             $table->index('due_date');
