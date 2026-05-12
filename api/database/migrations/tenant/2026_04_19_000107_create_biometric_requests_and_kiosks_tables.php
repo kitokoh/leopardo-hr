@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('biometric_enrollment_requests')) {
         Schema::create('biometric_enrollment_requests', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -30,7 +31,9 @@ return new class extends Migration
             $table->index(['company_id', 'status']);
             $table->index(['employee_id', 'status']);
         });
+        }
 
+        if (! Schema::hasTable('attendance_kiosks')) {
         Schema::create('attendance_kiosks', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -43,6 +46,7 @@ return new class extends Migration
             $table->timestampTz('last_seen_at')->nullable();
             $table->timestamps();
         });
+        }
     }
 
     public function down(): void
