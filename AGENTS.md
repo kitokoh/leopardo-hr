@@ -36,6 +36,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Dans `tests.yml`, ne pas faire porter la dette mobile historique a des PR backend/web en declenchant `mobile-tests` uniquement parce que le workflow lui-meme change. Le job mobile doit rester cale sur `mobile/**` tant que la base n'est pas completement assainie.
 - Pour `Backend Quality`, un scope PHPStan diff-aware sur les fichiers PHP backend modifies est preferable a un faux vert ou a un blocage par dette historique hors perimetre. Garder les artefacts et la visibilite du baseline.
 - Le depot contient deja beaucoup de tests backend critiques (auth, guardrails, RBAC, absences, attendance, contrats mobile). Avant d'ajouter de nouveaux tests, verifier d'abord si le manque reel n'est pas plutot la visibilite CI (coverage, artifacts, reporting).
+- Les tests locaux Windows peuvent echouer avant PHPUnit si l'extension PHP `mbstring` manque (`mb_split()` introuvable dans Laravel). Dans ce cas, ne pas conclure a un rouge applicatif ; verifier la syntaxe et laisser GitHub Actions executer la suite complete.
 
 ## Pieges connus
 
@@ -132,6 +133,8 @@ Procedure recommandee :
 - Les tests qui utilisent `Tests\Support\CreatesMvpSchema` ne voient que le schema fixture, pas automatiquement toutes les migrations post-sprints. Si un test couvre billing, paie, recrutement, formation, prets, frais ou vehicules, verifier que le fixture cree aussi la table minimale correspondante.
 - Attention aux tables historiques homonymes dans `public` et `shared_tenants` (`invoices`, notamment) : en PostgreSQL, `Schema::hasTable()` peut donner un faux positif si le `search_path` inclut `public`. Pour un fixture ou une migration tenant, preferer une table qualifiee ou un rattrapage idempotent.
 - L'ancien `audit_logs` tenant utilise `employee_id`, `target_type`, `target_id`, `changes`, `ip`; le code actuel ecrit `user_id`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`. Toute migration de compatibilite doit ajouter le contrat moderne sans relancer de SQL apres erreur PostgreSQL.
+- Les notifications API ne sont pas les `DatabaseNotification` Laravel natives : le modele interne doit exposer `markAsRead()` et `Employee` doit declarer explicitement `notifications()` / `unreadNotifications()`.
+- Les analytics IA doivent rester alignees sur le schema reel `ai_audit_logs` : `input_tokens`, `output_tokens`, `cost_cents`, `duration_ms`, `error`, `tools_called`. Ne pas reintroduire les colonnes fantomes `total_tokens`, `cost`, `tool_called`, `response_time_ms`, `status`, `error_message`.
 
 ### 2026-05-07 - I18N enterprise partage
 

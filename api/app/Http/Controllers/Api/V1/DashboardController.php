@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -67,16 +68,18 @@ class DashboardController extends Controller
         $user = $request->user();
         $companyId = $user->company_id;
         $month = $request->input('month', now()->format('Y-m'));
+        $periodStart = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $periodEnd = $periodStart->copy()->endOfMonth();
 
         $turnover = DB::table('employees')
             ->where('company_id', $companyId)
             ->whereNotNull('archived_at')
-            ->whereRaw("to_char(archived_at, 'YYYY-MM') = ?", [$month])
+            ->whereBetween('archived_at', [$periodStart, $periodEnd])
             ->count();
 
         $hires = DB::table('employees')
             ->where('company_id', $companyId)
-            ->whereRaw("to_char(created_at, 'YYYY-MM') = ?", [$month])
+            ->whereBetween('created_at', [$periodStart, $periodEnd])
             ->count();
 
         $absenceRate = 0.0;
@@ -85,7 +88,7 @@ class DashboardController extends Controller
             $absences = DB::table('absences')
                 ->where('company_id', $companyId)
                 ->where('status', 'approved')
-                ->whereRaw("to_char(start_date, 'YYYY-MM') = ?", [$month])
+                ->whereBetween('start_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
                 ->count();
             $absenceRate = round(($absences / $totalEmployees) * 100, 1);
         }

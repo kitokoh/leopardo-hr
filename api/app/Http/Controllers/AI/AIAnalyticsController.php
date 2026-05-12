@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class AIAnalyticsController extends Controller
 {
@@ -19,12 +20,20 @@ class AIAnalyticsController extends Controller
         $from = $validated['from'] ?? now()->subDays(30)->toDateString();
         $to = $validated['to'] ?? now()->toDateString();
 
-        $usage = DB::table('ai_audit_logs')
+        $rows = $this->auditLogQuery($request)
             ->whereBetween('created_at', [$from, $to.' 23:59:59'])
-            ->selectRaw('company_id, count(*) as total_requests, sum(total_tokens) as total_tokens, sum(cost) as total_cost')
-            ->groupBy('company_id')
-            ->orderByDesc('total_requests')
             ->get();
+
+        $usage = $rows
+            ->groupBy('company_id')
+            ->map(fn ($items, $companyId) => [
+                'company_id' => $companyId,
+                'total_requests' => $items->count(),
+                'total_tokens' => $items->sum(fn ($row) => (int) $row->input_tokens + (int) $row->output_tokens),
+                'total_cost_cents' => $items->sum(fn ($row) => (int) $row->cost_cents),
+            ])
+            ->sortByDesc('total_requests')
+            ->values();
 
         return response()->json([
             'data' => $usage,
@@ -44,18 +53,25 @@ class AIAnalyticsController extends Controller
         $to = $validated['to'] ?? now()->toDateString();
         $groupBy = $validated['group_by'] ?? 'day';
 
-        $dateFormat = match ($groupBy) {
-            'week' => 'YYYY-IW',
-            'month' => 'YYYY-MM',
-            default => 'YYYY-MM-DD',
-        };
-
-        $costs = DB::table('ai_audit_logs')
+        $rows = $this->auditLogQuery($request)
             ->whereBetween('created_at', [$from, $to.' 23:59:59'])
-            ->selectRaw("to_char(created_at, '{$dateFormat}') as period, provider, sum(cost) as total_cost, count(*) as requests, sum(total_tokens) as total_tokens")
-            ->groupBy('period', 'provider')
-            ->orderBy('period')
             ->get();
+
+        $costs = $rows
+            ->groupBy(fn ($row) => $this->periodKey($row->created_at, $groupBy).'|'.$row->provider)
+            ->map(function ($items) use ($groupBy) {
+                $first = $items->first();
+
+                return [
+                    'period' => $this->periodKey($first->created_at, $groupBy),
+                    'provider' => $first->provider,
+                    'total_cost_cents' => $items->sum(fn ($row) => (int) $row->cost_cents),
+                    'requests' => $items->count(),
+                    'total_tokens' => $items->sum(fn ($row) => (int) $row->input_tokens + (int) $row->output_tokens),
+                ];
+            })
+            ->sortBy('period')
+            ->values();
 
         return response()->json([
             'data' => $costs,
@@ -73,13 +89,29 @@ class AIAnalyticsController extends Controller
         $from = $validated['from'] ?? now()->subDays(30)->toDateString();
         $to = $validated['to'] ?? now()->toDateString();
 
-        $tools = DB::table('ai_audit_logs')
+        $rows = $this->auditLogQuery($request)
             ->whereBetween('created_at', [$from, $to.' 23:59:59'])
-            ->whereNotNull('tool_called')
-            ->selectRaw('tool_called, count(*) as call_count, avg(response_time_ms) as avg_response_ms')
-            ->groupBy('tool_called')
-            ->orderByDesc('call_count')
             ->get();
+
+        $calls = collect();
+        foreach ($rows as $row) {
+            foreach ($this->toolsCalled($row->tools_called) as $tool) {
+                $calls->push([
+                    'tool_called' => $tool,
+                    'duration_ms' => (int) $row->duration_ms,
+                ]);
+            }
+        }
+
+        $tools = $calls
+            ->groupBy('tool_called')
+            ->map(fn ($items, $tool) => [
+                'tool_called' => $tool,
+                'call_count' => $items->count(),
+                'avg_response_ms' => round((float) $items->avg('duration_ms'), 1),
+            ])
+            ->sortByDesc('call_count')
+            ->values();
 
         return response()->json([
             'data' => $tools,
@@ -97,21 +129,21 @@ class AIAnalyticsController extends Controller
         $from = $validated['from'] ?? now()->subDays(30)->toDateString();
         $to = $validated['to'] ?? now()->toDateString();
 
-        $total = DB::table('ai_audit_logs')
+        $total = $this->auditLogQuery($request)
             ->whereBetween('created_at', [$from, $to.' 23:59:59'])
             ->count();
 
-        $errors = DB::table('ai_audit_logs')
+        $errors = $this->auditLogQuery($request)
             ->whereBetween('created_at', [$from, $to.' 23:59:59'])
-            ->where('status', 'error')
+            ->whereNotNull('error')
             ->count();
 
-        $recentErrors = DB::table('ai_audit_logs')
+        $recentErrors = $this->auditLogQuery($request)
             ->whereBetween('created_at', [$from, $to.' 23:59:59'])
-            ->where('status', 'error')
+            ->whereNotNull('error')
             ->orderByDesc('created_at')
             ->limit(20)
-            ->get(['id', 'company_id', 'user_id', 'provider', 'error_message', 'created_at']);
+            ->get(['id', 'company_id', 'user_id', 'provider', 'error', 'created_at']);
 
         $successRate = $total > 0 ? round((($total - $errors) / $total) * 100, 1) : 100;
 
@@ -124,5 +156,46 @@ class AIAnalyticsController extends Controller
             ],
             'meta' => ['from' => $from, 'to' => $to],
         ]);
+    }
+
+    private function auditLogQuery(Request $request): \Illuminate\Database\Query\Builder
+    {
+        $companyId = $request->attributes->get('ai_company_id') ?? $request->user()?->company_id;
+
+        return DB::table('ai_audit_logs')->where('company_id', $companyId);
+    }
+
+    private function periodKey(mixed $createdAt, string $groupBy): string
+    {
+        $date = Carbon::parse($createdAt);
+
+        return match ($groupBy) {
+            'week' => $date->format('o-W'),
+            'month' => $date->format('Y-m'),
+            default => $date->format('Y-m-d'),
+        };
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function toolsCalled(mixed $toolsCalled): array
+    {
+        if (is_string($toolsCalled)) {
+            $decoded = json_decode($toolsCalled, true);
+        } elseif (is_array($toolsCalled)) {
+            $decoded = $toolsCalled;
+        } else {
+            $decoded = [];
+        }
+
+        if (! is_array($decoded)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            fn (mixed $tool) => is_scalar($tool) ? (string) $tool : null,
+            $decoded,
+        )));
     }
 }
