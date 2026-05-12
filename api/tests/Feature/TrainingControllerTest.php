@@ -101,17 +101,15 @@ class TrainingControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson('/api/v1/training/sessions', [
-            'training_course_id' => $course->id,
-            'title' => 'Session Janvier',
-            'starts_at' => now()->addWeek()->toDateTimeString(),
-            'ends_at' => now()->addWeeks(2)->toDateTimeString(),
+        $response = $this->postJson("/api/v1/training/courses/{$course->id}/sessions", [
+            'start_date' => now()->addWeek()->toDateString(),
+            'end_date' => now()->addWeeks(2)->toDateString(),
             'location' => 'Salle A',
-            'instructor' => 'Mohamed',
+            'external_trainer' => 'Mohamed',
         ]);
 
         $response->assertCreated();
-        $response->assertJsonPath('data.title', 'Session Janvier');
+        $response->assertJsonPath('data.location', 'Salle A');
     }
 
     public function test_employee_can_enroll_in_session(): void
@@ -131,15 +129,17 @@ class TrainingControllerTest extends TestCase
         $session = TrainingSession::create([
             'training_course_id' => $course->id,
             'company_id' => $company->id,
-            'title' => 'Session 1',
-            'starts_at' => now()->addWeek(),
-            'ends_at' => now()->addWeeks(2),
-            'status' => 'scheduled',
+            'start_date' => now()->addWeek(),
+            'end_date' => now()->addWeeks(2),
+            'status' => 'planned',
         ]);
 
-        Sanctum::actingAs($employee);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Sanctum::actingAs($manager);
 
-        $response = $this->postJson("/api/v1/training/sessions/{$session->id}/enroll");
+        $response = $this->postJson("/api/v1/training/sessions/{$session->id}/enroll", [
+            'employee_id' => $employee->id,
+        ]);
         $response->assertStatus(201);
     }
 }

@@ -57,7 +57,7 @@ class ExportControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->getJson('/api/v1/export/attendance?format=csv');
+        $response = $this->getJson('/api/v1/export/attendance?format=csv&from='.now()->startOfMonth()->toDateString().'&to='.now()->endOfMonth()->toDateString());
         $response->assertOk();
     }
 }

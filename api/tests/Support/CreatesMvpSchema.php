@@ -13,6 +13,7 @@ trait CreatesMvpSchema
         if (DB::getDriverName() === 'pgsql') {
             $this->preparePostgresSchemas();
             $this->loadPostgresFixtureSchema();
+            $this->createPostSprintModuleTables();
             $this->restoreDefaultSearchPath();
 
             return;
@@ -537,6 +538,7 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        $this->createPostSprintModuleTables();
         $this->restoreDefaultSearchPath();
     }
 
@@ -619,6 +621,377 @@ trait CreatesMvpSchema
         return $table;
     }
 
+    private function moduleTable(string $table): string
+    {
+        return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
+    }
+
+    private function createPostSprintModuleTables(): void
+    {
+        if (DB::getDriverName() === 'pgsql') {
+            $this->setPostgresSearchPath('shared_tenants,public');
+        }
+
+        if (! Schema::hasTable($this->moduleTable('subscriptions'))) {
+            Schema::create($this->moduleTable('subscriptions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('plan', 50)->default('trial');
+                $table->string('status', 20)->default('trial');
+                $table->timestampTz('trial_ends_at')->nullable();
+                $table->timestampTz('current_period_start')->nullable();
+                $table->timestampTz('current_period_end')->nullable();
+                $table->timestampTz('cancelled_at')->nullable();
+                $table->text('cancel_reason')->nullable();
+                $table->string('payment_method', 30)->default('manual');
+                $table->string('stripe_subscription_id', 100)->nullable();
+                $table->string('chargily_subscription_id', 100)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('invoices'))) {
+            Schema::create($this->moduleTable('invoices'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('subscription_id')->nullable();
+                $table->string('number', 30)->unique();
+                $table->decimal('amount', 12, 2);
+                $table->string('currency', 3)->default('DZD');
+                $table->decimal('tax_amount', 12, 2)->default(0);
+                $table->decimal('total', 12, 2);
+                $table->string('status', 20)->default('draft');
+                $table->date('due_date');
+                $table->timestampTz('paid_at')->nullable();
+                $table->string('payment_method', 30)->nullable();
+                $table->string('stripe_invoice_id', 100)->nullable();
+                $table->string('pdf_path', 500)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payroll_runs'))) {
+            Schema::create($this->moduleTable('payroll_runs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->date('period_start');
+                $table->date('period_end');
+                $table->char('country_code', 2);
+                $table->string('status', 20)->default('draft');
+                $table->decimal('total_gross', 12, 2)->default(0);
+                $table->decimal('total_deductions', 12, 2)->default(0);
+                $table->decimal('total_net', 12, 2)->default(0);
+                $table->decimal('total_employer_cost', 12, 2)->default(0);
+                $table->unsignedInteger('employee_count')->default(0);
+                $table->timestampTz('calculated_at')->nullable();
+                $table->unsignedInteger('validated_by')->nullable();
+                $table->timestampTz('validated_at')->nullable();
+                $table->timestampTz('paid_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('pay_slips'))) {
+            Schema::create($this->moduleTable('pay_slips'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('payroll_run_id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->unsignedBigInteger('contract_id')->nullable();
+                $table->date('period_start');
+                $table->date('period_end');
+                $table->decimal('gross_salary', 12, 2)->default(0);
+                $table->decimal('total_deductions', 12, 2)->default(0);
+                $table->decimal('net_salary', 12, 2)->default(0);
+                $table->decimal('employer_contributions', 12, 2)->default(0);
+                $table->decimal('total_cost', 12, 2)->default(0);
+                $table->decimal('working_days', 5, 2)->default(0);
+                $table->decimal('actual_days_worked', 5, 2)->default(0);
+                $table->decimal('overtime_hours', 6, 2)->default(0);
+                $table->string('status', 20)->default('draft');
+                $table->string('pdf_path', 500)->nullable();
+                $table->timestampTz('sent_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('job_postings'))) {
+            Schema::create($this->moduleTable('job_postings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->unsignedInteger('department_id')->nullable();
+                $table->unsignedInteger('position_id')->nullable();
+                $table->string('location', 200)->nullable();
+                $table->string('remote_policy', 20)->nullable();
+                $table->string('contract_type', 20)->nullable();
+                $table->decimal('salary_range_min', 12, 2)->nullable();
+                $table->decimal('salary_range_max', 12, 2)->nullable();
+                $table->string('currency', 3)->default('DZD');
+                $table->json('skills_required')->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->timestampTz('published_at')->nullable();
+                $table->timestampTz('closes_at')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('applicants'))) {
+            Schema::create($this->moduleTable('applicants'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('job_posting_id');
+                $table->string('first_name', 100);
+                $table->string('last_name', 100);
+                $table->string('email');
+                $table->string('phone', 30)->nullable();
+                $table->string('resume_path', 500)->nullable();
+                $table->text('cover_letter')->nullable();
+                $table->string('source', 30)->nullable();
+                $table->string('status', 20)->default('new');
+                $table->unsignedTinyInteger('rating')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestampTz('applied_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('interviews'))) {
+            Schema::create($this->moduleTable('interviews'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('applicant_id');
+                $table->unsignedInteger('interviewer_id')->nullable();
+                $table->string('type', 20);
+                $table->timestampTz('scheduled_at');
+                $table->unsignedSmallInteger('duration_minutes')->nullable();
+                $table->string('status', 20)->default('scheduled');
+                $table->text('feedback')->nullable();
+                $table->unsignedTinyInteger('rating')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('training_courses'))) {
+            Schema::create($this->moduleTable('training_courses'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->string('category', 100)->nullable();
+                $table->string('type', 30)->default('internal');
+                $table->string('provider', 200)->nullable();
+                $table->decimal('duration_hours', 6, 2)->nullable();
+                $table->unsignedSmallInteger('max_participants')->nullable();
+                $table->decimal('cost_per_participant', 12, 2)->nullable();
+                $table->string('currency', 3)->default('DZD');
+                $table->string('materials_path', 500)->nullable();
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('training_sessions'))) {
+            Schema::create($this->moduleTable('training_sessions'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('training_course_id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('trainer_id')->nullable();
+                $table->string('external_trainer', 200)->nullable();
+                $table->date('start_date');
+                $table->date('end_date');
+                $table->string('location', 200)->nullable();
+                $table->string('status', 20)->default('planned');
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('training_enrollments'))) {
+            Schema::create($this->moduleTable('training_enrollments'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('training_session_id');
+                $table->unsignedInteger('employee_id');
+                $table->uuid('company_id')->index();
+                $table->string('status', 20)->default('enrolled');
+                $table->decimal('score', 5, 2)->nullable();
+                $table->string('certificate_path', 500)->nullable();
+                $table->text('feedback')->nullable();
+                $table->timestampTz('completed_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('employee_loans'))) {
+            Schema::create($this->moduleTable('employee_loans'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->string('loan_type', 30)->default('personal');
+                $table->decimal('amount', 12, 2);
+                $table->string('currency', 3)->default('DZD');
+                $table->decimal('interest_rate', 5, 2)->default(0);
+                $table->unsignedSmallInteger('installments');
+                $table->decimal('installment_amount', 12, 2);
+                $table->date('start_date');
+                $table->string('status', 30)->default('draft');
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->timestampTz('disbursed_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('loan_repayments'))) {
+            Schema::create($this->moduleTable('loan_repayments'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('employee_loan_id');
+                $table->uuid('company_id')->index();
+                $table->date('due_date');
+                $table->decimal('amount', 12, 2);
+                $table->decimal('principal', 12, 2);
+                $table->decimal('interest', 12, 2)->default(0);
+                $table->string('status', 20)->default('pending');
+                $table->timestampTz('paid_at')->nullable();
+                $table->unsignedInteger('payroll_id')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('expense_claims'))) {
+            Schema::create($this->moduleTable('expense_claims'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->string('title', 200);
+                $table->text('description')->nullable();
+                $table->decimal('total_amount', 12, 2)->default(0);
+                $table->string('currency', 3)->default('DZD');
+                $table->string('status', 20)->default('draft');
+                $table->timestampTz('submitted_at')->nullable();
+                $table->timestampTz('approved_at')->nullable();
+                $table->timestampTz('paid_at')->nullable();
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->string('payment_reference', 100)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('expense_items'))) {
+            Schema::create($this->moduleTable('expense_items'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('expense_claim_id');
+                $table->string('category', 30)->default('other');
+                $table->string('description', 255);
+                $table->decimal('amount', 12, 2);
+                $table->date('date');
+                $table->string('receipt_path', 500)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('vehicles'))) {
+            Schema::create($this->moduleTable('vehicles'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('plate_number', 20);
+                $table->string('brand', 100)->nullable();
+                $table->string('model', 100)->nullable();
+                $table->unsignedSmallInteger('year')->nullable();
+                $table->string('type', 30)->nullable();
+                $table->string('vin', 17)->nullable();
+                $table->string('fuel_type', 30)->nullable();
+                $table->string('status', 30)->default('active');
+                $table->unsignedInteger('mileage')->nullable();
+                $table->date('insurance_expiry')->nullable();
+                $table->date('technical_control_expiry')->nullable();
+                $table->unsignedBigInteger('traccar_device_id')->nullable();
+                $table->string('traccar_unique_id', 50)->nullable();
+                $table->unsignedInteger('assigned_driver_id')->nullable();
+                $table->unsignedInteger('assigned_site_id')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('vehicle_assignments'))) {
+            Schema::create($this->moduleTable('vehicle_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('vehicle_id');
+                $table->unsignedInteger('employee_id');
+                $table->uuid('company_id')->index();
+                $table->date('start_date');
+                $table->date('end_date')->nullable();
+                $table->string('reason', 500)->nullable();
+                $table->unsignedInteger('created_by');
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('vehicle_trips'))) {
+            Schema::create($this->moduleTable('vehicle_trips'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('vehicle_id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('driver_id')->nullable();
+                $table->timestampTz('start_time')->nullable();
+                $table->timestampTz('end_time')->nullable();
+                $table->decimal('start_lat', 10, 7)->nullable();
+                $table->decimal('start_lng', 10, 7)->nullable();
+                $table->string('start_address')->nullable();
+                $table->decimal('end_lat', 10, 7)->nullable();
+                $table->decimal('end_lng', 10, 7)->nullable();
+                $table->string('end_address')->nullable();
+                $table->decimal('distance_km', 10, 2)->nullable();
+                $table->unsignedInteger('duration_minutes')->nullable();
+                $table->decimal('max_speed_kmh', 8, 2)->nullable();
+                $table->decimal('avg_speed_kmh', 8, 2)->nullable();
+                $table->decimal('fuel_consumed', 8, 2)->nullable();
+                $table->string('traccar_trip_id')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('vehicle_alerts'))) {
+            Schema::create($this->moduleTable('vehicle_alerts'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('vehicle_id');
+                $table->uuid('company_id')->index();
+                $table->string('type', 50);
+                $table->string('message');
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->decimal('speed', 8, 2)->nullable();
+                $table->boolean('acknowledged')->default(false);
+                $table->unsignedInteger('acknowledged_by')->nullable();
+                $table->string('traccar_event_id')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('vehicle_maintenances'))) {
+            Schema::create($this->moduleTable('vehicle_maintenances'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('vehicle_id');
+                $table->uuid('company_id')->index();
+                $table->string('type', 50);
+                $table->text('description')->nullable();
+                $table->decimal('cost', 12, 2)->nullable();
+                $table->string('currency', 3)->default('DZD');
+                $table->unsignedInteger('mileage_at_service')->nullable();
+                $table->date('service_date')->nullable();
+                $table->date('next_service_date')->nullable();
+                $table->unsignedInteger('next_service_mileage')->nullable();
+                $table->string('provider')->nullable();
+                $table->string('invoice_path')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
+
     private function dropMvpTables(): void
     {
         if (DB::getDriverName() === 'pgsql') {
@@ -636,6 +1009,25 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "camera_permissions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "cameras"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "vehicle_maintenances"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "vehicle_alerts"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "vehicle_trips"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "vehicle_assignments"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "vehicles"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "expense_items"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "expense_claims"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "loan_repayments"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "employee_loans"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "training_enrollments"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "training_sessions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "training_courses"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "interviews"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "invoices"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
