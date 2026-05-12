@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\WebhookEndpoint;
 use Illuminate\Http\JsonResponse;
@@ -33,6 +34,7 @@ class WebhookController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);
@@ -55,6 +57,7 @@ class WebhookController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);
@@ -87,6 +90,7 @@ class WebhookController extends Controller
 
     public function show(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);
@@ -113,6 +117,7 @@ class WebhookController extends Controller
 
     public function update(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);
@@ -138,6 +143,7 @@ class WebhookController extends Controller
 
     public function destroy(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);

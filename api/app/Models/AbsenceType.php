@@ -6,6 +6,17 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property string $code
+ * @property bool $is_paid
+ * @property bool $deducts_leave
+ * @property bool $requires_proof
+ * @property int $max_days_once
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class AbsenceType extends Model
 {
     use BelongsToCompany;

@@ -7,6 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $user_id
+ * @property string $title
+ * @property array<mixed> $messages
+ * @property array<mixed> $context
+ * @property int $token_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class AIConversation extends Model
 {
     use BelongsToCompany;

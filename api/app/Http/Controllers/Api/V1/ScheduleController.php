@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +21,7 @@ class ScheduleController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -47,6 +49,7 @@ class ScheduleController extends Controller
 
     public function update(Request $request, Schedule $schedule): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);

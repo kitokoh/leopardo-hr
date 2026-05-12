@@ -7,6 +7,24 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $salary_structure_id
+ * @property string $name
+ * @property string $code
+ * @property string $type
+ * @property string|null $calculation_type
+ * @property float $amount
+ * @property float $percentage
+ * @property string|null $formula
+ * @property bool $is_taxable
+ * @property bool $is_recurring
+ * @property int $order
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class SalaryComponent extends Model
 {
     use BelongsToCompany;
@@ -26,6 +44,7 @@ class SalaryComponent extends Model
         'active' => 'boolean',
     ];
 
+    /** @return BelongsTo<SalaryStructure, $this> */
     public function salaryStructure(): BelongsTo
     {
         return $this->belongsTo(SalaryStructure::class, 'salary_structure_id');

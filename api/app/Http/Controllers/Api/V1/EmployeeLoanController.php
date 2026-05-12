@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
@@ -16,6 +17,7 @@ class EmployeeLoanController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $query = EmployeeLoan::query()->with('employee:id,first_name,last_name');
 
@@ -34,6 +36,7 @@ class EmployeeLoanController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $validated = $request->validate([
@@ -89,6 +92,7 @@ class EmployeeLoanController extends Controller
 
     public function show(Request $request, EmployeeLoan $employeeLoan): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($employeeLoan->company_id !== $actor->company_id) {
             abort(404);
@@ -102,6 +106,7 @@ class EmployeeLoanController extends Controller
 
     public function approve(Request $request, EmployeeLoan $employeeLoan): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($employeeLoan->company_id !== $actor->company_id) {
             abort(404);
@@ -123,6 +128,7 @@ class EmployeeLoanController extends Controller
 
     public function disburse(Request $request, EmployeeLoan $employeeLoan): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($employeeLoan->company_id !== $actor->company_id) {
             abort(404);

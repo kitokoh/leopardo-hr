@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property int|null $evaluator_id
+ * @property string|null $period
+ * @property float $score
+ * @property array<mixed> $criteria
+ * @property string|null $strengths
+ * @property string|null $improvements
+ * @property string|null $overall_comment
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $acknowledged_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Evaluation extends Model
 {
     use BelongsToCompany;
@@ -29,11 +45,13 @@ class Evaluation extends Model
         'updated_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function evaluator(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'evaluator_id');

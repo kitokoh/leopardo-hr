@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Evaluation\EvaluationIndexRequest;
 use App\Http\Requests\Api\V1\Evaluation\StoreEvaluationRequest;
@@ -24,6 +25,7 @@ class EvaluationController extends Controller
 {
     public function index(EvaluationIndexRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $query = Evaluation::query()
@@ -77,6 +79,7 @@ class EvaluationController extends Controller
 
     public function store(StoreEvaluationRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $data = $request->validated();
 

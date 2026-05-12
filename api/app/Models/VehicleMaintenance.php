@@ -6,6 +6,23 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $vehicle_id
+ * @property int|null $company_id
+ * @property string $type
+ * @property string $description
+ * @property string $cost
+ * @property string $currency
+ * @property int $mileage_at_service
+ * @property \Illuminate\Support\Carbon $service_date
+ * @property \Illuminate\Support\Carbon $next_service_date
+ * @property int $next_service_mileage
+ * @property string $provider
+ * @property string|null $invoice_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class VehicleMaintenance extends Model
 {
     use BelongsToCompany;

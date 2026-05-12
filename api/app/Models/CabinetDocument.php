@@ -7,6 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $employee_id
+ * @property int|null $folder_id
+ * @property string $name
+ * @property string $original_name
+ * @property string $mime_type
+ * @property int $size
+ * @property string $disk
+ * @property string $path
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class CabinetDocument extends Model
 {
     use BelongsToCompany;

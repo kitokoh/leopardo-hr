@@ -7,6 +7,16 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name_fr
+ * @property string $name_native
+ * @property bool $is_rtl
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Language extends Model
 {
     protected $table = 'languages';

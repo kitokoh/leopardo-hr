@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
@@ -14,6 +15,7 @@ class PaySlipController extends Controller
 {
     public function indexForRun(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
@@ -39,6 +41,7 @@ class PaySlipController extends Controller
 
     public function show(Request $request, PaySlip $paySlip): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($paySlip->company_id !== $actor->company_id) {
             abort(404);
@@ -54,6 +57,7 @@ class PaySlipController extends Controller
 
     public function myPaySlips(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $slips = PaySlip::where('employee_id', $actor->id)
@@ -76,6 +80,7 @@ class PaySlipController extends Controller
 
     public function myPaySlipDetail(Request $request, PaySlip $paySlip): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($paySlip->employee_id !== $actor->id || $paySlip->company_id !== $actor->company_id) {
             abort(404);
@@ -92,6 +97,7 @@ class PaySlipController extends Controller
 
     public function downloadPdf(Request $request, PaySlip $paySlip): Response
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $isOwner = $paySlip->employee_id === $actor->id && $paySlip->company_id === $actor->company_id;
@@ -117,6 +123,7 @@ class PaySlipController extends Controller
 
     public function sendSlips(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);

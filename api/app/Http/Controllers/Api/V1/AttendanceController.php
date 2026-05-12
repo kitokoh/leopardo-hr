@@ -63,7 +63,7 @@ class AttendanceController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $company = app('current_company');
+        $company = currentCompany();
         $today = now('UTC')->setTimezone($company->timezone)->toDateString();
 
         $employeeId = $request->validated('employee_id');
@@ -215,7 +215,7 @@ class AttendanceController extends Controller
 
         $this->authorize('viewAny', AttendanceLog::class);
 
-        $company = app('current_company');
+        $company = currentCompany();
         $validated = $request->validated();
         $month = $validated['month'] ?? now($company->timezone)->format('Y-m');
         $format = $validated['format'] ?? 'json';

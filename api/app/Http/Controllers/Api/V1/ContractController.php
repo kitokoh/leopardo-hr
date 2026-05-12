@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
@@ -14,6 +15,7 @@ class ContractController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $query = Contract::query()->with(['employee:id,first_name,last_name', 'department:id,name', 'position:id,name']);
 
@@ -34,6 +36,7 @@ class ContractController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -69,6 +72,7 @@ class ContractController extends Controller
 
     public function show(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -82,6 +86,7 @@ class ContractController extends Controller
 
     public function update(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -122,6 +127,7 @@ class ContractController extends Controller
 
     public function amendments(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -132,6 +138,7 @@ class ContractController extends Controller
 
     public function storeAmendment(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -159,6 +166,7 @@ class ContractController extends Controller
 
     public function expiring(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -174,6 +182,7 @@ class ContractController extends Controller
 
     public function activate(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -192,6 +201,7 @@ class ContractController extends Controller
 
     public function suspend(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -210,6 +220,7 @@ class ContractController extends Controller
 
     public function terminate(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -236,6 +247,7 @@ class ContractController extends Controller
 
     public function renew(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
@@ -279,6 +291,7 @@ class ContractController extends Controller
 
     public function myContracts(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $contracts = Contract::query()
@@ -292,6 +305,7 @@ class ContractController extends Controller
 
     public function generatePdf(Request $request, Contract $contract): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);

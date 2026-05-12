@@ -13,7 +13,7 @@ class OnboardingChecklistController extends Controller
     {
         /** @var Employee $actor */
         $actor = request()->user();
-        $company = app('current_company');
+        $company = currentCompany();
 
         $this->authorize('viewAny', Employee::class);
 

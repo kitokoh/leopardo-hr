@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Payroll\PayrollIndexRequest;
 use App\Http\Requests\Api\V1\Payroll\StorePayrollRequest;
@@ -17,6 +18,7 @@ class PayrollController extends Controller
 
     public function index(PayrollIndexRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $query = Payroll::query()
             ->select([
@@ -69,6 +71,7 @@ class PayrollController extends Controller
 
     public function store(StorePayrollRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -81,6 +84,7 @@ class PayrollController extends Controller
 
     public function show(Request $request, Payroll $payroll): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
@@ -94,6 +98,7 @@ class PayrollController extends Controller
 
     public function update(UpdatePayrollRequest $request, Payroll $payroll): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
@@ -109,6 +114,7 @@ class PayrollController extends Controller
 
     public function validatePayroll(Request $request, Payroll $payroll): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
@@ -124,6 +130,7 @@ class PayrollController extends Controller
 
     public function destroy(Request $request, Payroll $payroll): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Absence\AbsenceIndexRequest;
 use App\Http\Requests\Api\V1\Absence\RejectAbsenceRequest;
@@ -18,6 +19,7 @@ class AbsenceController extends Controller
 
     public function index(AbsenceIndexRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $query = Absence::query()
             ->select([
@@ -75,6 +77,7 @@ class AbsenceController extends Controller
 
     public function store(StoreAbsenceRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $absence = $this->absenceService->create($actor, $request->validated());
 
@@ -83,6 +86,7 @@ class AbsenceController extends Controller
 
     public function show(Request $request, Absence $absence): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($absence->company_id !== $actor->company_id) {
@@ -98,6 +102,7 @@ class AbsenceController extends Controller
 
     public function approve(Request $request, Absence $absence): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($absence->company_id !== $actor->company_id) {
@@ -115,6 +120,7 @@ class AbsenceController extends Controller
 
     public function reject(RejectAbsenceRequest $request, Absence $absence): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($absence->company_id !== $actor->company_id) {
@@ -132,6 +138,7 @@ class AbsenceController extends Controller
 
     public function destroy(Request $request, Absence $absence): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($absence->company_id !== $actor->company_id) {

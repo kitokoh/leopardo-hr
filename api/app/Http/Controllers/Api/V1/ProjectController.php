@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class ProjectController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $request->validate(['status' => ['nullable', 'in:active,completed,archived'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
 
@@ -33,6 +35,7 @@ class ProjectController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -46,6 +49,7 @@ class ProjectController extends Controller
 
     public function show(Request $request, Project $project): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($project->company_id !== $actor->company_id) {
             abort(404);
@@ -59,6 +63,7 @@ class ProjectController extends Controller
 
     public function update(Request $request, Project $project): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($project->company_id !== $actor->company_id) {
             abort(404);
@@ -75,6 +80,7 @@ class ProjectController extends Controller
 
     public function destroy(Request $request, Project $project): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($project->company_id !== $actor->company_id) {
             abort(404);

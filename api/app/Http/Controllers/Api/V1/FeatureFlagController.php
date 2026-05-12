@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\FeaturePlanMatrix;
 use App\Models\Subscription;
@@ -25,6 +26,7 @@ class FeatureFlagController extends Controller
 
     public function check(Request $request, string $featureKey): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $plan = $this->getCompanyPlan($user->company_id);
 
