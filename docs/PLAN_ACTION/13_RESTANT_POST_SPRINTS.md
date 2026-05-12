@@ -260,10 +260,10 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ### Workflows CI a ajouter
 
 ```
-- [ ] Workflow Playwright E2E (tests/e2e/*.spec.ts) — execute apres deploy staging
-- [ ] Workflow coverage gate — fail si coverage < seuil (commencer a 40%, monter 5%/mois)
-- [ ] Workflow deploy staging automatique sur merge main
-- [ ] Workflow mobile (flutter test + build APK)
+- [x] Workflow Playwright E2E (tests/e2e/*.spec.ts) — execute apres deploy staging
+- [x] Workflow coverage gate — fail si coverage < seuil (commencer a 40%, monter 5%/mois)
+- [x] Workflow deploy staging automatique sur merge main
+- [x] Workflow mobile (flutter test + build APK)
 ```
 
 ### Monitoring production
@@ -280,11 +280,11 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ## 8. OPEN SOURCE — Attractivite (MOYENNE)
 
 ```
-- [ ] Docker Compose pour dev (api + postgres + redis en 1 commande)
-- [ ] DevContainer config (.devcontainer/devcontainer.json)
-- [ ] DEVELOPMENT.md clair pour les nouveaux contributeurs
+- [x] Docker Compose pour dev (api + postgres + redis + queue + scheduler en 1 commande)
+- [x] DevContainer config (.devcontainer/devcontainer.json) — enrichi avec ports, extensions, lifecycle
+- [x] DEVELOPMENT.md clair pour les nouveaux contributeurs
 - [ ] Creer 10+ good first issues taguees sur GitHub
-- [ ] GitHub Releases avec tags et changelog formate
+- [x] GitHub Releases avec tags et changelog formate (workflow release.yml)
 - [ ] Project board visible (GitHub Projects) avec les taches restantes
 ```
 
