@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.15.0] - 2026-05-12
+
+### Paie avancee — Premier lot urgent
+
+- Payroll : factorisation du calcul progressif des tranches fiscales pour DZ, TN, FR, TR et SN afin d'eviter les erreurs de bornes inclusives.
+- Payroll : ajout de tests unitaires sur les cotisations sociales et les calculs d'impot multi-pays.
+- Payroll : ajout du seeder `PayrollCountryConfigSeeder` pour initialiser `TaxSlab` et `SocialContribution` dans le schema tenant courant.
+- Bank Export : support du format `virement_ma` comme export CSV bancaire standard.
+- Bank Export : correction des exports pour utiliser les colonnes employees reelles (`iban`, `bank_account`) et eviter les colonnes inexistantes `rib` / `bank_name`.
+- Bank Export : correction de la date d'execution SEPA via `addWeekdays`.
+
 ## [4.14.0] - 2026-05-12
 
 ### Backend — Stabilisation tests modules post-sprints

@@ -13,13 +13,14 @@ class BankExportGenerator
     public function generate(PayrollRun $run, string $format): string
     {
         $slips = $run->paySlips()
-            ->with('employee:id,first_name,last_name,iban,bank_name,rib')
+            ->with('employee:id,first_name,last_name,iban,bank_account')
             ->where('status', 'validated')
             ->get();
 
         return match ($format) {
             'sepa_xml' => $this->generateSepaXml($run, $slips),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
+            'virement_ma' => $this->generateCsvGeneric($run, $slips),
             'csv_generic' => $this->generateCsvGeneric($run, $slips),
             default => throw new \InvalidArgumentException("Unsupported bank export format: {$format}"),
         };
@@ -30,6 +31,7 @@ class BankExportGenerator
         return match ($format) {
             'sepa_xml' => 'xml',
             'ccp_dz' => 'txt',
+            'virement_ma' => 'csv',
             'csv_generic' => 'csv',
             default => 'dat',
         };
@@ -40,6 +42,7 @@ class BankExportGenerator
         return match ($format) {
             'sepa_xml' => 'application/xml',
             'ccp_dz' => 'text/plain',
+            'virement_ma' => 'text/csv',
             'csv_generic' => 'text/csv',
             default => 'application/octet-stream',
         };
@@ -67,7 +70,7 @@ class BankExportGenerator
         $xml .= '      <PmtMtd>TRF</PmtMtd>'."\n";
         $xml .= '      <NbOfTxs>'.$nbTransactions.'</NbOfTxs>'."\n";
         $xml .= '      <CtrlSum>'.number_format($totalAmount, 2, '.', '').'</CtrlSum>'."\n";
-        $xml .= '      <ReqdExctnDt>'.now()->addBusinessDays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
+        $xml .= '      <ReqdExctnDt>'.now()->addWeekdays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
         $xml .= '      <Dbtr><Nm>Leopardo RH</Nm></Dbtr>'."\n";
         $xml .= '      <DbtrAcct><Id><IBAN>PLACEHOLDER_COMPANY_IBAN</IBAN></Id></DbtrAcct>'."\n";
         $xml .= '      <DbtrAgt><FinInstnId><BIC>PLACEHOLDER_BIC</BIC></FinInstnId></DbtrAgt>'."\n";
@@ -104,7 +107,7 @@ class BankExportGenerator
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $ccp = $employee->rib ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT);
+            $ccp = $employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT);
             $amount = str_pad(number_format($slip->net_salary, 2, '', ''), 12, '0', STR_PAD_LEFT);
 
             $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad($ccp, 20).str_pad($name, 30).$amount;
@@ -118,7 +121,7 @@ class BankExportGenerator
 
     private function generateCsvGeneric(PayrollRun $run, Collection $slips): string
     {
-        $csv = "employee_id,first_name,last_name,iban,bank_name,net_salary,currency,period\n";
+        $csv = "employee_id,first_name,last_name,iban,bank_account,net_salary,currency,period\n";
 
         $period = $run->period_start->format('Y-m');
 
@@ -130,7 +133,7 @@ class BankExportGenerator
                 $this->csvEscape($employee->first_name ?? ''),
                 $this->csvEscape($employee->last_name ?? ''),
                 $this->csvEscape($employee->iban ?? ''),
-                $this->csvEscape($employee->bank_name ?? ''),
+                $this->csvEscape($employee->bank_account ?? ''),
                 $slip->net_salary,
                 $run->country_code ?? 'EUR',
                 $period
