@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.3] - 2026-05-12
+
+### Backend — Migration Safety (Partie 4 stabilisation)
+
+- Migrations tenant : ajout de `Schema::hasTable()` guards sur 8 migrations (22 tables protegees)
+- Migrations public : ajout `$withinTransaction = false` sur `2026_05_02_000002`
+- Contrainte CHECK `chk_absence_dates` rendue idempotente via `pg_constraint` lookup
+- Elimination des erreurs `42P07 Duplicate table` sur Render lors de deploys concurrents
+
 ## [4.16.2] - 2026-05-12
 
 ### Backend — Controller Stabilization (Partie 3 stabilisation)
