@@ -261,7 +261,9 @@ class AttendanceController extends Controller
             'check_in' => $effectiveCheckIn,
             'check_out' => $effectiveCheckOut,
             'method' => 'manual',
-            'corrected_by' => $request->user()->id,
+            /** @var Employee $user */
+            $user = $request->user();
+            'corrected_by' => $user->id,
             'correction_note' => $validated['notes'] ?? $attendanceLog->correction_note,
         ]);
 
