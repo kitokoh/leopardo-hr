@@ -57,7 +57,9 @@ class TrainingController extends Controller
 
     public function showCourse(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
-        if ($trainingCourse->company_id !== $request->user()->company_id) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if ($trainingCourse->company_id !== $user->company_id) {
             abort(404);
         }
 
@@ -96,7 +98,9 @@ class TrainingController extends Controller
 
     public function indexSessions(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
-        if ($trainingCourse->company_id !== $request->user()->company_id) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if ($trainingCourse->company_id !== $user->company_id) {
             abort(404);
         }
 
