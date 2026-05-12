@@ -1,45 +1,47 @@
-<!doctype html>
-<html lang="{{ $locale }}" @if($locale === 'ar') dir="rtl" @endif>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 14px; color: #333; background: #f5f5f5; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 30px; }
-        .logo { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 20px; }
-        .invoice-box { background: #f0f7ff; border: 1px solid #2563eb; border-radius: 6px; padding: 15px; margin: 15px 0; }
-        .footer { margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 15px; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="logo">Leopardo RH</div>
-
-    @if($locale === 'ar')
-        <h2>فاتورتك جاهزة</h2>
-        <p>مرحبًا، فيما يلي تفاصيل فاتورتك من <strong>{{ $company->name }}</strong>.</p>
-    @elseif($locale === 'en')
-        <h2>Your invoice is ready</h2>
-        <p>Hello, here are the details of your invoice for <strong>{{ $company->name }}</strong>.</p>
-    @else
-        <h2>Votre facture est prête</h2>
-        <p>Bonjour, voici les détails de votre facture pour <strong>{{ $company->name }}</strong>.</p>
-    @endif
-
-    <div class="invoice-box">
-        <div><strong>{{ $locale === 'ar' ? 'رقم الفاتورة' : ($locale === 'en' ? 'Invoice Number' : 'Numéro') }} :</strong> {{ $invoice->invoice_number ?? '—' }}</div>
-        <div><strong>{{ $locale === 'ar' ? 'المبلغ' : ($locale === 'en' ? 'Amount' : 'Montant') }} :</strong> {{ number_format($invoice->total ?? $invoice->amount ?? 0, 2) }} {{ $invoice->currency ?? 'EUR' }}</div>
-        <div><strong>{{ $locale === 'ar' ? 'تاريخ الاستحقاق' : ($locale === 'en' ? 'Due Date' : 'Échéance') }} :</strong> {{ $invoice->due_date?->format('d/m/Y') ?? '—' }}</div>
+@php
+$translations = [
+    'fr' => [
+        'subject' => 'Votre facture Leopardo RH',
+        'greeting' => 'Bonjour :name,',
+        'body' => 'Votre facture :number d\'un montant de :amount est disponible.',
+        'due' => 'Date d\'échéance : :date',
+        'button' => 'Voir la facture',
+        'thanks' => 'Merci pour votre abonnement.',
+    ],
+    'ar' => [
+        'subject' => 'فاتورتك من ليوباردو HR',
+        'greeting' => 'مرحبا :name،',
+        'body' => 'فاتورتك رقم :number بمبلغ :amount متاحة.',
+        'due' => 'تاريخ الاستحقاق: :date',
+        'button' => 'عرض الفاتورة',
+        'thanks' => 'شكرا لاشتراككم.',
+    ],
+    'en' => [
+        'subject' => 'Your Leopardo RH Invoice',
+        'greeting' => 'Hello :name,',
+        'body' => 'Your invoice :number for :amount is now available.',
+        'due' => 'Due date: :date',
+        'button' => 'View invoice',
+        'thanks' => 'Thank you for your subscription.',
+    ],
+];
+$t = $translations[$locale ?? 'fr'];
+@endphp
+<!DOCTYPE html>
+<html lang="{{ $locale ?? 'fr' }}">
+<head><meta charset="UTF-8"><title>{{ $t['subject'] }}</title></head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: #2563eb; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">🐆 Leopardo RH</h1>
     </div>
-
-    <div class="footer">
-        @if($locale === 'ar')
-            <p>هذه رسالة تلقائية من Leopardo RH.</p>
-        @elseif($locale === 'en')
-            <p>This is an automated message from Leopardo RH.</p>
-        @else
-            <p>Ceci est un message automatique de Leopardo RH.</p>
-        @endif
+    <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px;">{{ str_replace(':name', $userName ?? '', $t['greeting']) }}</p>
+        <p>{{ str_replace([':number', ':amount'], [$invoiceNumber ?? '', $invoiceAmount ?? ''], $t['body']) }}</p>
+        <p style="color: #6b7280;">{{ str_replace(':date', $dueDate ?? '', $t['due']) }}</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ $invoiceUrl ?? '#' }}" style="background: #2563eb; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">{{ $t['button'] }}</a>
+        </div>
+        <p style="color: #6b7280;">{{ $t['thanks'] }}</p>
     </div>
-</div>
 </body>
 </html>

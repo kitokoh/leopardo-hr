@@ -1,49 +1,43 @@
-<!doctype html>
-<html lang="{{ $locale }}" @if($locale === 'ar') dir="rtl" @endif>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 14px; color: #333; background: #f5f5f5; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 30px; }
-        .logo { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 20px; }
-        .alert-box { background: #fee2e2; border: 1px solid #ef4444; border-radius: 6px; padding: 15px; margin: 15px 0; }
-        .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; }
-        .footer { margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 15px; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="logo">Leopardo RH</div>
-
-    @if($locale === 'ar')
-        <h2>فشل الدفع</h2>
-        <div class="alert-box">
-            <strong>فشلت عملية الدفع بقيمة {{ number_format($amount, 2) }} {{ $currency }} لحساب {{ $company->name }}.</strong>
-        </div>
-        <p>يرجى التحقق من معلومات الدفع وإعادة المحاولة.</p>
-    @elseif($locale === 'en')
-        <h2>Payment Failed</h2>
-        <div class="alert-box">
-            <strong>A payment of {{ number_format($amount, 2) }} {{ $currency }} failed for {{ $company->name }}.</strong>
-        </div>
-        <p>Please verify your payment information and try again.</p>
-    @else
-        <h2>Échec de paiement</h2>
-        <div class="alert-box">
-            <strong>Un paiement de {{ number_format($amount, 2) }} {{ $currency }} a échoué pour {{ $company->name }}.</strong>
-        </div>
-        <p>Veuillez vérifier vos informations de paiement et réessayer.</p>
-    @endif
-
-    <div class="footer">
-        @if($locale === 'ar')
-            <p>هذه رسالة تلقائية من Leopardo RH.</p>
-        @elseif($locale === 'en')
-            <p>This is an automated message from Leopardo RH.</p>
-        @else
-            <p>Ceci est un message automatique de Leopardo RH.</p>
-        @endif
+@php
+$translations = [
+    'fr' => [
+        'subject' => 'Échec de paiement',
+        'greeting' => 'Bonjour :name,',
+        'body' => 'Le paiement de votre abonnement Leopardo RH a échoué. Veuillez mettre à jour votre moyen de paiement pour éviter toute interruption de service.',
+        'button' => 'Mettre à jour le paiement',
+        'thanks' => 'L\'équipe Leopardo RH',
+    ],
+    'ar' => [
+        'subject' => 'فشل الدفع',
+        'greeting' => 'مرحبا :name،',
+        'body' => 'فشل دفع اشتراك ليوباردو HR الخاص بك. يرجى تحديث وسيلة الدفع لتجنب أي انقطاع في الخدمة.',
+        'button' => 'تحديث الدفع',
+        'thanks' => 'فريق ليوباردو HR',
+    ],
+    'en' => [
+        'subject' => 'Payment Failed',
+        'greeting' => 'Hello :name,',
+        'body' => 'Your Leopardo RH subscription payment has failed. Please update your payment method to avoid service interruption.',
+        'button' => 'Update payment',
+        'thanks' => 'The Leopardo RH team',
+    ],
+];
+$t = $translations[$locale ?? 'fr'];
+@endphp
+<!DOCTYPE html>
+<html lang="{{ $locale ?? 'fr' }}">
+<head><meta charset="UTF-8"><title>{{ $t['subject'] }}</title></head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: #ef4444; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">⚠️ Leopardo RH</h1>
     </div>
-</div>
+    <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px;">{{ str_replace(':name', $userName ?? '', $t['greeting']) }}</p>
+        <p>{{ $t['body'] }}</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ $billingUrl ?? '#' }}" style="background: #ef4444; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">{{ $t['button'] }}</a>
+        </div>
+        <p style="color: #6b7280;">{{ $t['thanks'] }}</p>
+    </div>
 </body>
 </html>
