@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Invoice;
@@ -15,6 +16,7 @@ class BillingController extends Controller
 {
     public function subscription(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $subscription = Subscription::where('company_id', $user->company_id)
             ->latest()
@@ -29,6 +31,7 @@ class BillingController extends Controller
 
     public function upgrade(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -66,6 +69,7 @@ class BillingController extends Controller
 
     public function cancel(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -90,6 +94,7 @@ class BillingController extends Controller
 
     public function renew(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         if (! $user->isManager()) {
             abort(403);
@@ -112,6 +117,7 @@ class BillingController extends Controller
 
     public function invoices(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $invoices = Invoice::where('company_id', $user->company_id)
@@ -131,6 +137,7 @@ class BillingController extends Controller
 
     public function showInvoice(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $invoice = Invoice::where('company_id', $user->company_id)
             ->with('payments')
@@ -141,6 +148,7 @@ class BillingController extends Controller
 
     public function invoicePdf(Request $request, int $id): Response
     {
+        /** @var Employee $user */
         $user = $request->user();
         $invoice = Invoice::where('company_id', $user->company_id)->findOrFail($id);
         $company = Company::find($user->company_id);

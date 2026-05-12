@@ -56,7 +56,7 @@ class EstimationController extends Controller
             to: $request->validated('to')
         );
 
-        $company = app('current_company');
+        $company = currentCompany();
 
         $pdf = Pdf::loadView('pdf.receipt', [
             'company' => $company,

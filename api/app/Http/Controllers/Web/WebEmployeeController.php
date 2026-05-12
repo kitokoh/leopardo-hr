@@ -21,7 +21,7 @@ class WebEmployeeController extends Controller
         $this->authorize('viewAny', Employee::class);
         $employee = Employee::query()->findOrFail($employeeId);
 
-        $company = app('current_company');
+        $company = currentCompany();
 
         $historyLogs = AttendanceLog::query()
             ->where('employee_id', $employee->id)
@@ -40,11 +40,11 @@ class WebEmployeeController extends Controller
 
             return [
                 'date' => $log->date?->format('Y-m-d'),
-                'check_in' => $log->check_in?->setTimezone(app('current_company')->timezone)->format('H:i'),
-                'check_out' => $log->check_out?->setTimezone(app('current_company')->timezone)->format('H:i'),
+                'check_in' => $log->check_in?->setTimezone(currentCompany()->timezone)->format('H:i'),
+                'check_out' => $log->check_out?->setTimezone(currentCompany()->timezone)->format('H:i'),
                 'hours_worked' => $summary['hours_worked'] ?? 0.0,
                 'total_estimated' => $summary['total_estimated'] ?? 0.0,
-                'currency' => $summary['currency'] ?? app('current_company')->currency,
+                'currency' => $summary['currency'] ?? currentCompany()->currency,
                 'status' => $log->status ?? 'absent',
             ];
         })->values();
@@ -96,7 +96,7 @@ class WebEmployeeController extends Controller
             to: $validated['to'],
         );
 
-        $company = app('current_company');
+        $company = currentCompany();
 
         $pdf = Pdf::loadView('pdf.receipt', [
             'company' => $company,

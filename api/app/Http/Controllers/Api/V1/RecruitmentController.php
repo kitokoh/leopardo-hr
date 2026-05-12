@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Applicant;
 use App\Models\Interview;
@@ -17,6 +18,7 @@ class RecruitmentController extends Controller
 
     public function indexJobs(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -33,6 +35,7 @@ class RecruitmentController extends Controller
 
     public function storeJob(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -65,6 +68,7 @@ class RecruitmentController extends Controller
 
     public function showJob(Request $request, JobPosting $jobPosting): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($jobPosting->company_id !== $actor->company_id) {
             abort(404);
@@ -75,6 +79,7 @@ class RecruitmentController extends Controller
 
     public function updateJob(Request $request, JobPosting $jobPosting): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($jobPosting->company_id !== $actor->company_id) {
             abort(404);
@@ -111,6 +116,7 @@ class RecruitmentController extends Controller
 
     public function indexApplicants(Request $request, JobPosting $jobPosting): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($jobPosting->company_id !== $actor->company_id) {
             abort(404);
@@ -130,6 +136,7 @@ class RecruitmentController extends Controller
 
     public function storeApplicant(Request $request, JobPosting $jobPosting): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($jobPosting->company_id !== $actor->company_id) {
             abort(404);
@@ -159,6 +166,7 @@ class RecruitmentController extends Controller
 
     public function updateApplicant(Request $request, Applicant $applicant): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($applicant->company_id !== $actor->company_id) {
             abort(404);
@@ -182,6 +190,7 @@ class RecruitmentController extends Controller
 
     public function storeInterview(Request $request, Applicant $applicant): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($applicant->company_id !== $actor->company_id) {
             abort(404);
@@ -208,6 +217,7 @@ class RecruitmentController extends Controller
 
     public function updateInterview(Request $request, Interview $interview): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($interview->company_id !== $actor->company_id) {
             abort(404);

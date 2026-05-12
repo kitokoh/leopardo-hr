@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use App\Services\Tracking\TraccarService;
@@ -12,6 +13,7 @@ class VehicleController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $query = Vehicle::where('company_id', $user->company_id);
 
@@ -55,6 +57,7 @@ class VehicleController extends Controller
             'metadata' => 'nullable|array',
         ]);
 
+        /** @var Employee $user */
         $user = $request->user();
         $validated['company_id'] = $user->company_id;
 
@@ -65,6 +68,7 @@ class VehicleController extends Controller
 
     public function show(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -73,6 +77,7 @@ class VehicleController extends Controller
 
     public function update(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -100,6 +105,7 @@ class VehicleController extends Controller
 
     public function destroy(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
         $vehicle->delete();
@@ -109,6 +115,7 @@ class VehicleController extends Controller
 
     public function position(Request $request, int $id, TraccarService $traccar): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -123,6 +130,7 @@ class VehicleController extends Controller
 
     public function trips(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -143,6 +151,7 @@ class VehicleController extends Controller
 
     public function vehicleAlerts(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -163,6 +172,7 @@ class VehicleController extends Controller
 
     public function maintenance(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -183,6 +193,7 @@ class VehicleController extends Controller
 
     public function assign(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -208,6 +219,7 @@ class VehicleController extends Controller
 
     public function unassign(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
@@ -227,6 +239,7 @@ class VehicleController extends Controller
 
     public function assignments(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 

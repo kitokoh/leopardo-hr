@@ -9,6 +9,18 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string|null $url
+ * @property array<mixed> $events
+ * @property string|null $secret
+ * @property bool $active
+ * @property string|null $failure_count
+ * @property \Illuminate\Support\Carbon|null $last_triggered_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class WebhookEndpoint extends Model
 {
     use BelongsToCompany;
@@ -33,6 +45,7 @@ class WebhookEndpoint extends Model
 
     protected $hidden = ['secret'];
 
+    /** @return HasMany<WebhookDelivery, $this> */
     public function deliveries(): HasMany
     {
         return $this->hasMany(WebhookDelivery::class, 'webhook_endpoint_id');

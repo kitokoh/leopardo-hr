@@ -7,6 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property int $id
+ * @property int $company_id
+ * @property int $employee_id
+ * @property string|null $shareable_type
+ * @property int|null $shareable_id
+ * @property string|null $share_token
+ * @property string|null $shared_via
+ * @property string|null $shared_with_email
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class CabinetShare extends Model
 {
     use BelongsToCompany;

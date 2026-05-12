@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,7 @@ class AuditLogController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);
@@ -53,6 +55,7 @@ class AuditLogController extends Controller
 
     public function show(Request $request, AuditLog $auditLog): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal')) {
             abort(403);

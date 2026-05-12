@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\LeaveAccrual;
 use App\Models\LeaveBalance;
@@ -26,6 +27,7 @@ class LeavePolicyController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -66,6 +68,7 @@ class LeavePolicyController extends Controller
 
     public function update(Request $request, LeavePolicy $leavePolicy): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($leavePolicy->company_id !== $actor->company_id) {
             abort(404);
@@ -97,6 +100,7 @@ class LeavePolicyController extends Controller
 
     public function balances(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $year = $request->integer('year', (int) now()->format('Y'));
 
@@ -115,6 +119,7 @@ class LeavePolicyController extends Controller
 
     public function destroy(Request $request, LeavePolicy $leavePolicy): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($leavePolicy->company_id !== $actor->company_id) {
             abort(404);
@@ -130,6 +135,7 @@ class LeavePolicyController extends Controller
 
     public function myBalances(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $year = $request->integer('year', (int) now()->format('Y'));
 
@@ -144,6 +150,7 @@ class LeavePolicyController extends Controller
 
     public function accruals(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $query = LeaveAccrual::query()
@@ -163,6 +170,7 @@ class LeavePolicyController extends Controller
 
     public function storeAccrual(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);

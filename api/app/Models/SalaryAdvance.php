@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property float $amount
+ * @property string|null $reason
+ * @property string $status
+ * @property string|null $approved_by
+ * @property string|null $decision_comment
+ * @property string|null $repayment_months
+ * @property float $monthly_deduction
+ * @property float $amount_remaining
+ * @property array<mixed> $repayment_plan
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class SalaryAdvance extends Model
 {
     use BelongsToCompany, HasFactory;
@@ -25,11 +41,13 @@ class SalaryAdvance extends Model
         'amount_remaining' => 'float', 'repayment_plan' => 'array',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');

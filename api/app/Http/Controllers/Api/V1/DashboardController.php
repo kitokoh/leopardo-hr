@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ class DashboardController extends Controller
 {
     public function summary(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
 
@@ -46,6 +48,7 @@ class DashboardController extends Controller
 
     public function recentActivity(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
 
@@ -60,6 +63,7 @@ class DashboardController extends Controller
 
     public function kpi(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
         $month = $request->input('month', now()->format('Y-m'));

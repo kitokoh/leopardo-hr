@@ -6,6 +6,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ * @property string|null $phone
+ * @property string|null $password_hash
+ * @property string|null $google_id
+ * @property string|null $avatar_url
+ * @property string $provider
+ * @property string $preferred_language
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $last_login_at
+ * @property int $failed_login_attempts
+ * @property \Illuminate\Support\Carbon|null $locked_until
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -50,11 +69,13 @@ class User extends Authenticatable
         return trim("{$this->first_name} {$this->last_name}");
     }
 
+    /** @return HasMany<CompanyRequest, $this> */
     public function companyRequests(): HasMany
     {
         return $this->hasMany(CompanyRequest::class, 'user_id');
     }
 
+    /** @return HasMany<UserEmployeeLink, $this> */
     public function employeeLinks(): HasMany
     {
         return $this->hasMany(UserEmployeeLink::class, 'user_id');

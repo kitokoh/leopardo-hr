@@ -17,7 +17,7 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         $companyId = $this->user()?->company_id
-            ?? (app()->bound('current_company') ? app('current_company')->id : null);
+            ?? (app()->bound('current_company') ? currentCompany()->id : null);
 
         return [
             'matricule' => [
@@ -101,7 +101,7 @@ class StoreEmployeeRequest extends FormRequest
         }
 
         $company = $this->user()?->company
-            ?? (app()->bound('current_company') ? app('current_company') : null);
+            ?? (app()->bound('current_company') ? currentCompany() : null);
 
         if (! $company instanceof Company) {
             return;

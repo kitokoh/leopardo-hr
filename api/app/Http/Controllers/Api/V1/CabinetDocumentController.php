@@ -138,6 +138,7 @@ class CabinetDocumentController extends Controller
 
     private function employee(Request $request): Employee
     {
+        /** @var Employee $user */
         $user = $request->user();
         assert($user instanceof Employee);
 

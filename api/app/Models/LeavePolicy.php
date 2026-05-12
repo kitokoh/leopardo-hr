@@ -9,6 +9,26 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $absence_type_id
+ * @property string $name
+ * @property string $accrual_type
+ * @property float $accrual_amount
+ * @property float $max_balance
+ * @property bool $carry_forward
+ * @property float $carry_forward_max
+ * @property int $carry_forward_expiry_days
+ * @property bool $requires_approval
+ * @property int $approval_levels
+ * @property int $min_notice_days
+ * @property int $max_consecutive_days
+ * @property array<mixed> $applicable_roles
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class LeavePolicy extends Model
 {
     use BelongsToCompany;
@@ -43,11 +63,13 @@ class LeavePolicy extends Model
         'active' => 'boolean',
     ];
 
+    /** @return BelongsTo<AbsenceType, $this> */
     public function absenceType(): BelongsTo
     {
         return $this->belongsTo(AbsenceType::class, 'absence_type_id');
     }
 
+    /** @return HasMany<LeaveAccrual, $this> */
     public function accruals(): HasMany
     {
         return $this->hasMany(LeaveAccrual::class, 'leave_policy_id');

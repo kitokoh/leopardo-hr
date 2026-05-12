@@ -7,6 +7,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property int|null $approver_employee_id
+ * @property string $status
+ * @property bool $requested_face_enabled
+ * @property bool $requested_fingerprint_enabled
+ * @property string|null $requested_face_reference_path
+ * @property string|null $requested_fingerprint_reference_path
+ * @property int|null $requested_fingerprint_device_id
+ * @property string $request_source
+ * @property string|null $employee_note
+ * @property string|null $manager_note
+ * @property \Illuminate\Support\Carbon|null $submitted_at
+ * @property \Illuminate\Support\Carbon|null $approved_at
+ * @property \Illuminate\Support\Carbon|null $rejected_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class BiometricEnrollmentRequest extends Model
 {
     use BelongsToCompany;
@@ -40,11 +60,13 @@ class BiometricEnrollmentRequest extends Model
         'rejected_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approver_employee_id');

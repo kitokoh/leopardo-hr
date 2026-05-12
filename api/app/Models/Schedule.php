@@ -6,6 +6,21 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property string|null $start_time
+ * @property string|null $end_time
+ * @property int $break_minutes
+ * @property array<mixed> $work_days
+ * @property int $late_tolerance_minutes
+ * @property string $overtime_threshold_daily
+ * @property string $overtime_threshold_weekly
+ * @property bool $is_default
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Schedule extends Model
 {
     use BelongsToCompany;
