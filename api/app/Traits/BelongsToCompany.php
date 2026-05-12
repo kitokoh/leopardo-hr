@@ -11,7 +11,7 @@ trait BelongsToCompany
     protected static function bootBelongsToCompany(): void
     {
         static::addGlobalScope('company', function (Builder $builder): void {
-            $currentCompany = app()->bound('current_company') ? app('current_company') : null;
+            $currentCompany = app()->bound('current_company') ? currentCompany() : null;
 
             if (! $currentCompany instanceof Company) {
                 return;
@@ -24,7 +24,7 @@ trait BelongsToCompany
         });
 
         static::creating(function (Model $model): void {
-            $currentCompany = app()->bound('current_company') ? app('current_company') : null;
+            $currentCompany = app()->bound('current_company') ? currentCompany() : null;
 
             if (! $currentCompany instanceof Company) {
                 return;

@@ -20,7 +20,7 @@ class EnsureCameraModuleMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $company = app()->bound('current_company') ? app('current_company') : null;
+        $company = app()->bound('current_company') ? currentCompany() : null;
 
         if ($company === null) {
             return new JsonResponse([
