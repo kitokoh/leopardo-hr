@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\PayrollRun;
 use App\Services\Payroll\PayrollCalculator;
@@ -15,6 +16,7 @@ class PayrollRunController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -43,6 +45,7 @@ class PayrollRunController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -69,6 +72,7 @@ class PayrollRunController extends Controller
 
     public function show(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
@@ -84,6 +88,7 @@ class PayrollRunController extends Controller
 
     public function calculate(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
@@ -104,6 +109,7 @@ class PayrollRunController extends Controller
 
     public function validateRun(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
@@ -131,6 +137,7 @@ class PayrollRunController extends Controller
 
     public function cancel(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
@@ -150,6 +157,7 @@ class PayrollRunController extends Controller
 
     public function summary(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);

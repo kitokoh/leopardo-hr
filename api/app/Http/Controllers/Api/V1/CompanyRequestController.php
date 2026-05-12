@@ -59,6 +59,7 @@ class CompanyRequestController extends Controller
         }
 
         $payload = $validated;
+        /** @var Employee $employee */
         $employee = $request->user();
         if ($employee instanceof Employee) {
             $payload['employee_id'] = $employee->id;
@@ -119,6 +120,7 @@ class CompanyRequestController extends Controller
             return $user;
         }
 
+        /** @var Employee $employee */
         $employee = $request->user();
         if ($employee instanceof Employee) {
             return User::firstOrCreate(

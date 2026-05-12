@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ class NotificationController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $notifications = $user->notifications()
@@ -30,6 +32,7 @@ class NotificationController extends Controller
 
     public function unread(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $unread = $user->unreadNotifications()
@@ -42,6 +45,7 @@ class NotificationController extends Controller
 
     public function markRead(Request $request, string $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $notification = $user->notifications()->where('id', $id)->firstOrFail();
         $notification->markAsRead();
@@ -51,6 +55,7 @@ class NotificationController extends Controller
 
     public function markAllRead(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $user->unreadNotifications->markAsRead();
 
