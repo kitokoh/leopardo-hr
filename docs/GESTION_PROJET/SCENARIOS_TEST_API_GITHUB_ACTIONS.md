@@ -490,12 +490,14 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/dashboard/summary` resume (employes, departements, pointage today, absences pending)
 - `GET /api/v1/dashboard/recent-activity` activite recente depuis audit_logs
 - `GET /api/v1/dashboard/kpi` KPI mensuel (turnover, new hires, absence rate)
+- Couverture Feature requise : isolation tenant, limite recent activity, KPI compatible SQLite/PostgreSQL
 
 ### Notifications
 - `GET /api/v1/notifications` liste paginee avec unread_count
 - `GET /api/v1/notifications/unread` non-lues uniquement
 - `PATCH /api/v1/notifications/{id}/read` marquer comme lue
 - `POST /api/v1/notifications/mark-all-read` tout marquer comme lu
+- Couverture Feature requise : seules les notifications de l'employe authentifie sont visibles/modifiees
 
 ### Exports
 - `GET /api/v1/export/employees` export JSON ou CSV des employes
@@ -518,6 +520,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `POST /api/v1/webhooks/stripe` webhook Stripe (invoice.paid, payment_failed, subscription.deleted)
 - `POST /api/v1/webhooks/chargily` webhook Chargily (checkout.paid)
 - Pas d'authentification requise (endpoints publics)
+- Couverture Feature requise : facture payee, paiement cree, past_due, annulation abonnement
 
 ### Onboarding enrichi
 - `GET /api/v1/onboarding-setup/checklist` checklist dynamique (auto-seed 10 etapes si vide)
@@ -542,22 +545,23 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 ## IA Avancee — Voice, Agents, Analytics (Sprint 17-18)
 
 ### Voice IA
-- `POST /api/ai/voice/transcribe` audio -> texte (Whisper ou Deepgram)
-- `POST /api/ai/voice/synthesize` texte -> audio (Edge TTS ou ElevenLabs)
-- `POST /api/ai/voice/command` pipeline complet audio -> IA -> audio
+- `POST /api/v1/ai/voice/transcribe` audio -> texte (Whisper ou Deepgram)
+- `POST /api/v1/ai/voice/synthesize` texte -> audio (Edge TTS ou ElevenLabs)
+- `POST /api/v1/ai/voice/command` pipeline complet audio -> IA -> audio
 - Support langues : fr, ar, tr, en
 - Rate limiting applique
 
 ### Agents autonomes
-- `POST /api/ai/agent/run` executer une tache multi-step (max 10-20 etapes)
-- `GET /api/ai/agent/workflows` lister les workflows predefinis
+- `POST /api/v1/ai/agent/run` executer une tache multi-step (max 10-20 etapes)
+- `GET /api/v1/ai/agent/workflows` lister les workflows predefinis
 - Workflows : prepare_payroll, weekly_report, new_employee_onboarding
 
-### Analytics IA (super-admin)
-- `GET /api/ai/analytics/usage` utilisation par tenant (requests, tokens, couts)
-- `GET /api/ai/analytics/costs` couts par periode et provider (day/week/month)
-- `GET /api/ai/analytics/tools` outils les plus appeles
-- `GET /api/ai/analytics/errors` taux de succes + erreurs recentes
+### Analytics IA
+- `GET /api/v1/ai/analytics/usage` utilisation du tenant authentifie (requests, tokens, couts)
+- `GET /api/v1/ai/analytics/costs` couts par periode et provider (day/week/month)
+- `GET /api/v1/ai/analytics/tools` outils les plus appeles
+- `GET /api/v1/ai/analytics/errors` taux de succes + erreurs recentes
+- Couverture Feature requise : colonnes reelles `ai_audit_logs`, isolation tenant, historique/tools IA scopes
 
 ---
 

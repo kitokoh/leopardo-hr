@@ -132,6 +132,7 @@ trait CreatesMvpSchema
             $table->unsignedInteger('manager_id')->nullable();
             $table->decimal('leave_balance', 6, 2)->default(0);
             $table->string('status', 20)->default('active');
+            $table->timestampTz('archived_at')->nullable();
             $table->char('preferred_language', 2)->nullable();
             $table->string('photo_path', 255)->nullable();
             $table->string('iban', 255)->nullable();
@@ -289,6 +290,24 @@ trait CreatesMvpSchema
             $table->timestampTz('created_at')->useCurrent();
         });
 
+        Schema::create($this->tenantTable('audit_logs'), function (Blueprint $table): void {
+            $table->bigIncrements('id');
+            $table->uuid('company_id')->nullable()->index();
+            $table->unsignedInteger('user_id')->nullable();
+            $table->string('action', 100);
+            $table->string('auditable_type', 100)->nullable();
+            $table->unsignedBigInteger('auditable_id')->nullable();
+            $table->json('old_values')->nullable();
+            $table->json('new_values')->nullable();
+            $table->string('ip_address', 45)->nullable();
+            $table->string('user_agent', 255)->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestampTz('created_at')->useCurrent();
+
+            $table->index(['company_id', 'created_at']);
+            $table->index(['auditable_type', 'auditable_id']);
+        });
+
         Schema::create('absence_types', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -440,7 +459,17 @@ trait CreatesMvpSchema
             $table->string('type', 100);
             $table->string('title', 200);
             $table->text('body');
-            $table->timestamps();
+            if (DB::getDriverName() === 'pgsql') {
+                $table->jsonb('data')->nullable();
+            } else {
+                $table->json('data')->nullable();
+            }
+            $table->boolean('is_read')->default(false);
+            $table->timestampTz('read_at')->nullable();
+            $table->timestampTz('created_at')->useCurrent();
+
+            $table->index(['employee_id', 'is_read']);
+            $table->index('created_at');
         });
 
         Schema::create($this->tenantTable('cabinet_folders'), function (Blueprint $table): void {
@@ -666,6 +695,68 @@ trait CreatesMvpSchema
                 $table->string('payment_method', 30)->nullable();
                 $table->string('stripe_invoice_id', 100)->nullable();
                 $table->string('pdf_path', 500)->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payments'))) {
+            Schema::create($this->moduleTable('payments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->unsignedBigInteger('invoice_id');
+                $table->uuid('company_id')->index();
+                $table->decimal('amount', 12, 2);
+                $table->string('currency', 3)->default('DZD');
+                $table->string('method', 30)->default('manual');
+                $table->string('provider_reference', 200)->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->timestampTz('paid_at')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('ai_conversations'))) {
+            Schema::create($this->moduleTable('ai_conversations'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('user_id');
+                $table->string('title', 200)->default('Nouvelle conversation');
+                $table->json('messages')->nullable();
+                $table->json('context')->nullable();
+                $table->unsignedInteger('token_count')->default(0);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('ai_audit_logs'))) {
+            Schema::create($this->moduleTable('ai_audit_logs'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('user_id');
+                $table->unsignedBigInteger('conversation_id')->nullable();
+                $table->text('prompt');
+                $table->text('response');
+                $table->json('tools_called')->nullable();
+                $table->string('provider', 50);
+                $table->string('model', 100)->nullable();
+                $table->unsignedInteger('input_tokens')->default(0);
+                $table->unsignedInteger('output_tokens')->default(0);
+                $table->unsignedInteger('cost_cents')->default(0);
+                $table->unsignedInteger('duration_ms')->default(0);
+                $table->text('error')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('ai_tool_registry'))) {
+            Schema::create($this->moduleTable('ai_tool_registry'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->string('name', 100)->unique();
+                $table->text('description');
+                $table->json('parameters')->nullable();
+                $table->json('required_permissions')->nullable();
+                $table->string('required_role', 20)->default('employee');
+                $table->string('module', 50)->default('rh');
+                $table->boolean('active')->default(true);
                 $table->timestamps();
             });
         }
@@ -1026,15 +1117,26 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_tool_registry"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "invoices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_advances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "evaluations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "features"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "leave_balance_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absences"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "notifications"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "tasks"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "projects"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "sites"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "positions"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "departments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "cabinet_documents"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "cabinet_folders"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "absence_types"'.$cascade);
