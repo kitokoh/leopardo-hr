@@ -18,6 +18,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('features')) {
         Schema::create('features', function (Blueprint $table) {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
@@ -63,6 +64,7 @@ return new class extends Migration
             $table->index(['status', 'api_version']);
             $table->unique(['company_id', 'key']);
         });
+        }
 
         // ── Commentaires PostgreSQL uniquement ────────────────────────────────
         if (DB::getDriverName() === 'pgsql') {
