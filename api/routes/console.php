@@ -91,6 +91,18 @@ Artisan::command(
     }
 )->purpose('Run both public and tenant migrations (and optionally seeders) in one shot.');
 
+// ──────────────────────────────────────────────
+// Scheduled Jobs
+// ──────────────────────────────────────────────
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('billing:check-trials')->daily()->at('08:00');
+Schedule::command('billing:check-overdue')->daily()->at('09:00');
+Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
+Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
+Schedule::command('leave:carry-forward --year=' . (now()->year - 1))->yearlyOn(1, 1, '04:00');
+Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
+
 Artisan::command('super-admin:reset-password {email} {password}', function (string $email, string $password) {
     DB::statement('SET search_path TO public');
 
