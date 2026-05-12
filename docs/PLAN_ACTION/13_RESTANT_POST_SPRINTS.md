@@ -48,12 +48,12 @@ Taches :
 **A creer :** `api/app/Services/PaySlipPdfGenerator.php`
 
 ```
-- [ ] Installer DomPDF ou Snappy : `composer require barryvdh/laravel-dompdf`
-- [ ] Creer le template Blade `resources/views/pdf/payslip.blade.php`
-- [ ] Template adaptable par pays (logo, format, mentions legales)
-- [ ] Supporter les mentions obligatoires : brut, cotisations, net imposable, net a payer
-- [ ] Ajouter endpoint GET /api/v1/pay-slips/{id}/pdf -> download
-- [ ] Ajouter endpoint POST /api/v1/payroll-runs/{id}/send-slips -> envoi par email
+- [x] Installer DomPDF ou Snappy : `composer require barryvdh/laravel-dompdf`
+- [x] Creer le template Blade `resources/views/pdf/payslip.blade.php`
+- [x] Template adaptable par pays (logo, format, mentions legales)
+- [x] Supporter les mentions obligatoires : brut, cotisations, net imposable, net a payer
+- [x] Ajouter endpoint GET /api/v1/pay-slips/{id}/pdf -> download
+- [x] Ajouter endpoint POST /api/v1/payroll-runs/{id}/send-slips -> envoi par email
 ```
 
 ### 1.3 Export bancaire reel
@@ -70,9 +70,9 @@ Taches :
 ### 1.4 Accrual automatique conges
 
 ```
-- [ ] Job schedule `leave:accrue` mensuel — calcule et credite les soldes
-- [ ] Carry forward annuel — reporte les soldes non utilises selon LeavePolicy
-- [ ] Expiration carry forward — expire les reports selon carry_forward_expiry_days
+- [x] Job schedule `leave:accrue` mensuel — calcule et credite les soldes
+- [x] Carry forward annuel — reporte les soldes non utilises selon LeavePolicy
+- [x] Expiration carry forward — expire les reports selon carry_forward_expiry_days
 ```
 
 ---
@@ -82,29 +82,29 @@ Taches :
 ### 2.1 Scheduled jobs billing
 
 ```
-- [ ] Artisan command `billing:check-trials` (daily) — notifier les trials expirant dans 3 jours
-- [ ] Artisan command `billing:check-overdue` (daily) — notifier les factures en retard
-- [ ] Artisan command `billing:generate-invoices` (monthly) — generer les factures du mois
-- [ ] Registrer dans `app/Console/Kernel.php` ou `routes/console.php`
+- [x] Artisan command `billing:check-trials` (daily) — notifier les trials expirant dans 3 jours
+- [x] Artisan command `billing:check-overdue` (daily) — notifier les factures en retard
+- [x] Artisan command `billing:generate-invoices` (monthly) — generer les factures du mois
+- [x] Registrer dans `app/Console/Kernel.php` ou `routes/console.php`
 ```
 
 ### 2.2 Invoice PDF
 
 ```
-- [ ] Template Blade `resources/views/pdf/invoice.blade.php`
-- [ ] Numero auto-incremente LEO-2026-XXXX
-- [ ] Mentions legales (TVA, SIRET/RC selon pays)
-- [ ] Endpoint GET /api/v1/billing/invoices/{id}/pdf -> download
+- [x] Template Blade `resources/views/pdf/invoice.blade.php`
+- [x] Numero auto-incremente LEO-2026-XXXX
+- [x] Mentions legales (TVA, SIRET/RC selon pays)
+- [x] Endpoint GET /api/v1/billing/invoices/{id}/pdf -> download
 ```
 
 ### 2.3 Templates email i18n
 
 ```
-- [ ] Template welcome/onboarding (FR, AR, EN)
-- [ ] Template invoice envoyee (FR, AR, EN)
-- [ ] Template trial expiring (FR, AR, EN)
-- [ ] Template payment failed (FR, AR, EN)
-- [ ] Template password reset (deja existant, verifier i18n)
+- [x] Template welcome/onboarding (FR, AR, EN)
+- [x] Template invoice envoyee (FR, AR, EN)
+- [x] Template trial expiring (FR, AR, EN)
+- [x] Template payment failed (FR, AR, EN)
+- [x] Template password reset (deja existant, verifier i18n)
 ```
 
 ### 2.4 FormRequests + API Resources pour tous les nouveaux modules
@@ -114,37 +114,37 @@ Pour la qualite enterprise-grade :
 
 ```
 Modules concernes :
-- [ ] BillingController -> BillingRequest + SubscriptionResource
-- [ ] OnboardingStepController -> OnboardingStepResource
-- [ ] FeatureFlagController -> FeatureFlagRequest + FeaturePlanMatrixResource
-- [ ] DashboardController -> DashboardSummaryResource
-- [ ] ExportController -> (pas de resource, mais FormRequest avec format validation)
-- [ ] VoiceController -> VoiceTranscribeRequest, VoiceSynthesizeRequest
-- [ ] AgentController -> AgentRunRequest
-- [ ] AIAnalyticsController -> (pas de resource, query params validation)
-- [ ] VehicleController -> VehicleRequest + VehicleResource
-- [ ] FleetController -> FleetRequest
-- [ ] PayrollRunController -> PayrollRunRequest + PayrollRunResource
-- [ ] PaySlipController -> PaySlipResource
-- [ ] LeavePolicyController -> LeavePolicyRequest + LeavePolicyResource
-- [ ] ContractController -> ContractRequest + ContractResource
-- [ ] RecruitmentController -> JobPostingRequest + ApplicantResource
-- [ ] TrainingController -> TrainingRequest + TrainingResource
-- [ ] EmployeeLoanController -> LoanRequest + LoanResource
-- [ ] ExpenseClaimController -> ExpenseClaimRequest + ExpenseClaimResource
+- [x] BillingController -> BillingRequest + SubscriptionResource
+- [x] OnboardingStepController -> OnboardingStepResource
+- [x] FeatureFlagController -> FeatureFlagRequest + FeaturePlanMatrixResource
+- [x] DashboardController -> DashboardSummaryResource
+- [x] ExportController -> (pas de resource, mais FormRequest avec format validation)
+- [x] VoiceController -> VoiceTranscribeRequest, VoiceSynthesizeRequest
+- [x] AgentController -> AgentRunRequest
+- [x] AIAnalyticsController -> (pas de resource, query params validation)
+- [x] VehicleController -> VehicleRequest + VehicleResource
+- [x] FleetController -> FleetRequest
+- [x] PayrollRunController -> PayrollRunRequest + PayrollRunResource
+- [x] PaySlipController -> PaySlipResource
+- [x] LeavePolicyController -> LeavePolicyRequest + LeavePolicyResource
+- [x] ContractController -> ContractRequest + ContractResource
+- [x] RecruitmentController -> JobPostingRequest + ApplicantResource
+- [x] TrainingController -> TrainingRequest + TrainingResource
+- [x] EmployeeLoanController -> LoanRequest + LoanResource
+- [x] ExpenseClaimController -> ExpenseClaimRequest + ExpenseClaimResource
 ```
 
 ### 2.5 Policies RBAC completes
 
 ```
-- [ ] BillingPolicy (admin + super_admin seulement)
-- [ ] OnboardingPolicy (admin du tenant)
-- [ ] FeatureFlagPolicy (super_admin seulement pour write, tous pour read)
-- [ ] ExportPolicy (admin + manager)
-- [ ] VehiclePolicy (admin + fleet_manager)
-- [ ] PayrollPolicy (admin + accountant)
-- [ ] RecruitmentPolicy (admin + recruiter)
-- [ ] TrainingPolicy (admin + hr_manager)
+- [x] BillingPolicy (admin + super_admin seulement)
+- [x] OnboardingPolicy (admin du tenant)
+- [x] FeatureFlagPolicy (super_admin seulement pour write, tous pour read)
+- [x] ExportPolicy (admin + manager)
+- [x] VehiclePolicy (admin + fleet_manager)
+- [x] PayrollPolicy (admin + accountant)
+- [x] RecruitmentPolicy (admin + recruiter)
+- [x] TrainingPolicy (admin + hr_manager)
 ```
 
 ---
