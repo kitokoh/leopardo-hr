@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\OnboardingStep;
 use Illuminate\Database\Eloquent\Collection;
@@ -12,6 +13,7 @@ class OnboardingStepController extends Controller
 {
     public function checklist(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $steps = OnboardingStep::where('company_id', $user->company_id)
@@ -27,6 +29,7 @@ class OnboardingStepController extends Controller
 
     public function progress(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $steps = OnboardingStep::where('company_id', $user->company_id)->get();
@@ -49,6 +52,7 @@ class OnboardingStepController extends Controller
 
     public function complete(Request $request, string $stepKey): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $step = OnboardingStep::where('company_id', $user->company_id)
@@ -66,6 +70,7 @@ class OnboardingStepController extends Controller
 
     public function skip(Request $request, string $stepKey): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
 
         $step = OnboardingStep::where('company_id', $user->company_id)

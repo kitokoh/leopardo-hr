@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\TaskComment;
@@ -12,6 +13,7 @@ class TaskController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $request->validate(['project_id' => ['nullable', 'integer', 'min:1'], 'status' => ['nullable', 'in:todo,inprogress,review,done,rejected,cancelled'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'assigned_to' => ['nullable', 'integer', 'min:1'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
 
@@ -44,6 +46,7 @@ class TaskController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $data = $request->validate(['title' => ['required', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['nullable', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['required', 'date'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['nullable', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
 
@@ -54,6 +57,7 @@ class TaskController extends Controller
 
     public function show(Request $request, Task $task): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) {
             abort(404);
@@ -67,6 +71,7 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) {
             abort(404);
@@ -85,6 +90,7 @@ class TaskController extends Controller
 
     public function destroy(Request $request, Task $task): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) {
             abort(404);
@@ -100,6 +106,7 @@ class TaskController extends Controller
 
     public function addComment(Request $request, Task $task): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($task->company_id !== $actor->company_id) {
             abort(404);

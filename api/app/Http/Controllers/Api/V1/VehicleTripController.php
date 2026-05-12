@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\VehicleTrip;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class VehicleTripController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $query = VehicleTrip::where('company_id', $user->company_id);
 
@@ -43,6 +45,7 @@ class VehicleTripController extends Controller
 
     public function show(Request $request, int $id): JsonResponse
     {
+        /** @var Employee $user */
         $user = $request->user();
         $trip = VehicleTrip::where('company_id', $user->company_id)->findOrFail($id);
 

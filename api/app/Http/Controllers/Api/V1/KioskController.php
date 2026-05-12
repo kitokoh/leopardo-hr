@@ -22,6 +22,7 @@ class KioskController extends Controller
     public function register(Request $request): JsonResponse
     {
         $company = currentCompany();
+        /** @var Employee $actor */
         $actor = $request->user();
 
         abort_unless($actor?->isManager(), 403, 'FORBIDDEN');
