@@ -34,7 +34,7 @@ class MeController extends Controller
             'date' => ['nullable', 'date_format:Y-m-d'],
         ]);
 
-        $company = app('current_company');
+        $company = currentCompany();
         $date = $request->input('date');
         $dateLocal = $date
             ? Carbon::createFromFormat('Y-m-d', $date, $company->timezone)->startOfDay()
@@ -58,7 +58,7 @@ class MeController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $company = app('current_company');
+        $company = currentCompany();
         $today = now('UTC')->setTimezone($company->timezone)->startOfDay();
         $defaultFrom = $today->copy()->startOfMonth()->toDateString();
         $defaultTo = $today->toDateString();
@@ -82,7 +82,7 @@ class MeController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $company = app('current_company');
+        $company = currentCompany();
         $today = now('UTC')->setTimezone($company->timezone)->startOfDay();
 
         $validated = $request->validate([

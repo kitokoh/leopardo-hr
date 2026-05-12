@@ -18,7 +18,7 @@ class EstimationService
 
     public function dailySummary(Employee $employee, ?string $date = null): array
     {
-        $company = app('current_company');
+        $company = currentCompany();
 
         $dateLocal = $date
             ? Carbon::createFromFormat('Y-m-d', $date, $company->timezone)->startOfDay()
@@ -39,7 +39,7 @@ class EstimationService
 
     public function quickEstimate(Employee $employee, string $from, string $to): array
     {
-        $company = app('current_company');
+        $company = currentCompany();
 
         $fromLocal = Carbon::createFromFormat('Y-m-d', $from, $company->timezone)->startOfDay();
         $toLocal = Carbon::createFromFormat('Y-m-d', $to, $company->timezone)->startOfDay();
@@ -111,7 +111,7 @@ class EstimationService
 
     public function dailySummaryFromLog(Employee $employee, ?AttendanceLog $log, ?string $date = null): array
     {
-        $company = app('current_company');
+        $company = currentCompany();
         $dateKey = $date ?: now('UTC')->setTimezone($company->timezone)->toDateString();
 
         if (! $log || ! $log->check_in) {

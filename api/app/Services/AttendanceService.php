@@ -17,7 +17,7 @@ class AttendanceService
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
         $dto = $this->normalizeDto($dto, $gpsLng, $method);
-        $company = app('current_company');
+        $company = currentCompany();
 
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
@@ -68,7 +68,7 @@ class AttendanceService
     public function checkOut(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
         $dto = $this->normalizeDto($dto, $gpsLng, $method);
-        $company = app('current_company');
+        $company = currentCompany();
 
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
@@ -123,7 +123,7 @@ class AttendanceService
         Employee $employee,
         CheckInDTO $dto,
     ): AttendanceLog {
-        $company = app('current_company');
+        $company = currentCompany();
         $occurredAt = Carbon::parse($dto->occurred_at ?? now('UTC'))->utc();
         $today = $occurredAt->copy()->setTimezone($company->timezone)->toDateString();
         $action = $dto->action ?? 'check_in';
@@ -216,7 +216,7 @@ class AttendanceService
 
     public function recalculateLog(AttendanceLog $log): AttendanceLog
     {
-        $company = app('current_company');
+        $company = currentCompany();
         $schedule = $log->schedule_id ? $log->schedule : $log->employee?->schedule;
 
         if ($log->schedule_id === null && $schedule) {

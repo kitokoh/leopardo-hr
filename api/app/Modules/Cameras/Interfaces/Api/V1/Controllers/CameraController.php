@@ -46,7 +46,7 @@ class CameraController extends Controller
         $cameras = $query->get();
 
         /** @var Company $company */
-        $company = app('current_company');
+        $company = currentCompany();
         $max = $this->cameras->maxCameras($company);
 
         return new JsonResponse([
@@ -65,7 +65,7 @@ class CameraController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
         /** @var Company $company */
-        $company = app('current_company');
+        $company = currentCompany();
 
         $camera = $this->cameras->create($company, $actor, $request->validated());
 

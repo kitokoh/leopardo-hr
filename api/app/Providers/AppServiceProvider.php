@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\AI\LLMClient;
+use App\AI\Providers\ClaudeClient;
+use App\AI\Providers\OpenAIClient;
 use App\Services\TenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +20,12 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(TenantManager::class);
+
+        $this->app->bind(LLMClient::class, function (): LLMClient {
+            $provider = (string) config('ai.provider', 'openai');
+
+            return $provider === 'claude' ? new ClaudeClient : new OpenAIClient;
+        });
     }
 
     /**
