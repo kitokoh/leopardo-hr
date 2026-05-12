@@ -24,7 +24,18 @@ class ExportController extends Controller
 
         $query = DB::table('employees')
             ->where('company_id', $user->company_id)
-            ->select(['id', 'first_name', 'last_name', 'email', 'phone', 'position', 'department_id', 'status', 'hire_date', 'created_at']);
+            ->select([
+                'id',
+                'first_name',
+                'last_name',
+                'email',
+                'phone',
+                'position_id',
+                'department_id',
+                'status',
+                'contract_start',
+                'created_at',
+            ]);
 
         if (! empty($validated['status'])) {
             $query->where('status', $validated['status']);
@@ -71,7 +82,7 @@ class ExportController extends Controller
         $logs = DB::table('attendance_logs')
             ->where('company_id', $user->company_id)
             ->whereBetween('check_in', [$validated['from'], $validated['to'].' 23:59:59'])
-            ->select(['id', 'employee_id', 'check_in', 'check_out', 'status', 'ip_address', 'device_name'])
+            ->select(['id', 'employee_id', 'check_in', 'check_out', 'status', 'method', 'source_device_code'])
             ->orderBy('check_in')
             ->get();
 

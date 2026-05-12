@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-10
+Derniere mise a jour : 2026-05-12
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -120,6 +120,12 @@ Procedure recommandee :
 - Sur PostgreSQL, une migration Laravel executee dans la transaction du migrateur ne doit pas lancer de requete de verification apres une erreur SQL, sinon on tombe sur `SQLSTATE[25P02] current transaction is aborted`.
 - Concretement, apres un `42P07 Duplicate table`, ne pas appeler `Schema::hasTable(...)` dans le `catch`. Il faut considerer le code SQLSTATE et sortir directement, sinon le correctif de course reintroduit un echec.
 - Si une migration publique peut enchainer plusieurs `Schema::hasTable(...)` / `Schema::create(...)` sur Render, desactiver aussi la transaction du migrateur avec `public bool $withinTransaction = false;`, sinon une premiere course gagnée par un autre processus empoisonne tout le reste de la migration.
+
+### 2026-05-12 - Tests modules post-sprints
+
+- Les tests qui utilisent `Tests\Support\CreatesMvpSchema` ne voient que le schema fixture, pas automatiquement toutes les migrations post-sprints. Si un test couvre billing, paie, recrutement, formation, prets, frais ou vehicules, verifier que le fixture cree aussi la table minimale correspondante.
+- Attention aux tables historiques homonymes dans `public` et `shared_tenants` (`invoices`, notamment) : en PostgreSQL, `Schema::hasTable()` peut donner un faux positif si le `search_path` inclut `public`. Pour un fixture ou une migration tenant, preferer une table qualifiee ou un rattrapage idempotent.
+- L'ancien `audit_logs` tenant utilise `employee_id`, `target_type`, `target_id`, `changes`, `ip`; le code actuel ecrit `user_id`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`. Toute migration de compatibilite doit ajouter le contrat moderne sans relancer de SQL apres erreur PostgreSQL.
 
 ### 2026-05-07 - I18N enterprise partage
 
