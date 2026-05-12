@@ -2,9 +2,7 @@
 
 namespace App\Services\Payroll\CountryRules;
 
-use App\Services\Payroll\CountryRulesInterface;
-
-class TunisiaPayrollRules implements CountryRulesInterface
+class TunisiaPayrollRules extends AbstractCountryRules
 {
     public function countryCode(): string
     {
@@ -43,19 +41,7 @@ class TunisiaPayrollRules implements CountryRulesInterface
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
     {
         $annualTaxable = $grossTaxable * $annualBasis;
-        $remaining = $annualTaxable;
-        $tax = 0.0;
-
-        foreach ($this->taxSlabs() as $slab) {
-            if ($remaining <= 0) {
-                break;
-            }
-            $max = $slab['max'] ?? PHP_FLOAT_MAX;
-            $width = $max - $slab['min'] + 1;
-            $taxable = min($remaining, $width);
-            $tax += $taxable * ($slab['rate'] / 100);
-            $remaining -= $taxable;
-        }
+        $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
         return round($tax / $annualBasis, 2);
     }

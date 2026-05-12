@@ -28,7 +28,7 @@ class BankExportController extends Controller
         }
 
         $validated = $request->validate([
-            'format' => 'required|in:sepa_xml,ccp_dz,csv_generic',
+            'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
         ]);
 
         $generator = new BankExportGenerator();
