@@ -2,9 +2,7 @@
 
 namespace App\Services\Payroll\CountryRules;
 
-use App\Services\Payroll\CountryRulesInterface;
-
-class MoroccoPayrollRules implements CountryRulesInterface
+class MoroccoPayrollRules extends AbstractCountryRules
 {
     public function countryCode(): string
     {

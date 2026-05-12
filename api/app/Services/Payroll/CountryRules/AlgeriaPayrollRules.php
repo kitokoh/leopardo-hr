@@ -2,9 +2,7 @@
 
 namespace App\Services\Payroll\CountryRules;
 
-use App\Services\Payroll\CountryRulesInterface;
-
-class AlgeriaPayrollRules implements CountryRulesInterface
+class AlgeriaPayrollRules extends AbstractCountryRules
 {
     public function countryCode(): string
     {
@@ -43,20 +41,7 @@ class AlgeriaPayrollRules implements CountryRulesInterface
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12): float
     {
-        $monthlyTaxable = $grossTaxable;
-        $tax = 0.0;
-
-        foreach ($this->taxSlabs() as $slab) {
-            if ($monthlyTaxable <= 0) {
-                break;
-            }
-            $max = $slab['max'] ?? PHP_FLOAT_MAX;
-            $taxable = min($monthlyTaxable, $max - $slab['min'] + 1);
-            if ($taxable > 0) {
-                $tax += $taxable * ($slab['rate'] / 100);
-            }
-            $monthlyTaxable -= $taxable;
-        }
+        $tax = $this->calculateProgressiveTax($grossTaxable, $this->taxSlabs());
 
         $annualTax = $tax * $annualBasis;
         $abatement = min(max($annualTax * 0.40, 12000), 18000);
