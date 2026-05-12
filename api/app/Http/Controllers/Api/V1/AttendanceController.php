@@ -257,6 +257,9 @@ class AttendanceController extends Controller
             ]);
         }
 
+        /** @var Employee $user */
+        $user = $request->user();
+
         $attendanceLog->fill([
             'check_in' => $effectiveCheckIn,
             'check_out' => $effectiveCheckOut,
