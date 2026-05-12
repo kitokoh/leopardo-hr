@@ -4,12 +4,29 @@ import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
+import { OrganizationJsonLd } from "@/components/JsonLd";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
 
 export const metadata: Metadata = {
   title: "Leopardo RH - Plateforme RH multilingue pour PME et groupes terrain",
   description:
     "Leopardo RH centralise pointage, paie, absences, onboarding et operations terrain sur web, mobile et kiosque.",
   manifest: "/manifest.json",
+  metadataBase: new URL(siteUrl),
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    siteName: 'Leopardo RH',
+    title: 'Leopardo RH - Plateforme RH multilingue pour PME',
+    description: 'Leopardo RH centralise pointage, paie, absences, onboarding et operations terrain.',
+    url: siteUrl,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Leopardo RH - Plateforme RH multilingue pour PME',
+    description: 'Leopardo RH centralise pointage, paie, absences, onboarding et operations terrain.',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -81,6 +98,7 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans antialiased">
+        <OrganizationJsonLd />
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />
