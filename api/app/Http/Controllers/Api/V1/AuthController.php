@@ -88,7 +88,10 @@ class AuthController extends Controller
 
         $employee = $this->employeeService->update($employee, $employee, $dto);
 
-        return (new EmployeeResource($employee->fresh()))->response();
+        /** @var Employee $fresh */
+        $fresh = $employee->fresh();
+
+        return (new EmployeeResource($fresh))->response();
     }
 
     public function updateLanguage(Request $request): JsonResponse
@@ -113,7 +116,10 @@ class AuthController extends Controller
 
         app()->setLocale($employee->preferred_language);
 
-        return (new EmployeeResource($employee->fresh()))->response();
+        /** @var Employee $fresh */
+        $fresh = $employee->fresh();
+
+        return (new EmployeeResource($fresh))->response();
     }
 
     public function changePassword(ChangePasswordRequest $request): JsonResponse

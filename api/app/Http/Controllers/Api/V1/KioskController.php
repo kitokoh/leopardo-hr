@@ -146,7 +146,7 @@ class KioskController extends Controller
             'data' => [
                 'processed_count' => count($processed),
                 'processed_log_ids' => $processed,
-                'last_sync_at' => optional($kiosk->fresh()->last_sync_at)->toIso8601String(),
+                'last_sync_at' => $kiosk->fresh()?->last_sync_at?->toIso8601String(),
             ],
         ]);
     }
