@@ -15,6 +15,20 @@
 - Newsletter : composant `NewsletterForm.tsx` connecte a `/api/forms/newsletter`. Remplace le formulaire statique sur la page blog.
 - Plan d'action : mise a jour fichier 13 — section 5 Blog vitrine MDX cochee.
 
+## [4.16.0] - 2026-05-12
+
+### DevOps — CI/CD workflows + Open Source infrastructure
+
+- CI/CD : ajout workflow `coverage-gate.yml` — backend coverage avec seuil configurable via variable GitHub `BACKEND_COVERAGE_MIN` (default 40%, recommandation +5%/mois). Commente automatiquement la coverage sur les PRs.
+- CI/CD : ajout workflow `e2e-staging.yml` — Playwright E2E execute automatiquement apres chaque deploy staging reussi. Couvre API smoke tests, admin dashboard E2E et web vitrine E2E.
+- CI/CD : ajout workflow `deploy-staging.yml` — deploiement staging automatique sur merge main avec gate CI et health check.
+- CI/CD : ajout workflow `mobile-ci.yml` — workflow dedie Flutter avec analyze, tests + coverage, et build debug APK. Decouple du monolithique `tests.yml`.
+- CI/CD : ajout workflow `release.yml` — creation automatique de GitHub Releases avec extraction du changelog et upload de l'APK release en artifact.
+- Docker : ajout services `queue` (worker Redis), `scheduler` (cron artisan), `mailpit` (email dev) dans docker-compose.yml. Health check Redis ajoute.
+- Docker : creation `Makefile` avec targets : install, up, down, test, lint, analyze, quality, migrate, tinker, shell, logs.
+- DevContainer : enrichi avec forwarding de ports (API 8000, PG 5432, Redis 6379, Dashboard 3000, Web 3001, Mailpit 8025), extensions VS Code supplementaires (Docker, Pint, EditorConfig), et settings formatOnSave.
+- Plan d'action : mise a jour fichier 13 — section 7 DevOps et section 8 Open Source cochees.
+
 ## [4.15.0] - 2026-05-12
  
 ### Paie avancee — Premier lot urgent
