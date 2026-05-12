@@ -9,6 +9,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $user_id
+ * @property string $action
+ * @property string|null $auditable_type
+ * @property int|null $auditable_id
+ * @property array<mixed> $old_values
+ * @property array<mixed> $new_values
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property array<mixed> $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class AuditLog extends Model
 {
     public $timestamps = false;
@@ -40,6 +54,7 @@ class AuditLog extends Model
         return $this->morphTo();
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'user_id');

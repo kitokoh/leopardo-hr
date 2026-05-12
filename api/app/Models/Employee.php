@@ -11,6 +11,57 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $schedule_id
+ * @property string|null $matricule
+ * @property string|null $zkteco_id
+ * @property string $first_name
+ * @property string|null $middle_name
+ * @property string $last_name
+ * @property string|null $preferred_name
+ * @property string $email
+ * @property string|null $personal_email
+ * @property string|null $phone
+ * @property string|null $address_line
+ * @property string|null $postal_code
+ * @property string|null $password_hash
+ * @property \Illuminate\Support\Carbon $date_of_birth
+ * @property string|null $place_of_birth
+ * @property string $gender
+ * @property string|null $nationality
+ * @property string|null $marital_status
+ * @property string $contract_type
+ * @property \Illuminate\Support\Carbon $contract_start
+ * @property \Illuminate\Support\Carbon|null $contract_end
+ * @property string $salary_type
+ * @property float|null $salary_base
+ * @property float|null $hourly_rate
+ * @property string $role
+ * @property string|null $manager_role
+ * @property int|null $manager_id
+ * @property string $status
+ * @property string|null $photo_path
+ * @property bool $biometric_face_enabled
+ * @property bool $biometric_fingerprint_enabled
+ * @property string|null $biometric_face_reference_path
+ * @property string|null $biometric_fingerprint_reference_path
+ * @property \Illuminate\Support\Carbon|null $biometric_consent_at
+ * @property \Illuminate\Support\Carbon|null $invitation_accepted_at
+ * @property string|null $emergency_contact_name
+ * @property string|null $emergency_contact_phone
+ * @property string|null $emergency_contact_relation
+ * @property array<mixed> $extra_data
+ * @property string $preferred_language
+ * @property string $iban
+ * @property string $bank_account
+ * @property string $national_id
+ * @property int $failed_login_attempts
+ * @property \Illuminate\Support\Carbon|null $locked_until
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Employee extends Authenticatable
 {
     use BelongsToCompany;
@@ -150,16 +201,19 @@ class Employee extends Authenticatable
         return 'dashboard';
     }
 
+    /** @return BelongsTo<Company, $this> */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    /** @return BelongsTo<Schedule, $this> */
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 
+    /** @return HasMany<BiometricEnrollmentRequest, $this> */
     public function biometricEnrollmentRequests(): HasMany
     {
         return $this->hasMany(BiometricEnrollmentRequest::class, 'employee_id');

@@ -7,6 +7,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $name
+ * @property string $location_label
+ * @property string $device_code
+ * @property string|null $sync_token_hash
+ * @property string $status
+ * @property string $biometric_mode
+ * @property string|null $trusted_device_label
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @property \Illuminate\Support\Carbon|null $last_sync_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class AttendanceKiosk extends Model
 {
     use BelongsToCompany;
@@ -32,6 +47,7 @@ class AttendanceKiosk extends Model
         'last_sync_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Company, $this> */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');

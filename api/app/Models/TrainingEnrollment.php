@@ -8,6 +8,19 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $training_session_id
+ * @property int|null $employee_id
+ * @property int|null $company_id
+ * @property string $status
+ * @property float $score
+ * @property string|null $certificate_path
+ * @property string|null $feedback
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class TrainingEnrollment extends Model
 {
     use BelongsToCompany;
@@ -30,11 +43,13 @@ class TrainingEnrollment extends Model
         'completed_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<TrainingSession, $this> */
     public function session(): BelongsTo
     {
         return $this->belongsTo(TrainingSession::class, 'training_session_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
