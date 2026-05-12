@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (! Schema::hasTable('cabinet_folders')) {
         Schema::create('cabinet_folders', function (Blueprint $table): void {
             $table->id();
             $table->unsignedBigInteger('company_id')->index();
@@ -21,7 +22,9 @@ return new class extends Migration
             $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
             $table->foreign('parent_id')->references('id')->on('cabinet_folders')->nullOnDelete();
         });
+        }
 
+        if (! Schema::hasTable('cabinet_documents')) {
         Schema::create('cabinet_documents', function (Blueprint $table): void {
             $table->id();
             $table->unsignedBigInteger('company_id')->index();
@@ -39,7 +42,9 @@ return new class extends Migration
             $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
             $table->foreign('folder_id')->references('id')->on('cabinet_folders')->nullOnDelete();
         });
+        }
 
+        if (! Schema::hasTable('cabinet_shares')) {
         Schema::create('cabinet_shares', function (Blueprint $table): void {
             $table->id();
             $table->unsignedBigInteger('company_id')->index();
@@ -53,6 +58,7 @@ return new class extends Migration
 
             $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
         });
+        }
     }
 
     public function down(): void
