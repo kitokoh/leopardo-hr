@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, User, Clock, Share2, ArrowRight } from 'lucide-react';
+import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
+import { SocialShare } from '@/components/SocialShare';
+import { ArticleJsonLd } from '@/components/JsonLd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BlogPost } from '@/modules/vitrine/data/blog';
@@ -13,8 +15,6 @@ export interface BlogArticleProps {
 }
 
 export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
-  const [copied, setCopied] = useState(false);
-
   const formattedDate = new Date(post.date).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
@@ -79,23 +79,20 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
       });
   };
 
-  const handleShare = async () => {
-    const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${post.slug}`;
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: post.excerpt,
-        url: url,
-      });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
+  const articleUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/blog/${post.slug}`
+    : `https://leopardo.com/blog/${post.slug}`;
 
   return (
+    <>
+      <ArticleJsonLd
+        title={post.title}
+        description={post.excerpt}
+        url={articleUrl}
+        image={post.image}
+        datePublished={new Date(post.date).toISOString()}
+        author={post.author.name}
+      />
     <div className="min-h-screen">
       {/* Hero Image */}
       <div className="relative w-full h-96 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900">
@@ -146,14 +143,12 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
               </div>
             </div>
 
-            {/* Share Button */}
-            <button
-              onClick={handleShare}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            >
-              <Share2 className="w-4 h-4" />
-              {copied ? 'Copié!' : 'Partager'}
-            </button>
+            {/* Social Sharing */}
+            <SocialShare
+              url={articleUrl}
+              title={post.title}
+              description={post.excerpt}
+            />
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
@@ -303,5 +298,6 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
         </section>
       )}
     </div>
+    </>
   );
 }

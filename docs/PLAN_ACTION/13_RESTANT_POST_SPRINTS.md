@@ -223,14 +223,14 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ## 5. FRONTEND — Blog vitrine MDX (MOYENNE)
 
 ```
-- [ ] Setup MDX (Next.js + contentlayer ou next-mdx-remote)
-- [ ] Template article : titre, date, auteur, tags, reading time
-- [ ] Page /blog avec liste paginee et filtre par tag
-- [ ] Page /blog/{slug} avec article complet + TOC + partage social
-- [ ] Page /pricing avec tableau comparatif plans
-- [ ] Page /demo avec formulaire de demande
-- [ ] SEO : sitemap.xml dynamique, robots.txt, meta OG, schema.org JSON-LD
-- [ ] Newsletter signup (Mailchimp ou Brevo integration)
+- [x] Setup MDX (Next.js + next-mdx-remote + gray-matter + reading-time)
+- [x] Template article : titre, date, auteur, tags, reading time (lib/mdx.ts)
+- [x] Page /blog avec liste paginee et filtre par tag (existait, newsletter connectee)
+- [x] Page /blog/{slug} avec article complet + TOC + partage social (SocialShare + ArticleJsonLd)
+- [x] Page /pricing avec tableau comparatif plans (existait deja, enrichi meta OG)
+- [x] Page /demo avec formulaire de demande (cree, connecte a /api/forms/demo)
+- [x] SEO : sitemap.xml dynamique, robots.txt, meta OG, schema.org JSON-LD
+- [x] Newsletter signup (connecte a /api/forms/newsletter)
 ```
 
 ---
