@@ -167,7 +167,9 @@ class HrReportController extends Controller
 
     private function authorizeManager(Request $request): void
     {
-        if (! $request->user()->isManager()) {
+        /** @var Employee $user */
+        $user = $request->user();
+        if (! $user->isManager()) {
             abort(403);
         }
     }
