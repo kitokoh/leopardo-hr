@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.2] - 2026-05-12
+
+### Backend — Controller Stabilization (Partie 3 stabilisation)
+
+- Controllers : extraction des chaines `->fresh()->method()` nullables vers des variables typees (EvaluationController, ContractController, ApprovalController, LeavePolicyController, AuthController, UserAuthController)
+- Controllers : ajout de null checks sur les acces aux relations (employee, evaluator) dans les methodes serialize
+- Controllers : remplacement de `optional()` par operateur nullsafe dans KioskController
+
 ## [4.16.1] - 2026-05-12
 
 ### Backend — Controller Type Safety (Partie 2 stabilisation)
