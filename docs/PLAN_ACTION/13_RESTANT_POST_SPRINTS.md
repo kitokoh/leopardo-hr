@@ -32,13 +32,13 @@ Ces taches impactent directement les ventes. Un client ne peut pas utiliser la p
 
 ```
 Taches :
-- [ ] Implementer le calcul brut -> net pour DZ (CNAS 9%, IRG par tranches avec abattement 40%)
-- [ ] Implementer le calcul brut -> net pour MA (CNSS 4.48%, AMO 2.26%, IR par tranches)
-- [ ] Implementer le calcul brut -> net pour TN (CNSS 9.18%, IRPP progressif)
-- [ ] Implementer le calcul brut -> net pour FR (CSG/CRDS/securite sociale, PAS)
-- [ ] Implementer le calcul brut -> net pour TR (SGK 14%, gelir vergisi progressif)
-- [ ] Implementer le calcul brut -> net pour SN (IPRES 5.6%, IR par tranches)
-- [ ] Creer les seeders pour TN, FR, TR, SN (TaxSlab + SocialContribution)
+- [x] Implementer le calcul brut -> net pour DZ (CNAS 9%, IRG par tranches avec abattement 40%)
+- [x] Implementer le calcul brut -> net pour MA (CNSS 4.48%, AMO 2.26%, IR par tranches)
+- [x] Implementer le calcul brut -> net pour TN (CNSS 9.18%, IRPP progressif)
+- [x] Implementer le calcul brut -> net pour FR (CSG/CRDS/securite sociale, PAS)
+- [x] Implementer le calcul brut -> net pour TR (SGK 14%, gelir vergisi progressif)
+- [x] Implementer le calcul brut -> net pour SN (IPRES 5.6%, IR par tranches)
+- [x] Creer les seeders pour TN, FR, TR, SN (TaxSlab + SocialContribution)
 ```
 
 **Specification par pays :** Voir `docs/PLAN_ACTION/03_PAIE_COMPLETE.md` section 4.
@@ -61,10 +61,10 @@ Taches :
 **A creer :** `api/app/Services/BankExportGenerator.php`
 
 ```
-- [ ] Export SEPA XML (virement europeen standard) — pour FR et zone euro
-- [ ] Export CCP Algerie Poste (format texte fixe) — pour DZ
-- [ ] Export CSV banque standard — pour MA, TN, SN, TR
-- [ ] Chaque format genere un fichier telechargeable via GET /api/v1/bank-exports/{id}/download
+- [x] Export SEPA XML (virement europeen standard) — pour FR et zone euro
+- [x] Export CCP Algerie Poste (format texte fixe) — pour DZ
+- [x] Export CSV banque standard — pour MA, TN, SN, TR
+- [x] Chaque format genere un fichier telechargeable via GET /api/v1/bank-exports/{id}/download
 ```
 
 ### 1.4 Accrual automatique conges
