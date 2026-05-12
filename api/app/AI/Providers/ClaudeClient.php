@@ -17,17 +17,11 @@ class ClaudeClient implements LLMClient
 
     public function __construct()
     {
-        /** @var string $key */
-        $key = config('ai.providers.claude.key', '');
-        $this->apiKey = $key;
+        $this->apiKey = (string) (config('ai.providers.claude.key') ?? '');
 
-        /** @var string $model */
-        $model = config('ai.providers.claude.model', 'claude-sonnet-4-20250514');
-        $this->model = $model;
+        $this->model = (string) (config('ai.providers.claude.model') ?? 'claude-sonnet-4-20250514');
 
-        /** @var string $baseUrl */
-        $baseUrl = config('ai.providers.claude.base_url', 'https://api.anthropic.com/v1');
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = (string) (config('ai.providers.claude.base_url') ?? 'https://api.anthropic.com/v1');
     }
 
     public function chat(array $messages, array $tools = []): AIResponse

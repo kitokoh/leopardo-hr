@@ -48,4 +48,12 @@ class Notification extends Model
     {
         return $q->where('employee_id', $employeeId);
     }
+
+    public function markAsRead(): void
+    {
+        $this->forceFill([
+            'is_read' => true,
+            'read_at' => $this->read_at ?? now(),
+        ])->save();
+    }
 }
