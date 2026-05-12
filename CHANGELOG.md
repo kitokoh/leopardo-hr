@@ -28,6 +28,17 @@
 - Docker : creation `Makefile` avec targets : install, up, down, test, lint, analyze, quality, migrate, tinker, shell, logs.
 - DevContainer : enrichi avec forwarding de ports (API 8000, PG 5432, Redis 6379, Dashboard 3000, Web 3001, Mailpit 8025), extensions VS Code supplementaires (Docker, Pint, EditorConfig), et settings formatOnSave.
 - Plan d'action : mise a jour fichier 13 — section 7 DevOps et section 8 Open Source cochees.
+## [4.16.0] - 2026-05-12
+
+### Backend — Type Safety & Architecture (Partie 1 stabilisation)
+
+- Models : annotations `@property` PHPDoc sur les 71 modeles Eloquent (1167 lignes ajoutees)
+- Models : annotations `@return` generics sur 82+ methodes de relation (HasMany, BelongsTo, etc.)
+- Services : helper type `currentCompany()` remplace les 31 appels `app('current_company')` non types
+- Services : `PayrollCalculator` accepte les country rules via injection de dependances
+- Services : `Orchestrator` accepte `LLMClient` via DI, binding enregistre dans AppServiceProvider
+- Controllers : 207 annotations `@var Employee` sur les `$request->user()` dans 47 controllers
+- Architecture : nouveau `app/helpers.php` enregistre dans `composer.json` autoload files
 
 ## [4.15.0] - 2026-05-12
  

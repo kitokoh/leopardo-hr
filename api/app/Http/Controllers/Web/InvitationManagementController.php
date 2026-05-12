@@ -27,6 +27,7 @@ class InvitationManagementController extends Controller
 
     public function index(Request $request): View
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $companyId = $actor->company_id;
 
@@ -49,6 +50,7 @@ class InvitationManagementController extends Controller
 
     public function resend(Request $request, string $invitation): RedirectResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         /** @var UserInvitation $record */

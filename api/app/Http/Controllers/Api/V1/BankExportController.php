@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\BankExport;
 use App\Models\PayrollRun;
@@ -15,6 +16,7 @@ class BankExportController extends Controller
 {
     public function generate(Request $request, PayrollRun $payrollRun): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
@@ -63,6 +65,7 @@ class BankExportController extends Controller
 
     public function show(Request $request, BankExport $bankExport): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($bankExport->company_id !== $actor->company_id) {
             abort(404);
@@ -78,6 +81,7 @@ class BankExportController extends Controller
 
     public function download(Request $request, BankExport $bankExport): StreamedResponse|JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($bankExport->company_id !== $actor->company_id) {
             abort(404);

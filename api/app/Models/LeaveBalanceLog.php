@@ -6,6 +6,16 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property float $delta
+ * @property string|null $reason
+ * @property int|null $reference_id
+ * @property float $balance_after
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class LeaveBalanceLog extends Model
 {
     use BelongsToCompany;
@@ -33,6 +43,7 @@ class LeaveBalanceLog extends Model
         'created_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');

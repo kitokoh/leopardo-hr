@@ -7,6 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $subscription_id
+ * @property string|null $number
+ * @property string $amount
+ * @property string $currency
+ * @property string $tax_amount
+ * @property string $total
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $due_date
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property string|null $payment_method
+ * @property int|null $stripe_invoice_id
+ * @property string|null $pdf_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Invoice extends Model
 {
     use BelongsToCompany;

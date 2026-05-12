@@ -21,7 +21,7 @@ class AttendanceTodayResource extends JsonResource
     {
         parent::__construct($resource);
         $this->log = $log;
-        $this->timezone = $timezone ?? app('current_company')->timezone;
+        $this->timezone = $timezone ?? currentCompany()->timezone;
     }
 
     /**

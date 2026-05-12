@@ -7,6 +7,28 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property string $plate_number
+ * @property string $brand
+ * @property string|null $model
+ * @property int $year
+ * @property string $type
+ * @property string|null $vin
+ * @property string $fuel_type
+ * @property string $status
+ * @property int $mileage
+ * @property \Illuminate\Support\Carbon|null $insurance_expiry
+ * @property \Illuminate\Support\Carbon|null $technical_control_expiry
+ * @property string|null $traccar_device_id
+ * @property string|null $traccar_unique_id
+ * @property int|null $assigned_driver_id
+ * @property int|null $assigned_site_id
+ * @property array<mixed> $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Vehicle extends Model
 {
     use BelongsToCompany;

@@ -10,6 +10,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int|null $company_id
+ * @property int|null $employee_id
+ * @property string|null $loan_type
+ * @property float $amount
+ * @property string $currency
+ * @property float $interest_rate
+ * @property string|null $installments
+ * @property float $installment_amount
+ * @property \Illuminate\Support\Carbon $start_date
+ * @property string $status
+ * @property string|null $approved_by
+ * @property \Illuminate\Support\Carbon|null $disbursed_at
+ * @property string|null $notes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class EmployeeLoan extends Model
 {
     use BelongsToCompany;
@@ -40,16 +58,19 @@ class EmployeeLoan extends Model
         'disbursed_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
+    /** @return HasMany<LoanRepayment, $this> */
     public function repayments(): HasMany
     {
         return $this->hasMany(LoanRepayment::class, 'employee_loan_id');

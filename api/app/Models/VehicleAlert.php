@@ -6,6 +6,20 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int|null $vehicle_id
+ * @property int|null $company_id
+ * @property string $type
+ * @property string|null $message
+ * @property mixed $latitude
+ * @property mixed $longitude
+ * @property string $speed
+ * @property bool $acknowledged
+ * @property string|null $acknowledged_by
+ * @property int|null $traccar_event_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ */
 class VehicleAlert extends Model
 {
     use BelongsToCompany;

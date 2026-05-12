@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceLog;
 use Illuminate\Contracts\View\View;
@@ -17,8 +18,9 @@ class MyDashboardController extends Controller
 {
     public function index(Request $request): View
     {
+        /** @var Employee $employee */
         $employee = $request->user();
-        $company = app()->bound('current_company') ? app('current_company') : $employee->company;
+        $company = app()->bound('current_company') ? currentCompany() : $employee->company;
 
         $timezone = $company?->timezone ?? 'Africa/Algiers';
         $today = now('UTC')->setTimezone($timezone)->toDateString();

@@ -21,16 +21,27 @@ class PayrollCalculator
     /** @var array<string, CountryRulesInterface> */
     private array $rulesMap;
 
-    public function __construct()
+    /**
+     * @param  iterable<CountryRulesInterface>  $countryRules
+     */
+    public function __construct(iterable $countryRules = [])
     {
-        $this->rulesMap = [
-            'DZ' => new AlgeriaPayrollRules,
-            'MA' => new MoroccoPayrollRules,
-            'TN' => new TunisiaPayrollRules,
-            'FR' => new FrancePayrollRules,
-            'TR' => new TurkeyPayrollRules,
-            'SN' => new SenegalPayrollRules,
-        ];
+        $this->rulesMap = [];
+
+        foreach ($countryRules as $rule) {
+            $this->rulesMap[$rule->countryCode()] = $rule;
+        }
+
+        if ($this->rulesMap === []) {
+            $this->rulesMap = [
+                'DZ' => new AlgeriaPayrollRules,
+                'MA' => new MoroccoPayrollRules,
+                'TN' => new TunisiaPayrollRules,
+                'FR' => new FrancePayrollRules,
+                'TR' => new TurkeyPayrollRules,
+                'SN' => new SenegalPayrollRules,
+            ];
+        }
     }
 
     public function getRules(string $countryCode): CountryRulesInterface

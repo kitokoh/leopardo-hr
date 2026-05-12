@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\ApprovalDecision;
 use App\Models\ApprovalRequest;
@@ -15,6 +16,7 @@ class ApprovalController extends Controller
 {
     public function indexWorkflows(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -30,6 +32,7 @@ class ApprovalController extends Controller
 
     public function storeWorkflow(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
@@ -56,6 +59,7 @@ class ApprovalController extends Controller
 
     public function updateWorkflow(Request $request, ApprovalWorkflow $approvalWorkflow): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($approvalWorkflow->company_id !== $actor->company_id) {
             abort(404);
@@ -79,6 +83,7 @@ class ApprovalController extends Controller
 
     public function destroyWorkflow(Request $request, ApprovalWorkflow $approvalWorkflow): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($approvalWorkflow->company_id !== $actor->company_id) {
             abort(404);
@@ -94,6 +99,7 @@ class ApprovalController extends Controller
 
     public function pending(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $requests = ApprovalRequest::query()
@@ -108,6 +114,7 @@ class ApprovalController extends Controller
 
     public function approve(Request $request, ApprovalRequest $approvalRequest): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($approvalRequest->company_id !== $actor->company_id) {
             abort(404);
@@ -144,6 +151,7 @@ class ApprovalController extends Controller
 
     public function reject(Request $request, ApprovalRequest $approvalRequest): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($approvalRequest->company_id !== $actor->company_id) {
             abort(404);
@@ -172,6 +180,7 @@ class ApprovalController extends Controller
 
     public function history(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $decisions = ApprovalDecision::query()

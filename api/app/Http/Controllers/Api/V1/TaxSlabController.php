@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\TaxSlab;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ class TaxSlabController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -29,6 +31,7 @@ class TaxSlabController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -62,6 +65,7 @@ class TaxSlabController extends Controller
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);
@@ -84,6 +88,7 @@ class TaxSlabController extends Controller
 
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if (! $actor->isManager()) {
             abort(403);

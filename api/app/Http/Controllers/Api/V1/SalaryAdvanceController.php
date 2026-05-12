@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\SalaryAdvance\DecideSalaryAdvanceRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\SalaryAdvanceIndexRequest;
@@ -17,6 +18,7 @@ class SalaryAdvanceController extends Controller
 
     public function index(SalaryAdvanceIndexRequest $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         $query = SalaryAdvance::query();
 
@@ -48,6 +50,7 @@ class SalaryAdvanceController extends Controller
 
     public function show(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryAdvance->company_id !== $actor->company_id) {
             abort(404);
@@ -61,6 +64,7 @@ class SalaryAdvanceController extends Controller
 
     public function approve(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryAdvance->company_id !== $actor->company_id) {
             abort(404);
@@ -76,6 +80,7 @@ class SalaryAdvanceController extends Controller
 
     public function reject(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryAdvance->company_id !== $actor->company_id) {
             abort(404);
@@ -91,6 +96,7 @@ class SalaryAdvanceController extends Controller
 
     public function destroy(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
         if ($salaryAdvance->company_id !== $actor->company_id) {
             abort(404);
