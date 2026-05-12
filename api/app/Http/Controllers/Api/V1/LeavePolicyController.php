@@ -97,7 +97,9 @@ class LeavePolicyController extends Controller
 
         $leavePolicy->update($validated);
 
-        return response()->json(['data' => $leavePolicy->fresh()->load('absenceType:id,name,code')]);
+        /** @var LeavePolicy $leavePolicyFresh */
+        $leavePolicyFresh = $leavePolicy->fresh();
+        return response()->json(['data' => $leavePolicyFresh->load('absenceType:id,name,code')]);
     }
 
     public function balances(Request $request): JsonResponse
