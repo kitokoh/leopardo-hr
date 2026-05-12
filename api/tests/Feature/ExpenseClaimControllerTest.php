@@ -37,14 +37,16 @@ class ExpenseClaimControllerTest extends TestCase
 
         $response = $this->postJson('/api/v1/expense-claims', [
             'title' => 'Deplacement client Oran',
-            'amount' => 5000,
-            'currency' => 'DZD',
-            'category' => 'travel',
-            'expense_date' => now()->subDay()->toDateString(),
+            'items' => [[
+                'category' => 'transport',
+                'description' => 'Taxi client',
+                'amount' => 5000,
+                'date' => now()->subDay()->toDateString(),
+            ]],
         ]);
 
         $response->assertCreated();
-        $response->assertJsonPath('data.status', 'pending');
+        $response->assertJsonPath('data.status', 'draft');
     }
 
     public function test_employee_can_list_own_expense_claims(): void
@@ -59,23 +61,21 @@ class ExpenseClaimControllerTest extends TestCase
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'title' => 'Repas client',
-            'amount' => 2000,
+            'total_amount' => 2000,
             'currency' => 'DZD',
-            'category' => 'meal',
-            'expense_date' => now(),
-            'status' => 'pending',
+            'status' => 'draft',
         ]);
 
         Sanctum::actingAs($employee);
 
-        $response = $this->getJson('/api/v1/me/expense-claims');
+        $response = $this->getJson('/api/v1/expense-claims');
         $response->assertOk();
     }
 
     public function test_manager_can_approve_expense_claim(): void
     {
         $company = Company::factory()->create();
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -85,16 +85,15 @@ class ExpenseClaimControllerTest extends TestCase
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'title' => 'Taxi',
-            'amount' => 1500,
+            'total_amount' => 1500,
             'currency' => 'DZD',
-            'category' => 'transport',
-            'expense_date' => now(),
-            'status' => 'pending',
+            'status' => 'submitted',
+            'submitted_at' => now(),
         ]);
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson("/api/v1/expense-claims/{$claim->id}/approve");
+        $response = $this->putJson("/api/v1/expense-claims/{$claim->id}/approve");
         $response->assertOk();
         $response->assertJsonPath('data.status', 'approved');
     }
@@ -111,9 +110,12 @@ class ExpenseClaimControllerTest extends TestCase
 
         $this->postJson('/api/v1/expense-claims', [
             'title' => 'Test',
-            'amount' => 100,
-            'category' => 'invalid',
-            'expense_date' => now()->toDateString(),
+            'items' => [[
+                'category' => 'invalid',
+                'description' => 'Test',
+                'amount' => 100,
+                'date' => now()->toDateString(),
+            ]],
         ])->assertStatus(422);
     }
 }

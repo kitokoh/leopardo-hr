@@ -33,6 +33,8 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 4. Tests de securite / isolation
 5. Rapport CI lisible avec mapping vers les scenarios
 
+Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier les routes reelles (`/billing/subscription/*`, `/training/courses/{id}/sessions`, actions `PUT` pour prets/frais) et rester alignes avec le schema `CreatesMvpSchema`.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap

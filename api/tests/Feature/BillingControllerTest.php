@@ -54,7 +54,7 @@ class BillingControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson('/api/v1/billing/upgrade', [
+        $response = $this->postJson('/api/v1/billing/subscription/upgrade', [
             'plan' => 'enterprise',
             'payment_method' => 'stripe',
         ]);
@@ -73,7 +73,7 @@ class BillingControllerTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->postJson('/api/v1/billing/upgrade', [
+        $this->postJson('/api/v1/billing/subscription/upgrade', [
             'plan' => 'enterprise',
         ])->assertStatus(403);
     }
@@ -93,7 +93,7 @@ class BillingControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson('/api/v1/billing/cancel', [
+        $response = $this->postJson('/api/v1/billing/subscription/cancel', [
             'reason' => 'Too expensive',
         ]);
 
@@ -108,9 +108,10 @@ class BillingControllerTest extends TestCase
 
         Invoice::create([
             'company_id' => $company->id,
-            'invoice_number' => 'LEO-2026-0001',
+            'number' => 'LEO-2026-0001',
             'amount' => 99.00,
             'currency' => 'EUR',
+            'total' => 99.00,
             'status' => 'paid',
             'due_date' => now()->addDays(30),
         ]);
@@ -129,7 +130,7 @@ class BillingControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->postJson('/api/v1/billing/upgrade', [
+        $this->postJson('/api/v1/billing/subscription/upgrade', [
             'plan' => 'invalid_plan',
         ])->assertStatus(422);
     }
