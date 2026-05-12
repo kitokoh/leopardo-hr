@@ -3,7 +3,7 @@
 # Versioning : Semantic Versioning (semver.org)
 
 ## [4.15.0] - 2026-05-12
-
+ 
 ### Paie avancee — Premier lot urgent
 
 - Payroll : factorisation du calcul progressif des tranches fiscales pour DZ, TN, FR, TR et SN afin d'eviter les erreurs de bornes inclusives.
