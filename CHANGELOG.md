@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.1] - 2026-05-12
+
+### Backend — Controller Type Safety (Partie 2 stabilisation)
+
+- Controllers : extraction des appels inline `$request->user()->` vers des variables typees dans 8 controllers (DepartmentController, PositionController, SiteController, ScheduleController, HrReportController, AttendanceController, LeavePolicyController, TrainingController)
+- Elimination des erreurs `method.nonObject` restantes sur les appels `isManager()` et `company_id` non types
+
 ## [4.16.0] - 2026-05-12
 
 ### Backend — Type Safety & Architecture (Partie 1 stabilisation)
