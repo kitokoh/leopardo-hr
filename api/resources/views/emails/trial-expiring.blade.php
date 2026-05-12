@@ -1,49 +1,43 @@
-<!doctype html>
-<html lang="{{ $locale }}" @if($locale === 'ar') dir="rtl" @endif>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 14px; color: #333; background: #f5f5f5; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 30px; }
-        .logo { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 20px; }
-        .alert-box { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin: 15px 0; }
-        .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold; }
-        .footer { margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 15px; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="logo">Leopardo RH</div>
-
-    @if($locale === 'ar')
-        <h2>تجربتك تنتهي قريبًا</h2>
-        <div class="alert-box">
-            <strong>تنتهي تجربة {{ $company->name }} خلال {{ $daysLeft }} يوم (أيام).</strong>
-        </div>
-        <p>للاستمرار في استخدام جميع الميزات، يرجى الاشتراك في إحدى خططنا.</p>
-    @elseif($locale === 'en')
-        <h2>Your trial is expiring soon</h2>
-        <div class="alert-box">
-            <strong>{{ $company->name }}'s trial expires in {{ $daysLeft }} day(s).</strong>
-        </div>
-        <p>To continue using all features, please subscribe to one of our plans.</p>
-    @else
-        <h2>Votre essai expire bientôt</h2>
-        <div class="alert-box">
-            <strong>L'essai de {{ $company->name }} expire dans {{ $daysLeft }} jour(s).</strong>
-        </div>
-        <p>Pour continuer à utiliser toutes les fonctionnalités, veuillez vous abonner à l'un de nos plans.</p>
-    @endif
-
-    <div class="footer">
-        @if($locale === 'ar')
-            <p>هذه رسالة تلقائية من Leopardo RH.</p>
-        @elseif($locale === 'en')
-            <p>This is an automated message from Leopardo RH.</p>
-        @else
-            <p>Ceci est un message automatique de Leopardo RH.</p>
-        @endif
+@php
+$translations = [
+    'fr' => [
+        'subject' => 'Votre période d\'essai expire bientôt',
+        'greeting' => 'Bonjour :name,',
+        'body' => 'Votre période d\'essai Leopardo RH expire dans :days jours. Pour continuer à utiliser toutes les fonctionnalités, passez à un abonnement payant.',
+        'button' => 'Choisir un plan',
+        'thanks' => 'L\'équipe Leopardo RH',
+    ],
+    'ar' => [
+        'subject' => 'فترة التجربة الخاصة بك تنتهي قريبا',
+        'greeting' => 'مرحبا :name،',
+        'body' => 'فترة التجربة الخاصة بك في ليوباردو HR تنتهي خلال :days أيام. لمواصلة استخدام جميع الميزات، قم بالترقية إلى اشتراك مدفوع.',
+        'button' => 'اختيار خطة',
+        'thanks' => 'فريق ليوباردو HR',
+    ],
+    'en' => [
+        'subject' => 'Your trial period is expiring soon',
+        'greeting' => 'Hello :name,',
+        'body' => 'Your Leopardo RH trial expires in :days days. To continue using all features, upgrade to a paid plan.',
+        'button' => 'Choose a plan',
+        'thanks' => 'The Leopardo RH team',
+    ],
+];
+$t = $translations[$locale ?? 'fr'];
+@endphp
+<!DOCTYPE html>
+<html lang="{{ $locale ?? 'fr' }}">
+<head><meta charset="UTF-8"><title>{{ $t['subject'] }}</title></head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: #f59e0b; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">⏰ Leopardo RH</h1>
     </div>
-</div>
+    <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px;">{{ str_replace(':name', $userName ?? '', $t['greeting']) }}</p>
+        <p>{{ str_replace(':days', $daysLeft ?? '3', $t['body']) }}</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ $pricingUrl ?? '#' }}" style="background: #f59e0b; color: white; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold;">{{ $t['button'] }}</a>
+        </div>
+        <p style="color: #6b7280;">{{ $t['thanks'] }}</p>
+    </div>
 </body>
 </html>
