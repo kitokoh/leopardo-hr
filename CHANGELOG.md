@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.7] - 2026-05-13
+
+### Backend — Platform Metrics Overview (Lot 4)
+
+- API plateforme : ajout de `GET /api/v1/platform/metrics/overview` reserve au guard `super_admin_api`.
+- Super admin : exposition d'agregats business stables pour MRR/ARR, encaissements 30 jours, impayes, companies, abonnements, facturation et contexte systeme.
+- Billing : lecture resiliente des tables tenant `subscriptions`, `invoices` et `payments` afin de ne pas casser les environnements partiellement migres.
+- Tests : couverture Feature du contrat super-admin et du refus unauthenticated pour proteger le futur cockpit plateforme.
+
 ## [4.16.6] - 2026-05-13
 
 ### Backend — Feature Registry Console Typing (Lot 3)
