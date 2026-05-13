@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.8] - 2026-05-13
+
+### Admin Dashboard — Platform Metrics Wiring (Lot 5)
+
+- Cockpit plateforme : branchement de `/platform/metrics/overview` pour afficher MRR, ARR, encaissements 30 jours, impayes et clients actifs depuis le nouveau contrat backend.
+- Abonnements : ajout des agregats subscriptions, past due, trials, ARR et impayes afin de piloter retention et recouvrement sans widgets mockes.
+- Gouvernance : scenarios web admin mis a jour pour couvrir le nouveau contrat metrics overview consomme par le dashboard.
+
 ## [4.16.7] - 2026-05-13
 
 ### Backend — Platform Metrics Overview (Lot 4)

@@ -202,6 +202,7 @@ Procedure recommandee :
 - `GET /api/v1/platform/plans` fournit le catalogue a utiliser par l'admin-dashboard pour les formulaires d'abonnement ; ne pas hardcoder les `plan_id` cote frontend.
 - Le cockpit `admin-dashboard` doit consommer les contrats plateforme reels (`/platform/companies/health`, `/platform/companies/{id}/health`, `/subscription`, `/plans`) avant toute nouvelle statistique mockee.
 - `GET /api/v1/platform/metrics/overview` est le contrat d'agregats pour le cockpit super-admin : MRR/ARR, encaissements, impayes, companies, subscriptions, billing et systeme. Il doit rester sous `super_admin_api`, non nominatif, et tolerant aux tables billing absentes pendant les migrations progressives.
+- Le dashboard admin doit consommer `/platform/metrics/overview` pour les chiffres financiers globaux. Ne pas recalculer ARR, impayes ou encaissements cote frontend a partir de listes partielles.
 - La page Support admin sert maintenant d'intake demandes clients via `/platform/company-requests`; ne pas y remettre de tickets mockes tant qu'un vrai module support n'a pas son API dediee.
 - Le dashboard d'accueil admin doit rester une synthese des contrats plateforme existants. Eviter les endpoints `/admin/dashboard/*` tant qu'ils n'existent pas cote API.
 - Approuver une `company_request` doit declencher le provisioning partage via `CompanyProvisioningService` et remplir `approved_company_id`; ne pas se limiter a changer le statut.
