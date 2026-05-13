@@ -16,6 +16,9 @@ class EnsureAIAnalyticsAccess
             abort(403, 'AI analytics access requires Principal or RH manager role.');
         }
 
-        return $next($request);
+        /** @var Response $response */
+        $response = $next($request);
+
+        return $response;
     }
 }

@@ -567,6 +567,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/ai/analytics/errors` taux de succes + erreurs recentes
 - Couverture Feature requise : colonnes reelles `ai_audit_logs`, isolation tenant, historique/tools IA scopes
 - RBAC : analytics IA reservees aux managers `principal` et `rh`; les managers `dept` et `superviseur` doivent recevoir `403`
+- CI : toute retouche de ces routes doit rester couverte par le gate Pint diff-aware et par les tests Feature RBAC associes
 
 ---
 
