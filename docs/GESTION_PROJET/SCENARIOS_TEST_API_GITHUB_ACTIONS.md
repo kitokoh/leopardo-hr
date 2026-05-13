@@ -538,7 +538,8 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 ### Feature Flags
 - `GET /api/v1/feature-flags/matrix` matrice complete features x plans
 - `GET /api/v1/feature-flags/check/{featureKey}` verifier si feature active pour company
-- `PUT /api/v1/feature-flags/matrix` mettre a jour entree matrice (admin)
+- `PUT /api/v1/feature-flags/matrix` refuse les utilisateurs tenant ; les ecritures matrice passent par les contrats plateforme super-admin
+- Couverture Feature : lecture matrix, check par abonnement actif, fallback trial, feature inconnue desactivee et refus ecriture matrix depuis un utilisateur tenant
 
 ### Rapports avances
 - `GET /api/v1/reports/recruitment-pipeline` candidats par statut
