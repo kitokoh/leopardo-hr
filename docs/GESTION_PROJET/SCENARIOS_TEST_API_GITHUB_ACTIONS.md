@@ -276,6 +276,9 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/contracts/{id}/generate-pdf` genere les donnees PDF
 - `GET /api/v1/me/contracts` retourne les contrats de l'employe connecte
 - RBAC : employe voit uniquement ses propres contrats
+- Isolation : `GET /api/v1/contracts` et `GET /api/v1/contracts/expiring` ne retournent que le tenant courant
+- Isolation : `POST /api/v1/contracts` refuse un `employee_id` hors tenant
+- Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
 
 ### Module K — Workflows d'approbation

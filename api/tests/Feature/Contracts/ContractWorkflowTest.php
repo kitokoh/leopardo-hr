@@ -6,6 +6,7 @@ namespace Tests\Feature\Contracts;
 
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\ContractAmendment;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -119,6 +120,46 @@ class ContractWorkflowTest extends TestCase
         return [$company, $manager, $employee];
     }
 
+    private function makeOtherTenant(string $suffix = '02'): array
+    {
+        $company = Company::query()->create([
+            'name' => "Other Contract Co {$suffix}",
+            'slug' => "other-contract-co-{$suffix}",
+            'sector' => 'services',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => "other-contract-{$suffix}@test.com",
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'matricule' => "MGR-C{$suffix}",
+            'first_name' => 'Other',
+            'last_name' => 'Manager',
+            'email' => "boss-{$suffix}@contract-co.test",
+            'password_hash' => Hash::make('password'),
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'matricule' => "EMP-C{$suffix}",
+            'first_name' => 'Other',
+            'last_name' => 'Employee',
+            'email' => "employee-{$suffix}@contract-co.test",
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        return [$company, $manager, $employee];
+    }
+
     public function test_create_draft_contract(): void
     {
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
@@ -134,6 +175,58 @@ class ContractWorkflowTest extends TestCase
         $response->assertCreated();
         $response->assertJsonPath('data.status', 'draft');
         $response->assertJsonPath('data.contract_type', 'cdi');
+    }
+
+    public function test_manager_cannot_create_contract_for_other_tenant_employee(): void
+    {
+        [, $manager] = $this->makeManagerAndCompany();
+        [, , $otherEmployee] = $this->makeOtherTenant();
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson('/api/v1/contracts', [
+            'employee_id' => $otherEmployee->id,
+            'contract_type' => 'cdi',
+            'start_date' => '2026-06-01',
+            'base_salary' => 85000,
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors('employee_id');
+        $this->assertDatabaseMissing('contracts', [
+            'employee_id' => $otherEmployee->id,
+            'base_salary' => 85000,
+        ]);
+    }
+
+    public function test_contract_index_is_scoped_to_actor_company(): void
+    {
+        [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        [$otherCompany, , $otherEmployee] = $this->makeOtherTenant();
+        Sanctum::actingAs($manager);
+
+        Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'contract_type' => 'cdi',
+            'start_date' => '2026-01-01',
+            'base_salary' => 55000,
+            'status' => 'active',
+            'created_by' => $manager->id,
+        ]);
+        Contract::query()->create([
+            'company_id' => $otherCompany->id,
+            'employee_id' => $otherEmployee->id,
+            'contract_type' => 'cdd',
+            'start_date' => '2026-01-01',
+            'base_salary' => 99000,
+            'status' => 'active',
+        ]);
+
+        $response = $this->getJson('/api/v1/contracts');
+
+        $response->assertOk();
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.company_id', $company->id);
     }
 
     public function test_activate_draft_contract(): void
@@ -255,5 +348,75 @@ class ContractWorkflowTest extends TestCase
         $response->assertOk();
         $response->assertJsonStructure(['data' => [['id', 'contract_type', 'status']]]);
         $response->assertJsonCount(1, 'data');
+    }
+
+    public function test_expiring_contracts_are_tenant_scoped(): void
+    {
+        [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        [$otherCompany, , $otherEmployee] = $this->makeOtherTenant();
+        Sanctum::actingAs($manager);
+
+        Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'contract_type' => 'cdd',
+            'start_date' => now()->subMonths(6)->toDateString(),
+            'end_date' => now()->addDays(10)->toDateString(),
+            'base_salary' => 45000,
+            'status' => 'active',
+        ]);
+        Contract::query()->create([
+            'company_id' => $otherCompany->id,
+            'employee_id' => $otherEmployee->id,
+            'contract_type' => 'cdd',
+            'start_date' => now()->subMonths(6)->toDateString(),
+            'end_date' => now()->addDays(10)->toDateString(),
+            'base_salary' => 90000,
+            'status' => 'active',
+        ]);
+
+        $response = $this->getJson('/api/v1/contracts/expiring?days=30');
+
+        $response->assertOk();
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.company_id', $company->id);
+    }
+
+    public function test_employee_cannot_view_coworker_contract_pdf_or_amendments(): void
+    {
+        [$company, $manager, $employee] = $this->makeManagerAndCompany();
+        $coworker = Employee::query()->create([
+            'company_id' => $company->id,
+            'matricule' => 'EMP-C03',
+            'first_name' => 'Coworker',
+            'last_name' => 'RH',
+            'email' => 'coworker@contract-co.test',
+            'password_hash' => Hash::make('password'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        $contract = Contract::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $coworker->id,
+            'contract_type' => 'cdi',
+            'start_date' => '2026-01-01',
+            'base_salary' => 55000,
+            'status' => 'active',
+            'created_by' => $manager->id,
+        ]);
+        ContractAmendment::query()->create([
+            'company_id' => $company->id,
+            'contract_id' => $contract->id,
+            'amendment_type' => 'salary_change',
+            'changes' => ['base_salary' => 60000],
+            'effective_date' => '2026-07-01',
+            'approved_by' => $manager->id,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson("/api/v1/contracts/{$contract->id}")->assertForbidden();
+        $this->getJson("/api/v1/contracts/{$contract->id}/generate-pdf")->assertForbidden();
+        $this->getJson("/api/v1/contracts/{$contract->id}/amendments")->assertForbidden();
     }
 }
