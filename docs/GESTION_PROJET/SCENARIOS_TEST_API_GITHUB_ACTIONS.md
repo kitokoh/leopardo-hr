@@ -201,6 +201,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Auth guardrails: employee archive, company suspended
 - RBAC employees
 - Isolation tenant
+- Isolation tenant par chaine FK : `WebhookDelivery`, `PaySlipLine`, `ApprovalDecision`, `ExpenseItem` doivent etre filtres via leur parent portant `company_id`
 - Attendance check-in / check-out / history
 - Attendance anomalies business impact / recommended actions
 - Attendance monthly report JSON / CSV / PDF payroll estimates

@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.12] - 2026-05-13
+
+### Architecture security — Policies and FK tenant chains
+
+- Securite : enregistrement explicite des policies dans `AppServiceProvider` pour eviter les echecs silencieux d'auto-discovery Laravel.
+- Tests : ajout d'une suite `FkChainTenantIsolationTest` couvrant `WebhookDelivery`, `PaySlipLine`, `ApprovalDecision` et `ExpenseItem`, qui sont isoles via leur chaine FK parent portant `company_id`.
+- CI : conservation des gates Pint/PHPStan diff-aware pour bloquer les nouvelles regressions sans faire porter la dette historique aux PR urgents.
+
 ## [4.16.11] - 2026-05-13
 
 ### Audit readiness — P0/P1 security fixes
