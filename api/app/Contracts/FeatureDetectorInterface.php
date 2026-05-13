@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 interface FeatureDetectorInterface
 {
     /**
-     * @return Collection<array>
+     * @return Collection<int, array<string, mixed>>
      */
     public function detectNewFeatures(): Collection;
 
@@ -17,12 +17,12 @@ interface FeatureDetectorInterface
     public function extractMetadata(string $controllerClass, string $method): array;
 
     /**
-     * @return Collection<array>
+     * @return Collection<int, array<string, mixed>>
      */
     public function scanRoutes(): Collection;
 
     /**
-     * @return Collection<array>
+     * @return Collection<int, array<string, mixed>>
      */
     public function detectChanges(): Collection;
 }
