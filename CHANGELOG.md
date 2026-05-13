@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.10] - 2026-05-13
+
+### OpenAPI — Platform Metrics Contract (Lot 6)
+
+- OpenAPI : documentation de `GET /api/v1/platform/metrics/overview` avec securite `SuperAdminBearerAuth`.
+- OpenAPI : ajout des schemas d'agregats plateforme pour revenue, companies, subscriptions, billing, system et `generated_at`.
+
 ## [4.16.9] - 2026-05-13
 
 ### Documentation — Roadmap Execution Post Lots
