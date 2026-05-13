@@ -160,14 +160,23 @@ Fichiers a creer dans tests/Feature/ :
 - [x] OnboardingStepControllerTest.php (~5 tests : checklist, progress, complete, skip, auto-seed, isolation tenant)
 - [x] FeatureFlagControllerTest.php (~5 tests : matrix, check, fallback trial, feature inconnue, updateMatrix RBAC)
 - [x] PaymentWebhookControllerTest.php (~7 tests : stripe valid/invalid, chargily valid/invalid, events inconnus sans effet)
-- [ ] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
-- [ ] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
-- [ ] ExportControllerTest.php (~4 tests : employees JSON, employees CSV, attendance JSON, attendance CSV)
+- [x] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
+- [x] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
+- [x] ExportControllerTest.php (~4 tests : employees JSON, employees CSV, attendance JSON, attendance CSV)
 - [x] VoiceControllerTest.php (~4 tests : transcribe, synthesize, command, RBAC)
 - [x] AgentControllerTest.php (~4 tests : run, workflows, max steps, RBAC)
 - [x] AIAnalyticsControllerTest.php (~4 tests : usage, costs, tools, errors)
-- [ ] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
+- [x] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
 - [x] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
+- [x] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
+- [x] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
+- [x] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
+- [x] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
+- [x] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
+- [x] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
+- [x] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
+- [x] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
+
 - [ ] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
 - [x] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
 - [ ] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
@@ -223,14 +232,14 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ## 5. FRONTEND — Blog vitrine MDX (MOYENNE)
 
 ```
-- [ ] Setup MDX (Next.js + contentlayer ou next-mdx-remote)
-- [ ] Template article : titre, date, auteur, tags, reading time
-- [ ] Page /blog avec liste paginee et filtre par tag
-- [ ] Page /blog/{slug} avec article complet + TOC + partage social
-- [ ] Page /pricing avec tableau comparatif plans
-- [ ] Page /demo avec formulaire de demande
-- [ ] SEO : sitemap.xml dynamique, robots.txt, meta OG, schema.org JSON-LD
-- [ ] Newsletter signup (Mailchimp ou Brevo integration)
+- [x] Setup MDX (Next.js + next-mdx-remote + gray-matter + reading-time)
+- [x] Template article : titre, date, auteur, tags, reading time (lib/mdx.ts)
+- [x] Page /blog avec liste paginee et filtre par tag (existait, newsletter connectee)
+- [x] Page /blog/{slug} avec article complet + TOC + partage social (SocialShare + ArticleJsonLd)
+- [x] Page /pricing avec tableau comparatif plans (existait deja, enrichi meta OG)
+- [x] Page /demo avec formulaire de demande (cree, connecte a /api/forms/demo)
+- [x] SEO : sitemap.xml dynamique, robots.txt, meta OG, schema.org JSON-LD
+- [x] Newsletter signup (connecte a /api/forms/newsletter)
 ```
 
 ---
@@ -260,10 +269,10 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ### Workflows CI a ajouter
 
 ```
-- [ ] Workflow Playwright E2E (tests/e2e/*.spec.ts) — execute apres deploy staging
-- [ ] Workflow coverage gate — fail si coverage < seuil (commencer a 40%, monter 5%/mois)
-- [ ] Workflow deploy staging automatique sur merge main
-- [ ] Workflow mobile (flutter test + build APK)
+- [x] Workflow Playwright E2E (tests/e2e/*.spec.ts) — execute apres deploy staging
+- [x] Workflow coverage gate — fail si coverage < seuil (commencer a 40%, monter 5%/mois)
+- [x] Workflow deploy staging automatique sur merge main
+- [x] Workflow mobile (flutter test + build APK)
 ```
 
 ### Monitoring production
@@ -280,11 +289,11 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ## 8. OPEN SOURCE — Attractivite (MOYENNE)
 
 ```
-- [ ] Docker Compose pour dev (api + postgres + redis en 1 commande)
-- [ ] DevContainer config (.devcontainer/devcontainer.json)
-- [ ] DEVELOPMENT.md clair pour les nouveaux contributeurs
+- [x] Docker Compose pour dev (api + postgres + redis + queue + scheduler en 1 commande)
+- [x] DevContainer config (.devcontainer/devcontainer.json) — enrichi avec ports, extensions, lifecycle
+- [x] DEVELOPMENT.md clair pour les nouveaux contributeurs
 - [ ] Creer 10+ good first issues taguees sur GitHub
-- [ ] GitHub Releases avec tags et changelog formate
+- [x] GitHub Releases avec tags et changelog formate (workflow release.yml)
 - [ ] Project board visible (GitHub Projects) avec les taches restantes
 ```
 
@@ -298,7 +307,7 @@ Voir `11_GTM_EXECUTION.md` pour le detail complet. Resume des actions prioritair
 - [ ] 5 mini cas clients (1 page chacun avec metriques et citation)
 - [ ] 3 videos demo produit (pointage, rapport, dashboard) en FR et AR
 - [ ] Landing page live avec temoignages + videos + pricing
-- [ ] Page /demo avec formulaire de demande
+- [x] Page /demo avec formulaire de demande — PR #403
 - [ ] 5 articles blog SEO (pointage biometrique, paie DZ, conges legaux, etc.)
 - [ ] Prospection LinkedIn 20 contacts/semaine DRH PME Maghreb
 - [ ] Partenariat ZKTeco / distributeur local
