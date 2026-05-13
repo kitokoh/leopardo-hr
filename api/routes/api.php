@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Api\V1\PlatformCompanySubscriptionController;
+use App\Http\Controllers\Api\V1\PlatformMetricsOverviewController;
 use App\Http\Controllers\Api\V1\PlatformPlanController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
@@ -109,6 +110,7 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+        Route::get('/metrics/overview', PlatformMetricsOverviewController::class);
 
         Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
         Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
