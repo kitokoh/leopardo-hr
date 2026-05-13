@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.17] - 2026-05-13
+
+### Tests — Onboarding setup workflow
+
+- Tests : ajout de `OnboardingStepControllerTest` couvrant auto-seed checklist, progression, completion, skip optionnel, refus skip obligatoire et isolation inter-tenant.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture onboarding setup.
+
 ## [4.16.16] - 2026-05-13
 
 ### Tests — Structured logging observability
