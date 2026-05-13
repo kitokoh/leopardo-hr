@@ -28,6 +28,7 @@ jobs:
       ref: ${{ steps.context.outputs.ref }}
       sha: ${{ steps.context.outputs.sha }}
       web_changed: ${{ steps.final.outputs.web_changed }}
+      app_version: ${{ steps.final.outputs.app_version }}
     steps:
       - name: Resolve deployment source
         id: context
@@ -89,6 +90,20 @@ jobs:
 
           echo "web_changed=${web_changed}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve program version for deploy metadata
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          program_version="$(sed -n 's/^# PROGRAM_VERSION = \([^ |]*\).*$/\1/p' PILOTAGE.md | head -n 1)"
+          if [[ -z "${program_version}" ]]; then
+            echo "Unable to resolve PROGRAM_VERSION from PILOTAGE.md"
+            exit 1
+          fi
+          echo "app_version=${program_version}" >> "$GITHUB_OUTPUT"
+          echo "Deploy APP_VERSION=${program_version}"
+
       - name: Verify required workflow conclusions for deployment SHA
         if: steps.context.outputs.should_deploy == 'pending-validation'
         id: workflow_gate
@@ -143,6 +158,7 @@ jobs:
         shell: bash
         run: |
           echo "Deployment gate resolved for ${{ steps.context.outputs.sha }}."
+          echo "APP_VERSION=${{ steps.version.outputs.app_version }}"
 
       - name: Export final prepare outputs
         id: final
@@ -151,9 +167,11 @@ jobs:
           if [[ "${{ steps.context.outputs.should_deploy }}" == "pending-validation" ]]; then
             echo "should_deploy=${{ steps.decision.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
             echo "web_changed=${{ steps.changes.outputs.web_changed }}" >> "$GITHUB_OUTPUT"
+            echo "app_version=${{ steps.version.outputs.app_version }}" >> "$GITHUB_OUTPUT"
           else
             echo "should_deploy=${{ steps.context.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
             echo "web_changed=false" >> "$GITHUB_OUTPUT"
+            echo "app_version=" >> "$GITHUB_OUTPUT"
           fi
 
   deploy-api:
@@ -178,8 +196,10 @@ jobs:
         shell: bash
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          APP_VERSION: ${{ needs.prepare.outputs.app_version }}
         run: |
           set -euo pipefail
+          echo "Triggering Render deploy for APP_VERSION=${APP_VERSION}"
           curl --fail --silent --show-error --request POST "${RENDER_DEPLOY_HOOK_URL}"
 
       - name: Wait for API/Web healthcheck

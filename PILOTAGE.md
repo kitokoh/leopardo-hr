@@ -1,5 +1,5 @@
 ﻿# 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.1.120 | 2026-05-10
+# PROGRAM_VERSION = 4.16.11 | 2026-05-13
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -101,8 +101,8 @@ Stack MVP :
   Cache      : File driver (pas Redis)
   Queue      : Sync (pas Redis/Horizon)
   Auth       : Sanctum (tokens opaques)
-  Frontend   : Next.js + Tailwind CSS (App Router)
-  Mobile     : Flutter (3 écrans)
+  Frontend   : Next.js 16.2 + Tailwind CSS + Shadcn/UI (App Router)
+  Mobile     : Flutter 3.x + flutter_riverpod 3.3
   PDF        : DomPDF (synchrone)
   Hébergement: Render (Web Service) + Neon.tech (PostgreSQL)
   Tests      : Pest PHP
