@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)  
 
+## [4.16.5] - 2026-05-13
+
+### Backend — Service Layer Typing (Lot 2)
+
+- Feature registry : typage generique des contrats `FeatureRegistryInterface` et `FeatureDetectorInterface` pour fiabiliser les manifestes API consommes par web, mobile, admin et future couche IA.
+- Feature registry : normalisation des arguments/options de la commande `features:registry` afin d'eviter les chaines `mixed` et les sorties JSON `false`.
+- PHPStan : retrait des ignores baseline resolus sur les attributs API et les contrats du registre de fonctionnalites.
+- CI : alignement du job backend principal sur `composer:v2`, comme les jobs quality/coverage, afin d'eviter les echecs `composer validate` lies au token GitHub runtime.
+
 ## [4.16.4] - 2026-05-12
 
 ### Backend — API Contract Hardening (Lot 1)
