@@ -12,10 +12,11 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard title="MRR portefeuille" :value="formatCurrency(summary.mrr)" icon="CurrencyEuroIcon" color="purple" />
-      <StatsCard title="Clients actifs" :value="summary.active_companies" icon="BuildingOfficeIcon" color="green" />
-      <StatsCard title="Risque eleve" :value="summary.risk.high" icon="ChartBarIcon" color="red" />
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
+      <StatsCard title="MRR portefeuille" :value="formatCurrency(revenue.mrr, revenue.currency)" icon="CurrencyEuroIcon" color="purple" />
+      <StatsCard title="ARR estime" :value="formatCurrency(revenue.arr, revenue.currency)" icon="ChartBarIcon" color="blue" />
+      <StatsCard title="Clients actifs" :value="companyMetrics.active" icon="BuildingOfficeIcon" color="green" />
+      <StatsCard title="Impayes" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="CreditCardIcon" color="red" />
       <StatsCard title="Demandes a traiter" :value="pendingRequests" icon="ChatBubbleLeftRightIcon" color="yellow" />
     </div>
 
@@ -119,15 +120,23 @@
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
             <dt class="text-gray-500">MRR</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(summary.mrr) }}</dd>
+            <dd class="font-semibold text-gray-900">{{ formatCurrency(revenue.mrr, revenue.currency) }}</dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-gray-500">Encaisse 30j</dt>
+            <dd class="font-semibold text-gray-900">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-gray-500">Impayes</dt>
+            <dd class="font-semibold text-gray-900">{{ formatCurrency(revenue.overdue_total, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
             <dt class="text-gray-500">ARPA</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(averageRevenuePerAccount) }}</dd>
+            <dd class="font-semibold text-gray-900">{{ formatCurrency(averageRevenuePerAccount, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Plans actifs</dt>
-            <dd class="font-semibold text-gray-900">{{ activePlansCount }}</dd>
+            <dt class="text-gray-500">Abonnements actifs</dt>
+            <dd class="font-semibold text-gray-900">{{ subscriptionMetrics.active }}</dd>
           </div>
         </dl>
       </section>
@@ -159,8 +168,30 @@ const summary = ref({
 })
 const portfolioItems = ref([])
 const pendingCompanyRequests = ref([])
-const plans = ref([])
 const pendingRequests = ref(0)
+const platformMetrics = ref({
+  revenue: {
+    currency: 'EUR',
+    mrr: 0,
+    arr: 0,
+    collected_30d: 0,
+    overdue_total: 0,
+  },
+  companies: {
+    total: 0,
+    active: 0,
+    trial: 0,
+    suspended: 0,
+    expired: 0,
+  },
+  subscriptions: {
+    total: 0,
+    active: 0,
+    trial: 0,
+    past_due: 0,
+    cancelled_30d: 0,
+  },
+})
 
 const priorityCompanies = computed(() => {
   const rank = { high: 0, medium: 1, low: 2 }
@@ -171,10 +202,19 @@ const priorityCompanies = computed(() => {
     })
     .slice(0, 5)
 })
-const activePlansCount = computed(() => plans.value.filter((plan) => plan.is_active).length)
+const revenue = computed(() => platformMetrics.value.revenue || {})
+const companyMetrics = computed(() => {
+  const metrics = platformMetrics.value.companies || {}
+
+  return {
+    total: Number(metrics.total || summary.value.companies || 0),
+    active: Number(metrics.active || summary.value.active_companies || 0),
+  }
+})
+const subscriptionMetrics = computed(() => platformMetrics.value.subscriptions || {})
 const averageRevenuePerAccount = computed(() => {
-  if (!summary.value.active_companies) return 0
-  return Number(summary.value.mrr || 0) / summary.value.active_companies
+  if (!companyMetrics.value.active) return 0
+  return Number(revenue.value.mrr || summary.value.mrr || 0) / companyMetrics.value.active
 })
 const adoption = computed(() => portfolioItems.value.reduce((totals, item) => ({
   attendance_logs: totals.attendance_logs + Number(item.attendance_logs_30d || 0),
@@ -186,15 +226,15 @@ async function loadDashboard() {
   errorMessage.value = ''
 
   try {
-    const [portfolioResponse, plansResponse, requestsResponse] = await Promise.all([
+    const [portfolioResponse, metricsResponse, requestsResponse] = await Promise.all([
       api.get('/platform/companies/health'),
-      api.get('/platform/plans'),
+      api.get('/platform/metrics/overview'),
       api.get('/platform/company-requests', { params: { status: 'pending' } }),
     ])
 
     summary.value = portfolioResponse.data?.data?.summary || summary.value
+    platformMetrics.value = metricsResponse.data?.data || platformMetrics.value
     portfolioItems.value = portfolioResponse.data?.data?.items || []
-    plans.value = plansResponse.data?.data?.items || []
     pendingCompanyRequests.value = requestsResponse.data?.data || []
     pendingRequests.value = requestsResponse.data?.meta?.total || pendingCompanyRequests.value.length
   } catch (error) {
@@ -205,12 +245,22 @@ async function loadDashboard() {
   }
 }
 
-function formatCurrency(value) {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0))
+function formatCurrency(value, currency = 'EUR') {
+  const amount = Number(value || 0)
+
+  try {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency || 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  } catch {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 }
 
 function riskClass(risk) {
