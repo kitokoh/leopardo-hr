@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.13] - 2026-05-13
+
+### Tests — Billing tenant and RBAC coverage
+
+- Tests : durcissement de `BillingControllerTest` avec couverture renouvellement, refus cancel/renew employe, isolation inter-tenant des factures et telechargement PDF facture.
+- Documentation : synchronisation du plan d'action post-sprints et du registre de scenarios API avec la couverture billing reelle.
+
 ## [4.16.12] - 2026-05-13
 
 ### Architecture security — Policies and FK tenant chains

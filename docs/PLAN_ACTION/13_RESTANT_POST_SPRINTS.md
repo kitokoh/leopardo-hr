@@ -156,7 +156,7 @@ Chaque module a besoin de tests Pest Feature couvrant les cas positifs et RBAC.
 ```
 Fichiers a creer dans tests/Feature/ :
 
-- [ ] BillingControllerTest.php (~10 tests : subscription CRUD, upgrade, cancel, invoices)
+- [x] BillingControllerTest.php (~10 tests : subscription CRUD, upgrade, cancel, renew, invoices, PDF, isolation tenant)
 - [ ] OnboardingStepControllerTest.php (~6 tests : checklist, progress, complete, skip, auto-seed)
 - [ ] FeatureFlagControllerTest.php (~6 tests : matrix, check, updateMatrix, RBAC)
 - [ ] PaymentWebhookControllerTest.php (~4 tests : stripe valid, stripe invalid, chargily valid, chargily invalid)
