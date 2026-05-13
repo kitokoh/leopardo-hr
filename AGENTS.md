@@ -136,6 +136,7 @@ Procedure recommandee :
 - Sur Windows local, PHPStan peut etre non representatif si `phpstan.ci.neon` genere par CI reference Larastan absent/incomplet dans `vendor`. Dans ce cas, verifier au minimum `php -l` et laisser GitHub Actions Linux servir de source de verite.
 - Les commandes Artisan qui lisent `$this->argument()` / `$this->option()` doivent normaliser les valeurs avant de les passer aux services (`string|null` attendu), sinon PHPStan voit `array|bool|string|null` et la dette revient vite.
 - Si le job backend principal echoue sur `composer validate` avec `github oauth token contains invalid characters`, verifier que le setup PHP force bien `tools: composer:v2`, comme les jobs backend-quality et coverage.
+- Pour les commandes console de detection/registre de features, preferer des helpers locaux `stringValue`, `stringList`, `optionString` et `optionBool` plutot que caster inline des tableaux `mixed`; cela garde PHPStan exploitable et les sorties Artisan previsibles.
 - Les notifications API ne sont pas les `DatabaseNotification` Laravel natives : le modele interne doit exposer `markAsRead()` et `Employee` doit declarer explicitement `notifications()` / `unreadNotifications()`.
 - Les analytics IA doivent rester alignees sur le schema reel `ai_audit_logs` : `input_tokens`, `output_tokens`, `cost_cents`, `duration_ms`, `error`, `tools_called`. Ne pas reintroduire les colonnes fantomes `total_tokens`, `cost`, `tool_called`, `response_time_ms`, `status`, `error_message`.
 
