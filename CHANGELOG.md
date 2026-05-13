@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.19] - 2026-05-13
+
+### Tests — Fleet dashboard contracts
+
+- Tests : ajout de `FleetControllerTest` couvrant overview tenant-scope, live-map avec `TraccarService` fake, rapports carburant/kilometrage, maintenances dues et refus non authentifie.
+- Securite : les routes tracking/flotte sont maintenant protegees par `auth:sanctum`, `tenant` et `throttle:api`, alignant le comportement reel avec les scenarios API.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture tracking flotte reelle.
+
 ## [4.16.18] - 2026-05-13
 
 ### Tests — AI voice, agents and analytics coverage
