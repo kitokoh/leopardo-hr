@@ -10,6 +10,7 @@ import {
   BlogGrid,
 } from '@/modules/vitrine';
 import { blogPosts } from '@/modules/vitrine/data/blog';
+import { NewsletterForm } from '@/components/NewsletterForm';
 import { motion } from 'framer-motion';
 import { BookOpen } from 'lucide-react';
 
@@ -90,30 +91,7 @@ export default function BlogPage() {
             </p>
 
             {/* Newsletter Form */}
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Handle newsletter signup
-              }}
-            >
-              <input
-                type="email"
-                placeholder="Votre email"
-                required
-                className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors whitespace-nowrap"
-              >
-                S&apos;inscrire
-              </button>
-            </motion.form>
+            <NewsletterForm />
 
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
               Pas de spam, juste des conseils utiles. Désinscription facile.
