@@ -13,6 +13,10 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD)]
 class ApiFeature
 {
+    /**
+     * @param  array<string, mixed>  $form_schema
+     * @param  array<string, mixed>  $list_schema
+     */
     public function __construct(
         public readonly string $title,
         public readonly ?string $description = null,
