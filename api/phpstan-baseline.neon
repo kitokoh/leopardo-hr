@@ -1,24 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method App\\Attributes\\ApiFeature\:\:__construct\(\) has parameter \$form_schema with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Attributes/ApiFeature.php
-
-		-
-			message: '#^Method App\\Attributes\\ApiFeature\:\:__construct\(\) has parameter \$list_schema with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Attributes/ApiFeature.php
-
-		-
-			message: '#^Method App\\Attributes\\RequiresPermission\:\:__construct\(\) has parameter \$permissions with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Attributes/RequiresPermission.php
-
-		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 2
@@ -353,66 +335,6 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureDetectorInterface\:\:detectChanges\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Contracts/FeatureDetectorInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureDetectorInterface\:\:detectNewFeatures\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Contracts/FeatureDetectorInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureDetectorInterface\:\:scanRoutes\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Contracts/FeatureDetectorInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:getCompatibleFeatures\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:getFeatures\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:getFeaturesByApiVersion\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:getManifest\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:getStatistics\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:synchronize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
-
-		-
-			message: '#^Method App\\Contracts\\FeatureRegistryInterface\:\:updateFeature\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Contracts/FeatureRegistryInterface.php
 
 		-
 			message: '#^Cannot access offset ''gps_lat'' on mixed\.$#'
