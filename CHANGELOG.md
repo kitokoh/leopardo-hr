@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.20] - 2026-05-13
+
+### Tests — Pay slips API contracts
+
+- Tests : ajout de `PaySlipControllerTest` couvrant liste manager par run, self-service employe, detail proprietaire, telechargement PDF, envoi des bulletins et refus RBAC.
+- Tests : le fixture MVP cree maintenant `pay_slip_lines`, afin que les relations `PaySlip::lines()` soient testables comme en schema tenant reel.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture bulletins de paie.
+
 ## [4.16.19] - 2026-05-13
 
 ### Tests — Fleet dashboard contracts
