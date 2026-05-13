@@ -108,6 +108,55 @@ class PaymentWebhookControllerTest extends TestCase
         ]);
     }
 
+    public function test_invalid_stripe_payload_is_acknowledged_without_side_effects(): void
+    {
+        [, $subscription, $invoice] = $this->billingFixture(stripeInvoiceId: 'in_safe');
+
+        $response = $this->postJson('/api/v1/webhooks/stripe', [
+            'type' => 'invoice.paid',
+            'data' => ['object' => ['id' => 'in_unknown']],
+        ]);
+
+        $response->assertOk()->assertJsonPath('received', true);
+        $this->assertSame('sent', $invoice->fresh()->status);
+        $this->assertSame('active', $subscription->fresh()->status);
+        $this->assertSame(0, Payment::count());
+    }
+
+    public function test_unknown_stripe_event_is_acknowledged_without_side_effects(): void
+    {
+        [, $subscription, $invoice] = $this->billingFixture(stripeInvoiceId: 'in_safe');
+
+        $response = $this->postJson('/api/v1/webhooks/stripe', [
+            'type' => 'customer.created',
+            'data' => ['object' => ['id' => 'cus_123']],
+        ]);
+
+        $response->assertOk()->assertJsonPath('received', true);
+        $this->assertSame('sent', $invoice->fresh()->status);
+        $this->assertSame('active', $subscription->fresh()->status);
+        $this->assertSame(0, Payment::count());
+    }
+
+    public function test_invalid_chargily_payload_is_acknowledged_without_side_effects(): void
+    {
+        [, $subscription, $invoice] = $this->billingFixture(invoiceNumber: 'LEO-CHARGILY-SAFE');
+
+        $response = $this->postJson('/api/v1/webhooks/chargily', [
+            'type' => 'checkout.paid',
+            'data' => [
+                'id' => 'checkout_unknown',
+                'payment_method' => 'cib',
+                'metadata' => ['invoice_number' => 'LEO-UNKNOWN'],
+            ],
+        ]);
+
+        $response->assertOk()->assertJsonPath('received', true);
+        $this->assertSame('sent', $invoice->fresh()->status);
+        $this->assertSame('active', $subscription->fresh()->status);
+        $this->assertSame(0, Payment::count());
+    }
+
     /**
      * @return array{0: Company, 1: Subscription, 2: Invoice}
      */
