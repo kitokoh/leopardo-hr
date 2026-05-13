@@ -29,6 +29,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Si les workflows web sont fusionnes plus tard, conserver absolument les filtres `paths:` qui ont reduit le bruit CI a partir du 2026-05-06.
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
+- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`, et son seuil par defaut doit rester non bloquant (`0`) tant que `BACKEND_COVERAGE_MIN` n'est pas configure explicitement.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
 - Pour `admin-dashboard/`, garder `web-ci.yml` cible sur `admin-dashboard/**` avec lint/build/Playwright.
@@ -165,6 +166,7 @@ Procedure recommandee :
 - Pour tester les endpoints flotte, injecter un faux `TraccarService` dans le container plutot que de laisser les tests appeler Traccar/HTTP. Le contrat utile est `vehicle_id` + `position`, pas la disponibilite du serveur Traccar externe.
 - Les routes `routes/modules/tracking.php` doivent rester dans un groupe `auth:sanctum` + `tenant`. Sans ce garde, un appel anonyme peut atteindre `FleetController` avec `$request->user() === null` et produire un 500.
 - Les tests de bulletins de paie ont besoin de `pay_slip_lines` dans `CreatesMvpSchema`; `PaySlipController` charge toujours la relation `lines`, donc un fixture sans cette table casse les endpoints meme si le test ne cree pas explicitement de lignes.
+- Pour les conges avances, ne pas se fier uniquement au middleware `tenant` : les listes `leave_policies`, `leave_balances` et `leave_accruals` doivent filtrer explicitement par `company_id`, et les creations d'accrual doivent verifier que l'employe et la policy appartiennent au tenant courant.
 - Sur Windows local, PHPStan peut etre non representatif si `phpstan.ci.neon` genere par CI reference Larastan absent/incomplet dans `vendor`. Dans ce cas, verifier au minimum `php -l` et laisser GitHub Actions Linux servir de source de verite.
 - Les commandes Artisan qui lisent `$this->argument()` / `$this->option()` doivent normaliser les valeurs avant de les passer aux services (`string|null` attendu), sinon PHPStan voit `array|bool|string|null` et la dette revient vite.
 - Si le job backend principal echoue sur `composer validate` avec `github oauth token contains invalid characters`, verifier que le setup PHP force bien `tools: composer:v2`, comme les jobs backend-quality et coverage.
@@ -294,3 +296,4 @@ Procedure recommandee :
 - Les modeles LeavePolicy, LeaveBalance, LeaveAccrual, Contract, ContractAmendment, ApprovalWorkflow/Request/Decision existaient deja en tant que modeles. Verifier les routes et controllers avant de creer du code duplique.
 - `hr_extended.php` centralise toutes les routes des modules etendus (conges, contrats, recrutement, formation, loans, frais, webhooks, audit).
 - Le trait `Approvable` est un pattern reutilisable pour brancher le workflow d'approbation sur n'importe quel modele (Absence, ExpenseClaim, etc.).
+- Les contrats doivent rester explicitement scopes par `company_id` dans `index`, `expiring`, `myContracts` et les endpoints self-service. Ne pas compter uniquement sur les IDs de route : la creation doit refuser un `employee_id` hors tenant, et PDF/amendments doivent verifier proprietaire ou manager.
