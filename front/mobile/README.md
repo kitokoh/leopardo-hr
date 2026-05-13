@@ -2,6 +2,12 @@
 
 Application Flutter de gestion RH pour les employés et managers.
 
+## Architecture
+
+- Framework : Flutter 3.x
+- State management : `flutter_riverpod` 3.3
+- Architecture active : providers Riverpod + services API, pas Bloc
+
 ## 🌐 Environnements
 
 | Environnement | URL API | Usage |

@@ -28,7 +28,6 @@ class AdminMiddleware
             ], 401);
         }
 
-        // Vérifier si l'utilisateur a les droits admin
         if (! $this->userIsAdmin($user)) {
             return response()->json([
                 'success' => false,
@@ -46,9 +45,12 @@ class AdminMiddleware
      */
     private function userIsAdmin($user): bool
     {
-        // Adapter selon votre système de rôles
         $role = $user->role ?? '';
 
-        return $role === 'manager' || in_array($role, ['admin', 'super_admin']);
+        if (in_array($role, ['admin', 'super_admin'], true)) {
+            return true;
+        }
+
+        return is_object($user) && method_exists($user, 'hasManagerRole') && $user->hasManagerRole('principal');
     }
 }
