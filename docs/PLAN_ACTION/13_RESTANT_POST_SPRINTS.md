@@ -177,6 +177,15 @@ Fichiers a creer dans tests/Feature/ :
 - [x] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
 - [x] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
 
+- [ ] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
+- [x] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
+- [ ] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
+- [ ] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
+- [ ] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
+- [ ] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
+- [ ] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
+- [ ] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
+
 Total estime : ~110 nouveaux tests -> coverage backend > 70%
 ```
 
