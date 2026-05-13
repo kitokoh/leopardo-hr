@@ -167,7 +167,7 @@ Fichiers a creer dans tests/Feature/ :
 - [x] AgentControllerTest.php (~4 tests : run, workflows, max steps, RBAC)
 - [x] AIAnalyticsControllerTest.php (~4 tests : usage, costs, tools, errors)
 - [ ] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
-- [ ] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
+- [x] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
 - [ ] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
 - [ ] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
 - [ ] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)

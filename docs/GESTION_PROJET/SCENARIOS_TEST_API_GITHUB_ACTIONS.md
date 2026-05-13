@@ -435,6 +435,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/fleet/reports/fuel` rapport consommation carburant
 - `GET /api/v1/fleet/reports/mileage` rapport kilometrage
 - `GET /api/v1/fleet/reports/maintenance-due` maintenances a venir (30 jours)
+- Couverture Feature : overview scope au tenant, live-map avec Traccar fake sans HTTP externe, rapports carburant/kilometrage groupes par vehicule, maintenances dues a 30 jours et refus non authentifie.
 ## Module IA (Sprint 7-8)
 
 ### Chat IA
