@@ -373,7 +373,10 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 ### Pay Slips
 - `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager)
 - `GET /api/v1/pay-slips/{id}` detail bulletin avec lignes (manager ou employe concerne)
+- `GET /api/v1/pay-slips/{id}/pdf` telecharge le PDF du bulletin (manager ou employe proprietaire)
+- `POST /api/v1/payroll-runs/{id}/send-slips` exige un run valide/paye et marque les bulletins emailable comme envoyes
 - RBAC : manager voit tout, employe voit uniquement ses bulletins
+- Couverture Feature : liste par run scopee tenant, self-service validated/sent uniquement, detail proprietaire, PDF protege, send-slips bloque avant validation et refus employe sur liste manager.
 
 ### Self-service
 - `GET /api/v1/me/pay-slips` retourne les bulletins valides/envoyes de l'employe connecte
