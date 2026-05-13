@@ -8,98 +8,218 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Commande de démonstration du Feature Registry
- *
- * Cette commande illustre l'utilisation complète du système de registre
- * des fonctionnalités avec des exemples concrets.
+ * Demonstration du registre central des fonctionnalites API.
  */
 class DemoFeatureRegistryCommand extends Command
 {
-    /**
-     * Nom et signature de la commande
-     *
-     * @var string
-     */
     protected $signature = 'features:demo
-                            {--reset : Réinitialiser les données de démonstration}
+                            {--reset : Reinitialiser les donnees de demonstration}
                             {--mobile-version=1.0.0 : Version mobile pour les tests}';
 
-    /**
-     * Description de la commande
-     *
-     * @var string
-     */
-    protected $description = 'Démonstration complète du système Feature Registry';
+    protected $description = 'Demonstration complete du systeme Feature Registry';
 
-    /**
-     * Exécute la commande de démonstration
-     */
     public function handle(FeatureRegistryInterface $registry): int
     {
-        $this->info('🚀 Démonstration du Feature Registry');
+        $this->info('Demonstration du Feature Registry');
         $this->newLine();
 
-        if ($this->option('reset')) {
+        if ($this->optionBool('reset')) {
             $this->resetDemoData();
         }
 
-        // 1. Créer des fonctionnalités d'exemple
-        $this->info('📝 1. Création de fonctionnalités d\'exemple...');
+        $this->info('1. Creation de fonctionnalites d\'exemple...');
         $this->createDemoFeatures($registry);
 
-        // 2. Afficher les statistiques
-        $this->info('📊 2. Statistiques du registre:');
+        $this->info('2. Statistiques du registre:');
         $this->displayStatistics($registry);
 
-        // 3. Tester la récupération de fonctionnalités
-        $this->info('🔍 3. Test de récupération des fonctionnalités:');
+        $this->info('3. Test de recuperation des fonctionnalites:');
         $this->testFeatureRetrieval($registry);
 
-        // 4. Tester la compatibilité mobile
-        $this->info('📱 4. Test de compatibilité mobile:');
+        $this->info('4. Test de compatibilite mobile:');
         $this->testMobileCompatibility($registry);
 
-        // 5. Générer et afficher le manifeste
-        $this->info('📋 5. Génération du manifeste:');
+        $this->info('5. Generation du manifeste:');
         $this->generateAndDisplayManifest($registry);
 
-        // 6. Tester la synchronisation
-        $this->info('🔄 6. Test de synchronisation:');
+        $this->info('6. Test de synchronisation:');
         $this->testSynchronization($registry);
 
-        // 7. Tester le cache
-        $this->info('💾 7. Test du système de cache:');
+        $this->info('7. Test du systeme de cache:');
         $this->testCaching($registry);
 
         $this->newLine();
-        $this->info('✅ Démonstration terminée avec succès!');
+        $this->info('Demonstration terminee avec succes.');
 
         return Command::SUCCESS;
     }
 
-    /**
-     * Réinitialise les données de démonstration
-     */
     private function resetDemoData(): void
     {
-        $this->warn('🗑️  Suppression des données de démonstration...');
+        $this->warn('Suppression des donnees de demonstration...');
 
         DB::table('features')->where('key', 'like', 'demo_%')->delete();
 
-        $this->info('✅ Données supprimées.');
+        $this->info('Donnees supprimees.');
+        $this->newLine();
+    }
+
+    private function createDemoFeatures(FeatureRegistryInterface $registry): void
+    {
+        foreach ($this->demoFeatures() as $featureData) {
+            $feature = new Feature($featureData);
+            $registry->registerFeature($feature);
+
+            $this->line('  OK '.$feature->title.' enregistree');
+        }
+
+        $this->newLine();
+    }
+
+    private function displayStatistics(FeatureRegistryInterface $registry): void
+    {
+        $stats = $registry->getStatistics();
+
+        $this->table(
+            ['Metrique', 'Valeur'],
+            [
+                ['Total des fonctionnalites', $this->statInt($stats, 'total_features')],
+                ['Fonctionnalites actives', $this->statInt($stats, 'active_features')],
+                ['Fonctionnalites inactives', $this->statInt($stats, 'inactive_features')],
+                ['Mises a jour recentes', $this->statInt($stats, 'recently_updated')],
+            ]
+        );
+
+        $byStatus = $this->statArray($stats, 'by_status');
+        if ($byStatus !== []) {
+            $this->info('Par statut:');
+            foreach ($byStatus as $status => $count) {
+                $this->line('  - '.(string) $status.': '.(string) $count);
+            }
+        }
+
+        $this->newLine();
+    }
+
+    private function testFeatureRetrieval(FeatureRegistryInterface $registry): void
+    {
+        $allFeatures = $registry->getFeatures();
+        $this->line('  Total des fonctionnalites: '.$allFeatures->count());
+
+        $specificFeature = $registry->getFeature('demo_employee_management');
+        if ($specificFeature instanceof Feature) {
+            $this->line('  Fonctionnalite trouvee: '.$specificFeature->title);
+        }
+
+        $exists = $registry->hasFeature('demo_employee_management');
+        $this->line('  Fonctionnalite existe: '.$this->boolLabel($exists));
+
+        $this->newLine();
+    }
+
+    private function testMobileCompatibility(FeatureRegistryInterface $registry): void
+    {
+        $mobileVersion = $this->optionString('mobile-version', '1.0.0');
+
+        $compatibleFeatures = $registry->getCompatibleFeatures($mobileVersion);
+        $this->line('  Fonctionnalites compatibles avec v'.$mobileVersion.': '.$compatibleFeatures->count());
+
+        foreach ($compatibleFeatures as $feature) {
+            $maxVersion = $feature->mobile_version_max ? ' - '.$feature->mobile_version_max : '';
+            $this->line('    - '.$feature->title.' (v'.$feature->mobile_version_min.$maxVersion.')');
+        }
+
+        $oldCompatible = $registry->getCompatibleFeatures('1.0.0');
+        $this->line('  Fonctionnalites compatibles avec v1.0.0: '.$oldCompatible->count());
+
+        $this->newLine();
+    }
+
+    private function generateAndDisplayManifest(FeatureRegistryInterface $registry): void
+    {
+        $mobileVersion = $this->optionString('mobile-version', '1.0.0');
+        $manifest = $registry->getManifest($mobileVersion);
+
+        $this->line('  Manifeste genere pour la version mobile '.$mobileVersion.':');
+        $this->line('    - Version API: '.$this->stringValue($manifest, 'version'));
+        $this->line('    - Genere le: '.$this->stringValue($manifest, 'generated_at'));
+        $this->line('    - Nombre de fonctionnalites: '.$this->statInt($manifest, 'total_features'));
+
+        if ($this->output->isVerbose()) {
+            $this->newLine();
+            $this->info('Detail des fonctionnalites:');
+
+            $rows = [];
+            foreach ($this->statArray($manifest, 'features') as $feature) {
+                if (is_array($feature)) {
+                    $rows[] = $this->manifestFeatureRow($feature);
+                }
+            }
+
+            $this->table(['Cle', 'Titre', 'Endpoint', 'Methodes', 'Permissions'], $rows);
+        }
+
+        $this->newLine();
+    }
+
+    private function testSynchronization(FeatureRegistryInterface $registry): void
+    {
+        $this->line('  Lancement de la synchronisation...');
+
+        $result = $registry->synchronize();
+
+        $this->line('    - Nouvelles fonctionnalites: '.$result['new']);
+        $this->line('    - Fonctionnalites mises a jour: '.$result['updated']);
+        $this->line('    - Fonctionnalites supprimees: '.$result['removed']);
+
+        if ($result['errors'] !== []) {
+            $this->warn('    - Erreurs: '.count($result['errors']));
+            foreach ($result['errors'] as $error) {
+                $this->line('      - '.$error);
+            }
+        } else {
+            $this->line('    OK Aucune erreur');
+        }
+
+        $this->newLine();
+    }
+
+    private function testCaching(FeatureRegistryInterface $registry): void
+    {
+        $this->line('  Test du cache...');
+
+        $start = microtime(true);
+        $features1 = $registry->getFeatures();
+        $time1 = round((microtime(true) - $start) * 1000, 2);
+
+        $start = microtime(true);
+        $features2 = $registry->getFeatures();
+        $time2 = round((microtime(true) - $start) * 1000, 2);
+
+        $this->line('    - Premier appel: '.$time1.'ms ('.$features1->count().' fonctionnalites)');
+        $this->line('    - Deuxieme appel: '.$time2.'ms ('.$features2->count().' fonctionnalites)');
+
+        if ($time2 < $time1 && $time1 > 0.0) {
+            $improvement = round(($time1 - $time2) / $time1 * 100, 1);
+            $this->line('    OK Cache fonctionnel (amelioration: '.$improvement.'%)');
+        }
+
+        $registry->invalidateCache();
+        $this->line('    Cache invalide');
+
         $this->newLine();
     }
 
     /**
-     * Crée des fonctionnalités d'exemple
+     * @return array<int, array<string, mixed>>
      */
-    private function createDemoFeatures(FeatureRegistryInterface $registry): void
+    private function demoFeatures(): array
     {
-        $demoFeatures = [
+        return [
             [
                 'key' => 'demo_employee_management',
-                'title' => 'Gestion des Employés (Démo)',
-                'description' => 'Créer, modifier et gérer les employés de l\'entreprise',
+                'title' => 'Gestion des Employes (Demo)',
+                'description' => 'Creer, modifier et gerer les employes de l\'entreprise',
                 'endpoint' => '/api/v1/employees',
                 'http_methods' => ['GET', 'POST', 'PUT', 'DELETE'],
                 'parameters' => [
@@ -133,7 +253,7 @@ class DemoFeatureRegistryCommand extends Command
                     'ui_type' => 'list',
                     'form_schema' => [
                         'fields' => [
-                            ['name' => 'first_name', 'type' => 'text', 'label' => 'Prénom', 'required' => true],
+                            ['name' => 'first_name', 'type' => 'text', 'label' => 'Prenom', 'required' => true],
                             ['name' => 'last_name', 'type' => 'text', 'label' => 'Nom', 'required' => true],
                             ['name' => 'email', 'type' => 'email', 'label' => 'Email', 'required' => true],
                         ],
@@ -142,8 +262,8 @@ class DemoFeatureRegistryCommand extends Command
             ],
             [
                 'key' => 'demo_attendance_tracking',
-                'title' => 'Suivi des Présences (Démo)',
-                'description' => 'Enregistrer et consulter les heures de présence',
+                'title' => 'Suivi des Presences (Demo)',
+                'description' => 'Enregistrer et consulter les heures de presence',
                 'endpoint' => '/api/v1/attendance',
                 'http_methods' => ['GET', 'POST'],
                 'parameters' => [
@@ -173,8 +293,8 @@ class DemoFeatureRegistryCommand extends Command
             ],
             [
                 'key' => 'demo_advanced_reporting',
-                'title' => 'Rapports Avancés (Démo)',
-                'description' => 'Génération de rapports détaillés et analytics',
+                'title' => 'Rapports Avances (Demo)',
+                'description' => 'Generation de rapports detailles et analytics',
                 'endpoint' => '/api/v1/reports/advanced',
                 'http_methods' => ['GET'],
                 'parameters' => [
@@ -192,7 +312,7 @@ class DemoFeatureRegistryCommand extends Command
                     ],
                 ],
                 'permissions' => ['reports.advanced'],
-                'mobile_version_min' => '1.5.0', // Version plus récente requise
+                'mobile_version_min' => '1.5.0',
                 'mobile_version_max' => null,
                 'api_version' => 'v1',
                 'status' => 'active',
@@ -203,196 +323,103 @@ class DemoFeatureRegistryCommand extends Command
             ],
             [
                 'key' => 'demo_legacy_feature',
-                'title' => 'Fonctionnalité Héritée (Démo)',
-                'description' => 'Ancienne fonctionnalité en cours de dépréciation',
+                'title' => 'Fonctionnalite Heritee (Demo)',
+                'description' => 'Ancienne fonctionnalite en cours de depreciation',
                 'endpoint' => '/api/v1/legacy/old-feature',
                 'http_methods' => ['GET'],
                 'parameters' => [],
                 'response_schema' => ['data' => 'object'],
                 'permissions' => ['legacy.access'],
                 'mobile_version_min' => '1.0.0',
-                'mobile_version_max' => '1.2.0', // Limitée aux anciennes versions
+                'mobile_version_max' => '1.2.0',
                 'api_version' => 'v1',
                 'status' => 'deprecated',
                 'metadata' => [
                     'ui_type' => 'generic',
-                    'deprecation_notice' => 'Cette fonctionnalité sera supprimée dans la version 2.0',
+                    'deprecation_notice' => 'Cette fonctionnalite sera supprimee dans la version 2.0',
                 ],
             ],
         ];
-
-        foreach ($demoFeatures as $featureData) {
-            $feature = new Feature($featureData);
-            $registry->registerFeature($feature);
-
-            $this->line('  ✅ '.$feature->title.' enregistrée');
-        }
-
-        $this->newLine();
     }
 
     /**
-     * Affiche les statistiques du registre
+     * @param  array<string, mixed>  $feature
+     * @return array<int, string>
      */
-    private function displayStatistics(FeatureRegistryInterface $registry): void
+    private function manifestFeatureRow(array $feature): array
     {
-        $stats = $registry->getStatistics();
+        return [
+            $this->stringValue($feature, 'key'),
+            $this->stringValue($feature, 'title'),
+            $this->stringValue($feature, 'endpoint'),
+            implode(', ', $this->stringList($feature['methods'] ?? [])),
+            implode(', ', $this->stringList($feature['permissions'] ?? [])),
+        ];
+    }
 
-        $this->table(
-            ['Métrique', 'Valeur'],
-            [
-                ['Total des fonctionnalités', $stats['total_features']],
-                ['Fonctionnalités actives', $stats['active_features']],
-                ['Fonctionnalités inactives', $stats['inactive_features']],
-                ['Mises à jour récentes', $stats['recently_updated']],
-            ]
-        );
+    private function optionBool(string $key): bool
+    {
+        return filter_var($this->option($key), FILTER_VALIDATE_BOOL);
+    }
 
-        if (! empty($stats['by_status'])) {
-            $this->info('Par statut:');
-            foreach ($stats['by_status'] as $status => $count) {
-                $this->line('  - '.$status.': '.$count);
-            }
+    private function optionString(string $key, string $default): string
+    {
+        $value = $this->option($key);
+
+        if ($value === null || $value === false || is_array($value)) {
+            return $default;
         }
 
-        $this->newLine();
+        $value = trim((string) $value);
+
+        return $value === '' ? $default : $value;
     }
 
     /**
-     * Teste la récupération des fonctionnalités
+     * @param  array<string, mixed>  $stats
      */
-    private function testFeatureRetrieval(FeatureRegistryInterface $registry): void
+    private function statInt(array $stats, string $key): int
     {
-        // Test récupération de toutes les fonctionnalités
-        $allFeatures = $registry->getFeatures();
-        $this->line('  📋 Total des fonctionnalités: '.$allFeatures->count());
+        $value = $stats[$key] ?? 0;
 
-        // Test récupération d'une fonctionnalité spécifique
-        $specificFeature = $registry->getFeature('demo_employee_management');
-        if ($specificFeature) {
-            $this->line('  🎯 Fonctionnalité trouvée: '.$specificFeature->title);
-        }
-
-        // Test vérification d'existence
-        $exists = $registry->hasFeature('demo_employee_management');
-        $this->line('  ✅ Fonctionnalité existe: '.($exists ? 'Oui' : 'Non'));
-
-        $this->newLine();
+        return is_numeric($value) ? (int) $value : 0;
     }
 
     /**
-     * Teste la compatibilité mobile
+     * @param  array<string, mixed>  $stats
+     * @return array<array-key, mixed>
      */
-    private function testMobileCompatibility(FeatureRegistryInterface $registry): void
+    private function statArray(array $stats, string $key): array
     {
-        $mobileVersion = $this->option('mobile-version');
+        $value = $stats[$key] ?? [];
 
-        $compatibleFeatures = $registry->getCompatibleFeatures($mobileVersion);
-        $this->line('  📱 Fonctionnalités compatibles avec v'.$mobileVersion.': '.$compatibleFeatures->count());
-
-        foreach ($compatibleFeatures as $feature) {
-            $maxVersion = $feature->mobile_version_max ? ' - '.$feature->mobile_version_max : '';
-            $this->line('    - '.$feature->title.' (v'.$feature->mobile_version_min.$maxVersion.')');
-        }
-
-        // Test avec une version plus ancienne
-        $oldCompatible = $registry->getCompatibleFeatures('1.0.0');
-        $this->line('  📱 Fonctionnalités compatibles avec v1.0.0: '.$oldCompatible->count());
-
-        $this->newLine();
+        return is_array($value) ? $value : [];
     }
 
     /**
-     * Génère et affiche le manifeste
+     * @param  array<string, mixed>  $data
      */
-    private function generateAndDisplayManifest(FeatureRegistryInterface $registry): void
+    private function stringValue(array $data, string $key, string $default = ''): string
     {
-        $mobileVersion = $this->option('mobile-version');
-        $manifest = $registry->getManifest($mobileVersion);
+        $value = $data[$key] ?? $default;
 
-        $this->line('  📋 Manifeste généré pour la version mobile '.$mobileVersion.':');
-        $this->line('    - Version API: '.$manifest['version']);
-        $this->line('    - Généré le: '.$manifest['generated_at']);
-        $this->line('    - Nombre de fonctionnalités: '.$manifest['total_features']);
-
-        if ($this->option('verbose')) {
-            $this->newLine();
-            $this->info('Détail des fonctionnalités:');
-
-            $headers = ['Clé', 'Titre', 'Endpoint', 'Méthodes', 'Permissions'];
-            $rows = [];
-
-            foreach ($manifest['features'] as $feature) {
-                /** @var array<string, mixed> $feature */
-                $rows[] = [
-                    (string) $feature['key'],
-                    (string) $feature['title'],
-                    (string) $feature['endpoint'],
-                    implode(', ', (array) $feature['methods']),
-                    implode(', ', (array) $feature['permissions']),
-                ];
-            }
-
-            $this->table($headers, $rows);
-        }
-
-        $this->newLine();
+        return is_scalar($value) ? (string) $value : $default;
     }
 
     /**
-     * Teste la synchronisation
+     * @return list<string>
      */
-    private function testSynchronization(FeatureRegistryInterface $registry): void
+    private function stringList(mixed $value): array
     {
-        $this->line('  🔄 Lancement de la synchronisation...');
-
-        $result = $registry->synchronize();
-
-        /** @var array<string, mixed> $result */
-        $this->line('    - Nouvelles fonctionnalités: '.(string) $result['new']);
-        $this->line('    - Fonctionnalités mises à jour: '.(string) $result['updated']);
-        $this->line('    - Fonctionnalités supprimées: '.(string) $result['removed']);
-
-        if (! empty($result['errors'])) {
-            $this->warn('    - Erreurs: '.count((array) $result['errors']));
-            foreach ((array) $result['errors'] as $error) {
-                $this->line('      • '.$error);
-            }
-        } else {
-            $this->line('    ✅ Aucune erreur');
+        if (! is_array($value)) {
+            return [];
         }
 
-        $this->newLine();
+        return array_values(array_map('strval', $value));
     }
 
-    /**
-     * Teste le système de cache
-     */
-    private function testCaching(FeatureRegistryInterface $registry): void
+    private function boolLabel(bool $value): string
     {
-        $this->line('  💾 Test du cache...');
-
-        // Premier appel (devrait mettre en cache)
-        $start = microtime(true);
-        $features1 = $registry->getFeatures();
-        $time1 = round((microtime(true) - $start) * 1000, 2);
-
-        // Deuxième appel (devrait utiliser le cache)
-        $start = microtime(true);
-        $features2 = $registry->getFeatures();
-        $time2 = round((microtime(true) - $start) * 1000, 2);
-
-        $this->line('    - Premier appel: '.$time1.'ms ('.$features1->count().' fonctionnalités)');
-        $this->line('    - Deuxième appel: '.$time2.'ms ('.$features2->count().' fonctionnalités)');
-
-        if ($time2 < $time1) {
-            $this->line('    ✅ Cache fonctionnel (amélioration: '.round(($time1 - $time2) / $time1 * 100, 1).'%)');
-        }
-
-        // Test invalidation du cache
-        $registry->invalidateCache();
-        $this->line('    🗑️  Cache invalidé');
-
-        $this->newLine();
+        return $value ? 'Oui' : 'Non';
     }
 }

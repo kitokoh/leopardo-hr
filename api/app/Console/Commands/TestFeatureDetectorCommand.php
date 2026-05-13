@@ -7,96 +7,131 @@ use Illuminate\Console\Command;
 
 class TestFeatureDetectorCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'features:test-detector {--limit=10 : Limit the number of features to display}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Test the FeatureDetector service and display detected features';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(FeatureDetector $detector): int
     {
         $this->info('Testing FeatureDetector service...');
 
         try {
-            // Test scanRoutes
-            $this->info('Scanning API routes...');
             $routes = $detector->scanRoutes();
-            $this->info("Found {$routes->count()} API routes");
+            $this->info('Found '.$routes->count().' API routes');
 
-            // Test detectNewFeatures
-            $this->info('Detecting new features...');
             $features = $detector->detectNewFeatures();
-            $this->info("Detected {$features->count()} new features");
+            $this->info('Detected '.$features->count().' new features');
+            $this->displayFeatures($features->take($this->limit()));
 
-            // Display limited features
-            $limit = (int) $this->option('limit');
-            $displayFeatures = $features->take($limit);
+            $this->displayEmployeeMetadata($detector);
+            $this->displayChanges($detector);
 
-            if ($displayFeatures->count() > 0) {
-                $this->info("\nFirst {$displayFeatures->count()} features:");
-
-                $headers = ['Key', 'Title', 'Endpoint', 'Methods', 'UI Type', 'Permissions'];
-                $rows = [];
-
-                foreach ($displayFeatures as $feature) {
-                    $rows[] = [
-                        $feature['key'],
-                        $feature['title'],
-                        $feature['endpoint'],
-                        implode(', ', $feature['http_methods']),
-                        $feature['metadata']['ui_type'],
-                        implode(', ', $feature['permissions']),
-                    ];
-                }
-
-                $this->table($headers, $rows);
-            }
-
-            // Test extractMetadata on a specific controller
-            $this->info("\nTesting metadata extraction on EmployeeController::index...");
-            $metadata = $detector->extractMetadata(
-                'App\Http\Controllers\Api\V1\EmployeeController',
-                'index'
-            );
-
-            $this->info("Title: {$metadata['title']}");
-            $this->info("Description: {$metadata['description']}");
-            $this->info("UI Type: {$metadata['ui_type']}");
-            $this->info('Mobile Compatible: '.($metadata['mobile_compatible'] ? 'Yes' : 'No'));
-            $this->info('Permissions: '.implode(', ', $metadata['permissions']));
-
-            // Test detectChanges
-            $this->info("\nDetecting changes in existing features...");
-            $changes = $detector->detectChanges();
-            $this->info("Found {$changes->count()} changes");
-
-            if ($changes->count() > 0) {
-                $this->warn('Changes detected:');
-                foreach ($changes->take(5) as $change) {
-                    $this->line("- {$change['type']}: {$change['feature_key']}");
-                }
-            }
-
-            $this->info("\n✅ FeatureDetector test completed successfully!");
+            $this->info('FeatureDetector test completed successfully.');
 
             return Command::SUCCESS;
-
         } catch (\Exception $e) {
-            $this->error("❌ Error testing FeatureDetector: {$e->getMessage()}");
-            $this->error("Trace: {$e->getTraceAsString()}");
+            $this->error('Error testing FeatureDetector: '.$e->getMessage());
+            $this->error('Trace: '.$e->getTraceAsString());
 
             return Command::FAILURE;
         }
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, array<string, mixed>>  $features
+     */
+    private function displayFeatures(\Illuminate\Support\Collection $features): void
+    {
+        if ($features->isEmpty()) {
+            return;
+        }
+
+        $this->info("\nFirst ".$features->count().' features:');
+        $this->table(
+            ['Key', 'Title', 'Endpoint', 'Methods', 'UI Type', 'Permissions'],
+            $features->map(fn (array $feature): array => $this->featureRow($feature))->toArray()
+        );
+    }
+
+    private function displayEmployeeMetadata(FeatureDetector $detector): void
+    {
+        $this->info("\nTesting metadata extraction on EmployeeController::index...");
+        $metadata = $detector->extractMetadata(
+            'App\Http\Controllers\Api\V1\EmployeeController',
+            'index'
+        );
+
+        $this->info('Title: '.$this->stringValue($metadata, 'title'));
+        $this->info('Description: '.$this->stringValue($metadata, 'description'));
+        $this->info('UI Type: '.$this->stringValue($metadata, 'ui_type'));
+        $this->info('Mobile Compatible: '.$this->boolLabel($metadata['mobile_compatible'] ?? false));
+        $this->info('Permissions: '.implode(', ', $this->stringList($metadata['permissions'] ?? [])));
+    }
+
+    private function displayChanges(FeatureDetector $detector): void
+    {
+        $changes = $detector->detectChanges();
+        $this->info("\nFound ".$changes->count().' changes');
+
+        if ($changes->isEmpty()) {
+            return;
+        }
+
+        $this->warn('Changes detected:');
+        foreach ($changes->take(5) as $change) {
+            $this->line('- '.$this->stringValue($change, 'type').': '.$this->stringValue($change, 'feature_key'));
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $feature
+     * @return array<int, string>
+     */
+    private function featureRow(array $feature): array
+    {
+        $metadata = is_array($feature['metadata'] ?? null) ? $feature['metadata'] : [];
+
+        return [
+            $this->stringValue($feature, 'key'),
+            $this->stringValue($feature, 'title'),
+            $this->stringValue($feature, 'endpoint'),
+            implode(', ', $this->stringList($feature['http_methods'] ?? [])),
+            $this->stringValue($metadata, 'ui_type'),
+            implode(', ', $this->stringList($feature['permissions'] ?? [])),
+        ];
+    }
+
+    private function limit(): int
+    {
+        $value = $this->option('limit');
+
+        return is_numeric($value) ? max(1, (int) $value) : 10;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function stringValue(array $data, string $key, string $default = ''): string
+    {
+        $value = $data[$key] ?? $default;
+
+        return is_scalar($value) ? (string) $value : $default;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function stringList(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        return array_values(array_map('strval', $value));
+    }
+
+    private function boolLabel(mixed $value): string
+    {
+        return filter_var($value, FILTER_VALIDATE_BOOL) ? 'Yes' : 'No';
     }
 }
