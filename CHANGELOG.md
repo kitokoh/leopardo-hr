@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.9] - 2026-05-13
+
+### Documentation — Roadmap Execution Post Lots
+
+- Plan d'action : ajout du fichier `docs/PLAN_ACTION/14_ROADMAP_EXECUTION_POST_LOTS.md` avec retour d'experience, risques, recommandations architecture et prochaine sequence de lots.
+- Sommaire : index du dossier `docs/PLAN_ACTION` mis a jour pour exposer le fichier 14.
+
 ## [4.16.8] - 2026-05-13
 
 ### Admin Dashboard — Platform Metrics Wiring (Lot 5)
