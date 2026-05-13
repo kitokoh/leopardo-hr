@@ -1,6 +1,14 @@
 ﻿# CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
-# Versioning : Semantic Versioning (semver.org)  
+# Versioning : Semantic Versioning (semver.org)
+
+## [4.16.6] - 2026-05-13
+
+### Backend — Feature Registry Console Typing (Lot 3)
+
+- Feature Registry : reecriture type-safe des commandes `features:demo`, `features:detect` et `features:test-detector`.
+- PHPStan : retrait des ignores baseline residuels lies aux commandes console du registre de fonctionnalites.
+- Console : normalisation des options, listes et tableaux de manifeste pour eviter les erreurs `mixed` dans les sorties Artisan.
 
 ## [4.16.5] - 2026-05-13
 
