@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.14] - 2026-05-13
+
+### Tests — Payment webhook negative coverage
+
+- Tests : ajout des cas negatifs `PaymentWebhookControllerTest` pour payload Stripe facture inconnue, evenement Stripe inconnu et payload Chargily facture inconnue sans mutation billing.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture webhook paiement valide/invalide.
+
 ## [4.16.13] - 2026-05-13
 
 ### Tests — Billing tenant and RBAC coverage
