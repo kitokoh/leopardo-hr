@@ -315,6 +315,25 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /platform/metrics/overview:
+    get:
+      tags: ["Platform"]
+      summary: "Agregats business du cockpit super-admin"
+      description: "Retourne des metriques globales non nominatives pour piloter MRR, ARR, encaissements, impayes, companies, subscriptions, billing et systeme."
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Metriques plateforme agregees"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformMetricsOverviewResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
   /employees:
     get:
       tags: ["Employees"]
@@ -2440,6 +2459,125 @@ components:
           type: string
           format: date-time
           nullable: true
+
+    PlatformMetricsOverviewResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            revenue:
+              $ref: "#/components/schemas/PlatformMetricsRevenue"
+            companies:
+              $ref: "#/components/schemas/PlatformMetricsCompanies"
+            subscriptions:
+              $ref: "#/components/schemas/PlatformMetricsSubscriptions"
+            billing:
+              $ref: "#/components/schemas/PlatformMetricsBilling"
+            system:
+              $ref: "#/components/schemas/PlatformMetricsSystem"
+            generated_at:
+              type: string
+              format: date-time
+
+    PlatformMetricsRevenue:
+      type: object
+      properties:
+        currency:
+          type: string
+          example: "DZD"
+        mrr:
+          type: number
+          format: float
+          example: 128
+        arr:
+          type: number
+          format: float
+          example: 1536
+        collected_30d:
+          type: number
+          format: float
+          example: 119
+        overdue_total:
+          type: number
+          format: float
+          example: 50
+
+    PlatformMetricsCompanies:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 12
+        active:
+          type: integer
+          example: 8
+        trial:
+          type: integer
+          example: 2
+        suspended:
+          type: integer
+          example: 1
+        expired:
+          type: integer
+          example: 1
+
+    PlatformMetricsSubscriptions:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 12
+        active:
+          type: integer
+          example: 8
+        trial:
+          type: integer
+          example: 2
+        past_due:
+          type: integer
+          example: 1
+        cancelled_30d:
+          type: integer
+          example: 1
+
+    PlatformMetricsBilling:
+      type: object
+      properties:
+        invoices_total:
+          type: integer
+          example: 24
+        invoices_paid:
+          type: integer
+          example: 18
+        invoices_overdue:
+          type: integer
+          example: 3
+        payments_completed_30d:
+          type: integer
+          example: 7
+
+    PlatformMetricsSystem:
+      type: object
+      properties:
+        php_version:
+          type: string
+          example: "8.4.20"
+        laravel_version:
+          type: string
+          example: "11.x"
+        memory_usage_mb:
+          type: integer
+          example: 32
+        cache_driver:
+          type: string
+          example: "redis"
+        queue_driver:
+          type: string
+          example: "redis"
+        db_driver:
+          type: string
+          example: "pgsql"
 
     PlatformCompanyCreateRequest:
       type: object
