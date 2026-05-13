@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.18.0] - 2026-05-13
+
+### Frontend — Dashboard admin 9 ecrans + composants partages (Plan 13 Section 4)
+
+- Vues : PayrollView (runs + bulletins), LeavesView (demandes + soldes + politiques), ContractsView, RecruitmentView (Kanban pipeline), TrainingView (catalogue + sessions + inscriptions), FleetView (carte Leaflet + liste + alertes), ChatView (conversations IA), WebhooksView (CRUD + test), ExportsView (rapports + historique).
+- Composants partages : DataTable (tri, filtre, pagination, export CSV), KanbanBoard (colonnes drag-ready), ApprovalWidget (approve/reject avec commentaire), StatusBadge (statuts dynamiques).
+- Router et Sidebar mis a jour avec 9 nouvelles routes et icones Heroicons.
+
 ## [4.19.0] - 2026-05-13
 
 ### Mobile — Flutter 8 ecrans + modeles + providers (Plan 13 Section 6)
