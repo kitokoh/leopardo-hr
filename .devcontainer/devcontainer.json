@@ -5,9 +5,19 @@
     "workspaceFolder": "/var/www/html",
     "features": {
         "ghcr.io/devcontainers/features/node:1": { "version": "20" },
-        "ghcr.io/devcontainers/features/common-utils:2": {}
+        "ghcr.io/devcontainers/features/common-utils:2": {},
+        "ghcr.io/devcontainers/features/git:1": {}
     },
-    "postCreateCommand": "composer install && php artisan migrate --seed",
+    "postCreateCommand": "composer install && php artisan key:generate --force && php artisan migrate --seed --force",
+    "forwardPorts": [8000, 5432, 6379, 3000, 3001, 8025],
+    "portsAttributes": {
+        "8000": { "label": "API", "onAutoForward": "notify" },
+        "5432": { "label": "PostgreSQL", "onAutoForward": "silent" },
+        "6379": { "label": "Redis", "onAutoForward": "silent" },
+        "3000": { "label": "Admin Dashboard", "onAutoForward": "notify" },
+        "3001": { "label": "Web Vitrine", "onAutoForward": "notify" },
+        "8025": { "label": "Mailpit", "onAutoForward": "notify" }
+    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -15,8 +25,15 @@
                 "shufo.vscode-blade-formatter",
                 "Dart-Code.flutter",
                 "bradlc.vscode-tailwindcss",
-                "dbaeumer.vscode-eslint"
-            ]
+                "dbaeumer.vscode-eslint",
+                "ms-azuretools.vscode-docker",
+                "open-southeners.laravel-pint",
+                "EditorConfig.EditorConfig"
+            ],
+            "settings": {
+                "php.suggest.basic": false,
+                "editor.formatOnSave": true
+            }
         }
     }
 }

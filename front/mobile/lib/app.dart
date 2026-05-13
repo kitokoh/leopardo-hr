@@ -27,6 +27,14 @@ import 'package:leopardo_rh/features/user_auth/screens/user_register_screen.dart
 import 'package:leopardo_rh/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_rh/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_rh/features/user_auth/screens/company_request_screen.dart';
+import 'package:leopardo_rh/features/contracts/screens/contract_screen.dart';
+import 'package:leopardo_rh/features/training/screens/training_screen.dart';
+import 'package:leopardo_rh/features/expenses/screens/expense_list_screen.dart';
+import 'package:leopardo_rh/features/ai_chat/screens/ai_chat_screen.dart';
+import 'package:leopardo_rh/features/ai_voice/screens/ai_voice_screen.dart';
+import 'package:leopardo_rh/features/vehicle_position/screens/vehicle_map_screen.dart';
+import 'package:leopardo_rh/features/approvals/screens/approval_screen.dart';
+import 'package:leopardo_rh/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_rh/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -146,6 +154,38 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/company-request',
         builder: (context, state) => const CompanyRequestScreen(),
+      ),
+      GoRoute(
+        path: '/contracts',
+        builder: (context, state) => const ContractScreen(),
+      ),
+      GoRoute(
+        path: '/training',
+        builder: (context, state) => const TrainingScreen(),
+      ),
+      GoRoute(
+        path: '/expenses',
+        builder: (context, state) => const ExpenseListScreen(),
+      ),
+      GoRoute(
+        path: '/ai-chat',
+        builder: (context, state) => const AiChatScreen(),
+      ),
+      GoRoute(
+        path: '/ai-voice',
+        builder: (context, state) => const AiVoiceScreen(),
+      ),
+      GoRoute(
+        path: '/vehicle-map',
+        builder: (context, state) => const VehicleMapScreen(),
+      ),
+      GoRoute(
+        path: '/approvals',
+        builder: (context, state) => const ApprovalScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
     ],
   );
