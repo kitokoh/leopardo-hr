@@ -170,7 +170,7 @@ Fichiers a creer dans tests/Feature/ :
 - [x] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
 - [ ] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
 - [x] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
-- [ ] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
+- [x] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
 - [ ] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
 - [ ] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
 - [ ] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
