@@ -55,8 +55,33 @@ class Orchestrator
 
             foreach ($results as $result) {
                 $toolsUsed[] = $result->name;
-                $llmMessages[] = ['role' => 'assistant', 'content' => "Tool call: {$result->name}"];
-                $llmMessages[] = ['role' => 'user', 'content' => "Tool result ({$result->name}): {$result->content}"];
+            }
+
+            if ($this->client->provider() === 'claude') {
+                $llmMessages[] = [
+                    'role' => 'assistant',
+                    'content' => array_map(fn ($call) => [
+                        'type' => 'tool_use',
+                        'id' => $call->id,
+                        'name' => $call->name,
+                        'input' => $call->arguments,
+                    ], $response->toolCalls),
+                ];
+
+                $llmMessages[] = [
+                    'role' => 'user',
+                    'content' => array_map(fn ($result) => [
+                        'type' => 'tool_result',
+                        'tool_use_id' => $result->toolCallId,
+                        'content' => $result->content,
+                        'is_error' => ! $result->success,
+                    ], $results),
+                ];
+            } else {
+                foreach ($results as $result) {
+                    $llmMessages[] = ['role' => 'assistant', 'content' => "Tool call: {$result->name}"];
+                    $llmMessages[] = ['role' => 'user', 'content' => "Tool result ({$result->name}): {$result->content}"];
+                }
             }
 
             $response = $this->client->chat($llmMessages, $tools);

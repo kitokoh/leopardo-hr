@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.11] - 2026-05-13
+
+### Audit readiness — P0/P1 security fixes
+
+- IA : correction des imports `AIOrchestrator` vers `App\AI\Orchestrator` sur les routes Agent/Voice et le runner agent.
+- IA : alignement Agent/Voice sur le contrat `AIRequest` de l'orchestrateur pour eviter les erreurs de signature au runtime.
+- Migrations : resolution de la collision de timestamp tenant `2026_04_24_000110` en renommant la migration cameras en `000111`.
+- Securite : restriction des analytics IA aux managers `principal` et `rh`, avec test de refus pour manager departement.
+- Securite : durcissement `AdminMiddleware` pour refuser les managers `dept` / `superviseur` et accepter seulement principal/admin/super_admin.
+- IA : format `tool_result` natif Claude ajoute dans l'orchestrateur tout en conservant le chemin OpenAI existant.
+- CI : Pint passe en mode gate bloquant diff-aware via `./vendor/bin/pint --test` sur les fichiers PHP modifies, pour eviter que la dette historique hors PR bloque les correctifs urgents.
+- CD : le workflow deploiement resout `APP_VERSION` depuis `PILOTAGE.md` pour eviter la derive manuelle.
+- Documentation : stack mobile corrigee vers Flutter + Riverpod 3.3 et notes runtime TenantManager/PHP-FPM ajoutees.
+
 ## [4.16.10] - 2026-05-13
 
 ### OpenAPI — Platform Metrics Contract (Lot 6)

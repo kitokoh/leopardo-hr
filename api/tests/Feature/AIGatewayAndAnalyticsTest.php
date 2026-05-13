@@ -152,6 +152,29 @@ class AIGatewayAndAnalyticsTest extends TestCase
             ->assertJsonPath('data.recent_errors.0.error', 'Provider timeout');
     }
 
+    public function test_ai_analytics_are_restricted_to_principal_or_rh_managers(): void
+    {
+        [$company, $principal] = $this->aiFixture();
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $departmentManager = Employee::factory()->managerDept()->create(['company_id' => $company->id]);
+
+        $this->insertAiAuditLog($company->id, $principal->id, [
+            'tools_called' => ['attendance_today'],
+            'input_tokens' => 10,
+            'output_tokens' => 5,
+            'cost_cents' => 1,
+        ]);
+
+        Sanctum::actingAs($principal);
+        $this->getJson('/api/v1/ai/analytics/usage')->assertOk();
+
+        Sanctum::actingAs($rh);
+        $this->getJson('/api/v1/ai/analytics/usage')->assertOk();
+
+        Sanctum::actingAs($departmentManager);
+        $this->getJson('/api/v1/ai/analytics/usage')->assertForbidden();
+    }
+
     /**
      * @return array{0: Company, 1: Employee}
      */

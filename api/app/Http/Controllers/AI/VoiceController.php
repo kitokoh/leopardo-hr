@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\AI;
 
-use App\AI\AIOrchestrator;
+use App\AI\DTOs\AIRequest;
+use App\AI\Orchestrator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -72,12 +73,15 @@ class VoiceController extends Controller
         $sttProvider = config('ai.voice.stt_provider', 'whisper');
         $transcribedText = $this->speechToText($audio, $language, $sttProvider);
 
-        $orchestrator = app(AIOrchestrator::class);
-        $aiResponse = $orchestrator->handle(
-            $request->user(),
-            $transcribedText,
-            $request->input('conversation_id'),
-        );
+        $orchestrator = app(Orchestrator::class);
+        $user = $request->user();
+        $conversationId = $request->input('conversation_id');
+        $aiResponse = $orchestrator->handle(new AIRequest(
+            message: $transcribedText,
+            userId: (int) $user->id,
+            companyId: (string) $user->company_id,
+            conversationId: is_numeric($conversationId) ? (int) $conversationId : null,
+        ));
 
         $ttsProvider = config('ai.voice.tts_provider', 'edge_tts');
         $audioUrl = $this->textToSpeech(
