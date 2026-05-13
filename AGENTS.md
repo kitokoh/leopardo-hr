@@ -296,3 +296,4 @@ Procedure recommandee :
 - Les modeles LeavePolicy, LeaveBalance, LeaveAccrual, Contract, ContractAmendment, ApprovalWorkflow/Request/Decision existaient deja en tant que modeles. Verifier les routes et controllers avant de creer du code duplique.
 - `hr_extended.php` centralise toutes les routes des modules etendus (conges, contrats, recrutement, formation, loans, frais, webhooks, audit).
 - Le trait `Approvable` est un pattern reutilisable pour brancher le workflow d'approbation sur n'importe quel modele (Absence, ExpenseClaim, etc.).
+- Les contrats doivent rester explicitement scopes par `company_id` dans `index`, `expiring`, `myContracts` et les endpoints self-service. Ne pas compter uniquement sur les IDs de route : la creation doit refuser un `employee_id` hors tenant, et PDF/amendments doivent verifier proprietaire ou manager.
