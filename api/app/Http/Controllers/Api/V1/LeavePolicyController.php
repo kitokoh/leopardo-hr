@@ -35,7 +35,7 @@ class LeavePolicyController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -92,7 +92,7 @@ class LeavePolicyController extends Controller
         if ($leavePolicy->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -130,7 +130,7 @@ class LeavePolicyController extends Controller
             ->where('company_id', $actor->company_id)
             ->forYear($year);
 
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             $query->where('employee_id', $actor->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
@@ -146,7 +146,7 @@ class LeavePolicyController extends Controller
         if ($leavePolicy->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -181,7 +181,7 @@ class LeavePolicyController extends Controller
             ->where('company_id', $actor->company_id)
             ->orderByDesc('effective_date');
 
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             $query->where('employee_id', $actor->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
@@ -196,7 +196,7 @@ class LeavePolicyController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 

@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.22] - 2026-05-13
+
+### CI — Coverage gate bootstrap
+
+- CI : `coverage-gate.yml` cree maintenant `storage/coverage` avant d'ecrire les rapports Clover/summary.
+- CI : le seuil backend coverage par defaut revient a `0` tant que la variable GitHub `BACKEND_COVERAGE_MIN` n'est pas explicitement configuree, afin de garder le gate visible sans bloquer les PR par surprise.
+
 ## [4.16.21] - 2026-05-13
 
 ### Security — Leave policy tenant isolation
