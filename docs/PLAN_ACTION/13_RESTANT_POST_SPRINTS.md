@@ -160,22 +160,22 @@ Fichiers a creer dans tests/Feature/ :
 - [x] OnboardingStepControllerTest.php (~5 tests : checklist, progress, complete, skip, auto-seed, isolation tenant)
 - [x] FeatureFlagControllerTest.php (~5 tests : matrix, check, fallback trial, feature inconnue, updateMatrix RBAC)
 - [x] PaymentWebhookControllerTest.php (~7 tests : stripe valid/invalid, chargily valid/invalid, events inconnus sans effet)
-- [ ] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
-- [ ] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
-- [ ] ExportControllerTest.php (~4 tests : employees JSON, employees CSV, attendance JSON, attendance CSV)
+- [x] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
+- [x] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
+- [x] ExportControllerTest.php (~4 tests : employees JSON, employees CSV, attendance JSON, attendance CSV)
 - [x] VoiceControllerTest.php (~4 tests : transcribe, synthesize, command, RBAC)
 - [x] AgentControllerTest.php (~4 tests : run, workflows, max steps, RBAC)
 - [x] AIAnalyticsControllerTest.php (~4 tests : usage, costs, tools, errors)
-- [ ] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
+- [x] VehicleControllerTest.php (~8 tests : CRUD, assign, unassign, RBAC)
 - [x] FleetControllerTest.php (~4 tests : overview, tracking, alerts, RBAC)
-- [ ] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
-- [ ] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
-- [ ] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
-- [ ] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
-- [ ] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
-- [ ] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
-- [ ] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
-- [ ] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
+- [x] PayrollRunControllerTest.php (~8 tests : create, calculate, validate, cancel, summary, RBAC)
+- [x] PaySlipControllerTest.php (~4 tests : list, detail, PDF, self-service)
+- [x] LeavePolicyControllerTest.php (~6 tests : CRUD, accrual, balance, RBAC)
+- [x] ContractControllerTest.php (~6 tests : CRUD, amendment, expiring, RBAC)
+- [x] RecruitmentControllerTest.php (~8 tests : job CRUD, apply, pipeline, interview, RBAC)
+- [x] TrainingControllerTest.php (~6 tests : course CRUD, session, enrollment, RBAC)
+- [x] EmployeeLoanControllerTest.php (~6 tests : CRUD, repayment schedule, RBAC)
+- [x] ExpenseClaimControllerTest.php (~6 tests : CRUD, approve, reject, RBAC)
 
 Total estime : ~110 nouveaux tests -> coverage backend > 70%
 ```
@@ -298,7 +298,7 @@ Voir `11_GTM_EXECUTION.md` pour le detail complet. Resume des actions prioritair
 - [ ] 5 mini cas clients (1 page chacun avec metriques et citation)
 - [ ] 3 videos demo produit (pointage, rapport, dashboard) en FR et AR
 - [ ] Landing page live avec temoignages + videos + pricing
-- [ ] Page /demo avec formulaire de demande
+- [x] Page /demo avec formulaire de demande — PR #403
 - [ ] 5 articles blog SEO (pointage biometrique, paie DZ, conges legaux, etc.)
 - [ ] Prospection LinkedIn 20 contacts/semaine DRH PME Maghreb
 - [ ] Partenariat ZKTeco / distributeur local
