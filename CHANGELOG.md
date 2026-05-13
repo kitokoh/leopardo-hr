@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.17.0] - 2026-05-13
+
+### Integration — Lots 1 + 2 du Plan 13 vers main
+
+- DevOps CI/CD (Plan 13 Section 7) : 5 nouveaux workflows — coverage-gate, e2e-staging, deploy-staging, mobile-ci, release.
+- Open Source (Plan 13 Section 8) : Docker Compose enrichi (queue, scheduler, mailpit), Makefile, DevContainer ameliore, GitHub Releases.
+- Blog vitrine MDX (Plan 13 Section 5) : lib/mdx.ts, page /demo, SocialShare, JsonLd, NewsletterForm, sitemap dynamique.
+- Plan 13 mis a jour : sections 3.3, 5, 7, 8 et 9.1 cochees selon etat reel de main.
+
 ## [4.16.19] - 2026-05-13
 
 ### Tests — Fleet dashboard contracts
