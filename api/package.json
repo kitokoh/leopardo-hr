@@ -12,9 +12,9 @@
         "laravel-vite-plugin": "^3.0.1",
         "postcss": "^8.5.14",
         "tailwindcss": "^4.2.4",
-        "vite": "^8.0.10"
+        "vite": "^8.0.12"
     },
     "dependencies": {
-        "@tailwindcss/postcss": "^4.2.4"
+        "@tailwindcss/postcss": "^4.3.0"
     }
 }
