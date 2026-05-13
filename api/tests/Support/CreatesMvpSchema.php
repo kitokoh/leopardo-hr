@@ -807,6 +807,21 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('pay_slip_lines'))) {
+            Schema::create($this->moduleTable('pay_slip_lines'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('pay_slip_id');
+                $table->unsignedBigInteger('salary_component_id')->nullable();
+                $table->string('name', 150);
+                $table->string('type', 30);
+                $table->decimal('base_amount', 14, 2)->default(0);
+                $table->decimal('rate', 8, 4)->nullable();
+                $table->decimal('amount', 14, 2)->default(0);
+                $table->unsignedSmallInteger('order')->default(0);
+                $table->timestampTz('created_at')->useCurrent();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('job_postings'))) {
             Schema::create($this->moduleTable('job_postings'), function (Blueprint $table): void {
                 $table->id();
@@ -1115,6 +1130,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "interviews"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
