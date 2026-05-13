@@ -527,6 +527,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `POST /api/v1/webhooks/chargily` webhook Chargily (checkout.paid)
 - Pas d'authentification requise (endpoints publics)
 - Couverture Feature requise : facture payee, paiement cree, past_due, annulation abonnement
+- Couverture Feature negative : facture Stripe inconnue, evenement Stripe inconnu et facture Chargily inconnue ne doivent creer aucun paiement ni changer abonnement/facture existants
 
 ### Onboarding enrichi
 - `GET /api/v1/onboarding-setup/checklist` checklist dynamique (auto-seed 10 etapes si vide)
