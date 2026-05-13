@@ -49,6 +49,12 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Front mobile : la stack reelle est Flutter 3.x + `flutter_riverpod` 3.3. Ne pas documenter Bloc comme architecture active.
 - PHPStan reste en diff-gate avec baseline historique. Ne jamais elargir `api/phpstan-baseline.neon`; reduire par campagne module par module (AI, middleware, routes, payroll, attendance) et garder le scope visible dans les artefacts CI.
 
+### Audit 2026-05-13 - Policies explicites et isolation FK
+
+- Les policies Laravel sont enregistrees explicitement dans `AppServiceProvider`. Si une nouvelle policy est ajoutee, l'ajouter au boot provider ou a un `Gate::define` dedie dans le meme PR.
+- Les modeles sans `company_id` direct (`WebhookDelivery`, `PaySlipLine`, `ApprovalDecision`, `ExpenseItem`) doivent rester isoles via leur relation parent (`endpoint`, `paySlip`, `request`, `claim`). Toute requete metier sur ces modeles doit filtrer avec `whereHas(...)` ou charger depuis le parent deja scope.
+- La suite `FkChainTenantIsolationTest` couvre ce contrat ; l'etendre si un nouveau modele sans `company_id` est introduit.
+
 ### Frontieres routes modules
 
 - `routes/modules/rh.php` porte le socle RH transverse (employes, contrats, absences, rapports courants) alors que `routes/modules/hr_extended.php` porte les extensions post-MVP. Avant de deplacer une route, verifier le controller et le scenario de test associe.
