@@ -269,8 +269,8 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ### Monitoring production
 
 ```
-- [ ] Health check enrichi : GET /api/v1/health -> JSON {status, db, redis, queue, disk, uptime}
-- [ ] Logging JSON structure : channel production avec Monolog JsonFormatter
+- [x] Health check enrichi : GET /api/v1/health -> JSON {status, db, redis, queue, disk, uptime}
+- [x] Logging JSON structure : channel production avec Monolog JsonFormatter
 - [ ] Sentry APM : performance traces sur endpoints critiques (paie, IA)
 - [ ] Alerting Slack/Discord : erreurs 5xx, queue backed up, disk > 80%
 ```
