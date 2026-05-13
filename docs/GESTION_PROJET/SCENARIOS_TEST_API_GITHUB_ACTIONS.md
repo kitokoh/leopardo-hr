@@ -259,6 +259,8 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/leave-accruals` retourne l'historique des cumuls
 - `POST /api/v1/leave-accruals` cree un cumul manuel (manager RH)
 - RBAC : employe non-manager ne voit que ses propres soldes
+- Isolation tenant : policies, balances et accruals doivent etre scopes au `company_id` de l'acteur ; `POST /leave-accruals` refuse employee/policy d'un autre tenant.
+- Couverture Feature : CRUD policy existant, index tenant-scope, balances manager/self-service, accrual success + refus cross-tenant employee/policy, accrual index tenant-scope.
 - Scheduler : `leave:accrue` accumule les soldes le 1er de chaque mois
 
 ### Module B — Contrats
