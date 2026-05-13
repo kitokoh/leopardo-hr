@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 use Monolog\Handler\NullHandler;
+use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -148,7 +151,7 @@ return [
         'discord' => [
             'driver' => 'monolog',
             'level' => env('LOG_DISCORD_LEVEL', 'error'),
-            'handler' => \Monolog\Handler\SlackWebhookHandler::class,
+            'handler' => SlackWebhookHandler::class,
             'handler_with' => [
                 'webhookUrl' => env('LOG_DISCORD_WEBHOOK_URL'),
                 'channel' => null,
