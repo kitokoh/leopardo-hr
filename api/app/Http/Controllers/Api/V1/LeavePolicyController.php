@@ -116,6 +116,7 @@ class LeavePolicyController extends Controller
 
         /** @var LeavePolicy $leavePolicyFresh */
         $leavePolicyFresh = $leavePolicy->fresh();
+
         return response()->json(['data' => $leavePolicyFresh->load('absenceType:id,name,code')]);
     }
 

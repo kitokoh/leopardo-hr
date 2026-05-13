@@ -13,6 +13,14 @@ import 'package:leopardo_rh/features/evaluations/data/evaluation_repository.dart
 import 'package:leopardo_rh/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_rh/features/home/data/project_repository.dart';
 import 'package:leopardo_rh/features/user_auth/data/user_auth_repository.dart';
+import 'package:leopardo_rh/features/contracts/data/contract_repository.dart';
+import 'package:leopardo_rh/features/training/data/training_repository.dart';
+import 'package:leopardo_rh/features/expenses/data/expense_repository.dart';
+import 'package:leopardo_rh/features/ai_chat/data/ai_chat_repository.dart';
+import 'package:leopardo_rh/features/ai_voice/data/ai_voice_repository.dart';
+import 'package:leopardo_rh/features/vehicle_position/data/vehicle_position_repository.dart';
+import 'package:leopardo_rh/features/approvals/data/approval_repository.dart';
+import 'package:leopardo_rh/features/onboarding/data/onboarding_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();
@@ -87,4 +95,45 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final storage = ref.watch(secureStorageProvider);
   return UserAuthRepository(apiClient, storage);
+});
+
+final contractRepositoryProvider = Provider<ContractRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return ContractRepository(apiClient);
+});
+
+final trainingRepositoryProvider = Provider<TrainingRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return TrainingRepository(apiClient);
+});
+
+final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return ExpenseRepository(apiClient);
+});
+
+final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return AiChatRepository(apiClient);
+});
+
+final aiVoiceRepositoryProvider = Provider<AiVoiceRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return AiVoiceRepository(apiClient);
+});
+
+final vehiclePositionRepositoryProvider =
+    Provider<VehiclePositionRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return VehiclePositionRepository(apiClient);
+});
+
+final approvalRepositoryProvider = Provider<ApprovalRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return ApprovalRepository(apiClient);
+});
+
+final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return OnboardingRepository(apiClient);
 });

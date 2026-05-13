@@ -16,6 +16,14 @@
 - Securite : `LeavePolicyController` filtre maintenant policies, balances et accruals par `company_id` et refuse les accruals visant un employe ou une policy hors tenant.
 - Tests : extension de `LeavePolicyApiTest` pour couvrir index tenant-scope, soldes manager/self-service, creation d'accrual avec balance et refus cross-tenant.
 - Documentation : plan post-sprints et scenarios API synchronises avec la couverture conges avances.
+## [4.19.0] - 2026-05-13
+
+### Mobile — Flutter 8 ecrans + modeles + providers (Plan 13 Section 6)
+
+- Ecrans : ContractScreen (mon contrat), TrainingScreen (mes formations + progression), ExpenseListScreen (notes de frais + soumission), AiChatScreen (chat IA streaming), AiVoiceScreen (voice IA transcribe/synthesize), VehicleMapScreen (position vehicule), ApprovalScreen (approbations approve/reject), OnboardingScreen (wizard checklist).
+- Modeles : Contract, TrainingEnrollment, ExpenseClaim, Approval, OnboardingStep, VehiclePosition.
+- Repositories et Providers Riverpod enregistres dans core_providers.dart.
+- Router GoRouter mis a jour avec 8 nouvelles routes.
 
 ## [4.17.0] - 2026-05-13
 
