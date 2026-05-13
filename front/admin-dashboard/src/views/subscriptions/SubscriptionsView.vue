@@ -14,9 +14,9 @@
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <StatsCard title="MRR portefeuille" :value="formattedMrr" icon="CurrencyEuroIcon" color="purple" />
-      <StatsCard title="Clients actifs" :value="summary.active_companies" icon="BuildingOfficeIcon" color="green" />
-      <StatsCard title="Plans actifs" :value="activePlansCount" icon="CreditCardIcon" color="blue" />
-      <StatsCard title="Risque eleve" :value="summary.risk.high" icon="ChartBarIcon" color="red" />
+      <StatsCard title="Abonnements actifs" :value="subscriptionMetrics.active" icon="CreditCardIcon" color="green" />
+      <StatsCard title="Past due" :value="subscriptionMetrics.past_due" icon="ChartBarIcon" color="yellow" />
+      <StatsCard title="Impayes" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="CreditCardIcon" color="red" />
     </div>
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -64,6 +64,26 @@
           <p class="text-sm text-gray-500">Priorite abonnement et retention.</p>
         </div>
         <div class="divide-y divide-gray-200">
+          <div class="p-4">
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt class="text-gray-500">ARR estime</dt>
+                <dd class="mt-1 font-semibold text-gray-900">{{ formatCurrency(revenue.arr, revenue.currency) }}</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">Encaisse 30j</dt>
+                <dd class="mt-1 font-semibold text-gray-900">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">Abonnements total</dt>
+                <dd class="mt-1 font-semibold text-gray-900">{{ subscriptionMetrics.total }}</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">Trials</dt>
+                <dd class="mt-1 font-semibold text-gray-900">{{ subscriptionMetrics.trial }}</dd>
+              </div>
+            </dl>
+          </div>
           <div v-for="item in priorityClients" :key="item.company.id" class="p-4">
             <div class="flex items-center justify-between gap-3">
               <div>
@@ -98,9 +118,26 @@ const summary = ref({
   mrr: 0,
   risk: { high: 0, medium: 0, low: 0 },
 })
+const platformMetrics = ref({
+  revenue: {
+    currency: 'EUR',
+    mrr: 0,
+    arr: 0,
+    collected_30d: 0,
+    overdue_total: 0,
+  },
+  subscriptions: {
+    total: 0,
+    active: 0,
+    trial: 0,
+    past_due: 0,
+    cancelled_30d: 0,
+  },
+})
 
-const activePlansCount = computed(() => plans.value.filter((plan) => plan.is_active).length)
-const formattedMrr = computed(() => formatCurrency(summary.value.mrr))
+const revenue = computed(() => platformMetrics.value.revenue || {})
+const subscriptionMetrics = computed(() => platformMetrics.value.subscriptions || {})
+const formattedMrr = computed(() => formatCurrency(revenue.value.mrr || summary.value.mrr, revenue.value.currency))
 const priorityClients = computed(() => {
   const rank = { high: 0, medium: 1, low: 2 }
   return [...portfolioItems.value]
@@ -112,14 +149,16 @@ async function loadSubscriptions() {
   isLoading.value = true
 
   try {
-    const [plansResponse, portfolioResponse] = await Promise.all([
+    const [plansResponse, portfolioResponse, metricsResponse] = await Promise.all([
       api.get('/platform/plans'),
       api.get('/platform/companies/health'),
+      api.get('/platform/metrics/overview'),
     ])
 
     plans.value = plansResponse.data?.data?.items || []
     summary.value = portfolioResponse.data?.data?.summary || summary.value
     portfolioItems.value = portfolioResponse.data?.data?.items || []
+    platformMetrics.value = metricsResponse.data?.data || platformMetrics.value
   } catch (error) {
     console.error('Failed to load subscriptions cockpit:', error)
   } finally {
@@ -133,12 +172,22 @@ function enabledFeatures(plan) {
     .map(([feature]) => feature)
 }
 
-function formatCurrency(value) {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0))
+function formatCurrency(value, currency = 'EUR') {
+  const amount = Number(value || 0)
+
+  try {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency || 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  } catch {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 }
 
 onMounted(loadSubscriptions)
