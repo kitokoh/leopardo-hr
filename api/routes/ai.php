@@ -5,9 +5,9 @@ use App\Http\Controllers\AI\AIAnalyticsController;
 use App\Http\Controllers\AI\AIGatewayController;
 use App\Http\Controllers\AI\VoiceController;
 use App\Http\Middleware\AI\AIFeatureCheck;
-use App\Http\Middleware\AI\EnsureAIAnalyticsAccess;
 use App\Http\Middleware\AI\AIRateLimiter;
 use App\Http\Middleware\AI\AITenantInjector;
+use App\Http\Middleware\AI\EnsureAIAnalyticsAccess;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', AIFeatureCheck::class, AITenantInjector::class])->prefix('ai')->group(function () {

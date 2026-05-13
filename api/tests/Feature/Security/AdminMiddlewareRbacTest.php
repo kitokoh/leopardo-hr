@@ -22,7 +22,7 @@ class AdminMiddlewareRbacTest extends TestCase
     {
         Auth::setUser($this->employee('manager', 'principal'));
 
-        $response = (new AdminMiddleware())->handle(
+        $response = (new AdminMiddleware)->handle(
             Request::create('/admin-only'),
             fn (): Response => new Response('', 204),
         );
@@ -35,7 +35,7 @@ class AdminMiddlewareRbacTest extends TestCase
         foreach (['dept', 'superviseur'] as $managerRole) {
             Auth::setUser($this->employee('manager', $managerRole));
 
-            $response = (new AdminMiddleware())->handle(
+            $response = (new AdminMiddleware)->handle(
                 Request::create('/admin-only'),
                 fn (): Response => new Response('', 204),
             );
@@ -46,7 +46,7 @@ class AdminMiddlewareRbacTest extends TestCase
 
     private function employee(string $role, ?string $managerRole): Employee
     {
-        $employee = new Employee();
+        $employee = new Employee;
         $employee->setRawAttributes([
             'id' => 1,
             'role' => $role,

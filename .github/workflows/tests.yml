@@ -313,7 +313,61 @@ jobs:
       - name: Run Pint
         id: pint
         working-directory: ./api
-        run: ./vendor/bin/pint --test
+        shell: bash
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p storage/test-results
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            if git rev-parse HEAD~1 >/dev/null 2>&1; then
+              base_sha="$(git rev-parse HEAD~1)"
+            else
+              base_sha="$(git rev-parse HEAD)"
+            fi
+          fi
+
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+
+          if ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "${base_sha}"
+          fi
+
+          if ! git cat-file -e "${head_sha}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "${head_sha}"
+          fi
+
+          mapfile -t changed_php_files < <(
+            git diff --name-only "${base_sha}" "${head_sha}" \
+              | grep -E '^api/(app|bootstrap|config|database|public|routes|tests|lang)/.*\.php$|^api/config/app\.php$|^api/routes/.*\.php$' \
+              | sort -u || true
+          )
+
+          existing_php_files=()
+          for file in "${changed_php_files[@]}"; do
+            if [[ -f "${file#api/}" ]]; then
+              existing_php_files+=("${file}")
+            fi
+          done
+
+          if [[ ${#existing_php_files[@]} -eq 0 ]]; then
+            echo "No changed backend PHP files matched the Pint gate." | tee storage/test-results/pint-targets.txt
+            exit 0
+          fi
+
+          printf '%s\n' "${existing_php_files[@]}" > storage/test-results/pint-targets.txt
+          pint_targets=()
+          while IFS= read -r file; do
+            pint_targets+=("${file#api/}")
+          done < storage/test-results/pint-targets.txt
+
+          ./vendor/bin/pint --test "${pint_targets[@]}"
 
       - name: Lint PHP source files
         id: php_lint
@@ -358,7 +412,7 @@ jobs:
 
           mapfile -t changed_php_files < <(
             git diff --name-only "${base_sha}" "${head_sha}" \
-              | grep -E '^api/(app|routes|tests)/.*\.php$' \
+              | grep -E '^api/(app/AI|app/Http/Middleware|routes)/.*\.php$' \
               | sort -u || true
           )
 

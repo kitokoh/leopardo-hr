@@ -51,6 +51,6 @@ class AdminMiddleware
             return true;
         }
 
-        return method_exists($user, 'hasManagerRole') && $user->hasManagerRole('principal');
+        return is_object($user) && method_exists($user, 'hasManagerRole') && $user->hasManagerRole('principal');
     }
 }

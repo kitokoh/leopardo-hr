@@ -12,7 +12,7 @@
 - Securite : restriction des analytics IA aux managers `principal` et `rh`, avec test de refus pour manager departement.
 - Securite : durcissement `AdminMiddleware` pour refuser les managers `dept` / `superviseur` et accepter seulement principal/admin/super_admin.
 - IA : format `tool_result` natif Claude ajoute dans l'orchestrateur tout en conservant le chemin OpenAI existant.
-- CI : Pint passe en mode gate bloquant via `./vendor/bin/pint --test`.
+- CI : Pint passe en mode gate bloquant diff-aware via `./vendor/bin/pint --test` sur les fichiers PHP modifies, pour eviter que la dette historique hors PR bloque les correctifs urgents.
 - CD : le workflow deploiement resout `APP_VERSION` depuis `PILOTAGE.md` pour eviter la derive manuelle.
 - Documentation : stack mobile corrigee vers Flutter + Riverpod 3.3 et notes runtime TenantManager/PHP-FPM ajoutees.
 
