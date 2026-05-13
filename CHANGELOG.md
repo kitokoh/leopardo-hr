@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.21] - 2026-05-13
+
+### Security — Leave policy tenant isolation
+
+- Securite : `LeavePolicyController` filtre maintenant policies, balances et accruals par `company_id` et refuse les accruals visant un employe ou une policy hors tenant.
+- Tests : extension de `LeavePolicyApiTest` pour couvrir index tenant-scope, soldes manager/self-service, creation d'accrual avec balance et refus cross-tenant.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture conges avances.
+
 ## [4.16.20] - 2026-05-13
 
 ### Tests — Pay slips API contracts

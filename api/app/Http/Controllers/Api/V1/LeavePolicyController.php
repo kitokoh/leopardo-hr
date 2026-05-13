@@ -4,20 +4,26 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\AbsenceType;
+use App\Models\Employee;
 use App\Models\LeaveAccrual;
 use App\Models\LeaveBalance;
 use App\Models\LeavePolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LeavePolicyController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $policies = LeavePolicy::query()
             ->with('absenceType:id,name,code')
+            ->where('company_id', $actor->company_id)
             ->where('active', true)
             ->orderBy('name')
             ->get();
@@ -48,6 +54,17 @@ class LeavePolicyController extends Controller
             'max_consecutive_days' => 'nullable|integer|min:1',
             'applicable_roles' => 'nullable|array',
         ]);
+
+        $absenceTypeBelongsToCompany = AbsenceType::query()
+            ->where('company_id', $actor->company_id)
+            ->whereKey($validated['absence_type_id'])
+            ->exists();
+
+        if (! $absenceTypeBelongsToCompany) {
+            throw ValidationException::withMessages([
+                'absence_type_id' => ['The selected absence type is invalid.'],
+            ]);
+        }
 
         $policy = LeavePolicy::create([
             ...$validated,
@@ -110,6 +127,7 @@ class LeavePolicyController extends Controller
 
         $query = LeaveBalance::query()
             ->with(['absenceType:id,name,code', 'employee:id,first_name,last_name'])
+            ->where('company_id', $actor->company_id)
             ->forYear($year);
 
         if (! $actor->isManager()) {
@@ -145,6 +163,7 @@ class LeavePolicyController extends Controller
 
         $balances = LeaveBalance::query()
             ->with('absenceType:id,name,code')
+            ->where('company_id', $actor->company_id)
             ->where('employee_id', $actor->id)
             ->forYear($year)
             ->get();
@@ -159,6 +178,7 @@ class LeavePolicyController extends Controller
 
         $query = LeaveAccrual::query()
             ->with(['employee:id,first_name,last_name', 'leavePolicy:id,name'])
+            ->where('company_id', $actor->company_id)
             ->orderByDesc('effective_date');
 
         if (! $actor->isManager()) {
@@ -189,6 +209,27 @@ class LeavePolicyController extends Controller
             'effective_date' => 'required|date',
         ]);
 
+        $employeeBelongsToCompany = Employee::query()
+            ->where('company_id', $actor->company_id)
+            ->whereKey($validated['employee_id'])
+            ->exists();
+        $policy = LeavePolicy::query()
+            ->where('company_id', $actor->company_id)
+            ->whereKey($validated['leave_policy_id'])
+            ->first();
+
+        if (! $employeeBelongsToCompany) {
+            throw ValidationException::withMessages([
+                'employee_id' => ['The selected employee is invalid.'],
+            ]);
+        }
+
+        if (! ($policy instanceof LeavePolicy)) {
+            throw ValidationException::withMessages([
+                'leave_policy_id' => ['The selected leave policy is invalid.'],
+            ]);
+        }
+
         $accrual = LeaveAccrual::create([
             ...$validated,
             'company_id' => $actor->company_id,
@@ -199,7 +240,7 @@ class LeavePolicyController extends Controller
             [
                 'company_id' => $actor->company_id,
                 'employee_id' => $validated['employee_id'],
-                'absence_type_id' => $accrual->leavePolicy->absence_type_id,
+                'absence_type_id' => $policy->absence_type_id,
                 'year' => (int) date('Y', strtotime($validated['effective_date'])),
             ],
             ['balance' => 0, 'used' => 0, 'pending' => 0]
