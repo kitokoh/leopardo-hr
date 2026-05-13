@@ -55,6 +55,11 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les modeles sans `company_id` direct (`WebhookDelivery`, `PaySlipLine`, `ApprovalDecision`, `ExpenseItem`) doivent rester isoles via leur relation parent (`endpoint`, `paySlip`, `request`, `claim`). Toute requete metier sur ces modeles doit filtrer avec `whereHas(...)` ou charger depuis le parent deja scope.
 - La suite `FkChainTenantIsolationTest` couvre ce contrat ; l'etendre si un nouveau modele sans `company_id` est introduit.
 
+### 2026-05-13 - Plan 13 et couverture Feature billing
+
+- Avant d'ajouter un test liste comme manquant dans `docs/PLAN_ACTION/13_RESTANT_POST_SPRINTS.md`, verifier d'abord `api/tests/Feature/` : plusieurs suites post-sprints existent deja meme si le plan historique les affichait encore en non cochees.
+- `BillingControllerTest` couvre maintenant abonnement, upgrade/cancel/renew, RBAC employe et isolation tenant liste/detail/PDF facture ; etendre cette suite plutot que creer un doublon.
+
 ### Frontieres routes modules
 
 - `routes/modules/rh.php` porte le socle RH transverse (employes, contrats, absences, rapports courants) alors que `routes/modules/hr_extended.php` porte les extensions post-MVP. Avant de deplacer une route, verifier le controller et le scenario de test associe.
