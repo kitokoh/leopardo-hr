@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\AI\DTOs\AIResponse;
+use App\AI\LLMClient;
 use App\Models\AIConversation;
 use App\Models\AIToolRegistryEntry;
 use App\Models\Company;
 use App\Models\Employee;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -175,6 +178,122 @@ class AIGatewayAndAnalyticsTest extends TestCase
         $this->getJson('/api/v1/ai/analytics/usage')->assertForbidden();
     }
 
+    public function test_voice_transcribe_and_synthesize_validate_without_external_provider_keys(): void
+    {
+        [, $employee] = $this->aiFixture();
+        Sanctum::actingAs($employee);
+
+        config([
+            'ai.voice.stt_provider' => 'whisper',
+            'ai.providers.openai.key' => null,
+            'ai.voice.tts_provider' => 'elevenlabs',
+            'ai.voice.elevenlabs_key' => null,
+        ]);
+
+        $this->post('/api/v1/ai/voice/transcribe', [
+            'audio' => UploadedFile::fake()->create('voice.mp3', 12, 'audio/mpeg'),
+            'language' => 'fr',
+        ], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.text', '')
+            ->assertJsonPath('data.language', 'fr')
+            ->assertJsonPath('data.provider', 'whisper');
+
+        $this->postJson('/api/v1/ai/voice/synthesize', [
+            'text' => 'Bonjour',
+            'language' => 'fr',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.audio_url', null)
+            ->assertJsonPath('data.provider', 'elevenlabs');
+    }
+
+    public function test_voice_command_uses_orchestrator_contract_and_returns_conversation_context(): void
+    {
+        [$company, $employee] = $this->aiFixture();
+        Sanctum::actingAs($employee);
+        $this->fakeLlmClient('Commande vocale traitee.');
+
+        config([
+            'ai.voice.stt_provider' => 'whisper',
+            'ai.providers.openai.key' => null,
+            'ai.voice.tts_provider' => 'elevenlabs',
+            'ai.voice.elevenlabs_key' => null,
+        ]);
+
+        $this->post('/api/v1/ai/voice/command', [
+            'audio' => UploadedFile::fake()->create('voice.mp3', 12, 'audio/mpeg'),
+            'language' => 'fr',
+        ], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.transcribed_text', '')
+            ->assertJsonPath('data.ai_response', 'Commande vocale traitee.')
+            ->assertJsonPath('data.language', 'fr')
+            ->assertJsonStructure(['data' => ['conversation_id', 'audio_url']]);
+
+        $this->assertDatabaseHas('ai_audit_logs', [
+            'company_id' => $company->id,
+            'user_id' => $employee->id,
+            'response' => 'Commande vocale traitee.',
+        ]);
+    }
+
+    public function test_agent_workflows_and_run_endpoint_are_bounded_by_validation(): void
+    {
+        [, $employee] = $this->aiFixture();
+        Sanctum::actingAs($employee);
+        $this->fakeLlmClient('Plan agent pret.');
+
+        $this->getJson('/api/v1/ai/agent/workflows')
+            ->assertOk()
+            ->assertJsonCount(3, 'data')
+            ->assertJsonPath('data.0.id', 'prepare_payroll');
+
+        $this->postJson('/api/v1/ai/agent/run', [
+            'task' => 'Prepare le rapport hebdomadaire.',
+            'max_steps' => 1,
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.task', 'Prepare le rapport hebdomadaire.')
+            ->assertJsonPath('data.total_steps', 1)
+            ->assertJsonPath('data.final_response', 'Plan agent pret.');
+
+        $this->postJson('/api/v1/ai/agent/run', [
+            'task' => 'Trop loin',
+            'max_steps' => 21,
+        ])->assertUnprocessable();
+    }
+
+    public function test_ai_analytics_costs_support_period_grouping(): void
+    {
+        [$company, $employee] = $this->aiFixture();
+
+        $this->insertAiAuditLog($company->id, $employee->id, [
+            'provider' => 'openai',
+            'input_tokens' => 100,
+            'output_tokens' => 50,
+            'cost_cents' => 12,
+            'created_at' => '2026-05-05 10:00:00',
+        ]);
+        $this->insertAiAuditLog($company->id, $employee->id, [
+            'provider' => 'openai',
+            'input_tokens' => 40,
+            'output_tokens' => 10,
+            'cost_cents' => 3,
+            'created_at' => '2026-05-12 10:00:00',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/ai/analytics/costs?from=2026-05-01&to=2026-05-31&group_by=month')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.period', '2026-05')
+            ->assertJsonPath('data.0.provider', 'openai')
+            ->assertJsonPath('data.0.total_cost_cents', 15)
+            ->assertJsonPath('data.0.total_tokens', 200);
+    }
+
     /**
      * @return array{0: Company, 1: Employee}
      */
@@ -209,5 +328,28 @@ class AIGatewayAndAnalyticsTest extends TestCase
             ...$overrides,
             'tools_called' => json_encode($overrides['tools_called'] ?? []),
         ]));
+    }
+
+    private function fakeLlmClient(string $content): void
+    {
+        $this->app->instance(LLMClient::class, new class($content) implements LLMClient
+        {
+            public function __construct(private readonly string $content) {}
+
+            public function chat(array $messages, array $tools = []): AIResponse
+            {
+                return new AIResponse(
+                    content: $this->content,
+                    inputTokens: 7,
+                    outputTokens: 11,
+                    model: 'test-model',
+                );
+            }
+
+            public function provider(): string
+            {
+                return 'test';
+            }
+        });
     }
 }
