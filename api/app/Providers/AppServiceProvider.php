@@ -5,10 +5,35 @@ namespace App\Providers;
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
+use App\Models\Applicant;
+use App\Models\AttendanceLog;
+use App\Models\Employee;
+use App\Models\Evaluation;
+use App\Models\FeaturePlanMatrix;
+use App\Models\Invoice;
+use App\Models\JobPosting;
+use App\Models\OnboardingStep;
+use App\Models\PayrollRun;
+use App\Models\PaySlip;
+use App\Models\Subscription;
+use App\Models\TrainingCourse;
+use App\Models\Vehicle;
+use App\Policies\AttendancePolicy;
+use App\Policies\BillingPolicy;
+use App\Policies\EmployeePolicy;
+use App\Policies\EvaluationPolicy;
+use App\Policies\ExportPolicy;
+use App\Policies\FeatureFlagPolicy;
+use App\Policies\OnboardingPolicy;
+use App\Policies\PayrollPolicy;
+use App\Policies\RecruitmentPolicy;
+use App\Policies\TrainingPolicy;
+use App\Policies\VehiclePolicy;
 use App\Services\TenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,6 +58,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Applicant::class, RecruitmentPolicy::class);
+        Gate::policy(AttendanceLog::class, AttendancePolicy::class);
+        Gate::policy(Employee::class, EmployeePolicy::class);
+        Gate::policy(Evaluation::class, EvaluationPolicy::class);
+        Gate::policy(FeaturePlanMatrix::class, FeatureFlagPolicy::class);
+        Gate::policy(Invoice::class, BillingPolicy::class);
+        Gate::policy(JobPosting::class, RecruitmentPolicy::class);
+        Gate::policy(OnboardingStep::class, OnboardingPolicy::class);
+        Gate::policy(PayrollRun::class, PayrollPolicy::class);
+        Gate::policy(PaySlip::class, PayrollPolicy::class);
+        Gate::policy(Subscription::class, BillingPolicy::class);
+        Gate::policy(TrainingCourse::class, TrainingPolicy::class);
+        Gate::policy(Vehicle::class, VehiclePolicy::class);
+        Gate::define('export', [ExportPolicy::class, 'export']);
+        Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
+        Gate::define('downloadExport', [ExportPolicy::class, 'download']);
+
         Model::preventLazyLoading(app()->isLocal());
 
         RateLimiter::for('api', function (Request $request) {
