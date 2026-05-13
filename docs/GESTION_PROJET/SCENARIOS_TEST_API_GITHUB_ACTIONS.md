@@ -520,6 +520,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/billing/invoices/{id}` detail facture avec paiements
 - `GET /api/v1/billing/invoices/{id}/pdf` lien PDF facture
 - RBAC : upgrade/cancel/renew reserves aux managers
+- Couverture Feature : renew abonnement annule, refus cancel/renew employe, liste/detail/PDF factures scopes au tenant authentifie
 
 ### Webhooks paiement
 - `POST /api/v1/webhooks/stripe` webhook Stripe (invoice.paid, payment_failed, subscription.deleted)
