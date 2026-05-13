@@ -140,7 +140,16 @@ import {
   ChatBubbleLeftRightIcon,
   CogIcon,
   DocumentTextIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  CurrencyEuroIcon,
+  CalendarDaysIcon,
+  DocumentDuplicateIcon,
+  UserPlusIcon,
+  AcademicCapIcon,
+  TruckIcon,
+  SparklesIcon,
+  LinkIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -197,6 +206,60 @@ const navigation = computed(() => [
     title: 'Abonnements',
     path: '/subscriptions',
     icon: CreditCardIcon
+  },
+  {
+    name: 'payroll',
+    title: 'Paie',
+    path: '/payroll',
+    icon: CurrencyEuroIcon
+  },
+  {
+    name: 'leaves',
+    title: 'Congés & Absences',
+    path: '/leaves',
+    icon: CalendarDaysIcon
+  },
+  {
+    name: 'contracts',
+    title: 'Contrats',
+    path: '/contracts',
+    icon: DocumentDuplicateIcon
+  },
+  {
+    name: 'recruitment',
+    title: 'Recrutement',
+    path: '/recruitment',
+    icon: UserPlusIcon
+  },
+  {
+    name: 'training',
+    title: 'Formations',
+    path: '/training',
+    icon: AcademicCapIcon
+  },
+  {
+    name: 'fleet',
+    title: 'Flotte véhicules',
+    path: '/fleet',
+    icon: TruckIcon
+  },
+  {
+    name: 'chat',
+    title: 'Chat IA',
+    path: '/chat',
+    icon: SparklesIcon
+  },
+  {
+    name: 'webhooks',
+    title: 'Webhooks',
+    path: '/webhooks',
+    icon: LinkIcon
+  },
+  {
+    name: 'exports',
+    title: 'Exports & Rapports',
+    path: '/exports',
+    icon: ArrowDownTrayIcon
   },
   {
     name: 'support',
