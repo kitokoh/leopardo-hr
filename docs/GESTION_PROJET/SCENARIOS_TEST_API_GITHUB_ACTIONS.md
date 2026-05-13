@@ -559,11 +559,13 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `POST /api/v1/ai/voice/command` pipeline complet audio -> IA -> audio
 - Support langues : fr, ar, tr, en
 - Rate limiting applique
+- Couverture Feature : transcribe/synthesize restent stables sans cles provider externes, et `voice/command` garde le contrat orchestrateur `conversation_id`, reponse IA et URL audio nullable
 
 ### Agents autonomes
 - `POST /api/v1/ai/agent/run` executer une tache multi-step (max 10-20 etapes)
 - `GET /api/v1/ai/agent/workflows` lister les workflows predefinis
 - Workflows : prepare_payroll, weekly_report, new_employee_onboarding
+- Couverture Feature : workflows predefinis presents, execution agent borne par `max_steps`, validation refuse `max_steps > 20`
 
 ### Analytics IA
 - `GET /api/v1/ai/analytics/usage` utilisation du tenant authentifie (requests, tokens, couts)
@@ -572,6 +574,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/ai/analytics/errors` taux de succes + erreurs recentes
 - Couverture Feature requise : colonnes reelles `ai_audit_logs`, isolation tenant, historique/tools IA scopes
 - RBAC : analytics IA reservees aux managers `principal` et `rh`; les managers `dept` et `superviseur` doivent recevoir `403`
+- Couverture Feature : `usage`, `tools`, `errors` et `costs` groupable par `day/week/month` restent scopes au tenant authentifie
 - CI : toute retouche de ces routes doit rester couverte par le gate Pint diff-aware et par les tests Feature RBAC associes
 
 ---
