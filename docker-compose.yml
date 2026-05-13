@@ -55,6 +55,79 @@ services:
     container_name: leopardo-redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  queue:
+    build:
+      context: ./api
+      dockerfile: docker/php84/Dockerfile
+    container_name: leopardo-queue
+    working_dir: /var/www/html
+    volumes:
+      - ./api:/var/www/html
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: leopardo
+      DB_USERNAME: leopardo
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    restart: unless-stopped
+
+  scheduler:
+    build:
+      context: ./api
+      dockerfile: docker/php84/Dockerfile
+    container_name: leopardo-scheduler
+    working_dir: /var/www/html
+    volumes:
+      - ./api:/var/www/html
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: leopardo
+      DB_USERNAME: leopardo
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: leopardo-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    profiles:
+      - full
 
   dashboard:
     build:
