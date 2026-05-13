@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.23] - 2026-05-13
+
+### Security — Contract tenant isolation
+
+- Securite : `ContractController` filtre maintenant les listes, alertes d'expiration et contrats self-service par `company_id`.
+- Securite : la creation de contrat refuse un employe hors tenant ; les endpoints PDF/amendments appliquent le meme controle proprietaire que le detail contrat.
+- Tests : `ContractWorkflowTest` couvre index tenant-scope, refus cross-tenant employee, expirations tenant-scope et interdiction self-service sur les contrats d'un collegue.
+
 ## [4.16.22] - 2026-05-13
 
 ### CI — Coverage gate bootstrap

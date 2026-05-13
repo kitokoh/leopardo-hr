@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
+use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ContractController extends Controller
 {
@@ -17,9 +18,11 @@ class ContractController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $query = Contract::query()->with(['employee:id,first_name,last_name', 'department:id,name', 'position:id,name']);
+        $query = Contract::query()
+            ->with(['employee:id,first_name,last_name', 'department:id,name', 'position:id,name'])
+            ->where('company_id', $actor->company_id);
 
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             $query->where('employee_id', $actor->id);
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
@@ -38,7 +41,7 @@ class ContractController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -60,6 +63,17 @@ class ContractController extends Controller
             'clauses' => 'nullable|array',
         ]);
 
+        $employeeBelongsToCompany = Employee::query()
+            ->where('company_id', $actor->company_id)
+            ->whereKey($validated['employee_id'])
+            ->exists();
+
+        if ($employeeBelongsToCompany === false) {
+            throw ValidationException::withMessages([
+                'employee_id' => ['The selected employee is invalid.'],
+            ]);
+        }
+
         $contract = Contract::create([
             ...$validated,
             'company_id' => $actor->company_id,
@@ -77,7 +91,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager() && $contract->employee_id !== $actor->id) {
+        if ($actor->isManager() === false && $contract->employee_id !== $actor->id) {
             abort(403);
         }
 
@@ -91,7 +105,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -124,6 +138,7 @@ class ContractController extends Controller
 
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
+
         return response()->json(['data' => $contractFresh->load(['employee:id,first_name,last_name', 'department:id,name'])]);
     }
 
@@ -133,6 +148,9 @@ class ContractController extends Controller
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
+        }
+        if ($actor->isManager() === false && $contract->employee_id !== $actor->id) {
+            abort(403);
         }
 
         return response()->json(['data' => $contract->amendments()->orderByDesc('effective_date')->get()]);
@@ -145,7 +163,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -170,12 +188,13 @@ class ContractController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
         $days = $request->integer('days', 30);
         $contracts = Contract::expiringSoon($days)
+            ->where('company_id', $actor->company_id)
             ->with('employee:id,first_name,last_name')
             ->get();
 
@@ -189,7 +208,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
         if ($contract->status !== 'draft') {
@@ -200,6 +219,7 @@ class ContractController extends Controller
 
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
+
         return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
     }
 
@@ -210,7 +230,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
         if ($contract->status !== 'active') {
@@ -221,6 +241,7 @@ class ContractController extends Controller
 
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
+
         return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
     }
 
@@ -231,10 +252,10 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
-        if (! in_array($contract->status, ['active', 'suspended'], true)) {
+        if (in_array($contract->status, ['active', 'suspended'], true) === false) {
             return response()->json(['message' => 'Contract must be active or suspended to terminate.'], 422);
         }
 
@@ -250,6 +271,7 @@ class ContractController extends Controller
 
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
+
         return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
     }
 
@@ -260,7 +282,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->hasManagerRole('principal', 'rh')) {
+        if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }
 
@@ -303,6 +325,7 @@ class ContractController extends Controller
         $actor = $request->user();
 
         $contracts = Contract::query()
+            ->where('company_id', $actor->company_id)
             ->where('employee_id', $actor->id)
             ->with(['department:id,name', 'position:id,name'])
             ->orderByDesc('start_date')
@@ -317,6 +340,9 @@ class ContractController extends Controller
         $actor = $request->user();
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
+        }
+        if ($actor->isManager() === false && $contract->employee_id !== $actor->id) {
+            abort(403);
         }
 
         $data = $contract->load(['employee:id,first_name,last_name,email', 'department:id,name', 'position:id,name', 'amendments'])->toArray();
