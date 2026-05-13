@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.15] - 2026-05-13
+
+### Security tests — Feature flag matrix writes
+
+- Securite : `PUT /api/v1/feature-flags/matrix` refuse maintenant les utilisateurs tenant ; l'administration de matrice reste reservee aux contrats plateforme super-admin.
+- Tests : ajout de `FeatureFlagControllerTest` pour matrix, check par plan actif, fallback trial, feature inconnue et refus RBAC en ecriture.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture feature flags reelle.
+
 ## [4.16.14] - 2026-05-13
 
 ### Tests — Payment webhook negative coverage
