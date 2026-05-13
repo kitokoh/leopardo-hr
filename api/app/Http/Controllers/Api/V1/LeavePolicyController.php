@@ -60,7 +60,7 @@ class LeavePolicyController extends Controller
             ->whereKey($validated['absence_type_id'])
             ->exists();
 
-        if (! $absenceTypeBelongsToCompany) {
+        if ($absenceTypeBelongsToCompany === false) {
             throw ValidationException::withMessages([
                 'absence_type_id' => ['The selected absence type is invalid.'],
             ]);
@@ -218,13 +218,13 @@ class LeavePolicyController extends Controller
             ->whereKey($validated['leave_policy_id'])
             ->first();
 
-        if (! $employeeBelongsToCompany) {
+        if ($employeeBelongsToCompany === false) {
             throw ValidationException::withMessages([
                 'employee_id' => ['The selected employee is invalid.'],
             ]);
         }
 
-        if (! ($policy instanceof LeavePolicy)) {
+        if ($policy === null) {
             throw ValidationException::withMessages([
                 'leave_policy_id' => ['The selected leave policy is invalid.'],
             ]);
