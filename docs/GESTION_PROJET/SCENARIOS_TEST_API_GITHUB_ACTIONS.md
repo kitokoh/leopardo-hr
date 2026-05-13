@@ -164,9 +164,11 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/platform/companies/health` retourne le portefeuille client avec MRR total, repartition des risques et prochaine action par company
 - `GET /api/v1/platform/plans` retourne le catalogue des plans pour alimenter les formulaires d'abonnement super-admin
 - `GET/PATCH /api/v1/platform/companies/{company}/subscription` lit et met a jour plan, statut, dates d'abonnement et notes client
+- `GET /api/v1/platform/metrics/overview` retourne les agregats plateforme MRR/ARR, encaissements 30 jours, impayes, companies, abonnements, facturation et systeme
 - Le health client classe clairement le risque (`low`, `medium`, `high`) et reste reserve au guard `super_admin_api`
 - Les metriques health ne doivent jamais lire les donnees d'un autre tenant ni dependre d'un `current_company` applicatif
 - Le contrat abonnement refuse les statuts inconnus, les plans inexistants et les dates incoherentes
+- Le contrat metrics overview reste reserve au guard `super_admin_api`, ne retourne aucune donnee nominative tenant et tolere les tables billing absentes pendant les migrations progressives
 
 ### 14. Catalogue de traductions distant et variantes de locale
 
@@ -208,6 +210,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Contrat health plateforme pour adoption, retention et upsell client
 - Contrat catalogue plans plateforme pour eviter les `plan_id` hardcodes cote frontend
 - Contrat abonnement plateforme pour upgrade, suspension, expiration et notes client
+- Contrat metrics overview plateforme pour MRR/ARR, impayes, encaissements, companies, abonnements et facturation
 - Health endpoint
 
 ### Suites a ajouter ou durcir progressivement
@@ -574,6 +577,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 
 ### Metrics platform
 - `GET /api/v1/metrics` — Retourne: companies (total, active, trial), employees (total, active), system (php_version, laravel_version, memory_usage_mb, cache_driver, queue_driver, db_driver)
+- `GET /api/v1/platform/metrics/overview` — Retourne: revenue (currency, mrr, arr, collected_30d, overdue_total), companies, subscriptions, billing, system et generated_at pour le cockpit super-admin
 
 ### Structured Logging
 - Middleware `StructuredLogging` enregistre chaque requete API en JSON : method, uri, status, duration_ms, ip, user_agent, user_id, company_id, request_id
