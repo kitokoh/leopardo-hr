@@ -2,6 +2,7 @@
 
 namespace App\AI;
 
+use App\AI\DTOs\AIRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
@@ -9,9 +10,9 @@ class AgentRunner
 {
     private int $maxSteps;
 
-    private AIOrchestrator $orchestrator;
+    private Orchestrator $orchestrator;
 
-    public function __construct(AIOrchestrator $orchestrator, int $maxSteps = 10)
+    public function __construct(Orchestrator $orchestrator, int $maxSteps = 10)
     {
         $this->orchestrator = $orchestrator;
         $this->maxSteps = $maxSteps;
@@ -28,7 +29,12 @@ class AgentRunner
         $currentConversationId = $conversationId;
 
         for ($i = 0; $i < $this->maxSteps; $i++) {
-            $response = $this->orchestrator->handle($user, $currentMessage, $currentConversationId);
+            $response = $this->orchestrator->handle(new AIRequest(
+                message: $currentMessage,
+                userId: (int) $user->id,
+                companyId: (string) $user->company_id,
+                conversationId: is_numeric($currentConversationId) ? (int) $currentConversationId : null,
+            ));
             $currentConversationId = $response['conversation_id'] ?? $currentConversationId;
 
             $step = [

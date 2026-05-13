@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\AI;
 
 use App\AI\AgentRunner;
-use App\AI\AIOrchestrator;
+use App\AI\Orchestrator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +18,7 @@ class AgentController extends Controller
             'max_steps' => 'nullable|integer|min:1|max:20',
         ]);
 
-        $orchestrator = app(AIOrchestrator::class);
+        $orchestrator = app(Orchestrator::class);
         $agent = new AgentRunner($orchestrator, $validated['max_steps'] ?? 10);
 
         $result = $agent->execute(
