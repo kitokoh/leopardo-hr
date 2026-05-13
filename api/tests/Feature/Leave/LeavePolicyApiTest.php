@@ -7,6 +7,8 @@ namespace Tests\Feature\Leave;
 use App\Models\AbsenceType;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\LeaveAccrual;
+use App\Models\LeaveBalance;
 use App\Models\LeavePolicy;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -118,6 +120,7 @@ class LeavePolicyApiTest extends TestCase
     {
         [$company, $manager] = $this->makeManagerAndCompany();
         Sanctum::actingAs($manager);
+        $otherCompany = Company::factory()->create();
 
         $absenceType = AbsenceType::query()->create([
             'company_id' => $company->id,
@@ -134,11 +137,26 @@ class LeavePolicyApiTest extends TestCase
             'accrual_amount' => 2.5,
             'active' => true,
         ]);
+        LeavePolicy::query()->create([
+            'company_id' => $otherCompany->id,
+            'absence_type_id' => AbsenceType::query()->create([
+                'company_id' => $otherCompany->id,
+                'code' => 'OTHER',
+                'name' => 'Other Tenant Leave',
+                'requires_approval' => true,
+            ])->id,
+            'name' => 'Other Tenant Policy',
+            'accrual_type' => 'monthly',
+            'accrual_amount' => 2.5,
+            'active' => true,
+        ]);
 
         $response = $this->getJson('/api/v1/leave-policies');
 
         $response->assertOk();
         $response->assertJsonStructure(['data' => [['id', 'name', 'accrual_type']]]);
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.name', 'Standard Annual');
     }
 
     public function test_store_leave_policy(): void
@@ -192,5 +210,168 @@ class LeavePolicyApiTest extends TestCase
 
         $response->assertOk();
         $this->assertFalse($policy->fresh()->active);
+    }
+
+    public function test_leave_balances_are_scoped_to_actor_company_and_employee_role(): void
+    {
+        [$company, $manager] = $this->makeManagerAndCompany();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $otherEmployee = Employee::factory()->create(['company_id' => Company::factory()->create()->id]);
+        $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
+            'code' => 'ANNUAL-BAL',
+            'name' => 'Annual Balance',
+            'requires_approval' => true,
+        ]);
+
+        LeaveBalance::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $absenceType->id,
+            'balance' => 12,
+            'used' => 2,
+            'pending' => 1,
+            'year' => 2026,
+        ]);
+        LeaveBalance::query()->create([
+            'company_id' => $otherEmployee->company_id,
+            'employee_id' => $otherEmployee->id,
+            'absence_type_id' => $absenceType->id,
+            'balance' => 99,
+            'used' => 0,
+            'pending' => 0,
+            'year' => 2026,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/leave-balances?year=2026')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.employee_id', $employee->id);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/leave-balances?year=2026')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.employee_id', $employee->id);
+    }
+
+    public function test_manager_can_store_accrual_and_balance_for_own_company_only(): void
+    {
+        [$company, $manager] = $this->makeManagerAndCompany();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
+            'code' => 'ACCRUAL',
+            'name' => 'Accrual Leave',
+            'requires_approval' => true,
+        ]);
+        $policy = LeavePolicy::query()->create([
+            'company_id' => $company->id,
+            'absence_type_id' => $absenceType->id,
+            'name' => 'Accrual Policy',
+            'accrual_type' => 'manual',
+            'accrual_amount' => 0,
+            'active' => true,
+        ]);
+        $otherCompany = Company::factory()->create();
+        $otherEmployee = Employee::factory()->create(['company_id' => $otherCompany->id]);
+        $otherPolicy = LeavePolicy::query()->create([
+            'company_id' => $otherCompany->id,
+            'absence_type_id' => AbsenceType::query()->create([
+                'company_id' => $otherCompany->id,
+                'code' => 'OTHER-ACC',
+                'name' => 'Other Accrual',
+                'requires_approval' => true,
+            ])->id,
+            'name' => 'Other Policy',
+            'accrual_type' => 'manual',
+            'accrual_amount' => 0,
+            'active' => true,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/leave-accruals', [
+            'employee_id' => $otherEmployee->id,
+            'leave_policy_id' => $policy->id,
+            'amount' => 2,
+            'type' => 'accrual',
+            'effective_date' => '2026-05-01',
+        ])->assertUnprocessable();
+
+        $this->postJson('/api/v1/leave-accruals', [
+            'employee_id' => $employee->id,
+            'leave_policy_id' => $otherPolicy->id,
+            'amount' => 2,
+            'type' => 'accrual',
+            'effective_date' => '2026-05-01',
+        ])->assertUnprocessable();
+
+        $this->postJson('/api/v1/leave-accruals', [
+            'employee_id' => $employee->id,
+            'leave_policy_id' => $policy->id,
+            'amount' => 2.5,
+            'type' => 'accrual',
+            'description' => 'Manual opening balance',
+            'effective_date' => '2026-05-01',
+        ])->assertCreated()
+            ->assertJsonPath('data.employee_id', $employee->id);
+
+        $this->assertDatabaseHas('leave_accruals', [
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'leave_policy_id' => $policy->id,
+        ]);
+        $this->assertDatabaseHas('leave_balances', [
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $absenceType->id,
+            'year' => 2026,
+        ]);
+    }
+
+    public function test_leave_accrual_index_is_tenant_scoped(): void
+    {
+        [$company, $manager] = $this->makeManagerAndCompany();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $policy = LeavePolicy::query()->create([
+            'company_id' => $company->id,
+            'absence_type_id' => AbsenceType::query()->create([
+                'company_id' => $company->id,
+                'code' => 'ACC-IDX',
+                'name' => 'Accrual Index',
+                'requires_approval' => true,
+            ])->id,
+            'name' => 'Index Policy',
+            'accrual_type' => 'manual',
+            'accrual_amount' => 0,
+            'active' => true,
+        ]);
+        LeaveAccrual::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'leave_policy_id' => $policy->id,
+            'amount' => 1,
+            'type' => 'accrual',
+            'effective_date' => '2026-05-01',
+        ]);
+        LeaveAccrual::query()->create([
+            'company_id' => Company::factory()->create()->id,
+            'employee_id' => $employee->id,
+            'leave_policy_id' => $policy->id,
+            'amount' => 99,
+            'type' => 'accrual',
+            'effective_date' => '2026-05-01',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/leave-accruals')
+            ->assertOk()
+            ->assertJsonPath('data.0.company_id', $company->id)
+            ->assertJsonCount(1, 'data');
     }
 }
