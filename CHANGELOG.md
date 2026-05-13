@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.16] - 2026-05-13
+
+### Tests — Structured logging observability
+
+- Tests : ajout de `StructuredLoggingMiddlewareTest` pour verifier l'ecriture `http_request` sur le channel JSON `structured` avec request id, status et duree.
+- Tests : verification que les sondes `/api/v1/health/*` restent exclues du logging structure pour eviter le bruit de supervision.
+- Documentation : plan post-sprints synchronise pour health enrichi et logging JSON deja couverts sur `main`.
+
 ## [4.16.15] - 2026-05-13
 
 ### Security tests — Feature flag matrix writes

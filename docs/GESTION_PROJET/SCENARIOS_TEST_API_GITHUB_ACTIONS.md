@@ -590,6 +590,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Middleware `StructuredLogging` enregistre chaque requete API en JSON : method, uri, status, duration_ms, ip, user_agent, user_id, company_id, request_id
 - Channel `structured` : daily JSON logs dans `storage/logs/structured.log`
 - Channel `audit` : daily JSON logs dans `storage/logs/audit.log` (90 jours retention)
+- Couverture Feature : requetes API non-health journalisees sur le channel `structured`, sondes health exclues du bruit de logs
 
 ## Paie avancee — PDF, Bank Export, Billing (Post-Sprint)
 
