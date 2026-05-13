@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\FeaturePlanMatrix;
 use App\Models\Subscription;
 use Illuminate\Http\JsonResponse;
@@ -49,19 +49,7 @@ class FeatureFlagController extends Controller
 
     public function updateMatrix(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'feature_key' => 'required|string|max:50',
-            'plan' => 'required|in:trial,starter,business,enterprise',
-            'enabled' => 'required|boolean',
-            'limit_value' => 'nullable|integer|min:0',
-        ]);
-
-        $entry = FeaturePlanMatrix::updateOrCreate(
-            ['feature_key' => $validated['feature_key'], 'plan' => $validated['plan']],
-            ['enabled' => $validated['enabled'], 'limit_value' => $validated['limit_value'] ?? null],
-        );
-
-        return response()->json(['data' => $entry]);
+        abort(403, 'Feature plan matrix writes are reserved to platform administration.');
     }
 
     private function getCompanyPlan(string $companyId): string
