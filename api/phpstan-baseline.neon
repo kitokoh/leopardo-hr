@@ -1,342 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 2
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''      • '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''    \- Généré le\: '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''    \- Nombre de…'' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''    \- Version API\: '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''  \- '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''  📋 Manifeste…'' and array\|bool\|string\|null results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between ''  📱 Fonctionnalités…'' and array\|bool\|string\|null results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between mixed and ''\: '' results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between mixed and ''\:'' results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 6
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#1 \$mobileVersion of method App\\Contracts\\FeatureRegistryInterface\:\:getCompatibleFeatures\(\) expects string, array\|bool\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#1 \$mobileVersion of method App\\Contracts\\FeatureRegistryInterface\:\:getManifest\(\) expects string\|null, array\|bool\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<mixed, mixed\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Console/Commands/DemoFeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 9
-			path: app/Console/Commands/DetectFeaturesCommand.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) expects callable\(mixed, int\|string\)\: array\{string, string, string, string, string\}, Closure\(array\)\: array\{string, string, string, string, string\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/DetectFeaturesCommand.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) expects callable\(mixed, int\|string\)\: array\{string, string, string, string\}, Closure\(array\)\: array\{string, string, string, string\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/DetectFeaturesCommand.php
-
-		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Console/Commands/DetectFeaturesCommand.php
-
-		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 3
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access offset ''cache_driver'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access offset ''features_cached'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access offset ''manifest_cached'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access property \$api_version on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access property \$endpoint on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access property \$http_methods on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access property \$key on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access property \$status on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access property \$title on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#1 \$mobileVersion of method App\\Contracts\\FeatureRegistryInterface\:\:getCompatibleFeatures\(\) expects string, array\|string\|true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#1 \$string of method Illuminate\\Console\\Command\:\:line\(\) expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#1 \$version of method App\\Contracts\\FeatureRegistryInterface\:\:getFeatures\(\) expects string\|null, array\|bool\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Parameter \#2 \$array of function implode expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$action \(array\|bool\|string\|null\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$cacheStatus\[''cache_driver''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 2
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$error \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$mobileVersion \(non\-empty\-array\|non\-falsy\-string\|true\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$result\[''new''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$result\[''removed''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$result\[''updated''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$stats\[''active_features''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$stats\[''inactive_features''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$stats\[''last_synchronization''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$stats\[''recently_updated''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$stats\[''total_features''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$status \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$version \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Part \$version \(non\-empty\-array\|non\-falsy\-string\|true\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/FeatureRegistryCommand.php
-
-		-
-			message: '#^Cannot access offset ''ui_type'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Parameter \#2 \$array of function implode expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Part \$change\[''feature_key''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Part \$change\[''type''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Part \$metadata\[''description''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Part \$metadata\[''title''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
-			message: '#^Part \$metadata\[''ui_type''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/TestFeatureDetectorCommand.php
-
-		-
 			message: '#^Cannot access offset ''gps_lat'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -6487,7 +6151,7 @@ parameters:
 			path: app/Http/Controllers/Web/InvitationManagementController.php
 
 		-
-			message: '#^Binary operation "\." between ''Invitation renvoyee…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''Invitation renvoyeeâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Http/Controllers/Web/InvitationManagementController.php
@@ -7207,7 +6871,7 @@ parameters:
 			path: app/Http/Requests/Api/V1/Estimation/ReceiptRequest.php
 
 		-
-			message: '#^Binary operation "\." between ''exists\:employees,id…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''exists\:employees,idâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 2
 			path: app/Http/Requests/Api/V1/Evaluation/EvaluationIndexRequest.php
@@ -12619,13 +12283,13 @@ parameters:
 			path: app/Services/AttendanceMonthlyReportService.php
 
 		-
-			message: '#^Binary operation "\." between ''attachment;…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''attachment;â€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Services/AttendanceMonthlyReportService.php
 
 		-
-			message: '#^Binary operation "\." between ''attendance\-monthly…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''attendance\-monthlyâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Services/AttendanceMonthlyReportService.php
@@ -15427,7 +15091,7 @@ parameters:
 			path: app/Services/SuperAdminService.php
 
 		-
-			message: '#^Binary operation "\." between ''Leopardo RH…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''Leopardo RHâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Services/SuperAdminService.php
@@ -15475,7 +15139,7 @@ parameters:
 			path: app/Services/SuperAdminService.php
 
 		-
-			message: '#^Offset float\|int might not exist on ''ABCDEFGHIJKLMNOPQRS…''\.$#'
+			message: '#^Offset float\|int might not exist on ''ABCDEFGHIJKLMNOPQRSâ€¦''\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Services/SuperAdminService.php
@@ -15937,7 +15601,7 @@ parameters:
 			path: tests/Feature/Absences/AbsenceIndexTest.php
 
 		-
-			message: '#^Binary operation "\." between ''/api/v1/absences…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''/api/v1/absencesâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/Absences/AbsenceIndexTest.php
@@ -16687,7 +16351,7 @@ parameters:
 			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
 
 		-
-			message: '#^Binary operation "\." between ''/api/v1/internal…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''/api/v1/internalâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 7
 			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
@@ -17941,19 +17605,19 @@ parameters:
 			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
 
 		-
-			message: '#^Binary operation "\." between ''/api/v1/absences…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''/api/v1/absencesâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
 
 		-
-			message: '#^Binary operation "\." between ''/api/v1/evaluations…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''/api/v1/evaluationsâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 2
 			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
 
 		-
-			message: '#^Binary operation "\." between ''/api/v1/salary…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''/api/v1/salaryâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/Security/IndexCrossTenantValidationTest.php
@@ -17977,7 +17641,7 @@ parameters:
 			path: tests/Feature/Security/SalaryAdvanceSecurityTest.php
 
 		-
-			message: '#^Binary operation "\." between ''/api/v1/salary…'' and mixed results in an error\.$#'
+			message: '#^Binary operation "\." between ''/api/v1/salaryâ€¦'' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/Security/SalaryAdvanceSecurityTest.php
