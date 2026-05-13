@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;
@@ -136,7 +137,7 @@ return [
             'level' => env('LOG_LEVEL', 'info'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
         ],
 
         'audit' => [
@@ -145,7 +146,7 @@ return [
             'level' => 'info',
             'days' => 90,
             'replace_placeholders' => true,
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
         ],
 
         'discord' => [

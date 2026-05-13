@@ -6,7 +6,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Sentry\State\Scope;
 use Symfony\Component\HttpFoundation\Response;
+
+use function Sentry\configureScope;
 
 /**
  * Sentry APM — performance traces on critical endpoints.
@@ -33,8 +36,8 @@ class SentryPerformanceMiddleware
         $path = $request->path();
         $domain = $this->resolveDomain($path);
 
-        if ($domain !== null && function_exists('\\Sentry\\configureScope')) {
-            \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($request, $domain, $path) {
+        if ($domain !== null && function_exists('Sentry\\configureScope')) {
+            configureScope(function (Scope $scope) use ($request, $domain, $path) {
                 $scope->setTag('domain', $domain);
                 $scope->setTag('route', $request->method().' /'.$path);
                 $scope->setContext('http', [
