@@ -62,12 +62,12 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 
 ### 6. Cockpit plateforme v5.0
 
-- la page d'accueil charge une synthese via `/api/v1/platform/companies/health`, `/api/v1/platform/plans` et `/api/v1/platform/company-requests?status=pending`
-- les priorites clients, MRR, ARPA, adoption terrain et demandes entrantes remplacent les anciens widgets mockes
+- la page d'accueil charge une synthese via `/api/v1/platform/companies/health`, `/api/v1/platform/metrics/overview` et `/api/v1/platform/company-requests?status=pending`
+- les priorites clients, MRR, ARR, ARPA, encaissements 30 jours, impayes, adoption terrain et demandes entrantes remplacent les anciens widgets mockes
 - la vue Entreprises charge le portefeuille via `/api/v1/platform/companies/health`
 - le detail Entreprise charge health client, abonnement et catalogue plans
 - le formulaire abonnement met a jour plan, statut, dates et notes sans hardcoder les `plan_id`
-- la vue Abonnements affiche le catalogue `/api/v1/platform/plans`, le MRR portefeuille et les clients prioritaires
+- la vue Abonnements affiche le catalogue `/api/v1/platform/plans`, les metriques `/api/v1/platform/metrics/overview`, le MRR portefeuille, les impayes et les clients prioritaires
 - les etats loading/error restent lisibles si l'API plateforme est indisponible
 
 ### 7. Intake demandes clients
