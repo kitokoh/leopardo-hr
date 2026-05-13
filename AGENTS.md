@@ -272,6 +272,7 @@ Procedure recommandee :
 - `config/sentry.php` configure le traces_sample_rate via `SENTRY_TRACES_SAMPLE_RATE` (defaut 0.2 en prod).
 - En Laravel 11, `EventServiceProvider` doit etre enregistre explicitement dans `bootstrap/providers.php` pour que les listeners soient actifs. L'auto-discovery ne fonctionne plus pour les providers custom.
 - Les listeners `ShouldQueue` s'executent en mode sync pendant les tests (queue=sync). Toujours proteger les ecritures DB dans les listeners avec un try-catch pour ne pas casser l'operation metier parente.
+- Pour tester les endpoints IA voice/agent sans reseau, injecter un fake `LLMClient` dans le container et configurer les providers voice sans cle. Les contrats doivent rester testables meme quand Whisper, ElevenLabs ou Edge TTS ne sont pas disponibles localement.
 - La governance gate CI exige que `SCENARIOS_TEST_API_GITHUB_ACTIONS.md` soit mis a jour quand de nouveaux endpoints API sont ajoutes. Ne pas oublier cette etape avant de push.
 - Le repo a ete renomme de `gestionemployerBackend` a `leopardo-hr` sur GitHub. Utiliser `kitokoh/leopardo-hr` pour les operations PR/CI.
 

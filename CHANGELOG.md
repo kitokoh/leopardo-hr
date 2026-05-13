@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.18] - 2026-05-13
+
+### Tests — AI voice, agents and analytics coverage
+
+- Tests : extension de `AIGatewayAndAnalyticsTest` pour couvrir `voice/transcribe`, `voice/synthesize`, `voice/command`, `agent/workflows`, `agent/run` et la validation `max_steps`.
+- Tests : ajout d'une couverture `ai/analytics/costs` avec groupement mensuel, tokens et couts scopes au tenant.
+- IA : les tests utilisent un `LLMClient` fake afin de valider les contrats sans appel reseau ni cle provider externe.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture IA avancee reelle.
+
 ## [4.16.17] - 2026-05-13
 
 ### Tests — Onboarding setup workflow
