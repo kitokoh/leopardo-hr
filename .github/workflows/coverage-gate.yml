@@ -1,0 +1,247 @@
+name: Backend Coverage Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'api/**'
+      - '.github/workflows/coverage-gate.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: coverage-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-coverage:
+    name: Backend Coverage (PHP 8.4 + PostgreSQL 16)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
+          coverage: pcov
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        working-directory: ./api
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php84-
+
+      - name: Install Composer dependencies
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare environment
+        working-directory: ./api
+        run: |
+          cat > .env <<'EOF'
+          APP_NAME=LeopardoRH
+          APP_ENV=testing
+          APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          APP_DEBUG=true
+          APP_URL=http://localhost
+
+          DB_CONNECTION=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=leopardo_test
+          DB_USERNAME=leopardo_user
+          DB_PASSWORD=leopardo_pass_test
+          DB_SEARCH_PATH=shared_tenants,public
+
+          CACHE_STORE=array
+          QUEUE_CONNECTION=sync
+          SESSION_DRIVER=array
+          REDIS_HOST=127.0.0.1
+          REDIS_PORT=6379
+          EOF
+
+      - name: Bootstrap migration repositories
+        working-directory: ./api
+        run: |
+          php <<'PHP'
+          <?php
+          $dsn = 'pgsql:host=127.0.0.1;port=5432;dbname=leopardo_test';
+          $pdo = new PDO($dsn, 'leopardo_user', 'leopardo_pass_test', [
+              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          ]);
+          $pdo->exec(<<<'SQL'
+          CREATE SCHEMA IF NOT EXISTS shared_tenants;
+          CREATE TABLE IF NOT EXISTS public.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          SQL);
+          echo "Migration repositories ensured.\n";
+          PHP
+
+      - name: Run public migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=public php artisan migrate --path=database/migrations/public --force --isolated
+
+      - name: Run tenant migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
+
+      - name: Run tests with coverage
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: |
+          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
+
+      - name: Parse coverage percentage
+        id: coverage
+        working-directory: ./api
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUMMARY_FILE="storage/coverage/summary.txt"
+          if [[ ! -f "${SUMMARY_FILE}" ]]; then
+            echo "percentage=0" >> "$GITHUB_OUTPUT"
+            echo "Coverage summary file not found, defaulting to 0%."
+            exit 0
+          fi
+          PERCENT=$(grep -oP 'Lines:\s+\K[\d.]+' "${SUMMARY_FILE}" | head -1 || echo "0")
+          if [[ -z "${PERCENT}" ]]; then
+            PERCENT=0
+          fi
+          echo "percentage=${PERCENT}" >> "$GITHUB_OUTPUT"
+          echo "Backend coverage: ${PERCENT}%"
+
+      - name: Evaluate coverage gate
+        id: gate
+        shell: bash
+        env:
+          COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN || '40' }}
+        run: |
+          set -euo pipefail
+          ACTUAL="${{ steps.coverage.outputs.percentage }}"
+          THRESHOLD="${COVERAGE_MIN}"
+
+          echo "Actual coverage: ${ACTUAL}%"
+          echo "Threshold: ${THRESHOLD}%"
+
+          PASS=$(echo "${ACTUAL} >= ${THRESHOLD}" | bc -l)
+          if [[ "${PASS}" -eq 1 ]]; then
+            echo "Coverage gate PASSED (${ACTUAL}% >= ${THRESHOLD}%)"
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Coverage gate FAILED (${ACTUAL}% < ${THRESHOLD}%)"
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: |
+            api/storage/coverage/clover.xml
+            api/storage/coverage/summary.txt
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const percentage = `${{ steps.coverage.outputs.percentage }}`;
+            const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '40' }}`;
+            const passed = `${{ steps.gate.outputs.passed }}` === 'true';
+            const icon = passed ? ':white_check_mark:' : ':x:';
+            const body = [
+              `## ${icon} Backend Coverage Report`,
+              '',
+              `| Metric | Value |`,
+              `|--------|-------|`,
+              `| **Lines covered** | ${percentage}% |`,
+              `| **Threshold** | ${threshold}% |`,
+              `| **Status** | ${passed ? 'PASSED' : 'FAILED'} |`,
+              '',
+              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 40).`,
+              `> Recommended: increase by 5% monthly.`,
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Backend Coverage Report')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if coverage below threshold
+        if: steps.gate.outputs.passed == 'false'
+        run: |
+          echo "Coverage gate failed. Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
+          exit 1
