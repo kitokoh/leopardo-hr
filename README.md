@@ -83,8 +83,8 @@ Detailed onboarding instructions: [DEVELOPMENT.md](dev-hub/DEVELOPMENT.md).
 ## 🛠 Tech Stack
 
 - **Backend:** Laravel 11, PHP 8.4, PostgreSQL 16
-- **Frontend:** Next.js 14, Tailwind CSS, Shadcn/UI
-- **Mobile:** Flutter 3.x, Bloc
+- **Frontend:** Next.js 16.2, Tailwind CSS, Shadcn/UI
+- **Mobile:** Flutter 3.x, flutter_riverpod 3.3
 - **Infra:** Render, Vercel, Neon.tech
 - **Testing:** Pest PHP, Playwright, Flutter Test
 
