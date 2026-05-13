@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-12
+Derniere mise a jour : 2026-05-13
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -39,6 +39,20 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les tests locaux Windows peuvent echouer avant PHPUnit si l'extension PHP `mbstring` manque (`mb_split()` introuvable dans Laravel). Dans ce cas, ne pas conclure a un rouge applicatif ; verifier la syntaxe et laisser GitHub Actions executer la suite complete.
 
 ## Pieges connus
+
+### Audit 2026-05-13 - IA, RBAC et tenant runtime
+
+- Les routes IA doivent importer `App\AI\Orchestrator`. Ne pas recreer `App\AI\AIOrchestrator` : cette classe n'existe pas et provoque un boot fatal sur les routes IA.
+- Les analytics IA (`/api/v1/ai/analytics/*`) sont reservees aux managers `principal` et `rh`. Ne pas les remettre derriere le seul `AIFeatureCheck`, sinon un manager departement/superviseur peut lire des couts LLM.
+- `AdminMiddleware` ne doit pas traiter tout `role=manager` comme admin. Le sous-role attendu est `manager_role=principal`, sauf vrais roles globaux `admin` / `super_admin`.
+- `TenantMiddleware` doit conserver son `try/finally` autour de `TenantManager::resetToPrevious()`. L'hypothese operationnelle actuelle reste une requete active par worker PHP-FPM ; si des workers persistants/interleavings sont introduits, evaluer `SET LOCAL search_path` ou une gestion strictement connexion/transaction plutot que l'etat d'instance.
+- Front mobile : la stack reelle est Flutter 3.x + `flutter_riverpod` 3.3. Ne pas documenter Bloc comme architecture active.
+- PHPStan reste en diff-gate avec baseline historique. Ne jamais elargir `api/phpstan-baseline.neon`; reduire par campagne module par module (AI, middleware, routes, payroll, attendance) et garder le scope visible dans les artefacts CI.
+
+### Frontieres routes modules
+
+- `routes/modules/rh.php` porte le socle RH transverse (employes, contrats, absences, rapports courants) alors que `routes/modules/hr_extended.php` porte les extensions post-MVP. Avant de deplacer une route, verifier le controller et le scenario de test associe.
+- Les routes IA experimentales voice/agent restent sous feature AI + rate limit ; toute exposition plus large doit passer par une feature flag explicite et une couverture RBAC.
 
 ### Paie multi-pays et exports bancaires
 
