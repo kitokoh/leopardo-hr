@@ -534,6 +534,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/onboarding-setup/progress` pourcentage progression
 - `PATCH /api/v1/onboarding-setup/{stepKey}/complete` marquer etape complete
 - `PATCH /api/v1/onboarding-setup/{stepKey}/skip` sauter etape (non-required seulement)
+- Couverture Feature : auto-seed 10 etapes, progression completed/skipped, completion par tenant, skip optionnel, refus skip obligatoire et isolation inter-tenant
 
 ### Feature Flags
 - `GET /api/v1/feature-flags/matrix` matrice complete features x plans

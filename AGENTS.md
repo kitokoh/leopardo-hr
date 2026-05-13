@@ -62,6 +62,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - `PaymentWebhookControllerTest` couvre les webhooks Stripe/Chargily valides et invalides. Les payloads inconnus doivent rester idempotents cote donnees : acquittement HTTP OK, mais aucune creation de paiement ni mutation facture/abonnement.
 - `PUT /api/v1/feature-flags/matrix` ne doit pas etre ouvert aux utilisateurs tenant. Les ecritures matrice feature flags passent par les contrats plateforme super-admin ; garder `FeatureFlagControllerTest` comme garde anti-regression.
 - `StructuredLoggingMiddlewareTest` verifie que les requetes API non-health ecrivent sur le channel JSON `structured`, tandis que `/api/v1/health/*` reste exclu pour eviter le bruit des sondes.
+- `OnboardingStepControllerTest` couvre `/api/v1/onboarding-setup/*` : auto-seed checklist, progression, complete/skip et isolation tenant. Ne pas confondre avec `/api/v1/onboarding/checklist`, qui mesure le go-live client.
 
 ### Frontieres routes modules
 
