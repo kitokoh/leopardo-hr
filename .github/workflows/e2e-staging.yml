@@ -1,0 +1,202 @@
+name: E2E - Playwright Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_url:
+        description: "Staging base URL to test"
+        required: false
+        default: ""
+  workflow_run:
+    workflows: ["Deploy - Leopardo RH"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DEFAULT_STAGING_URL: https://gestionemployerbackend.onrender.com
+
+concurrency:
+  group: e2e-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  should-run:
+    name: Check deployment status
+    runs-on: ubuntu-latest
+    outputs:
+      run_e2e: ${{ steps.check.outputs.run_e2e }}
+    steps:
+      - name: Determine if E2E should run
+        id: check
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "run_e2e=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            echo "run_e2e=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_e2e=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  e2e-api-smoke:
+    name: API Smoke Tests
+    runs-on: ubuntu-latest
+    needs: should-run
+    if: needs.should-run.outputs.run_e2e == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Resolve staging URL
+        id: url
+        shell: bash
+        run: |
+          INPUT_URL="${{ github.event.inputs.staging_url }}"
+          URL="${INPUT_URL:-${DEFAULT_STAGING_URL}}"
+          echo "base_url=${URL}" >> "$GITHUB_OUTPUT"
+          echo "Testing against: ${URL}"
+
+      - name: API health check
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="${{ steps.url.outputs.base_url }}/api/v1/health"
+          echo "Checking API health at ${URL}..."
+          for attempt in {1..5}; do
+            if curl --fail --silent --show-error "${URL}" | grep -q '"status"'; then
+              echo "API is healthy."
+              exit 0
+            fi
+            echo "Attempt ${attempt}/5 failed, retrying in 10s..."
+            sleep 10
+          done
+          echo "API health check failed after 5 attempts."
+          exit 1
+
+      - name: API endpoint smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.url.outputs.base_url }}/api/v1"
+          FAILED=0
+
+          test_endpoint() {
+            local name="$1"
+            local url="$2"
+            local expected_status="${3:-200}"
+            echo -n "Testing ${name}... "
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "${url}" || echo "000")
+            if [[ "${STATUS}" == "${expected_status}" ]]; then
+              echo "OK (${STATUS})"
+            else
+              echo "FAIL (got ${STATUS}, expected ${expected_status})"
+              FAILED=$((FAILED + 1))
+            fi
+          }
+
+          test_endpoint "Health" "${BASE}/health"
+          test_endpoint "Health Live" "${BASE}/health/live"
+          test_endpoint "Health Ready" "${BASE}/health/ready"
+          test_endpoint "Auth (no token)" "${BASE}/me" "401"
+
+          if [[ "${FAILED}" -gt 0 ]]; then
+            echo "${FAILED} endpoint(s) failed."
+            exit 1
+          fi
+          echo "All API smoke tests passed."
+
+  e2e-admin-dashboard:
+    name: Admin Dashboard E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: should-run
+    if: needs.should-run.outputs.run_e2e == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: front/admin-dashboard
+        run: npm ci
+
+      - name: Install Playwright
+        working-directory: front/admin-dashboard
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        working-directory: front/admin-dashboard
+        env:
+          CI: true
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-admin-playwright-report
+          path: |
+            front/admin-dashboard/playwright-report/
+            front/admin-dashboard/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  e2e-web-vitrine:
+    name: Web Vitrine E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: should-run
+    if: needs.should-run.outputs.run_e2e == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/web/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: front/web
+        run: npm ci
+
+      - name: Install Playwright
+        working-directory: front/web
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E tests
+        working-directory: front/web
+        env:
+          CI: true
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-web-playwright-report
+          path: |
+            front/web/playwright-report/
+            front/web/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
