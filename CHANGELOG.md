@@ -4,7 +4,7 @@
 
 ## [4.20.0] - 2026-05-13
 
-### Finitions — Sentry APM, alerting, DEVELOPMENT.md, GTM (Plan 13 Sections 7-9)
+### Finitions — Sentry APM, alerting, DEVELOPMENT.md, GTM (Plan 13 Sections 7-9) + Plan 14
 
 - SentryPerformanceMiddleware : traces APM sur endpoints critiques (paie, IA, attendance, contracts, exports) avec tags domain/route.
 - Sentry config enrichi : trace_propagation_targets, ignore_transactions pour health checks.
