@@ -211,6 +211,7 @@ Procedure recommandee :
 
 - Le dossier racine de strategie commerciale s'appelle `docs/GOTO_MARKET/`, pas `marketing/`, sur demande explicite.
 - Le PDF inspirant `Leopardo_RH_Production_Creative.pdf` doit etre conserve dans `docs/GOTO_MARKET/00_inspiration/` et sert de base creative IA-first.
+- Le fichier `docs/PLAN_ACTION/14_ROADMAP_EXECUTION_POST_LOTS.md` sert maintenant de roadmap actualisee apres execution des lots plateforme metrics/backend/admin. Le fichier 13 reste l'inventaire brut ; le 14 doit porter la sequence priorisee et les retours d'experience.
 - Les prochaines actions GTM doivent rester connectees au wedge produit prioritaire : pointage, anomalies, rapport mensuel, onboarding et ROI client mesurable.
 - `docs/GOTO_MARKET/` est aussi le centre de reflexion sur la viabilite globale : utiliser la tech pour repondre a un besoin actuel, gagner de l'argent, et ne pas hesiter a repositionner ou moderniser le produit/offre quand le marche l'exige.
 - Les fichiers destines a presenter Leopardo RH au public doivent aller dans `docs/GOTO_MARKET/public/` avec un sous-dossier par canal : `social/`, `landing/`, `video/`, `press/`, `partners/`, `ads/`, `content_calendar/`, `metrics/`.
