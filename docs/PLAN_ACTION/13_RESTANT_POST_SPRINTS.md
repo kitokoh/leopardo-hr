@@ -158,7 +158,7 @@ Fichiers a creer dans tests/Feature/ :
 
 - [x] BillingControllerTest.php (~10 tests : subscription CRUD, upgrade, cancel, renew, invoices, PDF, isolation tenant)
 - [ ] OnboardingStepControllerTest.php (~6 tests : checklist, progress, complete, skip, auto-seed)
-- [ ] FeatureFlagControllerTest.php (~6 tests : matrix, check, updateMatrix, RBAC)
+- [x] FeatureFlagControllerTest.php (~5 tests : matrix, check, fallback trial, feature inconnue, updateMatrix RBAC)
 - [x] PaymentWebhookControllerTest.php (~7 tests : stripe valid/invalid, chargily valid/invalid, events inconnus sans effet)
 - [ ] DashboardControllerTest.php (~5 tests : summary, recentActivity, kpi, RBAC)
 - [ ] NotificationControllerTest.php (~6 tests : index, unread, markRead, markAllRead, pagination)
