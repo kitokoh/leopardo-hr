@@ -5,6 +5,7 @@ use App\Http\Controllers\AI\AIAnalyticsController;
 use App\Http\Controllers\AI\AIGatewayController;
 use App\Http\Controllers\AI\VoiceController;
 use App\Http\Middleware\AI\AIFeatureCheck;
+use App\Http\Middleware\AI\EnsureAIAnalyticsAccess;
 use App\Http\Middleware\AI\AIRateLimiter;
 use App\Http\Middleware\AI\AITenantInjector;
 use Illuminate\Support\Facades\Route;
@@ -33,9 +34,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', AIFeatureCheck::class, AITena
         Route::get('/agent/workflows', [AgentController::class, 'workflows']);
     });
 
-    // Phase 2 — Analytics IA (super-admin, Sprint 17-18)
-    Route::get('/analytics/usage', [AIAnalyticsController::class, 'usage']);
-    Route::get('/analytics/costs', [AIAnalyticsController::class, 'costs']);
-    Route::get('/analytics/tools', [AIAnalyticsController::class, 'tools']);
-    Route::get('/analytics/errors', [AIAnalyticsController::class, 'errors']);
+    // Phase 2 — Analytics IA (Principal/RH only, Sprint 17-18)
+    Route::middleware([EnsureAIAnalyticsAccess::class])->group(function () {
+        Route::get('/analytics/usage', [AIAnalyticsController::class, 'usage']);
+        Route::get('/analytics/costs', [AIAnalyticsController::class, 'costs']);
+        Route::get('/analytics/tools', [AIAnalyticsController::class, 'tools']);
+        Route::get('/analytics/errors', [AIAnalyticsController::class, 'errors']);
+    });
 });
