@@ -27,4 +27,16 @@ return [
     ],
 
     'controllers_base_namespace' => 'App\\Http\\Controllers',
+
+    // Performance: trace critical endpoints with higher sample rate
+    'trace_propagation_targets' => [
+        env('APP_URL', 'https://gestionemployerbackend.onrender.com'),
+    ],
+
+    // Ignore health checks and favicon to reduce noise
+    'ignore_transactions' => [
+        'GET /api/v1/health',
+        'GET /api/v1/health/ready',
+        'GET /favicon.ico',
+    ],
 ];

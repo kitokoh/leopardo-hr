@@ -145,6 +145,25 @@ return [
             'formatter' => Monolog\Formatter\JsonFormatter::class,
         ],
 
+        'discord' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_DISCORD_LEVEL', 'error'),
+            'handler' => \Monolog\Handler\SlackWebhookHandler::class,
+            'handler_with' => [
+                'webhookUrl' => env('LOG_DISCORD_WEBHOOK_URL'),
+                'channel' => null,
+                'username' => env('LOG_DISCORD_USERNAME', 'Leopardo Alerts'),
+                'useShortAttachment' => true,
+                'includeContextAndExtra' => true,
+            ],
+        ],
+
+        'sentry' => [
+            'driver' => 'sentry',
+            'level' => env('LOG_SENTRY_LEVEL', 'error'),
+            'bubble' => true,
+        ],
+
     ],
 
 ];
