@@ -48,7 +48,10 @@ class SentryPerformanceMiddleware
             });
         }
 
-        return $next($request);
+        /** @var Response $response */
+        $response = $next($request);
+
+        return $response;
     }
 
     private function resolveDomain(string $path): ?string
