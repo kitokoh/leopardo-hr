@@ -313,7 +313,7 @@ jobs:
       - name: Run Pint
         id: pint
         working-directory: ./api
-        run: ./vendor/bin/pint
+        run: ./vendor/bin/pint --test
 
       - name: Lint PHP source files
         id: php_lint

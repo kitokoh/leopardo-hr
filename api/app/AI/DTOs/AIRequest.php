@@ -5,7 +5,7 @@ namespace App\AI\DTOs;
 class AIRequest
 {
     /**
-     * @param  array<int, array{role: string, content: string}>  $messages
+     * @param  array<int, array{role: string, content: mixed}>  $messages
      * @param  array<int, array<string, mixed>>  $tools
      */
     public function __construct(
