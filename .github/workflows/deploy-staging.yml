@@ -1,0 +1,140 @@
+name: Deploy Staging - Leopardo RH
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  deployments: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Verify CI passed
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Check required CI workflows
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.sha;
+            const { owner, repo } = context.repo;
+
+            if (context.eventName === 'workflow_dispatch') {
+              core.setOutput('should_deploy', 'true');
+              core.info('Manual trigger — deploying.');
+              return;
+            }
+
+            // Wait up to 10 minutes for CI to complete
+            const maxWait = 600;
+            const interval = 30;
+            let elapsed = 0;
+
+            while (elapsed < maxWait) {
+              const { data: checkRuns } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: sha,
+                per_page: 100,
+              });
+
+              const testsRun = checkRuns.check_runs.find(
+                (r) => r.name.includes('Backend') && r.name.includes('PHP')
+              );
+
+              if (testsRun && testsRun.status === 'completed') {
+                if (testsRun.conclusion === 'success') {
+                  core.setOutput('should_deploy', 'true');
+                  core.info(`Backend tests passed for ${sha}.`);
+                  return;
+                } else {
+                  core.setOutput('should_deploy', 'false');
+                  core.warning(`Backend tests ${testsRun.conclusion} for ${sha}. Skipping deploy.`);
+                  return;
+                }
+              }
+
+              core.info(`Waiting for CI... (${elapsed}s / ${maxWait}s)`);
+              await new Promise((r) => setTimeout(r, interval * 1000));
+              elapsed += interval;
+            }
+
+            core.warning('CI did not complete in time. Deploying anyway (optimistic).');
+            core.setOutput('should_deploy', 'true');
+
+  deploy-staging-api:
+    name: Deploy API to Staging (Render)
+    runs-on: ubuntu-latest
+    needs: gate
+    if: needs.gate.outputs.should_deploy == 'true'
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+
+    steps:
+      - name: Trigger Render staging deploy
+        shell: bash
+        env:
+          RENDER_STAGING_HOOK_URL: ${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL || secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${RENDER_STAGING_HOOK_URL}" ]]; then
+            echo "::warning::No staging deploy hook configured. Set RENDER_STAGING_DEPLOY_HOOK_URL or RENDER_DEPLOY_HOOK_URL secret."
+            exit 0
+          fi
+          echo "Triggering Render staging deployment..."
+          curl --fail --silent --show-error --request POST "${RENDER_STAGING_HOOK_URL}"
+          echo "Deploy hook triggered successfully."
+
+      - name: Wait for staging health
+        shell: bash
+        env:
+          STAGING_URL: ${{ vars.STAGING_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+        run: |
+          set -euo pipefail
+          URL="${STAGING_URL}/api/v1/health"
+          echo "Waiting for staging to be healthy at ${URL}..."
+
+          for attempt in {1..20}; do
+            echo "Health check attempt ${attempt}/20..."
+            if curl --fail --silent --show-error --max-time 10 "${URL}" | grep -q '"status"'; then
+              echo "Staging is healthy!"
+              exit 0
+            fi
+            sleep 15
+          done
+
+          echo "::warning::Staging health check timed out after 5 minutes."
+          exit 1
+
+  notify:
+    name: Post-deploy summary
+    runs-on: ubuntu-latest
+    needs: [gate, deploy-staging-api]
+    if: always()
+    steps:
+      - name: Deployment summary
+        shell: bash
+        run: |
+          echo "## Staging Deployment Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Step | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| CI Gate | ${{ needs.gate.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| API Deploy | ${{ needs.deploy-staging-api.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Commit:** \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"

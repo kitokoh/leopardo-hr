@@ -123,6 +123,87 @@ const routes = [
           title: 'Logs',
           icon: 'DocumentTextIcon'
         }
+      },
+      {
+        path: '/payroll',
+        name: 'payroll',
+        component: () => import('@/views/payroll/PayrollView.vue'),
+        meta: {
+          title: 'Paie',
+          icon: 'CurrencyEuroIcon'
+        }
+      },
+      {
+        path: '/leaves',
+        name: 'leaves',
+        component: () => import('@/views/leaves/LeavesView.vue'),
+        meta: {
+          title: 'Congés & Absences',
+          icon: 'CalendarDaysIcon'
+        }
+      },
+      {
+        path: '/contracts',
+        name: 'contracts',
+        component: () => import('@/views/contracts/ContractsView.vue'),
+        meta: {
+          title: 'Contrats',
+          icon: 'DocumentDuplicateIcon'
+        }
+      },
+      {
+        path: '/recruitment',
+        name: 'recruitment',
+        component: () => import('@/views/recruitment/RecruitmentView.vue'),
+        meta: {
+          title: 'Recrutement',
+          icon: 'UserPlusIcon'
+        }
+      },
+      {
+        path: '/training',
+        name: 'training',
+        component: () => import('@/views/training/TrainingView.vue'),
+        meta: {
+          title: 'Formations',
+          icon: 'AcademicCapIcon'
+        }
+      },
+      {
+        path: '/fleet',
+        name: 'fleet',
+        component: () => import('@/views/fleet/FleetView.vue'),
+        meta: {
+          title: 'Flotte véhicules',
+          icon: 'TruckIcon'
+        }
+      },
+      {
+        path: '/chat',
+        name: 'chat',
+        component: () => import('@/views/chat/ChatView.vue'),
+        meta: {
+          title: 'Chat IA',
+          icon: 'SparklesIcon'
+        }
+      },
+      {
+        path: '/webhooks',
+        name: 'webhooks',
+        component: () => import('@/views/webhooks/WebhooksView.vue'),
+        meta: {
+          title: 'Webhooks',
+          icon: 'LinkIcon'
+        }
+      },
+      {
+        path: '/exports',
+        name: 'exports',
+        component: () => import('@/views/exports/ExportsView.vue'),
+        meta: {
+          title: 'Exports & Rapports',
+          icon: 'ArrowDownTrayIcon'
+        }
       }
     ]
   },

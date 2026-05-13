@@ -11,6 +11,38 @@
 - Logging : canaux Discord alerting + Sentry log driver ajoutes dans logging.php.
 - DEVELOPMENT.md : guide contributeur complet (Docker, backend, dashboard, vitrine, mobile, CI/CD, architecture).
 - GTM : 5 mini cas clients (DZ, MA, SN, TN, CI), templates prospection LinkedIn/WhatsApp, liste 13 good first issues.
+## [4.18.0] - 2026-05-13
+
+### Frontend — Dashboard admin 9 ecrans + composants partages (Plan 13 Section 4)
+
+- Vues : PayrollView (runs + bulletins), LeavesView (demandes + soldes + politiques), ContractsView, RecruitmentView (Kanban pipeline), TrainingView (catalogue + sessions + inscriptions), FleetView (carte Leaflet + liste + alertes), ChatView (conversations IA), WebhooksView (CRUD + test), ExportsView (rapports + historique).
+- Composants partages : DataTable (tri, filtre, pagination, export CSV), KanbanBoard (colonnes drag-ready), ApprovalWidget (approve/reject avec commentaire), StatusBadge (statuts dynamiques).
+- Router et Sidebar mis a jour avec 9 nouvelles routes et icones Heroicons.
+
+## [4.19.0] - 2026-05-13
+
+### Mobile — Flutter 8 ecrans + modeles + providers (Plan 13 Section 6)
+
+- Ecrans : ContractScreen (mon contrat), TrainingScreen (mes formations + progression), ExpenseListScreen (notes de frais + soumission), AiChatScreen (chat IA streaming), AiVoiceScreen (voice IA transcribe/synthesize), VehicleMapScreen (position vehicule), ApprovalScreen (approbations approve/reject), OnboardingScreen (wizard checklist).
+- Modeles : Contract, TrainingEnrollment, ExpenseClaim, Approval, OnboardingStep, VehiclePosition.
+- Repositories et Providers Riverpod enregistres dans core_providers.dart.
+- Router GoRouter mis a jour avec 8 nouvelles routes.
+
+## [4.17.0] - 2026-05-13
+
+### Integration — Lots 1 + 2 du Plan 13 vers main
+
+- DevOps CI/CD (Plan 13 Section 7) : 5 nouveaux workflows — coverage-gate, e2e-staging, deploy-staging, mobile-ci, release.
+- Open Source (Plan 13 Section 8) : Docker Compose enrichi (queue, scheduler, mailpit), Makefile, DevContainer ameliore, GitHub Releases.
+- Blog vitrine MDX (Plan 13 Section 5) : lib/mdx.ts, page /demo, SocialShare, JsonLd, NewsletterForm, sitemap dynamique.
+- Plan 13 mis a jour : sections 3.3, 5, 7, 8 et 9.1 cochees selon etat reel de main.
+## [4.16.20] - 2026-05-13
+
+### Tests — Pay slips API contracts
+
+- Tests : ajout de `PaySlipControllerTest` couvrant liste manager par run, self-service employe, detail proprietaire, telechargement PDF, envoi des bulletins et refus RBAC.
+- Tests : le fixture MVP cree maintenant `pay_slip_lines`, afin que les relations `PaySlip::lines()` soient testables comme en schema tenant reel.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture bulletins de paie.
 
 ## [4.16.19] - 2026-05-13
 
@@ -182,6 +214,33 @@
 - Services : `Orchestrator` accepte `LLMClient` via DI, binding enregistre dans AppServiceProvider
 - Controllers : 207 annotations `@var Employee` sur les `$request->user()` dans 47 controllers
 - Architecture : nouveau `app/helpers.php` enregistre dans `composer.json` autoload files
+
+## [4.16.0] - 2026-05-12
+
+### DevOps — CI/CD workflows + Open Source infrastructure
+
+- CI/CD : ajout workflow `coverage-gate.yml` — backend coverage avec seuil configurable via variable GitHub `BACKEND_COVERAGE_MIN` (default 40%, recommandation +5%/mois). Commente automatiquement la coverage sur les PRs.
+- CI/CD : ajout workflow `e2e-staging.yml` — Playwright E2E execute automatiquement apres chaque deploy staging reussi. Couvre API smoke tests, admin dashboard E2E et web vitrine E2E.
+- CI/CD : ajout workflow `deploy-staging.yml` — deploiement staging automatique sur merge main avec gate CI et health check.
+- CI/CD : ajout workflow `mobile-ci.yml` — workflow dedie Flutter avec analyze, tests + coverage, et build debug APK. Decouple du monolithique `tests.yml`.
+- CI/CD : ajout workflow `release.yml` — creation automatique de GitHub Releases avec extraction du changelog et upload de l'APK release en artifact.
+- Docker : ajout services `queue` (worker Redis), `scheduler` (cron artisan), `mailpit` (email dev) dans docker-compose.yml. Health check Redis ajoute.
+- Docker : creation `Makefile` avec targets : install, up, down, test, lint, analyze, quality, migrate, tinker, shell, logs.
+- DevContainer : enrichi avec forwarding de ports (API 8000, PG 5432, Redis 6379, Dashboard 3000, Web 3001, Mailpit 8025), extensions VS Code supplementaires (Docker, Pint, EditorConfig), et settings formatOnSave.
+- Plan d'action : mise a jour fichier 13 — section 7 DevOps et section 8 Open Source cochees.
+
+## [4.17.0] - 2026-05-12
+
+### Frontend — Blog vitrine MDX + SEO + Demo
+
+- MDX : ajout `lib/mdx.ts` — utilitaires pour lire les articles `.md` avec frontmatter (gray-matter, reading-time). Fonctions `getAllBlogPosts`, `getBlogPost`, `getRelatedPosts`, `extractHeadings`.
+- Page /demo : nouvelle page avec formulaire complet (nom, email, entreprise, telephone, nombre employes, date preferee). Connecte a l'API `/api/forms/demo`.
+- Social Share : composant `SocialShare.tsx` avec boutons Twitter, LinkedIn, Facebook, WhatsApp et copie du lien. Integre dans `BlogArticle`.
+- JSON-LD : composants `JsonLd.tsx` — `ArticleJsonLd` sur chaque article blog, `OrganizationJsonLd` en layout racine, `FAQJsonLd` disponible pour pricing.
+- SEO : `metadataBase`, Open Graph et Twitter Card ajoutes au layout racine. Meta OG sur les pages demo, blog, pricing.
+- Sitemap dynamique : `api/sitemap/route.ts` genere maintenant les URLs blog depuis `getAllBlogPosts()` au lieu d'entrees hardcodees. Page `/demo` ajoutee.
+- Newsletter : composant `NewsletterForm.tsx` connecte a `/api/forms/newsletter`. Remplace le formulaire statique sur la page blog.
+- Plan d'action : mise a jour fichier 13 — section 5 Blog vitrine MDX cochee.
 
 ## [4.15.0] - 2026-05-12
  
