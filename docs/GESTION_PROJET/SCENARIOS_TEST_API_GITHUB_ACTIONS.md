@@ -297,24 +297,28 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `POST /api/v1/recruitment/jobs/{id}/applicants` ajoute un candidat
 - `POST /api/v1/recruitment/applicants/{id}/interviews` planifie un entretien
 - RBAC : employes non-managers recoivent 403 sur toutes les routes recrutement
+- Isolation : listes, details, mises a jour et creation de candidats restent scopees au `company_id` courant.
 
 ### Module D — Formation/LMS
 - `POST /api/v1/training/courses` cree un cours (manager RH)
 - `POST /api/v1/training/courses/{id}/sessions` planifie une session
 - `POST /api/v1/training/sessions/{id}/enroll` inscrit un employe
 - `PUT /api/v1/training/enrollments/{id}` complete une inscription (score, feedback)
+- Isolation : catalogue, details, sessions, trainers et enrollments refusent les ressources ou employees hors tenant.
 
 ### Module E — Prets employes
 - `POST /api/v1/loans` cree un pret avec echeancier auto-genere
 - `PUT /api/v1/loans/{id}/approve` approuve un pret (manager RH)
 - `PUT /api/v1/loans/{id}/disburse` debloque les fonds (apres approbation)
 - Validation : un pret non approuve ne peut pas etre debloque (422)
+- Isolation : manager ne voit que les prets de son tenant et ne peut pas creer/approuver un pret pour un employe externe.
 
 ### Module F — Notes de frais
 - `POST /api/v1/expense-claims` cree une note avec items
 - `PUT /api/v1/expense-claims/{id}/submit` soumet pour approbation
 - `PUT /api/v1/expense-claims/{id}/approve` approuve (manager RH)
 - Validation : seul le draft peut etre soumis, seul le submitted peut etre approuve
+- Isolation : employe ne voit que ses notes, manager seulement celles de son tenant, et les approvals cross-tenant retournent 404.
 
 ### Module G — Organigramme
 - `GET /api/v1/org-chart` retourne l'arbre hierarchique complet

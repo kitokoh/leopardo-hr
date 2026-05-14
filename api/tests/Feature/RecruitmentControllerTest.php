@@ -39,11 +39,18 @@ class RecruitmentControllerTest extends TestCase
             'title' => 'Developpeur Backend',
             'status' => 'published',
         ]);
+        JobPosting::create([
+            'company_id' => Company::factory()->create()->id,
+            'created_by' => $manager->id,
+            'title' => 'Foreign Job',
+            'status' => 'published',
+        ]);
 
         Sanctum::actingAs($manager);
 
         $response = $this->getJson('/api/v1/recruitment/jobs');
         $response->assertOk();
+        $response->assertJsonCount(1, 'data');
     }
 
     public function test_rh_manager_can_create_job_posting(): void
@@ -131,5 +138,33 @@ class RecruitmentControllerTest extends TestCase
         $response = $this->postJson("/api/v1/recruitment/jobs/{$job->id}/publish");
         $response->assertOk();
         $response->assertJsonPath('data.status', 'published');
+    }
+
+    public function test_recruitment_jobs_are_isolated_by_tenant(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create([
+            'company_id' => $company->id,
+            'manager_role' => 'rh',
+        ]);
+        $foreignJob = JobPosting::create([
+            'company_id' => $otherCompany->id,
+            'created_by' => Employee::factory()->managerRh()->create(['company_id' => $otherCompany->id])->id,
+            'title' => 'Foreign Job',
+            'status' => 'draft',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson("/api/v1/recruitment/jobs/{$foreignJob->id}")->assertNotFound();
+        $this->putJson("/api/v1/recruitment/jobs/{$foreignJob->id}", [
+            'title' => 'Leaked update',
+        ])->assertNotFound();
+        $this->postJson("/api/v1/recruitment/jobs/{$foreignJob->id}/applicants", [
+            'first_name' => 'Nadia',
+            'last_name' => 'Candidate',
+            'email' => 'nadia@example.com',
+        ])->assertNotFound();
     }
 }
