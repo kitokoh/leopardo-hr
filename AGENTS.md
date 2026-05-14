@@ -41,6 +41,12 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 
 ## Pieges connus
 
+### 2026-05-14 - Integration branche Devin Plan 14
+
+- La branche distante `devin/1778717175-plan14-phase1-tests` apportait les suites Plan 14 Phase 1 : E2E admin-dashboard, integration API et tests de modeles Flutter. Elle doit etre integree depuis un `origin/main` recent, pas mergee telle quelle si les checks GitHub Actions sont rouges.
+- Les vues admin-dashboard ne doivent pas contenir de `catch {}` vide : `Web Lint` bloque avec `no-empty`. Ajouter au minimum un `console.warn(...)` explicite ou un etat d'erreur utilisateur selon le contexte.
+- Les tests Feature qui declenchent `AbsenceRequested`, `AbsenceApproved`, `AbsenceRejected`, `PayrollValidated` ou d'autres evenements metier peuvent passer par `WebhookListener`. Le schema de test MVP doit donc creer `webhook_endpoints` et `webhook_deliveries`, sinon PostgreSQL echoue avec `relation "webhook_endpoints" does not exist` avant meme les assertions.
+
 ### Audit 2026-05-13 - IA, RBAC et tenant runtime
 
 - Les routes IA doivent importer `App\AI\Orchestrator`. Ne pas recreer `App\AI\AIOrchestrator` : cette classe n'existe pas et provoque un boot fatal sur les routes IA.

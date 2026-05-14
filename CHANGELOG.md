@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.33] - 2026-05-14
+
+### Tests — Integration branche Devin Plan 14
+
+- Tests : integration des suites Devin Plan 14 Phase 1 (E2E admin-dashboard, API integration payroll/onboarding/conges, modeles Flutter).
+- CI : correction des blocs `catch` vides dans l'admin-dashboard afin que `Web Lint` bloque seulement les vrais ecarts.
+- Backend tests : ajout des tables webhook au schema MVP de test pour couvrir les dispatchs evenementiels sans erreur `webhook_endpoints` manquante.
+
 ## [4.16.32] - 2026-05-14
 
 ### Performance — k6 load testing foundation
