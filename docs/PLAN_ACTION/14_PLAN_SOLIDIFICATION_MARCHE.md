@@ -97,10 +97,10 @@
 ### 2.2 Conformite RGPD / Loi 18-07 (DZ)
 ```
 - [ ] Page politique de confidentialite + CGU
-- [ ] Mecanisme d'export des donnees personnelles (droit d'acces)
-- [ ] Mecanisme de suppression des donnees (droit a l'oubli)
+- [x] Mecanisme d'export des donnees personnelles (droit d'acces) via `GET /api/v1/privacy/export`
+- [x] Mecanisme de suppression des donnees (droit a l'oubli) via demande tracee `POST /api/v1/privacy/deletion-request`
 - [ ] Registre des traitements (document interne)
-- [ ] Consentement employe pour le traitement biometrique
+- [x] Consentement employe pour le traitement biometrique via `PATCH /api/v1/privacy/biometric-consent`
 - [ ] Chiffrement des donnees sensibles au repos (AES-256 pour IBAN, salaire)
 - [ ] Journalisation des acces aux donnees RH (audit trail)
 ```
