@@ -2342,6 +2342,505 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  # ─── Vehicle Tracking ───────────────────────────────────────────────
+
+  /vehicles:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Liste des vehicules de l'entreprise"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste paginee des vehicules"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Vehicle"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Creer un vehicule"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number, brand, model]
+              properties:
+                registration_number:
+                  type: string
+                brand:
+                  type: string
+                model:
+                  type: string
+                year:
+                  type: integer
+                tracker_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: "Vehicule cree"
+        "422":
+          $ref: "#/components/responses/Error422"
+
+  /vehicles/{id}:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Detail d'un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detail vehicule"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Vehicle Tracking"]
+      summary: "Modifier un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                registration_number:
+                  type: string
+                brand:
+                  type: string
+                model:
+                  type: string
+      responses:
+        "200":
+          description: "Vehicule mis a jour"
+    delete:
+      tags: ["Vehicle Tracking"]
+      summary: "Supprimer un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Vehicule supprime"
+
+  /vehicles/{id}/position:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Position actuelle du vehicule (via Traccar)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Position GPS actuelle"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  latitude:
+                    type: number
+                    format: double
+                  longitude:
+                    type: number
+                    format: double
+                  speed:
+                    type: number
+                  updated_at:
+                    type: string
+                    format: date-time
+
+  /vehicles/{id}/trips:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Trajets d'un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Liste des trajets"
+
+  /vehicles/{id}/alerts:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Alertes d'un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Liste des alertes"
+
+  /vehicles/{id}/maintenance:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Historique maintenance d'un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Liste des maintenances"
+
+  /vehicles/{id}/assign:
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Assigner un vehicule a un employe"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id]
+              properties:
+                employee_id:
+                  type: integer
+      responses:
+        "200":
+          description: "Vehicule assigne"
+
+  /vehicles/{id}/unassign:
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Desassigner un vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Vehicule desassigne"
+
+  /vehicle-trips:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Liste de tous les trajets"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste paginee des trajets"
+
+  /vehicle-alerts:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Liste de toutes les alertes vehicules"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste paginee des alertes"
+
+  /vehicle-alerts/{id}/acknowledge:
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Acquitter une alerte vehicule"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Alerte acquittee"
+
+  /vehicle-maintenance:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Liste des maintenances vehicules"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste paginee"
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Planifier une maintenance"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vehicle_id, type, description]
+              properties:
+                vehicle_id:
+                  type: integer
+                type:
+                  type: string
+                  enum: [preventive, corrective, inspection]
+                description:
+                  type: string
+                scheduled_at:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: "Maintenance planifiee"
+
+  /tracking/sync-devices:
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Synchroniser les devices Traccar"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Devices synchronises"
+
+  /tracking/sync-positions:
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Synchroniser les positions Traccar"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Positions synchronisees"
+
+  /tracking/sync-trips:
+    post:
+      tags: ["Vehicle Tracking"]
+      summary: "Synchroniser les trajets Traccar"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Trajets synchronises"
+
+  /fleet/overview:
+    get:
+      tags: ["Fleet Management"]
+      summary: "Vue d'ensemble de la flotte"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statistiques flotte"
+
+  /fleet/live-map:
+    get:
+      tags: ["Fleet Management"]
+      summary: "Carte temps reel des vehicules"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Positions live de tous les vehicules"
+
+  /fleet/reports/fuel:
+    get:
+      tags: ["Fleet Management"]
+      summary: "Rapport consommation carburant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Rapport carburant"
+
+  /fleet/reports/mileage:
+    get:
+      tags: ["Fleet Management"]
+      summary: "Rapport kilometrage"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Rapport kilometrage"
+
+  /fleet/reports/maintenance-due:
+    get:
+      tags: ["Fleet Management"]
+      summary: "Vehicules necessitant une maintenance"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste vehicules maintenance due"
+
+  # ─── AI Gateway ────────────────────────────────────────────────────
+
+  /ai/chat:
+    post:
+      tags: ["AI"]
+      summary: "Envoyer un message au chatbot IA"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                conversation_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: "Reponse IA"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reply:
+                    type: string
+                  conversation_id:
+                    type: integer
+                  tools_used:
+                    type: array
+                    items:
+                      type: string
+
+  /ai/chat/history:
+    get:
+      tags: ["AI"]
+      summary: "Historique des conversations IA"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des conversations"
+
+  /ai/chat/{conversationId}:
+    delete:
+      tags: ["AI"]
+      summary: "Supprimer une conversation IA"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Conversation supprimee"
+
+  /ai/tools:
+    get:
+      tags: ["AI"]
+      summary: "Liste des outils IA disponibles"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des tools enregistres dans le ToolRegistry"
+
+  /ai/analytics/usage:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Metriques d'usage IA"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Stats usage (nb conversations, messages, tokens)"
+
+  /ai/analytics/costs:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Couts IA par periode"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Ventilation couts par provider/modele"
+
+  /ai/analytics/tools:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Usage des outils IA"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Stats par outil (appels, succes, erreurs)"
+
+  /ai/analytics/errors:
+    get:
+      tags: ["AI Analytics"]
+      summary: "Erreurs IA recentes"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des erreurs IA avec details"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -2481,6 +2980,38 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        registration_number:
+          type: string
+        brand:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+          nullable: true
+        tracker_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, maintenance, inactive]
+        current_driver_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
     ErrorResponse:
       type: object
       properties:

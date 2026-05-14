@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.52] - 2026-05-14
+
+### Docs & Config — Iteration 2 documentation technique
+
+- Nouveau : `CONVENTIONS.md` — regles de code obligatoires (PHP, tests, git, frontend, mobile, securite).
+- Nouveau : `docs/api/VERSIONING.md` — politique de versioning API, cycle de deprecation, headers.
+- Nouveau : `docs/architecture/PARTITIONING.md` — strategie partitionnement PostgreSQL, indexation, scalabilite.
+- Nouveau : `.pre-commit-config.yaml` — hooks pre-commit (trailing whitespace, YAML, PHP, ESLint, OpenAPI, secrets).
+- OpenAPI : ajout de 27 endpoints Vehicle Tracking + 8 endpoints AI Gateway dans `api/openapi.yaml`.
+- OpenAPI : ajout du schema `Vehicle` dans les composants.
+
 ## [4.16.50] - 2026-05-14
 
 ### CI — Mobile coverage ratchet
