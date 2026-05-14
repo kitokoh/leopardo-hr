@@ -1,14 +1,29 @@
 # Leopardo RH SDKs
 
-Official and community-maintained SDKs for the Leopardo RH API.
+Official generated clients for the Leopardo RH API.
 
-## 📦 Official SDKs
-- **PHP SDK:** `composer require leopardo-rh/sdk` (Coming soon)
-- **Dart/Flutter SDK:** `flutter pub add leopardo_sdk` (Coming soon)
+## Source of Truth
 
-## 🤝 Community SDKs
-- **Python:** `pip install leopardo-rh`
-- **Go:** `go get github.com/leopardo-rh/leopardo-go`
+The canonical contract is `api/openapi.yaml`. JavaScript and Python clients are generated from that file with:
 
----
-Interested in maintaining an official SDK? Contact us at `dev@leopardo-rh.com`.
+```bash
+node dev-hub/tools/generate-openapi-sdk.mjs
+```
+
+To verify that committed SDKs are still aligned with OpenAPI:
+
+```bash
+node dev-hub/tools/generate-openapi-sdk.mjs --check
+```
+
+## Generated Targets
+
+- JavaScript: `dev-hub/sdk/javascript/leopardoClient.js`
+- Python: `dev-hub/sdk/python/leopardo_client.py`
+- Manifest: `dev-hub/sdk/MANIFEST.json`
+
+The generated clients expose one method per OpenAPI operation plus a generic `request(...)` method for advanced cases.
+
+## Rule
+
+Do not edit generated SDK files manually. Update `api/openapi.yaml`, run the generator, then commit the generated output.
