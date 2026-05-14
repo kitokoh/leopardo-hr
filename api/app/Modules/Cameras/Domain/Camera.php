@@ -5,11 +5,13 @@ namespace App\Modules\Cameras\Domain;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * Caméra IP déclarée par une company (module Surveillance Caméras).
@@ -28,14 +30,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $created_by
  * @property string|null $stream_path_override
  * @property array<mixed> $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Company|null $company
- * @property-read \App\Models\Employee|null $creator
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Modules\Cameras\Domain\CameraAccessToken> $accessTokens
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Modules\Cameras\Domain\CameraPermission> $permissions
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Modules\Cameras\Domain\CameraAccessLog> $accessLogs
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Company|null $company
+ * @property-read Employee|null $creator
+ * @property-read Collection<int, CameraAccessToken> $accessTokens
+ * @property-read Collection<int, CameraPermission> $permissions
+ * @property-read Collection<int, CameraAccessLog> $accessLogs
  */
 class Camera extends Model
 {

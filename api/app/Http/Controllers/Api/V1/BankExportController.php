@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\BankExport;
+use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\BankExportGenerator;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +33,7 @@ class BankExportController extends Controller
             'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
         ]);
 
-        $generator = new BankExportGenerator();
+        $generator = new BankExportGenerator;
         $format = $validated['format'];
         $content = $generator->generate($payrollRun, $format);
         $extension = $generator->fileExtension($format);

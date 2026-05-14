@@ -87,8 +87,8 @@ class Feature extends Model
      * Scope pour rÃƒÂ©cupÃƒÂ©rer uniquement les fonctionnalitÃƒÂ©s actives.
      */
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeActive(Builder $query): Builder
     {
@@ -99,9 +99,8 @@ class Feature extends Model
      * Scope pour rÃƒÂ©cupÃƒÂ©rer les fonctionnalitÃƒÂ©s compatibles avec une version mobile.
      */
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param string $mobileVersion
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeCompatibleWith(Builder $query, string $mobileVersion): Builder
     {
@@ -116,9 +115,8 @@ class Feature extends Model
      * Scope pour rÃƒÂ©cupÃƒÂ©rer les fonctionnalitÃƒÂ©s par version API.
      */
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param string $apiVersion
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeForApiVersion(Builder $query, string $apiVersion): Builder
     {

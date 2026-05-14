@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Services\PaySlipPdfGenerator;
@@ -107,7 +107,7 @@ class PaySlipController extends Controller
             abort(404);
         }
 
-        $generator = new PaySlipPdfGenerator();
+        $generator = new PaySlipPdfGenerator;
         $pdfContent = $generator->generate($paySlip);
 
         $filename = sprintf('bulletin_%s_%s.pdf',

@@ -27,11 +27,11 @@ return new class extends Migration
         // la dépendance circulaire departments ↔ employees
         if (! Schema::hasTable('departments')) {
             Schema::create('departments', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();        // NULL en mode schema isolé
-            $table->string('name', 100);
-            // manager_id ajouté en migration T-04 (après employees)
-            $table->timestampTz('created_at')->useCurrent();
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();        // NULL en mode schema isolé
+                $table->string('name', 100);
+                // manager_id ajouté en migration T-04 (après employees)
+                $table->timestampTz('created_at')->useCurrent();
 
                 $table->comment('Départements de l\'entreprise. manager_id ajouté après la table employees (dépendance circulaire)');
             });
@@ -42,11 +42,11 @@ return new class extends Migration
         // ── positions ──────────────────────────────────────────────────────────
         if (! Schema::hasTable('positions')) {
             Schema::create('positions', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('name', 100);
-            $table->unsignedInteger('department_id')->nullable();
-            $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 100);
+                $table->unsignedInteger('department_id')->nullable();
+                $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
                 $table->timestampTz('created_at')->useCurrent();
             });
         }
@@ -54,18 +54,18 @@ return new class extends Migration
         // ── schedules ──────────────────────────────────────────────────────────
         if (! Schema::hasTable('schedules')) {
             Schema::create('schedules', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('name', 100);
-            $table->time('start_time');                             // ex: '08:00:00'
-            $table->time('end_time');                               // ex: '17:00:00'
-            $table->unsignedSmallInteger('break_minutes')->default(60);
-            $table->jsonb('work_days')->default('[1,2,3,4,5]');    // 1=Lundi ... 7=Dimanche
-            $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
-            $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);   // heures/jour avant HS
-            $table->decimal('overtime_threshold_weekly', 5, 2)->default(40.00); // heures/semaine avant HS
-            $table->boolean('is_default')->default(false);
-            $table->timestampTz('created_at')->useCurrent();
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 100);
+                $table->time('start_time');                             // ex: '08:00:00'
+                $table->time('end_time');                               // ex: '17:00:00'
+                $table->unsignedSmallInteger('break_minutes')->default(60);
+                $table->jsonb('work_days')->default('[1,2,3,4,5]');    // 1=Lundi ... 7=Dimanche
+                $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
+                $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);   // heures/jour avant HS
+                $table->decimal('overtime_threshold_weekly', 5, 2)->default(40.00); // heures/semaine avant HS
+                $table->boolean('is_default')->default(false);
+                $table->timestampTz('created_at')->useCurrent();
 
                 $table->comment('Plannings de travail. work_days: tableau JSON [1-7], 1=Lundi');
             });
@@ -74,13 +74,13 @@ return new class extends Migration
         // ── sites ──────────────────────────────────────────────────────────────
         if (! Schema::hasTable('sites')) {
             Schema::create('sites', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('name', 100);
-            $table->text('address')->nullable();
-            $table->decimal('gps_lat', 10, 8)->nullable();
-            $table->decimal('gps_lng', 11, 8)->nullable();
-            $table->unsignedSmallInteger('gps_radius_m')->default(100);         // rayon de tolérance GPS
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 100);
+                $table->text('address')->nullable();
+                $table->decimal('gps_lat', 10, 8)->nullable();
+                $table->decimal('gps_lng', 11, 8)->nullable();
+                $table->unsignedSmallInteger('gps_radius_m')->default(100);         // rayon de tolérance GPS
                 $table->timestampTz('created_at')->useCurrent();
             });
         }
