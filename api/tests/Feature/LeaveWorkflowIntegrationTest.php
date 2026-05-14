@@ -33,16 +33,9 @@ class LeaveWorkflowIntegrationTest extends TestCase
     {
         $company = Company::factory()->create(['country' => 'DZ']);
 
-        $manager = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'manager',
-            'manager_role' => 'principal',
-        ]);
+        Employee::factory()->manager()->create(['company_id' => $company->id]);
 
-        $employee = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'employee',
-        ]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($employee);
 
@@ -68,11 +61,7 @@ class LeaveWorkflowIntegrationTest extends TestCase
     {
         $company = Company::factory()->create();
 
-        $manager = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'manager',
-            'manager_role' => 'principal',
-        ]);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
 
@@ -85,16 +74,9 @@ class LeaveWorkflowIntegrationTest extends TestCase
         $companyA = Company::factory()->create(['name' => 'Tenant A']);
         $companyB = Company::factory()->create(['name' => 'Tenant B']);
 
-        $managerA = Employee::factory()->create([
-            'company_id' => $companyA->id,
-            'role' => 'manager',
-            'manager_role' => 'principal',
-        ]);
+        $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
 
-        $empB = Employee::factory()->create([
-            'company_id' => $companyB->id,
-            'role' => 'employee',
-        ]);
+        $empB = Employee::factory()->create(['company_id' => $companyB->id]);
 
         // Employee B submits absence
         Sanctum::actingAs($empB);
