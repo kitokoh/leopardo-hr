@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\TrainingCourse;
 use App\Models\TrainingEnrollment;
 use App\Models\TrainingSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TrainingController extends Controller
 {
@@ -18,7 +19,9 @@ class TrainingController extends Controller
 
     public function indexCourses(Request $request): JsonResponse
     {
-        $query = TrainingCourse::query();
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $query = TrainingCourse::query()->where('company_id', $actor->company_id);
 
         if ($request->filled('category')) {
             $query->where('category', $request->input('category'));
@@ -119,7 +122,11 @@ class TrainingController extends Controller
         }
 
         $validated = $request->validate([
-            'trainer_id' => 'nullable|integer|exists:employees,id',
+            'trainer_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+            ],
             'external_trainer' => 'nullable|string|max:200',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -148,7 +155,11 @@ class TrainingController extends Controller
         }
 
         $validated = $request->validate([
-            'trainer_id' => 'nullable|integer|exists:employees,id',
+            'trainer_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+            ],
             'external_trainer' => 'nullable|string|max:200',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date',
@@ -176,7 +187,11 @@ class TrainingController extends Controller
         }
 
         $validated = $request->validate([
-            'employee_id' => 'required|integer|exists:employees,id',
+            'employee_id' => [
+                'required',
+                'integer',
+                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+            ],
         ]);
 
         $enrollment = TrainingEnrollment::firstOrCreate([

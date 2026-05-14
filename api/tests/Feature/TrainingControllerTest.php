@@ -39,11 +39,17 @@ class TrainingControllerTest extends TestCase
             'title' => 'Formation Securite',
             'type' => 'internal',
         ]);
+        TrainingCourse::create([
+            'company_id' => Company::factory()->create()->id,
+            'title' => 'Foreign Course',
+            'type' => 'internal',
+        ]);
 
         Sanctum::actingAs($employee);
 
         $response = $this->getJson('/api/v1/training/courses');
         $response->assertOk();
+        $response->assertJsonCount(1, 'data');
     }
 
     public function test_rh_can_create_course(): void
@@ -141,5 +147,37 @@ class TrainingControllerTest extends TestCase
             'employee_id' => $employee->id,
         ]);
         $response->assertStatus(201);
+    }
+
+    public function test_training_isolated_by_tenant_and_rejects_foreign_enrollment(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $foreignEmployee = Employee::factory()->create(['company_id' => $otherCompany->id]);
+        $foreignCourse = TrainingCourse::create([
+            'company_id' => $otherCompany->id,
+            'title' => 'Foreign Course',
+            'type' => 'internal',
+        ]);
+        $course = TrainingCourse::create([
+            'company_id' => $company->id,
+            'title' => 'Internal Course',
+            'type' => 'internal',
+        ]);
+        $session = TrainingSession::create([
+            'training_course_id' => $course->id,
+            'company_id' => $company->id,
+            'start_date' => now()->addWeek(),
+            'end_date' => now()->addWeeks(2),
+            'status' => 'planned',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson("/api/v1/training/courses/{$foreignCourse->id}")->assertNotFound();
+        $this->postJson("/api/v1/training/sessions/{$session->id}/enroll", [
+            'employee_id' => $foreignEmployee->id,
+        ])->assertUnprocessable();
     }
 }

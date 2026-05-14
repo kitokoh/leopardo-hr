@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class EmployeeLoanController extends Controller
 {
@@ -19,7 +20,9 @@ class EmployeeLoanController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $query = EmployeeLoan::query()->with('employee:id,first_name,last_name');
+        $query = EmployeeLoan::query()
+            ->where('company_id', $actor->company_id)
+            ->with('employee:id,first_name,last_name');
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
@@ -40,7 +43,13 @@ class EmployeeLoanController extends Controller
         $actor = $request->user();
 
         $validated = $request->validate([
-            'employee_id' => $actor->isManager() ? 'required|integer|exists:employees,id' : 'prohibited',
+            'employee_id' => $actor->isManager()
+                ? [
+                    'required',
+                    'integer',
+                    Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+                ]
+                : 'prohibited',
             'loan_type' => 'required|in:personal,housing,vehicle,education,emergency',
             'amount' => 'required|numeric|min:1',
             'interest_rate' => 'nullable|numeric|min:0|max:100',
@@ -114,7 +123,7 @@ class EmployeeLoanController extends Controller
         if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
-        if (! in_array($employeeLoan->status, ['draft', 'pending_approval'])) {
+        if (in_array($employeeLoan->status, ['draft', 'pending_approval'], true) === false) {
             abort(422, 'Loan is not in approvable state.');
         }
 
