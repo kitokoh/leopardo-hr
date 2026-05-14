@@ -123,4 +123,47 @@ class EmployeeLoanControllerTest extends TestCase
 
         $this->putJson("/api/v1/loans/{$loan->id}/approve")->assertStatus(403);
     }
+
+    public function test_loans_are_scoped_to_tenant_and_foreign_employee_is_rejected(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $foreignEmployee = Employee::factory()->create(['company_id' => $otherCompany->id]);
+        EmployeeLoan::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 12000,
+            'currency' => 'DZD',
+            'installments' => 3,
+            'installment_amount' => 4000,
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
+        ]);
+        $foreignLoan = EmployeeLoan::create([
+            'company_id' => $otherCompany->id,
+            'employee_id' => $foreignEmployee->id,
+            'amount' => 9000,
+            'currency' => 'DZD',
+            'installments' => 3,
+            'installment_amount' => 3000,
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/loans')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+        $this->getJson("/api/v1/loans/{$foreignLoan->id}")->assertNotFound();
+        $this->postJson('/api/v1/loans', [
+            'employee_id' => $foreignEmployee->id,
+            'amount' => 50000,
+            'loan_type' => 'housing',
+            'installments' => 12,
+            'start_date' => now()->addMonth()->toDateString(),
+        ])->assertUnprocessable();
+    }
 }
