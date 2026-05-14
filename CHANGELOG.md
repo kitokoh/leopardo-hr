@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.55] - 2026-05-14
+
+### Feat — Iteration 5 monitoring et observabilite
+
+- Nouveau : `SentryContextMiddleware` — enrichissement tenant/user/role sur chaque requete API pour Sentry.
+- Nouveau : `SlackAlertNotification` — notification Slack webhook pour les evenements critiques (queue backup, erreurs).
+- Nouveau : `MonitorSlowQueries` artisan command — detection requetes lentes via pg_stat_statements (schedule 15 min).
+- Config : `services.slack.monitoring_webhook` ajoute pour recevoir les alertes monitoring.
+- Scheduler : `monitor:slow-queries` ajoute au schedule Laravel (toutes les 15 minutes).
 ## [4.16.52] - 2026-05-14
 
 ### Docs & Config — Iteration 2 documentation technique
