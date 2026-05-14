@@ -383,6 +383,246 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /platform/plans:
+    get:
+      tags: ["Platform"]
+      summary: "Lister le catalogue des plans SaaS"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Catalogue des plans actifs et inactifs"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformPlansResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /platform/companies/health:
+    get:
+      tags: ["Platform"]
+      summary: "Vue portefeuille health des societes"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        "200":
+          description: "Resume compact adoption, risque et MRR par societe"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyHealthPortfolioResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /platform/companies/{company}/health:
+    get:
+      tags: ["Platform"]
+      summary: "Health detaille d'une societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/CompanyUuid"
+      responses:
+        "200":
+          description: "Adoption, abonnement, anomalies et prochaine action"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyHealthResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /platform/companies/{company}/subscription:
+    get:
+      tags: ["Platform"]
+      summary: "Lire l'abonnement plateforme d'une societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/CompanyUuid"
+      responses:
+        "200":
+          description: "Abonnement courant"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanySubscriptionResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    patch:
+      tags: ["Platform"]
+      summary: "Mettre a jour l'abonnement plateforme d'une societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/CompanyUuid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformCompanySubscriptionUpdateRequest"
+      responses:
+        "200":
+          description: "Abonnement mis a jour"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanySubscriptionResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/companies/{company}/features:
+    get:
+      tags: ["Platform"]
+      summary: "Lire les feature flags d'une societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/CompanyUuid"
+      responses:
+        "200":
+          description: "Feature flags actifs et modules connus"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyFeaturesResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    patch:
+      tags: ["Platform"]
+      summary: "Mettre a jour les feature flags d'une societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/CompanyUuid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformCompanyFeaturesUpdateRequest"
+      responses:
+        "200":
+          description: "Feature flags mis a jour"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyFeaturesResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/company-requests:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les demandes de creation de societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "approved", "rejected"]
+      responses:
+        "200":
+          description: "Demandes paginees"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyRequestsResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /platform/company-requests/{id}:
+    get:
+      tags: ["Platform"]
+      summary: "Lire une demande de creation de societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/NumericId"
+      responses:
+        "200":
+          description: "Detail de la demande"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyRequestResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    patch:
+      tags: ["Platform"]
+      summary: "Approuver ou rejeter une demande de creation de societe"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/NumericId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformCompanyRequestReviewRequest"
+      responses:
+        "200":
+          description: "Decision enregistree"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformCompanyRequestReviewResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /platform/metrics/overview:
     get:
       tags: ["Platform"]
@@ -2175,6 +2415,19 @@ components:
       required: true
       schema:
         type: integer
+    NumericId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    CompanyUuid:
+      name: company
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     DeviceCode:
       name: deviceCode
       in: path
@@ -2761,6 +3014,365 @@ components:
           type: string
           example: "pgsql"
 
+    PlatformPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price_monthly:
+          type: number
+          format: float
+        price_yearly:
+          type: number
+          format: float
+        max_employees:
+          type: integer
+          nullable: true
+        features:
+          type: object
+          additionalProperties: true
+        trial_days:
+          type: integer
+        is_active:
+          type: boolean
+
+    PlatformPlansResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/PlatformPlan"
+
+    PlatformCompanySubscription:
+      type: object
+      properties:
+        company_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: ["active", "trial", "suspended", "expired"]
+        plan:
+          type: object
+          properties:
+            id:
+              type: integer
+              nullable: true
+            name:
+              type: string
+              nullable: true
+            price_monthly:
+              type: number
+              format: float
+              nullable: true
+            price_yearly:
+              type: number
+              format: float
+              nullable: true
+            max_employees:
+              type: integer
+              nullable: true
+        subscription_start:
+          type: string
+          format: date
+          nullable: true
+        subscription_end:
+          type: string
+          format: date
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    PlatformCompanySubscriptionResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PlatformCompanySubscription"
+
+    PlatformCompanySubscriptionUpdateRequest:
+      type: object
+      required: ["plan_id", "status"]
+      properties:
+        plan_id:
+          type: integer
+        status:
+          type: string
+          enum: ["active", "trial", "suspended", "expired"]
+        subscription_start:
+          type: string
+          format: date
+          nullable: true
+        subscription_end:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+          maxLength: 1000
+
+    PlatformCompanyFeaturesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            company_id:
+              type: string
+              format: uuid
+            features:
+              type: object
+              additionalProperties:
+                type: boolean
+            known_modules:
+              type: array
+              items:
+                type: string
+
+    PlatformCompanyFeaturesUpdateRequest:
+      type: object
+      required: ["features"]
+      properties:
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+
+    PlatformHealthCompany:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        status:
+          type: string
+        country:
+          type: string
+        currency:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+
+    PlatformCompanyHealthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            company:
+              $ref: "#/components/schemas/PlatformHealthCompany"
+            plan:
+              type: object
+              additionalProperties: true
+            features:
+              type: object
+              additionalProperties: true
+            period:
+              type: object
+              additionalProperties: true
+            subscription:
+              type: object
+              additionalProperties: true
+            adoption:
+              type: object
+              properties:
+                health_score:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                risk_level:
+                  type: string
+                  enum: ["low", "medium", "high"]
+                employees:
+                  type: object
+                  additionalProperties: true
+                attendance:
+                  type: object
+                  additionalProperties: true
+                onboarding:
+                  type: object
+                  additionalProperties: true
+                anomalies:
+                  type: object
+                  additionalProperties: true
+            next_actions:
+              type: array
+              items:
+                $ref: "#/components/schemas/PlatformNextAction"
+
+    PlatformCompanyHealthPortfolioResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            summary:
+              type: object
+              additionalProperties: true
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  company:
+                    $ref: "#/components/schemas/PlatformHealthCompany"
+                  plan:
+                    type: object
+                    additionalProperties: true
+                  subscription:
+                    type: object
+                    additionalProperties: true
+                  health_score:
+                    type: integer
+                  risk_level:
+                    type: string
+                  employees_active:
+                    type: integer
+                  attendance_logs_30d:
+                    type: integer
+                  last_punch_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                  critical_anomalies_30d:
+                    type: integer
+                  next_action:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/PlatformNextAction"
+
+    PlatformNextAction:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        priority:
+          type: string
+          enum: ["low", "medium", "high"]
+
+    PlatformCompanyRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_name:
+          type: string
+        sector:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected"]
+        admin_notes:
+          type: string
+          nullable: true
+        user:
+          nullable: true
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    PlatformCompanyRequestsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformCompanyRequest"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    PlatformCompanyRequestResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PlatformCompanyRequest"
+
+    PlatformCompanyRequestReviewRequest:
+      type: object
+      required: ["status"]
+      properties:
+        status:
+          type: string
+          enum: ["approved", "rejected"]
+        admin_notes:
+          type: string
+          nullable: true
+          maxLength: 2000
+        plan_id:
+          type: integer
+          nullable: true
+
+    PlatformCompanyRequestReviewResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+              enum: ["approved", "rejected"]
+            approved_company_id:
+              type: string
+              format: uuid
+              nullable: true
+            admin_notes:
+              type: string
+              nullable: true
+            reviewed_at:
+              type: string
+              format: date-time
+              nullable: true
+
     PlatformCompanyCreateRequest:
       type: object
       required:
@@ -3030,6 +3642,7 @@ components:
         author_id:
           type: integer
         author:
+          type: object
           allOf:
             - $ref: "#/components/schemas/TaskCommentAuthorMini"
           nullable: true
@@ -3237,12 +3850,14 @@ components:
         employee_id:
           type: integer
         employee:
+          type: object
           allOf:
             - $ref: "#/components/schemas/EvaluationEmployeeMini"
           nullable: true
         evaluator_id:
           type: integer
         evaluator:
+          type: object
           allOf:
             - $ref: "#/components/schemas/EvaluationEvaluatorMini"
           nullable: true
