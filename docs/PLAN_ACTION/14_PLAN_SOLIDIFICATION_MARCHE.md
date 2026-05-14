@@ -67,7 +67,7 @@
 - [x] Scenario cycle paie mensuel : pointage → calcul → validation → bulletins → export banque
 - [x] Scenario conges avec regles : demande → validation manager → deduction solde → rapport
 - [ ] Scenario multi-tenant : isolation complete entre 2 entreprises (donnees, fichiers, logs)
-- [ ] Coverage backend cible : 60% (actuel : ~40%)
+- [x] Coverage backend cible : 60% — ratchet CI passe a 55% par defaut apres mesure GitHub Actions a 56.86%, cible suivante 60%
 ```
 
 ### 1.3 Tests Mobile — Flutter
