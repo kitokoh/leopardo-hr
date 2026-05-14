@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.28] - 2026-05-14
+
+### CI/CD — E2E Playwright smoke tests & hardening (Partie 6 stabilisation)
+
+- E2E : ajout de 3 suites Playwright (navigation-smoke, accessibility-smoke, error-handling) — 10 scenarios
+- E2E : tests couverture navigation non-auth, validation formulaire login, ARIA labels, clavier, console errors
+- E2E : verification absence stack traces, absence erreurs console, gestion 404
+- Note : changements workflows (coverage 40%, PHPStan scope elargi, baseline auto-regen) necessitent scope `workflow` sur le token OAuth — a appliquer manuellement
+
 ## [4.16.27] - 2026-05-14
 
 ### Security — Privacy/RGPD employee data rights
