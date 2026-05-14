@@ -195,7 +195,16 @@ Future<void> pumpMobile(
   WidgetTester tester,
   Widget child, {
   List<dynamic> overrides = const [],
+  Size surfaceSize = const Size(390, 844),
 }) async {
-  await tester.pumpWidget(localizedHarness(child, overrides: overrides));
+  await tester.binding.setSurfaceSize(surfaceSize);
+  addTearDown(() => tester.binding.setSurfaceSize(null));
+  await tester.pumpWidget(
+    localizedHarness(
+      child,
+      overrides: overrides,
+      surfaceSize: surfaceSize,
+    ),
+  );
   await tester.pump();
 }
