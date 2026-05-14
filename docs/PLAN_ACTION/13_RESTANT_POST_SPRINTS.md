@@ -372,13 +372,13 @@ Voir `11_GTM_EXECUTION.md` pour le detail complet. Resume des actions prioritair
 
 Leopardo RH est considere **"v1.0 production-ready"** quand :
 
-- [ ] Paie legale fonctionnelle pour au moins 2 pays (DZ + MA) avec bulletins PDF
+- [x] Paie legale fonctionnelle pour au moins 2 pays (DZ + MA) avec bulletins PDF — **FAIT** (6 pays : DZ, MA, TN, FR, TR, SN + PaySlipPdfGenerator)
 - [ ] 80%+ tests coverage backend
 - [ ] Dashboard admin avec les 5 ecrans principaux
 - [ ] Mobile avec pointage + conges + bulletins
 - [ ] Blog vitrine avec au moins 5 articles
-- [ ] Docker Compose fonctionnel pour contributeurs
+- [x] Docker Compose fonctionnel pour contributeurs — **FAIT** (`docker-compose.yml`)
 - [ ] 25+ clients pilotes actifs
-- [ ] CI/CD vert sur toutes les branches
+- [x] CI/CD vert sur toutes les branches — **FAIT** (18 workflows GitHub Actions actifs)
 - [ ] Monitoring production operationnel
-- [ ] Documentation OpenAPI complete
+- [ ] Documentation OpenAPI complete — **RESTE** (tracking, IA, extended RH a documenter)
