@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
+use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
@@ -133,7 +137,7 @@ return [
             'level' => env('LOG_LEVEL', 'info'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
         ],
 
         'audit' => [
@@ -142,7 +146,26 @@ return [
             'level' => 'info',
             'days' => 90,
             'replace_placeholders' => true,
-            'formatter' => Monolog\Formatter\JsonFormatter::class,
+            'formatter' => JsonFormatter::class,
+        ],
+
+        'discord' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_DISCORD_LEVEL', 'error'),
+            'handler' => SlackWebhookHandler::class,
+            'handler_with' => [
+                'webhookUrl' => env('LOG_DISCORD_WEBHOOK_URL'),
+                'channel' => null,
+                'username' => env('LOG_DISCORD_USERNAME', 'Leopardo Alerts'),
+                'useShortAttachment' => true,
+                'includeContextAndExtra' => true,
+            ],
+        ],
+
+        'sentry' => [
+            'driver' => 'sentry',
+            'level' => env('LOG_SENTRY_LEVEL', 'error'),
+            'bubble' => true,
         ],
 
     ],
