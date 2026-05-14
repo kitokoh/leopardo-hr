@@ -305,3 +305,4 @@ Procedure recommandee :
 - Les droits employes RGPD sont servis par `GET /api/v1/privacy/export`, `POST /api/v1/privacy/deletion-request` et `PATCH /api/v1/privacy/biometric-consent`, tous sous `auth:sanctum` + `tenant`.
 - Une demande de suppression doit rester non destructive par defaut : creer une `privacy_requests` pour revue RH/juridique, ne pas supprimer directement l'employe ni ses donnees paie/attendance.
 - Le retrait du consentement biometrique doit desactiver les flags visage/empreinte et effacer les chemins de references de templates. Ne pas reactiver des templates simplement parce que `consented=true`; l'enrolement reste le role du workflow biometrie.
+- Les acces RH sensibles doivent passer par `DataAccessAuditLogger` quand c'est possible. Le logger doit rester non bloquant et enregistrer `category=hr_data_access` dans `audit_logs` pour que le dashboard audit et la future couche IA puissent tracer les consultations.
