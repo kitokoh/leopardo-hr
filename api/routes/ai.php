@@ -10,7 +10,7 @@ use App\Http\Middleware\AI\AITenantInjector;
 use App\Http\Middleware\AI\EnsureAIAnalyticsAccess;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', AIFeatureCheck::class, AITenantInjector::class])->prefix('ai')->group(function () {
+Route::middleware(['throttle:api', 'auth:sanctum', 'throttle:ai-sensitive', AIFeatureCheck::class, AITenantInjector::class])->prefix('ai')->group(function () {
 
     // Phase 1 — Chat IA
     Route::middleware([AIRateLimiter::class])->group(function () {

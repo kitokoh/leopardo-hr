@@ -30,7 +30,7 @@ Route::prefix('v1')->group(function (): void {
     Route::get('/metrics', MetricsController::class);
 
     // Auth (core, hors module)
-    Route::middleware(['throttle:10,1'])->group(function (): void {
+    Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
         Route::post('/auth/register', [AuthController::class, 'register']);
         Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
@@ -55,9 +55,11 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
-        Route::get('/privacy/export', [PrivacyController::class, 'export']);
-        Route::post('/privacy/deletion-request', [PrivacyController::class, 'storeDeletionRequest']);
-        Route::patch('/privacy/biometric-consent', [PrivacyController::class, 'updateBiometricConsent']);
+        Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {
+            Route::get('/privacy/export', [PrivacyController::class, 'export']);
+            Route::post('/privacy/deletion-request', [PrivacyController::class, 'storeDeletionRequest']);
+            Route::patch('/privacy/biometric-consent', [PrivacyController::class, 'updateBiometricConsent']);
+        });
 
         // Feature Registry API - Mobile synchronization
         Route::prefix('features')->group(function (): void {
@@ -98,7 +100,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/ai.php';
 
     // Platform (super-admin, hors module)
-    Route::middleware(['auth:super_admin_api'])->prefix('platform')->group(function (): void {
+    Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform')->group(function (): void {
         Route::get('/auth/me', [PlatformAuthController::class, 'me']);
         Route::post('/auth/logout', [PlatformAuthController::class, 'logout']);
 
