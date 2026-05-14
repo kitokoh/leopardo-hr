@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.49] - 2026-05-14
+
+### Mobile — Navigation and contract tests
+
+- Mobile : ajout d'un harnais Flutter de test avec overrides Riverpod pour auth, preferences et storage sans acces reseau.
+- Tests : ajout de la couverture GoRouter pour routes protegees/publiques et smoke tests sur les surfaces mobiles principales.
+- Tests : ajout de contrats repositories mobiles avec `ApiClient` mocke pour absences, paie, notifications, evaluations, contrats, formations, notes de frais, approvals et onboarding.
+- Tests : ajout de baselines structurelles type golden pour la synthese paie mobile et l'etat congés.
+- Plan : coche du lot Plan 14 "Tests Mobile — Flutter" pour widget tests, repositories, navigation GoRouter et baselines golden.
+
 ## [4.16.48] - 2026-05-14
 
 ### Tests — Backend coverage ratchet
