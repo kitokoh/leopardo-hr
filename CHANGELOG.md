@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.46] - 2026-05-14
+
+### API Contracts — Generated client SDKs
+
+- SDK : ajout d'un generateur OpenAPI reproductible pour clients JavaScript et Python depuis `api/openapi.yaml`.
+- SDK : publication des clients generes, du manifeste de synchronisation et de la documentation d'usage.
+- Plan : coche du point Plan 14 "SDK client JavaScript/Python genere depuis OpenAPI".
+
 ## [4.16.45] - 2026-05-14
 
 ### Validation — Generalized release readiness

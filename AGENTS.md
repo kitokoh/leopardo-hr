@@ -340,3 +340,9 @@ Procedure recommandee :
 - Une demande de suppression doit rester non destructive par defaut : creer une `privacy_requests` pour revue RH/juridique, ne pas supprimer directement l'employe ni ses donnees paie/attendance.
 - Le retrait du consentement biometrique doit desactiver les flags visage/empreinte et effacer les chemins de references de templates. Ne pas reactiver des templates simplement parce que `consented=true`; l'enrolement reste le role du workflow biometrie.
 - Les acces RH sensibles doivent passer par `DataAccessAuditLogger` quand c'est possible. Le logger doit rester non bloquant et enregistrer `category=hr_data_access` dans `audit_logs` pour que le dashboard audit et la future couche IA puissent tracer les consultations.
+
+### 2026-05-14 - SDK OpenAPI generes
+
+- Les SDK JavaScript et Python officiels vivent dans `dev-hub/sdk/` et sont generes depuis `api/openapi.yaml` par `node dev-hub/tools/generate-openapi-sdk.mjs`.
+- Ne pas modifier `dev-hub/sdk/javascript/leopardoClient.js`, `dev-hub/sdk/python/leopardo_client.py` ou `dev-hub/sdk/MANIFEST.json` a la main. Mettre a jour OpenAPI puis lancer le generateur.
+- Avant de livrer une modification du contrat OpenAPI ou des SDK, executer `node dev-hub/tools/generate-openapi-sdk.mjs --check`.
