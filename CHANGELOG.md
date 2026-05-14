@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.38] - 2026-05-14
+
+### Security — Admin CSRF/XSS audit
+
+- Securite : ajout de `docs/security/ADMIN_CSRF_XSS_AUDIT.md` couvrant les formulaires admin, le client API Bearer token, les sinks XSS et la posture CORS.
+- Front admin : durcissement ESLint avec blocage de `vue/no-v-html`, `no-eval`, `no-implied-eval`, `no-new-func` et `no-script-url`.
+- Plan : coche du point Plan 14 "Verifier CSRF/XSS protection sur formulaires admin".
+
 ## [4.16.37] - 2026-05-14
 
 ### Security — SQL injection audit
