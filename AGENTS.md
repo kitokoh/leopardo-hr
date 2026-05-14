@@ -29,7 +29,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Si les workflows web sont fusionnes plus tard, conserver absolument les filtres `paths:` qui ont reduit le bruit CI a partir du 2026-05-06.
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
-- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`, et son seuil par defaut doit rester non bloquant (`0`) tant que `BACKEND_COVERAGE_MIN` n'est pas configure explicitement.
+- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.48, son seuil par defaut est `55%` et la cible suivante est `60%`.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
 - Pour `admin-dashboard/`, garder `web-ci.yml` cible sur `admin-dashboard/**` avec lint/build/Playwright.
@@ -358,3 +358,9 @@ Procedure recommandee :
 - La derniere mesure GitHub Actions connue est `56.86%` de statement coverage backend (`7588/13346`) sur PR #458.
 - Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `55%`. La prochaine cible Plan 14 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
 - Le workflow dedie `coverage-gate.yml` doit parser `clover.xml` pour eviter les faux `0%` issus d'une sortie texte PHPUnit variable.
+
+### 2026-05-14 - Tests mobiles Plan 14
+
+- Les tests mobiles ajoutes pour Plan 14 vivent dans `front/mobile/test/navigation`, `front/mobile/test/features/mobile_surface_smoke_test.dart`, `front/mobile/test/repositories` et `front/mobile/test/golden`.
+- Le harnais `front/mobile/test/helpers/mobile_test_harness.dart` remplace auth, preferences et storage par des fakes Riverpod afin de tester les ecrans sans Hive, secure storage ni reseau.
+- Les goldens actuels sont des baselines structurelles, pas encore des captures PNG. Ne les presenter comme goldens image qu'apres ajout de fixtures generees et validees par Flutter.

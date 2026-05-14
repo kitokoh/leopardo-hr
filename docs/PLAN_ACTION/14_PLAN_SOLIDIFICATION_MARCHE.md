@@ -74,10 +74,10 @@
 **Objectif :** App stable sans crash
 
 ```
-- [ ] Widget tests pour les 11 ecrans principaux
-- [ ] Tests unitaires pour les 8 repositories (mock ApiClient)
-- [ ] Test navigation GoRouter (routes protegees / publiques)
-- [ ] Golden tests pour les composants critiques (fiche de paie, calendrier conges)
+- [x] Widget tests pour les 11 ecrans principaux via `front/mobile/test/features/mobile_surface_smoke_test.dart`
+- [x] Tests unitaires pour les 8 repositories (mock ApiClient) via `front/mobile/test/repositories/repository_contract_test.dart`
+- [x] Test navigation GoRouter (routes protegees / publiques) via `front/mobile/test/navigation/go_router_guard_test.dart`
+- [x] Golden tests pour les composants critiques (fiche de paie, calendrier conges) via baselines structurelles `front/mobile/test/golden/critical_component_golden_test.dart`
 ```
 
 ---
