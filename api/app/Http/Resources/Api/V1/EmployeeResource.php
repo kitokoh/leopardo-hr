@@ -10,6 +10,9 @@ use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Employee
+ */
 class EmployeeResource extends JsonResource
 {
     /**

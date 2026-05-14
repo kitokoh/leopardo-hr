@@ -8,7 +8,7 @@ class MakeModuleCommandTest extends TestCase
 {
     public function test_make_module_creates_directory_structure(): void
     {
-        $moduleName = 'TestModule' . time();
+        $moduleName = 'TestModule'.time();
         $basePath = app_path("Modules/{$moduleName}");
 
         try {
@@ -37,14 +37,14 @@ class MakeModuleCommandTest extends TestCase
                 $this->assertDirectoryExists("{$basePath}/{$dir}");
             }
 
-            $routeFile = base_path('routes/modules/' . strtolower($moduleName) . '.php');
+            $routeFile = base_path('routes/modules/'.strtolower($moduleName).'.php');
             $this->assertFileExists($routeFile);
         } finally {
             // Cleanup
             if (is_dir($basePath)) {
                 $this->deleteDirectory($basePath);
             }
-            $routeFile = base_path('routes/modules/' . strtolower($moduleName) . '.php');
+            $routeFile = base_path('routes/modules/'.strtolower($moduleName).'.php');
             if (file_exists($routeFile)) {
                 unlink($routeFile);
             }

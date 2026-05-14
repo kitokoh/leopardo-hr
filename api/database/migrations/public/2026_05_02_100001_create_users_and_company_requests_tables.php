@@ -112,7 +112,7 @@ return new class extends Migration
         Schema::dropIfExists('users');
     }
 
-    private function createTableIfMissing(string $table, \Closure $callback): void
+    private function createTableIfMissing(string $table, Closure $callback): void
     {
         if (Schema::hasTable($table)) {
             return;

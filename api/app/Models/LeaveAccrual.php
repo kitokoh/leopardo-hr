@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,9 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $amount
  * @property string $type
  * @property string $description
- * @property \Illuminate\Support\Carbon $effective_date
+ * @property Carbon $effective_date
  * @property string|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class LeaveAccrual extends Model
 {

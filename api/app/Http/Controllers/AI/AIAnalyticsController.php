@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\AI;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AIAnalyticsController extends Controller
 {
@@ -158,7 +159,7 @@ class AIAnalyticsController extends Controller
         ]);
     }
 
-    private function auditLogQuery(Request $request): \Illuminate\Database\Query\Builder
+    private function auditLogQuery(Request $request): Builder
     {
         $companyId = $request->attributes->get('ai_company_id') ?? $request->user()?->company_id;
 

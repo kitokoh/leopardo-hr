@@ -7,12 +7,29 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Permission interne accordée à un employé sur une caméra spécifique.
  * Section 4.3 du cahier des charges.
  *
  * Contrainte unique : (camera_id, employee_id) — une seule ligne par couple.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $camera_id
+ * @property int $employee_id
+ * @property bool $can_view
+ * @property bool $can_share
+ * @property bool $can_manage
+ * @property int|null $granted_by
+ * @property Carbon|null $granted_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Camera|null $camera
+ * @property-read Employee|null $employee
+ * @property-read Employee|null $grantor
  */
 class CameraPermission extends Model
 {
@@ -47,16 +64,19 @@ class CameraPermission extends Model
         'can_manage' => false,
     ];
 
+    /** @return BelongsTo<Camera, $this> */
     public function camera(): BelongsTo
     {
         return $this->belongsTo(Camera::class, 'camera_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function grantor(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'granted_by');

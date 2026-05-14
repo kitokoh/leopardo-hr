@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Events\AbsenceApproved;
+use App\Events\AbsenceRejected;
+use App\Events\AbsenceRequested;
+use App\Events\AttendanceCheckedIn;
+use App\Events\AttendanceCheckedOut;
+use App\Events\EmployeeArchived;
+use App\Events\EmployeeCreated;
+use App\Events\PayrollValidated;
 use App\Services\WebhookDispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -14,14 +22,14 @@ class WebhookListener implements ShouldQueue
 
     /** @var array<class-string, string> */
     private const EVENT_NAMES = [
-        \App\Events\EmployeeCreated::class => 'employee.created',
-        \App\Events\EmployeeArchived::class => 'employee.archived',
-        \App\Events\AttendanceCheckedIn::class => 'attendance.checked_in',
-        \App\Events\AttendanceCheckedOut::class => 'attendance.checked_out',
-        \App\Events\AbsenceRequested::class => 'absence.requested',
-        \App\Events\AbsenceApproved::class => 'absence.approved',
-        \App\Events\AbsenceRejected::class => 'absence.rejected',
-        \App\Events\PayrollValidated::class => 'payroll.validated',
+        EmployeeCreated::class => 'employee.created',
+        EmployeeArchived::class => 'employee.archived',
+        AttendanceCheckedIn::class => 'attendance.checked_in',
+        AttendanceCheckedOut::class => 'attendance.checked_out',
+        AbsenceRequested::class => 'absence.requested',
+        AbsenceApproved::class => 'absence.approved',
+        AbsenceRejected::class => 'absence.rejected',
+        PayrollValidated::class => 'payroll.validated',
     ];
 
     public function __construct(private readonly WebhookDispatcher $dispatcher) {}

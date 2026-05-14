@@ -5,14 +5,15 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int|null $vehicle_id
  * @property int|null $company_id
  * @property int|null $driver_id
- * @property \Illuminate\Support\Carbon $start_time
- * @property \Illuminate\Support\Carbon $end_time
+ * @property Carbon $start_time
+ * @property Carbon $end_time
  * @property mixed $start_lat
  * @property mixed $start_lng
  * @property string|null $start_address
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $avg_speed_kmh
  * @property string $fuel_consumed
  * @property int|null $traccar_trip_id
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class VehicleTrip extends Model
 {

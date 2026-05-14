@@ -6,6 +6,7 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,10 +18,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $status
  * @property string $biometric_mode
  * @property string|null $trusted_device_label
- * @property \Illuminate\Support\Carbon|null $last_seen_at
- * @property \Illuminate\Support\Carbon|null $last_sync_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $last_seen_at
+ * @property Carbon|null $last_sync_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company|null $company
  */
 class AttendanceKiosk extends Model
 {

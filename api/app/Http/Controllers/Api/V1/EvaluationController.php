@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Evaluation\EvaluationIndexRequest;
 use App\Http\Requests\Api\V1\Evaluation\StoreEvaluationRequest;
 use App\Http\Requests\Api\V1\Evaluation\UpdateEvaluationRequest;
+use App\Models\Employee;
 use App\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

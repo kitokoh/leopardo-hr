@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,10 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $max_amount
  * @property float $rate
  * @property float $fixed_deduction
- * @property \Illuminate\Support\Carbon $effective_from
- * @property \Illuminate\Support\Carbon $effective_to
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon $effective_from
+ * @property Carbon $effective_to
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class TaxSlab extends Model
 {
@@ -35,11 +36,19 @@ class TaxSlab extends Model
         'effective_to' => 'date',
     ];
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeForCountry(Builder $query, string $countryCode): Builder
     {
         return $query->where('country_code', $countryCode);
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeEffective(Builder $query): Builder
     {
         return $query->where('effective_from', '<=', now())

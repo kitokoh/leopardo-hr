@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $employee_id
  * @property string $contract_type
  * @property string $reference
- * @property \Illuminate\Support\Carbon $start_date
- * @property \Illuminate\Support\Carbon|null $end_date
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
  * @property string $job_title
  * @property int|null $department_id
  * @property int|null $position_id
@@ -25,17 +26,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $currency
  * @property string $salary_frequency
  * @property float $work_hours_per_week
- * @property \Illuminate\Support\Carbon|null $probation_end_date
+ * @property Carbon|null $probation_end_date
  * @property array<mixed> $benefits
  * @property array<mixed> $clauses
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $signed_at
+ * @property Carbon|null $signed_at
  * @property string|null $signed_document_path
  * @property string|null $termination_reason
- * @property \Illuminate\Support\Carbon|null $terminated_at
+ * @property Carbon|null $terminated_at
  * @property string|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class Contract extends Model
 {
@@ -104,11 +105,19 @@ class Contract extends Model
         return $this->hasMany(ContractAmendment::class, 'contract_id');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('status', 'active');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeExpiringSoon(Builder $q, int $days = 30): Builder
     {
         return $q->where('status', 'active')

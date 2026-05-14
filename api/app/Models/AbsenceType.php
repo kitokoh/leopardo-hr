@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $deducts_leave
  * @property bool $requires_proof
  * @property int $max_days_once
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class AbsenceType extends Model
 {

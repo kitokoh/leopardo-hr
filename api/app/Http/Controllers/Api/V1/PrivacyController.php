@@ -11,16 +11,26 @@ use App\Models\Employee;
 use App\Models\ExpenseClaim;
 use App\Models\PaySlip;
 use App\Models\PrivacyRequest;
+use App\Services\DataAccessAuditLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PrivacyController extends Controller
 {
+    public function __construct(
+        private readonly DataAccessAuditLogger $dataAccessAuditLogger,
+    ) {}
+
     public function export(Request $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
+
+        $this->dataAccessAuditLogger->record($request, $employee, 'hr_data.privacy_exported', $employee, [
+            'resource' => 'privacy_export',
+            'format_version' => '2026-05-14',
+        ]);
 
         return new JsonResponse([
             'data' => [

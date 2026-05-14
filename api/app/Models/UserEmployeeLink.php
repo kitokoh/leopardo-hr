@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -11,9 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $employee_id
  * @property int|null $company_id
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $linked_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $linked_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company|null $company
  */
 class UserEmployeeLink extends Model
 {

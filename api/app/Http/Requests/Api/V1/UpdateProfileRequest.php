@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Rules\GlobalEmailUnique;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,7 @@ class UpdateProfileRequest extends FormRequest
                 'email',
                 'max:150',
                 Rule::unique('employees', 'email')->ignore($employeeId),
-                new \App\Rules\GlobalEmailUnique((int) $employeeId),
+                new GlobalEmailUnique((int) $employeeId),
             ],
         ];
     }
