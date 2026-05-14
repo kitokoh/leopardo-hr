@@ -119,7 +119,7 @@
 
 ### 3.1 Load Testing
 ```
-- [ ] Setup k6 ou Artillery pour tests de charge
+- [x] Setup k6 pour tests de charge via `dev-hub/load/k6/api-core-smoke.js`
 - [ ] Benchmark : 100 employes simultanes (pointage, consultation paie)
 - [ ] Benchmark : calcul paie 500 employes en < 30 secondes
 - [ ] Benchmark : dashboard admin avec 10k employes (pagination, search)
