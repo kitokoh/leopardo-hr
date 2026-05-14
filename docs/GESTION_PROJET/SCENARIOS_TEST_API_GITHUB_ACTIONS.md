@@ -192,6 +192,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `POST /api/v1/privacy/deletion-request` cree une demande tracee non destructive pour revue RH/juridique et ne supprime jamais le compte immediatement
 - `PATCH /api/v1/privacy/biometric-consent` enregistre le consentement ou retire le consentement en desactivant les flags biometriques et en effacant les references de templates
 - Les endpoints privacy restent sous `auth:sanctum` + `tenant` et ne prennent jamais d'`employee_id` client pour eviter l'export d'un collegue ou d'un autre tenant
+- Les acces aux fiches employees et exports privacy creent une entree `audit_logs` avec `category=hr_data_access`, acteur, tenant et cible quand elle existe
 
 ## Mapping attendu vers les suites GitHub Actions
 
@@ -221,6 +222,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Contrat abonnement plateforme pour upgrade, suspension, expiration et notes client
 - Contrat metrics overview plateforme pour MRR/ARR, impayes, encaissements, companies, abonnements et facturation
 - Contrats privacy/RGPD pour export donnees personnelles, demande de suppression et consentement biometrique employe
+- Journalisation `audit_logs` des acces RH sensibles : liste employees, fiche employee, export privacy
 - Health endpoint
 
 ### Suites a ajouter ou durcir progressivement
