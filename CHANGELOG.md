@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.20.0] - 2026-05-13
+
+### Finitions — Sentry APM, alerting, DEVELOPMENT.md, GTM (Plan 13 Sections 7-9) + Plan 14
+
+- SentryPerformanceMiddleware : traces APM sur endpoints critiques (paie, IA, attendance, contracts, exports) avec tags domain/route.
+- Sentry config enrichi : trace_propagation_targets, ignore_transactions pour health checks.
+- Logging : canaux Discord alerting + Sentry log driver ajoutes dans logging.php.
+- DEVELOPMENT.md : guide contributeur complet (Docker, backend, dashboard, vitrine, mobile, CI/CD, architecture).
+- GTM : 5 mini cas clients (DZ, MA, SN, TN, CI), templates prospection LinkedIn/WhatsApp, liste 13 good first issues.
 ## [4.16.23] - 2026-05-13
 
 ### Security — Contract tenant isolation
