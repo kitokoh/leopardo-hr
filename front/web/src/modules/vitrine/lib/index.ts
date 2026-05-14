@@ -21,3 +21,6 @@ export * from "./utils";
 
 // Locale
 export * from "./vitrine-locale";
+
+// Legal content
+export * from "./legal-content";
