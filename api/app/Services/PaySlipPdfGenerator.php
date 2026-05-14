@@ -7,12 +7,6 @@ namespace App\Services;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\PaySlip;
-use App\Services\Payroll\CountryRules\AlgeriaPayrollRules;
-use App\Services\Payroll\CountryRules\FrancePayrollRules;
-use App\Services\Payroll\CountryRules\MoroccoPayrollRules;
-use App\Services\Payroll\CountryRules\SenegalPayrollRules;
-use App\Services\Payroll\CountryRules\TunisiaPayrollRules;
-use App\Services\Payroll\CountryRules\TurkeyPayrollRules;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PaySlipPdfGenerator

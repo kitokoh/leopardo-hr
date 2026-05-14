@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $task_id
  * @property int|null $author_id
  * @property string|null $content
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class TaskComment extends Model
 {

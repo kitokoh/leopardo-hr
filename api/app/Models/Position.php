@@ -6,13 +6,15 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int|null $company_id
  * @property string $name
  * @property int|null $department_id
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
+ * @property-read Department|null $department
  */
 class Position extends Model
 {

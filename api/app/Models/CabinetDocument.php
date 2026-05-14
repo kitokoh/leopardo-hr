@@ -6,6 +6,7 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -19,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property string $disk
  * @property string $path
  * @property string|null $notes
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class CabinetDocument extends Model
 {

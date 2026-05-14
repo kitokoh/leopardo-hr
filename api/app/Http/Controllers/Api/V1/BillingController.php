@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Employee;
 use App\Models\Invoice;
 use App\Models\Subscription;
 use Barryvdh\DomPDF\Facade\Pdf;

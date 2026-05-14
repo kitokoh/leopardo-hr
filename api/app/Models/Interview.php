@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,13 +15,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $company_id
  * @property int|null $interviewer_id
  * @property string $type
- * @property \Illuminate\Support\Carbon|null $scheduled_at
+ * @property Carbon|null $scheduled_at
  * @property string|null $duration_minutes
  * @property string $status
  * @property string|null $feedback
  * @property string|null $rating
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class Interview extends Model
 {

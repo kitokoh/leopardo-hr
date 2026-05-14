@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,14 +19,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $created_by
  * @property array<mixed> $assigned_to
  * @property int|null $project_id
- * @property \Illuminate\Support\Carbon $due_date
+ * @property Carbon $due_date
  * @property string|null $priority
  * @property string $status
  * @property string|null $category
  * @property array<mixed> $checklist
  * @property string|null $visibility
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, TaskComment> $comments
  */
 class Task extends Model
 {
@@ -55,6 +58,10 @@ class Task extends Model
         return $this->hasMany(TaskComment::class, 'task_id');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $employeeId): Builder
     {
         return $q->whereJsonContains('assigned_to', $employeeId);
