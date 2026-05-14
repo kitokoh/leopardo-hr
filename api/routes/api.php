@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\MetricsController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Api\V1\PlatformCompanySubscriptionController;
 use App\Http\Controllers\Api\V1\PlatformMetricsOverviewController;
 use App\Http\Controllers\Api\V1\PlatformPlanController;
+use App\Http\Controllers\Api\V1\PrivacyController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +27,7 @@ Route::prefix('v1')->group(function (): void {
     Route::get('/health', HealthController::class);
     Route::get('/health/live', [HealthController::class, 'live']);
     Route::get('/health/ready', [HealthController::class, 'ready']);
-    Route::get('/metrics', \App\Http\Controllers\Api\V1\MetricsController::class);
+    Route::get('/metrics', MetricsController::class);
 
     // Auth (core, hors module)
     Route::middleware(['throttle:10,1'])->group(function (): void {
@@ -53,6 +55,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
+        Route::get('/privacy/export', [PrivacyController::class, 'export']);
+        Route::post('/privacy/deletion-request', [PrivacyController::class, 'storeDeletionRequest']);
+        Route::patch('/privacy/biometric-consent', [PrivacyController::class, 'updateBiometricConsent']);
 
         // Feature Registry API - Mobile synchronization
         Route::prefix('features')->group(function (): void {
