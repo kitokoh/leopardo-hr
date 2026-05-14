@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.39] - 2026-05-14
+
+### Ops — Database backup automation
+
+- CI/Ops : ajout du workflow `Database Backup & Restore Drill` avec backup PostgreSQL quotidien vers S3/R2 et drill restore mensuel/manual.
+- Runbook : mise a jour du backup/restore avec secrets S3, RPO < 24h, RTO < 4h, fallback manuel et trace de drill.
+- Plan : coche des items Plan 14 backup quotidien, restore mensuel documente, RPO/RTO et runbook incident documente.
+
 ## [4.16.38] - 2026-05-14
 
 ### Security — Admin CSRF/XSS audit
