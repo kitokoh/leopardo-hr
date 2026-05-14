@@ -49,6 +49,8 @@ Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configur
 - Une erreur de bootstrap ne fuit pas d'informations sensibles
 - Le middleware `RequestIdMiddleware` ajoute un header `X-Request-Id` a chaque reponse API
 - Un `X-Request-Id` fourni dans la requete est reechoe dans la reponse
+- `GET /docs` publie Swagger UI sans authentification
+- `GET /docs/openapi.yaml` sert la specification canonique `api/openapi.yaml` sans copie divergente
 
 ### 2. Auth publique et onboarding
 
