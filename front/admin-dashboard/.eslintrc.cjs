@@ -6,6 +6,7 @@ module.exports = {
     es2022: true,
     node: true,
   },
+  ignorePatterns: ['dist/', 'node_modules/', 'playwright-report/', 'test-results/'],
   extends: ['eslint:recommended', 'plugin:vue/vue3-essential'],
   parser: 'vue-eslint-parser',
   parserOptions: {
