@@ -77,7 +77,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         ]);
 
         $response = $this->actingAs($managerA, 'sanctum')
-            ->getJson('/api/v1/salary-advances?employee_id=' . $employeeB->id);
+            ->getJson('/api/v1/salary-advances?employee_id='.$employeeB->id);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);

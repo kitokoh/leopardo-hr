@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -15,13 +16,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $cost
  * @property string $currency
  * @property int $mileage_at_service
- * @property \Illuminate\Support\Carbon $service_date
- * @property \Illuminate\Support\Carbon $next_service_date
+ * @property Carbon $service_date
+ * @property Carbon $next_service_date
  * @property int $next_service_mileage
  * @property string $provider
  * @property string|null $invoice_path
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class VehicleMaintenance extends Model
 {

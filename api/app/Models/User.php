@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -18,12 +19,12 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $provider
  * @property string $preferred_language
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property \Illuminate\Support\Carbon|null $last_login_at
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $last_login_at
  * @property int $failed_login_attempts
- * @property \Illuminate\Support\Carbon|null $locked_until
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $locked_until
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class User extends Authenticatable
 {

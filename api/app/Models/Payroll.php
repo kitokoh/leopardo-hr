@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -27,10 +28,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $pdf_path
  * @property string $status
  * @property string|null $validated_by
- * @property \Illuminate\Support\Carbon|null $validated_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Employee|null $employee
+ * @property Carbon|null $validated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Employee|null $employee
  */
 class Payroll extends Model
 {
@@ -66,8 +67,8 @@ class Payroll extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeDraft(Builder $q): Builder
     {
@@ -75,8 +76,8 @@ class Payroll extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeValidated(Builder $q): Builder
     {
@@ -84,10 +85,8 @@ class Payroll extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param int $month
-     * @param int $year
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeForPeriod(Builder $q, int $month, int $year): Builder
     {
@@ -95,9 +94,8 @@ class Payroll extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param int $id
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeForEmployee(Builder $q, int $id): Builder
     {

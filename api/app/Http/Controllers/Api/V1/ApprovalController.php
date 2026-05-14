@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\ApprovalDecision;
 use App\Models\ApprovalRequest;
 use App\Models\ApprovalWorkflow;
+use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -148,6 +148,7 @@ class ApprovalController extends Controller
 
         /** @var ApprovalRequest $approvalRequestFresh */
         $approvalRequestFresh = $approvalRequest->fresh();
+
         return response()->json(['data' => $approvalRequestFresh->load('decisions')]);
     }
 
@@ -179,6 +180,7 @@ class ApprovalController extends Controller
 
         /** @var ApprovalRequest $approvalRequestFresh */
         $approvalRequestFresh = $approvalRequest->fresh();
+
         return response()->json(['data' => $approvalRequestFresh->load('decisions')]);
     }
 

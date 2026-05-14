@@ -7,23 +7,23 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int|null $company_id
  * @property int|null $employee_id
  * @property int|null $absence_type_id
- * @property \Illuminate\Support\Carbon $start_date
- * @property \Illuminate\Support\Carbon|null $end_date
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
  * @property int $days_count
  * @property string $status
  * @property string|null $reason
  * @property string|null $proof_path
  * @property string|null $approved_by
  * @property string|null $rejected_reason
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\AbsenceType|null $absenceType
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class Absence extends Model
 {
@@ -69,20 +69,11 @@ class Absence extends Model
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
     public function scopePending(Builder $q): Builder
     {
         return $q->where('status', 'pending');
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param int $employeeId
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
     public function scopeForEmployee(Builder $q, int $employeeId): Builder
     {
         return $q->where('employee_id', $employeeId);

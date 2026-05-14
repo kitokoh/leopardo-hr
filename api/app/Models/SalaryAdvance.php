@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -21,8 +22,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $monthly_deduction
  * @property float $amount_remaining
  * @property array<mixed> $repayment_plan
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class SalaryAdvance extends Model
 {
@@ -54,8 +55,8 @@ class SalaryAdvance extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopePending(Builder $q): Builder
     {
@@ -63,8 +64,8 @@ class SalaryAdvance extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeActive(Builder $q): Builder
     {
@@ -72,9 +73,8 @@ class SalaryAdvance extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param int $id
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeForEmployee(Builder $q, int $id): Builder
     {

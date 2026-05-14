@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -23,10 +24,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $status
  * @property int|null $approved_company_id
  * @property string|null $admin_notes
- * @property \Illuminate\Support\Carbon|null $reviewed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $user
+ * @property Carbon|null $reviewed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
  */
 class CompanyRequest extends Model
 {

@@ -6,6 +6,7 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -22,8 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property bool $is_recurring
  * @property int $order
  * @property bool $active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class SalaryComponent extends Model
 {
@@ -51,8 +52,8 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeActive(Builder $query): Builder
     {
@@ -60,8 +61,8 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeEarnings(Builder $query): Builder
     {
@@ -69,8 +70,8 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeDeductions(Builder $query): Builder
     {
@@ -78,8 +79,8 @@ class SalaryComponent extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeEmployerContributions(Builder $query): Builder
     {

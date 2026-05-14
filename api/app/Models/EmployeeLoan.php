@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -20,13 +21,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $interest_rate
  * @property string|null $installments
  * @property float $installment_amount
- * @property \Illuminate\Support\Carbon $start_date
+ * @property Carbon $start_date
  * @property string $status
  * @property string|null $approved_by
- * @property \Illuminate\Support\Carbon|null $disbursed_at
+ * @property Carbon|null $disbursed_at
  * @property string|null $notes
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class EmployeeLoan extends Model
 {
@@ -77,8 +78,8 @@ class EmployeeLoan extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeActive(Builder $q): Builder
     {

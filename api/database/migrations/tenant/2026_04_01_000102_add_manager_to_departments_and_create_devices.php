@@ -30,39 +30,39 @@ return new class extends Migration
         // DÉCISION ARCHITECTURALE : table séparée (PAS fcm_tokens JSONB dans employees)
         // Raison : scalable multi-device, permet last_seen par appareil, révocation ciblée
         if (! Schema::hasTable('employee_devices')) {
-        Schema::create('employee_devices', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
-            $table->string('device_name', 100);                     // ex: 'iPhone 15 Pro d\'Ahmed'
-            $table->text('fcm_token')->unique();                    // Token Firebase Cloud Messaging
-            $table->string('platform', 10)->default('android');     // 'android' | 'ios'
-            $table->string('app_version', 20)->nullable();
-            $table->timestampTz('last_seen_at')->nullable();
-            $table->timestampTz('created_at')->useCurrent();
+            Schema::create('employee_devices', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('employee_id');
+                $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+                $table->string('device_name', 100);                     // ex: 'iPhone 15 Pro d\'Ahmed'
+                $table->text('fcm_token')->unique();                    // Token Firebase Cloud Messaging
+                $table->string('platform', 10)->default('android');     // 'android' | 'ios'
+                $table->string('app_version', 20)->nullable();
+                $table->timestampTz('last_seen_at')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
 
-            $table->index('employee_id');
-            $table->comment('Tokens FCM par appareil. DÉCISION: table séparée (pas JSONB dans employees). Permet multi-device et révocation ciblée');
-        });
+                $table->index('employee_id');
+                $table->comment('Tokens FCM par appareil. DÉCISION: table séparée (pas JSONB dans employees). Permet multi-device et révocation ciblée');
+            });
         }
 
         // ── 3. devices (appareils ZKTeco / QR) ────────────────────────────────
         if (! Schema::hasTable('devices')) {
-        Schema::create('devices', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('site_id')->nullable();
-            $table->foreign('site_id')->references('id')->on('sites')->nullOnDelete();
-            $table->string('name', 100);
-            $table->enum('type', ['zkteco', 'qrcode_terminal', 'tablet']);
-            $table->string('serial_number', 100)->nullable();
-            $table->string('ip_address', 45)->nullable();           // IPv4 ou IPv6
-            $table->text('device_token')->nullable();               // Token auth pour API ZKTeco
-            $table->enum('status', ['active', 'inactive', 'maintenance'])->default('active');
-            $table->timestampTz('last_sync_at')->nullable();
-            $table->timestampTz('created_at')->useCurrent();
-        });
+            Schema::create('devices', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('site_id')->nullable();
+                $table->foreign('site_id')->references('id')->on('sites')->nullOnDelete();
+                $table->string('name', 100);
+                $table->enum('type', ['zkteco', 'qrcode_terminal', 'tablet']);
+                $table->string('serial_number', 100)->nullable();
+                $table->string('ip_address', 45)->nullable();           // IPv4 ou IPv6
+                $table->text('device_token')->nullable();               // Token auth pour API ZKTeco
+                $table->enum('status', ['active', 'inactive', 'maintenance'])->default('active');
+                $table->timestampTz('last_sync_at')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+            });
         }
     }
 

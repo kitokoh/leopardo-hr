@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\FeatureDetector;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 
 class TestFeatureDetectorCommand extends Command
 {
@@ -38,9 +39,9 @@ class TestFeatureDetectorCommand extends Command
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, array<string, mixed>>  $features
+     * @param  Collection<int, array<string, mixed>>  $features
      */
-    private function displayFeatures(\Illuminate\Support\Collection $features): void
+    private function displayFeatures(Collection $features): void
     {
         if ($features->isEmpty()) {
             return;

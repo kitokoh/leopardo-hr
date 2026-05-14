@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -16,9 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $country_code
  * @property string $frequency
  * @property bool $active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SalaryComponent> $components
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, SalaryComponent> $components
  */
 class SalaryStructure extends Model
 {
@@ -41,8 +43,8 @@ class SalaryStructure extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeActive(Builder $query): Builder
     {
@@ -50,9 +52,8 @@ class SalaryStructure extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param string $countryCode
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeForCountry(Builder $query, string $countryCode): Builder
     {

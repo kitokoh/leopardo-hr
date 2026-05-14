@@ -19,51 +19,51 @@ return new class extends Migration
     public function up(): void
     {
         if (! Schema::hasTable('features')) {
-        Schema::create('features', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
+            Schema::create('features', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
 
-            // ── Identification de la fonctionnalité ──────────────────────────
-            $table->string('key', 100)->unique();
-            $table->string('title', 200);
-            $table->text('description');
+                // ── Identification de la fonctionnalité ──────────────────────────
+                $table->string('key', 100)->unique();
+                $table->string('title', 200);
+                $table->text('description');
 
-            // ── Configuration API ────────────────────────────────────────────
-            $table->string('endpoint', 500);
+                // ── Configuration API ────────────────────────────────────────────
+                $table->string('endpoint', 500);
 
-            if (DB::getDriverName() === 'pgsql') {
-                $table->jsonb('http_methods');
-                $table->jsonb('parameters');
-                $table->jsonb('response_schema');
-                $table->jsonb('permissions');
-                $table->jsonb('metadata')->nullable();
-            } else {
-                $table->json('http_methods');
-                $table->json('parameters');
-                $table->json('response_schema');
-                $table->json('permissions');
-                $table->json('metadata')->nullable();
-            }
+                if (DB::getDriverName() === 'pgsql') {
+                    $table->jsonb('http_methods');
+                    $table->jsonb('parameters');
+                    $table->jsonb('response_schema');
+                    $table->jsonb('permissions');
+                    $table->jsonb('metadata')->nullable();
+                } else {
+                    $table->json('http_methods');
+                    $table->json('parameters');
+                    $table->json('response_schema');
+                    $table->json('permissions');
+                    $table->json('metadata')->nullable();
+                }
 
-            // ── Compatibilité mobile ─────────────────────────────────────────
-            $table->string('mobile_version_min', 20);
-            $table->string('mobile_version_max', 20)->nullable();
-            $table->string('api_version', 20);
+                // ── Compatibilité mobile ─────────────────────────────────────────
+                $table->string('mobile_version_min', 20);
+                $table->string('mobile_version_max', 20)->nullable();
+                $table->string('api_version', 20);
 
-            // ── État ─────────────────────────────────────────────────────────
-            $table->string('status', 20)->default('active');
+                // ── État ─────────────────────────────────────────────────────────
+                $table->string('status', 20)->default('active');
 
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
 
-            // ── Index pour performance ────────────────────────────────────────
-            $table->index('status');
-            $table->index('api_version');
-            $table->index('mobile_version_min');
-            $table->index(['company_id', 'status']);
-            $table->index(['status', 'api_version']);
-            $table->unique(['company_id', 'key']);
-        });
+                // ── Index pour performance ────────────────────────────────────────
+                $table->index('status');
+                $table->index('api_version');
+                $table->index('mobile_version_min');
+                $table->index(['company_id', 'status']);
+                $table->index(['status', 'api_version']);
+                $table->unique(['company_id', 'key']);
+            });
         }
 
         // ── Commentaires PostgreSQL uniquement ────────────────────────────────

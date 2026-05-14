@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -19,13 +20,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $total_amount
  * @property string $currency
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $submitted_at
- * @property \Illuminate\Support\Carbon|null $approved_at
- * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property Carbon|null $submitted_at
+ * @property Carbon|null $approved_at
+ * @property Carbon|null $paid_at
  * @property string|null $approved_by
  * @property string|null $payment_reference
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class ExpenseClaim extends Model
 {
@@ -74,9 +75,8 @@ class ExpenseClaim extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param string $status
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeByStatus(Builder $q, string $status): Builder
     {

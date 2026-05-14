@@ -57,9 +57,8 @@ class LeaveBalance extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param int $year
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeForYear(Builder $q, int $year): Builder
     {
