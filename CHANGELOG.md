@@ -11,6 +11,17 @@
 - API : ajout de `PATCH /api/v1/privacy/biometric-consent` pour enregistrer ou retirer le consentement biometrique en nettoyant les references de templates.
 - Tests : couverture Feature des contrats privacy, non-divulgation des donnees collegue et persistance des demandes RGPD.
 
+## [4.16.27] - 2026-05-13
+
+### Backend — PHPStan baseline reduction (Partie 5 stabilisation)
+
+- Resources : ajout `@mixin \Model` sur 16 JsonResource pour eliminer ~105 erreurs `property.notFound`
+- Camera module : ajout `@property` PHPDoc sur 4 modeles Domain (Camera, CameraAccessToken, CameraAccessLog, CameraPermission)
+- Camera module : ajout `@return` generics sur 10 relations BelongsTo/HasMany
+- Models : ajout `@property-read` pour 24 relations manquantes sur 14 modeles (Employee, Department, Evaluation, etc.)
+- Models : ajout `@param Builder<static>`/`@return Builder<static>` sur 48 scope methods dans 23 modeles
+- Estimation de reduction baseline : ~500-700 erreurs en moins une fois le baseline regenere
+
 ## [4.16.26] - 2026-05-13
 
 ### Security — HR extension tenant isolation

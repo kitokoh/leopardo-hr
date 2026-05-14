@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property int|null $manager_id
  * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \App\Models\Employee|null $manager
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Position> $positions
  */
 class Department extends Model
 {

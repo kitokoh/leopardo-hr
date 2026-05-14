@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $acknowledged_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \App\Models\Employee|null $evaluator
  */
 class Evaluation extends Model
 {
@@ -57,16 +59,29 @@ class Evaluation extends Model
         return $this->belongsTo(Employee::class, 'evaluator_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeDraft(Builder $q): Builder
     {
         return $q->where('status', 'draft');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeSubmitted(Builder $q): Builder
     {
         return $q->where('status', 'submitted');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $id): Builder
     {
         return $q->where('employee_id', $id);

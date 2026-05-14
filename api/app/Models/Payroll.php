@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $validated_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Employee|null $employee
  */
 class Payroll extends Model
 {
@@ -64,21 +65,40 @@ class Payroll extends Model
         return $this->belongsTo(Employee::class, 'validated_by');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeDraft(Builder $q): Builder
     {
         return $q->where('status', 'draft');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeValidated(Builder $q): Builder
     {
         return $q->where('status', 'validated');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $month
+     * @param int $year
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForPeriod(Builder $q, int $month, int $year): Builder
     {
         return $q->where('period_month', $month)->where('period_year', $year);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $id): Builder
     {
         return $q->where('employee_id', $id);

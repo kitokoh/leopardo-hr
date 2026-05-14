@@ -53,16 +53,29 @@ class SalaryAdvance extends Model
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopePending(Builder $q): Builder
     {
         return $q->where('status', 'pending');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('status', 'active');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $id): Builder
     {
         return $q->where('employee_id', $id);

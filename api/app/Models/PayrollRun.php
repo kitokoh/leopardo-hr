@@ -70,16 +70,28 @@ class PayrollRun extends Model
         return $this->hasMany(BankExport::class, 'payroll_run_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeDraft(Builder $query): Builder
     {
         return $query->where('status', 'draft');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeCalculated(Builder $query): Builder
     {
         return $query->where('status', 'calculated');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeValidated(Builder $query): Builder
     {
         return $query->where('status', 'validated');

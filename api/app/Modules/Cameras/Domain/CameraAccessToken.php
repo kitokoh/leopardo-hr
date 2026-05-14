@@ -13,6 +13,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * interne hors-app. Vérifié par MediaMTX via l'endpoint interne.
  *
  * Section 4.2 du cahier des charges.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $camera_id
+ * @property string $token
+ * @property string|null $label
+ * @property string|null $granted_to_email
+ * @property string|null $granted_to_name
+ * @property int|null $granted_by
+ * @property array<mixed> $permissions
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $last_used_at
+ * @property int $use_count
+ * @property bool $is_revoked
+ * @property array<mixed>|null $ip_whitelist
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Modules\Cameras\Domain\Camera|null $camera
+ * @property-read \App\Models\Employee|null $grantor
  */
 class CameraAccessToken extends Model
 {
@@ -56,11 +75,13 @@ class CameraAccessToken extends Model
         'token',
     ];
 
+    /** @return BelongsTo<Camera, $this> */
     public function camera(): BelongsTo
     {
         return $this->belongsTo(Camera::class, 'camera_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function grantor(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'granted_by');

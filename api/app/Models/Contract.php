@@ -104,11 +104,19 @@ class Contract extends Model
         return $this->hasMany(ContractAmendment::class, 'contract_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('status', 'active');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeExpiringSoon(Builder $q, int $days = 30): Builder
     {
         return $q->where('status', 'active')
