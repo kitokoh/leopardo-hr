@@ -152,6 +152,7 @@ Procedure recommandee :
 - Si un compte super-admin a le 2FA active, l'API renvoie `202 TWO_FA_REQUIRED`; le frontend doit traiter ce cas comme une etape de login et non comme un succes silencieux.
 - Le login admin supporte maintenant un toggle afficher / masquer le mot de passe. Si cette zone evolue encore, garder les labels ARIA synchronises avec l'etat visible/cache et couvrir la regression dans Playwright.
 - La vitrine publique `web/` a maintenant un vrai rail de locale client (`FR/EN/TR/AR`) sur la landing page. Pour les prochaines evolutions, reutiliser ce socle au lieu de rehardcoder des textes dans chaque composant.
+- Les pages legales de la vitrine vivent dans `front/web/src/app/privacy` et `front/web/src/app/terms`. Garder les liens footer reels vers ces routes et reutiliser `useVitrineLocale()` pour FR/EN/TR/AR + RTL au lieu de creer une logique locale separee.
 - Desormais, quand `web/**` change, les checks de lint/build doivent partir via `web-marketing-ci.yml`; ne pas se reposer uniquement sur le workflow admin.
 
 ### 2026-05-08 - Render et transaction PostgreSQL abort

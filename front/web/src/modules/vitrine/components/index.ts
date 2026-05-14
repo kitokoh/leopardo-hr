@@ -15,6 +15,7 @@ export { FaqSection as LegacyFaqSection } from './FaqSection';
 export { CTASection as LegacyCTASection } from './CTASection';
 export { DemoSection } from './DemoSection';
 export { ParticleField } from './ParticleField';
+export { LegalPageShell } from './LegalPageShell';
 
 // Common Components
 export * from './common';

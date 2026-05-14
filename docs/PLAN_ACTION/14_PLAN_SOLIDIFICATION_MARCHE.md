@@ -96,7 +96,7 @@
 
 ### 2.2 Conformite RGPD / Loi 18-07 (DZ)
 ```
-- [ ] Page politique de confidentialite + CGU
+- [x] Page politique de confidentialite + CGU via la vitrine `/privacy` et `/terms` en FR/EN/TR/AR
 - [x] Mecanisme d'export des donnees personnelles (droit d'acces) via `GET /api/v1/privacy/export`
 - [x] Mecanisme de suppression des donnees (droit a l'oubli) via demande tracee `POST /api/v1/privacy/deletion-request`
 - [ ] Registre des traitements (document interne)
