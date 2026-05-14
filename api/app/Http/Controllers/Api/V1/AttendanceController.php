@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\DTOs\CheckInDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceAnomaliesRequest;
-use App\Http\Requests\Api\V1\Attendance\AttendanceTodayRequest;
+use App\Http\Requests\Api\V1\Attendance\AttendanceIndexRequest;
 use App\Http\Requests\Api\V1\Attendance\AttendanceMonthlyReportRequest;
+use App\Http\Requests\Api\V1\Attendance\AttendanceTodayRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckOutRequest;
 use App\Http\Resources\Api\V1\AttendanceLogResource;

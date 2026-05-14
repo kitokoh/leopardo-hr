@@ -5,9 +5,8 @@ namespace Tests\Feature\Security;
 use App\Models\Company;
 use App\Models\Employee;
 use Laravel\Socialite\Facades\Socialite;
-use Tests\RefreshTenantDatabase;
-use Tests\TestCase;
 use Tests\Support\CreatesMvpSchema;
+use Tests\TestCase;
 
 class GoogleAuthGlobalLookupTest extends TestCase
 {
@@ -94,7 +93,7 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // 4. Call the token endpoint
         $response = $this->postJson('/api/v1/auth/google/token', [
             'token' => 'fake-token',
-            'device_name' => 'test-device'
+            'device_name' => 'test-device',
         ]);
 
         // 5. Assert success

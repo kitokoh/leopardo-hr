@@ -2,7 +2,14 @@
 
 namespace Tests\Unit;
 
+use App\Events\AbsenceApproved;
+use App\Events\AbsenceRejected;
+use App\Events\AbsenceRequested;
+use App\Events\AttendanceCheckedIn;
+use App\Events\AttendanceCheckedOut;
+use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
+use App\Events\PayrollValidated;
 use App\Listeners\AuditLogger;
 use App\Listeners\WebhookListener;
 use Illuminate\Support\Facades\Event;
@@ -29,14 +36,14 @@ class AuditLoggerListenerTest extends TestCase
         Event::fake();
 
         $events = [
-            \App\Events\EmployeeCreated::class,
-            \App\Events\EmployeeArchived::class,
-            \App\Events\AttendanceCheckedIn::class,
-            \App\Events\AttendanceCheckedOut::class,
-            \App\Events\AbsenceRequested::class,
-            \App\Events\AbsenceApproved::class,
-            \App\Events\AbsenceRejected::class,
-            \App\Events\PayrollValidated::class,
+            EmployeeCreated::class,
+            EmployeeArchived::class,
+            AttendanceCheckedIn::class,
+            AttendanceCheckedOut::class,
+            AbsenceRequested::class,
+            AbsenceApproved::class,
+            AbsenceRejected::class,
+            PayrollValidated::class,
         ];
 
         foreach ($events as $event) {

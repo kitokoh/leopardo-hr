@@ -24,12 +24,12 @@ class PayrollCountryConfigSeeder extends Seeder
         }
 
         $rules = [
-            new AlgeriaPayrollRules(),
-            new MoroccoPayrollRules(),
-            new TunisiaPayrollRules(),
-            new FrancePayrollRules(),
-            new TurkeyPayrollRules(),
-            new SenegalPayrollRules(),
+            new AlgeriaPayrollRules,
+            new MoroccoPayrollRules,
+            new TunisiaPayrollRules,
+            new FrancePayrollRules,
+            new TurkeyPayrollRules,
+            new SenegalPayrollRules,
         ];
 
         foreach ($rules as $countryRules) {

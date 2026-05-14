@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Console\Commands\AccrueLeaveBalances;
 use Tests\TestCase;
 
 class AccrueLeaveBalancesTest extends TestCase

@@ -33,7 +33,7 @@ class IndexCrossTenantValidationTest extends TestCase
         $employeeB = $this->createEmployee($companyB, 'employee');
 
         $response = $this->actingAs($managerA, 'sanctum')
-            ->getJson('/api/v1/salary-advances?employee_id=' . $employeeB->id);
+            ->getJson('/api/v1/salary-advances?employee_id='.$employeeB->id);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
@@ -49,7 +49,7 @@ class IndexCrossTenantValidationTest extends TestCase
         $employeeB = $this->createEmployee($companyB, 'employee');
 
         $response = $this->actingAs($managerA, 'sanctum')
-            ->getJson('/api/v1/absences?employee_id=' . $employeeB->id);
+            ->getJson('/api/v1/absences?employee_id='.$employeeB->id);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
@@ -65,7 +65,7 @@ class IndexCrossTenantValidationTest extends TestCase
         $employeeB = $this->createEmployee($companyB, 'employee');
 
         $response = $this->actingAs($managerA, 'sanctum')
-            ->getJson('/api/v1/evaluations?employee_id=' . $employeeB->id);
+            ->getJson('/api/v1/evaluations?employee_id='.$employeeB->id);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['employee_id']);
@@ -81,7 +81,7 @@ class IndexCrossTenantValidationTest extends TestCase
         $managerB = $this->createEmployee($companyB, 'manager', 'principal');
 
         $response = $this->actingAs($managerA, 'sanctum')
-            ->getJson('/api/v1/evaluations?evaluator_id=' . $managerB->id);
+            ->getJson('/api/v1/evaluations?evaluator_id='.$managerB->id);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['evaluator_id']);

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,8 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $company_id
  * @property int|null $employee_id
  * @property int|null $contract_id
- * @property \Illuminate\Support\Carbon $period_start
- * @property \Illuminate\Support\Carbon $period_end
+ * @property Carbon $period_start
+ * @property Carbon $period_end
  * @property float $gross_salary
  * @property float $total_deductions
  * @property float $net_salary
@@ -26,9 +27,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $overtime_hours
  * @property string $status
  * @property string|null $pdf_path
- * @property \Illuminate\Support\Carbon|null $sent_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $sent_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class PaySlip extends Model
 {
@@ -74,11 +75,19 @@ class PaySlip extends Model
         return $this->hasMany(PaySlipLine::class, 'pay_slip_id')->orderBy('order');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeForEmployee(Builder $query, int $employeeId): Builder
     {
         return $query->where('employee_id', $employeeId);
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeValidated(Builder $query): Builder
     {
         return $query->where('status', 'validated');

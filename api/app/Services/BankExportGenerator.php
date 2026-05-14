@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\PayrollRun;
-use App\Models\PaySlip;
 use Illuminate\Support\Collection;
 
 class BankExportGenerator

@@ -168,7 +168,7 @@ class PlatformCompanyHealthService
     }
 
     /**
-     * @param array<string, mixed> $employees
+     * @param  array<string, mixed>  $employees
      * @return array<string, mixed>
      */
     private function onboarding(Company $company, array $employees): array
@@ -251,10 +251,10 @@ class PlatformCompanyHealthService
     }
 
     /**
-     * @param array<string, mixed> $employees
-     * @param array<string, mixed> $attendance
-     * @param array<string, mixed> $onboarding
-     * @param array<string, mixed> $anomalies
+     * @param  array<string, mixed>  $employees
+     * @param  array<string, mixed>  $attendance
+     * @param  array<string, mixed>  $onboarding
+     * @param  array<string, mixed>  $anomalies
      */
     private function score(Company $company, array $employees, array $attendance, array $onboarding, array $anomalies): int
     {
@@ -292,10 +292,10 @@ class PlatformCompanyHealthService
     }
 
     /**
-     * @param array<string, mixed> $employees
-     * @param array<string, mixed> $attendance
-     * @param array<string, mixed> $onboarding
-     * @param array<string, mixed> $anomalies
+     * @param  array<string, mixed>  $employees
+     * @param  array<string, mixed>  $attendance
+     * @param  array<string, mixed>  $onboarding
+     * @param  array<string, mixed>  $anomalies
      * @return list<array{key: string, label: string, priority: string}>
      */
     private function nextActions(int $score, Company $company, array $employees, array $attendance, array $onboarding, array $anomalies): array
@@ -325,7 +325,7 @@ class PlatformCompanyHealthService
     }
 
     /**
-     * @param callable(): array<string, mixed> $callback
+     * @param  callable(): array<string, mixed>  $callback
      * @return array<string, mixed>
      */
     private function withTenantSearchPath(Company $company, callable $callback): array
