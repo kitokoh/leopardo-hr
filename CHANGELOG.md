@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.27] - 2026-05-14
+
+### Security — Privacy/RGPD employee data rights
+
+- API : ajout de `GET /api/v1/privacy/export` pour exporter le bundle personnel de l'employe authentifie avec compteurs scopes tenant.
+- API : ajout de `POST /api/v1/privacy/deletion-request` pour enregistrer une demande de suppression non destructive et auditable.
+- API : ajout de `PATCH /api/v1/privacy/biometric-consent` pour enregistrer ou retirer le consentement biometrique en nettoyant les references de templates.
+- Tests : couverture Feature des contrats privacy, non-divulgation des donnees collegue et persistance des demandes RGPD.
+
 ## [4.16.26] - 2026-05-13
 
 ### Security — HR extension tenant isolation

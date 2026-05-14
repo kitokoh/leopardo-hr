@@ -783,6 +783,22 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('privacy_requests'))) {
+            Schema::create($this->moduleTable('privacy_requests'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('type', 40)->index();
+                $table->string('status', 30)->default('received')->index();
+                $table->json('requested_payload')->nullable();
+                $table->timestampTz('processed_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'type', 'status']);
+                $table->index(['employee_id', 'type']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('pay_slips'))) {
             Schema::create($this->moduleTable('pay_slips'), function (Blueprint $table): void {
                 $table->id();
@@ -1132,6 +1148,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "privacy_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);

@@ -299,3 +299,9 @@ Procedure recommandee :
 - `hr_extended.php` centralise toutes les routes des modules etendus (conges, contrats, recrutement, formation, loans, frais, webhooks, audit).
 - Le trait `Approvable` est un pattern reutilisable pour brancher le workflow d'approbation sur n'importe quel modele (Absence, ExpenseClaim, etc.).
 - Les contrats doivent rester explicitement scopes par `company_id` dans `index`, `expiring`, `myContracts` et les endpoints self-service. Ne pas compter uniquement sur les IDs de route : la creation doit refuser un `employee_id` hors tenant, et PDF/amendments doivent verifier proprietaire ou manager.
+
+### 2026-05-14 - Privacy / RGPD self-service
+
+- Les droits employes RGPD sont servis par `GET /api/v1/privacy/export`, `POST /api/v1/privacy/deletion-request` et `PATCH /api/v1/privacy/biometric-consent`, tous sous `auth:sanctum` + `tenant`.
+- Une demande de suppression doit rester non destructive par defaut : creer une `privacy_requests` pour revue RH/juridique, ne pas supprimer directement l'employe ni ses donnees paie/attendance.
+- Le retrait du consentement biometrique doit desactiver les flags visage/empreinte et effacer les chemins de references de templates. Ne pas reactiver des templates simplement parce que `consented=true`; l'enrolement reste le role du workflow biometrie.

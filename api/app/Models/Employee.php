@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\HasApiTokens;
@@ -27,14 +28,14 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $address_line
  * @property string|null $postal_code
  * @property string|null $password_hash
- * @property \Illuminate\Support\Carbon $date_of_birth
+ * @property Carbon $date_of_birth
  * @property string|null $place_of_birth
  * @property string $gender
  * @property string|null $nationality
  * @property string|null $marital_status
  * @property string $contract_type
- * @property \Illuminate\Support\Carbon $contract_start
- * @property \Illuminate\Support\Carbon|null $contract_end
+ * @property Carbon $contract_start
+ * @property Carbon|null $contract_end
  * @property string $salary_type
  * @property float|null $salary_base
  * @property float|null $hourly_rate
@@ -47,8 +48,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property bool $biometric_fingerprint_enabled
  * @property string|null $biometric_face_reference_path
  * @property string|null $biometric_fingerprint_reference_path
- * @property \Illuminate\Support\Carbon|null $biometric_consent_at
- * @property \Illuminate\Support\Carbon|null $invitation_accepted_at
+ * @property Carbon|null $biometric_consent_at
+ * @property Carbon|null $invitation_accepted_at
  * @property string|null $emergency_contact_name
  * @property string|null $emergency_contact_phone
  * @property string|null $emergency_contact_relation
@@ -58,9 +59,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $bank_account
  * @property string $national_id
  * @property int $failed_login_attempts
- * @property \Illuminate\Support\Carbon|null $locked_until
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $locked_until
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class Employee extends Authenticatable
 {
@@ -217,6 +218,12 @@ class Employee extends Authenticatable
     public function biometricEnrollmentRequests(): HasMany
     {
         return $this->hasMany(BiometricEnrollmentRequest::class, 'employee_id');
+    }
+
+    /** @return HasMany<PrivacyRequest, $this> */
+    public function privacyRequests(): HasMany
+    {
+        return $this->hasMany(PrivacyRequest::class, 'employee_id');
     }
 
     /**
