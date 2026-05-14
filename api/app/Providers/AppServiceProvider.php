@@ -31,6 +31,7 @@ use App\Policies\TrainingPolicy;
 use App\Policies\VehiclePolicy;
 use App\Services\TenantManager;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -91,6 +92,52 @@ class AppServiceProvider extends ServiceProvider
 
             // 60 requêtes par minute par IP pour les non-authentifiés
             return Limit::perMinute(60)->by($request->ip());
+        });
+
+        RateLimiter::for('auth-sensitive', function (Request $request) {
+            $email = strtolower((string) $request->input('email', 'anonymous'));
+
+            return Limit::perMinute((int) config('security.rate_limits.auth_per_minute', 10))
+                ->by('auth:'.$email.'|'.$request->ip());
+        });
+
+        RateLimiter::for('privacy-sensitive', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee
+                ? 'employee:'.$user->company_id.':'.$user->id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.privacy_per_minute', 20))
+                ->by('privacy:'.$key);
+        });
+
+        RateLimiter::for('payroll-sensitive', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.payroll_per_minute', 60))
+                ->by('payroll:'.$key);
+        });
+
+        RateLimiter::for('platform-sensitive', function (Request $request) {
+            $user = $request->user('super_admin_api');
+            $userId = $user instanceof AuthenticatableContract ? $user->getAuthIdentifier() : null;
+            $key = $userId !== null ? 'super-admin:'.$userId : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.platform_per_minute', 60))
+                ->by('platform:'.$key);
+        });
+
+        RateLimiter::for('ai-sensitive', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.ai_per_minute', 20))
+                ->by('ai:'.$key);
         });
     }
 }

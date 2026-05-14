@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.31] - 2026-05-14
+
+### Security — Sensitive API rate limits
+
+- API : ajout de limiters nommes configurables pour auth publique, privacy, paie, plateforme super-admin et IA.
+- Routes : application de `auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive` et `ai-sensitive` aux surfaces sensibles.
+- Tests : couverture Feature des reponses 429 sur login public et export privacy authentifie.
+
 ## [4.16.30] - 2026-05-14
 
 ### Compliance — Registre interne des traitements RH
