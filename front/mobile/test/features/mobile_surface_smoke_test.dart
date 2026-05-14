@@ -75,6 +75,7 @@ void main() {
         tester,
         entry.value,
         overrides: baseOverrides,
+        surfaceSize: const Size(430, 1200),
       );
 
       expect(find.byType(entry.key), findsOneWidget);
