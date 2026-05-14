@@ -11,6 +11,7 @@ test.describe('Navigation and routing', () => {
       '/leaves',
       '/contracts',
       '/exports',
+      '/recruitment',
     ]
 
     for (const route of protectedRoutes) {
