@@ -62,6 +62,10 @@ class ApprovalRequest extends Model
         return $this->hasMany(ApprovalDecision::class, 'approval_request_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopePending(Builder $q): Builder
     {
         return $q->where('status', 'pending');

@@ -56,6 +56,11 @@ class LeaveBalance extends Model
         return $this->belongsTo(AbsenceType::class, 'absence_type_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $year
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForYear(Builder $q, int $year): Builder
     {
         return $q->where('year', $year);

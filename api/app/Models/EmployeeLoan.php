@@ -76,6 +76,10 @@ class EmployeeLoan extends Model
         return $this->hasMany(LoanRepayment::class, 'employee_loan_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->whereIn('status', ['disbursed', 'repaying']);

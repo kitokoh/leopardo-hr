@@ -51,11 +51,20 @@ class WebhookEndpoint extends Model
         return $this->hasMany(WebhookDelivery::class, 'webhook_endpoint_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('active', true);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $event
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeListeningTo(Builder $q, string $event): Builder
     {
         return $q->whereJsonContains('events', $event);

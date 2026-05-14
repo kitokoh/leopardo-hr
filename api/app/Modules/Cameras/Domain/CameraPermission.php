@@ -13,6 +13,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Section 4.3 du cahier des charges.
  *
  * Contrainte unique : (camera_id, employee_id) — une seule ligne par couple.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $camera_id
+ * @property int $employee_id
+ * @property bool $can_view
+ * @property bool $can_share
+ * @property bool $can_manage
+ * @property int|null $granted_by
+ * @property \Illuminate\Support\Carbon|null $granted_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Modules\Cameras\Domain\Camera|null $camera
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \App\Models\Employee|null $grantor
  */
 class CameraPermission extends Model
 {
@@ -47,16 +63,19 @@ class CameraPermission extends Model
         'can_manage' => false,
     ];
 
+    /** @return BelongsTo<Camera, $this> */
     public function camera(): BelongsTo
     {
         return $this->belongsTo(Camera::class, 'camera_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function grantor(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'granted_by');

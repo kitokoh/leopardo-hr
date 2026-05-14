@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $rejected_reason
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\AbsenceType|null $absenceType
  */
 class Absence extends Model
 {
@@ -68,11 +69,20 @@ class Absence extends Model
         return $this->belongsTo(Employee::class, 'approved_by');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopePending(Builder $q): Builder
     {
         return $q->where('status', 'pending');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $employeeId
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $employeeId): Builder
     {
         return $q->where('employee_id', $employeeId);

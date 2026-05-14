@@ -33,21 +33,38 @@ class SocialContribution extends Model
         'effective_to' => 'date',
     ];
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $countryCode
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForCountry(Builder $query, string $countryCode): Builder
     {
         return $query->where('country_code', $countryCode);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeEmployee(Builder $query): Builder
     {
         return $query->where('type', 'employee');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeEmployer(Builder $query): Builder
     {
         return $query->where('type', 'employer');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeEffective(Builder $query): Builder
     {
         return $query->where('effective_from', '<=', now())

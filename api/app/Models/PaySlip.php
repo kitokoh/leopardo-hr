@@ -74,11 +74,20 @@ class PaySlip extends Model
         return $this->hasMany(PaySlipLine::class, 'pay_slip_id')->orderBy('order');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $employeeId
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $query, int $employeeId): Builder
     {
         return $query->where('employee_id', $employeeId);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeValidated(Builder $query): Builder
     {
         return $query->where('status', 'validated');

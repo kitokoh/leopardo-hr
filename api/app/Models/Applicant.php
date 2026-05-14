@@ -71,6 +71,11 @@ class Applicant extends Model
         return $this->first_name.' '.$this->last_name;
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $status
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeByStatus(Builder $q, string $status): Builder
     {
         return $q->where('status', $status);

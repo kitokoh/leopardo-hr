@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SalaryComponent> $components
  */
 class SalaryStructure extends Model
 {
@@ -39,11 +40,20 @@ class SalaryStructure extends Model
         return $this->hasMany(SalaryComponent::class, 'salary_structure_id')->orderBy('order');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $countryCode
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForCountry(Builder $query, string $countryCode): Builder
     {
         return $query->where('country_code', $countryCode);

@@ -82,6 +82,10 @@ class JobPosting extends Model
         return $this->hasMany(Applicant::class, 'job_posting_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopePublished(Builder $q): Builder
     {
         return $q->where('status', 'published');
