@@ -41,6 +41,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - L'audit SQL injection courant vit dans `docs/security/SQL_INJECTION_AUDIT.md`. Toute introduction de tri/groupe/selection dynamique ou de raw SQL doit passer par allowlist, test de regression securite, et mise a jour de cet audit.
 - L'audit CSRF/XSS admin vit dans `docs/security/ADMIN_CSRF_XSS_AUDIT.md`. Garder ESLint bloquant sur `vue/no-v-html`, `no-eval`, `no-implied-eval`, `no-new-func` et `no-script-url`; toute exception doit documenter le sanitizer et le test associe.
 - Le workflow `Database Backup & Restore Drill` porte le backup PostgreSQL quotidien et le drill restore mensuel. Il saute proprement si les secrets ne sont pas configures ; ne pas supprimer ce skip, il evite les faux rouges sur forks/PR.
+- Le code splitting par route est deja actif dans `front/admin-dashboard/src/router/index.js` via `component: () => import(...)`. Ne pas reouvrir cet item Plan 14 sauf si une route redevient importee en eager.
 - Le depot contient deja beaucoup de tests backend critiques (auth, guardrails, RBAC, absences, attendance, contrats mobile). Avant d'ajouter de nouveaux tests, verifier d'abord si le manque reel n'est pas plutot la visibilite CI (coverage, artifacts, reporting).
 - Les tests locaux Windows peuvent echouer avant PHPUnit si l'extension PHP `mbstring` manque (`mb_split()` introuvable dans Laravel). Dans ce cas, ne pas conclure a un rouge applicatif ; verifier la syntaxe et laisser GitHub Actions executer la suite complete.
 
