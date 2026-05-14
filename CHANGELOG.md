@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.37] - 2026-05-14
+
+### Security — SQL injection audit
+
+- Securite : ajout de `docs/security/SQL_INJECTION_AUDIT.md` avec inventaire des usages raw SQL, surfaces a parametres et guardrails pour filtres/sorts dynamiques.
+- Audit : aucun defaut d'injection SQL direct trouve sur les surfaces API revues ; les usages `selectRaw`, `DB::raw`, `DB::select`, `DB::statement` et `orderByRaw` identifies restent statiques ou passent par `getSafeSearchPath()`.
+- Plan : coche du point Plan 14 "Audit SQL injection sur tous les endpoints avec parametres".
+
 ## [4.16.36] - 2026-05-14
 
 ### Security — RBAC route matrix
