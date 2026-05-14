@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.29] - 2026-05-14
+
+### Web — Legal pages vitrine multilingues
+
+- Web vitrine : ajout des pages publiques `/privacy` et `/terms` avec contenu FR/EN/TR/AR, support RTL arabe et selection de langue partagee.
+- SEO : ajout des routes legales au sitemap public.
+- Tests : extension Playwright pour verifier les liens footer vers les pages legales et le changement de langue.
+
 ## [4.16.28] - 2026-05-14
 
 ### CI/CD — E2E Playwright smoke tests & hardening (Partie 6 stabilisation)
