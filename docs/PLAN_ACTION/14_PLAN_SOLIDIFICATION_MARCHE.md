@@ -175,7 +175,7 @@
 
 ### 4.4 API Publique
 ```
-- [ ] Documentation OpenAPI complete et validee en CI (surface plateforme recente documentee, publication Swagger UI restante)
+- [x] Documentation OpenAPI complete et validee en CI (surface plateforme recente documentee, Swagger UI publiee sur `/docs`)
 - [ ] SDK client JavaScript/Python genere depuis OpenAPI
 - [ ] Rate limiting API avec plans (starter: 100 req/min, pro: 1000, enterprise: illimite)
 - [ ] Versioning API (v1 stable, v2 beta)
