@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.44] - 2026-05-14
+
+### Docs — Partner integration guide
+
+- Documentation : ajout du guide integration partenaires couvrant API REST, regles multi-tenant, webhooks, exports et cadrage SSO.
+- Plan : coche du point Plan 14 "Guide integration partenaires (webhooks, API, SSO)".
+
 ## [4.16.43] - 2026-05-14
 
 ### Architecture — ADR, C4 and operations runbook
