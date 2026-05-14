@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.35] - 2026-05-14
+
+### Security — OWASP ZAP baseline CI
+
+- CI : ajout d'un workflow `OWASP ZAP Baseline` lance manuellement ou apres un deploiement `main` reussi.
+- Securite : le scan cible l'API staging Render, verifie `/api/v1/health` avant analyse et publie les rapports ZAP HTML/Markdown/JSON en artefacts.
+- Plan : coche du point Plan 14 "Activer OWASP ZAP scan automatise dans CI".
+
 ## [4.16.34] - 2026-05-14
 
 ### API Contracts — OpenAPI plateforme
