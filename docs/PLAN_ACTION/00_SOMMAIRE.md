@@ -27,6 +27,8 @@
 | 12 | `12_PRIORITES_ROADMAP.md` | Ordre d'execution, dependances entre modules, timeline realiste, criteres de validation |
 | 13 | `13_RESTANT_POST_SPRINTS.md` | **NOUVEAU** — Consolidation de tout ce qui reste a developper apres les sprints 1-18 |
 | 14 | `14_ROADMAP_EXECUTION_POST_LOTS.md` | **NOUVEAU** - Roadmap d'execution actualisee apres les lots plateforme metrics backend/admin |
+| 14b | `14_PLAN_SOLIDIFICATION_MARCHE.md` | Plan de solidification 7 phases (fiabilite, securite, performance, integrations, UX, docs, GTM) |
+| 15 | `15_PLAN_EXECUTION_CONSOLIDE.md` | **NOUVEAU 2026-05-14** — Plan d'execution consolide : audit code vs plans, taches restantes, iterations |
 
 ---
 
