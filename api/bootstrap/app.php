@@ -3,8 +3,8 @@
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
-use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
+use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
