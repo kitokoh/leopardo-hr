@@ -220,9 +220,9 @@
 
 ### 6.1 Documentation Technique
 ```
-- [ ] Architecture Decision Records (ADR) pour les choix critiques
-- [ ] Diagramme d'architecture (C4 model) : contexte, containers, composants
-- [ ] Runbook operations : deploiement, rollback, monitoring, incidents
+- [x] Architecture Decision Records (ADR) pour les choix critiques
+- [x] Diagramme d'architecture (C4 model) : contexte, containers, composants
+- [x] Runbook operations : deploiement, rollback, monitoring, incidents
 - [ ] Guide integration partenaires (webhooks, API, SSO)
 ```
 
