@@ -102,7 +102,7 @@
 - [ ] Registre des traitements (document interne)
 - [x] Consentement employe pour le traitement biometrique via `PATCH /api/v1/privacy/biometric-consent`
 - [ ] Chiffrement des donnees sensibles au repos (AES-256 pour IBAN, salaire)
-- [ ] Journalisation des acces aux donnees RH (audit trail)
+- [x] Journalisation des acces aux donnees RH (audit trail) via `audit_logs` pour fiches employes et exports privacy
 ```
 
 ### 2.3 Sauvegarde & Reprise
