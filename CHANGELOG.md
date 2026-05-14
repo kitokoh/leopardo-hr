@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.25] - 2026-05-13
+
+### Style — Payroll run test formatting
+
+- Qualite : correction Pint du test `PayrollRunControllerTest` apres merge du lot workflow paie.
+
 ## [4.16.24] - 2026-05-13
 
 ### Tests — Payroll run API contracts
