@@ -107,10 +107,10 @@
 
 ### 2.3 Sauvegarde & Reprise
 ```
-- [ ] Backup PostgreSQL automatise quotidien (pg_dump + S3)
-- [ ] Test de restauration mensuel documente
-- [ ] RPO < 24h, RTO < 4h documentes
-- [ ] Runbook incident documente (qui contacter, quoi faire)
+- [x] Backup PostgreSQL automatise quotidien (pg_dump + S3)
+- [x] Test de restauration mensuel documente
+- [x] RPO < 24h, RTO < 4h documentes
+- [x] Runbook incident documente (qui contacter, quoi faire)
 ```
 
 ---

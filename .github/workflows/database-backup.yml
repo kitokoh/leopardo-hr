@@ -1,0 +1,159 @@
+name: Database Backup & Restore Drill
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "backup or drill"
+        required: true
+        default: "backup"
+        type: choice
+        options:
+          - backup
+          - drill
+  schedule:
+    - cron: "15 2 * * *"
+    - cron: "15 3 1 * *"
+
+permissions:
+  contents: read
+
+env:
+  BACKUP_DIR: /tmp/leopardo-backups
+  AWS_REGION: ${{ secrets.AWS_REGION || 'eu-west-3' }}
+
+concurrency:
+  group: database-backup-${{ github.event_name }}-${{ github.event.schedule || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  daily-backup:
+    name: Daily PostgreSQL backup
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'backup' || github.event_name == 'schedule' && github.event.schedule == '15 2 * * *'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install backup tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client age awscli
+
+      - name: Validate backup secrets
+        id: secrets
+        shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in DATABASE_URL BACKUP_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("${name}")
+            fi
+          done
+
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::notice::Database backup skipped; missing secrets: ${missing[*]}"
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Run pg_dump and upload to S3
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${BACKUP_DIR}"
+          timestamp="$(date -u +%Y%m%d-%H%M%S)"
+          dump_file="${BACKUP_DIR}/leopardo-${timestamp}.dump"
+
+          pg_dump --format=custom --no-owner --no-privileges --file="${dump_file}" "${DATABASE_URL}"
+
+          if [[ -n "${BACKUP_AGE_RECIPIENT:-}" ]]; then
+            age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${dump_file}.age" "${dump_file}"
+            rm -f "${dump_file}"
+            dump_file="${dump_file}.age"
+          fi
+
+          object_key="postgres/daily/$(date -u +%Y/%m/%d)/$(basename "${dump_file}")"
+          aws s3 cp "${dump_file}" "s3://${BACKUP_S3_BUCKET}/${object_key}" \
+            --region "${AWS_REGION}" \
+            --storage-class STANDARD_IA \
+            --sse AES256
+
+          echo "Backup uploaded to s3://${BACKUP_S3_BUCKET}/${object_key}"
+
+  monthly-restore-drill:
+    name: Monthly restore drill
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'drill' || github.event_name == 'schedule' && github.event.schedule == '15 3 1 * *'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install drill tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client age awscli
+
+      - name: Validate drill secrets
+        id: secrets
+        shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESTORE_DB_URL: ${{ secrets.RESTORE_DB_URL }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in DATABASE_URL RESTORE_DB_URL; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("${name}")
+            fi
+          done
+
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::notice::Restore drill skipped; missing secrets: ${missing[*]}"
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Run backup restore drill
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESTORE_DB_URL: ${{ secrets.RESTORE_DB_URL }}
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+          BACKUP_AGE_IDENTITY_FILE: ${{ secrets.BACKUP_AGE_IDENTITY_FILE }}
+        run: |
+          set -euo pipefail
+          chmod +x dev-hub/scripts/backup_drill.sh
+          dev-hub/scripts/backup_drill.sh
+
+      - name: Upload drill log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-restore-drill-log
+          path: /tmp/leopardo-backups/last-drill.log
+          if-no-files-found: ignore
+          retention-days: 90
