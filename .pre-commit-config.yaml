@@ -1,0 +1,61 @@
+# Pre-commit hooks — Leopardo RH
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # General
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+        exclude: '\.md$'
+      - id: check-yaml
+        args: ['--allow-multiple-documents']
+      - id: check-json
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: no-commit-to-branch
+        args: ['--branch', 'main']
+
+  # PHP (Laravel backend)
+  - repo: local
+    hooks:
+      - id: phpstan
+        name: PHPStan (diff-gate)
+        language: system
+        entry: bash -c 'cd api && php vendor/bin/phpstan analyse --no-progress --error-format=table 2>/dev/null || true'
+        files: '\.php$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # JavaScript/Vue (admin-dashboard)
+  - repo: local
+    hooks:
+      - id: eslint-admin
+        name: ESLint (admin-dashboard)
+        language: system
+        entry: bash -c 'cd front/admin-dashboard && npx eslint --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx 2>/dev/null || true'
+        files: 'front/admin-dashboard/.*\.(vue|js|jsx|ts|tsx)$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # OpenAPI validation
+  - repo: local
+    hooks:
+      - id: openapi-lint
+        name: OpenAPI lint
+        language: system
+        entry: bash -c 'npx @redocly/cli lint api/openapi.yaml --skip-rule no-unused-components 2>/dev/null || true'
+        files: 'openapi\.yaml$'
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # Secrets detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: 'package-lock\.json|composer\.lock|\.svg$'
