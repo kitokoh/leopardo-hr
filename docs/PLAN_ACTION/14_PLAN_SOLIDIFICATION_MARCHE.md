@@ -137,7 +137,7 @@
 
 ### 3.3 Optimisation Frontend
 ```
-- [ ] Code splitting par route (Vue.js lazy loading)
+- [x] Code splitting par route (Vue.js lazy loading via `component: () => import(...)` dans `front/admin-dashboard/src/router/index.js`)
 - [ ] Service Worker pour mode offline mobile (cache API + assets)
 - [ ] Optimisation bundle size (tree-shaking, analyse webpack)
 - [ ] Skeleton loading sur tous les ecrans (pas de blank screen)
