@@ -45,6 +45,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - La vue recrutement admin consomme les endpoints backend reels `/v1/recruitment/jobs`, `/v1/recruitment/jobs/{id}/applicants` et `/v1/recruitment/applicants/{id}/status`; ne pas revenir aux anciens chemins inexistants `/v1/job-postings` ou `/v1/applicants`.
 - La documentation API publique est servie par le backend sur `/docs` et lit directement la spec canonique `/docs/openapi.yaml` depuis `api/openapi.yaml`; eviter toute copie divergente de la specification.
 - Les decisions d'architecture structurantes vivent dans `docs/architecture/adr/`, le diagramme C4 dans `docs/architecture/C4_ARCHITECTURE.md`, et le point d'entree operations dans `docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md`.
+- Le guide partenaire canonique est `docs/GUIDES/GUIDE_INTEGRATION_PARTENAIRES.md`; l'actualiser avec tout changement API/webhook/SSO expose aux integrateurs.
 - Le depot contient deja beaucoup de tests backend critiques (auth, guardrails, RBAC, absences, attendance, contrats mobile). Avant d'ajouter de nouveaux tests, verifier d'abord si le manque reel n'est pas plutot la visibilite CI (coverage, artifacts, reporting).
 - Les tests locaux Windows peuvent echouer avant PHPUnit si l'extension PHP `mbstring` manque (`mb_split()` introuvable dans Laravel). Dans ce cas, ne pas conclure a un rouge applicatif ; verifier la syntaxe et laisser GitHub Actions executer la suite complete.
 
