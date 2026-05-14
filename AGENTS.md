@@ -364,3 +364,4 @@ Procedure recommandee :
 - Les tests mobiles ajoutes pour Plan 14 vivent dans `front/mobile/test/navigation`, `front/mobile/test/features/mobile_surface_smoke_test.dart`, `front/mobile/test/repositories` et `front/mobile/test/golden`.
 - Le harnais `front/mobile/test/helpers/mobile_test_harness.dart` remplace auth, preferences et storage par des fakes Riverpod afin de tester les ecrans sans Hive, secure storage ni reseau.
 - Les goldens actuels sont des baselines structurelles, pas encore des captures PNG. Ne les presenter comme goldens image qu'apres ajout de fixtures generees et validees par Flutter.
+- La derniere mesure coverage mobile connue est `21.85%` (`1469/6723`) sur PR #460. Le seuil par defaut est `21%`; prochaine cible `25%`.
