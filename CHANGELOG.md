@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.30] - 2026-05-14
+
+### Compliance — Registre interne des traitements RH
+
+- Documentation : ajout du registre interne des traitements de donnees RH couvrant finalites, categories, bases legales, conservation, sous-traitants et mesures de protection.
+- Conformite : rattachement du registre aux endpoints privacy, pages legales, audit logs et gaps suivis pour RGPD / loi 18-07 DZ.
+- Plan : coche du point Plan 14 "Registre des traitements".
+
 ## [4.16.29] - 2026-05-14
 
 ### Web — Legal pages vitrine multilingues
