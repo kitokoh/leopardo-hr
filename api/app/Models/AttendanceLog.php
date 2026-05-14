@@ -6,16 +6,17 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int|null $company_id
  * @property int|null $employee_id
  * @property int|null $schedule_id
- * @property \Illuminate\Support\Carbon $date
+ * @property Carbon $date
  * @property int $session_number
- * @property \Illuminate\Support\Carbon $check_in
- * @property \Illuminate\Support\Carbon $check_out
+ * @property Carbon $check_in
+ * @property Carbon $check_out
  * @property string $method
  * @property string|null $source_device_code
  * @property string|null $external_event_id
@@ -29,10 +30,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $gps_lng
  * @property string|null $corrected_by
  * @property string|null $correction_note
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Employee|null $employee
- * @property-read \App\Models\Schedule|null $schedule
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Employee|null $employee
+ * @property-read Schedule|null $schedule
  */
 class AttendanceLog extends Model
 {

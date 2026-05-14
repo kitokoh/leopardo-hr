@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -22,16 +23,16 @@ use Illuminate\Support\Facades\DB;
  * @property string $schema_name
  * @property string $tenancy_type
  * @property string $status
- * @property \Illuminate\Support\Carbon $subscription_start
- * @property \Illuminate\Support\Carbon $subscription_end
+ * @property Carbon $subscription_start
+ * @property Carbon $subscription_end
  * @property string $language
  * @property string $timezone
  * @property string $currency
  * @property string|null $notes
  * @property array<mixed> $features
  * @property array<mixed> $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class Company extends Model
 {

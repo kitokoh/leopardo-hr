@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 class AttendanceAnomalyService
 {
     /**
-     * @param array{employee_id?: int|null, date_from?: string|null, date_to?: string|null, per_page?: int|null} $filters
+     * @param  array{employee_id?: int|null, date_from?: string|null, date_to?: string|null, per_page?: int|null}  $filters
      * @return array<string, mixed>
      */
     public function summarize(string $companyId, array $filters = []): array
@@ -253,7 +253,7 @@ class AttendanceAnomalyService
     }
 
     /**
-     * @param array<string, mixed> $details
+     * @param  array<string, mixed>  $details
      * @return array<string, mixed>
      */
     private function item(

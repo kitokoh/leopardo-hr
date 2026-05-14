@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Journal d'accès caméra — alimenté à chaque action sensible (view, verify,
@@ -25,10 +26,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property array<mixed>|null $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property-read \App\Modules\Cameras\Domain\Camera|null $camera
- * @property-read \App\Models\Employee|null $employee
- * @property-read \App\Modules\Cameras\Domain\CameraAccessToken|null $accessToken
+ * @property Carbon|null $created_at
+ * @property-read Camera|null $camera
+ * @property-read Employee|null $employee
+ * @property-read CameraAccessToken|null $accessToken
  */
 class CameraAccessLog extends Model
 {

@@ -62,8 +62,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $locked_until
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\Company|null $company
- * @property-read \App\Models\Schedule|null $schedule
+ * @property-read Company|null $company
+ * @property-read Schedule|null $schedule
  * @property-read Carbon|null $email_verified_at
  * @property-read Carbon|null $last_login_at
  */

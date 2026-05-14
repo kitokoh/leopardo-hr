@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,11 +15,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $company_id
  * @property string $amendment_type
  * @property array<mixed> $changes
- * @property \Illuminate\Support\Carbon $effective_date
+ * @property Carbon $effective_date
  * @property string|null $reason
  * @property string|null $approved_by
  * @property string|null $document_path
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class ContractAmendment extends Model
 {

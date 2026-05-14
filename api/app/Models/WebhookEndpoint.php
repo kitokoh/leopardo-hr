@@ -8,6 +8,7 @@ use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,9 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $secret
  * @property bool $active
  * @property string|null $failure_count
- * @property \Illuminate\Support\Carbon|null $last_triggered_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $last_triggered_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class WebhookEndpoint extends Model
 {
@@ -52,8 +53,8 @@ class WebhookEndpoint extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeActive(Builder $q): Builder
     {
@@ -61,9 +62,8 @@ class WebhookEndpoint extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<static> $q
-     * @param string $event
-     * @return \Illuminate\Database\Eloquent\Builder<static>
+     * @param  Builder<static>  $q
+     * @return Builder<static>
      */
     public function scopeListeningTo(Builder $q, string $event): Builder
     {
