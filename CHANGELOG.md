@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.47] - 2026-05-14
+
+### Performance — k6 benchmarks and N+1 hardening
+
+- Performance : ajout des benchmarks k6 Plan 14 pour 100 employes simultanes, calcul paie 500 employes et dashboard admin 10k employes.
+- Backend : optimisation du rapport mensuel attendance en groupant les logs par employe au lieu de rescanner la collection pour chaque ligne.
+- Backend : optimisation de l'organigramme par groupement `manager_id` et scope explicite `company_id` sur les lectures employes.
+- Plan : coche des benchmarks performance Plan 14 et de la correction N+1/scans repetes.
+
 ## [4.16.46] - 2026-05-14
 
 ### API Contracts — Generated client SDKs
