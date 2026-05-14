@@ -90,6 +90,14 @@
 - Tests : extension de `PayrollRunControllerTest` pour couvrir calcul, validation, annulation et isolation tenant des runs de paie.
 - Qualite : `PayrollRunController` utilise maintenant des checks stricts sur les statuts et roles dans les actions sensibles.
 - Documentation : plan post-sprints et scenarios API synchronises avec la couverture workflow paie.
+## [4.21.0] - 2026-05-13
+
+### Plan 14 Phase 1 — Fiabilite & Tests
+
+- Playwright E2E : 5 suites de tests (dashboard-kpi, navigation, payroll-flow, leaves-flow, exports-flow) couvrant login, routing, auth guards, validation.
+- @playwright/test ajoute comme devDependency dans admin-dashboard (plus d'install ad-hoc en CI).
+- API Integration : 3 nouveaux tests Feature (PayrollCycleIntegration, CompanyOnboardingIntegration, LeaveWorkflowIntegration) — scenarios metier complets avec isolation tenant.
+- Mobile Flutter : 5 tests modeles (contract, expense_claim, approval, training_enrollment, vehicle_position, onboarding_step) — fromJson + defaults + edge cases.
 
 ## [4.20.0] - 2026-05-13
 
