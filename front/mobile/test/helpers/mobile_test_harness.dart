@@ -131,7 +131,7 @@ Employee testEmployee({
   );
 }
 
-Override fakePreferencesOverride({
+dynamic fakePreferencesOverride({
   String language = 'fr',
   bool rtl = false,
 }) {
@@ -140,11 +140,11 @@ Override fakePreferencesOverride({
   );
 }
 
-Override fakeStorageOverride() {
+dynamic fakeStorageOverride() {
   return secureStorageProvider.overrideWith((ref) => FakeSecureStorage());
 }
 
-Override authOverride(Employee? employee) {
+dynamic authOverride(Employee? employee) {
   return authProvider.overrideWith(
     (ref) => StaticAuthNotifier(
       AuthState(isLoading: false, employee: employee),
@@ -154,7 +154,7 @@ Override authOverride(Employee? employee) {
 
 Widget localizedHarness(
   Widget child, {
-  List<Override> overrides = const [],
+  List<dynamic> overrides = const [],
   Size surfaceSize = const Size(390, 844),
 }) {
   return ProviderScope(
@@ -180,7 +180,7 @@ Widget localizedHarness(
   );
 }
 
-Widget appRouterHarness({List<Override> overrides = const []}) {
+Widget appRouterHarness({List<dynamic> overrides = const []}) {
   return ProviderScope(
     overrides: [
       fakePreferencesOverride(),
@@ -194,7 +194,7 @@ Widget appRouterHarness({List<Override> overrides = const []}) {
 Future<void> pumpMobile(
   WidgetTester tester,
   Widget child, {
-  List<Override> overrides = const [],
+  List<dynamic> overrides = const [],
 }) async {
   await tester.pumpWidget(localizedHarness(child, overrides: overrides));
   await tester.pump();
