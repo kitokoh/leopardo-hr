@@ -34,9 +34,9 @@ api/app/Modules/{NomModule}/
 
 ### Taches
 
-- [ ] **T-ARCH-01** : Creer le template de module vide dans `stubs/module-template/`
+- [x] **T-ARCH-01** : Creer le template de module vide dans `stubs/module-template/` — **FAIT** (`api/stubs/module-template/` existe avec Application, Domain, Infrastructure, Interfaces)
 - [ ] **T-ARCH-02** : Migrer progressivement les controllers existants (Payroll, Absence, etc.) vers la structure DDD — commencer par les nouveaux modules, migrer l'existant quand on y touche
-- [ ] **T-ARCH-03** : Creer une commande Artisan `php artisan make:module {name}` qui genere la structure
+- [x] **T-ARCH-03** : Creer une commande Artisan `php artisan make:module {name}` qui genere la structure — **FAIT** (`app/Console/Commands/MakeModuleCommand.php` + test unit)
 
 ---
 
@@ -66,11 +66,11 @@ Chaque action metier importante doit emettre un event Laravel. Cela permet :
 
 ### Taches
 
-- [ ] **T-ARCH-04** : Creer `app/Events/` avec les domain events ci-dessus
-- [ ] **T-ARCH-05** : Creer `app/Listeners/AuditLogger.php` — ecoute tous les events et ecrit dans `audit_logs`
-- [ ] **T-ARCH-06** : Creer `app/Listeners/WebhookDispatcher.php` — envoie les events aux URLs configurees par le tenant
-- [ ] **T-ARCH-07** : Creer la table `audit_logs` (migration) : `id, company_id, user_id, action, model_type, model_id, old_values, new_values, ip, user_agent, created_at`
-- [ ] **T-ARCH-08** : Creer la table `webhook_endpoints` : `id, company_id, url, events (JSON), secret, active, created_at`
+- [x] **T-ARCH-04** : Creer `app/Events/` avec les domain events ci-dessus — **FAIT** (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
+- [x] **T-ARCH-05** : Creer `app/Listeners/AuditLogger.php` — ecoute tous les events et ecrit dans `audit_logs` — **FAIT** (`app/Listeners/AuditLogger.php`)
+- [x] **T-ARCH-06** : Creer `app/Listeners/WebhookDispatcher.php` — envoie les events aux URLs configurees par le tenant — **FAIT** (`app/Listeners/WebhookListener.php` + `app/Services/WebhookDispatcher.php`)
+- [x] **T-ARCH-07** : Creer la table `audit_logs` (migration) — **FAIT** (`2026_05_10_000001_create_audit_logs_table.php`)
+- [x] **T-ARCH-08** : Creer la table `webhook_endpoints` — **FAIT** (`2026_05_10_000002_create_webhook_tables.php`)
 
 ---
 
@@ -135,8 +135,8 @@ L'API actuelle est en `/api/v1/`. Pour la stabilite long terme :
 
 ### Taches
 
-- [ ] **T-ARCH-11** : Creer `.editorconfig` a la racine
-- [ ] **T-ARCH-12** : Ajouter `phpstan.neon` avec level 6 minimum pour les nouveaux modules
+- [x] **T-ARCH-11** : Creer `.editorconfig` a la racine — **FAIT** (`.editorconfig` existe avec UTF-8, LF)
+- [x] **T-ARCH-12** : Ajouter `phpstan.neon` avec level 6 minimum pour les nouveaux modules — **FAIT** (`phpstan.neon` + `phpstan-baseline.neon` + CI diff-gate)
 - [ ] **T-ARCH-13** : Creer `CONVENTIONS.md` a la racine avec les regles ci-dessus
 
 ---
@@ -170,9 +170,9 @@ A activer uniquement en mode Schema (Enterprise). Pas pour le mode Shared.
 
 ### Taches
 
-- [ ] **T-ARCH-14** : Creer la migration d'index de performance
+- [x] **T-ARCH-14** : Creer la migration d'index de performance — **FAIT** (`2026_05_10_000008_add_performance_indexes.php`)
 - [ ] **T-ARCH-15** : Documenter la strategie de partitioning dans `docs/architecture/PARTITIONING.md`
-- [ ] **T-ARCH-16** : Ajouter des query scopes optimises sur les modeles (ex: `Employee::active()`, `AttendanceLog::forPeriod()`)
+- [x] **T-ARCH-16** : Ajouter des query scopes optimises sur les modeles — **FAIT** (scopes `active()`, `forPeriod()` trouves sur Contract, EmployeeLoan, Feature, Project, SalaryAdvance)
 
 ---
 
@@ -200,8 +200,8 @@ Jobs a mettre en queue :
 
 ### Taches
 
-- [ ] **T-ARCH-17** : Creer les Job classes dans `app/Jobs/`
-- [ ] **T-ARCH-18** : Configurer `config/queue.php` avec les queues nommees
+- [x] **T-ARCH-17** : Creer les Job classes dans `app/Jobs/` — **FAIT** (`app/Jobs/DispatchWebhook.php` implementant ShouldQueue)
+- [x] **T-ARCH-18** : Configurer `config/queue.php` avec les queues nommees — **FAIT** (`config/queue.php` configure)
 - [ ] **T-ARCH-19** : Ajouter le workflow CI pour tester les jobs
 - [ ] **T-ARCH-20** : Documenter le setup worker dans `DEPLOYMENT_GUIDE.md` (Render Worker)
 

@@ -246,15 +246,15 @@ if (app()->environment('production')) {
 
 ## 9. Taches
 
-- [ ] **T-MON-01** : Enrichir `/api/v1/health` avec checks queue, traccar, AI
-- [ ] **T-MON-02** : Ajouter `/api/v1/health/live` et `/api/v1/health/ready`
-- [ ] **T-MON-03** : Configurer logging JSON en production
-- [ ] **T-MON-04** : Implementer le middleware RequestId
-- [ ] **T-MON-05** : Creer les endpoints metriques plateforme
+- [x] **T-MON-01** : Enrichir `/api/v1/health` avec checks queue, traccar, AI — **FAIT** (`HealthController.php` + `tests/Feature/HealthEndpointTest.php`)
+- [x] **T-MON-02** : Ajouter `/api/v1/health/live` et `/api/v1/health/ready` — **FAIT** (`tests/Feature/HealthLiveReadyTest.php`)
+- [x] **T-MON-03** : Configurer logging JSON en production — **FAIT** (`StructuredLogging.php` middleware + `StructuredLoggingMiddlewareTest.php`)
+- [x] **T-MON-04** : Implementer le middleware RequestId — **FAIT** (`RequestIdMiddleware.php` + `RequestIdMiddlewareTest.php`)
+- [x] **T-MON-05** : Creer les endpoints metriques plateforme — **FAIT** (`MetricsController.php` + `PlatformMetricsOverviewController.php` + tests)
 - [ ] **T-MON-06** : Configurer Sentry traces + profiles
 - [ ] **T-MON-07** : Implementer AlertService + webhook Slack
 - [ ] **T-MON-08** : Configurer slow query logging
 - [ ] **T-MON-09** : Ajouter UptimeRobot/BetterUptime pour monitoring externe
-- [ ] **T-MON-10** : Dashboard admin avec metriques cles
+- [x] **T-MON-10** : Dashboard admin avec metriques cles — **FAIT** (admin-dashboard avec DashboardController + metriques)
 - [ ] **T-MON-11** : Installer Telescope pour dev
 - [ ] **T-MON-12** : Documenter le runbook alertes dans `docs/GESTION_PROJET/RUNBOOK_ALERTES.md`
