@@ -17,6 +17,6 @@ Use this file to record real drill executions (staging recommended).
 
 | ID | Drill | Deadline | Owner | Status |
 |---|---|---|---|---|
-| DR-01 | Backup restore test on staging | Before P1-06 merge | Project lead | TODO |
+| DR-01 | Backup restore test on staging | Monthly via `Database Backup & Restore Drill` or manual fallback | Project lead | SCHEDULED |
 | DR-02 | Rollback deployment test on staging | Before first beta | Project lead | TODO |
 | DR-03 | Incident P1 tabletop exercise | Before first beta | Project lead | TODO |
