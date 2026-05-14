@@ -374,6 +374,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `GET /api/v1/payroll-runs/{id}/summary` retourne le resume avec totaux et liste employes
 - Validation : seul un run calculated peut etre valide, seul un run draft/calculated peut etre recalcule
 - RBAC : managers uniquement
+- Couverture Feature : liste scopee tenant, creation manager, calcul via contrat `PayrollCalculator`, validation run + bulletins, annulation draft, refus paid et refus d'acces cross-tenant.
 
 ### Pay Slips
 - `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager)
