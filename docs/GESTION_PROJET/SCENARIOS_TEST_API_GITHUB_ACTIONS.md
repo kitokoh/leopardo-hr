@@ -85,6 +85,8 @@ Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configur
 ### 5. Employes et organisation
 
 - Liste employees avec pagination, tri, filtre
+- Organigramme retourne uniquement les employes du tenant courant et construit l'arbre sans scans repetes par noeud
+- Chaine manager et subordonnes refusent les IDs hors tenant
 - Creation employee avec validations metier
 - Mise a jour employee avec verifications unicite/global email
 - Desactivation / reactivation employee
@@ -129,6 +131,7 @@ Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configur
 - PDF recu genere un fichier telechargeable valide
 - Erreurs de generation PDF gerees sans crash global
 - Rapport mensuel attendance JSON expose jours travailles, heures, retards et estimations paie terrain
+- Rapport mensuel attendance reste performant sur 500+ employes en groupant les logs par employe avant generation des lignes
 - Export CSV du rapport mensuel conserve les colonnes d'estimation paie et reste exploitable par comptable
 - PDF du rapport mensuel affiche les indicateurs de cloture et l'estimation globale sans casser le rendu
 
