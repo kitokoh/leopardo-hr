@@ -37,11 +37,11 @@ class MonitorSlowQueries extends Command
 
         try {
             $slowQueries = DB::select(
-                "SELECT query, calls, mean_exec_time, total_exec_time, rows
+                'SELECT query, calls, mean_exec_time, total_exec_time, rows
                  FROM pg_stat_statements
                  WHERE mean_exec_time > ?
                  ORDER BY mean_exec_time DESC
-                 LIMIT ?",
+                 LIMIT ?',
                 [$threshold, $limit]
             );
         } catch (\Throwable $e) {
@@ -54,12 +54,12 @@ class MonitorSlowQueries extends Command
         }
 
         if (empty($slowQueries)) {
-            $this->info("Aucune requete lente (seuil: {$threshold}ms).");
+            $this->info('Aucune requete lente (seuil: '.$threshold.'ms).');
 
             return self::SUCCESS;
         }
 
-        $this->info(count($slowQueries)." requete(s) lente(s) detectee(s) (seuil: {$threshold}ms):");
+        $this->info(count($slowQueries).' requete(s) lente(s) detectee(s) (seuil: '.$threshold.'ms):');
 
         $rows = [];
         foreach ($slowQueries as $query) {
