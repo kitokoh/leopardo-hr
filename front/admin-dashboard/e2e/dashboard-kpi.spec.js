@@ -31,7 +31,7 @@ test.describe('Dashboard cockpit', () => {
 
     // Should show error message after failed API call
     await expect(
-      page.locator('.bg-red-50').or(page.getByText(/Erreur de connexion/i)),
+      page.getByRole('heading', { name: /Erreur de connexion/i }),
     ).toBeVisible({ timeout: 10_000 })
   })
 
