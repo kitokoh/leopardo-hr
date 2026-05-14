@@ -18,7 +18,7 @@ import 'package:leopardo_rh/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_rh/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_rh/models/monthly_summary.dart';
 
-import '../../helpers/mobile_test_harness.dart';
+import '../helpers/mobile_test_harness.dart';
 
 void main() {
   final employee = testEmployee(role: 'manager', managerRole: 'rh');
