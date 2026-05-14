@@ -36,6 +36,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Pour `web/`, utiliser un workflow dedie vitrine (`web-marketing-ci.yml`) sur `web/**` au lieu de recycler les checks admin.
 - Dans `tests.yml`, ne pas faire porter la dette mobile historique a des PR backend/web en declenchant `mobile-tests` uniquement parce que le workflow lui-meme change. Le job mobile doit rester cale sur `mobile/**` tant que la base n'est pas completement assainie.
 - Pour `Backend Quality`, garder Pint et PHPStan en gates diff-aware sur les fichiers PHP backend modifies. Cela bloque les nouvelles regressions sans faire porter la dette historique hors perimetre au PR courant. Garder les artefacts et la visibilite du baseline.
+- Le workflow `OWASP ZAP Baseline` scanne la cible staging apres un deploy `main` reussi ou via `workflow_dispatch`. Il produit des artefacts HTML/Markdown/JSON et utilise `-I` pour ne pas bloquer sur les warnings informatifs ; traiter les alertes en lots dedies plutot que desactiver le scan.
 - Le depot contient deja beaucoup de tests backend critiques (auth, guardrails, RBAC, absences, attendance, contrats mobile). Avant d'ajouter de nouveaux tests, verifier d'abord si le manque reel n'est pas plutot la visibilite CI (coverage, artifacts, reporting).
 - Les tests locaux Windows peuvent echouer avant PHPUnit si l'extension PHP `mbstring` manque (`mb_split()` introuvable dans Laravel). Dans ce cas, ne pas conclure a un rouge applicatif ; verifier la syntaxe et laisser GitHub Actions executer la suite complete.
 
