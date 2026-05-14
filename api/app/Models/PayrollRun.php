@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int|null $company_id
- * @property \Illuminate\Support\Carbon $period_start
- * @property \Illuminate\Support\Carbon $period_end
+ * @property Carbon $period_start
+ * @property Carbon $period_end
  * @property string $country_code
  * @property string $status
  * @property float $total_gross
@@ -20,13 +21,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $total_net
  * @property float $total_employer_cost
  * @property int $employee_count
- * @property \Illuminate\Support\Carbon|null $calculated_at
+ * @property Carbon|null $calculated_at
  * @property string|null $validated_by
- * @property \Illuminate\Support\Carbon|null $validated_at
- * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property Carbon|null $validated_at
+ * @property Carbon|null $paid_at
  * @property string|null $notes
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class PayrollRun extends Model
 {
@@ -70,16 +71,28 @@ class PayrollRun extends Model
         return $this->hasMany(BankExport::class, 'payroll_run_id');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeDraft(Builder $query): Builder
     {
         return $query->where('status', 'draft');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeCalculated(Builder $query): Builder
     {
         return $query->where('status', 'calculated');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeValidated(Builder $query): Builder
     {
         return $query->where('status', 'validated');

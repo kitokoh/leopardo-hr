@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
 use App\Models\TrainingEnrollment;

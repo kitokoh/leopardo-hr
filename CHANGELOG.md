@@ -11,6 +11,12 @@
 - E2E : verification absence stack traces, absence erreurs console, gestion 404
 - Note : changements workflows (coverage 40%, PHPStan scope elargi, baseline auto-regen) necessitent scope `workflow` sur le token OAuth — a appliquer manuellement
 
+### Security — HR data access audit trail
+
+- Securite : ajout de `DataAccessAuditLogger` pour journaliser les acces RH sensibles sans bloquer la requete metier en cas d'incident d'audit.
+- API : les endpoints employees list/detail et privacy export creent maintenant une entree `audit_logs` avec acteur, tenant, cible et metadata `category=hr_data_access`.
+- Tests : couverture Feature de la journalisation sur liste employees, fiche employee et export privacy.
+
 ## [4.16.27] - 2026-05-14
 
 ### Security — Privacy/RGPD employee data rights
@@ -19,6 +25,17 @@
 - API : ajout de `POST /api/v1/privacy/deletion-request` pour enregistrer une demande de suppression non destructive et auditable.
 - API : ajout de `PATCH /api/v1/privacy/biometric-consent` pour enregistrer ou retirer le consentement biometrique en nettoyant les references de templates.
 - Tests : couverture Feature des contrats privacy, non-divulgation des donnees collegue et persistance des demandes RGPD.
+
+## [4.16.27] - 2026-05-13
+
+### Backend — PHPStan baseline reduction (Partie 5 stabilisation)
+
+- Resources : ajout `@mixin \Model` sur 16 JsonResource pour eliminer ~105 erreurs `property.notFound`
+- Camera module : ajout `@property` PHPDoc sur 4 modeles Domain (Camera, CameraAccessToken, CameraAccessLog, CameraPermission)
+- Camera module : ajout `@return` generics sur 10 relations BelongsTo/HasMany
+- Models : ajout `@property-read` pour 24 relations manquantes sur 14 modeles (Employee, Department, Evaluation, etc.)
+- Models : ajout `@param Builder<static>`/`@return Builder<static>` sur 48 scope methods dans 23 modeles
+- Estimation de reduction baseline : ~500-700 erreurs en moins une fois le baseline regenere
 
 ## [4.16.26] - 2026-05-13
 

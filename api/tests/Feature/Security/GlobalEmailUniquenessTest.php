@@ -51,11 +51,11 @@ class GlobalEmailUniquenessTest extends TestCase
         $this->assertTrue(
             in_array('La valeur du champ email est déjà utilisée.', $errors) ||
             in_array('Cet email est déjà utilisé par un utilisateur sur la plateforme (GLOBAL_COLLISION).', $errors),
-            "Expected email uniqueness error, got: " . json_encode($errors)
+            'Expected email uniqueness error, got: '.json_encode($errors)
         );
     }
 
-    public function test_syncUserLookup_is_protected_against_hijacking(): void
+    public function test_sync_user_lookup_is_protected_against_hijacking(): void
     {
         $companyA = $this->createCompany('Company A');
         $companyB = $this->createCompany('Company B');
@@ -66,7 +66,7 @@ class GlobalEmailUniquenessTest extends TestCase
             'company_id' => $companyA->id,
             'schema_name' => 'schema_a',
             'employee_id' => 123,
-            'role' => 'employee'
+            'role' => 'employee',
         ]);
 
         // Create an employee in Company B with a different email

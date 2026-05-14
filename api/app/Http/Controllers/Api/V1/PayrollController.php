@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Payroll\PayrollIndexRequest;
 use App\Http\Requests\Api\V1\Payroll\StorePayrollRequest;
 use App\Http\Requests\Api\V1\Payroll\UpdatePayrollRequest;
+use App\Models\Employee;
 use App\Models\Payroll;
 use App\Services\PayrollService;
 use Illuminate\Http\JsonResponse;

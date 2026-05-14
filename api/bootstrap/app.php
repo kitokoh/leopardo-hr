@@ -11,6 +11,7 @@ use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -23,7 +24,7 @@ use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
-    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+    ->withSchedule(function (Schedule $schedule) {
         $schedule->command('leave:accrue')->daily();
         $schedule->command('leave:carry-forward')->yearlyOn(1, 1, '02:00');
         $schedule->command('contracts:alert-expiring')->daily();

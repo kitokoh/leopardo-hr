@@ -15,40 +15,40 @@ return new class extends Migration
     {
         // ── attendance_logs ────────────────────────────────────────────────────
         if (! Schema::hasTable('attendance_logs')) {
-        Schema::create('attendance_logs', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
-            $table->unsignedInteger('schedule_id')->nullable();
-            $table->foreign('schedule_id')->references('id')->on('schedules')->nullOnDelete();
-            // Planning actif AU MOMENT du pointage (snapshot)
-            $table->date('date');
-            $table->smallInteger('session_number')->default(1);     // 1 = session normale, 2+ = split-shift
-            $table->timestampTz('check_in')->nullable();
-            $table->timestampTz('check_out')->nullable();
-            // RÈGLE : check_in/check_out toujours en UTC côté stockage.
-            // CALCULS (retard, HS) se font EN TIMEZONE ENTREPRISE via Carbon::setTimezone()
-            $table->enum('method', ['mobile', 'qr', 'biometric', 'manual'])->default('mobile');
-            $table->enum('status', ['ontime', 'late', 'absent', 'leave', 'holiday', 'incomplete'])
-                ->default('incomplete');
-            $table->decimal('hours_worked', 5, 2)->nullable();
-            $table->decimal('overtime_hours', 5, 2)->default(0);
-            $table->unsignedSmallInteger('late_minutes')->default(0);
-            $table->decimal('gps_lat', 10, 8)->nullable();
-            $table->decimal('gps_lng', 11, 8)->nullable();
-            $table->string('photo_check_in', 255)->nullable();      // Chemin stockage local/R2
-            $table->unsignedInteger('corrected_by')->nullable();    // Employee qui a corrigé (manager)
-            $table->foreign('corrected_by')->references('id')->on('employees')->nullOnDelete();
-            $table->text('correction_note')->nullable();
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
+            Schema::create('attendance_logs', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('employee_id');
+                $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+                $table->unsignedInteger('schedule_id')->nullable();
+                $table->foreign('schedule_id')->references('id')->on('schedules')->nullOnDelete();
+                // Planning actif AU MOMENT du pointage (snapshot)
+                $table->date('date');
+                $table->smallInteger('session_number')->default(1);     // 1 = session normale, 2+ = split-shift
+                $table->timestampTz('check_in')->nullable();
+                $table->timestampTz('check_out')->nullable();
+                // RÈGLE : check_in/check_out toujours en UTC côté stockage.
+                // CALCULS (retard, HS) se font EN TIMEZONE ENTREPRISE via Carbon::setTimezone()
+                $table->enum('method', ['mobile', 'qr', 'biometric', 'manual'])->default('mobile');
+                $table->enum('status', ['ontime', 'late', 'absent', 'leave', 'holiday', 'incomplete'])
+                    ->default('incomplete');
+                $table->decimal('hours_worked', 5, 2)->nullable();
+                $table->decimal('overtime_hours', 5, 2)->default(0);
+                $table->unsignedSmallInteger('late_minutes')->default(0);
+                $table->decimal('gps_lat', 10, 8)->nullable();
+                $table->decimal('gps_lng', 11, 8)->nullable();
+                $table->string('photo_check_in', 255)->nullable();      // Chemin stockage local/R2
+                $table->unsignedInteger('corrected_by')->nullable();    // Employee qui a corrigé (manager)
+                $table->foreign('corrected_by')->references('id')->on('employees')->nullOnDelete();
+                $table->text('correction_note')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
 
-            // UNE ligne par employé par jour PAR SESSION (split-shift supporté)
-            $table->unique(['employee_id', 'date', 'session_number']);
-            $table->index(['employee_id', 'date']);
-            $table->index(['date', 'status']);
-        });
+                // UNE ligne par employé par jour PAR SESSION (split-shift supporté)
+                $table->unique(['employee_id', 'date', 'session_number']);
+                $table->index(['employee_id', 'date']);
+                $table->index(['date', 'status']);
+            });
         }
 
         DB::statement("COMMENT ON COLUMN attendance_logs.session_number IS 'Support split-shift. 1=journée normale. 2+=demi-journées séparées'");
@@ -56,44 +56,44 @@ return new class extends Migration
 
         // ── absence_types ──────────────────────────────────────────────────────
         if (! Schema::hasTable('absence_types')) {
-        Schema::create('absence_types', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('name', 100);
-            $table->string('code', 20)->unique();                   // ex: 'CONGE_ANNUEL', 'MALADIE'
-            $table->boolean('is_paid')->default(true);
-            $table->boolean('deducts_leave')->default(true);        // Déduit du solde congés ?
-            $table->boolean('requires_proof')->default(false);      // Justificatif obligatoire ?
-            $table->unsignedSmallInteger('max_days_once')->nullable(); // Limite par demande
-            $table->timestampTz('created_at')->useCurrent();
-        });
+            Schema::create('absence_types', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->string('name', 100);
+                $table->string('code', 20)->unique();                   // ex: 'CONGE_ANNUEL', 'MALADIE'
+                $table->boolean('is_paid')->default(true);
+                $table->boolean('deducts_leave')->default(true);        // Déduit du solde congés ?
+                $table->boolean('requires_proof')->default(false);      // Justificatif obligatoire ?
+                $table->unsignedSmallInteger('max_days_once')->nullable(); // Limite par demande
+                $table->timestampTz('created_at')->useCurrent();
+            });
         }
 
         // ── absences ───────────────────────────────────────────────────────────
         if (! Schema::hasTable('absences')) {
-        Schema::create('absences', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
-            $table->unsignedInteger('absence_type_id');
-            $table->foreign('absence_type_id')->references('id')->on('absence_types');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->unsignedSmallInteger('days_count');
-            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
-            $table->text('reason')->nullable();
-            $table->string('proof_path', 255)->nullable();
-            $table->unsignedInteger('approved_by')->nullable();
-            $table->foreign('approved_by')->references('id')->on('employees')->nullOnDelete();
-            $table->text('rejected_reason')->nullable();
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
+            Schema::create('absences', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('employee_id');
+                $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+                $table->unsignedInteger('absence_type_id');
+                $table->foreign('absence_type_id')->references('id')->on('absence_types');
+                $table->date('start_date');
+                $table->date('end_date');
+                $table->unsignedSmallInteger('days_count');
+                $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
+                $table->text('reason')->nullable();
+                $table->string('proof_path', 255)->nullable();
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->foreign('approved_by')->references('id')->on('employees')->nullOnDelete();
+                $table->text('rejected_reason')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
 
-            // Contrainte : end_date >= start_date (ajoutée manuellement)
-            $table->index(['employee_id', 'status']);
-            $table->index(['start_date', 'end_date']);
-        });
+                // Contrainte : end_date >= start_date (ajoutée manuellement)
+                $table->index(['employee_id', 'status']);
+                $table->index(['start_date', 'end_date']);
+            });
         }
 
         // Contrainte check dates (PostgreSQL spécifique)
@@ -101,49 +101,49 @@ return new class extends Migration
 
         // ── leave_balance_logs ────────────────────────────────────────────────
         if (! Schema::hasTable('leave_balance_logs')) {
-        Schema::create('leave_balance_logs', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
-            $table->decimal('delta', 5, 2);                         // + accrual ou - consommé
-            $table->string('reason', 100);                          // ex: 'accrual_monthly', 'absence_approved'
-            $table->unsignedInteger('reference_id')->nullable();    // ID absence ou payroll lié
-            $table->decimal('balance_after', 6, 2);                 // Solde après opération
-            $table->timestampTz('created_at')->useCurrent();
+            Schema::create('leave_balance_logs', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('employee_id');
+                $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+                $table->decimal('delta', 5, 2);                         // + accrual ou - consommé
+                $table->string('reason', 100);                          // ex: 'accrual_monthly', 'absence_approved'
+                $table->unsignedInteger('reference_id')->nullable();    // ID absence ou payroll lié
+                $table->decimal('balance_after', 6, 2);                 // Solde après opération
+                $table->timestampTz('created_at')->useCurrent();
 
-            $table->index('employee_id');
-        });
+                $table->index('employee_id');
+            });
         }
 
         // ── salary_advances ────────────────────────────────────────────────────
         if (! Schema::hasTable('salary_advances')) {
-        Schema::create('salary_advances', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->unsignedInteger('employee_id');
-            $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
-            $table->decimal('amount', 12, 2);                       // Montant demandé
-            $table->text('reason')->nullable();
+            Schema::create('salary_advances', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('company_id')->nullable()->index();
+                $table->unsignedInteger('employee_id');
+                $table->foreign('employee_id')->references('id')->on('employees')->cascadeOnDelete();
+                $table->decimal('amount', 12, 2);                       // Montant demandé
+                $table->text('reason')->nullable();
 
-            // STATUTS : pending → approved → active → repaid (+rejected)
-            // 'active' = avance approuvée EN COURS de remboursement (PayrollService filtre sur 'active')
-            $table->enum('status', ['pending', 'approved', 'rejected', 'active', 'repaid'])
-                ->default('pending');
+                // STATUTS : pending → approved → active → repaid (+rejected)
+                // 'active' = avance approuvée EN COURS de remboursement (PayrollService filtre sur 'active')
+                $table->enum('status', ['pending', 'approved', 'rejected', 'active', 'repaid'])
+                    ->default('pending');
 
-            $table->unsignedInteger('approved_by')->nullable();
-            $table->foreign('approved_by')->references('id')->on('employees')->nullOnDelete();
-            $table->text('decision_comment')->nullable();
-            $table->unsignedSmallInteger('repayment_months')->default(1);
-            $table->decimal('monthly_deduction', 12, 2)->nullable(); // Calculé à l'approbation
-            $table->decimal('amount_remaining', 12, 2)->default(0); // Mis à jour par PayrollService
-            $table->jsonb('repayment_plan')->nullable();
-            // Structure: [{"month":"2026-05","amount":5000,"paid":false}, ...]
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->foreign('approved_by')->references('id')->on('employees')->nullOnDelete();
+                $table->text('decision_comment')->nullable();
+                $table->unsignedSmallInteger('repayment_months')->default(1);
+                $table->decimal('monthly_deduction', 12, 2)->nullable(); // Calculé à l'approbation
+                $table->decimal('amount_remaining', 12, 2)->default(0); // Mis à jour par PayrollService
+                $table->jsonb('repayment_plan')->nullable();
+                // Structure: [{"month":"2026-05","amount":5000,"paid":false}, ...]
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
 
-            $table->index(['employee_id', 'status']);
-        });
+                $table->index(['employee_id', 'status']);
+            });
         }
 
         DB::statement("COMMENT ON COLUMN salary_advances.status IS 'pending→approved→active→repaid. active=en cours de remboursement. PayrollService filtre WHERE status=active'");

@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int|null $company_id
  * @property string $name
  * @property string $description
- * @property \Illuminate\Support\Carbon $start_date
- * @property \Illuminate\Support\Carbon|null $end_date
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
  * @property array<mixed> $members
  * @property string $status
  * @property string|null $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class Project extends Model
 {
@@ -48,6 +49,10 @@ class Project extends Model
         return $this->hasMany(Task::class, 'project_id');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('status', 'active');
