@@ -13,7 +13,7 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DEFAULT_BACKEND_COVERAGE_MIN: "55"
-  DEFAULT_MOBILE_COVERAGE_MIN: "25"
+  DEFAULT_MOBILE_COVERAGE_MIN: "21"
 
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}

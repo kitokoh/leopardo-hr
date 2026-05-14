@@ -160,9 +160,13 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 
 - `front/mobile/test/features/auth/*`
 - `front/mobile/test/features/attendance/*`
+- `front/mobile/test/features/mobile_surface_smoke_test.dart` couvre le rendu sans backend des surfaces principales: welcome, login, register, home, hub modules, absences, paie, notifications, equipe, settings, historique et resume mensuel.
 - `front/mobile/test/features/leave/*`
 - `front/mobile/test/features/employees/*`
 - `front/mobile/test/features/payroll/*` (si module actif)
+- `front/mobile/test/navigation/go_router_guard_test.dart` couvre les redirections GoRouter public/protege.
+- `front/mobile/test/repositories/repository_contract_test.dart` couvre les contrats endpoints des repositories mobiles avec `ApiClient` intercepte sans reseau.
+- `front/mobile/test/golden/critical_component_golden_test.dart` maintient des baselines structurelles pour paie mobile et conges tant que les goldens image ne sont pas generes localement.
 
 ### Integration tests (PR sur mobile)
 
