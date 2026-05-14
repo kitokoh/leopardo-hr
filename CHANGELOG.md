@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.40] - 2026-05-14
+
+### Docs — Admin route code splitting status
+
+- Plan : coche du point Plan 14 "Code splitting par route" apres verification de `front/admin-dashboard/src/router/index.js`.
+- Front admin : confirmation que les routes utilisent deja le lazy loading Vue via `component: () => import(...)`.
+
 ## [4.16.39] - 2026-05-14
 
 ### Ops — Database backup automation
