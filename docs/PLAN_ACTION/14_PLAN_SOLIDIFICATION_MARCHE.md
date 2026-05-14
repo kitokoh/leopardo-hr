@@ -90,7 +90,7 @@
 - [ ] Audit SQL injection sur tous les endpoints avec parametres
 - [ ] Verifier CSRF/XSS protection sur formulaires admin
 - [ ] Audit des permissions RBAC : matrice complete roles/routes
-- [ ] Rate limiting sur tous les endpoints sensibles (auth, paie, IA)
+- [x] Rate limiting sur endpoints sensibles auth, privacy, paie, plateforme et IA via limiters nommes configurables
 - [ ] Rotation automatique des tokens JWT (refresh token flow)
 ```
 

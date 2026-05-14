@@ -160,6 +160,11 @@ Procedure recommandee :
 - Le registre interne des traitements vit dans `docs/security/REGISTRE_TRAITEMENTS_DONNEES_RH.md`. Le maintenir a jour a chaque nouveau module collectant une nouvelle categorie de donnees, integration externe, traitement IA ou usage biometrique.
 - Les points privacy publics (`/privacy`, `/terms`) et API (`/api/v1/privacy/export`, `/deletion-request`, `/biometric-consent`) doivent rester coherents avec ce registre.
 
+### 2026-05-14 - Rate limiting endpoints sensibles
+
+- Les surfaces sensibles utilisent des limiters nommes dans `AppServiceProvider` et configures via `api/config/security.php` : `auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive`, `ai-sensitive`.
+- Pour les prochains endpoints auth, paie, privacy, IA ou super-admin, reutiliser ces limiters au lieu d'ajouter des `throttle:10,1` isoles.
+
 ### 2026-05-08 - Render et transaction PostgreSQL abort
 
 - Sur PostgreSQL, une migration Laravel executee dans la transaction du migrateur ne doit pas lancer de requete de verification apres une erreur SQL, sinon on tombe sur `SQLSTATE[25P02] current transaction is aborted`.
