@@ -1,0 +1,102 @@
+name: OWASP ZAP Baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Base URL to scan"
+        required: false
+        default: ""
+  workflow_run:
+    workflows: ["Deploy - Leopardo RH"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  DEFAULT_ZAP_TARGET_URL: https://gestionemployerbackend.onrender.com
+
+concurrency:
+  group: owasp-zap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  should-run:
+    name: Check deployment status
+    runs-on: ubuntu-latest
+    outputs:
+      run_scan: ${{ steps.check.outputs.run_scan }}
+    steps:
+      - name: Determine if ZAP should run
+        id: check
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "run_scan=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            echo "run_scan=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_scan=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  zap-baseline:
+    name: ZAP Baseline Scan
+    runs-on: ubuntu-latest
+    needs: should-run
+    if: needs.should-run.outputs.run_scan == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Resolve target URL
+        id: target
+        shell: bash
+        run: |
+          INPUT_URL="${{ github.event.inputs.target_url }}"
+          URL="${INPUT_URL:-${DEFAULT_ZAP_TARGET_URL}}"
+          URL="${URL%/}"
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+          echo "Scanning ${URL}"
+
+      - name: Wait for health endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="${{ steps.target.outputs.url }}/api/v1/health"
+          for attempt in {1..6}; do
+            if curl --fail --silent --show-error "${URL}" | grep -q '"status"'; then
+              echo "API health endpoint is ready."
+              exit 0
+            fi
+            echo "Health check attempt ${attempt}/6 failed; retrying in 10s."
+            sleep 10
+          done
+          echo "API health endpoint did not become ready: ${URL}"
+          exit 1
+
+      - name: Run OWASP ZAP baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p zap-reports
+          docker run --rm \
+            -v "${PWD}/zap-reports:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+              -t "${{ steps.target.outputs.url }}" \
+              -J zap-baseline.json \
+              -r zap-baseline.html \
+              -w zap-baseline.md \
+              -I
+
+      - name: Upload ZAP reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-zap-baseline
+          path: zap-reports/
+          if-no-files-found: ignore
+          retention-days: 30
