@@ -54,7 +54,7 @@
 - [x] Scenario login + dashboard chargement KPI
 - [x] Scenario paie : creer un run → calculer → valider → telecharger bulletin
 - [x] Scenario conges : soumettre → approuver → verifier solde
-- [ ] Scenario recrutement : creer poste → pipeline kanban → changer stage
+- [x] Scenario recrutement : creer poste → pipeline kanban → changer stage
 - [x] Scenario exports : generer rapport PDF/CSV
 - [x] Integrer dans CI web-ci.yml avec screenshots on failure
 ```
