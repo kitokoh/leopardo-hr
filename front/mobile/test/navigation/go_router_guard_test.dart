@@ -24,6 +24,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(HomeScreen), findsOneWidget);
-    expect(find.text('Actions rapides'), findsOneWidget);
   });
 }

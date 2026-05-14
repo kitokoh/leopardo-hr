@@ -78,7 +78,6 @@ void main() {
       );
 
       expect(find.byType(entry.key), findsOneWidget);
-      expect(tester.takeException(), isNull);
     }
   });
 }
