@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.51] - 2026-05-14
+
+### Docs — Audit exhaustif plans d'action vs code
+
+- Audit : mise a jour de TOUS les fichiers PLAN_ACTION (01-14) pour marquer `[x]` les taches deja implementees dans le code.
+- Resultat : ~85% des taches documentees etaient deja implementees mais non cochees dans les plans historiques.
+- Plans 03 (Paie), 09 (Onboarding/Billing) : 100% des taches marquees FAIT avec references code.
+- Plans 01, 02, 04, 05, 07, 08, 10 : mise a jour partielle, taches restantes identifiees.
+- Nouveau : creation de `15_PLAN_EXECUTION_CONSOLIDE.md` — inventaire complet des 193 taches restantes organisees en 12 categories et 7+ iterations.
+- Nouveau : mise a jour de `00_SOMMAIRE.md` avec references aux nouveaux documents.
+
 ## [4.16.50] - 2026-05-14
 
 ### CI — Mobile coverage ratchet
