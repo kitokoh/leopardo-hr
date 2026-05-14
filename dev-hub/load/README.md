@@ -7,6 +7,9 @@ Ce dossier contient les scripts de charge k6 utilises pour mesurer les parcours 
 | Script | Objectif | Mutations |
 |---|---|---|
 | `k6/api-core-smoke.js` | Health, dashboard manager, employees, attendance, payroll et self-service employe | Non |
+| `k6/employee-100-attendance-payroll.js` | Benchmark 100 employes simultanes sur pointage, historique et consultation paie | Non par defaut ; check-in optionnel avec `ALLOW_ATTENDANCE_MUTATIONS=true` |
+| `k6/payroll-500-batch.js` | Benchmark calcul paie 500 employes avec seuil < 30 s | Lecture par defaut ; calcul optionnel avec `ALLOW_PAYROLL_MUTATIONS=true` |
+| `k6/admin-dashboard-10k.js` | Benchmark dashboard admin + pagination/search sur tenant 10k employes | Non |
 
 ## Prerequis
 
@@ -24,6 +27,42 @@ MANAGER_TOKEN="..." \
 EMPLOYEE_TOKEN="..." \
 k6 run dev-hub/load/k6/api-core-smoke.js
 ```
+
+## Benchmarks cibles Plan 14
+
+### 100 employes simultanes
+
+```bash
+BASE_URL="https://api-staging.leopardo-rh.com" \
+EMPLOYEE_TOKENS="token1,token2,token3" \
+k6 run dev-hub/load/k6/employee-100-attendance-payroll.js
+```
+
+Seuils : moins de 2% d'erreurs, p95 attendance < 1500 ms, p95 paie self-service < 1800 ms.
+
+### Paie 500 employes
+
+Preparer un tenant staging avec 500 employes actifs et un `PAYROLL_RUN_ID` en brouillon/calculable.
+
+```bash
+BASE_URL="https://api-staging.leopardo-rh.com" \
+MANAGER_TOKEN="..." \
+PAYROLL_RUN_ID="123" \
+ALLOW_PAYROLL_MUTATIONS=true \
+k6 run dev-hub/load/k6/payroll-500-batch.js
+```
+
+Seuil : `POST /api/v1/payroll-runs/{id}/calculate` p95 < 30000 ms.
+
+### Dashboard admin 10k employes
+
+```bash
+BASE_URL="https://api-staging.leopardo-rh.com" \
+MANAGER_TOKEN="..." \
+k6 run dev-hub/load/k6/admin-dashboard-10k.js
+```
+
+Seuils : p95 dashboard < 1500 ms, liste/search employes < 1800 ms.
 
 ## Profil par defaut
 
@@ -56,6 +95,11 @@ k6 run dev-hub/load/k6/api-core-smoke.js
 4. Augmenter progressivement `MANAGER_VUS` et `EMPLOYEE_VUS`.
 5. Consigner les resultats dans un rapport date : p50, p95, taux d'erreur, endpoints les plus lents.
 6. Ouvrir un ticket par goulot : N+1, index absent, payload trop lourd, cache manquant.
+
+## Corrections N+1 / scalabilite livrees
+
+- `AttendanceMonthlyReportService` groupe les logs par `employee_id` avant de produire les lignes employes, afin d'eviter un scan complet des logs pour chaque employe du rapport.
+- `OrgChartController` construit l'arbre depuis une collection groupee par `manager_id` et scope explicitement les lectures sur `company_id`, afin d'eviter le rescanning O(n^2) et de garder l'isolation tenant lisible.
 
 ## Garde-fous
 

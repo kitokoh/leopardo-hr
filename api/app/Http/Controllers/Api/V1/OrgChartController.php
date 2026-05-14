@@ -7,19 +7,24 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 
 class OrgChartController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $employees = Employee::query()
-            ->select(['id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'status', 'photo_path'])
+            ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'status', 'photo_path'])
             ->with('schedule:id,name')
+            ->where('company_id', $actor->company_id)
             ->where('status', 'active')
             ->get();
 
-        $tree = $this->buildTree($employees, null);
+        $tree = $this->buildTree($employees->groupBy('manager_id'), null);
 
         return response()->json(['data' => $tree]);
     }
@@ -30,7 +35,8 @@ class OrgChartController extends Controller
         $actor = $request->user();
 
         $directReports = Employee::query()
-            ->select(['id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'email', 'status'])
+            ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'email', 'status'])
+            ->where('company_id', $actor->company_id)
             ->where('manager_id', $employeeId)
             ->where('status', 'active')
             ->get();
@@ -40,8 +46,13 @@ class OrgChartController extends Controller
 
     public function managerChain(Request $request, int $employeeId): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
         $chain = [];
-        $current = Employee::select(['id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])->find($employeeId);
+        $current = Employee::query()
+            ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])
+            ->where('company_id', $actor->company_id)
+            ->find($employeeId);
 
         if (! $current) {
             abort(404);
@@ -50,7 +61,10 @@ class OrgChartController extends Controller
         $visited = [];
         while ($current->manager_id !== null && ! in_array($current->manager_id, $visited, true)) {
             $visited[] = $current->manager_id;
-            $manager = Employee::select(['id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])->find($current->manager_id);
+            $manager = Employee::query()
+                ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])
+                ->where('company_id', $actor->company_id)
+                ->find($current->manager_id);
             if (! $manager) {
                 break;
             }
@@ -67,10 +81,16 @@ class OrgChartController extends Controller
         return response()->json(['data' => $chain]);
     }
 
-    private function buildTree($employees, ?int $parentId): array
+    /**
+     * @param  Collection<int|string, Collection<int, Employee>>  $employeesByManager
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildTree(Collection $employeesByManager, ?int $parentId): array
     {
         $tree = [];
-        foreach ($employees->where('manager_id', $parentId) as $employee) {
+        $bucketKey = $parentId ?? '';
+
+        foreach ($employeesByManager->get($bucketKey, collect()) as $employee) {
             $tree[] = [
                 'id' => $employee->id,
                 'first_name' => $employee->first_name,
@@ -78,7 +98,7 @@ class OrgChartController extends Controller
                 'role' => $employee->role,
                 'manager_role' => $employee->manager_role,
                 'photo_path' => $employee->photo_path,
-                'children' => $this->buildTree($employees, $employee->id),
+                'children' => $this->buildTree($employeesByManager, $employee->id),
             ];
         }
 

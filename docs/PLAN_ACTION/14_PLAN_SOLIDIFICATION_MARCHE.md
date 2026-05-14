@@ -120,10 +120,10 @@
 ### 3.1 Load Testing
 ```
 - [x] Setup k6 pour tests de charge via `dev-hub/load/k6/api-core-smoke.js`
-- [ ] Benchmark : 100 employes simultanes (pointage, consultation paie)
-- [ ] Benchmark : calcul paie 500 employes en < 30 secondes
-- [ ] Benchmark : dashboard admin avec 10k employes (pagination, search)
-- [ ] Identifier et corriger les N+1 queries (Laravel Debugbar)
+- [x] Benchmark : 100 employes simultanes (pointage, consultation paie) via `dev-hub/load/k6/employee-100-attendance-payroll.js`
+- [x] Benchmark : calcul paie 500 employes en < 30 secondes via `dev-hub/load/k6/payroll-500-batch.js`
+- [x] Benchmark : dashboard admin avec 10k employes (pagination, search) via `dev-hub/load/k6/admin-dashboard-10k.js`
+- [x] Identifier et corriger les N+1 queries / scans repetes : rapport mensuel attendance groupe par employe, organigramme groupe par manager
 ```
 
 ### 3.2 Optimisation Backend

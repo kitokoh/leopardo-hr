@@ -346,3 +346,9 @@ Procedure recommandee :
 - Les SDK JavaScript et Python officiels vivent dans `dev-hub/sdk/` et sont generes depuis `api/openapi.yaml` par `node dev-hub/tools/generate-openapi-sdk.mjs`.
 - Ne pas modifier `dev-hub/sdk/javascript/leopardoClient.js`, `dev-hub/sdk/python/leopardo_client.py` ou `dev-hub/sdk/MANIFEST.json` a la main. Mettre a jour OpenAPI puis lancer le generateur.
 - Avant de livrer une modification du contrat OpenAPI ou des SDK, executer `node dev-hub/tools/generate-openapi-sdk.mjs --check`.
+
+### 2026-05-14 - Benchmarks performance Plan 14
+
+- Les benchmarks k6 cibles vivent dans `dev-hub/load/k6/` : `employee-100-attendance-payroll.js`, `payroll-500-batch.js` et `admin-dashboard-10k.js`.
+- Les scripts de benchmark destructifs restent proteges par flags explicites (`ALLOW_ATTENDANCE_MUTATIONS=true`, `ALLOW_PAYROLL_MUTATIONS=true`) et doivent viser staging/preproduction, jamais la production client sans fenetre de test.
+- Pour les endpoints list/rapport, verifier les scans repetes autant que les N+1 Eloquent : le rapport mensuel attendance doit conserver le groupement par `employee_id`, et l'organigramme le groupement par `manager_id`.
