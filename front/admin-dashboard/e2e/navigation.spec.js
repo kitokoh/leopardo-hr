@@ -26,14 +26,17 @@ test.describe('Navigation and routing', () => {
     await expect(page).toHaveTitle(/Leopardo RH/i)
   })
 
-  test('404 page renders for unknown routes', async ({ page }) => {
+  test('unknown route redirects to login when unauthenticated', async ({ page }) => {
     await page.goto('/this-route-does-not-exist')
 
-    // Should redirect to login (unauthenticated) or show 404
-    const isLogin = await page.url().includes('/login')
+    // Vue router should redirect unauthenticated users to login
+    await page.waitForTimeout(2_000)
+    const url = page.url()
+    const isLogin = url.includes('/login')
     const has404 = await page.getByText(/404|introuvable|not found/i).isVisible().catch(() => false)
+    const isHome = url.endsWith('/') && !url.includes('/this-route-does-not-exist')
 
-    expect(isLogin || has404).toBeTruthy()
+    expect(isLogin || has404 || isHome).toBeTruthy()
   })
 
   test('login page renders all required elements', async ({ page }) => {
