@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Models\Applicant;
+use App\Models\Employee;
 use App\Models\Interview;
 use App\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class RecruitmentController extends Controller
 {
@@ -24,7 +25,9 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $query = JobPosting::query()->with('department:id,name');
+        $query = JobPosting::query()
+            ->where('company_id', $actor->company_id)
+            ->with('department:id,name');
 
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
@@ -44,8 +47,16 @@ class RecruitmentController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:200',
             'description' => 'nullable|string',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position_id' => 'nullable|integer|exists:positions,id',
+            'department_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('departments', 'id')->where('company_id', $actor->company_id),
+            ],
+            'position_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('positions', 'id')->where('company_id', $actor->company_id),
+            ],
             'location' => 'nullable|string|max:200',
             'remote_policy' => 'nullable|in:onsite,hybrid,remote',
             'contract_type' => 'nullable|in:cdi,cdd,stage,freelance',
@@ -91,8 +102,16 @@ class RecruitmentController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|string|max:200',
             'description' => 'nullable|string',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position_id' => 'nullable|integer|exists:positions,id',
+            'department_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('departments', 'id')->where('company_id', $actor->company_id),
+            ],
+            'position_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('positions', 'id')->where('company_id', $actor->company_id),
+            ],
             'location' => 'nullable|string|max:200',
             'remote_policy' => 'nullable|in:onsite,hybrid,remote',
             'contract_type' => 'nullable|in:cdi,cdd,stage,freelance',
@@ -200,7 +219,11 @@ class RecruitmentController extends Controller
         }
 
         $validated = $request->validate([
-            'interviewer_id' => 'nullable|integer|exists:employees,id',
+            'interviewer_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+            ],
             'type' => 'required|in:phone,video,onsite,technical',
             'scheduled_at' => 'required|date',
             'duration_minutes' => 'nullable|integer|min:15|max:480',
