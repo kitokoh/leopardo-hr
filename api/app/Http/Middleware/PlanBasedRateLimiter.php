@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Subscription;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -33,12 +33,14 @@ class PlanBasedRateLimiter
     {
         $employee = $request->user();
         if (! $employee instanceof Employee || ! $employee->company_id) {
+            /** @var Response */
             return $next($request);
         }
 
-        $limit = $this->resolveLimit($employee->company_id);
-        $key = 'plan_rate:'.$employee->company_id;
-        $current = (int) Cache::get($key, 0);
+        $companyId = (string) $employee->company_id;
+        $limit = $this->resolveLimit($companyId);
+        $key = 'plan_rate:'.$companyId;
+        $current = is_numeric(Cache::get($key)) ? (int) Cache::get($key) : 0;
 
         if ($current >= $limit) {
             return response()->json([
@@ -59,7 +61,7 @@ class PlanBasedRateLimiter
 
         $response->headers->set('X-RateLimit-Limit', (string) $limit);
         $response->headers->set('X-RateLimit-Remaining', (string) max(0, $limit - $current - 1));
-        $response->headers->set('X-RateLimit-Plan', $this->resolvePlanName($employee->company_id));
+        $response->headers->set('X-RateLimit-Plan', $this->resolvePlanName($companyId));
 
         return $response;
     }
@@ -73,20 +75,21 @@ class PlanBasedRateLimiter
 
     private function resolvePlanName(string $companyId): string
     {
+        /** @var string */
         return Cache::remember(
             'company_plan:'.$companyId,
             self::CACHE_TTL_SECONDS,
             function () use ($companyId): string {
-                $company = Company::query()
-                    ->select(['id', 'plan_id'])
-                    ->with('plan:id,name')
-                    ->find($companyId);
+                $subscription = Subscription::query()
+                    ->where('company_id', $companyId)
+                    ->where('status', 'active')
+                    ->first(['plan']);
 
-                if (! $company || ! $company->plan) {
+                if (! $subscription) {
                     return 'free';
                 }
 
-                return strtolower($company->plan->name);
+                return strtolower((string) $subscription->plan);
             }
         );
     }
