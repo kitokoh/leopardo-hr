@@ -24,13 +24,27 @@ class AttendanceMonthlyReportService
             ->get();
 
         $logs = AttendanceLog::query()
-            ->with(['employee:id,company_id,first_name,last_name,matricule'])
+            ->select([
+                'id',
+                'company_id',
+                'employee_id',
+                'date',
+                'check_in',
+                'check_out',
+                'method',
+                'hours_worked',
+                'overtime_hours',
+                'late_minutes',
+                'corrected_by',
+            ])
             ->where('company_id', $company->id)
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->get();
 
+        $logsByEmployee = $logs->groupBy('employee_id');
+
         $rows = $employees
-            ->map(fn (Employee $employee): array => $this->employeeRow($employee, $logs->where('employee_id', $employee->id)))
+            ->map(fn (Employee $employee): array => $this->employeeRow($employee, $logsByEmployee->get($employee->id, collect())))
             ->values();
 
         $totals = [
