@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\V1\UserEmployeeLinkController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
-Route::middleware(['throttle:10,1'])->prefix('user')->group(function (): void {
+Route::middleware(['throttle:auth-sensitive'])->prefix('user')->group(function (): void {
     Route::post('/register', [UserAuthController::class, 'register']);
     Route::post('/login', [UserAuthController::class, 'login']);
     Route::post('/google-signin', [UserAuthController::class, 'googleSignIn']);
