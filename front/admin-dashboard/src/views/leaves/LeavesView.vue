@@ -156,10 +156,20 @@ async function fetchData() {
 }
 
 async function approveRequest(id) {
-  try { await api.post(`/v1/absences/${id}/approve`); fetchData() } catch {}
+  try {
+    await api.post(`/v1/absences/${id}/approve`)
+    fetchData()
+  } catch (err) {
+    console.warn('Failed to approve leave request', err)
+  }
 }
 async function rejectRequest(id, comment) {
-  try { await api.post(`/v1/absences/${id}/reject`, { comment }); fetchData() } catch {}
+  try {
+    await api.post(`/v1/absences/${id}/reject`, { comment })
+    fetchData()
+  } catch (err) {
+    console.warn('Failed to reject leave request', err)
+  }
 }
 function exportBalances() { window.open('/api/v1/export/leave-balances?format=csv', '_blank') }
 

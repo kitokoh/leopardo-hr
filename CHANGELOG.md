@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.33] - 2026-05-14
+
+### Tests — Integration branche Devin Plan 14
+
+- Tests : integration des suites Devin Plan 14 Phase 1 (E2E admin-dashboard, API integration payroll/onboarding/conges, modeles Flutter).
+- Tests : alignement du test plateforme sur le guard Sanctum `super_admin_api`, le contrat reel de `/api/v1/platform/companies`.
+- CI : correction des blocs `catch` vides dans l'admin-dashboard afin que `Web Lint` bloque seulement les vrais ecarts.
+- Backend tests : ajout des tables webhook au schema MVP de test pour couvrir les dispatchs evenementiels sans erreur `webhook_endpoints` manquante.
+
 ## [4.16.32] - 2026-05-14
 
 ### Performance — k6 load testing foundation
@@ -90,6 +99,14 @@
 - Tests : extension de `PayrollRunControllerTest` pour couvrir calcul, validation, annulation et isolation tenant des runs de paie.
 - Qualite : `PayrollRunController` utilise maintenant des checks stricts sur les statuts et roles dans les actions sensibles.
 - Documentation : plan post-sprints et scenarios API synchronises avec la couverture workflow paie.
+## [4.21.0] - 2026-05-13
+
+### Plan 14 Phase 1 — Fiabilite & Tests
+
+- Playwright E2E : 5 suites de tests (dashboard-kpi, navigation, payroll-flow, leaves-flow, exports-flow) couvrant login, routing, auth guards, validation.
+- @playwright/test ajoute comme devDependency dans admin-dashboard (plus d'install ad-hoc en CI).
+- API Integration : 3 nouveaux tests Feature (PayrollCycleIntegration, CompanyOnboardingIntegration, LeaveWorkflowIntegration) — scenarios metier complets avec isolation tenant.
+- Mobile Flutter : 5 tests modeles (contract, expense_claim, approval, training_enrollment, vehicle_position, onboarding_step) — fromJson + defaults + edge cases.
 
 ## [4.20.0] - 2026-05-13
 
