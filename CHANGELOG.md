@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.28] - 2026-05-14
+
+### Security — HR data access audit trail
+
+- Securite : ajout de `DataAccessAuditLogger` pour journaliser les acces RH sensibles sans bloquer la requete metier en cas d'incident d'audit.
+- API : les endpoints employees list/detail et privacy export creent maintenant une entree `audit_logs` avec acteur, tenant, cible et metadata `category=hr_data_access`.
+- Tests : couverture Feature de la journalisation sur liste employees, fiche employee et export privacy.
+
 ## [4.16.27] - 2026-05-14
 
 ### Security — Privacy/RGPD employee data rights
