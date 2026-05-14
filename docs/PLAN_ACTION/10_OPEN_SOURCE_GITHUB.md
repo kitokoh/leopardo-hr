@@ -287,9 +287,9 @@ Recommandation : rester MIT pour attirer des contributeurs. La valeur est dans l
 
 ## 5. Taches
 
-- [ ] **T-OSS-01** : Creer `docker-compose.yml` et les Dockerfiles
-- [ ] **T-OSS-02** : Creer `.devcontainer/devcontainer.json`
-- [ ] **T-OSS-03** : Creer `../../dev-hub/DEVELOPMENT.md`
+- [x] **T-OSS-01** : Creer `docker-compose.yml` et les Dockerfiles — **FAIT** (`docker-compose.yml` + `front/web/Dockerfile.dev`)
+- [x] **T-OSS-02** : Creer `.devcontainer/devcontainer.json` — **FAIT** (`.devcontainer/devcontainer.json`)
+- [x] **T-OSS-03** : Creer `dev-hub/DEVELOPMENT.md` — **FAIT**
 - [ ] **T-OSS-04** : Creer les labels GitHub (script `../../dev-hub/scripts/setup-labels.sh`)
 - [ ] **T-OSS-05** : Creer 10 issues "good first issue"
 - [ ] **T-OSS-06** : Corriger les URLs dans le README
