@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,12 +19,12 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $invited_by_type
  * @property string|null $invited_by_email
  * @property string|null $token_hash
- * @property \Illuminate\Support\Carbon|null $expires_at
- * @property \Illuminate\Support\Carbon|null $accepted_at
- * @property \Illuminate\Support\Carbon|null $last_sent_at
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $accepted_at
+ * @property Carbon|null $last_sent_at
  * @property array<mixed> $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 class UserInvitation extends Model
 {

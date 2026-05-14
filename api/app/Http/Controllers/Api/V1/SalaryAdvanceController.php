@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\SalaryAdvance\DecideSalaryAdvanceRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\SalaryAdvanceIndexRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\StoreSalaryAdvanceRequest;
+use App\Models\Employee;
 use App\Models\SalaryAdvance;
 use App\Services\SalaryAdvanceService;
 use Illuminate\Http\JsonResponse;

@@ -28,7 +28,7 @@ return new class extends Migration
 
         if (Schema::hasTable('employees')) {
             if (DB::getDriverName() === 'pgsql') {
-                DB::statement("ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check");
+                DB::statement('ALTER TABLE employees DROP CONSTRAINT IF EXISTS employees_role_check');
             }
 
             Schema::table('employees', function (Blueprint $table) {
