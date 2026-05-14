@@ -165,6 +165,11 @@ Procedure recommandee :
 - Les surfaces sensibles utilisent des limiters nommes dans `AppServiceProvider` et configures via `api/config/security.php` : `auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive`, `ai-sensitive`.
 - Pour les prochains endpoints auth, paie, privacy, IA ou super-admin, reutiliser ces limiters au lieu d'ajouter des `throttle:10,1` isoles.
 
+### 2026-05-14 - Load testing k6
+
+- Le socle de charge vit dans `dev-hub/load/k6/api-core-smoke.js` et reste read-only par defaut. Ne pas ajouter de mutations de pointage, paie ou exports dans ce script sans flag explicite.
+- Les benchmarks Plan 14 doivent etre consignes avec p50/p95, taux d'erreur et endpoints lents avant d'annoncer un SLA.
+
 ### 2026-05-08 - Render et transaction PostgreSQL abort
 
 - Sur PostgreSQL, une migration Laravel executee dans la transaction du migrateur ne doit pas lancer de requete de verification apres une erreur SQL, sinon on tombe sur `SQLSTATE[25P02] current transaction is aborted`.
