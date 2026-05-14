@@ -6,10 +6,11 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
-use App\Models\PaySlip;
 use App\Models\PayrollRun;
+use App\Models\PaySlip;
 use App\Services\Payroll\PayrollCalculator;
 use Laravel\Sanctum\Sanctum;
+use Mockery;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -31,45 +32,49 @@ class PayrollRunControllerTest extends TestCase
 
     private function bindFakePayrollCalculator(): void
     {
-        $this->app->instance(PayrollCalculator::class, new class extends PayrollCalculator
-        {
-            public function calculateRun(PayrollRun $run): PayrollRun
-            {
-                $employee = Employee::query()
-                    ->where('company_id', $run->company_id)
-                    ->where('status', 'active')
-                    ->firstOrFail();
+        $calculator = Mockery::mock(PayrollCalculator::class);
+        $calculator
+            ->shouldReceive('calculateRun')
+            ->once()
+            ->andReturnUsing(
+                function (PayrollRun $run): PayrollRun {
+                    $employee = Employee::query()
+                        ->where('company_id', $run->company_id)
+                        ->where('status', 'active')
+                        ->firstOrFail();
 
-                PaySlip::query()->create([
-                    'payroll_run_id' => $run->id,
-                    'company_id' => $run->company_id,
-                    'employee_id' => $employee->id,
-                    'period_start' => $run->period_start,
-                    'period_end' => $run->period_end,
-                    'gross_salary' => 100000,
-                    'total_deductions' => 25000,
-                    'net_salary' => 75000,
-                    'employer_contributions' => 12000,
-                    'total_cost' => 112000,
-                    'working_days' => 22,
-                    'actual_days_worked' => 22,
-                    'overtime_hours' => 0,
-                    'status' => 'calculated',
-                ]);
+                    PaySlip::query()->create([
+                        'payroll_run_id' => $run->id,
+                        'company_id' => $run->company_id,
+                        'employee_id' => $employee->id,
+                        'period_start' => $run->period_start,
+                        'period_end' => $run->period_end,
+                        'gross_salary' => 100000,
+                        'total_deductions' => 25000,
+                        'net_salary' => 75000,
+                        'employer_contributions' => 12000,
+                        'total_cost' => 112000,
+                        'working_days' => 22,
+                        'actual_days_worked' => 22,
+                        'overtime_hours' => 0,
+                        'status' => 'calculated',
+                    ]);
 
-                $run->update([
-                    'status' => 'calculated',
-                    'total_gross' => 100000,
-                    'total_deductions' => 25000,
-                    'total_net' => 75000,
-                    'total_employer_cost' => 112000,
-                    'employee_count' => 1,
-                    'calculated_at' => now(),
-                ]);
+                    $run->update([
+                        'status' => 'calculated',
+                        'total_gross' => 100000,
+                        'total_deductions' => 25000,
+                        'total_net' => 75000,
+                        'total_employer_cost' => 112000,
+                        'employee_count' => 1,
+                        'calculated_at' => now(),
+                    ]);
 
-                return $run->refresh();
-            }
-        });
+                    return $run->refresh();
+                }
+            );
+
+        $this->app->instance(PayrollCalculator::class, $calculator);
     }
 
     public function test_manager_can_list_payroll_runs(): void
