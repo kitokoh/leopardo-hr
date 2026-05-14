@@ -88,7 +88,7 @@
 ```
 - [x] Activer OWASP ZAP scan automatise dans CI
 - [x] Audit SQL injection sur tous les endpoints avec parametres
-- [ ] Verifier CSRF/XSS protection sur formulaires admin
+- [x] Verifier CSRF/XSS protection sur formulaires admin
 - [x] Audit des permissions RBAC : matrice complete roles/routes
 - [x] Rate limiting sur endpoints sensibles auth, privacy, paie, plateforme et IA via limiters nommes configurables
 - [ ] Rotation automatique des tokens JWT (refresh token flow)
