@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.43] - 2026-05-14
+
+### Architecture — ADR, C4 and operations runbook
+
+- Architecture : ajout du registre ADR avec decisions multi-tenant PostgreSQL, OpenAPI canonique et GitHub Actions source de verite.
+- Architecture : ajout du diagramme C4 contexte/containers/composants backend dans `docs/architecture/C4_ARCHITECTURE.md`.
+- Operations : ajout d'un runbook operations central reliant deploy, rollback, incidents, observabilite et backup/restore.
+
 ## [4.16.42] - 2026-05-14
 
 ### API Contracts — Swagger UI publication
