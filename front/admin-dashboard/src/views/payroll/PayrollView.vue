@@ -153,10 +153,20 @@ async function fetchData() {
 }
 
 async function calculateRun(id) {
-  try { await api.post(`/v1/payroll-runs/${id}/calculate`); fetchData() } catch {}
+  try {
+    await api.post(`/v1/payroll-runs/${id}/calculate`)
+    fetchData()
+  } catch (err) {
+    console.warn('Failed to calculate payroll run', err)
+  }
 }
 async function validateRun(id) {
-  try { await api.post(`/v1/payroll-runs/${id}/validate`); fetchData() } catch {}
+  try {
+    await api.post(`/v1/payroll-runs/${id}/validate`)
+    fetchData()
+  } catch (err) {
+    console.warn('Failed to validate payroll run', err)
+  }
 }
 function viewRun(id) { /* TODO: navigate to detail */ }
 function exportRuns() { window.open('/api/v1/export/payroll-runs?format=csv', '_blank') }
