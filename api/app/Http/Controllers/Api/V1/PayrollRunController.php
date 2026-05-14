@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\Payroll\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +20,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
@@ -47,7 +49,7 @@ class PayrollRunController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
@@ -77,7 +79,7 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
@@ -93,11 +95,11 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
-        if (! in_array($payrollRun->status, ['draft', 'calculated'])) {
+        if (in_array($payrollRun->status, ['draft', 'calculated'], true) === false) {
             return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
         }
 
@@ -114,7 +116,7 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
@@ -142,11 +144,11 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 
-        if (in_array($payrollRun->status, ['paid', 'cancelled'])) {
+        if (in_array($payrollRun->status, ['paid', 'cancelled'], true)) {
             return response()->json(['message' => 'Payroll run cannot be cancelled.'], 422);
         }
 
@@ -162,7 +164,7 @@ class PayrollRunController extends Controller
         if ($payrollRun->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        if ($actor->isManager() === false) {
             abort(403);
         }
 

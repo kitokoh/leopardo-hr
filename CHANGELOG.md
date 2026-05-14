@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.24] - 2026-05-13
+
+### Tests — Payroll run API contracts
+
+- Tests : extension de `PayrollRunControllerTest` pour couvrir calcul, validation, annulation et isolation tenant des runs de paie.
+- Qualite : `PayrollRunController` utilise maintenant des checks stricts sur les statuts et roles dans les actions sensibles.
+- Documentation : plan post-sprints et scenarios API synchronises avec la couverture workflow paie.
+
 ## [4.20.0] - 2026-05-13
 
 ### Finitions — Sentry APM, alerting, DEVELOPMENT.md, GTM (Plan 13 Sections 7-9) + Plan 14
