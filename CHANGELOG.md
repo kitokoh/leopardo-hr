@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.45] - 2026-05-14
+
+### Validation — Generalized release readiness
+
+- Validation : ajout du gate generalise `RELEASE_READINESS_GATE.md` couvrant API, admin-dashboard, mobile, securite, operations et documentation.
+- Outillage : ajout de `dev-hub/tools/release-readiness.ps1` pour verifier les artefacts essentiels de readiness sans dependance PHP locale.
+- Rapport : ajout du controle generalise 2026-05-14 avec livre, partiellement livre, reste a livrer, limitations locales et score estime.
+
 ## [4.16.44] - 2026-05-14
 
 ### Docs — Partner integration guide
