@@ -352,3 +352,9 @@ Procedure recommandee :
 - Les benchmarks k6 cibles vivent dans `dev-hub/load/k6/` : `employee-100-attendance-payroll.js`, `payroll-500-batch.js` et `admin-dashboard-10k.js`.
 - Les scripts de benchmark destructifs restent proteges par flags explicites (`ALLOW_ATTENDANCE_MUTATIONS=true`, `ALLOW_PAYROLL_MUTATIONS=true`) et doivent viser staging/preproduction, jamais la production client sans fenetre de test.
 - Pour les endpoints list/rapport, verifier les scans repetes autant que les N+1 Eloquent : le rapport mensuel attendance doit conserver le groupement par `employee_id`, et l'organigramme le groupement par `manager_id`.
+
+### 2026-05-14 - Coverage backend ratchet
+
+- La derniere mesure GitHub Actions connue est `56.86%` de statement coverage backend (`7588/13346`) sur PR #458.
+- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `55%`. La prochaine cible Plan 14 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
+- Le workflow dedie `coverage-gate.yml` doit parser `clover.xml` pour eviter les faux `0%` issus d'une sortie texte PHPUnit variable.
