@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.41] - 2026-05-14
+
+### Front admin — Recruitment workflow alignment
+
+- Front admin : alignement de la vue recrutement sur les endpoints backend reels `/v1/recruitment/jobs` et `/v1/recruitment/jobs/{id}/applicants`.
+- Front admin : ajout d'un formulaire minimal de creation de poste et d'actions d'avancement/retour candidat dans le pipeline Kanban.
+- Tests : ajout d'un scenario Playwright recrutement avec API mockee couvrant connexion, creation de poste, pipeline Kanban et avancement candidat.
+
 ## [4.16.40] - 2026-05-14
 
 ### Docs — Admin route code splitting status
