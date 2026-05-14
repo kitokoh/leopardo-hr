@@ -11,6 +11,26 @@
 - Nouveau : `MonitorSlowQueries` artisan command — detection requetes lentes via pg_stat_statements (schedule 15 min).
 - Config : `services.slack.monitoring_webhook` ajoute pour recevoir les alertes monitoring.
 - Scheduler : `monitor:slow-queries` ajoute au schedule Laravel (toutes les 15 minutes).
+## [4.16.52] - 2026-05-14
+
+### Docs & Config — Iteration 2 documentation technique
+
+- Nouveau : `CONVENTIONS.md` — regles de code obligatoires (PHP, tests, git, frontend, mobile, securite).
+- Nouveau : `docs/api/VERSIONING.md` — politique de versioning API, cycle de deprecation, headers.
+- Nouveau : `docs/architecture/PARTITIONING.md` — strategie partitionnement PostgreSQL, indexation, scalabilite.
+- Nouveau : `.pre-commit-config.yaml` — hooks pre-commit (trailing whitespace, YAML, PHP, ESLint, OpenAPI, secrets).
+- OpenAPI : ajout de 27 endpoints Vehicle Tracking + 8 endpoints AI Gateway dans `api/openapi.yaml`.
+- OpenAPI : ajout du schema `Vehicle` dans les composants.
+## [4.16.51] - 2026-05-14
+
+### Docs — Audit exhaustif plans d'action vs code
+
+- Audit : mise a jour de TOUS les fichiers PLAN_ACTION (01-14) pour marquer `[x]` les taches deja implementees dans le code.
+- Resultat : ~85% des taches documentees etaient deja implementees mais non cochees dans les plans historiques.
+- Plans 03 (Paie), 09 (Onboarding/Billing) : 100% des taches marquees FAIT avec references code.
+- Plans 01, 02, 04, 05, 07, 08, 10 : mise a jour partielle, taches restantes identifiees.
+- Nouveau : creation de `15_PLAN_EXECUTION_CONSOLIDE.md` — inventaire complet des 193 taches restantes organisees en 12 categories et 7+ iterations.
+- Nouveau : mise a jour de `00_SOMMAIRE.md` avec references aux nouveaux documents.
 
 ## [4.16.50] - 2026-05-14
 
