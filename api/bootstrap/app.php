@@ -3,6 +3,7 @@
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('billing:check-trials')->daily();
         $schedule->command('billing:check-overdue')->daily();
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
+        $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
@@ -39,7 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class, StructuredLogging::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
