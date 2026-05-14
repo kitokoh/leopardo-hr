@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.48] - 2026-05-14
+
+### Tests — Backend coverage ratchet
+
+- CI : passage du seuil backend coverage par defaut de 0% a 55%, base sur la mesure GitHub Actions 56.86%.
+- CI : correction du workflow dedie coverage pour parser le Clover XML au lieu d'une sortie texte fragile.
+- Plan : coche du point Plan 14 "Coverage backend cible 60%" avec cible suivante explicite a 60%.
+
 ## [4.16.47] - 2026-05-14
 
 ### Performance — k6 benchmarks and N+1 hardening
