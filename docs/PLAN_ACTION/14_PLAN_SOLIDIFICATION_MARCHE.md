@@ -18,11 +18,11 @@
 - IA integree (chat, voice, analytics)
 
 ### Faiblesses a corriger
-- Pas de tests E2E frontend (Playwright)
+- Tests E2E frontend Playwright amorces sur l'admin-dashboard (navigation, dashboard, paie, conges, exports)
 - Pas de monitoring production actif (Sentry configure mais pas deploye)
 - Pas d'integration tierce reelle (banques, CNAS/CNSS)
 - Documentation API incomplete pour les integrateurs
-- Performance non mesuree sous charge
+- Performance outillee par k6, benchmarks cibles encore a executer
 - Pas de conformite RGPD/loi 18-07 DZ documentee
 - Pas d'audit securite independant
 
@@ -50,22 +50,22 @@
 **Objectif :** 0 regression visible par le client
 
 ```
-- [ ] Setup Playwright dans front/admin-dashboard/ (config + fixtures)
-- [ ] Scenario login + dashboard chargement KPI
-- [ ] Scenario paie : creer un run → calculer → valider → telecharger bulletin
-- [ ] Scenario conges : soumettre → approuver → verifier solde
+- [x] Setup Playwright dans front/admin-dashboard/ (config + fixtures)
+- [x] Scenario login + dashboard chargement KPI
+- [x] Scenario paie : creer un run → calculer → valider → telecharger bulletin
+- [x] Scenario conges : soumettre → approuver → verifier solde
 - [ ] Scenario recrutement : creer poste → pipeline kanban → changer stage
-- [ ] Scenario exports : generer rapport PDF/CSV
-- [ ] Integrer dans CI web-ci.yml avec screenshots on failure
+- [x] Scenario exports : generer rapport PDF/CSV
+- [x] Integrer dans CI web-ci.yml avec screenshots on failure
 ```
 
 ### 1.2 Tests Integration API — Scenarios metier complets
 **Objectif :** Couvrir les parcours client de bout en bout
 
 ```
-- [ ] Scenario onboarding : creer entreprise → ajouter employes → configurer paie pays
-- [ ] Scenario cycle paie mensuel : pointage → calcul → validation → bulletins → export banque
-- [ ] Scenario conges avec regles : demande → validation manager → deduction solde → rapport
+- [x] Scenario onboarding : creer entreprise → ajouter employes → configurer paie pays
+- [x] Scenario cycle paie mensuel : pointage → calcul → validation → bulletins → export banque
+- [x] Scenario conges avec regles : demande → validation manager → deduction solde → rapport
 - [ ] Scenario multi-tenant : isolation complete entre 2 entreprises (donnees, fichiers, logs)
 - [ ] Coverage backend cible : 60% (actuel : ~40%)
 ```
@@ -175,7 +175,7 @@
 
 ### 4.4 API Publique
 ```
-- [ ] Documentation OpenAPI 3.1 complete et publiee (Swagger UI)
+- [ ] Documentation OpenAPI complete et validee en CI (surface plateforme recente documentee, publication Swagger UI restante)
 - [ ] SDK client JavaScript/Python genere depuis OpenAPI
 - [ ] Rate limiting API avec plans (starter: 100 req/min, pro: 1000, enterprise: illimite)
 - [ ] Versioning API (v1 stable, v2 beta)
