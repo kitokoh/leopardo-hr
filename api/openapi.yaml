@@ -44,6 +44,7 @@ tags:
   - name: "Me"
   - name: "Invitations"
   - name: "Biometrics"
+  - name: "Privacy"
   - name: "Kiosks"
   - name: "Cameras"
 
@@ -215,6 +216,73 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/BiometricEnrollmentRequest"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /privacy/export:
+    get:
+      tags: ["Privacy"]
+      summary: "Exporter les donnees personnelles de l'employe authentifie"
+      responses:
+        "200":
+          description: "Bundle personnel self-service"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivacyExportResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /privacy/deletion-request:
+    post:
+      tags: ["Privacy"]
+      summary: "Creer une demande de suppression non destructive"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  nullable: true
+                  maxLength: 1000
+      responses:
+        "202":
+          description: "Demande recue pour revue RH/juridique"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivacyRequestResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /privacy/biometric-consent:
+    patch:
+      tags: ["Privacy"]
+      summary: "Enregistrer ou retirer le consentement biometrique"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["consented"]
+              properties:
+                consented:
+                  type: boolean
+      responses:
+        "200":
+          description: "Etat biometrique courant"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BiometricConsentResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
         "422":
           $ref: "#/components/responses/Validation422"
 
@@ -2339,6 +2407,120 @@ components:
           type: string
         company:
           $ref: "#/components/schemas/CompanyMini"
+
+    PrivacyExportResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            employee:
+              type: object
+              properties:
+                id:
+                  type: integer
+                company_id:
+                  type: string
+                  format: uuid
+                matricule:
+                  type: string
+                  nullable: true
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                preferred_name:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  format: email
+                personal_email:
+                  type: string
+                  format: email
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                role:
+                  type: string
+                manager_role:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                preferred_language:
+                  type: string
+                  nullable: true
+                biometric_face_enabled:
+                  type: boolean
+                biometric_fingerprint_enabled:
+                  type: boolean
+                biometric_consent_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                created_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                updated_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+            activity_summary:
+              type: object
+              properties:
+                attendance_logs_count:
+                  type: integer
+                absence_requests_count:
+                  type: integer
+                pay_slips_count:
+                  type: integer
+                expense_claims_count:
+                  type: integer
+            privacy:
+              type: object
+              properties:
+                exported_at:
+                  type: string
+                  format: date-time
+                scope:
+                  type: string
+                format_version:
+                  type: string
+
+    PrivacyRequestResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            type:
+              type: string
+              example: "deletion"
+            status:
+              type: string
+              example: "received"
+            message:
+              type: string
+
+    BiometricConsentResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            biometric_face_enabled:
+              type: boolean
+            biometric_fingerprint_enabled:
+              type: boolean
+            biometric_consent_at:
+              type: string
+              format: date-time
+              nullable: true
 
     LoginResponse:
       type: object
