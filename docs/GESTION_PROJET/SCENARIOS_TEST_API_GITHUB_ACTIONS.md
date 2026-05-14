@@ -35,6 +35,8 @@ Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur
 
 Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier les routes reelles (`/billing/subscription/*`, `/training/courses/{id}/sessions`, actions `PUT` pour prets/frais) et rester alignes avec le schema `CreatesMvpSchema`.
 
+Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configurables (`auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive`, `ai-sensitive`). Les scenarios API doivent conserver au moins un test `429` sur auth publique et un test `429` sur privacy authentifie.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -55,6 +57,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Register refuse si payload invalide
 - Login succes pour chaque role autorise
 - Login refuse pour mot de passe invalide
+- Login public retourne `429` apres depassement du limiter `auth-sensitive`
 - Login refuse pour compte inactif ou bloque
 - `me` retourne le bon role, tenant, permissions et contexte
 - Logout invalide le token en cours
@@ -193,6 +196,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - `PATCH /api/v1/privacy/biometric-consent` enregistre le consentement ou retire le consentement en desactivant les flags biometriques et en effacant les references de templates
 - Les endpoints privacy restent sous `auth:sanctum` + `tenant` et ne prennent jamais d'`employee_id` client pour eviter l'export d'un collegue ou d'un autre tenant
 - Les acces aux fiches employees et exports privacy creent une entree `audit_logs` avec `category=hr_data_access`, acteur, tenant et cible quand elle existe
+- Les endpoints privacy retournent `429` apres depassement du limiter `privacy-sensitive`
 
 ## Mapping attendu vers les suites GitHub Actions
 
