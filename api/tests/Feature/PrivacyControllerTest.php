@@ -111,6 +111,14 @@ class PrivacyControllerTest extends TestCase
             ->assertJsonPath('data.activity_summary.pay_slips_count', 1)
             ->assertJsonPath('data.activity_summary.expense_claims_count', 1)
             ->assertJsonMissing(['email' => 'colleague@example.test']);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $company->id,
+            'user_id' => $employee->id,
+            'action' => 'hr_data.privacy_exported',
+            'auditable_type' => Employee::class,
+            'auditable_id' => $employee->id,
+        ]);
     }
 
     public function test_employee_can_submit_deletion_request_without_destroying_account(): void
