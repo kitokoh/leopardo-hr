@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.50] - 2026-05-14
+
+### CI — Mobile coverage ratchet
+
+- CI : passage du seuil mobile coverage par defaut de 25% a 21%, base sur la mesure GitHub Actions 21.85%.
+- Plan : conservation de la cible suivante a 25% apres stabilisation des tests mobiles Plan 14.
+
 ## [4.16.49] - 2026-05-14
 
 ### Mobile — Navigation and contract tests
