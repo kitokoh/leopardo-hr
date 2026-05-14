@@ -6,6 +6,8 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\SuperAdmin;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -33,15 +35,12 @@ class CompanyOnboardingIntegrationTest extends TestCase
     {
         $company = Company::factory()->create();
 
-        $admin = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'super_admin',
-        ]);
-
-        Sanctum::actingAs($admin);
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
 
         $response = $this->getJson('/api/v1/platform/companies');
-        $this->assertContains($response->status(), [200, 403]);
+
+        $response->assertOk();
+        $this->assertContains($company->id, collect($response->json('data'))->pluck('id')->all());
     }
 
     public function test_manager_can_list_own_employees(): void
@@ -102,5 +101,14 @@ class CompanyOnboardingIntegrationTest extends TestCase
 
         // Should return checklist or 404 if not provisioned yet
         $this->assertContains($response->status(), [200, 404]);
+    }
+
+    private function superAdmin(): SuperAdmin
+    {
+        return SuperAdmin::query()->create([
+            'name' => 'Platform Admin',
+            'email' => fake()->unique()->safeEmail(),
+            'password_hash' => Hash::make('password123'),
+        ]);
     }
 }
