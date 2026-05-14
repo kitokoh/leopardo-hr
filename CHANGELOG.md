@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.32] - 2026-05-14
+
+### Performance — k6 load testing foundation
+
+- DevOps : ajout d'un script k6 read-only pour mesurer health, dashboard, employees, attendance, payroll et self-service.
+- Documentation : ajout du runbook `dev-hub/load/README.md` avec variables, seuils et procedure de benchmark Plan 14.
+- Plan : coche du setup k6 / Artillery pour tests de charge.
+
 ## [4.16.31] - 2026-05-14
 
 ### Security — Sensitive API rate limits
