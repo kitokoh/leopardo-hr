@@ -177,18 +177,29 @@ async function saveWebhook() {
     }
     closeModal()
     fetchData()
-  } catch {} finally {
+  } catch (err) {
+    console.warn('Failed to save webhook', err)
+  } finally {
     saving.value = false
   }
 }
 
 async function testWebhook(id) {
-  try { await api.post(`/v1/webhooks/${id}/test`) } catch {}
+  try {
+    await api.post(`/v1/webhooks/${id}/test`)
+  } catch (err) {
+    console.warn('Failed to test webhook', err)
+  }
 }
 
 async function deleteWebhook(id) {
   if (!confirm('Supprimer ce webhook ?')) return
-  try { await api.delete(`/v1/webhooks/${id}`); fetchData() } catch {}
+  try {
+    await api.delete(`/v1/webhooks/${id}`)
+    fetchData()
+  } catch (err) {
+    console.warn('Failed to delete webhook', err)
+  }
 }
 
 onMounted(fetchData)
