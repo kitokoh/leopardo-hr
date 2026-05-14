@@ -86,7 +86,7 @@
 
 ### 2.1 Audit Securite
 ```
-- [ ] Activer OWASP ZAP scan automatise dans CI
+- [x] Activer OWASP ZAP scan automatise dans CI
 - [ ] Audit SQL injection sur tous les endpoints avec parametres
 - [ ] Verifier CSRF/XSS protection sur formulaires admin
 - [ ] Audit des permissions RBAC : matrice complete roles/routes
