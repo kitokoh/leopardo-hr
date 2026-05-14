@@ -235,8 +235,15 @@ router.beforeEach(async (to, from, next) => {
 
   const authStore = useAuthStore()
 
-  // Vérifier l'authentification
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    if (authStore.token) {
+      const isValid = await authStore.checkAuth()
+      if (isValid) {
+        next()
+        return
+      }
+    }
+
     next('/login')
     return
   }
