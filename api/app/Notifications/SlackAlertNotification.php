@@ -47,7 +47,7 @@ class SlackAlertNotification extends Notification
     public function toSlack(object $notifiable): array
     {
         $emoji = self::SEVERITY_EMOJI[$this->severity] ?? ':bell:';
-        $env = config('app.env', 'unknown');
+        $env = (string) config('app.env', 'unknown');
         $text = "{$emoji} *[Leopardo RH — {$env}]* {$this->message}";
 
         if ($this->context !== []) {

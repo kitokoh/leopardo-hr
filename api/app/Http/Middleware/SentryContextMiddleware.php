@@ -23,6 +23,7 @@ class SentryContextMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! function_exists('Sentry\\configureScope')) {
+            /** @var Response */
             return $next($request);
         }
 
@@ -52,6 +53,7 @@ class SentryContextMiddleware
             });
         }
 
+        /** @var Response */
         return $next($request);
     }
 }
