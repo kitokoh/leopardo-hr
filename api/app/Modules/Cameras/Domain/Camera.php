@@ -5,17 +5,39 @@ namespace App\Modules\Cameras\Domain;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * Caméra IP déclarée par une company (module Surveillance Caméras).
  *
  * Section 4.1 du cahier des charges : rtsp_url est chiffré en base via le
  * cast Laravel "encrypted" (AES-256 dérivé d'APP_KEY).
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property string $name
+ * @property string $rtsp_url
+ * @property string|null $location
+ * @property bool $is_active
+ * @property string|null $thumbnail_path
+ * @property int $sort_order
+ * @property int|null $created_by
+ * @property string|null $stream_path_override
+ * @property array<mixed> $metadata
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read Company|null $company
+ * @property-read Employee|null $creator
+ * @property-read Collection<int, CameraAccessToken> $accessTokens
+ * @property-read Collection<int, CameraPermission> $permissions
+ * @property-read Collection<int, CameraAccessLog> $accessLogs
  */
 class Camera extends Model
 {
@@ -55,26 +77,31 @@ class Camera extends Model
         'rtsp_url',
     ];
 
+    /** @return BelongsTo<Company, $this> */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
 
+    /** @return HasMany<CameraAccessToken, $this> */
     public function accessTokens(): HasMany
     {
         return $this->hasMany(CameraAccessToken::class, 'camera_id');
     }
 
+    /** @return HasMany<CameraPermission, $this> */
     public function permissions(): HasMany
     {
         return $this->hasMany(CameraPermission::class, 'camera_id');
     }
 
+    /** @return HasMany<CameraAccessLog, $this> */
     public function accessLogs(): HasMany
     {
         return $this->hasMany(CameraAccessLog::class, 'camera_id');

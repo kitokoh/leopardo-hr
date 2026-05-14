@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -11,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $email
  * @property string|null $password_hash
  * @property string|null $two_fa_secret
- * @property \Illuminate\Support\Carbon|null $last_login_at
+ * @property Carbon|null $last_login_at
  */
 class SuperAdmin extends Authenticatable
 {

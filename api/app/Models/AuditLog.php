@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null $ip_address
  * @property string|null $user_agent
  * @property array<mixed> $metadata
- * @property \Illuminate\Support\Carbon|null $created_at
+ * @property Carbon|null $created_at
  */
 class AuditLog extends Model
 {
@@ -60,11 +61,19 @@ class AuditLog extends Model
         return $this->belongsTo(Employee::class, 'user_id');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeForCompany(Builder $q, string $companyId): Builder
     {
         return $q->where('company_id', $companyId);
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeForModel(Builder $q, string $type, int $id): Builder
     {
         return $q->where('auditable_type', $type)->where('auditable_id', $id);

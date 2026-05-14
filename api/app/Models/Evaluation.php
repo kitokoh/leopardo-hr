@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -20,9 +21,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $improvements
  * @property string|null $overall_comment
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $acknowledged_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $acknowledged_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Employee|null $employee
+ * @property-read Employee|null $evaluator
  */
 class Evaluation extends Model
 {
@@ -57,16 +60,28 @@ class Evaluation extends Model
         return $this->belongsTo(Employee::class, 'evaluator_id');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeDraft(Builder $q): Builder
     {
         return $q->where('status', 'draft');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeSubmitted(Builder $q): Builder
     {
         return $q->where('status', 'submitted');
     }
 
+    /**
+     * @param  Builder<static>  $q
+     * @return Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $id): Builder
     {
         return $q->where('employee_id', $id);

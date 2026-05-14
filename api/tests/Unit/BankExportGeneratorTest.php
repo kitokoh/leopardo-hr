@@ -14,7 +14,7 @@ class BankExportGeneratorTest extends TestCase
 {
     public function test_virement_ma_uses_csv_extension_and_mime_type(): void
     {
-        $generator = new BankExportGenerator();
+        $generator = new BankExportGenerator;
 
         self::assertSame('csv', $generator->fileExtension('virement_ma'));
         self::assertSame('text/csv', $generator->mimeType('virement_ma'));
@@ -22,11 +22,11 @@ class BankExportGeneratorTest extends TestCase
 
     public function test_csv_export_uses_real_employee_bank_account_column(): void
     {
-        $generator = new BankExportGenerator();
+        $generator = new BankExportGenerator;
         $method = new ReflectionMethod($generator, 'generateCsvGeneric');
         $method->setAccessible(true);
 
-        $run = new PayrollRun();
+        $run = new PayrollRun;
         $run->setRawAttributes([
             'period_start' => Carbon::parse('2026-05-01'),
             'country_code' => 'MA',
@@ -39,7 +39,7 @@ class BankExportGeneratorTest extends TestCase
             'bank_account' => '001205000534921',
         ];
 
-        $slip = new PaySlip();
+        $slip = new PaySlip;
         $slip->setRawAttributes([
             'employee_id' => 42,
             'net_salary' => 8750.25,

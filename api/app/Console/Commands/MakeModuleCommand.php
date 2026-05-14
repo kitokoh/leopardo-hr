@@ -54,7 +54,7 @@ class MakeModuleCommand extends Command
             $files->put("{$base}/{$dir}/.gitkeep", '');
         }
 
-        $routeFile = base_path("routes/modules/" . strtolower($name) . ".php");
+        $routeFile = base_path('routes/modules/'.strtolower($name).'.php');
 
         if (! $files->exists($routeFile)) {
             $files->ensureDirectoryExists(dirname($routeFile));
@@ -64,10 +64,10 @@ class MakeModuleCommand extends Command
         $this->info("Module {$name} created at {$base}");
         $this->line("Route file: {$routeFile}");
         $this->line('Next steps:');
-        $this->line("  1. Add models in Domain/Models/");
-        $this->line("  2. Add controllers in Interfaces/Api/V1/Controllers/");
-        $this->line("  3. Register routes in routes/modules/" . strtolower($name) . ".php");
-        $this->line("  4. Require the route file in routes/api.php");
+        $this->line('  1. Add models in Domain/Models/');
+        $this->line('  2. Add controllers in Interfaces/Api/V1/Controllers/');
+        $this->line('  3. Register routes in routes/modules/'.strtolower($name).'.php');
+        $this->line('  4. Require the route file in routes/api.php');
 
         return self::SUCCESS;
     }
