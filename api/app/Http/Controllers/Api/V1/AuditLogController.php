@@ -89,7 +89,7 @@ class AuditLogController extends Controller
             $query->where('created_at', '<=', $request->input('to'));
         }
 
-        $filename = 'audit_logs_' . now()->format('Y-m-d_His') . '.csv';
+        $filename = 'audit_logs_'.now()->format('Y-m-d_His').'.csv';
 
         return response()->streamDownload(function () use ($query): void {
             $handle = fopen('php://output', 'w');
@@ -102,7 +102,7 @@ class AuditLogController extends Controller
             $query->chunk(500, function ($logs) use ($handle): void {
                 foreach ($logs as $log) {
                     $userName = $log->user
-                        ? $log->user->first_name . ' ' . $log->user->last_name
+                        ? $log->user->first_name.' '.$log->user->last_name
                         : '';
 
                     fputcsv($handle, [
