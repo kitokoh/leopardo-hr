@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.26] - 2026-05-13
+
+### Security — HR extension tenant isolation
+
+- Securite : les listes recrutement, formation, prets et notes de frais filtrent maintenant explicitement par `company_id`.
+- Securite : les champs `employee_id`, `trainer_id`, `department_id`, `position_id` et `interviewer_id` des modules etendus refusent les references hors tenant.
+- Tests : extension des suites Recruitment, Training, EmployeeLoan et ExpenseClaim avec scenarios d'isolation tenant et refus cross-tenant.
+
 ## [4.16.25] - 2026-05-13
 
 ### Style — Payroll run test formatting

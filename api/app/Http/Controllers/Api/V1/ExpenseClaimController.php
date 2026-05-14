@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\ExpenseClaim;
 use App\Models\ExpenseItem;
 use Illuminate\Http\JsonResponse;
@@ -17,7 +17,9 @@ class ExpenseClaimController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $query = ExpenseClaim::query()->with('employee:id,first_name,last_name');
+        $query = ExpenseClaim::query()
+            ->where('company_id', $actor->company_id)
+            ->with('employee:id,first_name,last_name');
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
