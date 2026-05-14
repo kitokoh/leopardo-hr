@@ -118,4 +118,51 @@ class ExpenseClaimControllerTest extends TestCase
             ]],
         ])->assertStatus(422);
     }
+
+    public function test_expense_claims_are_scoped_by_tenant_and_owner(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $coworker = Employee::factory()->create(['company_id' => $company->id]);
+        $foreignEmployee = Employee::factory()->create(['company_id' => $otherCompany->id]);
+
+        ExpenseClaim::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Own claim',
+            'total_amount' => 2000,
+            'currency' => 'DZD',
+            'status' => 'submitted',
+        ]);
+        ExpenseClaim::create([
+            'company_id' => $company->id,
+            'employee_id' => $coworker->id,
+            'title' => 'Coworker claim',
+            'total_amount' => 3000,
+            'currency' => 'DZD',
+            'status' => 'submitted',
+        ]);
+        $foreignClaim = ExpenseClaim::create([
+            'company_id' => $otherCompany->id,
+            'employee_id' => $foreignEmployee->id,
+            'title' => 'Foreign claim',
+            'total_amount' => 4000,
+            'currency' => 'DZD',
+            'status' => 'submitted',
+        ]);
+
+        Sanctum::actingAs($employee);
+        $this->getJson('/api/v1/expense-claims')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+        $this->getJson("/api/v1/expense-claims/{$foreignClaim->id}")->assertNotFound();
+
+        Sanctum::actingAs($manager);
+        $this->getJson('/api/v1/expense-claims')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+        $this->putJson("/api/v1/expense-claims/{$foreignClaim->id}/approve")->assertNotFound();
+    }
 }
