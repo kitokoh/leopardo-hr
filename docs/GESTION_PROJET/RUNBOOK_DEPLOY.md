@@ -70,3 +70,78 @@
 - merger uniquement quand GitHub est vert
 
 Le reste doit etre automatique.
+
+---
+
+## Workers et services de fond
+
+### Queue Workers
+
+L'application utilise des jobs Laravel en queue pour les operations lourdes :
+
+| Job | Queue | Description | Frequence |
+|-----|-------|-------------|-----------|
+| `GenerateMonthlyInvoices` | `billing` | Generation factures mensuelles | Cron mensuel |
+| `CheckTrialExpiring` | `billing` | Notification expiration trial | Cron quotidien |
+| `CheckOverdueInvoices` | `billing` | Relance factures impayees | Cron quotidien |
+| `PayrollCalculation` | `payroll` | Calcul paie batch | On-demand |
+| `GeneratePaySlipPdf` | `default` | Generation bulletins PDF | On-demand |
+| `GenerateInvoicePdf` | `default` | Generation factures PDF | On-demand |
+| `WebhookDispatch` | `webhooks` | Envoi webhooks aux clients | Event-driven |
+| `TrackingSync` | `tracking` | Sync positions Traccar | Cron (5 min) |
+
+### Configuration workers Render
+
+```yaml
+# render.yaml (service worker)
+services:
+  - type: worker
+    name: leopardo-queue-default
+    env: docker
+    dockerCommand: php artisan queue:work --queue=default,billing,payroll,webhooks,tracking --sleep=3 --tries=3 --max-time=3600
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: QUEUE_CONNECTION
+        value: redis
+```
+
+### Scheduler (cron)
+
+Le scheduler Laravel doit tourner sur un service dedie ou via cron :
+
+```bash
+# Cron entry (ou Render Cron Job)
+* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Jobs schedules configures dans `app/Console/Kernel.php` :
+
+- `billing:generate-invoices` — mensuel (1er du mois)
+- `billing:check-trial-expiring` — quotidien 08h00
+- `billing:check-overdue` — quotidien 09h00
+- `tracking:sync` — toutes les 5 minutes
+
+### Variables d'environnement requises
+
+| Variable | Service | Description |
+|----------|---------|-------------|
+| `QUEUE_CONNECTION` | Worker | `redis` en production |
+| `REDIS_HOST` | Worker, API | Host Redis |
+| `REDIS_PASSWORD` | Worker, API | Password Redis |
+| `REDIS_PORT` | Worker, API | Port Redis (default 6379) |
+| `STRIPE_SECRET` | API, Worker | Cle secrete Stripe |
+| `STRIPE_WEBHOOK_SECRET` | API | Secret verification webhook Stripe |
+| `CHARGILY_SECRET` | API | Cle secrete Chargily (DZ) |
+| `TRACCAR_URL` | Worker | URL instance Traccar |
+| `TRACCAR_TOKEN` | Worker | Token API Traccar |
+| `OPENAI_API_KEY` | API | Cle API OpenAI (IA) |
+| `ANTHROPIC_API_KEY` | API | Cle API Anthropic (IA) |
+| `SENTRY_DSN` | API, Worker | DSN Sentry pour error tracking |
+
+### Monitoring workers
+
+- **Health** : `php artisan queue:monitor default,billing,payroll --max=100` (alerte si > 100 jobs en attente)
+- **Horizon** : envisager Laravel Horizon pour le monitoring UI des queues Redis
+- **Logs** : les workers ecrivent sur le meme channel JSON structure que l'API
+- **Restart** : apres chaque deploy, les workers doivent etre restartes (`php artisan queue:restart`)

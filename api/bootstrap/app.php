@@ -2,7 +2,9 @@
 
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\PlanBasedRateLimiter;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
@@ -39,7 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class, StructuredLogging::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, SetLocale::class, StructuredLogging::class, ApiVersionMiddleware::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
@@ -48,6 +50,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
+            'api.version' => ApiVersionMiddleware::class,
+            'plan.rate_limit' => PlanBasedRateLimiter::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

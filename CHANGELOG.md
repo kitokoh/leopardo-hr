@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.54] - 2026-05-14
+
+### Feat & Docs — Iteration 4 securite et performance
+
+- Nouveau : `PlanBasedRateLimiter` middleware — rate limiting par plan d'abonnement (free=60, starter=120, professional=300, enterprise=1000 req/min).
+- Nouveau : `ApiVersionMiddleware` — injection X-API-Version header, logging version, validation versions supportees.
+- Enregistrement des deux middleware dans `bootstrap/app.php` (aliases `plan.rate_limit` et `api.version`).
+- ApiVersionMiddleware ajoute au pipeline API global (prepend).
+- Documentation : RUNBOOK_DEPLOY.md enrichi (workers queue, scheduler cron, variables d'environnement, monitoring workers).
+
 ## [4.16.50] - 2026-05-14
 
 ### CI — Mobile coverage ratchet
