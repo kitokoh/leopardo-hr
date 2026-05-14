@@ -275,17 +275,17 @@ if (Feature::active('ai_chat', $company)) {
 
 ## 5. Taches
 
-- [ ] **T-OBD-01** : Enrichir la checklist d'onboarding avec auto-detection
-- [ ] **T-OBD-02** : Creer le systeme de workflow approbation generique
-- [ ] **T-OBD-03** : Implementer le trait Approvable
-- [ ] **T-OBD-04** : Integrer Stripe (ou Chargily pour DZ)
-- [ ] **T-OBD-05** : Creer les modeles Subscription, Invoice, Payment
-- [ ] **T-OBD-06** : Creer les endpoints billing
-- [ ] **T-OBD-07** : Implementer les webhooks Stripe/Chargily
-- [ ] **T-OBD-08** : Creer les scheduled jobs billing
-- [ ] **T-OBD-09** : Implementer la matrice features/plans
-- [ ] **T-OBD-10** : Template email facturation (i18n FR/AR/EN)
-- [ ] **T-OBD-11** : Generateur PDF factures
-- [ ] **T-OBD-12** : Tests Feature workflow approbation
-- [ ] **T-OBD-13** : Tests Feature billing/invoices
-- [ ] **T-OBD-14** : Tests Feature onboarding checklist
+- [x] **T-OBD-01** : Enrichir la checklist d'onboarding avec auto-detection — **FAIT** (`OnboardingChecklistController` + `OnboardingStepController` + tests)
+- [x] **T-OBD-02** : Creer le systeme de workflow approbation generique — **FAIT** (`ApprovalWorkflow`, `ApprovalRequest`, `ApprovalDecision` modeles + `ApprovalController`)
+- [x] **T-OBD-03** : Implementer le trait Approvable — **FAIT** (`app/Traits/Approvable.php`)
+- [x] **T-OBD-04** : Integrer Stripe (ou Chargily pour DZ) — **FAIT** (`PaymentWebhookController` avec Stripe/Chargily + `PaymentWebhookControllerTest`)
+- [x] **T-OBD-05** : Creer les modeles Subscription, Invoice, Payment — **FAIT** (modeles dans `app/Models/` + migration `2026_05_11_000003_create_billing_tables.php`)
+- [x] **T-OBD-06** : Creer les endpoints billing — **FAIT** (`BillingController.php` + `routes/modules/billing.php`)
+- [x] **T-OBD-07** : Implementer les webhooks Stripe/Chargily — **FAIT** (`PaymentWebhookController` + tests valid/invalid payloads)
+- [x] **T-OBD-08** : Creer les scheduled jobs billing — **FAIT** (`CheckTrialExpiring`, `CheckOverdueInvoices`, `GenerateMonthlyInvoices`)
+- [x] **T-OBD-09** : Implementer la matrice features/plans — **FAIT** (`FeaturePlanMatrix` modele + `FeaturePlanMatrixResource` + seeders)
+- [x] **T-OBD-10** : Template email facturation (i18n FR/AR/EN) — **FAIT** (`invoice-sent.blade.php`, `payment-failed.blade.php`, `trial-expiring.blade.php`)
+- [x] **T-OBD-11** : Generateur PDF factures — **FAIT** (`resources/views/pdf/invoice.blade.php` + generation PDF)
+- [x] **T-OBD-12** : Tests Feature workflow approbation — **FAIT** (ApprovalController + LeaveWorkflowIntegrationTest couvrent le workflow)
+- [x] **T-OBD-13** : Tests Feature billing/invoices — **FAIT** (`BillingControllerTest.php` : abonnement, upgrade/cancel/renew, RBAC, isolation tenant, PDF facture)
+- [x] **T-OBD-14** : Tests Feature onboarding checklist — **FAIT** (`OnboardingChecklistTest.php` + `OnboardingStepControllerTest.php` + `OnboardingE2ETest.php`)
