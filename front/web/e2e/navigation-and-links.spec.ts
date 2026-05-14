@@ -107,6 +107,20 @@ test.describe('Navigation and Links E2E Tests', () => {
       expect(count).toBeGreaterThan(0);
     });
 
+    test('should navigate to legal pages from footer', async ({ page }) => {
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+      await page.locator('footer a[href="/privacy"]').first().click();
+      await page.waitForURL('**/privacy');
+      await expect(page.getByRole('heading', { name: /Politique de confidentialite|Privacy policy|Gizlilik politikasi|سياسة الخصوصية/i })).toBeVisible();
+
+      await page.goto('/');
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.locator('footer a[href="/terms"]').first().click();
+      await page.waitForURL('**/terms');
+      await expect(page.getByRole('heading', { name: /Conditions generales|Terms of use|Kullanim kosullari|شروط الاستخدام/i })).toBeVisible();
+    });
+
     test('should open social media links in new tab', async ({ page }) => {
       // Scroll to footer
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -237,6 +251,17 @@ test.describe('Navigation and Links E2E Tests', () => {
     test('should route to blog page at /blog', async ({ page }) => {
       await page.goto('/blog');
       expect(page.url()).toContain('blog');
+    });
+
+    test('should route to multilingual legal pages', async ({ page }) => {
+      await page.goto('/privacy');
+      await expect(page.getByRole('heading', { name: /Politique de confidentialite|Privacy policy|Gizlilik politikasi|سياسة الخصوصية/i })).toBeVisible();
+
+      await page.getByLabel(/Langue du document|Document language|Belge dili|لغة الوثيقة/i).selectOption('en');
+      await expect(page.getByRole('heading', { name: /Privacy policy/i })).toBeVisible();
+
+      await page.goto('/terms');
+      await expect(page.getByRole('heading', { name: /Terms of use/i })).toBeVisible();
     });
 
     test('should handle 404 for invalid routes', async ({ page }) => {
