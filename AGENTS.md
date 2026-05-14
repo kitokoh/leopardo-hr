@@ -155,6 +155,11 @@ Procedure recommandee :
 - Les pages legales de la vitrine vivent dans `front/web/src/app/privacy` et `front/web/src/app/terms`. Garder les liens footer reels vers ces routes et reutiliser `useVitrineLocale()` pour FR/EN/TR/AR + RTL au lieu de creer une logique locale separee.
 - Desormais, quand `web/**` change, les checks de lint/build doivent partir via `web-marketing-ci.yml`; ne pas se reposer uniquement sur le workflow admin.
 
+### 2026-05-14 - Registre traitements RH
+
+- Le registre interne des traitements vit dans `docs/security/REGISTRE_TRAITEMENTS_DONNEES_RH.md`. Le maintenir a jour a chaque nouveau module collectant une nouvelle categorie de donnees, integration externe, traitement IA ou usage biometrique.
+- Les points privacy publics (`/privacy`, `/terms`) et API (`/api/v1/privacy/export`, `/deletion-request`, `/biometric-consent`) doivent rester coherents avec ce registre.
+
 ### 2026-05-08 - Render et transaction PostgreSQL abort
 
 - Sur PostgreSQL, une migration Laravel executee dans la transaction du migrateur ne doit pas lancer de requete de verification apres une erreur SQL, sinon on tombe sur `SQLSTATE[25P02] current transaction is aborted`.
