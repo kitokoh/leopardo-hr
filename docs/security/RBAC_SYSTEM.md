@@ -53,3 +53,5 @@ public function view(Employee $user, Employee $target)
 ---
 
 For more details on security patterns, see [SECURITY.md](../../SECURITY.md).
+
+The route-level audit matrix lives in [RBAC_ROUTE_MATRIX.md](RBAC_ROUTE_MATRIX.md) and must be updated whenever route guards or allowed roles change.

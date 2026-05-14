@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.36] - 2026-05-14
+
+### Security — RBAC route matrix
+
+- Securite : ajout d'une matrice routes/roles dans `docs/security/RBAC_ROUTE_MATRIX.md` couvrant surfaces publiques, plateforme, IA, modules tenant, kiosks, webhooks et cameras.
+- Documentation : liaison de `RBAC_SYSTEM.md` vers la matrice operationnelle et ajout d'une regle de mise a jour lors des changements de guards/routes.
+- Plan : coche du point Plan 14 "Audit des permissions RBAC : matrice complete roles/routes".
+
 ## [4.16.35] - 2026-05-14
 
 ### Security — OWASP ZAP baseline CI
