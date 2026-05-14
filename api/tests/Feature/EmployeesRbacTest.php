@@ -86,6 +86,11 @@ class EmployeesRbacTest extends TestCase
         $this->assertContains('manager@a.test', $emails);
         $this->assertContains('employee@a.test', $emails);
         $this->assertNotContains('employee@b.test', $emails);
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $companyA->id,
+            'user_id' => $managerA->id,
+            'action' => 'hr_data.employee_list_viewed',
+        ]);
     }
 
     public function test_employee_cannot_list_employees(): void
@@ -154,6 +159,13 @@ class EmployeesRbacTest extends TestCase
         $self = $this->withHeader('Authorization', "Bearer {$token}")
             ->getJson("/api/v1/employees/{$employeeA->id}");
         $self->assertOk();
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $companyA->id,
+            'user_id' => $employeeA->id,
+            'action' => 'hr_data.employee_profile_viewed',
+            'auditable_type' => Employee::class,
+            'auditable_id' => $employeeA->id,
+        ]);
 
         $other = $this->withHeader('Authorization', "Bearer {$token}")
             ->getJson("/api/v1/employees/{$managerA->id}");

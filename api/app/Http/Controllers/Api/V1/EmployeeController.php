@@ -12,13 +12,17 @@ use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
+use App\Services\DataAccessAuditLogger;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    public function __construct(private readonly EmployeeService $employeeService) {}
+    public function __construct(
+        private readonly EmployeeService $employeeService,
+        private readonly DataAccessAuditLogger $dataAccessAuditLogger,
+    ) {}
 
     /**
      * Liste des employés avec pagination
@@ -40,8 +44,11 @@ class EmployeeController extends Controller
         mobile_compatible: true
     )]
     #[RequiresPermission('employees.view')]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $this->authorize('viewAny', Employee::class);
 
         $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
@@ -64,6 +71,13 @@ class EmployeeController extends Controller
             ])
             ->orderBy('id')
             ->paginate($perPage);
+
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.employee_list_viewed', null, [
+            'resource' => 'employees',
+            'result_count' => $paginator->count(),
+            'per_page' => $paginator->perPage(),
+            'page' => $paginator->currentPage(),
+        ]);
 
         return EmployeeResource::collection($paginator)->response();
     }
@@ -129,6 +143,13 @@ class EmployeeController extends Controller
             ->findOrFail($employeeId);
 
         $this->authorize('view', $employee);
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.employee_profile_viewed', $employee, [
+            'resource' => 'employee_profile',
+            'target_employee_id' => $employee->id,
+        ]);
 
         return (new EmployeeResource($employee))->response();
     }
