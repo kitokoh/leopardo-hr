@@ -155,20 +155,20 @@ return [
 
 ### Taches Phase 1
 
-- [ ] **T-IA-01** : Creer `config/ai.php`
-- [ ] **T-IA-02** : Creer les migrations (ai_conversations, ai_audit_logs, ai_tool_registry)
-- [ ] **T-IA-03** : Implementer `LLMClient` interface + `OpenAIClient` + `ClaudeClient`
-- [ ] **T-IA-04** : Implementer `ToolRegistry` (charge depuis la table, filtre par role/permissions)
-- [ ] **T-IA-05** : Implementer `IntentEngine` (utilise le tool calling natif du LLM)
-- [ ] **T-IA-06** : Implementer `MemoryManager` (load/save context, gestion fenetre de contexte)
-- [ ] **T-IA-07** : Implementer `AIOrchestrator` (flow complet: context -> LLM -> tool call -> response)
-- [ ] **T-IA-08** : Implementer `AIAuditLogger`
-- [ ] **T-IA-09** : Creer les 3 middlewares (rate limiter, tenant injector, feature check)
-- [ ] **T-IA-10** : Creer `routes/ai.php` + `AIGatewayController`
-- [ ] **T-IA-11** : Seeder pour les 15 outils du Tool Registry
-- [ ] **T-IA-12** : Creer le system prompt dans `resources/ai/system_prompt.md`
-- [ ] **T-IA-13** : Tests Feature (chat endpoint, quota enforcement, tool calling)
-- [ ] **T-IA-14** : Tests Unit (orchestrator, intent engine, tool registry)
+- [x] **T-IA-01** : Creer `config/ai.php` — **FAIT**
+- [x] **T-IA-02** : Creer les migrations (ai_conversations, ai_audit_logs, ai_tool_registry) — **FAIT** (`2026_05_11_000001_create_ai_tables.php`)
+- [x] **T-IA-03** : Implementer `LLMClient` interface + `OpenAIClient` + `ClaudeClient` — **FAIT** (`app/AI/LLMClient.php`, `app/AI/Providers/OpenAIClient.php`, `app/AI/Providers/ClaudeClient.php`)
+- [x] **T-IA-04** : Implementer `ToolRegistry` — **FAIT** (`app/AI/ToolRegistry.php`)
+- [x] **T-IA-05** : Implementer `IntentEngine` — **FAIT** (`app/AI/IntentEngine.php`)
+- [x] **T-IA-06** : Implementer `MemoryManager` — **FAIT** (`app/AI/MemoryManager.php`)
+- [x] **T-IA-07** : Implementer `AIOrchestrator` — **FAIT** (`app/AI/Orchestrator.php`)
+- [x] **T-IA-08** : Implementer `AIAuditLogger` — **FAIT** (`app/AI/AIAuditLogger.php`)
+- [x] **T-IA-09** : Creer les 3 middlewares — **FAIT** (`AIRateLimiter.php`, `AITenantInjector.php`, `AIFeatureCheck.php` + `EnsureAIAnalyticsAccess.php`)
+- [x] **T-IA-10** : Creer `routes/ai.php` + `AIGatewayController` — **FAIT**
+- [x] **T-IA-11** : Seeder pour les 15 outils du Tool Registry — **FAIT** (`database/seeders/AIToolRegistrySeeder.php`)
+- [x] **T-IA-12** : Creer le system prompt dans `resources/ai/system_prompt.md` — **FAIT**
+- [x] **T-IA-13** : Tests Feature (chat endpoint, quota enforcement, tool calling) — **FAIT** (`tests/Feature/AIGatewayAndAnalyticsTest.php`)
+- [x] **T-IA-14** : Tests Unit (orchestrator, intent engine, tool registry) — **FAIT** (couverts dans AIGatewayAndAnalyticsTest)
 
 ---
 
@@ -203,7 +203,7 @@ GET    /api/ai/analytics/errors                   # Erreurs et taux de succes
 
 - [ ] **T-IA-15** : Implementer les outils write avec confirmation utilisateur
 - [ ] **T-IA-16** : Ajouter le mecanisme de confirmation (l'IA demande confirmation avant d'executer une action write)
-- [ ] **T-IA-17** : Creer les endpoints analytics IA
+- [x] **T-IA-17** : Creer les endpoints analytics IA — **FAIT** (`AIAnalyticsController.php` : usage, costs, tools, errors)
 - [ ] **T-IA-18** : Dashboard admin pour visualiser les analytics
 - [ ] **T-IA-19** : Tests pour les actions write avec confirmation
 
@@ -238,7 +238,7 @@ POST   /api/ai/voice/command                      # Audio -> Action -> Audio (pi
 
 ### Taches Phase 3
 
-- [ ] **T-IA-20** : Implementer `VoiceController`
+- [x] **T-IA-20** : Implementer `VoiceController` — **FAIT** (`app/Http/Controllers/AI/VoiceController.php`)
 - [ ] **T-IA-21** : Integrer Whisper API pour STT
 - [ ] **T-IA-22** : Integrer Edge TTS pour synthese vocale (gratuit)
 - [ ] **T-IA-23** : Pipeline voice complet (audio in -> action -> audio out)
@@ -255,7 +255,7 @@ L'IA peut executer des workflows complexes de maniere autonome : "Prepare la pai
 
 ### Taches Phase 4
 
-- [ ] **T-IA-26** : Implementer le multi-step agent (sequence d'outils)
+- [x] **T-IA-26** : Implementer le multi-step agent (sequence d'outils) — **FAIT** (`app/AI/AgentRunner.php` + `AgentController.php`)
 - [ ] **T-IA-27** : Workflow "preparer la paie" (collecter donnees -> calculer -> resume)
 - [ ] **T-IA-28** : Workflow "rapport hebdomadaire" (anomalies + absences + effectifs)
 - [ ] **T-IA-29** : Notifications proactives (l'IA alerte le manager)

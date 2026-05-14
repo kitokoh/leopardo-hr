@@ -405,21 +405,21 @@ Monnaie : XOF
 
 ### Taches
 
-- [ ] **T-PAIE-01** : Creer les migrations pour les 7 nouvelles tables
-- [ ] **T-PAIE-02** : Creer les modeles Eloquent dans `Modules/Payroll/Domain/Models/`
-- [ ] **T-PAIE-03** : Creer les seeders de configuration par defaut pour DZ, MA, TN, FR, TR, SN
-- [ ] **T-PAIE-04** : Implementer `PayrollCalculator` avec le moteur de calcul
-- [ ] **T-PAIE-05** : Implementer les 6 `CountryRules` classes
-- [ ] **T-PAIE-06** : Implementer `CalculatePayrollAction` — boucle sur chaque employe, applique structure + components + cotisations + impot
-- [ ] **T-PAIE-07** : Implementer `PaySlipPdfGenerator` (DomPDF, template bulletin)
-- [ ] **T-PAIE-08** : Implementer `SepaExporter` (format pain.001.003.03)
-- [ ] **T-PAIE-09** : Implementer `CCPAlgeriaExporter` (format CCP)
-- [ ] **T-PAIE-10** : Creer tous les endpoints API
-- [ ] **T-PAIE-11** : Creer les FormRequests et API Resources
-- [ ] **T-PAIE-12** : Creer les Policies (manager + comptable only pour validation)
-- [ ] **T-PAIE-13** : Tests Feature complets (create run, calculate, validate, generate slips, export)
-- [ ] **T-PAIE-14** : Tests Unit pour chaque CountryRules (calculs exacts)
-- [ ] **T-PAIE-15** : Self-service /me/pay-slips
+- [x] **T-PAIE-01** : Creer les migrations pour les 7 nouvelles tables — **FAIT** (`2026_05_10_100001_create_payroll_engine_tables.php` : SalaryStructure, SalaryComponent, PayrollRun, PaySlip, PaySlipLine, TaxSlab, SocialContribution, BankExport)
+- [x] **T-PAIE-02** : Creer les modeles Eloquent — **FAIT** (8 modeles dans `app/Models/` : PayrollRun, PaySlip, PaySlipLine, SalaryStructure, SalaryComponent, TaxSlab, SocialContribution, BankExport)
+- [x] **T-PAIE-03** : Creer les seeders de configuration par defaut pour DZ, MA, TN, FR, TR, SN — **FAIT** (`database/seeders/PayrollCountryConfigSeeder.php`)
+- [x] **T-PAIE-04** : Implementer `PayrollCalculator` avec le moteur de calcul — **FAIT** (`app/Services/Payroll/PayrollCalculator.php`)
+- [x] **T-PAIE-05** : Implementer les 6 `CountryRules` classes — **FAIT** (Algeria, Morocco, Tunisia, France, Turkey, Senegal dans `app/Services/Payroll/CountryRules/` + AbstractCountryRules + CountryRulesInterface)
+- [x] **T-PAIE-06** : Implementer `CalculatePayrollAction` — **FAIT** (logique dans `PayrollService.php` + `PayrollRunController`)
+- [x] **T-PAIE-07** : Implementer `PaySlipPdfGenerator` (DomPDF, template bulletin) — **FAIT** (`app/Services/PaySlipPdfGenerator.php` + `resources/views/pdf/payslip.blade.php`)
+- [x] **T-PAIE-08** : Implementer `SepaExporter` (format pain.001.003.03) — **FAIT** (dans `app/Services/BankExportGenerator.php` SEPA XML)
+- [x] **T-PAIE-09** : Implementer `CCPAlgeriaExporter` (format CCP) — **FAIT** (dans `app/Services/BankExportGenerator.php` CCP format)
+- [x] **T-PAIE-10** : Creer tous les endpoints API — **FAIT** (PayrollRunController, PaySlipController, SalaryStructureController, SalaryComponentController, TaxSlabController, BankExportController dans `routes/modules/payroll_engine.php`)
+- [x] **T-PAIE-11** : Creer les FormRequests et API Resources — **FAIT** (StorePayrollRequest, UpdatePayrollRequest, PayrollIndexRequest, PayrollRunResource, PaySlipResource)
+- [x] **T-PAIE-12** : Creer les Policies (manager + comptable only pour validation) — **FAIT** (`app/Policies/PayrollPolicy.php`)
+- [x] **T-PAIE-13** : Tests Feature complets — **FAIT** (`tests/Feature/PayrollRunControllerTest.php`, `tests/Feature/PaySlipControllerTest.php`, `tests/Feature/PayrollCycleIntegrationTest.php`)
+- [x] **T-PAIE-14** : Tests Unit pour chaque CountryRules (calculs exacts) — **FAIT** (`tests/Unit/PayrollCountryRulesTest.php`, `tests/Unit/BankExportGeneratorTest.php`)
+- [x] **T-PAIE-15** : Self-service /me/pay-slips — **FAIT** (3 routes : `GET /me/pay-slips`, `GET /me/pay-slips/{id}`, `GET /me/pay-slips/{id}/pdf`)
 
 ---
 
