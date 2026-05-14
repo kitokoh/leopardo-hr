@@ -99,7 +99,7 @@
 - [x] Page politique de confidentialite + CGU via la vitrine `/privacy` et `/terms` en FR/EN/TR/AR
 - [x] Mecanisme d'export des donnees personnelles (droit d'acces) via `GET /api/v1/privacy/export`
 - [x] Mecanisme de suppression des donnees (droit a l'oubli) via demande tracee `POST /api/v1/privacy/deletion-request`
-- [ ] Registre des traitements (document interne)
+- [x] Registre des traitements (document interne) via `docs/security/REGISTRE_TRAITEMENTS_DONNEES_RH.md`
 - [x] Consentement employe pour le traitement biometrique via `PATCH /api/v1/privacy/biometric-consent`
 - [ ] Chiffrement des donnees sensibles au repos (AES-256 pour IBAN, salaire)
 - [x] Journalisation des acces aux donnees RH (audit trail) via `audit_logs` pour fiches employes et exports privacy
