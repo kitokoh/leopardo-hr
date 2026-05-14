@@ -17,6 +17,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/docs', function () {
+    return view('docs.openapi');
+})->name('docs.openapi');
+
+Route::get('/docs/openapi.yaml', function () {
+    $path = base_path('openapi.yaml');
+
+    abort_unless(is_file($path), 404);
+
+    return response((string) file_get_contents($path), 200, [
+        'Cache-Control' => 'public, max-age=300',
+        'Content-Type' => 'application/yaml; charset=UTF-8',
+    ]);
+})->name('docs.openapi.spec');
+
 Route::middleware('guest:super_admin_web')->group(function (): void {
     Route::get('/platform/login', [PlatformAuthController::class, 'showLogin'])->name('platform.login');
     Route::post('/platform/login', [PlatformAuthController::class, 'login'])->name('platform.login.store');

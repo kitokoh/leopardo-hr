@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.42] - 2026-05-14
+
+### API Contracts — Swagger UI publication
+
+- Backend : publication publique de Swagger UI sur `/docs`, branchee sur la specification canonique `/docs/openapi.yaml`.
+- Tests : ajout d'une couverture Feature garantissant que la page docs et le YAML OpenAPI restent accessibles sans authentification.
+- Plan : coche du point Plan 14 "Documentation OpenAPI complete et validee en CI" apres ajout de l'interface Swagger UI publique.
+
 ## [4.16.41] - 2026-05-14
 
 ### Front admin — Recruitment workflow alignment
