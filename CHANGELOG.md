@@ -41,6 +41,15 @@
 - Plans 01, 02, 04, 05, 07, 08, 10 : mise a jour partielle, taches restantes identifiees.
 - Nouveau : creation de `15_PLAN_EXECUTION_CONSOLIDE.md` — inventaire complet des 193 taches restantes organisees en 12 categories et 7+ iterations.
 - Nouveau : mise a jour de `00_SOMMAIRE.md` avec references aux nouveaux documents.
+## [4.16.53] - 2026-05-14
+
+### Tests & Features — Iteration 3 tests manquants + export CSV audit
+
+- Nouveau : `HrReportControllerTest` — 11 tests Feature (headcount, turnover, absenteeism, payroll-summary, overtime, recruitment-pipeline, training-completion, loan-summary, demographic-breakdown, cost-analysis + RBAC).
+- Nouveau : `OrgChartControllerTest` — 5 tests Feature (arbre, subordonnes, chaine hierarchique, 404, isolation tenant).
+- Nouveau : `AuditLogExportTest` — 5 tests Feature (export CSV, RBAC, filtre dates, index pagine, filtre action).
+- Nouveau : endpoint `GET /api/v1/audit-logs/export-csv` — export CSV des logs d'audit avec filtres dates.
+- Route ajoutee dans `routes/modules/hr_extended.php`.
 
 ## [4.16.50] - 2026-05-14
 
