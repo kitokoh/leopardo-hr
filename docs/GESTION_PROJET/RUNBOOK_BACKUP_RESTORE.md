@@ -1,13 +1,14 @@
 # RUNBOOK - BACKUP / RESTORE
 
-Version 4.1.95 | 2026-05-07
+Version 4.16.39 | 2026-05-14
 
 ## 0. Procedure minimale a appliquer
 
-Pour Leopardo RH, la procedure minimale obligatoire reste volontairement simple :
+Pour Leopardo RH, la procedure minimale obligatoire combine automatisation et fallback manuel :
 
-- **Backup manuel hebdomadaire** de la base PostgreSQL de production
+- **Backup automatise quotidien** de la base PostgreSQL de production vers S3/R2
 - **Verification de restore mensuelle** sur une base scratch isolee
+- **Fallback manuel hebdomadaire** si le workflow quotidien est desactive ou sans secrets
 - **Trace obligatoire** dans `RUNBOOK_DRILLS_LOG.md`
 
 Si l'equipe n'active pas ou ne maintient pas le drill automatise, cette procedure minimale reste la reference d'exploitation.
@@ -21,9 +22,11 @@ Le "drill" (exercice de reprise) se fait sur une base **scratch isolee**,
 jamais contre la production.
 
 Cible :
-- **Production** : backup manuel hebdomadaire + restore mensuel verifie
+- **Production** : backup quotidien automatise + restore mensuel verifie
 - **Pre-prod** : drill automatise possible si l'infrastructure reste maintenue
 - **Reference de trace** : `RUNBOOK_DRILLS_LOG.md`
+- **RPO** : < 24h quand le workflow quotidien est configure
+- **RTO** : < 4h via restore scratch puis bascule applicative selon `RUNBOOK_ROLLBACK.md`
 
 ## 2. Secrets requis
 
@@ -34,10 +37,24 @@ Cible :
 | `BACKUP_AGE_RECIPIENT` | cle publique `age` pour chiffrer le dump (optionnel) | generee via `age-keygen` |
 | `BACKUP_AGE_IDENTITY_FILE` | cle privee `age` (pour restaurer un dump chiffre) | secret GitHub / 1Password |
 | `BACKUP_DIR` | dossier local ou on ecrit le dump | `/var/lib/leopardo/backups` en prod |
+| `BACKUP_S3_BUCKET` | bucket S3/R2 cible pour les dumps quotidiens | secret GitHub Actions |
+| `AWS_ACCESS_KEY_ID` | acces ecriture bucket backup | IAM limite au bucket |
+| `AWS_SECRET_ACCESS_KEY` | secret ecriture bucket backup | IAM limite au bucket |
+| `AWS_REGION` | region du bucket | `eu-west-3` par defaut |
 
 ## 3. Checklist operationnelle courte
 
-### Backup hebdomadaire
+### Backup quotidien automatise
+
+Le workflow `.github/workflows/database-backup.yml` execute :
+
+- `Daily PostgreSQL backup` tous les jours a 02:15 UTC
+- `Monthly restore drill` le 1er jour du mois a 03:15 UTC
+- `workflow_dispatch` manuel avec `mode=backup` ou `mode=drill`
+
+Si les secrets requis manquent, le workflow sort en notice et ne produit pas de faux backup.
+
+### Fallback manuel hebdomadaire
 
 1. Exporter un dump custom PostgreSQL avec `pg_dump`
 2. Chiffrer le dump si la cle `age` est disponible
