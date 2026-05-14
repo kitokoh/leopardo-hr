@@ -4,6 +4,18 @@ import Link from 'next/link'
 import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
+function getFooterHref(sectionIndex: number, linkIndex: number): string {
+  if (sectionIndex === 2 && linkIndex === 0) {
+    return '/privacy'
+  }
+
+  if (sectionIndex === 2 && linkIndex === 1) {
+    return '/terms'
+  }
+
+  return '#'
+}
+
 export function Footer() {
   const { copy, locale, options } = useVitrineLocale()
   const activeLocale = options.find((option) => option.value === locale)
@@ -42,13 +54,17 @@ export function Footer() {
             <div key={`${section.title}-${index}`}>
               <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">{section.title}</h4>
               <ul className="space-y-2.5">
-                {section.links.map((link, linkIndex) => (
-                  <li key={`${section.title}-link-${linkIndex}`}>
-                    <Link href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                      {link}
-                    </Link>
-                  </li>
-                ))}
+                {section.links.map((link, linkIndex) => {
+                  const href = getFooterHref(index, linkIndex)
+
+                  return (
+                    <li key={`${section.title}-link-${linkIndex}`}>
+                      <Link href={href} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                        {link}
+                      </Link>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ))}
