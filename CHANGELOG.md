@@ -7,6 +7,7 @@
 ### Tests — Integration branche Devin Plan 14
 
 - Tests : integration des suites Devin Plan 14 Phase 1 (E2E admin-dashboard, API integration payroll/onboarding/conges, modeles Flutter).
+- Tests : alignement du test plateforme sur le guard Sanctum `super_admin_api`, le contrat reel de `/api/v1/platform/companies`.
 - CI : correction des blocs `catch` vides dans l'admin-dashboard afin que `Web Lint` bloque seulement les vrais ecarts.
 - Backend tests : ajout des tables webhook au schema MVP de test pour couvrir les dispatchs evenementiels sans erreur `webhook_endpoints` manquante.
 
