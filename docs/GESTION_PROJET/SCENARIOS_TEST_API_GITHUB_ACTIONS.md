@@ -186,6 +186,13 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Le payload expose `go_live_ready` et `next_actions` pour guider l'installation client sans interpretation cote frontend
 - Les metriques de progression ne doivent pas compter une etape paie complete si aucun salaire ou taux horaire n'est renseigne
 
+### 16. Privacy / RGPD self-service
+
+- `GET /api/v1/privacy/export` retourne uniquement le bundle de donnees de l'employe authentifie et des compteurs d'activite scopes par `company_id`
+- `POST /api/v1/privacy/deletion-request` cree une demande tracee non destructive pour revue RH/juridique et ne supprime jamais le compte immediatement
+- `PATCH /api/v1/privacy/biometric-consent` enregistre le consentement ou retire le consentement en desactivant les flags biometriques et en effacant les references de templates
+- Les endpoints privacy restent sous `auth:sanctum` + `tenant` et ne prennent jamais d'`employee_id` client pour eviter l'export d'un collegue ou d'un autre tenant
+
 ## Mapping attendu vers les suites GitHub Actions
 
 ### Suite `Unit`
@@ -213,6 +220,7 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 - Contrat catalogue plans plateforme pour eviter les `plan_id` hardcodes cote frontend
 - Contrat abonnement plateforme pour upgrade, suspension, expiration et notes client
 - Contrat metrics overview plateforme pour MRR/ARR, impayes, encaissements, companies, abonnements et facturation
+- Contrats privacy/RGPD pour export donnees personnelles, demande de suppression et consentement biometrique employe
 - Health endpoint
 
 ### Suites a ajouter ou durcir progressivement
