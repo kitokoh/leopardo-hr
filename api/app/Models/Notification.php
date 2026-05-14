@@ -39,11 +39,20 @@ class Notification extends Model
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeUnread(Builder $q): Builder
     {
         return $q->where('is_read', false);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $employeeId
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $employeeId): Builder
     {
         return $q->where('employee_id', $employeeId);

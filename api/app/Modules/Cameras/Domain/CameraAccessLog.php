@@ -13,6 +13,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * Table write-only côté application : aucun update ni delete prévu.
  * Rétention gérée en Phase 2 par un job planifié.
+ *
+ * @property int $id
+ * @property int $company_id
+ * @property int $camera_id
+ * @property int|null $employee_id
+ * @property int|null $access_token_id
+ * @property string $actor_type
+ * @property string $action
+ * @property string|null $reason
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property array<mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \App\Modules\Cameras\Domain\Camera|null $camera
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \App\Modules\Cameras\Domain\CameraAccessToken|null $accessToken
  */
 class CameraAccessLog extends Model
 {
@@ -50,16 +66,19 @@ class CameraAccessLog extends Model
         'created_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Camera, $this> */
     public function camera(): BelongsTo
     {
         return $this->belongsTo(Camera::class, 'camera_id');
     }
 
+    /** @return BelongsTo<Employee, $this> */
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
+    /** @return BelongsTo<CameraAccessToken, $this> */
     public function accessToken(): BelongsTo
     {
         return $this->belongsTo(CameraAccessToken::class, 'access_token_id');

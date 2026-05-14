@@ -50,21 +50,37 @@ class SalaryComponent extends Model
         return $this->belongsTo(SalaryStructure::class, 'salary_structure_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeEarnings(Builder $query): Builder
     {
         return $query->where('type', 'earning');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeDeductions(Builder $query): Builder
     {
         return $query->where('type', 'deduction');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeEmployerContributions(Builder $query): Builder
     {
         return $query->where('type', 'employer_contribution');

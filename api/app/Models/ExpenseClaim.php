@@ -73,6 +73,11 @@ class ExpenseClaim extends Model
         return $this->hasMany(ExpenseItem::class, 'expense_claim_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $status
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeByStatus(Builder $q, string $status): Builder
     {
         return $q->where('status', $status);

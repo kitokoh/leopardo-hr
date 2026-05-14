@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $visibility
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TaskComment> $comments
  */
 class Task extends Model
 {
@@ -55,6 +56,11 @@ class Task extends Model
         return $this->hasMany(TaskComment::class, 'task_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param int $employeeId
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForEmployee(Builder $q, int $employeeId): Builder
     {
         return $q->whereJsonContains('assigned_to', $employeeId);

@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property string|null $icon
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CabinetFolder> $children
+ * @property-read int|null $children_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CabinetDocument> $documents
+ * @property-read int|null $documents_count
  */
 class CabinetFolder extends Model
 {

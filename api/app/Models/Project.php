@@ -48,6 +48,10 @@ class Project extends Model
         return $this->hasMany(Task::class, 'project_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeActive(Builder $q): Builder
     {
         return $q->where('status', 'active');

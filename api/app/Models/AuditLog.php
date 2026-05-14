@@ -60,11 +60,22 @@ class AuditLog extends Model
         return $this->belongsTo(Employee::class, 'user_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $companyId
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForCompany(Builder $q, string $companyId): Builder
     {
         return $q->where('company_id', $companyId);
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder<static> $q
+     * @param string $type
+     * @param int $id
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     public function scopeForModel(Builder $q, string $type, int $id): Builder
     {
         return $q->where('auditable_type', $type)->where('auditable_id', $id);

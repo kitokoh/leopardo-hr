@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $name
  * @property int|null $department_id
  * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \App\Models\Department|null $department
  */
 class Position extends Model
 {
