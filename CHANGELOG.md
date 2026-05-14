@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.34] - 2026-05-14
+
+### API Contracts — OpenAPI plateforme
+
+- OpenAPI : documentation des contrats plateforme recents (`plans`, health portefeuille/detail, subscription, features, company requests).
+- CI : ajout d'un workflow dedie `OpenAPI CI` pour linter `api/openapi.yaml` sur PR et push `main`.
+- Plan : actualisation des plans d'action 13/14 apres integration des tests Devin Plan 14 et du socle k6/Sentry.
+
 ## [4.16.33] - 2026-05-14
 
 ### Tests — Integration branche Devin Plan 14

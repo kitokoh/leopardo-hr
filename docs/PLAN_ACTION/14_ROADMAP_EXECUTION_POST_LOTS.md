@@ -1,7 +1,7 @@
-# 14 - ROADMAP D'EXECUTION ACTUALISEE (Post lots 4-5)
+# 14 - ROADMAP D'EXECUTION ACTUALISEE (Post lots 4-6)
 
 **Date :** 2026-05-13
-**Contexte :** Ce document enrichit le plan d'action apres l'implementation des lots plateforme metrics backend et dashboard admin. Il ne remplace pas `13_RESTANT_POST_SPRINTS.md` : il transforme l'inventaire en sequence d'execution pragmatique, orientee API solide, ventes, scalabilite et dette technique.
+**Contexte :** Ce document enrichit le plan d'action apres l'implementation des lots plateforme metrics backend, dashboard admin, tests Devin Plan 14 et contrats OpenAPI plateforme. Il ne remplace pas `13_RESTANT_POST_SPRINTS.md` : il transforme l'inventaire en sequence d'execution pragmatique, orientee API solide, ventes, scalabilite et dette technique.
 
 ---
 
@@ -13,6 +13,7 @@
 |---|---|---|---|
 | Lot 4 | Backend API | `GET /api/v1/platform/metrics/overview` protege par `super_admin_api` | Backend, coverage, quality, security, CodeQL, governance verts |
 | Lot 5 | Admin dashboard | Cockpit et abonnements branches sur `/platform/metrics/overview` | Web lint, build, Playwright, governance verts |
+| Lot 6 | API Contracts & OpenAPI | Contrats plateforme recents documentes dans `api/openapi.yaml` + lint OpenAPI CI | OpenAPI CI a valider par PR dediee |
 
 ### Ce que ces lots confirment
 
@@ -81,8 +82,8 @@
 
 Livrables :
 
-- Completer `api/openapi.yaml` pour les contrats plateforme recents : auth, health, plans, subscription, company requests, metrics overview.
-- Ajouter une verification CI minimale de validite OpenAPI.
+- [x] Completer `api/openapi.yaml` pour les contrats plateforme recents : auth, health, plans, subscription, company requests, metrics overview.
+- [x] Ajouter une verification CI minimale de validite OpenAPI.
 - Documenter les shapes `data`, `meta`, erreurs `401/403/422`.
 - Aligner le dashboard admin sur ces contrats et noter les endpoints non documentes restants.
 
