@@ -35,12 +35,11 @@ class CompanyOnboardingIntegrationTest extends TestCase
 
         $admin = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => 'admin',
+            'role' => 'super_admin',
         ]);
 
         Sanctum::actingAs($admin);
 
-        // List companies — should be accessible for admin role
         $response = $this->getJson('/api/v1/platform/companies');
         $this->assertContains($response->status(), [200, 403]);
     }
