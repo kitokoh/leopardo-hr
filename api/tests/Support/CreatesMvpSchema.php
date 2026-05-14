@@ -761,6 +761,33 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('webhook_endpoints'))) {
+            Schema::create($this->moduleTable('webhook_endpoints'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('url', 500);
+                $table->json('events');
+                $table->text('secret');
+                $table->boolean('active')->default(true);
+                $table->unsignedInteger('failure_count')->default(0);
+                $table->timestampTz('last_triggered_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('webhook_deliveries'))) {
+            Schema::create($this->moduleTable('webhook_deliveries'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('webhook_endpoint_id');
+                $table->string('event', 100);
+                $table->json('payload');
+                $table->unsignedSmallInteger('response_code')->nullable();
+                $table->text('response_body')->nullable();
+                $table->unsignedInteger('duration_ms')->nullable();
+                $table->timestampTz('delivered_at')->useCurrent();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('payroll_runs'))) {
             Schema::create($this->moduleTable('payroll_runs'), function (Blueprint $table): void {
                 $table->id();

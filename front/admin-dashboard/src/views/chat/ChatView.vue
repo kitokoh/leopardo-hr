@@ -125,7 +125,9 @@ async function fetchConversations() {
   try {
     const res = await api.get('/v1/ai/conversations')
     conversations.value = res.data.data || res.data || []
-  } catch {}
+  } catch (err) {
+    console.warn('Failed to load AI conversations', err)
+  }
 }
 
 async function selectConversation(conv) {
@@ -134,7 +136,9 @@ async function selectConversation(conv) {
     const res = await api.get(`/v1/ai/conversations/${conv.id}/messages`)
     messages.value = res.data.data || res.data || []
     scrollToBottom()
-  } catch {}
+  } catch (err) {
+    console.warn('Failed to load AI conversation messages', err)
+  }
 }
 
 function newConversation() {
