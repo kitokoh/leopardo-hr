@@ -189,7 +189,8 @@ class AIWriteActionConfirmationTest extends TestCase
 
     private function fakeLlmClientWithWriteToolCall(): void
     {
-        $this->app->instance(LLMClient::class, new class implements LLMClient {
+        $this->app->instance(LLMClient::class, new class implements LLMClient
+        {
             public function chat(array $messages, array $tools = []): AIResponse
             {
                 return new AIResponse(
