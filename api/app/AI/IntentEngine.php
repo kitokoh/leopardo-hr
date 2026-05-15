@@ -33,6 +33,10 @@ class IntentEngine
 
     private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId): ToolResult
     {
+        if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
+            return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
+        }
+
         $tool = $this->toolRegistry->findTool($toolCall->name);
 
         if ($tool === null) {
@@ -45,10 +49,6 @@ class IntentEngine
         }
 
         try {
-            if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
-                return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
-            }
-
             $result = $this->dispatchToolAction($toolCall->name, $toolCall->arguments, $companyId, $userId);
 
             return new ToolResult(
