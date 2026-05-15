@@ -13,6 +13,7 @@ use App\Models\Payroll;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class HrReportController extends Controller
@@ -21,6 +22,27 @@ class HrReportController extends Controller
     {
         $this->authorizeManager($request);
 
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $companyId = (string) $actor->company_id;
+        $ttl = max(0, (int) config('performance.cache.hr_headcount_ttl_seconds', 60));
+
+        $payload = $ttl > 0
+            ? Cache::remember(
+                'hr_report:headcount:'.$companyId,
+                $ttl,
+                fn (): array => $this->computeHeadcountPayload(),
+            )
+            : $this->computeHeadcountPayload();
+
+        return response()->json(['data' => $payload]);
+    }
+
+    /**
+     * @return array{total: int, by_department: array<int, array<string, mixed>>, by_contract_type: array<int, array<string, mixed>>, by_gender: array<int, array<string, mixed>>}
+     */
+    private function computeHeadcountPayload(): array
+    {
         $total = Employee::where('employees.status', 'active')->count();
         $byDepartment = Employee::query()
             ->where('employees.status', 'active')
@@ -37,19 +59,17 @@ class HrReportController extends Controller
             ->groupBy('contract_type')
             ->get();
 
-        $byGender = Employee::where('status', 'active')
+        $byGender = Employee::where('employees.status', 'active')
             ->select(DB::raw('gender, count(*) as count'))
             ->groupBy('gender')
             ->get();
 
-        return response()->json([
-            'data' => [
-                'total' => $total,
-                'by_department' => $byDepartment,
-                'by_contract_type' => $byContractType,
-                'by_gender' => $byGender,
-            ],
-        ]);
+        return [
+            'total' => $total,
+            'by_department' => $byDepartment->toArray(),
+            'by_contract_type' => $byContractType->toArray(),
+            'by_gender' => $byGender->toArray(),
+        ];
     }
 
     public function turnover(Request $request): JsonResponse
