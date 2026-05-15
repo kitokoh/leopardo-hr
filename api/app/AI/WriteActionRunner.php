@@ -30,7 +30,7 @@ class WriteActionRunner
      */
     private function createAbsence(string $companyId, int $userId, array $arguments): array
     {
-        $employeeId = (int) ($arguments['employee_id'] ?? $userId);
+        $employeeId = $this->intArgument($arguments, 'employee_id', $userId);
         $employee = Employee::query()
             ->where('company_id', $companyId)
             ->where('id', $employeeId)
@@ -40,8 +40,8 @@ class WriteActionRunner
             return ['error' => 'Employee not found'];
         }
 
-        $startDate = Carbon::parse((string) ($arguments['start_date'] ?? now()->toDateString()));
-        $endDate = Carbon::parse((string) ($arguments['end_date'] ?? $startDate->toDateString()));
+        $startDate = Carbon::parse($this->stringArgument($arguments, 'start_date', now()->toDateString()));
+        $endDate = Carbon::parse($this->stringArgument($arguments, 'end_date', $startDate->toDateString()));
         if ($endDate->lessThan($startDate)) {
             return ['error' => 'end_date must be on or after start_date'];
         }
@@ -56,7 +56,9 @@ class WriteActionRunner
             'end_date' => $endDate->toDateString(),
             'days_count' => $startDate->diffInDays($endDate) + 1,
             'status' => 'pending',
-            'reason' => isset($arguments['reason']) ? (string) $arguments['reason'] : null,
+            'reason' => array_key_exists('reason', $arguments)
+                ? ($this->stringArgument($arguments, 'reason', '') ?: null)
+                : null,
         ]);
 
         return [
@@ -72,7 +74,7 @@ class WriteActionRunner
      */
     private function approveAbsence(string $companyId, int $userId, array $arguments): array
     {
-        $absenceId = (int) ($arguments['absence_id'] ?? 0);
+        $absenceId = $this->intArgument($arguments, 'absence_id', 0);
         $absence = Absence::query()
             ->where('company_id', $companyId)
             ->where('id', $absenceId)
@@ -105,11 +107,16 @@ class WriteActionRunner
         if (isset($arguments['absence_type_id'])) {
             return AbsenceType::query()
                 ->where('company_id', $companyId)
-                ->where('id', (int) $arguments['absence_type_id'])
+                ->where('id', $this->intArgument($arguments, 'absence_type_id', 0))
                 ->first();
         }
 
-        $code = isset($arguments['type']) ? (string) $arguments['type'] : null;
+        $code = array_key_exists('type', $arguments)
+            ? $this->stringArgument($arguments, 'type', '')
+            : null;
+        if ($code === '') {
+            $code = null;
+        }
         if ($code !== null && $code !== '') {
             $byCode = AbsenceType::query()
                 ->where('company_id', $companyId)
@@ -121,5 +128,33 @@ class WriteActionRunner
         }
 
         return AbsenceType::query()->where('company_id', $companyId)->first();
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function intArgument(array $arguments, string $key, int $default): int
+    {
+        if (! array_key_exists($key, $arguments)) {
+            return $default;
+        }
+
+        $value = $arguments[$key];
+
+        return is_numeric($value) ? (int) $value : $default;
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function stringArgument(array $arguments, string $key, string $default): string
+    {
+        if (! array_key_exists($key, $arguments)) {
+            return $default;
+        }
+
+        $value = $arguments[$key];
+
+        return is_scalar($value) ? (string) $value : $default;
     }
 }
