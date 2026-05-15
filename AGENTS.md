@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-13
+Derniere mise a jour : 2026-05-16
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -155,6 +155,11 @@ Procedure recommandee :
 - Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
 
 ## Historique utile
+
+### 2026-05-16 - Plan 15 : parallel merge #468 et iteration 6
+
+- **Iteration 5** monitoring : code backend deja dans `main` (`CHANGELOG` [4.16.55]) ; reste **ops** sondes externes (UptimeRobot / Better Stack) + runbook `docs/GESTION_PROJET/RUNBOOK_OBSERVABILITY.md`.
+- **Iteration 4** perf/paie : PR **#468** en attente de merge ; preparation **iteration 6** admin-dashboard (`front/admin-dashboard/`, routes `/payroll`, `/leaves`) peut progresser sur une branche separee depuis `origin/main`, puis reconciliation `main` apres merge.
 
 ### 2026-05-08 - Render race sur `company_requests`
 
