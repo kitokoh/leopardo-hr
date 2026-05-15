@@ -113,11 +113,8 @@ class WriteActionRunner
 
         $code = array_key_exists('type', $arguments)
             ? $this->stringArgument($arguments, 'type', '')
-            : null;
-        if ($code === '') {
-            $code = null;
-        }
-        if ($code !== null && $code !== '') {
+            : '';
+        if ($code !== '') {
             $byCode = AbsenceType::query()
                 ->where('company_id', $companyId)
                 ->where('code', $code)
