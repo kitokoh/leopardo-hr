@@ -48,6 +48,15 @@
 - Plans 01, 02, 04, 05, 07, 08, 10 : mise a jour partielle, taches restantes identifiees.
 - Nouveau : creation de `15_PLAN_EXECUTION_CONSOLIDE.md` — inventaire complet des 193 taches restantes organisees en 12 categories et 7+ iterations.
 - Nouveau : mise a jour de `00_SOMMAIRE.md` avec references aux nouveaux documents.
+## [4.16.54] - 2026-05-15
+
+### IA & CI — Iteration 3 complete (pre-commit + write confirmation)
+
+- Nouveau : confirmation obligatoire pour les outils IA write (`WriteToolPolicy`, `PendingActionStore`, `WriteActionRunner`) avec endpoints `POST /api/v1/ai/actions/{id}/confirm` et `/reject`.
+- Nouveau : `AIWriteActionConfirmationTest` — couverture confirmation/rejet/execution `create_absence` et `approve_absence`.
+- Orchestrator : expose `pending_confirmations` quand un outil write attend validation humaine.
+- CI local : `.pre-commit-config.yaml` enrichi (Pint sur PHP stage, baseline `.secrets.baseline` pour detect-secrets).
+
 ## [4.16.53] - 2026-05-14
 
 ### Tests & Features — Iteration 3 tests manquants + export CSV audit
