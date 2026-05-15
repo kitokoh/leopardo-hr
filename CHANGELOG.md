@@ -22,6 +22,7 @@
 - Config : `services.slack.monitoring_webhook` ajoute pour recevoir les alertes monitoring.
 - Scheduler : `monitor:slow-queries` ajoute au schedule Laravel (toutes les 15 minutes).
 - Fix : tests Iteration 3 (`HrReportControllerTest`, `OrgChartControllerTest`, `AuditLogExportTest`) — creation explicite de `Company` + `company_id` pour eviter les violations NOT NULL PostgreSQL en CI.
+- Fix : `HrReportController::headcount` — qualification `employees.status` pour eviter l'ambiguite SQL PostgreSQL sur le join `contracts`.
 - Nouveau : `HrReportControllerTest` — 11 tests Feature (headcount, turnover, absenteeism, payroll-summary, overtime, recruitment-pipeline, training-completion, loan-summary, demographic-breakdown, cost-analysis + RBAC).
 - Nouveau : `OrgChartControllerTest` — 5 tests Feature (arbre, subordonnes, chaine hierarchique, 404, isolation tenant).
 - Nouveau : `AuditLogExportTest` — 5 tests Feature (export CSV, RBAC, filtre dates, index pagine, filtre action).

@@ -149,7 +149,7 @@ class HrReportControllerTest extends TestCase
     {
         $this->actingAsManager();
 
-        $response = $this->getJson('/api/v1/reports/demographic-breakdown');
+        $response = $this->getJson('/api/v1/reports/demographics');
 
         $response->assertOk()
             ->assertJsonStructure(['data']);
