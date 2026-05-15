@@ -366,6 +366,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 ### Module J — Audit Trail
 - `GET /api/v1/audit-logs` retourne les logs filtres par action, type, user, date
 - `GET /api/v1/audit-logs/{id}` retourne le detail avec old/new values
+- `GET /api/v1/audit-logs/export-csv` exporte les logs en CSV avec filtres `from`/`to` (stream chunked)
 - RBAC : uniquement principal
 
 ## Paie Complete Multi-Pays (v4.3.0)

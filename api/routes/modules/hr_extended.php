@@ -110,6 +110,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     // ── Module J — Audit Trail ──────────────────────────────────────────────
     Route::get('/audit-logs', [AuditLogController::class, 'index']);
+    Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv']);
     Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show']);
 
     // ── Module K — Approval Workflows ────────────────────────────────────────
