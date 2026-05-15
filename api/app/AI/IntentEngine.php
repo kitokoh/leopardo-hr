@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AI;
 
 use App\AI\DTOs\AIResponse;
@@ -12,6 +14,9 @@ class IntentEngine
 {
     public function __construct(
         private readonly ToolRegistry $toolRegistry,
+        private readonly WriteToolPolicy $writeToolPolicy,
+        private readonly PendingActionStore $pendingActionStore,
+        private readonly WriteActionRunner $writeActionRunner,
     ) {}
 
     /**
@@ -30,6 +35,10 @@ class IntentEngine
 
     private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId): ToolResult
     {
+        if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
+            return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
+        }
+
         $tool = $this->toolRegistry->findTool($toolCall->name);
 
         if ($tool === null) {
@@ -64,6 +73,95 @@ class IntentEngine
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
      */
+    public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId): array
+    {
+        if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
+            return ['error' => "Tool '{$toolName}' does not require confirmation."];
+        }
+
+        return $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
+    }
+
+    private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId): ToolResult
+    {
+        $pendingId = $this->pendingActionStore->store(
+            $companyId,
+            $userId,
+            $toolCall->name,
+            $toolCall->arguments,
+        );
+
+        $payload = [
+            'status' => 'confirmation_required',
+            'pending_action_id' => $pendingId,
+            'tool' => $toolCall->name,
+            'summary' => $this->confirmationSummary($toolCall->name, $toolCall->arguments),
+            'arguments' => $toolCall->arguments,
+        ];
+
+        return new ToolResult(
+            toolCallId: $toolCall->id,
+            name: $toolCall->name,
+            content: json_encode($payload) ?: '{}',
+            success: true,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function confirmationSummary(string $toolName, array $arguments): string
+    {
+        $startDate = $this->stringArgument($arguments, 'start_date', '?');
+        $endDate = $this->stringArgument($arguments, 'end_date', $startDate);
+        $absenceId = $this->stringArgument($arguments, 'absence_id', '?');
+
+        return match ($toolName) {
+            'create_absence' => sprintf(
+                'Creer une demande d\'absence du %s au %s',
+                $startDate,
+                $endDate,
+            ),
+            'approve_absence' => sprintf(
+                'Approuver l\'absence #%s',
+                $absenceId,
+            ),
+            default => "Confirmer l'action {$toolName}",
+        };
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function stringArgument(array $arguments, string $key, string $default): string
+    {
+        if (! array_key_exists($key, $arguments)) {
+            return $default;
+        }
+
+        $value = $arguments[$key];
+
+        return is_scalar($value) ? (string) $value : $default;
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function intArgument(array $arguments, string $key, int $default): int
+    {
+        if (! array_key_exists($key, $arguments)) {
+            return $default;
+        }
+
+        $value = $arguments[$key];
+
+        return is_numeric($value) ? (int) $value : $default;
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
     private function dispatchToolAction(string $toolName, array $arguments, string $companyId, int $userId): array
     {
         return match ($toolName) {
@@ -92,7 +190,7 @@ class IntentEngine
             $query->where('department_id', $args['department_id']);
         }
 
-        $limit = min((int) ($args['limit'] ?? 20), 50);
+        $limit = min($this->intArgument($args, 'limit', 20), 50);
         $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'post', 'department_id', 'status'])
             ->limit($limit)
             ->get();
@@ -148,7 +246,7 @@ class IntentEngine
     private function searchEmployees(string $companyId, array $args): array
     {
         $query = Employee::where('company_id', $companyId);
-        $search = $args['query'] ?? '';
+        $search = $this->stringArgument($args, 'query', '');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
