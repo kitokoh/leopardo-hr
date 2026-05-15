@@ -112,18 +112,50 @@ class IntentEngine
      */
     private function confirmationSummary(string $toolName, array $arguments): string
     {
+        $startDate = $this->stringArgument($arguments, 'start_date', '?');
+        $endDate = $this->stringArgument($arguments, 'end_date', $startDate);
+        $absenceId = $this->stringArgument($arguments, 'absence_id', '?');
+
         return match ($toolName) {
             'create_absence' => sprintf(
                 'Creer une demande d\'absence du %s au %s',
-                $arguments['start_date'] ?? '?',
-                $arguments['end_date'] ?? ($arguments['start_date'] ?? '?'),
+                $startDate,
+                $endDate,
             ),
             'approve_absence' => sprintf(
                 'Approuver l\'absence #%s',
-                $arguments['absence_id'] ?? '?',
+                $absenceId,
             ),
             default => "Confirmer l'action {$toolName}",
         };
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function stringArgument(array $arguments, string $key, string $default): string
+    {
+        if (! array_key_exists($key, $arguments)) {
+            return $default;
+        }
+
+        $value = $arguments[$key];
+
+        return is_scalar($value) ? (string) $value : $default;
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function intArgument(array $arguments, string $key, int $default): int
+    {
+        if (! array_key_exists($key, $arguments)) {
+            return $default;
+        }
+
+        $value = $arguments[$key];
+
+        return is_numeric($value) ? (int) $value : $default;
     }
 
     /**
@@ -158,7 +190,7 @@ class IntentEngine
             $query->where('department_id', $args['department_id']);
         }
 
-        $limit = min((int) ($args['limit'] ?? 20), 50);
+        $limit = min($this->intArgument($args, 'limit', 20), 50);
         $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'post', 'department_id', 'status'])
             ->limit($limit)
             ->get();
@@ -214,7 +246,7 @@ class IntentEngine
     private function searchEmployees(string $companyId, array $args): array
     {
         $query = Employee::where('company_id', $companyId);
-        $search = $args['query'] ?? '';
+        $search = $this->stringArgument($args, 'query', '');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

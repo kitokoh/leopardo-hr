@@ -61,6 +61,8 @@ class PendingActionStore
 
     private function ttlMinutes(): int
     {
-        return max(1, (int) config('ai.pending_action_ttl_minutes', 15));
+        $configured = config('ai.pending_action_ttl_minutes', 15);
+
+        return max(1, is_numeric($configured) ? (int) $configured : 15);
     }
 }
