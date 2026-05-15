@@ -9,6 +9,7 @@ use App\Models\AuditLog;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AuditLogController extends Controller
 {
@@ -65,5 +66,61 @@ class AuditLogController extends Controller
         }
 
         return response()->json(['data' => $auditLog->load('user:id,first_name,last_name')]);
+    }
+
+    public function exportCsv(Request $request): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->hasManagerRole('principal')) {
+            abort(403);
+        }
+
+        $query = AuditLog::query()
+            ->forCompany($actor->company_id)
+            ->with('user:id,first_name,last_name')
+            ->orderByDesc('created_at');
+
+        if ($request->filled('from')) {
+            $query->where('created_at', '>=', $request->input('from'));
+        }
+
+        if ($request->filled('to')) {
+            $query->where('created_at', '<=', $request->input('to'));
+        }
+
+        $filename = 'audit_logs_'.now()->format('Y-m-d_His').'.csv';
+
+        return response()->streamDownload(function () use ($query): void {
+            $handle = fopen('php://output', 'w');
+            if ($handle === false) {
+                return;
+            }
+
+            fputcsv($handle, ['id', 'user', 'action', 'auditable_type', 'auditable_id', 'old_values', 'new_values', 'created_at']);
+
+            $query->chunk(500, function ($logs) use ($handle): void {
+                foreach ($logs as $log) {
+                    $userName = $log->user
+                        ? $log->user->first_name.' '.$log->user->last_name
+                        : '';
+
+                    fputcsv($handle, [
+                        $log->id,
+                        $userName,
+                        $log->action,
+                        $log->auditable_type,
+                        $log->auditable_id,
+                        is_array($log->old_values) ? json_encode($log->old_values) : ($log->old_values ?? ''),
+                        is_array($log->new_values) ? json_encode($log->new_values) : ($log->new_values ?? ''),
+                        $log->created_at?->toIso8601String() ?? '',
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+        ]);
     }
 }

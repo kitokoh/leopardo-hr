@@ -21,14 +21,14 @@ class HrReportController extends Controller
     {
         $this->authorizeManager($request);
 
-        $total = Employee::where('status', 'active')->count();
-        $byDepartment = Employee::where('status', 'active')
-            ->select('employees.*')
-            ->join('contracts', function ($join) {
+        $total = Employee::where('employees.status', 'active')->count();
+        $byDepartment = Employee::query()
+            ->where('employees.status', 'active')
+            ->join('contracts', function ($join): void {
                 $join->on('contracts.employee_id', '=', 'employees.id')
                     ->where('contracts.status', '=', 'active');
             })
-            ->select(DB::raw('contracts.department_id, count(*) as count'))
+            ->selectRaw('contracts.department_id, count(*) as count')
             ->groupBy('contracts.department_id')
             ->get();
 
