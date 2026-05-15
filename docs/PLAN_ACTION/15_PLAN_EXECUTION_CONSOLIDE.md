@@ -38,7 +38,7 @@
 |---|-------|--------|--------|----------|
 | A1 | Creer `CONVENTIONS.md` | T-ARCH-13 | 0.5j | HIGH |
 | A2 | Creer `docs/api/VERSIONING.md` | T-ARCH-10 | 0.5j | HIGH |
-| A3 | Creer middleware `ApiVersion` | T-ARCH-09 | 1j | MEDIUM |
+| A3 | Creer middleware `ApiVersion` | T-ARCH-09 | 1j | DONE |
 | A4 | Creer `docs/architecture/PARTITIONING.md` | T-ARCH-15 | 0.5j | MEDIUM |
 | A5 | DDD migration progressive controllers existants | T-ARCH-02 | 5j+ | LOW |
 | A6 | Tests Feature rapport RH dedies | T-MOD-H4 | 1j | MEDIUM |
@@ -169,7 +169,7 @@
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| K1 | Rate limiting API par plan | Plan 14 | 1j | HIGH |
+| K1 | Rate limiting API par plan | Plan 14 | 1j | DONE |
 | K2 | SSO SAML/OIDC | Plan 14 | 3j | MEDIUM |
 | K3 | Multi-tenant isolation test complet | Plan 14 | 1j | HIGH |
 | K4 | Audit WCAG 2.1 AA | Plan 14 | 2j | LOW |
@@ -224,6 +224,11 @@
 - AES-256 chiffrement sensible
 - Rate limiting API par plan
 - Test isolation multi-tenant complet
+
+**Avancement 2026-05-15** :
+- A3/K1 livres : `ApiVersionMiddleware` expose le contrat de version `v1` sur toutes les reponses API et refuse les versions demandees non supportees.
+- Le limiter `api-plan` applique des quotas configurables par plan apres `auth:sanctum` + `tenant`, sans remplacer les limiters sensibles (`auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive`, `ai-sensitive`).
+- Reste Iteration 4 : D1/D2/D4/D5/K3 a traiter par lots separes pour eviter un gros PR risque.
 
 ### Iteration 5 — Monitoring production
 **Cible** : B1, B2, B3, B4

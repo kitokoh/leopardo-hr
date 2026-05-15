@@ -38,4 +38,5 @@ return [
     'FORBIDDEN' => 'ليس لديك صلاحية لهذا الإجراء.',
     'SERVER_ERROR' => 'حدث خطأ. يرجى المحاولة مجدداً.',
     'VALIDATION_ERROR' => 'بعض الحقول غير صحيحة.',
+    'UNSUPPORTED_API_VERSION' => 'إصدار API غير مدعوم.',
 ];

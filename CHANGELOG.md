@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.56] - 2026-05-15
+
+### API — Versioning et quotas par plan
+
+- Nouveau : `ApiVersionMiddleware` expose `X-API-Version` et `X-API-Supported-Versions` sur les reponses API.
+- Securite contrat : une requete qui force une version API non supportee via `X-API-Version` retourne `400 UNSUPPORTED_API_VERSION`.
+- Nouveau : limiter `api-plan` configurable dans `config/security.php` avec quotas trial/starter/business/pro/enterprise.
+- Routes : application du limiter `api-plan` apres `auth:sanctum` + `tenant` sur les surfaces API authentifiees pour utiliser le plan reel de l'entreprise.
+- Tests : ajout d'une couverture Feature pour les headers de version, le rejet v2 et le `429` par plan Starter.
+
 ## [4.16.55] - 2026-05-14
 
 ### Feat — Iteration 5 monitoring et observabilite
