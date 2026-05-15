@@ -12,6 +12,9 @@ class IntentEngine
 {
     public function __construct(
         private readonly ToolRegistry $toolRegistry,
+        private readonly WriteToolPolicy $writeToolPolicy,
+        private readonly PendingActionStore $pendingActionStore,
+        private readonly WriteActionRunner $writeActionRunner,
     ) {}
 
     /**
@@ -42,6 +45,10 @@ class IntentEngine
         }
 
         try {
+            if ($this->writeToolPolicy->requiresConfirmation($toolCall->name)) {
+                return $this->pendingConfirmationResult($toolCall, $companyId, $userId);
+            }
+
             $result = $this->dispatchToolAction($toolCall->name, $toolCall->arguments, $companyId, $userId);
 
             return new ToolResult(
@@ -58,6 +65,63 @@ class IntentEngine
                 success: false,
             );
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId): array
+    {
+        if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
+            return ['error' => "Tool '{$toolName}' does not require confirmation."];
+        }
+
+        return $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
+    }
+
+    private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId): ToolResult
+    {
+        $pendingId = $this->pendingActionStore->store(
+            $companyId,
+            $userId,
+            $toolCall->name,
+            $toolCall->arguments,
+        );
+
+        $payload = [
+            'status' => 'confirmation_required',
+            'pending_action_id' => $pendingId,
+            'tool' => $toolCall->name,
+            'summary' => $this->confirmationSummary($toolCall->name, $toolCall->arguments),
+            'arguments' => $toolCall->arguments,
+        ];
+
+        return new ToolResult(
+            toolCallId: $toolCall->id,
+            name: $toolCall->name,
+            content: json_encode($payload) ?: '{}',
+            success: true,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function confirmationSummary(string $toolName, array $arguments): string
+    {
+        return match ($toolName) {
+            'create_absence' => sprintf(
+                'Creer une demande d\'absence du %s au %s',
+                $arguments['start_date'] ?? '?',
+                $arguments['end_date'] ?? ($arguments['start_date'] ?? '?'),
+            ),
+            'approve_absence' => sprintf(
+                'Approuver l\'absence #%s',
+                $arguments['absence_id'] ?? '?',
+            ),
+            default => "Confirmer l'action {$toolName}",
+        };
     }
 
     /**

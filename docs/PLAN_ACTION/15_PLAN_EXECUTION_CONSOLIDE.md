@@ -41,10 +41,10 @@
 | A3 | Creer middleware `ApiVersion` | T-ARCH-09 | 1j | DONE |
 | A4 | Creer `docs/architecture/PARTITIONING.md` | T-ARCH-15 | 0.5j | MEDIUM |
 | A5 | DDD migration progressive controllers existants | T-ARCH-02 | 5j+ | LOW |
-| A6 | Tests Feature rapport RH dedies | T-MOD-H4 | 1j | MEDIUM |
-| A7 | Test Feature chaine hierarchique org chart | Plan 02 | 0.5j | LOW |
-| A8 | Export CSV audit logs | Plan 02 | 0.5j | LOW |
-| A9 | `.pre-commit-config.yaml` | T-CI-06 | 0.5j | MEDIUM |
+| A6 | Tests Feature rapport RH dedies | T-MOD-H4 | 1j | DONE |
+| A7 | Test Feature chaine hierarchique org chart | Plan 02 | 0.5j | DONE |
+| A8 | Export CSV audit logs | Plan 02 | 0.5j | DONE |
+| A9 | `.pre-commit-config.yaml` | T-CI-06 | 0.5j | DONE |
 | A10 | Documenter worker deployment (DEPLOYMENT_GUIDE) | T-ARCH-20 | 0.5j | MEDIUM |
 | A11 | Documentation API tracking dans OpenAPI | T-TRACK-14 | 1j | HIGH |
 
@@ -65,7 +65,7 @@
 |---|-------|--------|--------|----------|
 | C1 | Outils write avec confirmation | T-IA-15/16 | 2j | MEDIUM |
 | C2 | Dashboard admin analytics IA | T-IA-18 | 1j | LOW |
-| C3 | Tests actions write | T-IA-19 | 1j | MEDIUM |
+| C3 | Tests actions write | T-IA-19 | 1j | DONE |
 | C4 | Whisper API pour STT | T-IA-21 | 1j | LOW |
 | C5 | Edge TTS synthese vocale | T-IA-22 | 1j | LOW |
 | C6 | Pipeline voice complet | T-IA-23 | 2j | LOW |
@@ -208,6 +208,7 @@
 
 ### Iteration 3 — Tests Feature manquants + pre-commit
 **Cible** : A6, A7, A8, A9, C3
+**Statut** : COMPLETE (A6-A9, C3) — PR #463 + lot iteration 3 pre-commit/IA write (2026-05-15).
 **Contenu** :
 - Tests rapports RH dedies
 - Test chaine hierarchique org chart

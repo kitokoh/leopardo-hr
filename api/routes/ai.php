@@ -19,6 +19,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'throttle:ai-sensitive', AIFe
 
     Route::get('/chat/history', [AIGatewayController::class, 'history']);
     Route::delete('/chat/{conversationId}', [AIGatewayController::class, 'deleteConversation'])->whereNumber('conversationId');
+    Route::post('/actions/{pendingActionId}/confirm', [AIGatewayController::class, 'confirmAction']);
+    Route::post('/actions/{pendingActionId}/reject', [AIGatewayController::class, 'rejectAction']);
     Route::get('/tools', [AIGatewayController::class, 'tools']);
 
     // Phase 3 — Voice IA (Sprint 17-18)
