@@ -38,4 +38,5 @@ return [
     'FORBIDDEN' => 'Vous n\'avez pas les droits pour cette action.',
     'SERVER_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'VALIDATION_ERROR' => 'Certains champs sont incorrects.',
+    'UNSUPPORTED_API_VERSION' => 'Version API non supportee.',
 ];

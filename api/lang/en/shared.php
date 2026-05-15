@@ -19,7 +19,7 @@ return [
             ],
             'field' => [
                 'title' => 'Mobile-first for field teams',
-                'body' => "The phone is the employee's main surface. Clock-ins, absences, and documents live here.",
+                'body' => 'The phone is the employee\'s main surface. Clock-ins, absences, and documents live here.',
             ],
             'modules' => [
                 'title' => 'Active modules, visible roadmap',

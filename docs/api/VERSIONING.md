@@ -1,6 +1,6 @@
 # Politique de versioning API — Leopardo RH
 
-> Derniere mise a jour : 2026-05-14
+> Derniere mise a jour : 2026-05-15
 
 ---
 
@@ -66,8 +66,20 @@ Chaque reponse API inclut :
 
 ```
 X-API-Version: v1
+X-API-Supported-Versions: v1
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
+```
+
+Si un client envoie `X-API-Version` avec une version non supportee pour la route appelee, l'API retourne :
+
+```json
+{
+  "error": "UNSUPPORTED_API_VERSION",
+  "message": "UNSUPPORTED_API_VERSION",
+  "supported_versions": ["v1"],
+  "requested_version": "v2"
+}
 ```
 
 En cas de deprecation :
@@ -99,18 +111,19 @@ MAJOR.MINOR.PATCH (ex: 4.16.51)
 
 Le numero de version produit est independant de la version API (`v1`, `v2`).
 
-## 7. Middleware ApiVersion (a implementer)
+## 7. Middleware ApiVersion (implemente)
 
-Un middleware `ApiVersion` est prevu pour :
+Le middleware `ApiVersionMiddleware` :
 
-- Detecter la version demandee (prefixe URL ou header `Accept-Version`)
-- Injecter la version dans le contexte de la requete
-- Logger la version utilisee pour les metriques d'usage
-- Appliquer les transformations de compatibilite si necessaire
+- Detecte la version depuis le prefixe URL `/api/v1/*`
+- Compare la version demandee via `X-API-Version` si le client l'envoie
+- Injecte `api_version` dans les attributs de la requete
+- Ajoute les headers `X-API-Version` et `X-API-Supported-Versions`
+- Retourne `400 UNSUPPORTED_API_VERSION` avant controller si la version demandee n'est pas supportee
 
 ```php
-// Futur : app/Http/Middleware/ApiVersionMiddleware.php
-// Route::prefix('api/v1')->middleware(['api', 'api.version:v1'])->group(...)
+// app/Http/Middleware/ApiVersionMiddleware.php
+// Enregistre dans le groupe API global via bootstrap/app.php
 ```
 
 ## 8. References

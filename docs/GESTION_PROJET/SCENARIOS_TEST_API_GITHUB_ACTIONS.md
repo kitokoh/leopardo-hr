@@ -37,6 +37,8 @@ Note 2026-05-12 : les tests Feature des modules post-sprints doivent verifier le
 
 Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configurables (`auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive`, `ai-sensitive`). Les scenarios API doivent conserver au moins un test `429` sur auth publique et un test `429` sur privacy authentifie.
 
+Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version`, `X-API-Supported-Versions`) et refuse un `X-API-Version` non supporte. Les routes authentifiees tenant portent aussi un limiter `api-plan` configurable par plan commercial ; garder un test `429` dedie sur un plan Starter avec seuil abaisse en test.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -48,6 +50,8 @@ Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configur
 - Redis / cache / queue sync ne cassent pas les endpoints critiques
 - Une erreur de bootstrap ne fuit pas d'informations sensibles
 - Le middleware `RequestIdMiddleware` ajoute un header `X-Request-Id` a chaque reponse API
+- Le middleware `ApiVersionMiddleware` ajoute `X-API-Version: v1` et `X-API-Supported-Versions`
+- Une requete avec `X-API-Version: v2` sur `/api/v1/*` retourne `400 UNSUPPORTED_API_VERSION`
 - Un `X-Request-Id` fourni dans la requete est reechoe dans la reponse
 - `GET /docs` publie Swagger UI sans authentification
 - `GET /docs/openapi.yaml` sert la specification canonique `api/openapi.yaml` sans copie divergente
@@ -60,6 +64,7 @@ Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configur
 - Login succes pour chaque role autorise
 - Login refuse pour mot de passe invalide
 - Login public retourne `429` apres depassement du limiter `auth-sensitive`
+- Une route authentifiee retourne `429` apres depassement du limiter `api-plan` du plan client
 - Login refuse pour compte inactif ou bloque
 - `me` retourne le bon role, tenant, permissions et contexte
 - Logout invalide le token en cours

@@ -21,7 +21,7 @@ use App\Modules\Cameras\Interfaces\Api\V1\Controllers\InternalCameraTokenControl
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\PublicCameraViewerController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'module.cameras'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'module.cameras'])
     ->prefix('cameras')
     ->group(function (): void {
         Route::get('/', [CameraController::class, 'index']);
