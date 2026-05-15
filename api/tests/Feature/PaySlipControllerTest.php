@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Models\PaySlipLine;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -92,6 +93,26 @@ class PaySlipControllerTest extends TestCase
         $response->assertOk()
             ->assertHeader('Content-Type', 'application/pdf')
             ->assertHeader('Content-Disposition', 'attachment; filename="bulletin_'.$employee->id.'_2026_05.pdf"');
+    }
+
+    public function test_manager_download_pdf_serves_warmup_file_when_pdf_path_present(): void
+    {
+        Storage::fake('local');
+
+        [$company, $manager, $employee] = $this->payrollActor();
+        [, $slip] = $this->payrollSlip($company, $employee, ['status' => 'validated']);
+
+        $path = sprintf('pay-slips/%d/%d.pdf', $company->id, $slip->id);
+        Storage::disk('local')->put($path, '%PDF-1.4 test');
+        $slip->update(['pdf_path' => $path]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->get("/api/v1/pay-slips/{$slip->id}/pdf");
+
+        $response->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf');
+        $this->assertSame('%PDF-1.4 test', $response->getContent());
     }
 
     public function test_send_slips_requires_validated_run_and_marks_emailable_slips_sent(): void
