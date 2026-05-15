@@ -9,12 +9,14 @@ use App\AI\DTOs\ToolCall;
 use App\AI\IntentEngine;
 use App\AI\LLMClient;
 use App\AI\PendingActionStore;
+use App\AI\ToolRegistry;
 use App\Models\Absence;
 use App\Models\AbsenceType;
 use App\Models\AIToolRegistryEntry;
 use App\Models\Company;
 use App\Models\Employee;
 use Laravel\Sanctum\Sanctum;
+use stdClass;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -40,7 +42,7 @@ class AIWriteActionConfirmationTest extends TestCase
         [$company, $employee] = $this->aiFixture();
         $this->seedAbsenceType($company->id);
         $this->registerWriteTool('create_absence');
-        $this->app->forgetInstance(\App\AI\ToolRegistry::class);
+        $this->app->forgetInstance(ToolRegistry::class);
 
         $engine = app(IntentEngine::class);
         $response = new AIResponse(
@@ -173,7 +175,7 @@ class AIWriteActionConfirmationTest extends TestCase
     {
         [$company, $employee] = $this->aiFixture();
         $this->registerWriteTool('create_absence');
-        $this->app->forgetInstance(\App\AI\ToolRegistry::class);
+        $this->app->forgetInstance(ToolRegistry::class);
         Sanctum::actingAs($employee);
         $this->fakeLlmClientWithWriteToolCall();
 
@@ -187,8 +189,7 @@ class AIWriteActionConfirmationTest extends TestCase
 
     private function fakeLlmClientWithWriteToolCall(): void
     {
-        $this->app->instance(LLMClient::class, new class implements LLMClient
-        {
+        $this->app->instance(LLMClient::class, new class implements LLMClient {
             public function chat(array $messages, array $tools = []): AIResponse
             {
                 return new AIResponse(
@@ -240,7 +241,7 @@ class AIWriteActionConfirmationTest extends TestCase
         AIToolRegistryEntry::create([
             'name' => $name,
             'description' => "Write tool {$name}",
-            'parameters' => ['type' => 'object', 'properties' => new \stdClass],
+            'parameters' => ['type' => 'object', 'properties' => new stdClass],
             'required_permissions' => [],
             'required_role' => 'manager',
             'module' => 'rh',
