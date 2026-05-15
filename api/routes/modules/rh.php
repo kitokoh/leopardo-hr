@@ -25,7 +25,7 @@ use App\Http\Controllers\Api\V1\SiteController;
 use App\Http\Controllers\Api\V1\TaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
 
     // ── Employees ─────────────────────────────────────────────────────────────
     Route::get('/employees', [EmployeeController::class, 'index']);
