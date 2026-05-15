@@ -34,6 +34,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -94,6 +95,24 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->ip());
         });
 
+        RateLimiter::for('api-plan', function (Request $request) {
+            $user = $request->user();
+            if (! $user instanceof Employee || ! $user->company_id) {
+                return Limit::perMinute((int) config('security.plan_rate_limits.default_per_minute', 100))
+                    ->by('plan:ip:'.$request->ip());
+            }
+
+            $plan = $this->resolveCompanyPlan((string) $user->company_id);
+            $limit = $this->resolvePlanLimit($plan);
+            $normalizedPlan = $this->normalizePlan($plan);
+
+            if ($limit <= 0) {
+                return Limit::none();
+            }
+
+            return Limit::perMinute($limit)->by('plan:'.$normalizedPlan.':company:'.$user->company_id);
+        });
+
         RateLimiter::for('auth-sensitive', function (Request $request) {
             $email = strtolower((string) $request->input('email', 'anonymous'));
 
@@ -139,5 +158,39 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('security.rate_limits.ai_per_minute', 20))
                 ->by('ai:'.$key);
         });
+    }
+
+    private function resolvePlanLimit(string $plan): int
+    {
+        $normalized = $this->normalizePlan($plan);
+
+        return match ($normalized) {
+            'enterprise' => (int) config('security.plan_rate_limits.enterprise_per_minute', 0),
+            'business' => (int) config('security.plan_rate_limits.business_per_minute', 1000),
+            'professional' => (int) config('security.plan_rate_limits.professional_per_minute', 1000),
+            'pro' => (int) config('security.plan_rate_limits.pro_per_minute', 1000),
+            'starter' => (int) config('security.plan_rate_limits.starter_per_minute', 100),
+            'trial' => (int) config('security.plan_rate_limits.trial_per_minute', 60),
+            default => (int) config('security.plan_rate_limits.default_per_minute', 100),
+        };
+    }
+
+    private function resolveCompanyPlan(string $companyId): string
+    {
+        $planName = DB::table('companies')
+            ->leftJoin('plans', 'plans.id', '=', 'companies.plan_id')
+            ->where('companies.id', $companyId)
+            ->value('plans.name');
+
+        if (is_string($planName) && $planName !== '') {
+            return $planName;
+        }
+
+        return 'trial';
+    }
+
+    private function normalizePlan(string $plan): string
+    {
+        return strtolower(trim($plan));
     }
 }

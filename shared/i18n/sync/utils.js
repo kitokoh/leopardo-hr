@@ -62,11 +62,15 @@ function toPhpArray(node, depth = 0) {
   const childIndent = '    '.repeat(depth + 1);
   const entries = Object.entries(node).map(([key, value]) => {
     if (typeof value === 'string') {
-      return `${childIndent}${JSON.stringify(key)} => ${JSON.stringify(value)},`;
+      return `${childIndent}${phpString(key)} => ${phpString(value)},`;
     }
-    return `${childIndent}${JSON.stringify(key)} => [\n${toPhpArray(value, depth + 1)}\n${childIndent}],`;
+    return `${childIndent}${phpString(key)} => [\n${toPhpArray(value, depth + 1)}\n${childIndent}],`;
   });
   return entries.join('\n');
+}
+
+function phpString(value) {
+  return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 }
 
 function writePhpArray(filePath, payload) {

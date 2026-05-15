@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\V1\VehicleMaintenanceController;
 use App\Http\Controllers\Api\V1\VehicleTripController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
     // Vehicles CRUD
     Route::get('/vehicles', [VehicleController::class, 'index']);
     Route::post('/vehicles', [VehicleController::class, 'store']);

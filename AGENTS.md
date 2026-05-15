@@ -183,6 +183,12 @@ Procedure recommandee :
 - Les surfaces sensibles utilisent des limiters nommes dans `AppServiceProvider` et configures via `api/config/security.php` : `auth-sensitive`, `privacy-sensitive`, `payroll-sensitive`, `platform-sensitive`, `ai-sensitive`.
 - Pour les prochains endpoints auth, paie, privacy, IA ou super-admin, reutiliser ces limiters au lieu d'ajouter des `throttle:10,1` isoles.
 
+### 2026-05-15 - Versioning API et quotas par plan
+
+- Le middleware `ApiVersionMiddleware` est dans le groupe API global et ajoute `X-API-Version` / `X-API-Supported-Versions`; si un frontend ou integrateur force `X-API-Version: v2` avant ouverture officielle de v2, l'API doit continuer a retourner `400 UNSUPPORTED_API_VERSION`.
+- Le limiter `api-plan` doit rester applique apres `auth:sanctum` + `tenant` sur les routes tenant authentifiees. Avant cet ordre, le plan commercial et le contexte tenant ne sont pas fiables.
+- Les quotas par plan vivent dans `api/config/security.php` sous `plan_rate_limits`; garder `enterprise_per_minute=0` pour illimite et abaisser les seuils uniquement via config dans les tests.
+
 ### 2026-05-14 - Load testing k6
 
 - Le socle de charge vit dans `dev-hub/load/k6/api-core-smoke.js` et reste read-only par defaut. Ne pas ajouter de mutations de pointage, paie ou exports dans ce script sans flag explicite.
