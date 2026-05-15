@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Company;
 use App\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -27,7 +28,9 @@ class HrReportControllerTest extends TestCase
 
     private function actingAsManager(): Employee
     {
+        $company = Company::factory()->create();
         $manager = Employee::factory()->create([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
         ]);
@@ -38,7 +41,9 @@ class HrReportControllerTest extends TestCase
 
     private function actingAsEmployee(): Employee
     {
+        $company = Company::factory()->create();
         $employee = Employee::factory()->create([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ]);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\AuditLog;
+use App\Models\Company;
 use App\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -28,7 +29,7 @@ class AuditLogExportTest extends TestCase
 
     public function test_export_csv_returns_csv_for_principal_manager(): void
     {
-        $manager = Employee::factory()->create([
+        $manager = $this->employee([
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
@@ -52,7 +53,7 @@ class AuditLogExportTest extends TestCase
 
     public function test_export_csv_forbidden_for_non_principal(): void
     {
-        $employee = Employee::factory()->create([
+        $employee = $this->employee([
             'role' => 'employee',
             'status' => 'active',
         ]);
@@ -65,7 +66,7 @@ class AuditLogExportTest extends TestCase
 
     public function test_export_csv_with_date_filter(): void
     {
-        $manager = Employee::factory()->create([
+        $manager = $this->employee([
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
@@ -79,7 +80,7 @@ class AuditLogExportTest extends TestCase
 
     public function test_audit_log_index_returns_paginated_list(): void
     {
-        $manager = Employee::factory()->create([
+        $manager = $this->employee([
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
@@ -102,7 +103,7 @@ class AuditLogExportTest extends TestCase
 
     public function test_audit_log_index_filtered_by_action(): void
     {
-        $manager = Employee::factory()->create([
+        $manager = $this->employee([
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
@@ -120,5 +121,17 @@ class AuditLogExportTest extends TestCase
         $response = $this->getJson('/api/v1/audit-logs?action=deleted');
 
         $response->assertOk();
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function employee(array $attributes = []): Employee
+    {
+        $company = Company::factory()->create();
+
+        return Employee::factory()->create(array_merge([
+            'company_id' => $company->id,
+        ], $attributes));
     }
 }
