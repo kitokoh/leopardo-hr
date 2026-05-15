@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-13
+Derniere mise a jour : 2026-05-16
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -155,6 +155,12 @@ Procedure recommandee :
 - Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
 
 ## Historique utile
+
+### 2026-05-16 - Plan 15 iteration 4 (performance / paie async)
+
+- Iteration 4 cloture fonctionnelle : cache tenant `GET /api/v1/reports/headcount` (`HR_REPORT_HEADCOUNT_CACHE_TTL`), job `WarmPaySlipPdfPathsForPayrollRunJob` apres validation paie (`PAYROLL_QUEUE_PDF_WARMUP`), PDF bulletins via `pdf_path` sur disque `local`.
+- **D4 JWT refresh** hors scope pour l’auth Sanctum metier ; JWT dans le depot = flux camera (`CameraStreamTokenService`, TTL `config/cameras.php`).
+- **D5 chiffrement** : casts Laravel `encrypted` deja sur Employee (`iban`, `bank_account`, `national_id`) ; extension = chantier inventaire dedie.
 
 ### 2026-05-08 - Render race sur `company_requests`
 
