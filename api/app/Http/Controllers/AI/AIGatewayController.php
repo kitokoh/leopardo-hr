@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\AI;
 
 use App\AI\DTOs\AIRequest;
+use App\AI\IntentEngine;
 use App\AI\Orchestrator;
+use App\AI\PendingActionStore;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +16,11 @@ use Illuminate\Support\Facades\DB;
 
 class AIGatewayController extends Controller
 {
-    public function __construct(private readonly Orchestrator $orchestrator) {}
+    public function __construct(
+        private readonly Orchestrator $orchestrator,
+        private readonly IntentEngine $intentEngine,
+        private readonly PendingActionStore $pendingActionStore,
+    ) {}
 
     public function chat(Request $request): JsonResponse
     {
@@ -75,6 +83,64 @@ class AIGatewayController extends Controller
         }
 
         return response()->json(['message' => 'Conversation deleted.']);
+    }
+
+    public function confirmAction(Request $request, string $pendingActionId): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $pending = $this->pendingActionStore->pull(
+            $pendingActionId,
+            (string) $user->company_id,
+            (int) $user->id,
+        );
+
+        if ($pending === null) {
+            abort(404, 'Pending action not found or expired.');
+        }
+
+        $result = $this->intentEngine->executeConfirmedWrite(
+            $pending['tool'],
+            $pending['arguments'],
+            (string) $user->company_id,
+            (int) $user->id,
+        );
+
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error'], 'data' => $result], 422);
+        }
+
+        return response()->json([
+            'data' => [
+                'status' => 'executed',
+                'tool' => $pending['tool'],
+                'result' => $result,
+            ],
+        ]);
+    }
+
+    public function rejectAction(Request $request, string $pendingActionId): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $pending = $this->pendingActionStore->pull(
+            $pendingActionId,
+            (string) $user->company_id,
+            (int) $user->id,
+        );
+
+        if ($pending === null) {
+            abort(404, 'Pending action not found or expired.');
+        }
+
+        return response()->json([
+            'data' => [
+                'status' => 'rejected',
+                'tool' => $pending['tool'],
+            ],
+        ]);
     }
 
     public function tools(Request $request): JsonResponse
