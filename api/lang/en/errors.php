@@ -38,4 +38,5 @@ return [
     'FORBIDDEN' => 'You do not have permission for this action.',
     'SERVER_ERROR' => 'An error occurred. Please try again.',
     'VALIDATION_ERROR' => 'Some fields are incorrect.',
+    'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',
 ];

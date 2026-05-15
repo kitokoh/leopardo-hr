@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/cabinet/shared/{token}', [CabinetShareController::class, 'accessByToken'])
     ->middleware('throttle:60,1');
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->prefix('cabinet')->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->prefix('cabinet')->group(function (): void {
 
     // ── Stats ────────────────────────────────────────────────────────────────
     Route::get('/stats', [CabinetShareController::class, 'stats']);

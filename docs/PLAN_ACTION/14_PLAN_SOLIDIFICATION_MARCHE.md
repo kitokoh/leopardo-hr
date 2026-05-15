@@ -177,8 +177,8 @@
 ```
 - [x] Documentation OpenAPI complete et validee en CI (surface plateforme recente documentee, Swagger UI publiee sur `/docs`)
 - [x] SDK client JavaScript/Python genere depuis OpenAPI via `dev-hub/tools/generate-openapi-sdk.mjs`
-- [ ] Rate limiting API avec plans (starter: 100 req/min, pro: 1000, enterprise: illimite)
-- [ ] Versioning API (v1 stable, v2 beta)
+- [x] Rate limiting API avec plans (starter: 100 req/min, business/pro: 1000, enterprise: illimite) — **FAIT** (`api-plan` limiter configurable, applique apres auth/tenant sur les routes API authentifiees)
+- [x] Versioning API (v1 stable, v2 beta) — **FAIT socle v1** (`ApiVersionMiddleware`, headers `X-API-Version` / `X-API-Supported-Versions`, rejet explicite des versions demandees non supportees)
 - [ ] Sandbox environnement pour les integrateurs
 ```
 
