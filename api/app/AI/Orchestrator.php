@@ -47,6 +47,7 @@ class Orchestrator
         $response = $this->client->chat($llmMessages, $tools);
 
         $toolsUsed = [];
+        $pendingConfirmations = [];
         $maxIterations = 3;
         $iteration = 0;
 
@@ -55,6 +56,14 @@ class Orchestrator
 
             foreach ($results as $result) {
                 $toolsUsed[] = $result->name;
+                $decoded = json_decode($result->content, true);
+                if (is_array($decoded) && ($decoded['status'] ?? null) === 'confirmation_required') {
+                    $pendingConfirmations[] = $decoded;
+                }
+            }
+
+            if ($pendingConfirmations !== []) {
+                break;
             }
 
             if ($this->client->provider() === 'claude') {
@@ -120,6 +129,7 @@ class Orchestrator
             'conversation_id' => $conversationId,
             'response' => $response->content,
             'tools_used' => $toolsUsed,
+            'pending_confirmations' => $pendingConfirmations,
             'tokens' => ['input' => $response->inputTokens, 'output' => $response->outputTokens],
         ];
     }
