@@ -1,6 +1,17 @@
-﻿# CHANGELOG - LEOPARDO RH 
+# CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
+
+## [4.16.57] - 2026-05-16
+
+### Perf / Paie — Iteration 4 (lots D1, D2, K3)
+
+- Rapports RH : `GET /api/v1/reports/headcount` met en cache la charge utile JSON par tenant (`company_id`) avec TTL configurable (`HR_REPORT_HEADCOUNT_CACHE_TTL`, defaut 60s ; `0` desactive).
+- Paie : apres validation d'un run (`POST /api/v1/payroll-runs/{id}/validate`), dispatch du job `WarmPaySlipPdfPathsForPayrollRunJob` pour generer les PDF bulletins en async et renseigner `pdf_path` (toggle env `PAYROLL_QUEUE_PDF_WARMUP`).
+- Bulletins : `GET /api/v1/pay-slips/{id}/pdf` sert le fichier stocke sous `pdf_path` lorsqu'il existe sur le disque `local`, sinon fallback generation synchrone.
+- Nouveau : `config/performance.php` centralise TTL rapports et flags paie lies aux queues.
+- Tests : isolation tenant headcount, dispatch queue sur validation, warmup fichier fake, PDF depuis chemin pre-genere.
+- Docs : cloture **iteration 4** du plan 15 ; **D4** reporte (auth Sanctum metier vs JWT flux camera TTL config) ; **D5** couvert au MVP par casts `encrypted` sur Employee (`iban`, `bank_account`, `national_id`), extensions hors sprint.
 
 ## [4.16.56] - 2026-05-15
 

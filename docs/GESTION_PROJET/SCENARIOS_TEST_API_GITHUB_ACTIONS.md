@@ -350,7 +350,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - `GET /api/v1/org-chart/{id}/manager-chain` retourne la chaine manageriale ascendante
 
 ### Module H — Rapports RH
-- `GET /api/v1/reports/headcount` retourne effectifs par departement, type contrat, genre
+- `GET /api/v1/reports/headcount` retourne effectifs par departement, type contrat, genre (payload mis en cache par tenant avec TTL `HR_REPORT_HEADCOUNT_CACHE_TTL`, desactive si `0`)
 - `GET /api/v1/reports/turnover?months=12` retourne embauches/departs par mois
 - `GET /api/v1/reports/absenteeism?month=5&year=2026` retourne jours absence par type
 - `GET /api/v1/reports/payroll-summary` retourne masse salariale brute/nette
@@ -398,17 +398,17 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 ### Payroll Runs
 - `POST /api/v1/payroll-runs` cree un run en draft (period_start, period_end, country_code)
 - `POST /api/v1/payroll-runs/{id}/calculate` lance le calcul (genere les pay_slips)
-- `POST /api/v1/payroll-runs/{id}/validate` valide le run (status calculated -> validated)
+- `POST /api/v1/payroll-runs/{id}/validate` valide le run (status calculated -> validated) et enqueue un warmup PDF (`WarmPaySlipPdfPathsForPayrollRunJob`) lorsque `PAYROLL_QUEUE_PDF_WARMUP` est actif
 - `POST /api/v1/payroll-runs/{id}/cancel` annule un run (interdit si paid)
 - `GET /api/v1/payroll-runs/{id}/summary` retourne le resume avec totaux et liste employes
 - Validation : seul un run calculated peut etre valide, seul un run draft/calculated peut etre recalcule
 - RBAC : managers uniquement
-- Couverture Feature : liste scopee tenant, creation manager, calcul via contrat `PayrollCalculator`, validation run + bulletins, annulation draft, refus paid et refus d'acces cross-tenant.
+- Couverture Feature : liste scopee tenant, creation manager, calcul via contrat `PayrollCalculator`, validation run + bulletins + dispatch warmup PDF + fichier local `pdf_path`, annulation draft, refus paid et refus d'acces cross-tenant.
 
 ### Pay Slips
 - `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager)
 - `GET /api/v1/pay-slips/{id}` detail bulletin avec lignes (manager ou employe concerne)
-- `GET /api/v1/pay-slips/{id}/pdf` telecharge le PDF du bulletin (manager ou employe proprietaire)
+- `GET /api/v1/pay-slips/{id}/pdf` telecharge le PDF du bulletin (manager ou employe proprietaire) ; si `pdf_path` pointe vers un fichier present sur le disque `local`, le fichier est servi sinon generation synchrone DomPDF
 - `POST /api/v1/payroll-runs/{id}/send-slips` exige un run valide/paye et marque les bulletins emailable comme envoyes
 - RBAC : manager voit tout, employe voit uniquement ses bulletins
 - Couverture Feature : liste par run scopee tenant, self-service validated/sent uniquement, detail proprietaire, PDF protege, send-slips bloque avant validation et refus employe sur liste manager.
