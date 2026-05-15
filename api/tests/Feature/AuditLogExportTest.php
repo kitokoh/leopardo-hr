@@ -48,7 +48,7 @@ class AuditLogExportTest extends TestCase
         $response = $this->get('/api/v1/audit-logs/export-csv');
 
         $response->assertOk();
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $response->assertHeader('content-type', 'text/csv; charset=utf-8');
     }
 
     public function test_export_csv_forbidden_for_non_principal(): void
