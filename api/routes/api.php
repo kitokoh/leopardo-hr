@@ -47,7 +47,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/invitation/{token}/activate', [OnboardingController::class, 'activate']);
     });
 
-    Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
+    Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
         Route::patch('/auth/language', [AuthController::class, 'updateLanguage']);

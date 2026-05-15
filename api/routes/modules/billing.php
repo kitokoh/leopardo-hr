@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\V1\PaymentWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
 
     // Billing
     Route::get('/billing/subscription', [BillingController::class, 'subscription']);

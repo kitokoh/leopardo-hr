@@ -38,4 +38,5 @@ return [
     'FORBIDDEN' => 'Bu işlem için yetkiniz yok.',
     'SERVER_ERROR' => 'Bir hata oluştu. Lütfen tekrar deneyin.',
     'VALIDATION_ERROR' => 'Bazı alanlar hatalı.',
+    'UNSUPPORTED_API_VERSION' => 'Desteklenmeyen API surumu.',
 ];

@@ -21,7 +21,7 @@ use App\Http\Controllers\Api\V1\TrainingController;
 use App\Http\Controllers\Api\V1\WebhookController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
 
     // ── Module A — Leave Policies & Balances ────────────────────────────────
     Route::get('/leave-policies', [LeavePolicyController::class, 'index']);

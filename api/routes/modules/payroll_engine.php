@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\V1\SocialContributionController;
 use App\Http\Controllers\Api\V1\TaxSlabController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:payroll-sensitive'])->group(function () {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'throttle:payroll-sensitive'])->group(function () {
 
     // Salary Structures
     Route::get('/salary-structures', [SalaryStructureController::class, 'index']);
