@@ -73,6 +73,22 @@ class HrReportControllerTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_headcount_counts_only_current_tenant_employees(): void
+    {
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+
+        $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        Employee::factory()->count(2)->create(['company_id' => $companyA->id]);
+        Employee::factory()->count(5)->create(['company_id' => $companyB->id]);
+
+        Sanctum::actingAs($managerA);
+
+        $this->getJson('/api/v1/reports/headcount')
+            ->assertOk()
+            ->assertJsonPath('data.total', 3);
+    }
+
     public function test_turnover_returns_hired_and_terminated(): void
     {
         $this->actingAsManager();

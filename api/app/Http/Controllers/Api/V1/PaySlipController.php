@@ -10,6 +10,7 @@ use App\Services\PaySlipPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 
 class PaySlipController extends Controller
 {
@@ -95,7 +96,7 @@ class PaySlipController extends Controller
         return response()->json(['data' => $paySlip]);
     }
 
-    public function downloadPdf(Request $request, PaySlip $paySlip): Response
+    public function downloadPdf(Request $request, PaySlip $paySlip, PaySlipPdfGenerator $generator): Response
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -107,8 +108,13 @@ class PaySlipController extends Controller
             abort(404);
         }
 
-        $generator = new PaySlipPdfGenerator;
-        $pdfContent = $generator->generate($paySlip);
+        $disk = Storage::disk('local');
+
+        if ($paySlip->pdf_path !== null && $disk->exists($paySlip->pdf_path)) {
+            $pdfContent = $disk->get($paySlip->pdf_path);
+        } else {
+            $pdfContent = $generator->generate($paySlip);
+        }
 
         $filename = sprintf('bulletin_%s_%s.pdf',
             $paySlip->employee_id,

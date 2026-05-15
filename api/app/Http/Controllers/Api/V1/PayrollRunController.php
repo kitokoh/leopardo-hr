@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\Payroll\PayrollCalculator;
@@ -133,6 +134,10 @@ class PayrollRunController extends Controller
 
             $payrollRun->paySlips()->update(['status' => 'validated']);
         });
+
+        if (config('performance.payroll.queue_pdf_warmup', true)) {
+            WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
+        }
 
         return response()->json(['data' => $payrollRun->refresh()->loadCount('paySlips')]);
     }
