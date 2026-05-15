@@ -45,7 +45,7 @@ return [
 
     'pending_action_ttl_minutes' => (int) env('AI_PENDING_ACTION_TTL_MINUTES', 15),
 
-    /** Tools that mutate data and require explicit user confirmation before execution. */
+    // Tools that mutate data and require explicit user confirmation before execution.
     'write_tools' => [
         'create_absence',
         'approve_absence',
