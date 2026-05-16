@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.64] - 2026-05-16
+
+### DevOps — Worker deployment
+
+- Nouveau `DEPLOYMENT_GUIDE.md` : deploiement API Laravel, Render Background Worker, scheduler, variables critiques, Supervisor hors Render, checks post-deploy et rollback.
+- Plan 15 : A10 passe en DONE pour le setup worker documente.
+
 ## [4.16.63] - 2026-05-16
 
 ### API Contracts — Tracking / flotte

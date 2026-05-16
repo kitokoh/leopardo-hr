@@ -45,7 +45,7 @@
 | A7 | Test Feature chaine hierarchique org chart | Plan 02 | 0.5j | DONE |
 | A8 | Export CSV audit logs | Plan 02 | 0.5j | DONE |
 | A9 | `.pre-commit-config.yaml` | T-CI-06 | 0.5j | DONE |
-| A10 | Documenter worker deployment (DEPLOYMENT_GUIDE) | T-ARCH-20 | 0.5j | MEDIUM |
+| A10 | Documenter worker deployment (DEPLOYMENT_GUIDE) | T-ARCH-20 | 0.5j | DONE |
 | A11 | Documentation API tracking dans OpenAPI | T-TRACK-14 | 1j | DONE |
 
 ### Categorie B — Monitoring & Observabilite
@@ -208,6 +208,7 @@
 - Runbook alertes
 
 **Livraison incrementale 2026-05-16** :
+- **A10 DONE** : `DEPLOYMENT_GUIDE.md` cree pour API Render, workers queues, scheduler, Supervisor, checks post-deploy et rollback.
 - **A11 DONE** : contrats tracking/flotte documentes dans `api/openapi.yaml` (vehicules, affectations, trajets, alertes, maintenance, sync Traccar, overview/live-map/reports).
 
 ### Iteration 3 — Tests Feature manquants + pre-commit
