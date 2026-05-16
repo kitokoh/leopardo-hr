@@ -47,6 +47,8 @@ tags:
   - name: "Privacy"
   - name: "Kiosks"
   - name: "Cameras"
+  - name: "Vehicle Tracking"
+  - name: "Fleet Management"
 
 paths:
   /health:
@@ -2417,18 +2419,26 @@ paths:
           application/json:
             schema:
               type: object
-              required: [registration_number, brand, model]
+              required: [plate_number]
               properties:
-                registration_number:
+                plate_number:
                   type: string
                 brand:
                   type: string
+                  nullable: true
                 model:
                   type: string
+                  nullable: true
                 year:
                   type: integer
-                tracker_id:
-                  type: integer
+                  nullable: true
+                type:
+                  type: string
+                  enum: [car, van, truck, motorcycle, bus]
+                  nullable: true
+                fuel_type:
+                  type: string
+                  enum: [diesel, gasoline, electric, hybrid, lpg]
                   nullable: true
       responses:
         "201":
@@ -2471,12 +2481,17 @@ paths:
             schema:
               type: object
               properties:
-                registration_number:
+                plate_number:
                   type: string
                 brand:
                   type: string
+                  nullable: true
                 model:
                   type: string
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, maintenance, decommissioned]
       responses:
         "200":
           description: "Vehicule mis a jour"
@@ -2617,6 +2632,35 @@ paths:
         "200":
           description: "Vehicule desassigne"
 
+  /vehicles/{id}/assignments:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Historique des affectations conducteur"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Affectations du vehicule"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /vehicle-trips:
     get:
       tags: ["Vehicle Tracking"]
@@ -2626,6 +2670,33 @@ paths:
       responses:
         "200":
           description: "Liste paginee des trajets"
+
+  /vehicle-trips/{id}:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Detail d'un trajet"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detail trajet"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /vehicle-alerts:
     get:
@@ -2673,21 +2744,121 @@ paths:
           application/json:
             schema:
               type: object
-              required: [vehicle_id, type, description]
+              required: [vehicle_id, type, service_date]
               properties:
                 vehicle_id:
                   type: integer
                 type:
                   type: string
-                  enum: [preventive, corrective, inspection]
+                  enum: [oil_change, tire, brake, battery, inspection, repair, other]
                 description:
                   type: string
-                scheduled_at:
+                  nullable: true
+                service_date:
                   type: string
-                  format: date-time
+                  format: date
+                next_service_date:
+                  type: string
+                  format: date
+                  nullable: true
+                cost:
+                  type: number
+                  nullable: true
+                currency:
+                  type: string
+                  nullable: true
       responses:
         "201":
           description: "Maintenance planifiee"
+
+  /vehicle-maintenance/{id}:
+    put:
+      tags: ["Vehicle Tracking"]
+      summary: "Modifier une maintenance"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [oil_change, tire, brake, battery, inspection, repair, other]
+                description:
+                  type: string
+                  nullable: true
+                cost:
+                  type: number
+                  nullable: true
+                currency:
+                  type: string
+                  nullable: true
+                mileage_at_service:
+                  type: integer
+                  nullable: true
+                service_date:
+                  type: string
+                  format: date
+                next_service_date:
+                  type: string
+                  format: date
+                  nullable: true
+                next_service_mileage:
+                  type: integer
+                  nullable: true
+                provider:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Maintenance mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Error422"
+    delete:
+      tags: ["Vehicle Tracking"]
+      summary: "Supprimer une maintenance"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Maintenance supprimee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /tracking/sync-devices:
     post:
@@ -3014,6 +3185,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
+    Error422:
+      description: "Erreur de validation"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrorResponse"
     Validation422:
       description: "Erreur de validation"
       content:
@@ -3029,24 +3206,55 @@ components:
           type: integer
         company_id:
           type: integer
-        registration_number:
+        plate_number:
           type: string
         brand:
           type: string
+          nullable: true
         model:
           type: string
+          nullable: true
         year:
           type: integer
           nullable: true
-        tracker_id:
-          type: integer
+        type:
+          type: string
+          enum: [car, van, truck, motorcycle, bus]
+          nullable: true
+        vin:
+          type: string
+          nullable: true
+        fuel_type:
+          type: string
+          enum: [diesel, gasoline, electric, hybrid, lpg]
           nullable: true
         status:
           type: string
-          enum: [active, maintenance, inactive]
-        current_driver_id:
+          enum: [active, maintenance, decommissioned]
+        mileage:
           type: integer
           nullable: true
+        insurance_expiry:
+          type: string
+          format: date
+          nullable: true
+        technical_control_expiry:
+          type: string
+          format: date
+          nullable: true
+        traccar_unique_id:
+          type: string
+          nullable: true
+        traccar_device_id:
+          type: integer
+          nullable: true
+        assigned_driver_id:
+          type: integer
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
         created_at:
           type: string
           format: date-time
