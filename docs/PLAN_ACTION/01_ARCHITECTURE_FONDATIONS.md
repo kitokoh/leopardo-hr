@@ -88,7 +88,7 @@ L'API actuelle est en `/api/v1/`. Pour la stabilite long terme :
 ### Taches
 
 - [ ] **T-ARCH-09** : Ajouter le middleware `ApiVersion` qui lit le header Accept et resout la version
-- [ ] **T-ARCH-10** : Documenter la politique de deprecation dans `docs/api/VERSIONING.md`
+- [x] **T-ARCH-10** : Documenter la politique de deprecation dans `docs/api/VERSIONING.md` — **FAIT**
 
 ---
 
@@ -137,7 +137,7 @@ L'API actuelle est en `/api/v1/`. Pour la stabilite long terme :
 
 - [x] **T-ARCH-11** : Creer `.editorconfig` a la racine — **FAIT** (`.editorconfig` existe avec UTF-8, LF)
 - [x] **T-ARCH-12** : Ajouter `phpstan.neon` avec level 6 minimum pour les nouveaux modules — **FAIT** (`phpstan.neon` + `phpstan-baseline.neon` + CI diff-gate)
-- [ ] **T-ARCH-13** : Creer `CONVENTIONS.md` a la racine avec les regles ci-dessus
+- [x] **T-ARCH-13** : Creer `CONVENTIONS.md` a la racine avec les regles ci-dessus — **FAIT**
 
 ---
 
@@ -171,7 +171,7 @@ A activer uniquement en mode Schema (Enterprise). Pas pour le mode Shared.
 ### Taches
 
 - [x] **T-ARCH-14** : Creer la migration d'index de performance — **FAIT** (`2026_05_10_000008_add_performance_indexes.php`)
-- [ ] **T-ARCH-15** : Documenter la strategie de partitioning dans `docs/architecture/PARTITIONING.md`
+- [x] **T-ARCH-15** : Documenter la strategie de partitioning dans `docs/architecture/PARTITIONING.md` — **FAIT**
 - [x] **T-ARCH-16** : Ajouter des query scopes optimises sur les modeles — **FAIT** (scopes `active()`, `forPeriod()` trouves sur Contract, EmployeeLoan, Feature, Project, SalaryAdvance)
 
 ---
