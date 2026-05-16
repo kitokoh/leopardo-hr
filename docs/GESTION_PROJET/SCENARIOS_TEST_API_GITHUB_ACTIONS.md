@@ -119,6 +119,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Chevauchement de periodes refuse
 - Consultation historique des demandes par role
 - Employee ne peut pas valider sa propre demande sans permission speciale
+- Liste paginee `GET /api/v1/absences` expose pour le dashboard manager les champs derives `employee_name` et `type` (nom du type d'absence) en plus des relations `absence_type` / `absenceType`
 
 ### 8. Paie / finance
 
