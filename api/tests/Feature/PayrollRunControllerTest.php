@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
+use App\Models\PaySlipLine;
 use App\Services\Payroll\PayrollCalculator;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
 use Tests\Support\CreatesMvpSchema;
@@ -205,6 +209,65 @@ class PayrollRunControllerTest extends TestCase
 
     public function test_manager_can_validate_calculated_run_and_slips(): void
     {
+        Storage::fake('local');
+
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'calculated',
+        ]);
+        $slip = PaySlip::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'period_start' => $run->period_start,
+            'period_end' => $run->period_end,
+            'gross_salary' => 100000,
+            'total_deductions' => 25000,
+            'net_salary' => 75000,
+            'employer_contributions' => 12000,
+            'total_cost' => 112000,
+            'working_days' => 22,
+            'actual_days_worked' => 22,
+            'overtime_hours' => 0,
+            'status' => 'calculated',
+        ]);
+        PaySlipLine::query()->create([
+            'pay_slip_id' => $slip->id,
+            'name' => 'Salaire de base',
+            'type' => 'earning',
+            'base_amount' => 100000,
+            'rate' => 1,
+            'amount' => 100000,
+            'order' => 1,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/validate");
+
+        $response->assertOk();
+        $response->assertJsonPath('data.status', 'validated');
+        $this->assertDatabaseHas('pay_slips', [
+            'payroll_run_id' => $run->id,
+            'status' => 'validated',
+        ]);
+        $this->assertSame($manager->id, $run->fresh()->validated_by);
+
+        $slip->refresh();
+        $this->assertNotNull($slip->pdf_path);
+        Storage::disk('local')->assertExists((string) $slip->pdf_path);
+    }
+
+    public function test_validate_dispatches_pay_slip_pdf_warmup_job(): void
+    {
+        Queue::fake();
+
         $company = Company::factory()->create();
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $employee = Employee::factory()->create(['company_id' => $company->id]);
@@ -234,15 +297,11 @@ class PayrollRunControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/validate");
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/validate")->assertOk();
 
-        $response->assertOk();
-        $response->assertJsonPath('data.status', 'validated');
-        $this->assertDatabaseHas('pay_slips', [
-            'payroll_run_id' => $run->id,
-            'status' => 'validated',
-        ]);
-        $this->assertSame($manager->id, $run->fresh()->validated_by);
+        Queue::assertPushed(WarmPaySlipPdfPathsForPayrollRunJob::class, function (WarmPaySlipPdfPathsForPayrollRunJob $job) use ($run): bool {
+            return $job->payrollRunId === $run->id;
+        });
     }
 
     public function test_manager_can_cancel_draft_run_but_not_paid_run(): void

@@ -220,6 +220,7 @@
 **Cible** : D1, D2, D4, D5, K1, K3
 **Merge API attendu** : **PR #468** — **D1** cache tenant `GET /api/v1/reports/headcount`, **D2** job PDF bulletins post-validation (`WarmPaySlipPdfPathsForPayrollRunJob`), **K3** tests Feature ; arbitrages **D4/D5** documentes dans la PR. Branche de travail : `feat/plan15-iteration4-d1-d2-k3`.
 
+**Statut** : **COMPLETE** (2026-05-16)
 **Contenu** :
 - Redis cache endpoints read-heavy
 - Queue async calcul paie/PDF/notifs
@@ -230,6 +231,15 @@
 
 **Deja sur `main` (hors #468)** :
 - **K1** : `ApiVersionMiddleware` + limiter `api-plan` (`CHANGELOG` [4.16.56]).
+**Livraisons** :
+- **K1** (anterieur iteration 4, main referencee ici) : `ApiVersionMiddleware` + limiter `api-plan` apres `auth:sanctum` + `tenant`.
+- **D1** : cache tenant pour `GET /api/v1/reports/headcount` (`config/performance.php`, env `HR_REPORT_HEADCOUNT_CACHE_TTL`).
+- **D2** : job `WarmPaySlipPdfPathsForPayrollRunJob` apres validation paie (`PAYROLL_QUEUE_PDF_WARMUP`), PDF servis via `pdf_path` sur disque `local` quand present.
+- **K3** : tests Feature isolation headcount, dispatch queue + warmup fichier, PDF depuis fichier pre-genere.
+
+**Arbitrage / hors scope iteration 4** :
+- **D4** : l’API metier cliente repose sur **Sanctum** (tokens API / session SPA), sans flux JWT refresh dedie. Les JWT presents dans le depot concernent surtout les **tokens flux camera** (`CameraStreamTokenService`, TTL configurable via `config/cameras.php`). Une rotation refresh JWT pour l’auth principale releverait d’un chantier auth dedie (ex. PAT integrateurs ou passerelle JWT), pas de ce lot.
+- **D5** : chiffrement au repos Laravel (`casts` `encrypted`) deja applique aux champs sensibles critique **Employee** (`iban`, `bank_account`, `national_id`). Elargissement a d’autres tables ou audit registre RGPD = campagne securite dediee hors cloture fonctionnelle iteration 4.
 
 ### Iteration 5 — Monitoring production
 **Cible** : B1, B2, B3, B4
