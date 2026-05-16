@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.59] - 2026-05-16
+
+### API & Admin — Liste bulletins tenant (`GET /pay-slips`)
+
+- Nouveau : `GET /api/v1/pay-slips` — pagination manager, scope `company_id`, filtres optionnels `payroll_run_id` (404 si run hors tenant), `status` (`calculated|validated|sent`), `per_page` max 100 ; sans chargement des `lines` (evite N+1 SPA).
+- Paie (`PayrollView`) : onglet bulletins via cet endpoint (pages absorbées côté SPA) au lieu d'enchaîner un `GET /payroll-runs/{id}/pay-slips` par run.
+- Tests : `PaySlipControllerTest` couvre index, filtres, isolation tenant, 403 employé, 422 filtre status invalide.
+- OpenAPI : entrée `GET /pay-slips` documentée sous le tag Payrolls.
+
 ## [4.16.58] - 2026-05-16
 
 ### Admin-dashboard — Iteration 6 (lot paie / conges)

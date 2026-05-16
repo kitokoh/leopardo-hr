@@ -190,8 +190,9 @@
 
 ## Plan d'execution par iterations
 
-### Iteration 1 — Audit & documentation (ACTUELLE)
-**Branche** : `devin/1778781034-iteration1-audit-plans`
+### Iteration 1 — Audit & documentation
+**Statut** : **COMPLETE** (2026-05-14)
+**Branche historique** : `devin/1778781034-iteration1-audit-plans`
 **Contenu** :
 - Mise a jour de TOUS les fichiers PLAN_ACTION (01-14) : marquer `[x]` ce qui existe
 - Creation de ce document consolide (15_PLAN_EXECUTION_CONSOLIDE.md)
@@ -261,25 +262,23 @@
 
 ### Iteration 6 — Frontend admin dashboard (ecrans prioritaires)
 **Cible** : E10, E11, E1, E2
-**Avancement 2026-05-16** : premier lot alignement SPA — `front/admin-dashboard/src/views/payroll/PayrollView.vue` et `.../leaves/LeavesView.vue` sur les endpoints `/api/v1/payroll-runs`, `/pay-slips`, `/absences` (PUT approve/reject), `/leave-balances`, `/leave-policies`.
-**Statut** : **PRET A DEMARRER** — parallelisable avec l’attente de merge **#468** pour QA paie/API ; le SPA reste utilisable sans ce merge (fallback PDF synchrone).
+**Statut** : **COMPLETE** (perimetre MVP paie/conges admin, 2026-05-16)
 
-**Contenu** :
-- Composants partages (DataTable, MetricCard, etc.)
-- Layout navigation nouveaux modules
-- Ecrans paie et conges
+**Livraisons** :
+- SPA `PayrollView` : runs pagines, bulletins via **`GET /api/v1/pay-slips`** (plus de boucle N+1 par run), calcul/validation runs, resume `summary`, PDF blob authentifie, exports CSV.
+- SPA `LeavesView` : soldes/politiques, approve/reject reels, pagination absences (`CHANGELOG` [4.16.58]).
+- API : **`GET /api/v1/pay-slips`** liste manager tenant-scopee + tests Feature (`CHANGELOG` [4.16.59]).
+- Absences liste enrichie (`employee_name`, `type`) pour les tableaux manager.
+
+**Hors perimetre iteration 6 (backlog produit)** : E3–E9 (contrats, recrutement Kanban, formation, tracking carte, chat IA, rapports RH dedies SPA, audit/webhooks UI), perfectionnement layout E11/E10 au-dela des routes existantes.
 
 **Contexte repo** :
 - Code : `front/admin-dashboard/` ; router `src/router/index.js` (lazy imports par route — ne pas regresser).
 - Routes existantes : `/payroll` → `views/payroll/PayrollView.vue`, `/leaves` → `views/leaves/LeavesView.vue`.
-
-**Sequence conseillee** :
-1. **E11 / E10** — layout navigation + composants partages.
-2. **E1** — aligner paie sur API reelle (`/api/v1/payroll-runs`, pay-slips, PDF, exports).
-3. **E2** — aligner conges sur endpoints modules conges / policies exposes.
-
 ### Iteration 7+ — Mobile, vitrine, IA avancee, GTM
 **Cible** : Categories C, F, G, H, I, J, K, L
+**Statut** : **BACKLOG** — hors cloture « plan 15 MVP admin/API » ; suites dediees par categorie.
+
 **Contenu** :
 - Ecrans Flutter (bulletins, conges, notifs push)
 - Blog MDX, pricing, SEO
@@ -287,6 +286,18 @@
 - Good first issues, releases, community
 - Integrations tierces (SEPA, CNAS, ZKTeco)
 - GTM (cas clients, videos, prospection)
+
+---
+
+## Cloture plan 15 — declaration de perimetre (2026-05-16)
+
+Le **plan 15** est declare **livre pour son objectif consolide** : enchainement documentaire + renforts backend/tests/monitoring **deja merges**, iteration 6 **admin paie/conges** alignee API, endpoint **`GET /api/v1/pay-slips`** pour supporter le SPA sans dette N+1.
+
+**Inclus dans cette cloture** : iterations **1 a 6** (audit/docs, docs technique A1/A2/A4, tests/pre-commit iter. 3, securite-perf iter. 4 arbitree D4/D5, monitoring iter. 5 code + residu **B4** hors depot, admin MVP paie/conges iter. 6).
+
+**Exclus / backlog plan 15+** : iteration **7+** (categories **F–L**, mobile **G**, kiosk **H**, OSS **I**, GTM **J**, integrations **L**, IA avancee **C** hors socle deja livre), ecrans admin **E3–E9**, et toute tache uniquement operationnelle externe (**B4** sondes SaaS, runbooks etendus **B6**).
+
+Les lignes « 0% » ou « reste » du tableau synthese en tete de ce document restent valides pour **l’inventaire global** des plans 01–14 ; ils ne remettent pas en cause la **cloture fonctionnelle** du **lot plan 15** tel que decrit ci-dessus.
 
 ---
 
@@ -309,4 +320,4 @@
 - Les taches GTM/marketing (categorie J) sont non-code et peuvent etre parallelisees
 - Le score release readiness actuel est 86/100 ; les iterations 2-5 devraient le porter a 90/100
 - Priorite absolue : ce qui bloque le score 90/100 (tests, securite, monitoring, documentation)
-- Travail parallel : une branche preparation **iteration 6** (`front/admin-dashboard`) peut partir de `origin/main` pendant le merge **#468** ; rebaser ou fusionner `main` apres coup si conflits documentation
+- Iterations **1–6** sont cloturees cote plan 15 MVP admin/API ; poursuivre le backlog sous **iteration 7+** ou chantiers par categorie (F–L).
