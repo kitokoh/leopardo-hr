@@ -28,6 +28,87 @@ class PaySlipControllerTest extends TestCase
         parent::tearDown();
     }
 
+    public function test_manager_can_list_all_pay_slips_for_tenant(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        [, $slipA] = $this->payrollSlip($company, $employee);
+        $employeeB = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => fake()->unique()->safeEmail(),
+        ]);
+        [, $slipB] = $this->payrollSlip($company, $employeeB);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/pay-slips?per_page=10');
+
+        $response->assertOk()
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('meta.total', 2);
+
+        $ids = collect($response->json('data'))->pluck('id')->sort()->values()->all();
+        $this->assertSame([$slipA->id, $slipB->id], $ids);
+    }
+
+    public function test_manager_pay_slips_index_never_leaks_other_tenant(): void
+    {
+        [$companyA, $managerA, $employeeA] = $this->payrollActor();
+        [, $slipA] = $this->payrollSlip($companyA, $employeeA);
+        [$companyB, , $employeeB] = $this->payrollActor();
+        $this->payrollSlip($companyB, $employeeB);
+
+        Sanctum::actingAs($managerA);
+
+        $this->getJson('/api/v1/pay-slips?per_page=50')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $slipA->id);
+    }
+
+    public function test_manager_pay_slips_index_filters_by_payroll_run_and_status(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        [$runCalc] = $this->payrollSlip($company, $employee, ['status' => 'calculated']);
+        [$runVal, $slipVal] = $this->payrollSlip($company, $employee, [
+            'run_status' => 'validated',
+            'status' => 'validated',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/pay-slips?payroll_run_id='.$runVal->id.'&status=validated')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $slipVal->id);
+
+        $this->getJson('/api/v1/pay-slips?payroll_run_id='.$runCalc->id)
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    }
+
+    public function test_manager_pay_slips_index_returns_404_for_foreign_payroll_run(): void
+    {
+        [$companyA, $managerA] = $this->payrollActor();
+        [$companyB, , $employeeB] = $this->payrollActor();
+        [$runB] = $this->payrollSlip($companyB, $employeeB);
+
+        Sanctum::actingAs($managerA);
+
+        $this->getJson('/api/v1/pay-slips?payroll_run_id='.$runB->id)
+            ->assertNotFound();
+    }
+
+    public function test_pay_slips_index_rejects_invalid_status_filter(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/pay-slips?status=hack')
+            ->assertStatus(422);
+    }
+
     public function test_manager_can_list_pay_slips_for_own_payroll_run(): void
     {
         [$company, $manager, $employee] = $this->payrollActor();
@@ -145,6 +226,17 @@ class PaySlipControllerTest extends TestCase
         Sanctum::actingAs($employee);
 
         $this->getJson("/api/v1/payroll-runs/{$run->id}/pay-slips")
+            ->assertForbidden();
+    }
+
+    public function test_employee_cannot_list_global_pay_slips_index(): void
+    {
+        [$company, , $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/pay-slips')
             ->assertForbidden();
     }
 
