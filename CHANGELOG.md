@@ -2,6 +2,37 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.62] - 2026-05-16
+
+### Mobile Flutter — Bulletins employe via API reelle
+
+- Module RH (`Modules` > onglet bulletins) : les **employes non managers** chargent desormais **`GET /api/v1/me/pay-slips`** au lieu de l’endpoint legacy `/payrolls`.
+- Mapping PaySlip vers `PayrollRecord` (`period_start` → mois/annee, `total_deductions` → deductions).
+- Les **managers** conservent le flux historique `/payrolls` (creation / validation).
+
+## [4.16.61] - 2026-05-16
+
+### Vitrine web — Sitemap (SEO)
+
+- `GET /api/sitemap` inclut desormais **`/changelog`**, **`/privacy`** et **`/terms`** pour indexation coherente avec les routes publiques.
+
+## [4.16.60] - 2026-05-16
+
+### Vitrine web — Journal des versions public
+
+- Nouvelle route **`/changelog`** (`front/web`) : extrait editorialise des dernieres livraisons, hero localise (FR/EN/TR/AR), renvoi vers `CHANGELOG.md` pour l'historique complet.
+- Footer vitrine : liens reels vers **`/pricing`**, **`/changelog`**, **`/blog`**, **`/privacy`**, **`/terms`** (memes indices de sections pour toutes les locales).
+- Donnees statiques : `front/web/src/modules/vitrine/data/changelog-public.ts` (a synchroniser ponctuellement avec le changelog racine).
+
+## [4.16.59] - 2026-05-16
+
+### API & Admin — Liste bulletins tenant (`GET /pay-slips`)
+
+- Nouveau : `GET /api/v1/pay-slips` — pagination manager, scope `company_id`, filtres optionnels `payroll_run_id` (404 si run hors tenant), `status` (`calculated|validated|sent`), `per_page` max 100 ; sans chargement des `lines` (evite N+1 SPA).
+- Paie (`PayrollView`) : onglet bulletins via cet endpoint (pages absorbées côté SPA) au lieu d'enchaîner un `GET /payroll-runs/{id}/pay-slips` par run.
+- Tests : `PaySlipControllerTest` couvre index, filtres, isolation tenant, 403 employé, 422 filtre status invalide.
+- OpenAPI : entrée `GET /pay-slips` documentée sous le tag Payrolls.
+
 ## [4.16.58] - 2026-05-16
 
 ### Admin-dashboard — Iteration 6 (lot paie / conges)

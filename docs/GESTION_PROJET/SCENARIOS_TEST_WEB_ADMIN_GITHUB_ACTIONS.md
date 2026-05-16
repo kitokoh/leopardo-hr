@@ -80,7 +80,7 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 
 ### 8. Paie et conges (tenant manager)
 
-- La vue `/payroll` charge les runs via `GET /api/v1/payroll-runs` (pagination absorbee cote SPA), agrege les bulletins via `GET /api/v1/payroll-runs/{id}/pay-slips`, actions Calculer/Valider via POST calculate/validate
+- La vue `/payroll` charge les runs via `GET /api/v1/payroll-runs` (pagination absorbee cote SPA), les bulletins via `GET /api/v1/pay-slips` (pagination absorbee cote SPA ; evite un `pay-slips` par run), actions Calculer/Valider via POST calculate/validate
 - Le resume run utilise `GET /api/v1/payroll-runs/{id}/summary`
 - Le telechargement PDF bulletin passe par la session axios (`Authorization`) avec `responseType: blob`, pas par lien nu `/api/...`
 - Les exports CSV paie sont generes cote navigateur depuis les lignes chargees (pas de routes `/export/*` inventees)

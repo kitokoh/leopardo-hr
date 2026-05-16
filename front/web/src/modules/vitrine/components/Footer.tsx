@@ -5,15 +5,16 @@ import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
 function getFooterHref(sectionIndex: number, linkIndex: number): string {
-  if (sectionIndex === 2 && linkIndex === 0) {
-    return '/privacy'
+  const key = `${sectionIndex}-${linkIndex}`
+  const routes: Record<string, string> = {
+    '0-1': '/pricing',
+    '0-4': '/changelog',
+    '1-1': '/blog',
+    '2-0': '/privacy',
+    '2-1': '/terms',
   }
 
-  if (sectionIndex === 2 && linkIndex === 1) {
-    return '/terms'
-  }
-
-  return '#'
+  return routes[key] ?? '#'
 }
 
 export function Footer() {

@@ -14,6 +14,59 @@ use Illuminate\Support\Facades\Storage;
 
 class PaySlipController extends Controller
 {
+    /**
+     * Liste paginee des bulletins du tenant courant (manager).
+     * Evite le pattern N+1 "un GET pay-slips par run" cote SPA.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'payroll_run_id' => 'sometimes|nullable|integer',
+            'status' => 'sometimes|nullable|string|in:calculated,validated,sent',
+            'per_page' => 'sometimes|integer|min:1|max:100',
+        ]);
+
+        $query = PaySlip::query()
+            ->where('company_id', $actor->company_id)
+            ->with(['employee:id,first_name,last_name,email']);
+
+        if (! empty($validated['payroll_run_id'])) {
+            $runId = (int) $validated['payroll_run_id'];
+            $belongs = PayrollRun::query()
+                ->whereKey($runId)
+                ->where('company_id', $actor->company_id)
+                ->exists();
+            if (! $belongs) {
+                abort(404);
+            }
+            $query->where('payroll_run_id', $runId);
+        }
+
+        if (! empty($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
+
+        $perPage = $validated['per_page'] ?? 50;
+
+        $slips = $query->orderByDesc('period_start')->orderByDesc('id')->paginate($perPage);
+
+        return response()->json([
+            'data' => $slips->items(),
+            'meta' => [
+                'current_page' => $slips->currentPage(),
+                'last_page' => $slips->lastPage(),
+                'per_page' => $slips->perPage(),
+                'total' => $slips->total(),
+            ],
+        ]);
+    }
+
     public function indexForRun(Request $request, PayrollRun $payrollRun): JsonResponse
     {
         /** @var Employee $actor */

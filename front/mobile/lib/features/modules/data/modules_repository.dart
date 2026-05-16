@@ -142,6 +142,21 @@ class ModulesRepository {
     );
   }
 
+  Future<List<PayrollRecord>> listMyPaySlips({int perPage = 50}) async {
+    final response = await _apiClient.dio.get(
+      '/me/pay-slips',
+      queryParameters: {'per_page': perPage},
+    );
+    final items = response.data['data'] as List;
+    return items
+        .map(
+          (item) => PayrollRecord.fromMePaySlipJson(
+            (item as Map).cast<String, dynamic>(),
+          ),
+        )
+        .toList();
+  }
+
   Future<List<PayrollRecord>> listPayrolls({int perPage = 30}) async {
     final response = await _apiClient.dio.get(
       '/payrolls',
