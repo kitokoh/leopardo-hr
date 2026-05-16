@@ -237,4 +237,4 @@ $schedule->command('tracking:check-insurance')->dailyAt('08:00');
 - [x] **T-TRACK-11** : Tests Feature sync Traccar — **FAIT** (couvert dans VehicleControllerTest)
 - [x] **T-TRACK-12** : Tests Feature alertes et maintenance — **FAIT** (`tests/Feature/FleetControllerTest.php`)
 - [x] **T-TRACK-13** : Ajouter le middleware `module.tracking` (feature flag) — **FAIT** (config/tracking.php enabled flag)
-- [ ] **T-TRACK-14** : Documentation API tracking dans openapi/v1.yaml — **RESTE** (endpoints tracking a documenter dans OpenAPI)
+- [x] **T-TRACK-14** : Documentation API tracking dans `api/openapi.yaml` — **FAIT** (contrats vehicules, affectations, trajets, alertes, maintenance, sync Traccar et rapports flotte documentes)
