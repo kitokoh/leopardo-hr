@@ -46,7 +46,7 @@
 | A8 | Export CSV audit logs | Plan 02 | 0.5j | DONE |
 | A9 | `.pre-commit-config.yaml` | T-CI-06 | 0.5j | DONE |
 | A10 | Documenter worker deployment (DEPLOYMENT_GUIDE) | T-ARCH-20 | 0.5j | MEDIUM |
-| A11 | Documentation API tracking dans OpenAPI | T-TRACK-14 | 1j | HIGH |
+| A11 | Documentation API tracking dans OpenAPI | T-TRACK-14 | 1j | DONE |
 
 ### Categorie B — Monitoring & Observabilite
 
@@ -207,6 +207,9 @@
 - Documentation OpenAPI tracking + IA
 - Runbook alertes
 
+**Livraison incrementale 2026-05-16** :
+- **A11 DONE** : contrats tracking/flotte documentes dans `api/openapi.yaml` (vehicules, affectations, trajets, alertes, maintenance, sync Traccar, overview/live-map/reports).
+
 ### Iteration 3 — Tests Feature manquants + pre-commit
 **Cible** : A6, A7, A8, A9, C3
 **Statut** : COMPLETE (A6-A9, C3) — PR #463 + lot iteration 3 pre-commit/IA write (2026-05-15).
@@ -283,6 +286,7 @@
 - **2026-05-16 — Lot vitrine F** : page publique **`/changelog`** + liens footer (`/pricing`, `/blog`, changelog) dans `front/web`.
 - **2026-05-16 — Lot SEO F4 partiel** : sitemap dynamique enrichi (`/changelog`, `/privacy`, `/terms`).
 - **2026-05-16 — Lot mobile G1 partiel** : liste bulletins employe via **`GET /api/v1/me/pay-slips`** dans l’onglet paie des modules (`ModulesRepository` / `payrollsProvider`).
+- **2026-05-16 — Lot API contracts A11** : tracking/flotte aligne OpenAPI pour preparer admin/mobile/kiosk et integrateurs.
 
 **Contenu** :
 - Ecrans Flutter (bulletins, conges, notifs push)
