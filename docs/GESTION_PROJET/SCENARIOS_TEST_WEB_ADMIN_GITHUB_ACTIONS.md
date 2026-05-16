@@ -78,6 +78,15 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 - les actions approuver/rejeter envoient `PATCH /api/v1/platform/company-requests/{id}` avec notes internes
 - une demande deja traitee ne propose plus d'action de decision
 
+### 8. Paie et conges (tenant manager)
+
+- La vue `/payroll` charge les runs via `GET /api/v1/payroll-runs` (pagination absorbee cote SPA), agrege les bulletins via `GET /api/v1/payroll-runs/{id}/pay-slips`, actions Calculer/Valider via POST calculate/validate
+- Le resume run utilise `GET /api/v1/payroll-runs/{id}/summary`
+- Le telechargement PDF bulletin passe par la session axios (`Authorization`) avec `responseType: blob`, pas par lien nu `/api/...`
+- Les exports CSV paie sont generes cote navigateur depuis les lignes chargees (pas de routes `/export/*` inventees)
+- La vue `/leaves` charge `GET /api/v1/absences`, `GET /api/v1/leave-balances`, `GET /api/v1/leave-policies`
+- Approbation / refus utilisent `PUT /api/v1/absences/{id}/approve` et `PUT .../reject` avec corps `{ rejected_reason }`
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
@@ -98,7 +107,7 @@ En revanche, elles doivent etre conservees automatiquement en cas d'echec Playwr
 
 ## Extension i18n enterprise
 
-### 8. Locales, dictionnaires et direction
+### Locales enterprise (extension)
 
 - Les dictionnaires generes dans `front/admin-dashboard/src/i18n/locales/` restent synchronises avec `shared/i18n/locales/`
 - Une locale variante (`fr-CA`, `en-GB`, `ar-SA`) est normalisee sans casser le rendu

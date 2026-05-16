@@ -37,7 +37,10 @@ class AbsenceController extends Controller
                 'created_at',
                 'updated_at',
             ])
-            ->with('absenceType:id,name,code,deducts_leave');
+            ->with([
+                'absenceType:id,name,code,deducts_leave',
+                'employee:id,first_name,last_name',
+            ]);
 
         // RBAC: employee sees only own absences
         if (! $actor->isManager()) {
@@ -172,6 +175,12 @@ class AbsenceController extends Controller
                 'code' => $absence->absenceType->code,
                 'deducts_leave' => $absence->absenceType->deducts_leave,
             ] : null,
+            'employee_name' => $absence->relationLoaded('employee') && $absence->employee !== null
+                ? trim(($absence->employee->first_name ?? '').' '.($absence->employee->last_name ?? ''))
+                : null,
+            'type' => $absence->relationLoaded('absenceType') && $absence->absenceType !== null
+                ? $absence->absenceType->name
+                : null,
             'start_date' => $absence->start_date?->toDateString(),
             'end_date' => $absence->end_date?->toDateString(),
             'days_count' => $absence->days_count,
