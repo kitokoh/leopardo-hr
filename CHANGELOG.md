@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.62] - 2026-05-16
+
+### Mobile Flutter — Bulletins employe via API reelle
+
+- Module RH (`Modules` > onglet bulletins) : les **employes non managers** chargent desormais **`GET /api/v1/me/pay-slips`** au lieu de l’endpoint legacy `/payrolls`.
+- Mapping PaySlip vers `PayrollRecord` (`period_start` → mois/annee, `total_deductions` → deductions).
+- Les **managers** conservent le flux historique `/payrolls` (creation / validation).
+
 ## [4.16.61] - 2026-05-16
 
 ### Vitrine web — Sitemap (SEO)

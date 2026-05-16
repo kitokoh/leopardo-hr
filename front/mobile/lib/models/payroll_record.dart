@@ -47,6 +47,26 @@ class PayrollRecord {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  /// JSON item from `GET /api/v1/me/pay-slips` (PaySlip resource).
+  factory PayrollRecord.fromMePaySlipJson(Map<String, dynamic> json) {
+    final periodStart =
+        DateTime.tryParse(json['period_start']?.toString() ?? '') ??
+        DateTime.utc(1970);
+    return PayrollRecord(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      employeeId: (json['employee_id'] as num?)?.toInt() ?? 0,
+      periodMonth: periodStart.month,
+      periodYear: periodStart.year,
+      status: (json['status'] ?? 'validated').toString(),
+      grossSalary: _parseDouble(json['gross_salary']),
+      deductions: _parseDouble(json['total_deductions']),
+      netSalary: _parseDouble(json['net_salary']),
+      pdfPath: json['pdf_path'] as String?,
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
+      updatedAt: DateTime.tryParse(json['updated_at']?.toString() ?? ''),
+    );
+  }
+
   factory PayrollRecord.fromJson(Map<String, dynamic> json) {
     final rawEmployee = json['employee'];
     return PayrollRecord(

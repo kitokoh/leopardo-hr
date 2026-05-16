@@ -79,7 +79,8 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 
 ### 6) Paie / compensation (si module activé)
 
-- Consultation bulletins par Employee
+- Consultation bulletins par Employee via **`GET /api/v1/me/pay-slips`** (Modules RH > bulletins ; mapping vers `PayrollRecord`)
+- Managers : liste / actions legacy **`/payrolls`** (creation, validation) conserve le comportement historique
 - Vue synthèse paie pour Finance/HR
 - Détail composantes (brut, retenues, net) affiché sans erreur
 - Blocage d’accès paie pour rôles non autorisés
