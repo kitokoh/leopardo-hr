@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
+import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/modules/data/modules_repository.dart';
 import 'package:leopardo_rh/models/app_notification.dart';
 import 'package:leopardo_rh/models/evaluation.dart';
@@ -26,7 +27,13 @@ final salaryAdvancesProvider = FutureProvider.autoDispose<List<SalaryAdvance>>((
 final payrollsProvider = FutureProvider.autoDispose<List<PayrollRecord>>((
   ref,
 ) async {
-  return ref.watch(modulesRepositoryProvider).listPayrolls();
+  final repo = ref.watch(modulesRepositoryProvider);
+  final employee = ref.watch(authProvider).employee;
+  final isManager = employee?.isManager == true;
+  if (!isManager) {
+    return repo.listMyPaySlips();
+  }
+  return repo.listPayrolls();
 });
 
 final notificationsProvider = FutureProvider.autoDispose<List<AppNotification>>(
