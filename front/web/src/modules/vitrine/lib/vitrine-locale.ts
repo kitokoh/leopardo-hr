@@ -91,6 +91,13 @@ type LandingCopy = {
     primary: string
     secondary: string
   }
+  changelog: {
+    badge: string
+    title: string
+    titleHighlight: string
+    subtitle: string
+    repoNote: string
+  }
   footer: {
     description: string
     sections: Array<{ title: string; links: string[] }>
@@ -190,6 +197,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primary: 'Commencer gratuitement',
       secondary: 'Demander une demo',
     },
+    changelog: {
+      badge: 'Produit',
+      title: 'Journal des',
+      titleHighlight: 'versions',
+      subtitle: 'Dernieres livraisons majeures de la plateforme (extrait editorialise).',
+      repoNote: 'Historique detaille : fichier CHANGELOG.md a la racine du depot.',
+    },
     footer: {
       description: "La solution moderne et intelligente pour gerer vos ressources humaines a l'ere de l'IA.",
       sections: [
@@ -283,6 +297,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Launch your 14-day free trial. No credit card required. Production setup in under five minutes.',
       primary: 'Start for free',
       secondary: 'Request a demo',
+    },
+    changelog: {
+      badge: 'Product',
+      title: 'Release',
+      titleHighlight: 'notes',
+      subtitle: 'Major platform updates (curated excerpt).',
+      repoNote: 'Full history: CHANGELOG.md at the repository root.',
     },
     footer: {
       description: 'A modern HR platform for payroll, attendance, workforce visibility, and AI-assisted operations.',
@@ -378,6 +399,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primary: 'Ucretsiz basla',
       secondary: 'Demo iste',
     },
+    changelog: {
+      badge: 'Urun',
+      title: 'Surum',
+      titleHighlight: 'gunlugu',
+      subtitle: 'Onemli platform guncellemeleri (ozet).',
+      repoNote: 'Tam gecmis: depodaki CHANGELOG.md dosyasi.',
+    },
     footer: {
       description: 'Bordro, devam takibi, saha gorunurlugu ve yapay zeka destekli operasyonlar icin modern IK platformu.',
       sections: [
@@ -471,6 +499,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'ابدأ تجربة مجانية لمدة 14 يوما بدون بطاقة ائتمان. التشغيل يتم خلال اقل من خمس دقائق.',
       primary: 'ابدأ مجانا',
       secondary: 'اطلب عرضا',
+    },
+    changelog: {
+      badge: 'المنتج',
+      title: 'سجل',
+      titleHighlight: 'الاصدارات',
+      subtitle: 'اهم تحديثات المنصة (مختارات تحريرية).',
+      repoNote: 'السجل الكامل في ملف CHANGELOG.md في جذر المستودع.',
     },
     footer: {
       description: 'منصة حديثة للموارد البشرية للرواتب والحضور والرؤية التشغيلية مع قدرات ذكاء اصطناعي.',
