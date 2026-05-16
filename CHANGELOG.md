@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.65] - 2026-05-16
+
+### Gouvernance — Statut Plan 15
+
+- Plan 15 / Plan 01 : realignement des statuts A1, A2 et A4 en DONE, car `CONVENTIONS.md`, `docs/api/VERSIONING.md` et `docs/architecture/PARTITIONING.md` sont deja presents sur `main`.
+
 ## [4.16.64] - 2026-05-16
 
 ### DevOps — Worker deployment
