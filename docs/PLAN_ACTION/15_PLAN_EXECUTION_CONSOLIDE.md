@@ -261,6 +261,7 @@
 
 ### Iteration 6 — Frontend admin dashboard (ecrans prioritaires)
 **Cible** : E10, E11, E1, E2
+**Avancement 2026-05-16** : premier lot alignement SPA — `front/admin-dashboard/src/views/payroll/PayrollView.vue` et `.../leaves/LeavesView.vue` sur les endpoints `/api/v1/payroll-runs`, `/pay-slips`, `/absences` (PUT approve/reject), `/leave-balances`, `/leave-policies`.
 **Statut** : **PRET A DEMARRER** — parallelisable avec l’attente de merge **#468** pour QA paie/API ; le SPA reste utilisable sans ce merge (fallback PDF synchrone).
 
 **Contenu** :
