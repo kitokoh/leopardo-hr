@@ -235,29 +235,27 @@ function mapRunRow(raw) {
   }
 }
 
-async function fetchPaySlipsForRuns(runRows) {
-  const aggregated = []
-  for (const run of runRows) {
-    try {
-      const res = await api.get(`/v1/payroll-runs/${run.id}/pay-slips`, { params: { per_page: 500 } })
-      const batch = res.data.data || []
-      const ref = run.reference
-      for (const slip of batch) {
-        aggregated.push({
-          id: slip.id,
-          payroll_run_reference: ref,
-          employee_name: slipEmployeeLabel(slip),
-          reference: `SLIP-${slip.id}`,
-          period: formatPeriod(slip.period_start, slip.period_end),
-          net_pay: slip.net_salary ?? 0,
-          created_at: slip.created_at ? String(slip.created_at).slice(0, 10) : '-',
-        })
-      }
-    } catch {
-      /* ignore erreurs par run */
-    }
+async function fetchAllPaySlips() {
+  const perPage = 100
+  const first = await api.get('/v1/pay-slips', { params: { per_page: perPage, page: 1 } })
+  const meta = first.data.meta || {}
+  let raw = [...(first.data.data || [])]
+  const lastPage = Math.min(Number(meta.last_page) || 1, 50)
+
+  for (let page = 2; page <= lastPage; page++) {
+    const res = await api.get('/v1/pay-slips', { params: { per_page: perPage, page } })
+    raw.push(...(res.data.data || []))
   }
-  return aggregated
+
+  return raw.map(slip => ({
+    id: slip.id,
+    payroll_run_reference: slip.payroll_run_id != null ? `RUN-${slip.payroll_run_id}` : '-',
+    employee_name: slipEmployeeLabel(slip),
+    reference: `SLIP-${slip.id}`,
+    period: formatPeriod(slip.period_start, slip.period_end),
+    net_pay: slip.net_salary ?? 0,
+    created_at: slip.created_at ? String(slip.created_at).slice(0, 10) : '-',
+  }))
 }
 
 function currentMonthBounds() {
@@ -278,7 +276,7 @@ async function fetchData() {
     const rawRuns = await fetchAllPayrollRuns()
     runs.value = rawRuns.map(mapRunRow)
 
-    slips.value = await fetchPaySlipsForRuns(runs.value)
+    slips.value = await fetchAllPaySlips()
 
     stats.value = {
       runs_this_month: runs.value.filter(runStartsThisMonth).length,

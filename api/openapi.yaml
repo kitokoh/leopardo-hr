@@ -642,6 +642,48 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
+  /pay-slips:
+    get:
+      tags: ["Payrolls"]
+      summary: "Lister les bulletins du tenant (manager)"
+      description: |
+        Liste paginee des bulletins sans lignes de detail (`pay_slip_lines`).
+        Filtre `payroll_run_id` restreint au tenant courant (404 si le run n'appartient pas a l'entreprise).
+      parameters:
+        - name: payroll_run_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [calculated, validated, sent]
+        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /employees:
     get:
       tags: ["Employees"]

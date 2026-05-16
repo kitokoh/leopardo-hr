@@ -407,12 +407,13 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Couverture Feature : liste scopee tenant, creation manager, calcul via contrat `PayrollCalculator`, validation run + bulletins + dispatch warmup PDF + fichier local `pdf_path`, annulation draft, refus paid et refus d'acces cross-tenant.
 
 ### Pay Slips
-- `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager)
+- `GET /api/v1/pay-slips` liste paginee tous les bulletins du tenant (manager), filtres optionnels `payroll_run_id` (404 si run hors tenant), `status` (`calculated|validated|sent`), sans lignes de detail — utilise par le SPA admin pour eviter un GET par run
+- `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager), avec lignes chargees (legacy / detail par run)
 - `GET /api/v1/pay-slips/{id}` detail bulletin avec lignes (manager ou employe concerne)
 - `GET /api/v1/pay-slips/{id}/pdf` telecharge le PDF du bulletin (manager ou employe proprietaire) ; si `pdf_path` pointe vers un fichier present sur le disque `local`, le fichier est servi sinon generation synchrone DomPDF
 - `POST /api/v1/payroll-runs/{id}/send-slips` exige un run valide/paye et marque les bulletins emailable comme envoyes
-- RBAC : manager voit tout, employe voit uniquement ses bulletins
-- Couverture Feature : liste par run scopee tenant, self-service validated/sent uniquement, detail proprietaire, PDF protege, send-slips bloque avant validation et refus employe sur liste manager.
+- RBAC : manager voit tout, employe voit uniquement ses bulletins ; `GET /pay-slips` refuse les employes (403)
+- Couverture Feature : index tenant + filtres + isolation + 422 status invalide, liste par run scopee tenant, self-service validated/sent uniquement, detail proprietaire, PDF protege, send-slips bloque avant validation et refus employe sur liste manager.
 
 ### Self-service
 - `GET /api/v1/me/pay-slips` retourne les bulletins valides/envoyes de l'employe connecte
@@ -646,6 +647,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 ## Paie avancee — PDF, Bank Export, Billing (Post-Sprint)
 
 ### Bulletin de paie PDF
+- `GET /api/v1/pay-slips` liste paginee les bulletins du tenant (manager), filtres `payroll_run_id` / `status`
 - `GET /api/v1/pay-slips/{id}/pdf` telecharger le bulletin en PDF (manager ou employe proprietaire)
 - `GET /api/v1/me/pay-slips/{id}/pdf` telecharger son propre bulletin (self-service)
 - Template Blade adapte par pays (DZ, MA, TN, FR, TR, SN) avec mentions legales
