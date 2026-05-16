@@ -1,6 +1,6 @@
 # 15 — Plan d'execution consolide
 
-> Derniere mise a jour : 2026-05-14
+> Derniere mise a jour : 2026-05-16
 > Ce document recense uniquement les taches RESTANTES apres l'audit exhaustif du code vs les plans d'action 01-14.
 > Resultat de l'audit : **~85% des taches documentees sont deja implementees**. Le code contient 395+ fichiers PHP, 60+ tests Feature, 18 workflows CI, 11 specs E2E Playwright.
 
@@ -218,6 +218,8 @@
 
 ### Iteration 4 — Securite & performance
 **Cible** : D1, D2, D4, D5, K1, K3
+**Merge API attendu** : **PR #468** — **D1** cache tenant `GET /api/v1/reports/headcount`, **D2** job PDF bulletins post-validation (`WarmPaySlipPdfPathsForPayrollRunJob`), **K3** tests Feature ; arbitrages **D4/D5** documentes dans la PR. Branche de travail : `feat/plan15-iteration4-d1-d2-k3`.
+
 **Statut** : **COMPLETE** (2026-05-16)
 **Contenu** :
 - Redis cache endpoints read-heavy
@@ -227,6 +229,8 @@
 - Rate limiting API par plan
 - Test isolation multi-tenant complet
 
+**Deja sur `main` (hors #468)** :
+- **K1** : `ApiVersionMiddleware` + limiter `api-plan` (`CHANGELOG` [4.16.56]).
 **Livraisons** :
 - **K1** (anterieur iteration 4, main referencee ici) : `ApiVersionMiddleware` + limiter `api-plan` apres `auth:sanctum` + `tenant`.
 - **D1** : cache tenant pour `GET /api/v1/reports/headcount` (`config/performance.php`, env `HR_REPORT_HEADCOUNT_CACHE_TTL`).
@@ -239,19 +243,40 @@
 
 ### Iteration 5 — Monitoring production
 **Cible** : B1, B2, B3, B4
+**Statut** : **COMPLETE backend** (`CHANGELOG` [4.16.55], 2026-05-14) ; **residu ops** : **B4** (sondes externes hors depot).
+
 **Contenu** :
 - Sentry APM traces
 - AlertService + Slack webhook
 - Slow query logging
 - UptimeRobot/BetterUptime
 
+**Livraisons code** :
+- **B1** : `SentryContextMiddleware` (prepend groupe API, `bootstrap/app.php`) + `config/sentry.php`.
+- **B2** : `App\Notifications\SlackAlertNotification` + `services.slack.monitoring_webhook`.
+- **B3** : commande `monitor:slow-queries` planifiee toutes les 15 minutes (`bootstrap/app.php`).
+- **B4** : configuration UptimeRobot / Better Stack Uptime + check-list `docs/GESTION_PROJET/RUNBOOK_OBSERVABILITY.md`.
+
+**Backlog** : B5 Telescope (dev), B6 runbook alertes etendu (lien `RUNBOOK_OPERATIONS.md` → observabilite).
+
 ### Iteration 6 — Frontend admin dashboard (ecrans prioritaires)
 **Cible** : E10, E11, E1, E2
 **Avancement 2026-05-16** : premier lot alignement SPA — `front/admin-dashboard/src/views/payroll/PayrollView.vue` et `.../leaves/LeavesView.vue` sur les endpoints `/api/v1/payroll-runs`, `/pay-slips`, `/absences` (PUT approve/reject), `/leave-balances`, `/leave-policies`.
+**Statut** : **PRET A DEMARRER** — parallelisable avec l’attente de merge **#468** pour QA paie/API ; le SPA reste utilisable sans ce merge (fallback PDF synchrone).
+
 **Contenu** :
 - Composants partages (DataTable, MetricCard, etc.)
 - Layout navigation nouveaux modules
 - Ecrans paie et conges
+
+**Contexte repo** :
+- Code : `front/admin-dashboard/` ; router `src/router/index.js` (lazy imports par route — ne pas regresser).
+- Routes existantes : `/payroll` → `views/payroll/PayrollView.vue`, `/leaves` → `views/leaves/LeavesView.vue`.
+
+**Sequence conseillee** :
+1. **E11 / E10** — layout navigation + composants partages.
+2. **E1** — aligner paie sur API reelle (`/api/v1/payroll-runs`, pay-slips, PDF, exports).
+3. **E2** — aligner conges sur endpoints modules conges / policies exposes.
 
 ### Iteration 7+ — Mobile, vitrine, IA avancee, GTM
 **Cible** : Categories C, F, G, H, I, J, K, L
@@ -284,3 +309,4 @@
 - Les taches GTM/marketing (categorie J) sont non-code et peuvent etre parallelisees
 - Le score release readiness actuel est 86/100 ; les iterations 2-5 devraient le porter a 90/100
 - Priorite absolue : ce qui bloque le score 90/100 (tests, securite, monitoring, documentation)
+- Travail parallel : une branche preparation **iteration 6** (`front/admin-dashboard`) peut partir de `origin/main` pendant le merge **#468** ; rebaser ou fusionner `main` apres coup si conflits documentation
