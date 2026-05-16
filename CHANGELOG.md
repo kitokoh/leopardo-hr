@@ -1,6 +1,14 @@
-# CHANGELOG - LEOPARDO RH 
+﻿# CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
+
+## [4.16.58] - 2026-05-16
+
+### Admin-dashboard — Iteration 6 (lot paie / conges)
+
+- Paie (`PayrollView`) : chargement pagine des runs, bulletins agrégés par run (`pay-slips`), calcul/validation reels, résumé run (`summary`), PDF via axios blob authentifié, export CSV navigateur (sans routes `/export/*` fictives).
+- Congés (`LeavesView`) : soldes et politiques via API reelles ; approbation `PUT /absences/{id}/approve`, refus `PUT .../reject` avec `rejected_reason` ; pagination absences absorbée côté SPA.
+- API : liste absences enrichie (`employee_name`, `type`) pour les tableaux manager.
 
 ## [4.16.57] - 2026-05-16
 
