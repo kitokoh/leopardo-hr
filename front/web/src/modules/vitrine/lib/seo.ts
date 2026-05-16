@@ -167,6 +167,19 @@ export const pageMetadata = {
     ],
     ogImage: `${siteUrl}/og/blog.png`,
   },
+
+  changelog: {
+    title: "Journal des versions | Leopardo RH",
+    description:
+      "Decouvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
+    keywords: [
+      "changelog Leopardo",
+      "nouveautes RH",
+      "releases logiciel paie",
+      "notes de version",
+    ],
+    ogImage: `${siteUrl}/og/blog.png`,
+  },
 };
 
 /**

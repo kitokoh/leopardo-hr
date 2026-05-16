@@ -279,6 +279,9 @@
 **Cible** : Categories C, F, G, H, I, J, K, L
 **Statut** : **BACKLOG** — hors cloture « plan 15 MVP admin/API » ; suites dediees par categorie.
 
+**Lots demarres (incrementaux)** :
+- **2026-05-16 — Lot vitrine F** : page publique **`/changelog`** + liens footer (`/pricing`, `/blog`, changelog) dans `front/web`.
+
 **Contenu** :
 - Ecrans Flutter (bulletins, conges, notifs push)
 - Blog MDX, pricing, SEO
