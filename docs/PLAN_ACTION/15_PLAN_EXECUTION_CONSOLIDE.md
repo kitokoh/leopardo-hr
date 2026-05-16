@@ -36,10 +36,10 @@
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| A1 | Creer `CONVENTIONS.md` | T-ARCH-13 | 0.5j | HIGH |
-| A2 | Creer `docs/api/VERSIONING.md` | T-ARCH-10 | 0.5j | HIGH |
+| A1 | Creer `CONVENTIONS.md` | T-ARCH-13 | 0.5j | DONE |
+| A2 | Creer `docs/api/VERSIONING.md` | T-ARCH-10 | 0.5j | DONE |
 | A3 | Creer middleware `ApiVersion` | T-ARCH-09 | 1j | DONE |
-| A4 | Creer `docs/architecture/PARTITIONING.md` | T-ARCH-15 | 0.5j | MEDIUM |
+| A4 | Creer `docs/architecture/PARTITIONING.md` | T-ARCH-15 | 0.5j | DONE |
 | A5 | DDD migration progressive controllers existants | T-ARCH-02 | 5j+ | LOW |
 | A6 | Tests Feature rapport RH dedies | T-MOD-H4 | 1j | DONE |
 | A7 | Test Feature chaine hierarchique org chart | Plan 02 | 0.5j | DONE |
@@ -208,6 +208,7 @@
 - Runbook alertes
 
 **Livraison incrementale 2026-05-16** :
+- **A1/A2/A4 DONE** : `CONVENTIONS.md`, `docs/api/VERSIONING.md` et `docs/architecture/PARTITIONING.md` existent sur `main` ; statut Plan 15 realigne.
 - **A10 DONE** : `DEPLOYMENT_GUIDE.md` cree pour API Render, workers queues, scheduler, Supervisor, checks post-deploy et rollback.
 - **A11 DONE** : contrats tracking/flotte documentes dans `api/openapi.yaml` (vehicules, affectations, trajets, alertes, maintenance, sync Traccar, overview/live-map/reports).
 
