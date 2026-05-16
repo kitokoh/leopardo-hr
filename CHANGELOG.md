@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.61] - 2026-05-16
+
+### Vitrine web — Sitemap (SEO)
+
+- `GET /api/sitemap` inclut desormais **`/changelog`**, **`/privacy`** et **`/terms`** pour indexation coherente avec les routes publiques.
+
 ## [4.16.60] - 2026-05-16
 
 ### Vitrine web — Journal des versions public
