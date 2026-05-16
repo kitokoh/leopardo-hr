@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.60] - 2026-05-16
+
+### Vitrine web — Journal des versions public
+
+- Nouvelle route **`/changelog`** (`front/web`) : extrait editorialise des dernieres livraisons, hero localise (FR/EN/TR/AR), renvoi vers `CHANGELOG.md` pour l'historique complet.
+- Footer vitrine : liens reels vers **`/pricing`**, **`/changelog`**, **`/blog`**, **`/privacy`**, **`/terms`** (memes indices de sections pour toutes les locales).
+- Donnees statiques : `front/web/src/modules/vitrine/data/changelog-public.ts` (a synchroniser ponctuellement avec le changelog racine).
+
 ## [4.16.59] - 2026-05-16
 
 ### API & Admin — Liste bulletins tenant (`GET /pay-slips`)
