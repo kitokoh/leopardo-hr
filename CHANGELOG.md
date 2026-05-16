@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.63] - 2026-05-16
+
+### API Contracts — Tracking / flotte
+
+- OpenAPI : documentation complete des contrats tracking/flotte exposes par `routes/modules/tracking.php`.
+- Alignement spec/code : `plate_number`, enums vehicules, maintenance reelle (`oil_change|tire|brake|battery|inspection|repair|other`), pagination `data/meta`, sync Traccar et rapports flotte.
+- Ajout des routes manquantes dans la spec : `GET /vehicles/{id}/assignments`, `GET /vehicle-trips/{id}`, `PUT/DELETE /vehicle-maintenance/{id}`.
+
 ## [4.16.62] - 2026-05-16
 
 ### Mobile Flutter — Bulletins employe via API reelle

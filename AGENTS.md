@@ -58,6 +58,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les vues admin-dashboard ne doivent pas contenir de `catch {}` vide : `Web Lint` bloque avec `no-empty`. Ajouter au minimum un `console.warn(...)` explicite ou un etat d'erreur utilisateur selon le contexte.
 - Les tests Feature qui declenchent `AbsenceRequested`, `AbsenceApproved`, `AbsenceRejected`, `PayrollValidated` ou d'autres evenements metier peuvent passer par `WebhookListener`. Le schema de test MVP doit donc creer `webhook_endpoints` et `webhook_deliveries`, sinon PostgreSQL echoue avec `relation "webhook_endpoints" does not exist` avant meme les assertions.
 - Les contrats plateforme recents doivent rester dans `api/openapi.yaml`. Le workflow `OpenAPI CI` lance Redocly uniquement quand la spec ou son workflow changent ; corriger la spec plutot que laisser les frontends deviner les shapes `data` / `meta`.
+- Depuis v4.16.63, les contrats tracking/flotte sont aussi dans `api/openapi.yaml`. Pour toute evolution de `routes/modules/tracking.php`, garder la spec alignee sur les vrais champs Eloquent (`plate_number`, `traccar_*`, `assigned_driver_id`) et non sur les anciens noms generiques (`registration_number`, `tracker_id`).
 
 ### Audit 2026-05-13 - IA, RBAC et tenant runtime
 
