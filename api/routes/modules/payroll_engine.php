@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\V1\BankExportController;
-use App\Http\Controllers\Api\V1\EmployeeImportController;
 use App\Http\Controllers\Api\V1\PayrollRunController;
 use App\Http\Controllers\Api\V1\PaySlipController;
 use App\Http\Controllers\Api\V1\SalaryComponentController;
@@ -69,7 +68,4 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
     Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
 
-    // Employee Import
-    Route::post('/employees/import', [EmployeeImportController::class, 'import']);
-    Route::get('/employees/import-template', [EmployeeImportController::class, 'template']);
 });
