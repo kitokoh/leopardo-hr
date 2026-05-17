@@ -21,7 +21,7 @@ class PlanningController extends Controller
         ]);
 
         $actor = $request->user();
-        $companyId = (int) $actor->company_id;
+        $companyId = $actor->company_id;
         $weekStart = $request->input('week_start', Carbon::now()->startOfWeek()->toDateString());
 
         $result = $this->optimizer->optimizeWeeklyPlanning($companyId, $weekStart);
@@ -32,7 +32,7 @@ class PlanningController extends Controller
     public function shiftRebalancing(Request $request): JsonResponse
     {
         $actor = $request->user();
-        $companyId = (int) $actor->company_id;
+        $companyId = $actor->company_id;
 
         $result = $this->optimizer->suggestShiftRebalancing($companyId);
 
