@@ -7,7 +7,9 @@ use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class EmployeeImportController extends Controller
 {
@@ -48,7 +50,7 @@ class EmployeeImportController extends Controller
         $allowedColumns = [
             'first_name', 'last_name', 'email', 'phone',
             'national_id', 'date_of_birth', 'gender',
-            'address', 'city', 'country',
+            'address_line', 'postal_code', 'nationality',
             'contract_start', 'contract_type', 'status',
         ];
 
@@ -80,14 +82,17 @@ class EmployeeImportController extends Controller
                 $rowValidator = Validator::make($row, [
                     'first_name' => 'required|string|max:100',
                     'last_name' => 'required|string|max:100',
-                    'email' => 'required|email|max:255',
+                    'email' => 'required|email|max:150',
                     'phone' => 'nullable|string|max:30',
                     'national_id' => 'nullable|string|max:50',
                     'date_of_birth' => 'nullable|date',
-                    'gender' => 'nullable|in:male,female,other',
+                    'gender' => 'nullable|in:M,F',
+                    'nationality' => 'nullable|string|size:2',
+                    'address_line' => 'nullable|string|max:255',
+                    'postal_code' => 'nullable|string|max:20',
                     'contract_start' => 'nullable|date',
-                    'contract_type' => 'nullable|in:cdi,cdd,stage,freelance',
-                    'status' => 'nullable|in:active,archived',
+                    'contract_type' => 'nullable|in:CDI,CDD,Stage,Interim,Consultant',
+                    'status' => 'nullable|in:active,suspended,archived',
                 ]);
 
                 if ($rowValidator->fails()) {
@@ -100,8 +105,7 @@ class EmployeeImportController extends Controller
                     continue;
                 }
 
-                $exists = DB::table('employees')
-                    ->where('company_id', $companyId)
+                $exists = Employee::where('company_id', $companyId)
                     ->where('email', $row['email'])
                     ->exists();
 
@@ -112,18 +116,20 @@ class EmployeeImportController extends Controller
                     continue;
                 }
 
-                $insertData = ['company_id' => $companyId, 'created_at' => now(), 'updated_at' => now()];
+                $fillData = ['company_id' => $companyId];
                 foreach ($allowedColumns as $col) {
                     if (isset($row[$col]) && $row[$col] !== '') {
-                        $insertData[$col] = $row[$col];
+                        $fillData[$col] = $row[$col];
                     }
                 }
 
-                if (! isset($insertData['status'])) {
-                    $insertData['status'] = 'active';
+                if (! isset($fillData['status'])) {
+                    $fillData['status'] = 'active';
                 }
 
-                DB::table('employees')->insert($insertData);
+                $fillData['password_hash'] = Hash::make(Str::random(32));
+
+                Employee::create($fillData);
                 $imported++;
             }
 
@@ -149,8 +155,18 @@ class EmployeeImportController extends Controller
 
     public function template(): JsonResponse
     {
-        $headers = ['first_name', 'last_name', 'email', 'phone', 'national_id', 'date_of_birth', 'gender', 'contract_start', 'contract_type', 'status'];
-        $example = ['Jean', 'Dupont', 'jean.dupont@example.com', '+213555000000', 'NID123456', '1990-01-15', 'male', '2026-01-01', 'cdi', 'active'];
+        $headers = [
+            'first_name', 'last_name', 'email', 'phone',
+            'national_id', 'date_of_birth', 'gender',
+            'address_line', 'postal_code', 'nationality',
+            'contract_start', 'contract_type', 'status',
+        ];
+        $example = [
+            'Jean', 'Dupont', 'jean.dupont@example.com', '+213555000000',
+            'NID123456', '1990-01-15', 'M',
+            '12 Rue Didouche Mourad', '16000', 'DZ',
+            '2026-01-01', 'CDI', 'active',
+        ];
 
         $csv = implode(',', $headers)."\n".implode(',', $example)."\n";
 
