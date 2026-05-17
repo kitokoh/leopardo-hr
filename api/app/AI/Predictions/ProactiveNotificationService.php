@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\AI\Predictions;
 
 use Carbon\CarbonInterface;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ProactiveNotificationService
 {
@@ -64,7 +66,7 @@ class ProactiveNotificationService
                 'title' => 'Contrat expire dans '.$daysLeft.' jours',
                 'message' => $firstName.' '.$lastName.' — renouvellement ou fin a planifier.',
                 'action_url' => '/contracts',
-                'entity_id' => (int) $contract->id,
+                'entity_id' => $this->intId($contract->id),
             ];
         }
     }
@@ -78,11 +80,18 @@ class ProactiveNotificationService
             ->join('employees', 'contracts.employee_id', '=', 'employees.id')
             ->where('contracts.company_id', $companyId)
             ->where('contracts.status', 'active')
-            ->whereNotNull('contracts.trial_end_date')
-            ->whereBetween('contracts.trial_end_date', [now(), now()->addDays(14)])
+            ->when(
+                Schema::hasColumn('contracts', 'trial_end_date'),
+                fn (Builder $query): Builder => $query->whereNotNull('contracts.trial_end_date')
+                    ->whereBetween('contracts.trial_end_date', [now(), now()->addDays(14)]),
+                fn (Builder $query): Builder => $query->whereNotNull('contracts.probation_end_date')
+                    ->whereBetween('contracts.probation_end_date', [now(), now()->addDays(14)]),
+            )
             ->select([
                 'contracts.id',
-                'contracts.trial_end_date',
+                Schema::hasColumn('contracts', 'trial_end_date')
+                    ? 'contracts.trial_end_date'
+                    : DB::raw('contracts.probation_end_date as trial_end_date'),
                 'employees.first_name',
                 'employees.last_name',
             ])
@@ -101,9 +110,18 @@ class ProactiveNotificationService
                 'title' => 'Periode d\'essai termine dans '.$daysLeft.' jours',
                 'message' => $firstName.' '.$lastName.' — evaluation a confirmer.',
                 'action_url' => '/contracts',
-                'entity_id' => (int) $contract->id,
+                'entity_id' => $this->intId($contract->id),
             ];
         }
+    }
+
+    private function intId(mixed $id): int
+    {
+        if (is_int($id)) {
+            return $id;
+        }
+
+        return is_numeric($id) ? (int) $id : 0;
     }
 
     private function daysUntil(mixed $date): int
@@ -123,8 +141,8 @@ class ProactiveNotificationService
         $count = DB::table('employees')
             ->where('company_id', $companyId)
             ->where('status', 'active')
-            ->whereNotNull('birth_date')
-            ->whereRaw('EXTRACT(MONTH FROM birth_date) = ? AND EXTRACT(DAY FROM birth_date) BETWEEN ? AND ?', [
+            ->whereNotNull('date_of_birth')
+            ->whereRaw('EXTRACT(MONTH FROM date_of_birth) = ? AND EXTRACT(DAY FROM date_of_birth) BETWEEN ? AND ?', [
                 now()->month,
                 now()->day,
                 now()->addDays(7)->day,
