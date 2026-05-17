@@ -56,8 +56,8 @@ class ProactiveNotificationService
             $notifications[] = [
                 'type' => 'contract_expiring',
                 'severity' => $severity,
-                'title' => 'Contrat expire dans ' . $daysLeft . ' jours',
-                'message' => $contract->first_name . ' ' . $contract->last_name . ' — renouvellement ou fin a planifier.',
+                'title' => 'Contrat expire dans '.$daysLeft.' jours',
+                'message' => $contract->first_name.' '.$contract->last_name.' — renouvellement ou fin a planifier.',
                 'action_url' => '/contracts',
                 'entity_id' => $contract->id,
             ];
@@ -89,8 +89,8 @@ class ProactiveNotificationService
             $notifications[] = [
                 'type' => 'trial_ending',
                 'severity' => 'warning',
-                'title' => 'Periode d\'essai termine dans ' . $daysLeft . ' jours',
-                'message' => $contract->first_name . ' ' . $contract->last_name . ' — evaluation a confirmer.',
+                'title' => 'Periode d\'essai termine dans '.$daysLeft.' jours',
+                'message' => $contract->first_name.' '.$contract->last_name.' — evaluation a confirmer.',
                 'action_url' => '/contracts',
                 'entity_id' => $contract->id,
             ];
@@ -106,7 +106,7 @@ class ProactiveNotificationService
             ->where('company_id', $companyId)
             ->where('status', 'active')
             ->whereNotNull('birth_date')
-            ->whereRaw("EXTRACT(MONTH FROM birth_date) = ? AND EXTRACT(DAY FROM birth_date) BETWEEN ? AND ?", [
+            ->whereRaw('EXTRACT(MONTH FROM birth_date) = ? AND EXTRACT(DAY FROM birth_date) BETWEEN ? AND ?', [
                 now()->month,
                 now()->day,
                 now()->addDays(7)->day,
@@ -117,7 +117,7 @@ class ProactiveNotificationService
             $notifications[] = [
                 'type' => 'birthdays',
                 'severity' => 'info',
-                'title' => $count . ' anniversaire(s) cette semaine',
+                'title' => $count.' anniversaire(s) cette semaine',
                 'message' => 'N\'oubliez pas de souhaiter un bon anniversaire a vos collaborateurs.',
                 'action_url' => '/employees',
                 'entity_id' => null,
@@ -141,7 +141,7 @@ class ProactiveNotificationService
             $notifications[] = [
                 'type' => 'pending_approvals',
                 'severity' => $pendingCount > 5 ? 'warning' : 'info',
-                'title' => $pendingCount . ' demande(s) en attente depuis 3+ jours',
+                'title' => $pendingCount.' demande(s) en attente depuis 3+ jours',
                 'message' => 'Des demandes de conges attendent votre validation.',
                 'action_url' => '/leaves',
                 'entity_id' => null,
@@ -166,7 +166,7 @@ class ProactiveNotificationService
             $notifications[] = [
                 'type' => 'overdue_training',
                 'severity' => 'warning',
-                'title' => $overdueCount . ' inscription(s) formation non completee(s)',
+                'title' => $overdueCount.' inscription(s) formation non completee(s)',
                 'message' => 'Des formations sont terminees mais les inscriptions ne sont pas cloturees.',
                 'action_url' => '/training',
                 'entity_id' => null,
@@ -192,7 +192,7 @@ class ProactiveNotificationService
             $notifications[] = [
                 'type' => 'low_leave_balance',
                 'severity' => 'info',
-                'title' => $lowBalanceCount . ' employe(s) avec solde conges faible',
+                'title' => $lowBalanceCount.' employe(s) avec solde conges faible',
                 'message' => 'Certains collaborateurs ont 2 jours ou moins de conges restants.',
                 'action_url' => '/leaves',
                 'entity_id' => null,
