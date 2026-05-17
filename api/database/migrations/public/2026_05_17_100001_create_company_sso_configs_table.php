@@ -16,7 +16,7 @@ return new class extends Migration
 
         Schema::create('company_sso_configs', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('company_id')->constrained()->cascadeOnDelete();
             $table->string('provider', 20); // saml, oidc
             $table->jsonb('config');
             $table->boolean('is_active')->default(false);
