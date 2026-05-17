@@ -703,6 +703,25 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Les reponses compressees portent `Content-Encoding: gzip` et `Vary: Accept-Encoding`
 - Les clients sans `Accept-Encoding: gzip` recoivent la reponse non compressees
 
+
+### Rapports RH avances (Iteration 8)
+- `GET /api/v1/reports/headcount` retourne l'effectif total et la repartition par departement et par statut
+- `GET /api/v1/reports/absenteeism` retourne le taux d'absenteisme, jours totaux, duree moyenne et repartition par type pour la periode donnee
+- `GET /api/v1/reports/turnover` retourne le taux de turnover pour la periode donnee
+- `GET /api/v1/reports/overtime` retourne les heures supplementaires totales, nombre d'employes concernes et repartition par departement
+- `GET /api/v1/reports/payroll-summary` retourne la masse salariale (brut, net, charges patronales, nombre de bulletins)
+- `GET /api/v1/reports/recruitment-pipeline` retourne les candidatures par etape du pipeline de recrutement
+- `GET /api/v1/reports/training-completion` retourne le taux de completion des formations et les inscriptions par statut
+- `GET /api/v1/reports/demographics` retourne la repartition demographique (age, genre, anciennete)
+- `GET /api/v1/reports/cost-analysis` retourne l'analyse des couts RH par departement
+- `GET /api/v1/reports/loan-summary` retourne l'encours et les remboursements de prets employes
+- Tous les rapports sont scopes au `company_id` de l'acteur et reservees aux managers
+
+### Indexes performance etendus (D6)
+- La migration `2026_05_17_000001_add_extended_performance_indexes` ajoute des indexes PostgreSQL sur les colonnes filtrees des tables contracts, training_courses, training_sessions, training_enrollments, job_postings, applicants, audit_logs et webhook_endpoints
+- Les indexes sont crees avec `CREATE INDEX CONCURRENTLY IF NOT EXISTS` et sont idempotents
+- L'index partiel `idx_contracts_end_date` filtre sur `status = 'active'` pour optimiser les alertes d'expiration
+
 ### Audit logs UI (E9 - Iteration 9)
 - `GET /api/v1/audit-logs` retourne les logs d'audit pagines, scopes au `company_id` de l'acteur
 - `GET /api/v1/audit-logs/export?format=csv` exporte les logs d'audit au format CSV
