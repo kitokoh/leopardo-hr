@@ -94,11 +94,12 @@
   </style>
 </head>
 <body>
-  <div class="app">
+  <a href="#identifier" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Aller au formulaire de pointage</a>
+  <div class="app" role="main" aria-label="Borne de pointage ZKTeco">
     <div class="eyebrow">ZKTeco Door Kiosk</div>
     <h1 id="companyName">Chargement...</h1>
     <p id="locationLabel">Initialisation de la borne d entree...</p>
-    <div class="pill"><span id="syncDot" class="dot"></span><span id="syncLabel">Verification de l etat reseau...</span></div>
+    <div class="pill" role="status" aria-live="polite"><span id="syncDot" class="dot" aria-hidden="true"></span><span id="syncLabel">Verification de l etat reseau...</span></div>
 
     <div class="grid">
       <section class="card">
@@ -113,11 +114,11 @@
         </select>
 
         <div class="actions">
-          <button class="primary" id="checkInButton">Pointer entree</button>
-          <button class="secondary" id="checkOutButton">Pointer sortie</button>
+          <button class="primary" id="checkInButton" aria-label="Pointer entree">Pointer entree</button>
+          <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Pointer sortie</button>
         </div>
 
-        <div id="statusBox" class="status">Pret a recevoir un pointage.</div>
+        <div id="statusBox" class="status" role="status" aria-live="polite" aria-atomic="true">Pret a recevoir un pointage.</div>
       </section>
 
       <aside class="card">
