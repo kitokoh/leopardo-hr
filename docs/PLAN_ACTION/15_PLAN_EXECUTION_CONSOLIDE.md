@@ -76,7 +76,7 @@
 | C11 | Notifications proactives IA | T-IA-29 | 2j | LOW |
 | C12 | Prediction turnover | T-IA-30 | 3j | LOW |
 | C13 | Prediction absenteisme | T-IA-31 | 2j | LOW |
-| C14 | Optimisation planning | T-IA-32 | 3j | LOW |
+| C14 | Optimisation planning | T-IA-32 | 3j | DONE |
 | C15 | Dashboard predictif | T-IA-33 | 2j | LOW |
 
 ### Categorie D — Architecture & Performance (Plan 01 + 14)
@@ -95,8 +95,8 @@
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| E1 | Ecrans paie (structures, runs, bulletins, export) | T-WEB-03 | 3j | HIGH |
-| E2 | Ecrans conges (politiques, soldes, approbations) | T-WEB-04 | 2j | HIGH |
+| E1 | Ecrans paie (structures, runs, bulletins, export) | T-WEB-03 | 3j | DONE |
+| E2 | Ecrans conges (politiques, soldes, approbations) | T-WEB-04 | 2j | DONE |
 | E3 | Ecrans contrats (liste, detail, alertes) | T-WEB-05 | 2j | DONE |
 | E4 | Ecrans recrutement (pipeline Kanban) | T-WEB-06 | 3j | DONE |
 | E5 | Ecrans formation (catalogue, sessions, suivi) | T-WEB-07 | 2j | DONE |
@@ -104,19 +104,19 @@
 | E7 | Widget chat IA | T-WEB-09 | 2j | LOW |
 | E8 | Ecrans rapports RH | T-WEB-10 | 2j | DONE |
 | E9 | Ecrans audit + webhooks | T-WEB-11 | 1j | DONE |
-| E10 | Composants partages (DataTable, MetricCard) | T-WEB-02 | 1j | HIGH |
-| E11 | Layout navigation nouveaux modules | T-WEB-01 | 1j | HIGH |
+| E10 | Composants partages (DataTable, MetricCard) | T-WEB-02 | 1j | DONE |
+| E11 | Layout navigation nouveaux modules | T-WEB-01 | 1j | DONE |
 
 ### Categorie F — Vitrine Web (Plan 06)
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| F1 | Systeme blog MDX | T-VITRINE-01 | 2j | MEDIUM |
-| F2 | Templates BlogList/BlogPost | T-VITRINE-02 | 1j | MEDIUM |
-| F3 | Page Pricing publique | T-VITRINE-03 | 1j | HIGH |
-| F4 | SEO (sitemap, robots, schema.org) | T-VITRINE-05 | 1j | MEDIUM |
-| F5 | 5 premiers articles blog | T-VITRINE-06 | 3j | MEDIUM |
-| F6 | Page changelog publique | T-VITRINE-07 | 0.5j | LOW |
+| F1 | Systeme blog MDX | T-VITRINE-01 | 2j | DONE |
+| F2 | Templates BlogList/BlogPost | T-VITRINE-02 | 1j | DONE |
+| F3 | Page Pricing publique | T-VITRINE-03 | 1j | DONE |
+| F4 | SEO (sitemap, robots, schema.org) | T-VITRINE-05 | 1j | DONE |
+| F5 | 5 premiers articles blog | T-VITRINE-06 | 3j | DONE |
+| F6 | Page changelog publique | T-VITRINE-07 | 0.5j | DONE |
 | F7 | Formulaire newsletter | T-VITRINE-08 | 0.5j | DONE |
 
 ### Categorie G — Mobile Flutter (Plan 06)

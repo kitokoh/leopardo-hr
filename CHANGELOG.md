@@ -2,6 +2,21 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.72] - 2026-05-17
+
+### Feat — Iteration 12 : E1/E2/E10/E11 completion, C14 planning optimization, WCAG corrections
+
+- Nouveau : onglet "Structures salariales" dans PayrollView (E1 complet — structures + runs + bulletins + export).
+- Nouveau : `MetricCard.vue` — composant partage avec tendance, formatage devise/pourcentage (E10).
+- Nouveau : `ReportsView.vue` — ecran rapports RH avec MetricCard KPIs et onglets (effectifs, absenteisme, turnover, heures supp., masse salariale) (E8).
+- Nouveau : routes `/reports` et navigation sidebar pour rapports RH et journal d'audit.
+- Nouveau : `PlanningOptimizer.php` — service IA optimisation planning hebdomadaire avec couverture departement, detection conflits, recommandations et score (C14).
+- Nouveau : `PlanningController.php` — endpoints `GET /v1/planning/weekly-optimization` et `GET /v1/planning/shift-rebalancing`.
+- Nouveau : `PlanningOptimizationTest.php` — tests Feature planning.
+- WCAG : `role="alert"` sur notifications toast, `aria-sort` sur DataTable triable, `type="search"` + `aria-label` sur champ recherche, `caption` sr-only optionnel.
+- Plan 15 : E1, E2, E10, E11, C14, F1-F6 passes en DONE.
+- Sidebar admin : ajout liens rapports RH et journal d'audit.
+
 ## [4.16.71] - 2026-05-17
 
 ### Feat — Iteration 9 : Audit UI, good first issues, release prep

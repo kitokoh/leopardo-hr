@@ -77,6 +77,8 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Payroll/billing sensitive data | `BillingControllerTest`, payroll integration tests, `SensitiveRateLimitTest` | Add role matrix tests for payroll engine manager roles. |
 | Attendance manager scope | `AttendanceAnomaliesTest`, `AttendanceMonthlyReportTest`, attendance CRUD tests | Add department/supervisor positive-scope tests where policies mature. |
 
+| Planning optimization endpoints | `PlanningOptimizationTest` | Scoped to `company_id` via tenant middleware; auth required. |
+
 ## Change Rule
 
 Any PR adding or moving protected routes must update this matrix, the matching scenario registry, and at least one Feature/security test when the allowed role set changes.
