@@ -144,7 +144,7 @@ class PlanningOptimizer
 
         foreach ($departmentCoverage as $dept => $info) {
             if ($info['status'] === 'critical') {
-                $coverageRate = (float) $info['coverage_rate'];
+                $coverageRate = $this->floatValue($info['coverage_rate'] ?? 0);
                 $conflicts[] = [
                     'type' => 'low_coverage',
                     'department' => $dept,
@@ -183,13 +183,13 @@ class PlanningOptimizer
 
         foreach ($departmentCoverage as $dept => $info) {
             if ($info['status'] === 'critical') {
-                $coverageRate = (float) $info['coverage_rate'];
+                $coverageRate = $this->floatValue($info['coverage_rate'] ?? 0);
                 $recommendations[] = [
                     'priority' => 'high',
                     'action' => "Renforcer l'equipe $dept cette semaine (couverture {$coverageRate}%).",
                 ];
             } elseif ($info['status'] === 'warning') {
-                $coverageRate = (float) $info['coverage_rate'];
+                $coverageRate = $this->floatValue($info['coverage_rate'] ?? 0);
                 $recommendations[] = [
                     'priority' => 'medium',
                     'action' => "Surveiller la couverture de $dept ({$coverageRate}%).",
@@ -233,5 +233,14 @@ class PlanningOptimizer
         $department = $employee->department;
 
         return $department instanceof Department ? $department->name : 'Non affecte';
+    }
+
+    private function floatValue(mixed $value): float
+    {
+        if (is_int($value) || is_float($value) || is_numeric($value)) {
+            return (float) $value;
+        }
+
+        return 0.0;
     }
 }
