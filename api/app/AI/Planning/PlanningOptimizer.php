@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\AI\Planning;
 
-use App\Models\Employee;
 use App\Models\Absence;
 use App\Models\Contract;
-use Illuminate\Support\Collection;
+use App\Models\Employee;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class PlanningOptimizer
 {
@@ -39,7 +39,7 @@ class PlanningOptimizer
         $recommendations = $this->generateRecommendations($departmentCoverage, $conflicts, $expiringContracts);
 
         return [
-            'week' => $start->toDateString() . ' - ' . $end->toDateString(),
+            'week' => $start->toDateString().' - '.$end->toDateString(),
             'total_employees' => $employees->count(),
             'total_absences' => $absences->count(),
             'department_coverage' => $departmentCoverage,
@@ -72,14 +72,14 @@ class PlanningOptimizer
                     'department' => $dept,
                     'current_size' => $size,
                     'suggestion' => 'sureffectif',
-                    'detail' => "Le departement $dept a $size employes, superieur a 1.5x la moyenne (" . round($avgSize) . ").",
+                    'detail' => 'Le departement '.$dept.' a '.$size.' employes, superieur a 1.5x la moyenne ('.round($avgSize).').',
                 ];
             } elseif ($size < $avgSize * 0.5 && $size > 0) {
                 $suggestions[] = [
                     'department' => $dept,
                     'current_size' => $size,
                     'suggestion' => 'sous-effectif',
-                    'detail' => "Le departement $dept a seulement $size employes, inferieur a 0.5x la moyenne (" . round($avgSize) . ").",
+                    'detail' => 'Le departement '.$dept.' a seulement '.$size.' employes, inferieur a 0.5x la moyenne ('.round($avgSize).').',
                 ];
             }
         }

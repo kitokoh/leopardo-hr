@@ -12,9 +12,7 @@ use Illuminate\Support\Carbon;
 
 class PlanningController extends Controller
 {
-    public function __construct(private readonly PlanningOptimizer $optimizer)
-    {
-    }
+    public function __construct(private readonly PlanningOptimizer $optimizer) {}
 
     public function weeklyOptimization(Request $request): JsonResponse
     {

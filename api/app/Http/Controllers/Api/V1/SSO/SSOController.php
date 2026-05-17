@@ -31,7 +31,7 @@ class SSOController extends Controller
             abort(403);
         }
 
-        $sso = $this->ssoService->getCompanySSO($actor->company_id);
+        $sso = $this->ssoService->getCompanySSO((int) $actor->company_id);
 
         return response()->json([
             'data' => [
@@ -60,7 +60,7 @@ class SSOController extends Controller
         ]);
 
         $config = $this->ssoService->configureSSO(
-            $actor->company_id,
+            (int) $actor->company_id,
             $validated['provider'],
             $validated,
         );
@@ -79,7 +79,7 @@ class SSOController extends Controller
             abort(403);
         }
 
-        $this->ssoService->disableSSO($actor->company_id);
+        $this->ssoService->disableSSO((int) $actor->company_id);
 
         return response()->json([
             'message' => 'SSO desactive.',
