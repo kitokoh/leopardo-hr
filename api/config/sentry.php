@@ -11,11 +11,14 @@ return [
         // Guard against boolean-like values ("1", "true", "0", "false") that
         // crash Symfony OptionsResolver with "The option dsn with value 1 is invalid".
         if ($dsn === null || $dsn === '' || $dsn === '0' || $dsn === 'false') {
+
             return null;
         }
         if (filter_var($dsn, FILTER_VALIDATE_URL) === false) {
+
             return null;
         }
+
         return $dsn;
     })(),
 
