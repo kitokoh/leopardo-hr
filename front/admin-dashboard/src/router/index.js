@@ -204,6 +204,15 @@ const routes = [
           title: 'Exports & Rapports',
           icon: 'ArrowDownTrayIcon'
         }
+      },
+      {
+        path: '/audit',
+        name: 'audit',
+        component: () => import('@/views/audit/AuditLogsView.vue'),
+        meta: {
+          title: 'Journal d\'audit',
+          icon: 'ShieldCheckIcon'
+        }
       }
     ]
   },
