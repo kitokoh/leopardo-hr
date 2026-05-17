@@ -80,12 +80,12 @@
             <!-- Notifications dropdown -->
             <div
               v-if="showNotifications"
-              class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700 focus:outline-none"
               @click.stop
             >
-              <div class="px-4 py-2 border-b border-gray-200">
+              <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-sm font-medium text-gray-900">Notifications</h3>
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
                   <button
                     @click="realtimeStore.markAllNotificationsAsRead()"
                     class="text-xs text-indigo-600 hover:text-indigo-500"
@@ -100,8 +100,8 @@
                   v-for="notification in realtimeStore.recentNotifications"
                   :key="notification.id"
                   :class="[
-                    'px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100',
-                    !notification.read ? 'bg-blue-50' : ''
+                    'px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700',
+                    !notification.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                   ]"
                   @click="markAsRead(notification.id)"
                 >
