@@ -11,7 +11,7 @@ class ProactiveNotificationService
     /**
      * @return list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>
      */
-    public function getNotifications(int $companyId): array
+    public function getNotifications(string $companyId): array
     {
         $notifications = [];
 
@@ -34,7 +34,7 @@ class ProactiveNotificationService
     /**
      * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
-    private function checkExpiringContracts(int $companyId, array &$notifications): void
+    private function checkExpiringContracts(string $companyId, array &$notifications): void
     {
         $expiring = DB::table('contracts')
             ->join('employees', 'contracts.employee_id', '=', 'employees.id')
@@ -71,7 +71,7 @@ class ProactiveNotificationService
     /**
      * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
-    private function checkTrialPeriodEnding(int $companyId, array &$notifications): void
+    private function checkTrialPeriodEnding(string $companyId, array &$notifications): void
     {
         $trials = DB::table('contracts')
             ->join('employees', 'contracts.employee_id', '=', 'employees.id')
@@ -108,7 +108,7 @@ class ProactiveNotificationService
     /**
      * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
-    private function checkBirthdaysThisWeek(int $companyId, array &$notifications): void
+    private function checkBirthdaysThisWeek(string $companyId, array &$notifications): void
     {
         $count = DB::table('employees')
             ->where('company_id', $companyId)
@@ -136,7 +136,7 @@ class ProactiveNotificationService
     /**
      * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
-    private function checkPendingApprovals(int $companyId, array &$notifications): void
+    private function checkPendingApprovals(string $companyId, array &$notifications): void
     {
         $pendingCount = DB::table('absences')
             ->join('employees', 'absences.employee_id', '=', 'employees.id')
@@ -160,7 +160,7 @@ class ProactiveNotificationService
     /**
      * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
-    private function checkOverdueTraining(int $companyId, array &$notifications): void
+    private function checkOverdueTraining(string $companyId, array &$notifications): void
     {
         $overdueCount = DB::table('training_enrollments')
             ->join('training_sessions', 'training_enrollments.training_session_id', '=', 'training_sessions.id')
@@ -185,7 +185,7 @@ class ProactiveNotificationService
     /**
      * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
-    private function checkLowLeaveBalances(int $companyId, array &$notifications): void
+    private function checkLowLeaveBalances(string $companyId, array &$notifications): void
     {
         $lowBalanceCount = DB::table('leave_balances')
             ->join('employees', 'leave_balances.employee_id', '=', 'employees.id')

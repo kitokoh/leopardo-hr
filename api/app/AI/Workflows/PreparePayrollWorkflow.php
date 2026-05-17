@@ -14,7 +14,7 @@ class PreparePayrollWorkflow
     /**
      * @return array{status: string, summary: array<string, mixed>, steps: array<int, array{step: string, status: string, detail: string}>}
      */
-    public function execute(int $companyId, string $periodStart, string $periodEnd): array
+    public function execute(string $companyId, string $periodStart, string $periodEnd): array
     {
         $steps = [];
 

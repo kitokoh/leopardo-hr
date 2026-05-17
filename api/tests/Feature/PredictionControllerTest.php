@@ -6,13 +6,13 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class PredictionControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private Company $company;
 
@@ -23,6 +23,7 @@ class PredictionControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create();
 
@@ -36,6 +37,12 @@ class PredictionControllerTest extends TestCase
             'company_id' => $this->company->id,
             'role' => 'employee',
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     public function test_turnover_prediction_requires_manager_role(): void

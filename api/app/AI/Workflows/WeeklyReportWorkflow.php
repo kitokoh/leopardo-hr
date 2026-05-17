@@ -14,7 +14,7 @@ class WeeklyReportWorkflow
     /**
      * @return array{period: array{start: string, end: string}, headcount: array<string, mixed>, absences: array<string, mixed>, anomalies: array<int, array<string, mixed>>, summary: string}
      */
-    public function execute(int $companyId, ?string $weekStart = null): array
+    public function execute(string $companyId, ?string $weekStart = null): array
     {
         $start = $weekStart
             ? Carbon::parse($weekStart)->startOfWeek()
@@ -64,7 +64,7 @@ class WeeklyReportWorkflow
     /**
      * @return array{total: int, by_department: list<array{department: string, count: int}>, by_status: list<array{status: string, count: int}>}
      */
-    private function buildHeadcount(int $companyId): array
+    private function buildHeadcount(string $companyId): array
     {
         $total = DB::table('employees')
             ->where('company_id', $companyId)
@@ -118,7 +118,7 @@ class WeeklyReportWorkflow
     /**
      * @return array{total: int, by_type: list<array{type: string, count: int}>, pending: int, approved: int, rejected: int}
      */
-    private function buildAbsenceSummary(int $companyId, string $startDate, string $endDate): array
+    private function buildAbsenceSummary(string $companyId, string $startDate, string $endDate): array
     {
         $query = DB::table('absences')
             ->where('company_id', $companyId)
@@ -159,7 +159,7 @@ class WeeklyReportWorkflow
     /**
      * @return array<int, array{type: string, detail: string, severity: string}>
      */
-    private function detectAnomalies(int $companyId, string $startDate, string $endDate): array
+    private function detectAnomalies(string $companyId, string $startDate, string $endDate): array
     {
         $anomalies = [];
 

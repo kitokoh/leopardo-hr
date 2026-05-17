@@ -6,12 +6,12 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class PlanningOptimizationTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private Company $company;
 
@@ -20,6 +20,7 @@ class PlanningOptimizationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create();
 
@@ -28,6 +29,12 @@ class PlanningOptimizationTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     public function test_weekly_optimization_returns_planning_data(): void

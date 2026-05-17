@@ -15,7 +15,7 @@ class PlanningOptimizer
     /**
      * @return array<string, mixed>
      */
-    public function optimizeWeeklyPlanning(int $companyId, string $weekStart): array
+    public function optimizeWeeklyPlanning(string $companyId, string $weekStart): array
     {
         $start = Carbon::parse($weekStart)->startOfWeek();
         $end = $start->copy()->endOfWeek();
@@ -56,7 +56,7 @@ class PlanningOptimizer
     /**
      * @return array<string, mixed>
      */
-    public function suggestShiftRebalancing(int $companyId): array
+    public function suggestShiftRebalancing(string $companyId): array
     {
         $employees = Employee::where('company_id', $companyId)
             ->where('status', 'active')

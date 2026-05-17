@@ -11,7 +11,7 @@ class AbsenteeismPredictor
     /**
      * @return array{predicted_days_next_month: float, high_risk_periods: list<array{month: string, predicted_rate: float}>, department_predictions: list<array{department: string, predicted_days: float, historical_avg: float}>, recommendations: list<string>}
      */
-    public function predict(int $companyId, int $horizonMonths = 3): array
+    public function predict(string $companyId, int $horizonMonths = 3): array
     {
         $historicalData = [];
 
