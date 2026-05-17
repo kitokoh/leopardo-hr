@@ -206,6 +206,24 @@ const routes = [
         }
       },
       {
+        path: '/reports',
+        name: 'reports',
+        component: () => import('@/views/reports/ReportsView.vue'),
+        meta: {
+          title: 'Rapports RH',
+          icon: 'ChartPieIcon'
+        }
+      },
+      {
+        path: '/predictions',
+        name: 'predictions',
+        component: () => import('@/views/predictions/PredictionsView.vue'),
+        meta: {
+          title: 'Dashboard Prédictif IA',
+          icon: 'ChartBarSquareIcon'
+        }
+      },
+      {
         path: '/audit',
         name: 'audit',
         component: () => import('@/views/audit/AuditLogsView.vue'),

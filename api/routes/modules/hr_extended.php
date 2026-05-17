@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\HrReportController;
 use App\Http\Controllers\Api\V1\JobPostingActionController;
 use App\Http\Controllers\Api\V1\LeavePolicyController;
 use App\Http\Controllers\Api\V1\OrgChartController;
+use App\Http\Controllers\Api\V1\PredictionController;
 use App\Http\Controllers\Api\V1\RecruitmentController;
 use App\Http\Controllers\Api\V1\SelfServiceController;
 use App\Http\Controllers\Api\V1\TrainingController;
@@ -146,5 +147,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/loan-summary', [AdvancedReportController::class, 'loanSummary']);
         Route::get('/demographics', [AdvancedReportController::class, 'demographicBreakdown']);
         Route::get('/cost-analysis', [AdvancedReportController::class, 'costAnalysis']);
+    });
+
+    // ── IA Predictions (Plan 15 C11-C13) ──────────────────────────────────
+    Route::prefix('predictions')->group(function (): void {
+        Route::get('/turnover', [PredictionController::class, 'turnover']);
+        Route::get('/absenteeism', [PredictionController::class, 'absenteeism']);
+        Route::get('/notifications', [PredictionController::class, 'proactiveNotifications']);
     });
 });

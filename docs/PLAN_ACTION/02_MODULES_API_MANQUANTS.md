@@ -468,7 +468,7 @@ GET    /api/v1/me/manager                         # Mon manager (self-service)
 
 - [x] Test Feature : Org chart tree generation — **FAIT** (`OrgChartController.php` existe, endpoints fonctionnels)
 - [x] Test Feature : Team listing pour un manager — **FAIT** (endpoint /org-chart/{employee}/team)
-- [ ] Test Feature : Chain hierarchique — **RESTE** (test Feature dedie manquant)
+- [x] Test Feature : Chain hierarchique — **FAIT** (`tests/Feature/OrgChartControllerTest.php`)
 
 ---
 
@@ -495,7 +495,7 @@ GET    /api/v1/reports/attendance-summary           # Resume pointage par period
 - [x] **T-MOD-H1** : Creer `ReportController` — **FAIT** (`HrReportController.php` + `AdvancedReportController.php`)
 - [x] **T-MOD-H2** : Creer `app/Services/ReportService.php` — **FAIT** (logique dans controllers + `AttendanceMonthlyReportService`)
 - [x] **T-MOD-H3** : Creer les exports CSV et PDF — **FAIT** (`ExportController.php` + templates PDF invoice/payslip/receipt/attendance-monthly-report)
-- [ ] **T-MOD-H4** : Tests Feature pour chaque rapport — **RESTE** (test Feature dedie rapports RH manquant)
+- [x] **T-MOD-H4** : Tests Feature pour chaque rapport — **FAIT** (`tests/Feature/HrReportControllerTest.php`)
 
 ---
 
@@ -595,4 +595,4 @@ Enregistrer l'observer sur chaque modele dans le ServiceProvider.
 
 - [x] Test Feature : Audit log creation automatique on CRUD — **FAIT** (`tests/Unit/AuditLoggerListenerTest.php` + `AuditLogController.php`)
 - [x] Test Feature : Listing et filtrage des logs — **FAIT** (endpoint GET /audit-logs dans AuditLogController)
-- [ ] Test Feature : Export CSV audit logs — **RESTE** (export CSV audit dedie manquant)
+- [x] Test Feature : Export CSV audit logs — **FAIT** (`tests/Feature/AuditLogExportTest.php`)

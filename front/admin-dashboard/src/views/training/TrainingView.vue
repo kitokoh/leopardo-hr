@@ -27,7 +27,8 @@
       <div
         v-for="course in courses"
         :key="course.id"
-        class="rounded-lg bg-white p-5 shadow ring-1 ring-gray-200 transition hover:shadow-md"
+        class="cursor-pointer rounded-lg bg-white p-5 shadow ring-1 ring-gray-200 transition hover:shadow-md hover:ring-indigo-300"
+        @click="viewCourse(course)"
       >
         <div class="flex items-start justify-between">
           <div>
@@ -40,6 +41,9 @@
         <div class="mt-3 flex items-center justify-between text-xs text-gray-400">
           <span>{{ course.duration_hours || '-' }}h</span>
           <span>{{ course.sessions_count || 0 }} sessions</span>
+        </div>
+        <div v-if="course.cost_per_participant" class="mt-1 text-xs text-gray-400">
+          {{ formatCurrency(course.cost_per_participant, course.currency) }} / participant
         </div>
       </div>
     </div>
@@ -83,11 +87,84 @@
         </div>
       </template>
     </DataTable>
+
+    <!-- Course Detail Panel -->
+    <div v-if="selectedCourse" class="fixed inset-0 z-50 overflow-hidden" @click.self="closeDetail">
+      <div class="absolute inset-0 bg-gray-500/50 transition-opacity" @click="closeDetail" />
+      <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
+        <div class="w-screen max-w-lg">
+          <div class="flex h-full flex-col overflow-y-auto bg-white shadow-xl">
+            <div class="border-b border-gray-200 px-6 py-4">
+              <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">{{ selectedCourse.title }}</h2>
+                <button class="rounded-md text-gray-400 hover:text-gray-600" @click="closeDetail">
+                  <span class="text-xl">&times;</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex-1 px-6 py-4">
+              <dl class="space-y-4">
+                <div class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Categorie</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.category || '-' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Type</dt>
+                  <dd>
+                    <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
+                      {{ (selectedCourse.type || '').toUpperCase() }}
+                    </span>
+                  </dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Statut</dt>
+                  <dd><StatusBadge :status="selectedCourse.is_active ? 'active' : 'draft'" /></dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Duree</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.duration_hours || '-' }} heures</dd>
+                </div>
+                <div v-if="selectedCourse.provider" class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Prestataire</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.provider }}</dd>
+                </div>
+                <div v-if="selectedCourse.max_participants" class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Places max</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.max_participants }}</dd>
+                </div>
+                <div v-if="selectedCourse.cost_per_participant" class="flex justify-between">
+                  <dt class="text-sm text-gray-500">Cout / participant</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ formatCurrency(selectedCourse.cost_per_participant, selectedCourse.currency) }}</dd>
+                </div>
+                <div v-if="selectedCourse.description" class="border-t pt-4">
+                  <dt class="mb-1 text-sm text-gray-500">Description</dt>
+                  <dd class="text-sm text-gray-700">{{ selectedCourse.description }}</dd>
+                </div>
+              </dl>
+
+              <div v-if="courseSessions.length > 0" class="mt-6">
+                <h3 class="mb-3 text-sm font-semibold text-gray-900">Sessions ({{ courseSessions.length }})</h3>
+                <div class="space-y-2">
+                  <div v-for="s in courseSessions" :key="s.id" class="rounded-md border border-gray-100 p-3">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm text-gray-700">{{ s.start_date }} - {{ s.end_date }}</span>
+                      <StatusBadge :status="s.status" :map="sessionStatusMap" />
+                    </div>
+                    <p v-if="s.location" class="mt-1 text-xs text-gray-500">{{ s.location }}</p>
+                    <p v-if="s.instructor" class="text-xs text-gray-400">Formateur: {{ s.instructor }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
@@ -99,6 +176,7 @@ const courses = ref([])
 const sessions = ref([])
 const enrollments = ref([])
 const activeTab = ref('catalogue')
+const selectedCourse = ref(null)
 
 const stats = ref({ active_courses: 0, upcoming_sessions: 0, total_enrollments: 0, completion_rate: 0 })
 
@@ -138,6 +216,24 @@ const enrollmentStatusMap = {
   in_progress: { label: 'En cours', color: 'yellow' },
   completed: { label: 'Termine', color: 'green' },
   dropped: { label: 'Abandonne', color: 'red' },
+}
+
+const courseSessions = computed(() => {
+  if (!selectedCourse.value) return []
+  return sessions.value.filter(s => s.training_course_id === selectedCourse.value.id || s.course_title === selectedCourse.value.title)
+})
+
+function formatCurrency(value, currency = 'EUR') {
+  if (!value && value !== 0) return '-'
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency || 'EUR' }).format(value)
+}
+
+function viewCourse(course) {
+  selectedCourse.value = course
+}
+
+function closeDetail() {
+  selectedCourse.value = null
 }
 
 async function fetchData() {
