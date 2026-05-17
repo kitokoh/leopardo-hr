@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white shadow-sm border-b border-gray-200">
+  <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <!-- Mobile menu button -->
@@ -22,7 +22,7 @@
                 id="search"
                 v-model="searchQuery"
                 name="search"
-                class="block w-full rounded-md border-0 bg-gray-50 py-1.5 pl-10 pr-3 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                class="block w-full rounded-md border-0 bg-gray-50 dark:bg-gray-700 py-1.5 pl-10 pr-3 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 placeholder="Rechercher..."
                 type="search"
                 @keyup.enter="handleSearch"
@@ -147,11 +147,21 @@
             </span>
           </button>
 
+          <!-- Dark mode toggle -->
+          <button
+            @click="themeStore.toggle()"
+            class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+            :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
+          >
+            <SunIcon v-if="themeStore.isDark" class="h-5 w-5" />
+            <MoonIcon v-else class="h-5 w-5" />
+          </button>
+
           <!-- Refresh button -->
           <button
             @click="refreshData"
             :disabled="isRefreshing"
-            class="rounded-md p-2 text-gray-400 hover:text-gray-500 disabled:opacity-50"
+            class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 disabled:opacity-50"
           >
             <ArrowPathIcon
               :class="[
@@ -183,15 +193,19 @@ import {
   BuildingOfficeIcon,
   CurrencyEuroIcon,
   ExclamationTriangleIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  SunIcon,
+  MoonIcon,
 } from '@heroicons/vue/24/outline'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
+import { useThemeStore } from '@/stores/theme'
 
 defineEmits(['toggle-sidebar'])
 
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
+const themeStore = useThemeStore()
 
 const searchQuery = ref('')
 const showNotifications = ref(false)
