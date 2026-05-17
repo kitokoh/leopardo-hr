@@ -12,6 +12,16 @@
 - Suppression : `public/robots.txt` statique remplace par generation dynamique.
 - Suppression : `src/app/api/sitemap/route.ts` (route API custom) remplace par l'approche canonique Next.js.
 - Plan 15 : couverture F4 (SEO sitemap + robots dynamiques). Schema.org JSON-LD deja present via `OrganizationJsonLd`.
+### Feat — Plan 15 Batch 1 : Integrations sociales, import employes, compression API
+
+- Nouveau : `SocialDeclarationGenerator` — generation declarations trimestrielles CNAS (Algerie) et CNSS (Maroc) a partir des bulletins valides.
+- Nouveau : `POST /api/v1/social-declarations/cnas-dz` — export declaration CNAS DZ trimestrielle (taux salarie 9%, employeur 26%).
+- Nouveau : `POST /api/v1/social-declarations/cnss-ma` — export declaration CNSS MA trimestrielle avec jours travailles.
+- Nouveau : `POST /api/v1/employees/import` — import employes depuis fichier CSV avec validation ligne par ligne, detection doublons email, rollback transactionnel.
+- Nouveau : `GET /api/v1/employees/import-template` — template CSV avec colonnes et exemple.
+- Nouveau : `CompressResponse` middleware — compression gzip des reponses JSON > 1 Ko pour les clients qui acceptent `Accept-Encoding: gzip`.
+- Routes : ajout des endpoints dans `routes/modules/payroll_engine.php`.
+- Plan 15 : couverture L2 (CNAS DZ), L3 (CNSS MA), L4 (import employes), D3 (compression reponse).
 
 ## [4.16.66] - 2026-05-17
 
