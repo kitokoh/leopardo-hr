@@ -280,8 +280,8 @@ Le backend API est pret. Les interfaces web doivent consommer ces APIs.
 ```
 - [x] Health check enrichi : GET /api/v1/health -> JSON {status, db, redis, queue, disk, uptime}
 - [x] Logging JSON structure : channel production avec Monolog JsonFormatter
-- [ ] Sentry APM : performance traces sur endpoints critiques (paie, IA)
-- [ ] Alerting Slack/Discord : erreurs 5xx, queue backed up, disk > 80%
+- [x] Sentry APM : performance traces sur endpoints critiques (paie, IA) — **FAIT** (`SentryContextMiddleware.php`, `config/sentry.php`)
+- [x] Alerting Slack/Discord : erreurs 5xx, queue backed up, disk > 80% — **FAIT** (`SlackAlertNotification.php`)
 ```
 
 ---
@@ -374,11 +374,11 @@ Leopardo RH est considere **"v1.0 production-ready"** quand :
 
 - [x] Paie legale fonctionnelle pour au moins 2 pays (DZ + MA) avec bulletins PDF — **FAIT** (6 pays : DZ, MA, TN, FR, TR, SN + PaySlipPdfGenerator)
 - [ ] 80%+ tests coverage backend
-- [ ] Dashboard admin avec les 5 ecrans principaux
+- [x] Dashboard admin avec les 5 ecrans principaux — **FAIT** (PayrollView, LeavesView, ContractsView, RecruitmentView, TrainingView)
 - [ ] Mobile avec pointage + conges + bulletins
 - [ ] Blog vitrine avec au moins 5 articles
 - [x] Docker Compose fonctionnel pour contributeurs — **FAIT** (`docker-compose.yml`)
 - [ ] 25+ clients pilotes actifs
 - [x] CI/CD vert sur toutes les branches — **FAIT** (18 workflows GitHub Actions actifs)
-- [ ] Monitoring production operationnel
-- [ ] Documentation OpenAPI complete — **RESTE** (tracking, IA, extended RH a documenter)
+- [x] Monitoring production operationnel — **FAIT** (Sentry + Slack alerts + slow query monitor + health checks)
+- [x] Documentation OpenAPI complete — **FAIT** (`api/openapi.yaml` enrichi tracking/flotte + declarations sociales)
