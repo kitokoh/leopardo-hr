@@ -36,6 +36,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'throttle:ai-sensitive', AIFe
         Route::get('/agent/workflows', [AgentController::class, 'workflows']);
     });
 
+    // Phase 5 — Workflows metier (C9, C10)
+    Route::middleware([AIRateLimiter::class])->group(function () {
+        Route::post('/workflows/prepare-payroll', [\App\Http\Controllers\Api\V1\AIWorkflowController::class, 'preparePayroll']);
+        Route::get('/workflows/weekly-report', [\App\Http\Controllers\Api\V1\AIWorkflowController::class, 'weeklyReport']);
+    });
+
     // Phase 2 — Analytics IA (Principal/RH only, Sprint 17-18)
     Route::middleware([EnsureAIAnalyticsAccess::class])->group(function () {
         Route::get('/analytics/usage', [AIAnalyticsController::class, 'usage']);
