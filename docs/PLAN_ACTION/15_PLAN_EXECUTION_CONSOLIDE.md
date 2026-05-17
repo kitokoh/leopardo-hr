@@ -173,16 +173,16 @@
 | K2 | SSO SAML/OIDC | Plan 14 | 3j | MEDIUM |
 | K3 | Multi-tenant isolation test complet | Plan 14 | 1j | HIGH |
 | K4 | Audit WCAG 2.1 AA | Plan 14 | 2j | LOW |
-| K5 | Matrice conformite (RGPD, loi 18-07) | Plan 14 | 2j | MEDIUM |
+| K5 | Matrice conformite (RGPD, loi 18-07) | Plan 14 | 2j | DONE |
 
 ### Categorie L — Integrations tierces (Plan 14)
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
 | L1 | Export SEPA reel (XML ISO 20022) | Plan 14 | 2j | HIGH |
-| L2 | Declaration CNAS trimestrielle DZ | Plan 14 | 2j | HIGH |
-| L3 | Declaration CNSS MA | Plan 14 | 2j | MEDIUM |
-| L4 | Import/export Excel employes | Plan 14 | 2j | MEDIUM |
+| L2 | Declaration CNAS trimestrielle DZ | Plan 14 | 2j | DONE |
+| L3 | Declaration CNSS MA | Plan 14 | 2j | DONE |
+| L4 | Import/export Excel employes | Plan 14 | 2j | DONE |
 | L5 | Integration ZKTeco | Plan 14 | 3j | MEDIUM |
 | L6 | Sync calendrier Google/Outlook | Plan 14 | 2j | LOW |
 
@@ -289,6 +289,9 @@
 - **2026-05-16 — Lot SEO F4 partiel** : sitemap dynamique enrichi (`/changelog`, `/privacy`, `/terms`).
 - **2026-05-16 — Lot mobile G1 partiel** : liste bulletins employe via **`GET /api/v1/me/pay-slips`** dans l’onglet paie des modules (`ModulesRepository` / `payrollsProvider`).
 - **2026-05-16 — Lot API contracts A11** : tracking/flotte aligne OpenAPI pour preparer admin/mobile/kiosk et integrateurs.
+- **2026-05-17 — Lot API Batch 1 (L2, L3, L4, D3)** : declarations sociales CNAS DZ / CNSS MA, import employes CSV, compression gzip API (PR #477).
+- **2026-05-17 — Lot SEO Batch 2 (F4)** : sitemap.ts + robots.ts dynamiques Next.js remplacant fichiers statiques (PR #478).
+- **2026-05-17 — Lot Conformite Batch 3 (K5)** : matrice conformite RGPD / loi 18-07 DZ / loi 09-08 MA dans `docs/security/MATRICE_CONFORMITE_RGPD_LOI_18_07.md`.
 
 **Contenu** :
 - Ecrans Flutter (bulletins, conges, notifs push)
