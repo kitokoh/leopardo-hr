@@ -37,6 +37,19 @@
 - Plans d'action 01-14 : synchronisation massive — 25+ taches passees de `[ ]` a `[x]` apres verification code existant (ApiVersion, cache Redis, compression gzip, Sentry, Slack alerts, slow queries, pre-commit, CNAS/CNSS, import CSV, write confirmation IA, multi-tenant isolation, AES-256 chiffrement, monitoring).
 - Plan 15 : C9 (workflow paie) et C10 (rapport hebdo) implementes. T-MON-11 (Telescope config) ajoute.
 
+## [4.16.70] - 2026-05-17
+
+### Feat — Iteration 8 : Admin enrichments, rapports RH, indexes, newsletter
+
+- Nouveau : `ReportsView.vue` — ecran rapports RH dans admin-dashboard, consomme les endpoints `/v1/reports/headcount`, `/v1/reports/absenteeism`, `/v1/reports/turnover`, `/v1/reports/overtime`, `/v1/reports/payroll-summary` et les rapports avances `/v1/reports/recruitment-pipeline`, `/v1/reports/training-completion`, `/v1/reports/demographics`, `/v1/reports/cost-analysis`, `/v1/reports/loan-summary`.
+- Nouveau : route `/reports` dans admin router (lazy import, code splitting conserve).
+- Enrichi : `ContractsView.vue` — panneau detail contrat slide-over (reference, employe, type, salaire, dates, departement, periode d'essai, preavis, notes), alertes automatiques (expiration 30j, contrat expire, periode d'essai en cours).
+- Enrichi : `TrainingView.vue` — panneau detail formation slide-over (categorie, type, prestataire, places, cout/participant, sessions associees), cartes catalogue cliquables avec cout affiché.
+- Nouveau : `NewsletterForm.tsx` — composant newsletter integre dans le footer vitrine, consomme `/api/forms/newsletter` avec gestion etats (loading, success, error).
+- Enrichi : `Footer.tsx` vitrine — integration composant newsletter avant copyright.
+- Nouveau : migration `2026_05_17_000001_add_extended_performance_indexes.php` — indexes PostgreSQL pour contrats (company+status, end_date partiel, employee), formation (courses, sessions, enrollments), recrutement (postings, applicants), audit logs (company+created_at DESC), webhooks.
+- Plan 15 : E3 (contrats detail+alertes), E5 (formation detail), E8 (rapports RH), D6 (indexes etendus), F7 (newsletter footer).
+
 ## [4.16.68] - 2026-05-17
 
 ### Docs — Plan 15 Batch 3 : Matrice conformite RGPD / loi 18-07 DZ / loi 09-08 MA
