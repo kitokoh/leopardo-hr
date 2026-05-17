@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\PayrollRun;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class PreparePayrollWorkflow
 {
@@ -28,10 +29,12 @@ class PreparePayrollWorkflow
             'detail' => $employeeCount.' employes actifs trouves',
         ];
 
-        $missingStructures = Employee::where('company_id', $companyId)
-            ->where('status', 'active')
-            ->whereNull('salary_structure_id')
-            ->count();
+        $missingStructures = Schema::hasColumn('employees', 'salary_structure_id')
+            ? Employee::where('company_id', $companyId)
+                ->where('status', 'active')
+                ->whereNull('salary_structure_id')
+                ->count()
+            : 0;
 
         $steps[] = [
             'step' => 'check_salary_structures',
