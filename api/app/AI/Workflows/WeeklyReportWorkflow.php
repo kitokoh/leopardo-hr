@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AI\Workflows;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -135,13 +136,13 @@ class WeeklyReportWorkflow
         $noCheckins = DB::table('employees')
             ->where('company_id', $companyId)
             ->where('status', 'active')
-            ->whereNotExists(function ($q) use ($startDate, $endDate): void {
+            ->whereNotExists(function (Builder $q) use ($startDate, $endDate): void {
                 $q->select(DB::raw(1))
                     ->from('attendance_logs')
                     ->whereColumn('attendance_logs.employee_id', 'employees.id')
                     ->whereBetween('attendance_logs.date', [$startDate, $endDate]);
             })
-            ->whereNotExists(function ($q) use ($startDate, $endDate): void {
+            ->whereNotExists(function (Builder $q) use ($startDate, $endDate): void {
                 $q->select(DB::raw(1))
                     ->from('absences')
                     ->whereColumn('absences.employee_id', 'employees.id')
