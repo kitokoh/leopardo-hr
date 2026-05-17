@@ -47,6 +47,7 @@ class TurnoverPredictor
                 ->where('updated_at', '>=', now()->subMonths(12))
                 ->count();
 
+            /** @var string $deptName */
             $deptName = DB::table('departments')
                 ->where('id', $deptId)
                 ->value('name') ?? 'Non assigne';
@@ -95,9 +96,13 @@ class TurnoverPredictor
                 }
 
                 if ($risk >= 20) {
+                    /** @var string $firstName */
+                    $firstName = $emp->first_name;
+                    /** @var string $lastName */
+                    $lastName = $emp->last_name;
                     $highRisk[] = [
                         'employee_id' => $emp->id,
-                        'name' => ((string) $emp->first_name).' '.((string) $emp->last_name),
+                        'name' => $firstName.' '.$lastName,
                         'risk' => min($risk, 100),
                         'factors' => $factors,
                     ];
