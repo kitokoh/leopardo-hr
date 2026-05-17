@@ -4,20 +4,36 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Company;
+use App\Models\Employee;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Tests\Traits\WithTenantSetup;
 
 class PlanningOptimizationTest extends TestCase
 {
     use RefreshDatabase;
-    use WithTenantSetup;
+
+    private Company $company;
+
+    private Employee $manager;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->company = Company::factory()->create();
+
+        $this->manager = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+        ]);
+    }
 
     public function test_weekly_optimization_returns_planning_data(): void
     {
-        $user = $this->createTenantManager();
 
-        $response = $this->actingAs($user, 'sanctum')
+        $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/v1/planning/weekly-optimization');
 
         $response->assertOk()
@@ -42,9 +58,7 @@ class PlanningOptimizationTest extends TestCase
 
     public function test_weekly_optimization_accepts_custom_week(): void
     {
-        $user = $this->createTenantManager();
-
-        $response = $this->actingAs($user, 'sanctum')
+        $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/v1/planning/weekly-optimization?week_start=2026-06-01');
 
         $response->assertOk();
@@ -53,9 +67,7 @@ class PlanningOptimizationTest extends TestCase
 
     public function test_shift_rebalancing_returns_department_analysis(): void
     {
-        $user = $this->createTenantManager();
-
-        $response = $this->actingAs($user, 'sanctum')
+        $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/v1/planning/shift-rebalancing');
 
         $response->assertOk()
