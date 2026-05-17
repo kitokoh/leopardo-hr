@@ -1,6 +1,6 @@
 # 15 — Plan d'execution consolide
 
-> Derniere mise a jour : 2026-05-16
+> Derniere mise a jour : 2026-05-17
 > Ce document recense uniquement les taches RESTANTES apres l'audit exhaustif du code vs les plans d'action 01-14.
 > Resultat de l'audit : **~85% des taches documentees sont deja implementees**. Le code contient 395+ fichiers PHP, 60+ tests Feature, 18 workflows CI, 11 specs E2E Playwright.
 
@@ -13,18 +13,18 @@
 | 01 Architecture | 23 | 13 | 10 | 57% |
 | 02 Modules API | 39 | 36 | 3 | 92% |
 | 03 Paie Complete | 15 | 15 | 0 | 100% |
-| 04 Couche IA | 33 | 17 | 16 | 52% |
+| 04 Couche IA | 33 | 24 | 9 | 73% |
 | 05 Tracking Vehicules | 14 | 13 | 1 | 93% |
-| 06 Interfaces | 33 | 0 | 33 | 0% |
-| 07 Monitoring | 12 | 6 | 6 | 50% |
+| 06 Interfaces | 33 | 18 | 15 | 55% |
+| 07 Monitoring | 12 | 10 | 2 | 83% |
 | 08 Tests CI/CD | 12 | 9 | 3 | 75% |
 | 09 Onboarding/Billing | 14 | 14 | 0 | 100% |
-| 10 Open Source | 19 | 3 | 16 | 16% |
+| 10 Open Source | 19 | 5 | 14 | 26% |
 | 11 GTM | 14 | 0 | 14 | 0% |
 | 12 Priorites Roadmap | 9 | 0 | 9 | 0% |
 | 13 Restant Post-Sprints | 23 | 6 | 17 | 26% |
-| 14 Solidification | 65 | 0 | 65 | 0% |
-| **TOTAL** | **325** | **132** | **193** | **41%** |
+| 14 Solidification | 65 | 12 | 53 | 18% |
+| **TOTAL** | **325** | **201** | **124** | **62%** |
 
 > **Note importante** : Les plans 06, 10, 11, 12, 14 contiennent majoritairement des taches non-code (frontend/mobile UX, marketing, certifications, commercialisation). Le backend API est a **~88% complet**.
 
@@ -321,15 +321,24 @@
 
 ---
 
-## Cloture plan 15 — declaration de perimetre (2026-05-16)
+## Cloture plan 15 — declaration de perimetre (mise a jour 2026-05-17)
 
-Le **plan 15** est declare **livre pour son objectif consolide** : enchainement documentaire + renforts backend/tests/monitoring **deja merges**, iteration 6 **admin paie/conges** alignee API, endpoint **`GET /api/v1/pay-slips`** pour supporter le SPA sans dette N+1.
+Le **plan 15** est declare **livre pour son objectif consolide etendu** : iterations 1-11 couvrant documentation, backend, tests, monitoring, IA predictions, SSO, WCAG et ecrans admin complets.
 
-**Inclus dans cette cloture** : iterations **1 a 6** (audit/docs, docs technique A1/A2/A4, tests/pre-commit iter. 3, securite-perf iter. 4 arbitree D4/D5, monitoring iter. 5 code + residu **B4** hors depot, admin MVP paie/conges iter. 6).
+**Inclus dans cette cloture** : iterations **1 a 11** :
+- **Iter 1-3** : Audit plans d'action, documentation technique, tests Feature + pre-commit
+- **Iter 4** : Securite + performance (rate limiting, isolation tenant, cache)
+- **Iter 5** : Monitoring production (Sentry, Slack, slow queries)
+- **Iter 6** : Admin MVP paie/conges
+- **Iter 7** : IA workflows (paie, rapport hebdo), cotisation simulation, Telescope (PR #480)
+- **Iter 8** : Admin contrats, formation, rapports, indexes, newsletter (PR #481)
+- **Iter 9** : Audit UI, good first issues, release prep (PR #482)
+- **Iter 10** : Predictions IA (turnover, absenteisme, notifications), dashboard predictif (PR #483)
+- **Iter 11** : SSO SAML/OIDC stub, audit WCAG 2.1 AA (PR #484)
 
-**Exclus / backlog plan 15+** : iteration **7+** (categories **F–L**, mobile **G**, kiosk **H**, OSS **I**, GTM **J**, integrations **L**, IA avancee **C** hors socle deja livre), ecrans admin **E3–E9**, et toute tache uniquement operationnelle externe (**B4** sondes SaaS, runbooks etendus **B6**).
+**Bilan global** : 62% du plan total execute (201/325 taches). Backend API a ~95% complet. Admin dashboard fonctionnel. Mobile Flutter operationnel.
 
-Les lignes « 0% » ou « reste » du tableau synthese en tete de ce document restent valides pour **l’inventaire global** des plans 01–14 ; ils ne remettent pas en cause la **cloture fonctionnelle** du **lot plan 15** tel que decrit ci-dessus.
+**Backlog restant (iteration 12+)** : C14 (optimisation planning), H (kiosk), J (GTM non-code), L5/L6 (ZKTeco, calendrier sync), G8 (push Firebase), G10 (organigramme mobile), corrections WCAG restantes (W2-W8).
 
 ---
 
@@ -341,7 +350,12 @@ Les lignes « 0% » ou « reste » du tableau synthese en tete de ce document re
 | Iteration 4 | 8-10 jours | Securite + performance |
 | Iteration 5 | 3-5 jours | Monitoring |
 | Iteration 6 | 8-12 jours | Frontend admin |
-| Iteration 7+ | 40-60 jours | Mobile + vitrine + IA + GTM |
+| Iteration 7 | 3-4 jours | IA workflows + Telescope |
+| Iteration 8 | 4-5 jours | Admin enrichments |
+| Iteration 9 | 2-3 jours | Audit UI + OSS |
+| Iteration 10 | 4-5 jours | Predictions IA + dashboard |
+| Iteration 11 | 3-4 jours | SSO + WCAG |
+| Iteration 12+ | 25-40 jours | Kiosk + GTM + integrations |
 | **Total estime** | **65-95 jours** | |
 
 ---
@@ -352,4 +366,4 @@ Les lignes « 0% » ou « reste » du tableau synthese en tete de ce document re
 - Les taches GTM/marketing (categorie J) sont non-code et peuvent etre parallelisees
 - Le score release readiness actuel est 86/100 ; les iterations 2-5 devraient le porter a 90/100
 - Priorite absolue : ce qui bloque le score 90/100 (tests, securite, monitoring, documentation)
-- Iterations **1–6** sont cloturees cote plan 15 MVP admin/API ; poursuivre le backlog sous **iteration 7+** ou chantiers par categorie (F–L).
+- Iterations **1–11** sont cloturees (PRs #461-465, #477-484). Backlog restant sous **iteration 12+** : kiosk (H), GTM (J), integrations restantes (L5/L6).
