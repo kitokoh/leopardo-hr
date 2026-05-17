@@ -82,7 +82,27 @@
     </div>
 
     <DataTable
-      v-if="activeTab === 'runs'"
+      v-if="activeTab === 'structures'"
+      :columns="structureColumns"
+      :rows="structures"
+      :loading="loading"
+      :error="error"
+      :search-keys="['name', 'country_code']"
+      search-placeholder="Rechercher une structure..."
+      default-sort="name"
+      exportable
+      @export="exportStructures"
+    >
+      <template #cell-components_count="{ row }">
+        {{ (row.components || []).length }}
+      </template>
+      <template #cell-status="{ value }">
+        <StatusBadge :status="value" :map="structureStatusMap" />
+      </template>
+    </DataTable>
+
+    <DataTable
+      v-else-if="activeTab === 'runs'"
       :columns="runColumns"
       :rows="runs"
       :loading="loading"
@@ -116,7 +136,7 @@
     </DataTable>
 
     <DataTable
-      v-else
+      v-else-if="activeTab === 'slips'"
       :columns="slipColumns"
       :rows="slips"
       :loading="loading"
@@ -156,7 +176,10 @@ const runSummary = ref(null)
 
 const stats = ref({ runs_this_month: 0, slips_generated: 0, total_net: 0, pending_validation: 0 })
 
+const structures = ref([])
+
 const tabs = [
+  { key: 'structures', label: 'Structures salariales' },
   { key: 'runs', label: 'Runs de paie' },
   { key: 'slips', label: 'Bulletins' },
 ]
@@ -176,6 +199,19 @@ const slipColumns = [
   { key: 'net_pay', label: 'Net a payer', sortable: true },
   { key: 'created_at', label: 'Date', sortable: true },
 ]
+
+const structureColumns = [
+  { key: 'name', label: 'Nom', sortable: true },
+  { key: 'country_code', label: 'Pays', sortable: true },
+  { key: 'components_count', label: 'Composants' },
+  { key: 'status', label: 'Statut', sortable: true },
+]
+
+const structureStatusMap = {
+  active: { label: 'Actif', color: 'green' },
+  draft: { label: 'Brouillon', color: 'gray' },
+  archived: { label: 'Archive', color: 'red' },
+}
 
 const runStatusMap = {
   draft: { label: 'Brouillon', color: 'gray' },
@@ -278,6 +314,20 @@ async function fetchData() {
 
     slips.value = await fetchAllPaySlips()
 
+    try {
+      const structRes = await api.get('/v1/salary-structures', { params: { per_page: 100 } })
+      structures.value = (structRes.data.data || []).map(s => ({
+        id: s.id,
+        name: s.name || `Structure #${s.id}`,
+        country_code: s.country_code || '-',
+        components: s.components || [],
+        status: s.is_active !== false ? 'active' : 'draft',
+      }))
+    } catch (e) {
+      console.warn('Salary structures not available', e)
+      structures.value = []
+    }
+
     stats.value = {
       runs_this_month: runs.value.filter(runStartsThisMonth).length,
       slips_generated: slips.value.length,
@@ -344,6 +394,14 @@ function exportRuns() {
     [r.reference, r.period, r.employees_count, r.total_net, r.status].map(escapeCsvCell).join(';'),
   )
   downloadCsv('payroll-runs.csv', header, lines)
+}
+
+function exportStructures() {
+  const header = ['nom', 'pays', 'composants', 'statut']
+  const lines = structures.value.map(s =>
+    [s.name, s.country_code, (s.components || []).length, s.status].map(escapeCsvCell).join(';'),
+  )
+  downloadCsv('salary-structures.csv', header, lines)
 }
 
 function exportSlips() {
