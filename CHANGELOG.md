@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.68] - 2026-05-17
+
+### Docs — Plan 15 Batch 3 : Matrice conformite RGPD / loi 18-07 DZ / loi 09-08 MA
+
+- Nouveau : `docs/security/MATRICE_CONFORMITE_RGPD_LOI_18_07.md` — matrice croisee des exigences RGPD (UE), loi 18-07 (Algerie) et loi 09-08 (Maroc) avec implementation Leopardo RH et statut de conformite.
+- Couverture : principes fondamentaux, droits des personnes, securite des traitements, isolation multi-tenant, notification des violations, donnees biometriques.
+- Specificites par pays : articles detailles pour l'Algerie (ANPDP) et le Maroc (CNDP).
+- Plan de remediation : 7 gaps identifies avec priorite et responsable.
+- References code : mapping vers les fichiers sources (controllers, middleware, policies, config).
+- Plan 15 : K5 passe en DONE ; L2, L3, L4 passes en DONE (batch 1 PR #477).
+
 ## [4.16.66] - 2026-05-17
 
 ### Fix — Sentry DSN crash & deployment readiness
