@@ -41,7 +41,7 @@ class SSOService
     }
 
     /**
-     * @param array<string, mixed> $configData
+     * @param  array<string, mixed>  $configData
      */
     public function configureSSO(int $companyId, string $provider, array $configData): SSOProviderConfig
     {
@@ -103,7 +103,7 @@ class SSOService
     }
 
     /**
-     * @param array<string, mixed> $tokenData
+     * @param  array<string, mixed>  $tokenData
      * @return array{user_email: string, claims: array<string, mixed>}
      */
     public function handleOIDCCallback(int $companyId, array $tokenData): array
