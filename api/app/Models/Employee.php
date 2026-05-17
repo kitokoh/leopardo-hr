@@ -63,6 +63,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
+ * @property-read Department|null $department
+ * @property-read Position|null $position
  * @property-read Schedule|null $schedule
  * @property-read Carbon|null $email_verified_at
  * @property-read Carbon|null $last_login_at
@@ -210,6 +212,18 @@ class Employee extends Authenticatable
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    /** @return BelongsTo<Department, $this> */
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    /** @return BelongsTo<Position, $this> */
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
     /** @return BelongsTo<Schedule, $this> */

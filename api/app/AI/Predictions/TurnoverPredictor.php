@@ -22,7 +22,7 @@ class TurnoverPredictor
                 'last_name',
                 'department_id',
                 'position_id',
-                'hire_date',
+                'contract_start',
                 'salary_base',
             ])
             ->get();
@@ -49,9 +49,10 @@ class TurnoverPredictor
                 ->where('updated_at', '>=', now()->subMonths(12))
                 ->count();
 
-            $deptName = (string) (DB::table('departments')
+            $rawDeptName = DB::table('departments')
                 ->where('id', $deptId)
-                ->value('name') ?? 'Non assigne');
+                ->value('name');
+            $deptName = is_string($rawDeptName) ? $rawDeptName : 'Non assigne';
 
             $deptRisk = $deptEmployees->count() > 0
                 ? round(($deptTerminated / $deptEmployees->count()) * 100, 2)
@@ -69,7 +70,7 @@ class TurnoverPredictor
                 $risk = 0.0;
 
                 /** @var string|null $hireDate */
-                $hireDate = $emp->hire_date;
+                $hireDate = $emp->contract_start;
                 if ($hireDate) {
                     $tenure = now()->diffInMonths($hireDate);
                     if ($tenure < 12) {
@@ -87,7 +88,7 @@ class TurnoverPredictor
                     $factors[] = 'Departement a fort turnover';
                 }
 
-                $employeeId = (int) $emp->id;
+                $employeeId = $this->intId($emp->id);
 
                 $absenceCount = DB::table('absences')
                     ->where('employee_id', $employeeId)
@@ -108,7 +109,7 @@ class TurnoverPredictor
                         'employee_id' => $employeeId,
                         'name' => $firstName.' '.$lastName,
                         'risk' => (float) min($risk, 100),
-                        'factors' => array_values($factors),
+                        'factors' => $factors,
                     ];
                 }
             }
@@ -127,5 +128,14 @@ class TurnoverPredictor
             'department_risks' => $departmentRisks,
             'overall_turnover_rate' => (float) $overallRate,
         ];
+    }
+
+    private function intId(mixed $id): int
+    {
+        if (is_int($id)) {
+            return $id;
+        }
+
+        return is_numeric($id) ? (int) $id : 0;
     }
 }

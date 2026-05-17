@@ -9,8 +9,9 @@
 - Fix : callbacks SSO publics compatibles UUID entreprise en supprimant la contrainte numerique de route.
 - Fix : configuration SSO sans `COALESCE(created_at, NOW())` dans un `INSERT`, incompatible PostgreSQL.
 - Fix : workflows IA paie/rapport hebdomadaire alignes avec le schema RH reel (`absence_type_id`, `salary_structure_id` optionnel).
-- Fix : predictions IA type-safe pour PHPStan (dates, ids, floats, listes de facteurs).
-- Tests : fixture MVP et tests predictions ajustes pour `shared_tenants`, `contracts` et `salary_structures`.
+- Fix : predictions IA et planning type-safe pour PHPStan (relations explicites, dates, ids, floats, listes de facteurs).
+- Fix : routes planning exposees sur `/api/v1/planning/*` au lieu de `/api/v1/v1/planning/*`.
+- Tests : fixture MVP ajustee pour `shared_tenants`, `contracts`, `contract_amendments` et `salary_structures`.
 
 ## [4.16.72] - 2026-05-17
 

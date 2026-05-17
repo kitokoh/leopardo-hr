@@ -25,7 +25,7 @@ class AbsenteeismPredictor
                 ->where('absences.start_date', '>=', $start)
                 ->where('absences.start_date', '<=', $end)
                 ->where('absences.status', 'approved')
-                ->sum(DB::raw('EXTRACT(DAY FROM absences.end_date - absences.start_date) + 1'));
+                ->sum(DB::raw('(absences.end_date - absences.start_date + 1)'));
 
             /** @var numeric $totalDays */
             $historicalData[] = [
@@ -34,9 +34,7 @@ class AbsenteeismPredictor
             ];
         }
 
-        $avgDays = count($historicalData) > 0
-            ? array_sum(array_column($historicalData, 'days')) / count($historicalData)
-            : 0;
+        $avgDays = array_sum(array_column($historicalData, 'days')) / count($historicalData);
 
         $recentAvg = count($historicalData) >= 3
             ? array_sum(array_map(fn (array $d) => $d['days'], array_slice($historicalData, -3))) / 3
@@ -70,7 +68,7 @@ class AbsenteeismPredictor
                 ->where('employees.department_id', $dept->id)
                 ->where('absences.start_date', '>=', now()->subMonths(6))
                 ->where('absences.status', 'approved')
-                ->sum(DB::raw('EXTRACT(DAY FROM absences.end_date - absences.start_date) + 1'));
+                ->sum(DB::raw('(absences.end_date - absences.start_date + 1)'));
 
             /** @var numeric $deptHistorical */
             $deptAvg = (float) $deptHistorical / 6;
