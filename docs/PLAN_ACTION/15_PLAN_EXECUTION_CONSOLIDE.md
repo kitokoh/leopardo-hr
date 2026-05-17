@@ -71,13 +71,13 @@
 | C6 | Pipeline voice complet | T-IA-23 | 2j | LOW |
 | C7 | Support 4 langues voice | T-IA-24 | 1j | LOW |
 | C8 | Tests Feature voice | T-IA-25 | 1j | LOW |
-| C9 | Workflow "preparer la paie" | T-IA-27 | 2j | MEDIUM |
-| C10 | Workflow "rapport hebdomadaire" | T-IA-28 | 1j | MEDIUM |
-| C11 | Notifications proactives IA | T-IA-29 | 2j | LOW |
-| C12 | Prediction turnover | T-IA-30 | 3j | LOW |
-| C13 | Prediction absenteisme | T-IA-31 | 2j | LOW |
+| C9 | Workflow "preparer la paie" | T-IA-27 | 2j | DONE |
+| C10 | Workflow "rapport hebdomadaire" | T-IA-28 | 1j | DONE |
+| C11 | Notifications proactives IA | T-IA-29 | 2j | DONE |
+| C12 | Prediction turnover | T-IA-30 | 3j | DONE |
+| C13 | Prediction absenteisme | T-IA-31 | 2j | DONE |
 | C14 | Optimisation planning | T-IA-32 | 3j | LOW |
-| C15 | Dashboard predictif | T-IA-33 | 2j | LOW |
+| C15 | Dashboard predictif | T-IA-33 | 2j | DONE |
 
 ### Categorie D — Architecture & Performance (Plan 01 + 14)
 
@@ -100,8 +100,8 @@
 | E3 | Ecrans contrats (liste, detail, alertes) | T-WEB-05 | 2j | MEDIUM |
 | E4 | Ecrans recrutement (pipeline Kanban) | T-WEB-06 | 3j | MEDIUM |
 | E5 | Ecrans formation (catalogue, sessions, suivi) | T-WEB-07 | 2j | MEDIUM |
-| E6 | Ecrans tracking/flotte (carte live) | T-WEB-08 | 3j | LOW |
-| E7 | Widget chat IA | T-WEB-09 | 2j | LOW |
+| E6 | Ecrans tracking/flotte (carte live) | T-WEB-08 | 3j | DONE |
+| E7 | Widget chat IA | T-WEB-09 | 2j | DONE |
 | E8 | Ecrans rapports RH | T-WEB-10 | 2j | MEDIUM |
 | E9 | Ecrans audit + webhooks | T-WEB-11 | 1j | LOW |
 | E10 | Composants partages (DataTable, MetricCard) | T-WEB-02 | 1j | HIGH |
@@ -124,14 +124,14 @@
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
 | G1 | Ecran bulletins de paie + PDF | T-MOB-01 | 2j | HIGH |
-| G2 | Ecran conges (soldes, demande, historique) | T-MOB-02 | 2j | HIGH |
-| G3 | Ecran contrat | T-MOB-03 | 1j | MEDIUM |
-| G4 | Ecran formations | T-MOB-04 | 1j | LOW |
-| G5 | Ecran notes de frais + camera | T-MOB-05 | 2j | MEDIUM |
-| G6 | Chat IA mobile | T-MOB-06 | 2j | LOW |
-| G7 | Voice IA mobile | T-MOB-07 | 2j | LOW |
+| G2 | Ecran conges (soldes, demande, historique) | T-MOB-02 | 2j | DONE |
+| G3 | Ecran contrat | T-MOB-03 | 1j | DONE |
+| G4 | Ecran formations | T-MOB-04 | 1j | DONE |
+| G5 | Ecran notes de frais + camera | T-MOB-05 | 2j | DONE |
+| G6 | Chat IA mobile | T-MOB-06 | 2j | DONE |
+| G7 | Voice IA mobile | T-MOB-07 | 2j | DONE |
 | G8 | Notifications push Firebase | T-MOB-08 | 2j | HIGH |
-| G9 | Carte vehicule | T-MOB-09 | 1j | LOW |
+| G9 | Carte vehicule | T-MOB-09 | 1j | DONE |
 | G10 | Organigramme visuel | T-MOB-10 | 1j | LOW |
 
 ### Categorie H — Kiosk (Plan 06)
@@ -280,9 +280,50 @@
 **Contexte repo** :
 - Code : `front/admin-dashboard/` ; router `src/router/index.js` (lazy imports par route — ne pas regresser).
 - Routes existantes : `/payroll` → `views/payroll/PayrollView.vue`, `/leaves` → `views/leaves/LeavesView.vue`.
-### Iteration 7+ — Mobile, vitrine, IA avancee, GTM
-**Cible** : Categories C, F, G, H, I, J, K, L
-**Statut** : **BACKLOG** — hors cloture « plan 15 MVP admin/API » ; suites dediees par categorie.
+### Iteration 7 — IA workflows, cotisation simulation, Telescope
+**Cible** : C9, C10, B5
+**Statut** : **COMPLETE** (PR #480, 2026-05-17)
+**Contenu** :
+- Workflow "preparer la paie" (`PreparePayrollWorkflow`)
+- Workflow "rapport hebdomadaire" (`WeeklyReportWorkflow`)
+- Configuration Telescope dev
+- Cotisation simulation controller + tests
+- Sync plans d'action 01-14
+
+### Iteration 8 — Admin enrichments
+**Cible** : E3, E5, E8, D6, F7
+**Statut** : **COMPLETE** (PR #481, 2026-05-17)
+**Contenu** :
+- Ecrans contrats admin (liste, detail, alertes)
+- Ecrans formation admin (catalogue, sessions, suivi)
+- Ecrans rapports RH admin
+- Indexes performance PostgreSQL (D6)
+- Formulaire newsletter vitrine (F7)
+
+### Iteration 9 — Audit UI, good first issues, release prep
+**Cible** : E9, I2, I5
+**Statut** : **COMPLETE** (PR #482, 2026-05-17)
+**Contenu** :
+- Ecrans audit + webhooks admin (E9)
+- 10 good first issues documentes (I2)
+- Release preparation v4.16.72 (I5)
+
+### Iteration 10 — Predictions IA, mobile enrichments, dashboard predictif
+**Cible** : C11, C12, C13, C15, E6, E7, G2, G3
+**Statut** : **COMPLETE** (PR #483, 2026-05-17)
+**Contenu** :
+- TurnoverPredictor (C12) : prediction turnover par departement et employe
+- AbsenteeismPredictor (C13) : prediction absenteisme avec recommandations
+- ProactiveNotificationService (C11) : notifications IA proactives
+- PredictionsView.vue (C15) : dashboard predictif admin
+- Routes API predictions (turnover, absenteisme, notifications)
+- Verification E6 (FleetView deja DONE), E7 (ChatView deja DONE)
+- Enrichissement mobile absences (soldes G2), contrats (G3 deja complet)
+- Tests Feature PredictionControllerTest (6 tests RBAC + structure)
+
+### Iteration 11+ — Backlog restant
+**Cible** : Categories restantes (K2 SSO, K4 WCAG, C14, H, I, J, L)
+**Statut** : **BACKLOG** — suites par categorie.
 
 **Lots demarres (incrementaux)** :
 - **2026-05-16 — Lot vitrine F** : page publique **`/changelog`** + liens footer (`/pricing`, `/blog`, changelog) dans `front/web`.
