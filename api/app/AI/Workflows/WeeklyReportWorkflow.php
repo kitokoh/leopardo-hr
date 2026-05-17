@@ -62,7 +62,7 @@ class WeeklyReportWorkflow
     }
 
     /**
-     * @return array{total: int, by_department: array<int, array{department: string, count: int}>, by_status: array<int, array{status: string, count: int}>}
+     * @return array{total: int, by_department: list<array{department: string, count: int}>, by_status: list<array{status: string, count: int}>}
      */
     private function buildHeadcount(int $companyId): array
     {
@@ -71,6 +71,7 @@ class WeeklyReportWorkflow
             ->where('status', 'active')
             ->count();
 
+        /** @var list<array{department: string, count: int}> $byDepartment */
         $byDepartment = DB::table('employees')
             ->join('departments', 'employees.department_id', '=', 'departments.id')
             ->where('employees.company_id', $companyId)
@@ -79,24 +80,29 @@ class WeeklyReportWorkflow
             ->select('departments.name as department', DB::raw('count(*) as count'))
             ->orderByDesc('count')
             ->get()
-            ->toArray();
+            ->map(fn (\stdClass $row): array => ['department' => (string) $row->department, 'count' => (int) $row->count])
+            ->values()
+            ->all();
 
+        /** @var list<array{status: string, count: int}> $byStatus */
         $byStatus = DB::table('employees')
             ->where('company_id', $companyId)
             ->groupBy('status')
             ->select('status', DB::raw('count(*) as count'))
             ->get()
-            ->toArray();
+            ->map(fn (\stdClass $row): array => ['status' => (string) $row->status, 'count' => (int) $row->count])
+            ->values()
+            ->all();
 
         return [
             'total' => $total,
-            'by_department' => array_map(fn (object $row): array => ['department' => (string) $row->department, 'count' => (int) $row->count], $byDepartment),
-            'by_status' => array_map(fn (object $row): array => ['status' => (string) $row->status, 'count' => (int) $row->count], $byStatus),
+            'by_department' => $byDepartment,
+            'by_status' => $byStatus,
         ];
     }
 
     /**
-     * @return array{total: int, by_type: array<int, array{type: string, count: int}>, pending: int, approved: int, rejected: int}
+     * @return array{total: int, by_type: list<array{type: string, count: int}>, pending: int, approved: int, rejected: int}
      */
     private function buildAbsenceSummary(int $companyId, string $startDate, string $endDate): array
     {
@@ -107,11 +113,14 @@ class WeeklyReportWorkflow
 
         $total = (clone $query)->count();
 
+        /** @var list<array{type: string, count: int}> $byType */
         $byType = (clone $query)
             ->groupBy('type')
             ->select('type', DB::raw('count(*) as count'))
             ->get()
-            ->toArray();
+            ->map(fn (\stdClass $row): array => ['type' => (string) $row->type, 'count' => (int) $row->count])
+            ->values()
+            ->all();
 
         $pending = (clone $query)->where('status', 'pending')->count();
         $approved = (clone $query)->where('status', 'approved')->count();
@@ -119,7 +128,7 @@ class WeeklyReportWorkflow
 
         return [
             'total' => $total,
-            'by_type' => array_map(fn (object $row): array => ['type' => (string) $row->type, 'count' => (int) $row->count], $byType),
+            'by_type' => $byType,
             'pending' => $pending,
             'approved' => $approved,
             'rejected' => $rejected,
