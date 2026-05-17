@@ -98,6 +98,12 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-indigo-600 focus:shadow-lg"
+        >
+          Aller au contenu principal
+        </a>
         <OrganizationJsonLd />
         <DarkModeProvider>
           <PWAProvider>
