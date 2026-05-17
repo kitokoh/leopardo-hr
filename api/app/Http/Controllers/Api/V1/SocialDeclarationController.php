@@ -52,13 +52,13 @@ class SocialDeclarationController extends Controller
             ->get()
             ->keyBy('employee_id');
 
-        $companyName = DB::table('companies')
+        $company = DB::table('companies')
             ->where('id', $actor->company_id)
-            ->value('name') ?? 'N/A';
+            ->select(['name', 'tax_id'])
+            ->first();
 
-        $companyNis = DB::table('companies')
-            ->where('id', $actor->company_id)
-            ->value('tax_id') ?? '';
+        $companyName = $company->name ?? 'N/A';
+        $companyNis = $company->tax_id ?? '';
 
         $declarationRows = $employees->map(function ($emp) use ($payrollData) {
             $payroll = $payrollData->get($emp->id);
@@ -147,13 +147,13 @@ class SocialDeclarationController extends Controller
             ->get()
             ->keyBy('employee_id');
 
-        $companyName = DB::table('companies')
+        $company = DB::table('companies')
             ->where('id', $actor->company_id)
-            ->value('name') ?? 'N/A';
+            ->select(['name', 'tax_id'])
+            ->first();
 
-        $companyAffiliate = DB::table('companies')
-            ->where('id', $actor->company_id)
-            ->value('tax_id') ?? '';
+        $companyName = $company->name ?? 'N/A';
+        $companyAffiliate = $company->tax_id ?? '';
 
         $declarationRows = $employees->map(function ($emp) use ($payrollData, $attendanceData) {
             $payroll = $payrollData->get($emp->id);
