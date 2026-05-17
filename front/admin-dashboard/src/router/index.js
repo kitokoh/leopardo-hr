@@ -206,6 +206,15 @@ const routes = [
         }
       },
       {
+        path: '/reports',
+        name: 'reports',
+        component: () => import('@/views/reports/ReportsView.vue'),
+        meta: {
+          title: 'Rapports RH',
+          icon: 'ChartPieIcon'
+        }
+      },
+      {
         path: '/audit',
         name: 'audit',
         component: () => import('@/views/audit/AuditLogsView.vue'),
