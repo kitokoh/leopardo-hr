@@ -88,7 +88,7 @@
 | D3 | Compression response gzip/brotli | Plan 14 | 0.5j | MEDIUM |
 | D4 | JWT refresh token rotation | Plan 14 | 1j | HIGH |
 | D5 | AES-256 chiffrement donnees sensibles | Plan 14 | 2j | HIGH |
-| D6 | Indexation PostgreSQL colonnes filtrees | Plan 14 | 1j | MEDIUM |
+| D6 | Indexation PostgreSQL colonnes filtrees | Plan 14 | 1j | DONE |
 | D7 | CI workflow pour tester les jobs | T-ARCH-19 | 0.5j | LOW |
 
 ### Categorie E — Frontend Admin Dashboard (Plan 06)
@@ -104,6 +104,13 @@
 | E7 | Widget chat IA | T-WEB-09 | 2j | DONE |
 | E8 | Ecrans rapports RH | T-WEB-10 | 2j | MEDIUM |
 | E9 | Ecrans audit + webhooks | T-WEB-11 | 1j | LOW |
+| E3 | Ecrans contrats (liste, detail, alertes) | T-WEB-05 | 2j | DONE |
+| E4 | Ecrans recrutement (pipeline Kanban) | T-WEB-06 | 3j | DONE |
+| E5 | Ecrans formation (catalogue, sessions, suivi) | T-WEB-07 | 2j | DONE |
+| E6 | Ecrans tracking/flotte (carte live) | T-WEB-08 | 3j | LOW |
+| E7 | Widget chat IA | T-WEB-09 | 2j | LOW |
+| E8 | Ecrans rapports RH | T-WEB-10 | 2j | DONE |
+| E9 | Ecrans audit + webhooks | T-WEB-11 | 1j | DONE |
 | E10 | Composants partages (DataTable, MetricCard) | T-WEB-02 | 1j | HIGH |
 | E11 | Layout navigation nouveaux modules | T-WEB-01 | 1j | HIGH |
 
@@ -117,7 +124,7 @@
 | F4 | SEO (sitemap, robots, schema.org) | T-VITRINE-05 | 1j | MEDIUM |
 | F5 | 5 premiers articles blog | T-VITRINE-06 | 3j | MEDIUM |
 | F6 | Page changelog publique | T-VITRINE-07 | 0.5j | LOW |
-| F7 | Formulaire newsletter | T-VITRINE-08 | 0.5j | LOW |
+| F7 | Formulaire newsletter | T-VITRINE-08 | 0.5j | DONE |
 
 ### Categorie G — Mobile Flutter (Plan 06)
 
@@ -148,7 +155,7 @@
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
 | I1 | Script labels GitHub | T-OSS-04 | 0.5j | LOW |
-| I2 | 10 good first issues | T-OSS-05 | 1j | MEDIUM |
+| I2 | 10 good first issues | T-OSS-05 | 1j | DONE |
 | I3 | Corriger URLs README | T-OSS-06 | 0.5j | LOW |
 | I4 | Screenshots/GIF README | T-OSS-07 | 1j | MEDIUM |
 | I5 | Premiere release GitHub v0.1.0 | T-OSS-08 | 0.5j | HIGH |
@@ -179,7 +186,7 @@
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| L1 | Export SEPA reel (XML ISO 20022) | Plan 14 | 2j | HIGH |
+| L1 | Export SEPA reel (XML ISO 20022) | Plan 14 | 2j | DONE |
 | L2 | Declaration CNAS trimestrielle DZ | Plan 14 | 2j | DONE |
 | L3 | Declaration CNSS MA | Plan 14 | 2j | DONE |
 | L4 | Import/export Excel employes | Plan 14 | 2j | DONE |
@@ -324,6 +331,27 @@
 ### Iteration 11+ — Backlog restant
 **Cible** : Categories restantes (K2 SSO, K4 WCAG, C14, H, I, J, L)
 **Statut** : **BACKLOG** — suites par categorie.
+### Iteration 7 — IA Workflows, Cotisation Simulation, Telescope
+**Cible** : C9, C10, Plan 14 (cotisation), T-MON-11
+**Statut** : **COMPLETE** (2026-05-17, PR #480)
+
+### Iteration 8 — Admin enrichments, rapports RH, indexes, newsletter
+**Cible** : E3, E5, E8, D6, F7, L1
+**Statut** : **COMPLETE** (2026-05-17, PR #481)
+
+### Iteration 9 — Audit UI, good first issues, release prep
+**Cible** : E4 (deja DONE), E9, I2, I5
+**Statut** : **COMPLETE** (2026-05-17)
+**Contenu** :
+- `AuditLogsView.vue` — journal d'audit admin avec filtres (action, type, recherche), export CSV, panneau detail slide-over avec diff avant/apres
+- Route `/audit` dans admin router (lazy import)
+- E4 (recrutement Kanban) confirme DONE — 308 lignes avec KanbanBoard, pipeline stages, advance/return
+- `GOOD_FIRST_ISSUES.md` — 10 issues pour contributeurs debutants
+- `RELEASE_v0.1.0.md` — notes de release pour la premiere version publique
+
+### Iteration 10+ — Mobile, vitrine, IA avancee, GTM
+**Cible** : Categories C, F, G, H, I, J, K, L
+**Statut** : **BACKLOG** — hors cloture « plan 15 MVP admin/API » ; suites dediees par categorie.
 
 **Lots demarres (incrementaux)** :
 - **2026-05-16 — Lot vitrine F** : page publique **`/changelog`** + liens footer (`/pricing`, `/blog`, changelog) dans `front/web`.
