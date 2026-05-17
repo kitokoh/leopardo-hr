@@ -832,12 +832,43 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->unsignedInteger('employee_id')->index();
-                $table->string('type', 30)->default('CDI');
+                $table->string('contract_type', 30)->default('cdi');
+                $table->string('reference', 50)->nullable();
                 $table->string('status', 20)->default('active');
+                $table->string('job_title', 150)->nullable();
+                $table->unsignedInteger('department_id')->nullable();
+                $table->unsignedInteger('position_id')->nullable();
+                $table->decimal('base_salary', 12, 2)->default(0);
+                $table->string('currency', 3)->default('DZD');
+                $table->string('salary_frequency', 20)->default('monthly');
+                $table->decimal('work_hours_per_week', 5, 2)->default(40);
                 $table->date('start_date')->nullable();
                 $table->date('end_date')->nullable();
+                $table->date('probation_end_date')->nullable();
                 $table->date('trial_end_date')->nullable();
+                $table->json('benefits')->nullable();
+                $table->json('clauses')->nullable();
+                $table->timestampTz('signed_at')->nullable();
+                $table->string('signed_document_path', 500)->nullable();
+                $table->text('termination_reason')->nullable();
+                $table->timestampTz('terminated_at')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
                 $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('contract_amendments'))) {
+            Schema::create($this->moduleTable('contract_amendments'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('contract_id')->index();
+                $table->uuid('company_id')->index();
+                $table->string('amendment_type', 40)->default('other');
+                $table->json('changes');
+                $table->date('effective_date');
+                $table->text('reason')->nullable();
+                $table->unsignedInteger('approved_by')->nullable();
+                $table->string('document_path', 500)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
             });
         }
 
@@ -1207,6 +1238,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "privacy_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "contract_amendments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "contracts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_structures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);

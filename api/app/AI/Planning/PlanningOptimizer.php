@@ -6,6 +6,7 @@ namespace App\AI\Planning;
 
 use App\Models\Absence;
 use App\Models\Contract;
+use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -64,7 +65,7 @@ class PlanningOptimizer
             ->get();
 
         /** @var array<string, int> $departmentSizes */
-        $departmentSizes = $employees->groupBy(fn (Employee $e): string => $e->department?->name ?? 'Non affecte')
+        $departmentSizes = $employees->groupBy(fn (Employee $e): string => $this->departmentName($e))
             ->map(fn (Collection $group): int => $group->count())
             ->toArray();
 
@@ -107,7 +108,7 @@ class PlanningOptimizer
     private function analyzeDepartmentCoverage(Collection $employees, Collection $absences, Carbon $start, Carbon $end): array
     {
         $coverage = [];
-        $grouped = $employees->groupBy(fn (Employee $e): string => $e->department?->name ?? 'Non affecte');
+        $grouped = $employees->groupBy(fn (Employee $e): string => $this->departmentName($e));
 
         foreach ($grouped as $dept => $deptEmployees) {
             $deptName = (string) $dept;
@@ -143,12 +144,13 @@ class PlanningOptimizer
 
         foreach ($departmentCoverage as $dept => $info) {
             if ($info['status'] === 'critical') {
+                $coverageRate = (float) $info['coverage_rate'];
                 $conflicts[] = [
                     'type' => 'low_coverage',
                     'department' => $dept,
-                    'coverage_rate' => $info['coverage_rate'],
+                    'coverage_rate' => $coverageRate,
                     'severity' => 'high',
-                    'message' => "Couverture critique ($info[coverage_rate]%) pour $dept.",
+                    'message' => "Couverture critique ({$coverageRate}%) pour $dept.",
                 ];
             }
         }
@@ -181,14 +183,16 @@ class PlanningOptimizer
 
         foreach ($departmentCoverage as $dept => $info) {
             if ($info['status'] === 'critical') {
+                $coverageRate = (float) $info['coverage_rate'];
                 $recommendations[] = [
                     'priority' => 'high',
-                    'action' => "Renforcer l'equipe $dept cette semaine (couverture {$info['coverage_rate']}%).",
+                    'action' => "Renforcer l'equipe $dept cette semaine (couverture {$coverageRate}%).",
                 ];
             } elseif ($info['status'] === 'warning') {
+                $coverageRate = (float) $info['coverage_rate'];
                 $recommendations[] = [
                     'priority' => 'medium',
-                    'action' => "Surveiller la couverture de $dept ({$info['coverage_rate']}%).",
+                    'action' => "Surveiller la couverture de $dept ({$coverageRate}%).",
                 ];
             }
         }
@@ -222,5 +226,12 @@ class PlanningOptimizer
         $score -= count($conflicts) * 5;
 
         return max(0, min(100, $score));
+    }
+
+    private function departmentName(Employee $employee): string
+    {
+        $department = $employee->department;
+
+        return $department instanceof Department ? $department->name : 'Non affecte';
     }
 }
