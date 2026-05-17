@@ -283,14 +283,28 @@
 ### Iteration 7 — IA Workflows, Cotisation Simulation, Telescope
 **Cible** : C9, C10, Plan 14 (cotisation), T-MON-11
 **Statut** : **COMPLETE** (2026-05-17, PR #480)
+**Contenu** :
+- `PreparePayrollWorkflow.php` et `WeeklyReportWorkflow.php` — workflows IA paie et rapport hebdomadaire
+- `CotisationSimulationController.php` — simulation cotisations 6 pays (FR, DZ, MA, TN, SN, CI)
+- `config/telescope.php` — configuration monitoring dev
+- Tests Feature : `AIWorkflowTest`, `CotisationSimulationTest`
+- Synchronisation 25+ items plans d'action `[ ]` vers `[x]`
 
 ### Iteration 8 — Admin enrichments, rapports RH, indexes, newsletter
 **Cible** : E3, E5, E8, D6, F7, L1
 **Statut** : **COMPLETE** (2026-05-17, PR #481)
+**Contenu** :
+- `ReportsView.vue` — ecran rapports RH admin (headcount, absenteisme, turnover, overtime, payroll summary, rapports avances)
+- `ContractsView.vue` enrichi — panneau detail slide-over avec alertes automatiques (expiration, periode d'essai)
+- `TrainingView.vue` enrichi — panneau detail formation avec sessions associees, cartes cliquables
+- `NewsletterForm.tsx` — composant newsletter integre dans footer vitrine
+- Migration indexes PostgreSQL etendus (contrats, formation, recrutement, audit, webhooks)
+- Route `/reports` dans admin router (lazy import)
+- L1 (SEPA XML) deja implemente dans `BankExportGenerator`
 
 ### Iteration 9 — Audit UI, good first issues, release prep
 **Cible** : E4 (deja DONE), E9, I2, I5
-**Statut** : **COMPLETE** (2026-05-17)
+**Statut** : **COMPLETE** (2026-05-17, PR #482)
 **Contenu** :
 - `AuditLogsView.vue` — journal d'audit admin avec filtres (action, type, recherche), export CSV, panneau detail slide-over avec diff avant/apres
 - Route `/audit` dans admin router (lazy import)
