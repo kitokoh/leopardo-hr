@@ -703,9 +703,89 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Les reponses compressees portent `Content-Encoding: gzip` et `Vary: Accept-Encoding`
 - Les clients sans `Accept-Encoding: gzip` recoivent la reponse non compressees
 
+
+
+### IA Workflows metier
+- `POST /api/v1/ai/workflows/prepare-payroll` execute le workflow de preparation paie
+  - Requiert `period_start` et `period_end` (dates)
+  - Collecte les employes actifs du tenant
+  - Verifie les structures salariales manquantes
+  - Detecte les absences en attente de validation sur la periode
+  - Compte les absences approuvees a deduire
+  - Verifie si un run de paie existe deja pour la meme periode
+  - Retourne un rapport multi-etapes avec status `ready` ou `requires_attention`
+  - Reserve aux managers (role=manager) ; employes recoivent 403
+  - Isolation tenant : toutes les requetes sont scopees au `company_id` de l'acteur
+- `GET /api/v1/ai/workflows/weekly-report` genere un rapport hebdomadaire automatique
+  - Parametre optionnel `week_start` (date) ; par defaut la semaine precedente
+  - Effectifs par departement et par statut
+  - Absences par type avec comptage pending/approved/rejected
+  - Detection anomalies : employes sans pointage ni absence approuvee, contrats expirant sous 30 jours
+  - Retourne un resume texte synthetique
+  - Reserve aux managers ; employes recoivent 403
+
+### Simulation cotisations sociales
+- `POST /api/v1/cotisation-simulation` simule les cotisations pour un salaire brut donne
+  - Requiert `gross_salary` (numeric >= 0) et `country_code` (in:DZ,MA,FR,TN,TR,SN)
+  - Retourne le detail des cotisations employe et employeur par type
+  - Calcule le net avant impot et le cout total employeur
+  - Taux DZ : CNAS salarie 9%, employeur 26%
+  - Taux MA : CNSS salarie 4.48%, AMO 2.26%, employeur CNSS 8.98%, AMO 3.40%
+  - Pays non supportes retournent une erreur 422
+  - Reserve aux managers ; employes recoivent 403
+  - Aucune persistance : calcul en memoire uniquement
+
+### Rapports RH avances (Iteration 8)
+- `GET /api/v1/reports/headcount` retourne l'effectif total et la repartition par departement et par statut
+- `GET /api/v1/reports/absenteeism` retourne le taux d'absenteisme, jours totaux, duree moyenne et repartition par type pour la periode donnee
+- `GET /api/v1/reports/turnover` retourne le taux de turnover pour la periode donnee
+- `GET /api/v1/reports/overtime` retourne les heures supplementaires totales, nombre d'employes concernes et repartition par departement
+- `GET /api/v1/reports/payroll-summary` retourne la masse salariale (brut, net, charges patronales, nombre de bulletins)
+- `GET /api/v1/reports/recruitment-pipeline` retourne les candidatures par etape du pipeline de recrutement
+- `GET /api/v1/reports/training-completion` retourne le taux de completion des formations et les inscriptions par statut
+- `GET /api/v1/reports/demographics` retourne la repartition demographique (age, genre, anciennete)
+- `GET /api/v1/reports/cost-analysis` retourne l'analyse des couts RH par departement
+- `GET /api/v1/reports/loan-summary` retourne l'encours et les remboursements de prets employes
+- Tous les rapports sont scopes au `company_id` de l'acteur et reservees aux managers
+
+### Indexes performance etendus (D6)
+- La migration `2026_05_17_000001_add_extended_performance_indexes` ajoute des indexes PostgreSQL sur les colonnes filtrees des tables contracts, training_courses, training_sessions, training_enrollments, job_postings, applicants, audit_logs et webhook_endpoints
+- Les indexes sont crees avec `CREATE INDEX CONCURRENTLY IF NOT EXISTS` et sont idempotents
+- L'index partiel `idx_contracts_end_date` filtre sur `status = 'active'` pour optimiser les alertes d'expiration
+
+### Predictions IA (Plan 15 C11-C13, C15)
+- `GET /api/v1/predictions/turnover` retourne le scoring turnover par departement et employe, avec facteurs de risque et taux global
+- `GET /api/v1/predictions/absenteeism` retourne les predictions d'absenteisme avec periodes a risque, saisonnalite et recommandations
+- `GET /api/v1/predictions/notifications` retourne les notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, soldes conges faibles)
+- Les 3 endpoints sont reserves aux managers `principal` et `rh` (RBAC teste dans PredictionControllerTest)
+- Les employes non-managers recoivent un 403
+- Structure reponse : `{"data": {...}}` avec champs documentes
+- Le TurnoverPredictor analyse anciennete, taux departement, absences frequentes
+- L'AbsenteeismPredictor integre saisonnalite (juillet, aout, decembre) et tendances
+- Le ProactiveNotificationService agrege 6 types de notifications tries par severite (critical > warning > info)
 ### Audit logs UI (E9 - Iteration 9)
 - `GET /api/v1/audit-logs` retourne les logs d'audit pagines, scopes au `company_id` de l'acteur
 - `GET /api/v1/audit-logs/export?format=csv` exporte les logs d'audit au format CSV
 - Les logs contiennent `user_name`, `action`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`
 - Filtrage par action (created, updated, deleted, login, logout, exported) et par type d'entite (Employee, Contract, Absence, PayrollRun, etc.)
 - Isolation tenant : les logs sont filtres par `company_id`
+
+
+### SSO SAML/OIDC (Plan 15 K2)
+- `GET /api/v1/sso/providers` retourne la liste des protocoles SSO supportes (SAML 2.0, OpenID Connect) — public, pas d'auth
+- `GET /api/v1/sso/status` retourne le statut SSO de l'entreprise (enabled, provider) — RBAC manager principal uniquement
+- `POST /api/v1/sso/configure` configure SSO pour l'entreprise (provider in:saml,oidc, entity_id URL, sso_url URL) — RBAC manager principal
+- `DELETE /api/v1/sso/disable` desactive SSO pour l'entreprise — RBAC manager principal
+- `POST /api/v1/sso/saml/{companyId}/callback` recoit la reponse SAML de l'IdP — stub, validation complete a implementer
+- `GET /api/v1/sso/oidc/{companyId}/callback` recoit le callback OIDC (code, state, id_token) — stub, echange token a implementer
+- Les endpoints de gestion (status, configure, disable) sont proteges par auth:sanctum + tenant
+- Les callbacks sont publics (recus directement de l'IdP)
+- Configuration stockee en JSONB dans company_sso_configs (unique par company_id)
+
+### Optimisation planning IA (C14 - Iteration 12)
+- `GET /api/v1/planning/weekly-optimization` retourne l'analyse de couverture departement, les conflits planning et les recommandations pour la semaine donnee
+- `GET /api/v1/planning/weekly-optimization?week_start=2026-06-01` accepte une date de debut de semaine optionnelle
+- `GET /api/v1/planning/shift-rebalancing` retourne l'analyse de repartition des effectifs par departement avec suggestions de reequilibrage
+- Le score d'optimisation est un entier 0-100 base sur la couverture departementale et le nombre de conflits
+- Isolation tenant : toutes les requetes sont scopees au `company_id` de l'acteur authentifie
+- Authentification requise : les endpoints retournent 401 sans token valide

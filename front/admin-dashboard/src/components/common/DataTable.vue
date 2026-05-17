@@ -6,8 +6,9 @@
           <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             v-model="searchQuery"
-            type="text"
+            type="search"
             :placeholder="searchPlaceholder"
+            :aria-label="searchPlaceholder"
             class="w-64 rounded-md border-gray-300 pl-9 text-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
@@ -32,7 +33,8 @@
       {{ emptyMessage }}
     </div>
     <div v-else class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
+      <table class="min-w-full divide-y divide-gray-200" role="table">
+        <caption v-if="caption" class="sr-only">{{ caption }}</caption>
         <thead class="bg-gray-50">
           <tr>
             <th
@@ -40,6 +42,7 @@
               :key="col.key"
               class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
               :class="{ 'cursor-pointer hover:text-gray-700': col.sortable }"
+              :aria-sort="col.sortable && sortKey === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined"
               @click="col.sortable && toggleSort(col.key)"
             >
               <div class="flex items-center gap-1">
@@ -99,7 +102,8 @@ const props = defineProps({
   emptyMessage: { type: String, default: 'Aucun resultat trouve.' },
   defaultSort: { type: String, default: '' },
   defaultSortDir: { type: String, default: 'asc' },
-  keyField: { type: String, default: 'id' }
+  keyField: { type: String, default: 'id' },
+  caption: { type: String, default: '' }
 })
 
 defineEmits(['export'])

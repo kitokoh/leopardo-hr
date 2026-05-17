@@ -60,6 +60,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les tests Feature qui declenchent `AbsenceRequested`, `AbsenceApproved`, `AbsenceRejected`, `PayrollValidated` ou d'autres evenements metier peuvent passer par `WebhookListener`. Le schema de test MVP doit donc creer `webhook_endpoints` et `webhook_deliveries`, sinon PostgreSQL echoue avec `relation "webhook_endpoints" does not exist` avant meme les assertions.
 - Les contrats plateforme recents doivent rester dans `api/openapi.yaml`. Le workflow `OpenAPI CI` lance Redocly uniquement quand la spec ou son workflow changent ; corriger la spec plutot que laisser les frontends deviner les shapes `data` / `meta`.
 - Depuis v4.16.63, les contrats tracking/flotte sont aussi dans `api/openapi.yaml`. Pour toute evolution de `routes/modules/tracking.php`, garder la spec alignee sur les vrais champs Eloquent (`plate_number`, `traccar_*`, `assigned_driver_id`) et non sur les anciens noms generiques (`registration_number`, `tracker_id`).
+- Les predictions IA doivent rester defensives face aux donnees RH incompletes : `department_id` peut etre nul dans les groupements Eloquent, et les soldes conges historiques peuvent exposer `remaining`, `remaining_days` ou `balance` selon la migration/fixture. Utiliser des allowlists de colonnes et des `whereNull` explicites plutot que caster une cle vide.
 
 ### Audit 2026-05-13 - IA, RBAC et tenant runtime
 
@@ -162,6 +163,14 @@ Procedure recommandee :
 
 - **Iteration 5** monitoring : code backend deja dans `main` (`CHANGELOG` [4.16.55]) ; reste **ops** sondes externes (UptimeRobot / Better Stack) + runbook `docs/GESTION_PROJET/RUNBOOK_OBSERVABILITY.md`.
 - **Iteration 4** perf/paie : PR **#468** en attente de merge ; preparation **iteration 6** admin-dashboard (`front/admin-dashboard/`, routes `/payroll`, `/leaves`) peut progresser sur une branche separee depuis `origin/main`, puis reconciliation `main` apres merge.
+### 2026-05-17 - Consolidation PR #487 SSO / IA workflows
+
+- Les routes publiques SSO doivent accepter les UUID `companies.id`; ne pas remettre `whereNumber('companyId')` sur `/api/v1/sso/saml/{companyId}/callback` ni `/oidc/{companyId}/callback`.
+- Pour `company_sso_configs`, eviter `created_at => DB::raw('COALESCE(created_at, NOW())')` dans `updateOrInsert` : PostgreSQL ne permet pas de referencer la colonne cible dans `VALUES`. Faire update puis insert explicites.
+- Les workflows IA doivent rester compatibles avec les schemas historiques et fixtures MVP : verifier `Schema::hasColumn('employees', 'salary_structure_id')` avant de filtrer dessus, et grouper les absences via `absence_type_id` / `absence_types`, jamais via une colonne fantome `absences.type`.
+- Dans les tests PostgreSQL partages, ne pas construire de `search_path` `company_{uuid}` non quote/sanitise ; la factory `Company` est shared par defaut et `shared_tenants,public` suffit.
+- Les modules inclus depuis `routes/api.php` sont deja sous `Route::prefix('v1')`; les fichiers `routes/modules/*.php` ne doivent pas repeter `prefix('v1/...')`, sinon les endpoints deviennent `/api/v1/v1/...`.
+- La fixture `CreatesMvpSchema` doit refleter le modele `Contract` moderne (`contract_type`, `base_salary`, `department_id`, `probation_end_date`, `contract_amendments`) pour eviter les faux rouges sur contrats, rapports RH, planning et predictions.
 ### 2026-05-16 - Plan 15 iteration 4 (performance / paie async)
 
 - Iteration 4 cloture fonctionnelle : cache tenant `GET /api/v1/reports/headcount` (`HR_REPORT_HEADCOUNT_CACHE_TTL`), job `WarmPaySlipPdfPathsForPayrollRunJob` apres validation paie (`PAYROLL_QUEUE_PDF_WARMUP`), PDF bulletins via `pdf_path` sur disque `local`.

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { NewsletterForm } from './NewsletterForm'
 
 function getFooterHref(sectionIndex: number, linkIndex: number): string {
   const key = `${sectionIndex}-${linkIndex}`
@@ -69,6 +70,10 @@ export function Footer() {
               </ul>
             </div>
           ))}
+        </div>
+
+        <div className="mb-8 flex justify-center">
+          <NewsletterForm />
         </div>
 
         <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">

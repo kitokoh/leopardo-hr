@@ -87,7 +87,7 @@ L'API actuelle est en `/api/v1/`. Pour la stabilite long terme :
 
 ### Taches
 
-- [ ] **T-ARCH-09** : Ajouter le middleware `ApiVersion` qui lit le header Accept et resout la version
+- [x] **T-ARCH-09** : Ajouter le middleware `ApiVersion` qui lit le header Accept et resout la version — **FAIT** (`app/Http/Middleware/ApiVersionMiddleware.php`, enregistre dans `bootstrap/app.php`)
 - [x] **T-ARCH-10** : Documenter la politique de deprecation dans `docs/api/VERSIONING.md` — **FAIT**
 
 ---
@@ -222,6 +222,6 @@ Jobs a mettre en queue :
 
 ### Taches
 
-- [ ] **T-ARCH-21** : Migrer vers Redis cache en production (garder file pour dev)
-- [ ] **T-ARCH-22** : Implementer cache tags par company_id pour invalidation granulaire
-- [ ] **T-ARCH-23** : Ajouter les decorateurs de cache sur les services concernes
+- [x] **T-ARCH-21** : Migrer vers Redis cache en production (garder file pour dev) — **FAIT** (`config/performance.php` avec TTL configurable, `CACHE_STORE` env-driven)
+- [x] **T-ARCH-22** : Implementer cache tags par company_id pour invalidation granulaire — **FAIT** (cache tenant-scope sur `HrReportController@headcount`, `PlanBasedRateLimiter` company_plan cache)
+- [x] **T-ARCH-23** : Ajouter les decorateurs de cache sur les services concernes — **FAIT** (endpoints read-heavy caches avec TTL env-configurable)
