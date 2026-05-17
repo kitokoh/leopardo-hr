@@ -151,6 +151,166 @@ class KioskController extends Controller
         ]);
     }
 
+    public function employeeInfo(Request $request, string $deviceCode): JsonResponse
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:150'],
+        ]);
+
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+        $this->setTenantSearchPath($company);
+
+        $employee = Employee::query()
+            ->where('company_id', $company->id)
+            ->where(function ($query) use ($validated): void {
+                $query->where('matricule', $validated['identifier'])
+                    ->orWhere('email', $validated['identifier'])
+                    ->orWhere('zkteco_id', $validated['identifier']);
+            })
+            ->first();
+
+        abort_if(!$employee, 404, 'EMPLOYEE_NOT_FOUND');
+
+        $today = now()->toDateString();
+        $todayAttendance = DB::table('attendance_logs')
+            ->where('employee_id', $employee->id)
+            ->where('date', $today)
+            ->first();
+
+        $leaveBalance = DB::table('leave_balances')
+            ->where('employee_id', $employee->id)
+            ->where('year', now()->year)
+            ->get()
+            ->map(fn ($b) => [
+                'leave_type' => $b->leave_type ?? 'annual',
+                'total' => $b->total_days ?? $b->entitled_days ?? 0,
+                'used' => $b->used_days ?? 0,
+                'remaining' => ($b->total_days ?? $b->entitled_days ?? 0) - ($b->used_days ?? 0),
+            ]);
+
+        return new JsonResponse([
+            'data' => [
+                'employee' => [
+                    'id' => $employee->id,
+                    'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+                    'matricule' => $employee->matricule,
+                    'department' => $employee->department?->name,
+                    'position' => $employee->position?->name,
+                    'photo_url' => $employee->photo_url ?? null,
+                ],
+                'today_attendance' => $todayAttendance ? [
+                    'check_in' => $todayAttendance->check_in,
+                    'check_out' => $todayAttendance->check_out,
+                    'status' => $todayAttendance->status,
+                ] : null,
+                'leave_balances' => $leaveBalance,
+            ],
+        ]);
+    }
+
+    public function announcements(Request $request, string $deviceCode): JsonResponse
+    {
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        $this->setTenantSearchPath($company);
+
+        $announcements = \App\Models\KioskAnnouncement::query()
+            ->where('company_id', $company->id)
+            ->active()
+            ->orderByDesc('priority')
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get()
+            ->map(fn ($a) => [
+                'id' => $a->id,
+                'title' => $a->title,
+                'body' => $a->body,
+                'priority' => $a->priority,
+                'starts_at' => $a->starts_at?->toIso8601String(),
+                'expires_at' => $a->expires_at?->toIso8601String(),
+            ]);
+
+        return new JsonResponse(['data' => $announcements]);
+    }
+
+    public function leaveBalance(Request $request, string $deviceCode): JsonResponse
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:150'],
+        ]);
+
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+        $this->setTenantSearchPath($company);
+
+        $employee = Employee::query()
+            ->where('company_id', $company->id)
+            ->where(function ($query) use ($validated): void {
+                $query->where('matricule', $validated['identifier'])
+                    ->orWhere('email', $validated['identifier'])
+                    ->orWhere('zkteco_id', $validated['identifier']);
+            })
+            ->firstOrFail();
+
+        $balances = DB::table('leave_balances')
+            ->where('employee_id', $employee->id)
+            ->where('year', now()->year)
+            ->get()
+            ->map(fn ($b) => [
+                'leave_type' => $b->leave_type ?? 'annual',
+                'total' => $b->total_days ?? $b->entitled_days ?? 0,
+                'used' => $b->used_days ?? 0,
+                'remaining' => ($b->total_days ?? $b->entitled_days ?? 0) - ($b->used_days ?? 0),
+            ]);
+
+        return new JsonResponse([
+            'data' => [
+                'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+                'year' => now()->year,
+                'balances' => $balances,
+            ],
+        ]);
+    }
+
+    public function qrPunch(Request $request, string $deviceCode): JsonResponse
+    {
+        $validated = $request->validate([
+            'qr_data' => ['required', 'string', 'max:500'],
+            'action' => ['nullable', 'in:check_in,check_out'],
+        ]);
+
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+        $this->setTenantSearchPath($company);
+
+        $qrPayload = json_decode(base64_decode($validated['qr_data'], true), true);
+        $identifier = $qrPayload['employee_id'] ?? $qrPayload['matricule'] ?? $validated['qr_data'];
+
+        $log = $this->kioskAttendanceService->punch(
+            kiosk: $kiosk,
+            identifier: (string) $identifier,
+            action: $validated['action'] ?? 'check_in',
+        );
+
+        $action = $validated['action'] ?? 'check_in';
+        $statusCode = $action === 'check_in' ? 201 : 200;
+
+        return new JsonResponse([
+            'data' => [
+                'employee_id' => $log->employee_id,
+                'date' => $log->date?->format('Y-m-d'),
+                'check_in' => optional($log->check_in)->toIso8601String(),
+                'check_out' => optional($log->check_out)->toIso8601String(),
+                'method' => 'qr_code',
+                'status' => $log->status,
+            ],
+        ], $statusCode);
+    }
+
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
         DB::statement('SET search_path TO shared_tenants,public');
