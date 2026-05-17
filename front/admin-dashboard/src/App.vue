@@ -1,10 +1,10 @@
 <template>
-  <div id="app" class="min-h-screen bg-gray-50">
+  <div id="app" class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Loading global -->
-    <div v-if="isLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div v-if="isLoading" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex items-center justify-center">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Chargement de l'administration...</p>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">Chargement de l'administration...</p>
       </div>
     </div>
 
@@ -16,13 +16,18 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import { useRouter } from 'vue-router'
 
 const isLoading = ref(true)
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const router = useRouter()
 
 onMounted(async () => {
+  // Initialize theme
+  themeStore.init()
+
   try {
     // Vérifier l'authentification au démarrage
     if (authStore.token) {
