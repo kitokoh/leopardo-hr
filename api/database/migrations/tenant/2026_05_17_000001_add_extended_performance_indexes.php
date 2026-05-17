@@ -20,7 +20,7 @@ return new class extends Migration
             ['contracts', 'idx_contracts_company_status', '(company_id, status)'],
             ['contracts', 'idx_contracts_end_date', '(end_date) WHERE status = \'active\''],
             ['contracts', 'idx_contracts_employee', '(employee_id, company_id)'],
-            ['training_courses', 'idx_training_courses_company', '(company_id, is_active)'],
+            ['training_courses', 'idx_training_courses_company', '(company_id)'],
             ['training_sessions', 'idx_training_sessions_dates', '(start_date, end_date)'],
             ['training_enrollments', 'idx_training_enrollments_employee', '(employee_id, status)'],
             ['job_postings', 'idx_job_postings_company_status', '(company_id, status)'],
