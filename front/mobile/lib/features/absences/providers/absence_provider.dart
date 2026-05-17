@@ -6,3 +6,9 @@ final absencesProvider = FutureProvider<List<Absence>>((ref) async {
   final repo = ref.watch(absenceRepositoryProvider);
   return await repo.getMyAbsences();
 });
+
+final leaveBalancesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final repo = ref.watch(absenceRepositoryProvider);
+  return await repo.getLeaveBalances();
+});

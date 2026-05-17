@@ -752,6 +752,17 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - La migration `2026_05_17_000001_add_extended_performance_indexes` ajoute des indexes PostgreSQL sur les colonnes filtrees des tables contracts, training_courses, training_sessions, training_enrollments, job_postings, applicants, audit_logs et webhook_endpoints
 - Les indexes sont crees avec `CREATE INDEX CONCURRENTLY IF NOT EXISTS` et sont idempotents
 - L'index partiel `idx_contracts_end_date` filtre sur `status = 'active'` pour optimiser les alertes d'expiration
+
+### Predictions IA (Plan 15 C11-C13, C15)
+- `GET /api/v1/predictions/turnover` retourne le scoring turnover par departement et employe, avec facteurs de risque et taux global
+- `GET /api/v1/predictions/absenteeism` retourne les predictions d'absenteisme avec periodes a risque, saisonnalite et recommandations
+- `GET /api/v1/predictions/notifications` retourne les notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, soldes conges faibles)
+- Les 3 endpoints sont reserves aux managers `principal` et `rh` (RBAC teste dans PredictionControllerTest)
+- Les employes non-managers recoivent un 403
+- Structure reponse : `{"data": {...}}` avec champs documentes
+- Le TurnoverPredictor analyse anciennete, taux departement, absences frequentes
+- L'AbsenteeismPredictor integre saisonnalite (juillet, aout, decembre) et tendances
+- Le ProactiveNotificationService agrege 6 types de notifications tries par severite (critical > warning > info)
 ### Audit logs UI (E9 - Iteration 9)
 - `GET /api/v1/audit-logs` retourne les logs d'audit pagines, scopes au `company_id` de l'acteur
 - `GET /api/v1/audit-logs/export?format=csv` exporte les logs d'audit au format CSV
