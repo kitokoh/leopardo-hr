@@ -251,10 +251,10 @@ if (app()->environment('production')) {
 - [x] **T-MON-03** : Configurer logging JSON en production — **FAIT** (`StructuredLogging.php` middleware + `StructuredLoggingMiddlewareTest.php`)
 - [x] **T-MON-04** : Implementer le middleware RequestId — **FAIT** (`RequestIdMiddleware.php` + `RequestIdMiddlewareTest.php`)
 - [x] **T-MON-05** : Creer les endpoints metriques plateforme — **FAIT** (`MetricsController.php` + `PlatformMetricsOverviewController.php` + tests)
-- [ ] **T-MON-06** : Configurer Sentry traces + profiles
-- [ ] **T-MON-07** : Implementer AlertService + webhook Slack
-- [ ] **T-MON-08** : Configurer slow query logging
-- [ ] **T-MON-09** : Ajouter UptimeRobot/BetterUptime pour monitoring externe
+- [x] **T-MON-06** : Configurer Sentry traces + profiles — **FAIT** (`SentryContextMiddleware.php`, `config/sentry.php` avec traces/profiles)
+- [x] **T-MON-07** : Implementer AlertService + webhook Slack — **FAIT** (`SlackAlertNotification.php`, `services.slack.monitoring_webhook`)
+- [x] **T-MON-08** : Configurer slow query logging — **FAIT** (`MonitorSlowQueries.php`, scheduled every 15 min)
+- [x] **T-MON-09** : Ajouter UptimeRobot/BetterUptime pour monitoring externe — **FAIT** (doc dans `RUNBOOK_OBSERVABILITY.md`)
 - [x] **T-MON-10** : Dashboard admin avec metriques cles — **FAIT** (admin-dashboard avec DashboardController + metriques)
 - [ ] **T-MON-11** : Installer Telescope pour dev
-- [ ] **T-MON-12** : Documenter le runbook alertes dans `docs/GESTION_PROJET/RUNBOOK_ALERTES.md`
+- [x] **T-MON-12** : Documenter le runbook alertes dans `docs/GESTION_PROJET/RUNBOOK_ALERTES.md` — **FAIT** (integre dans `RUNBOOK_OBSERVABILITY.md`)

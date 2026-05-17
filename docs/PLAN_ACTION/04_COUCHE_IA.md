@@ -201,11 +201,11 @@ GET    /api/ai/analytics/errors                   # Erreurs et taux de succes
 
 ### Taches Phase 2
 
-- [ ] **T-IA-15** : Implementer les outils write avec confirmation utilisateur
-- [ ] **T-IA-16** : Ajouter le mecanisme de confirmation (l'IA demande confirmation avant d'executer une action write)
+- [x] **T-IA-15** : Implementer les outils write avec confirmation utilisateur — **FAIT** (`AI/WriteActionRunner.php`, `AI/PendingActionStore.php`, `AI/WriteToolPolicy.php`)
+- [x] **T-IA-16** : Ajouter le mecanisme de confirmation (l'IA demande confirmation avant d'executer une action write) — **FAIT** (flow confirm/cancel via `PendingActionStore` + `AIGatewayController`)
 - [x] **T-IA-17** : Creer les endpoints analytics IA — **FAIT** (`AIAnalyticsController.php` : usage, costs, tools, errors)
 - [ ] **T-IA-18** : Dashboard admin pour visualiser les analytics
-- [ ] **T-IA-19** : Tests pour les actions write avec confirmation
+- [x] **T-IA-19** : Tests pour les actions write avec confirmation — **FAIT** (`tests/Feature/AIWriteActionConfirmationTest.php`)
 
 ---
 

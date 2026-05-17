@@ -68,4 +68,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
     Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
 
+    // Cotisation Simulation
+    Route::post('/cotisation-simulation', [\App\Http\Controllers\Api\V1\CotisationSimulationController::class, 'simulate']);
+
 });
