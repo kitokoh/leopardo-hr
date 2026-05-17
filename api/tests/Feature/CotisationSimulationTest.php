@@ -28,8 +28,7 @@ class CotisationSimulationTest extends TestCase
 
     public function test_simulate_dz_cotisations(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
@@ -67,8 +66,7 @@ class CotisationSimulationTest extends TestCase
 
     public function test_simulate_ma_cotisations(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
@@ -92,8 +90,7 @@ class CotisationSimulationTest extends TestCase
 
     public function test_employee_cannot_simulate(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
@@ -113,8 +110,7 @@ class CotisationSimulationTest extends TestCase
 
     public function test_invalid_country_code_rejected(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $manager = Employee::factory()->create([
             'company_id' => $company->id,

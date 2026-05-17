@@ -28,8 +28,7 @@ class AIWorkflowTest extends TestCase
 
     public function test_prepare_payroll_workflow_returns_steps(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
@@ -57,8 +56,7 @@ class AIWorkflowTest extends TestCase
 
     public function test_weekly_report_workflow_returns_report(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
@@ -85,8 +83,7 @@ class AIWorkflowTest extends TestCase
 
     public function test_employee_cannot_access_workflows(): void
     {
-        $company = Company::first();
-        $this->assertNotNull($company);
+        $company = Company::factory()->create();
 
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
