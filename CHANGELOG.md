@@ -1,7 +1,33 @@
-﻿# CHANGELOG - LEOPARDO RH 
+﻿#  CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.76] - 2026-05-17
+
+### Fix — PR #487 consolidation backend gates
+
+- Fix : callbacks SSO publics compatibles UUID entreprise en supprimant la contrainte numerique de route.
+- Fix : configuration SSO sans `COALESCE(created_at, NOW())` dans un `INSERT`, incompatible PostgreSQL.
+- Fix : workflows IA paie/rapport hebdomadaire alignes avec le schema RH reel (`absence_type_id`, `salary_structure_id` optionnel).
+- Fix : predictions IA et planning type-safe pour PHPStan (relations explicites, dates, ids, floats, listes de facteurs).
+- Fix : routes planning exposees sur `/api/v1/planning/*` au lieu de `/api/v1/v1/planning/*`.
+- Fix : predictions turnover compatibles avec les employes sans departement assigne et notifications proactives tolerantes aux variantes de colonne solde conges (`remaining`, `remaining_days`, `balance`).
+- Tests : fixture MVP ajustee pour `shared_tenants`, `contracts`, `contract_amendments` et `salary_structures`.
+
+## [4.16.72] - 2026-05-17
+
+### Feat — Iteration 12 : E1/E2/E10/E11 completion, C14 planning optimization, WCAG corrections
+
+- Nouveau : onglet "Structures salariales" dans PayrollView (E1 complet — structures + runs + bulletins + export).
+- Nouveau : `MetricCard.vue` — composant partage avec tendance, formatage devise/pourcentage (E10).
+- Nouveau : `ReportsView.vue` — ecran rapports RH avec MetricCard KPIs et onglets (effectifs, absenteisme, turnover, heures supp., masse salariale) (E8).
+- Nouveau : routes `/reports` et navigation sidebar pour rapports RH et journal d'audit.
+- Nouveau : `PlanningOptimizer.php` — service IA optimisation planning hebdomadaire avec couverture departement, detection conflits, recommandations et score (C14).
+- Nouveau : `PlanningController.php` — endpoints `GET /v1/planning/weekly-optimization` et `GET /v1/planning/shift-rebalancing`.
+- Nouveau : `PlanningOptimizationTest.php` — tests Feature planning.
+- WCAG : `role="alert"` sur notifications toast, `aria-sort` sur DataTable triable, `type="search"` + `aria-label` sur champ recherche, `caption` sr-only optionnel.
+- Plan 15 : E1, E2, E10, E11, C14, F1-F6 passes en DONE.
+- Sidebar admin : ajout liens rapports RH et journal d'audit.
 ## [4.16.75] - 2026-05-17
 
 ### Docs — Iteration FINALE : mise a jour documentation globale Plan 15
@@ -10,6 +36,36 @@
 - Mise a jour : `15_PLAN_EXECUTION_CONSOLIDE.md` — synthese globale mise a jour avec pourcentages et declaration de cloture etendue iterations 1-11.
 - Mise a jour : date `AGENTS.md` → 2026-05-17.
 - Bilan Plan 15 iterations 1-11 : 5 PRs (7-11), 15+ services/controllers, 30+ tests Feature, 3 audits (WCAG, RBAC, conformite), SSO stub, predictions IA, dashboard predictif.
+
+## [4.16.73] - 2026-05-17
+
+### Feat — Iteration 10 : Predictions IA, dashboard predictif, mobile enrichments
+
+- Nouveau : `App\AI\Predictions\TurnoverPredictor` — prediction du turnover par departement et employe, scoring facteurs de risque (anciennete, absences frequentes, departement a fort turnover).
+- Nouveau : `App\AI\Predictions\AbsenteeismPredictor` — prediction absenteisme avec saisonnalite, tendances departementales et recommandations IA.
+- Nouveau : `App\AI\Predictions\ProactiveNotificationService` — notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, soldes conges faibles).
+- Nouveau : `PredictionController` — endpoints `/api/v1/predictions/turnover`, `/absenteeism`, `/notifications` avec controle RBAC manager principal/RH.
+- Nouveau : `PredictionsView.vue` — dashboard predictif admin avec cartes turnover, absenteisme, notifications proactives, barres de risque departement.
+- Route admin : `/predictions` ajoutee au router (lazy import).
+- Mobile : enrichissement absences (provider `leaveBalancesProvider`, methode `getLeaveBalances` dans `AbsenceRepository`).
+- Verification : E6 FleetView (197 lignes, DONE), E7 ChatView (191 lignes, DONE), G2-G7 mobile (DONE), G9 carte vehicule (DONE).
+- Tests : `PredictionControllerTest` — 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
+- Plan 15 : C11, C12, C13, C15, E6, E7, G2-G7, G9 passes en DONE.
+- REGISTRE scenarios test API mis a jour.
+## [4.16.74] - 2026-05-17
+
+### Feat — Iteration 11 : SSO SAML/OIDC stub + audit WCAG 2.1 AA
+
+- Nouveau : `App\Services\SSO\SSOService` — service SSO multi-protocole (SAML 2.0, OpenID Connect) avec configuration par entreprise, activation/desactivation et callbacks stub.
+- Nouveau : `App\Services\SSO\SSOProviderConfig` — DTO configuration SSO (entity_id, sso_url, slo_url, certificate, name_id_format).
+- Nouveau : `SSOController` — 6 endpoints : `GET /sso/providers` (public), `GET /sso/status`, `POST /sso/configure`, `DELETE /sso/disable` (RBAC principal), `POST /sso/saml/{id}/callback`, `GET /sso/oidc/{id}/callback`.
+- Nouveau : migration `create_company_sso_configs_table` — table SSO config par entreprise (provider, config JSONB, is_active), idempotente.
+- Nouveau : `routes/modules/sso.php` — routes SSO separees (callbacks publics + gestion authentifiee).
+- Nouveau : `docs/security/WCAG_ACCESSIBILITY_AUDIT.md` — audit complet WCAG 2.1 AA (34 criteres, 23 conformes, 11 partiels, 0 non-conformes, score 68%).
+- Fix : `DashboardLayout.vue` — ajout lien "Aller au contenu principal" (WCAG 2.4.1) + `id="main-content"` sur `<main>`.
+- Fix : `web/src/app/layout.tsx` — ajout lien "Aller au contenu principal" (WCAG 2.4.1).
+- Tests : `SSOControllerTest` — 8 tests Feature (providers publics, RBAC status/configure/disable, validation provider, callback SAML).
+- Plan 15 : K2 (SSO stub) et K4 (WCAG audit) passes en DONE.
 
 ## [4.16.71] - 2026-05-17
 
@@ -22,6 +78,33 @@
 - Confirme : E4 (recrutement pipeline Kanban) est DONE — 308 lignes avec KanbanBoard, 6 stages pipeline, avancer/retourner candidats, creation poste inline.
 - Plan 15 : E4, E9, I2, I5 passes en DONE.
 - SCENARIOS_TEST_API et REGISTRE mis a jour.
+
+## [4.16.69] - 2026-05-14
+
+### Feat — Iteration 7 : IA Workflows, cotisations simulation, Telescope, synchronisation plans
+
+- Nouveau : `AI/Workflows/PreparePayrollWorkflow.php` — workflow IA « preparer la paie » : collecte employes actifs, verifie structures salariales, absences en attente, runs existants. Retourne un rapport de readiness multi-etapes.
+- Nouveau : `AI/Workflows/WeeklyReportWorkflow.php` — workflow IA « rapport hebdomadaire » : effectifs par departement/statut, absences par type, anomalies (employes sans pointage ni absence, contrats expirants).
+- Nouveau : `AIWorkflowController.php` avec endpoints `POST /api/v1/ai/workflows/prepare-payroll` et `GET /api/v1/ai/workflows/weekly-report`.
+- Nouveau : `CotisationSimulationController.php` — simulation cotisations sociales temps reel pour 6 pays (DZ, MA, FR, TN, TR, SN) avec detail employeur/employe.
+- Nouveau : `POST /api/v1/cotisation-simulation` endpoint pour simulation cotisations.
+- Nouveau : `config/telescope.php` — configuration Telescope pour environnement dev (watchers queries, jobs, events, cache, etc.).
+- Tests : `AIWorkflowTest.php` (prepare payroll, weekly report, RBAC employe), `CotisationSimulationTest.php` (DZ/MA simulation, RBAC, validation pays).
+- Plans d'action 01-14 : synchronisation massive — 25+ taches passees de `[ ]` a `[x]` apres verification code existant (ApiVersion, cache Redis, compression gzip, Sentry, Slack alerts, slow queries, pre-commit, CNAS/CNSS, import CSV, write confirmation IA, multi-tenant isolation, AES-256 chiffrement, monitoring).
+- Plan 15 : C9 (workflow paie) et C10 (rapport hebdo) implementes. T-MON-11 (Telescope config) ajoute.
+
+## [4.16.70] - 2026-05-17
+
+### Feat — Iteration 8 : Admin enrichments, rapports RH, indexes, newsletter
+
+- Nouveau : `ReportsView.vue` — ecran rapports RH dans admin-dashboard, consomme les endpoints `/v1/reports/headcount`, `/v1/reports/absenteeism`, `/v1/reports/turnover`, `/v1/reports/overtime`, `/v1/reports/payroll-summary` et les rapports avances `/v1/reports/recruitment-pipeline`, `/v1/reports/training-completion`, `/v1/reports/demographics`, `/v1/reports/cost-analysis`, `/v1/reports/loan-summary`.
+- Nouveau : route `/reports` dans admin router (lazy import, code splitting conserve).
+- Enrichi : `ContractsView.vue` — panneau detail contrat slide-over (reference, employe, type, salaire, dates, departement, periode d'essai, preavis, notes), alertes automatiques (expiration 30j, contrat expire, periode d'essai en cours).
+- Enrichi : `TrainingView.vue` — panneau detail formation slide-over (categorie, type, prestataire, places, cout/participant, sessions associees), cartes catalogue cliquables avec cout affiché.
+- Nouveau : `NewsletterForm.tsx` — composant newsletter integre dans le footer vitrine, consomme `/api/forms/newsletter` avec gestion etats (loading, success, error).
+- Enrichi : `Footer.tsx` vitrine — integration composant newsletter avant copyright.
+- Nouveau : migration `2026_05_17_000001_add_extended_performance_indexes.php` — indexes PostgreSQL pour contrats (company+status, end_date partiel, employee), formation (courses, sessions, enrollments), recrutement (postings, applicants), audit logs (company+created_at DESC), webhooks.
+- Plan 15 : E3 (contrats detail+alertes), E5 (formation detail), E8 (rapports RH), D6 (indexes etendus), F7 (newsletter footer).
 
 ## [4.16.68] - 2026-05-17
 

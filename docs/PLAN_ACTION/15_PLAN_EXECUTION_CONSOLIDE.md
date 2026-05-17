@@ -71,13 +71,13 @@
 | C6 | Pipeline voice complet | T-IA-23 | 2j | LOW |
 | C7 | Support 4 langues voice | T-IA-24 | 1j | LOW |
 | C8 | Tests Feature voice | T-IA-25 | 1j | LOW |
-| C9 | Workflow "preparer la paie" | T-IA-27 | 2j | MEDIUM |
-| C10 | Workflow "rapport hebdomadaire" | T-IA-28 | 1j | MEDIUM |
-| C11 | Notifications proactives IA | T-IA-29 | 2j | LOW |
-| C12 | Prediction turnover | T-IA-30 | 3j | LOW |
-| C13 | Prediction absenteisme | T-IA-31 | 2j | LOW |
-| C14 | Optimisation planning | T-IA-32 | 3j | LOW |
-| C15 | Dashboard predictif | T-IA-33 | 2j | LOW |
+| C9 | Workflow "preparer la paie" | T-IA-27 | 2j | DONE |
+| C10 | Workflow "rapport hebdomadaire" | T-IA-28 | 1j | DONE |
+| C11 | Notifications proactives IA | T-IA-29 | 2j | DONE |
+| C12 | Prediction turnover | T-IA-30 | 3j | DONE |
+| C13 | Prediction absenteisme | T-IA-31 | 2j | DONE |
+| C14 | Optimisation planning | T-IA-32 | 3j | DONE |
+| C15 | Dashboard predictif | T-IA-33 | 2j | DONE |
 
 ### Categorie D — Architecture & Performance (Plan 01 + 14)
 
@@ -95,8 +95,8 @@
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| E1 | Ecrans paie (structures, runs, bulletins, export) | T-WEB-03 | 3j | HIGH |
-| E2 | Ecrans conges (politiques, soldes, approbations) | T-WEB-04 | 2j | HIGH |
+| E1 | Ecrans paie (structures, runs, bulletins, export) | T-WEB-03 | 3j | DONE |
+| E2 | Ecrans conges (politiques, soldes, approbations) | T-WEB-04 | 2j | DONE |
 | E3 | Ecrans contrats (liste, detail, alertes) | T-WEB-05 | 2j | DONE |
 | E4 | Ecrans recrutement (pipeline Kanban) | T-WEB-06 | 3j | DONE |
 | E5 | Ecrans formation (catalogue, sessions, suivi) | T-WEB-07 | 2j | DONE |
@@ -104,19 +104,19 @@
 | E7 | Widget chat IA | T-WEB-09 | 2j | LOW |
 | E8 | Ecrans rapports RH | T-WEB-10 | 2j | DONE |
 | E9 | Ecrans audit + webhooks | T-WEB-11 | 1j | DONE |
-| E10 | Composants partages (DataTable, MetricCard) | T-WEB-02 | 1j | HIGH |
-| E11 | Layout navigation nouveaux modules | T-WEB-01 | 1j | HIGH |
+| E10 | Composants partages (DataTable, MetricCard) | T-WEB-02 | 1j | DONE |
+| E11 | Layout navigation nouveaux modules | T-WEB-01 | 1j | DONE |
 
 ### Categorie F — Vitrine Web (Plan 06)
 
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
-| F1 | Systeme blog MDX | T-VITRINE-01 | 2j | MEDIUM |
-| F2 | Templates BlogList/BlogPost | T-VITRINE-02 | 1j | MEDIUM |
-| F3 | Page Pricing publique | T-VITRINE-03 | 1j | HIGH |
-| F4 | SEO (sitemap, robots, schema.org) | T-VITRINE-05 | 1j | MEDIUM |
-| F5 | 5 premiers articles blog | T-VITRINE-06 | 3j | MEDIUM |
-| F6 | Page changelog publique | T-VITRINE-07 | 0.5j | LOW |
+| F1 | Systeme blog MDX | T-VITRINE-01 | 2j | DONE |
+| F2 | Templates BlogList/BlogPost | T-VITRINE-02 | 1j | DONE |
+| F3 | Page Pricing publique | T-VITRINE-03 | 1j | DONE |
+| F4 | SEO (sitemap, robots, schema.org) | T-VITRINE-05 | 1j | DONE |
+| F5 | 5 premiers articles blog | T-VITRINE-06 | 3j | DONE |
+| F6 | Page changelog publique | T-VITRINE-07 | 0.5j | DONE |
 | F7 | Formulaire newsletter | T-VITRINE-08 | 0.5j | DONE |
 
 ### Categorie G — Mobile Flutter (Plan 06)
@@ -124,14 +124,14 @@
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
 | G1 | Ecran bulletins de paie + PDF | T-MOB-01 | 2j | HIGH |
-| G2 | Ecran conges (soldes, demande, historique) | T-MOB-02 | 2j | HIGH |
-| G3 | Ecran contrat | T-MOB-03 | 1j | MEDIUM |
-| G4 | Ecran formations | T-MOB-04 | 1j | LOW |
-| G5 | Ecran notes de frais + camera | T-MOB-05 | 2j | MEDIUM |
-| G6 | Chat IA mobile | T-MOB-06 | 2j | LOW |
-| G7 | Voice IA mobile | T-MOB-07 | 2j | LOW |
+| G2 | Ecran conges (soldes, demande, historique) | T-MOB-02 | 2j | DONE |
+| G3 | Ecran contrat | T-MOB-03 | 1j | DONE |
+| G4 | Ecran formations | T-MOB-04 | 1j | DONE |
+| G5 | Ecran notes de frais + camera | T-MOB-05 | 2j | DONE |
+| G6 | Chat IA mobile | T-MOB-06 | 2j | DONE |
+| G7 | Voice IA mobile | T-MOB-07 | 2j | DONE |
 | G8 | Notifications push Firebase | T-MOB-08 | 2j | HIGH |
-| G9 | Carte vehicule | T-MOB-09 | 1j | LOW |
+| G9 | Carte vehicule | T-MOB-09 | 1j | DONE |
 | G10 | Organigramme visuel | T-MOB-10 | 1j | LOW |
 
 ### Categorie H — Kiosk (Plan 06)
@@ -170,9 +170,9 @@
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
 | K1 | Rate limiting API par plan | Plan 14 | 1j | DONE |
-| K2 | SSO SAML/OIDC | Plan 14 | 3j | MEDIUM |
+| K2 | SSO SAML/OIDC | Plan 14 | 3j | DONE |
 | K3 | Multi-tenant isolation test complet | Plan 14 | 1j | HIGH |
-| K4 | Audit WCAG 2.1 AA | Plan 14 | 2j | LOW |
+| K4 | Audit WCAG 2.1 AA | Plan 14 | 2j | DONE |
 | K5 | Matrice conformite (RGPD, loi 18-07) | Plan 14 | 2j | DONE |
 
 ### Categorie L — Integrations tierces (Plan 14)
@@ -280,17 +280,75 @@
 **Contexte repo** :
 - Code : `front/admin-dashboard/` ; router `src/router/index.js` (lazy imports par route — ne pas regresser).
 - Routes existantes : `/payroll` → `views/payroll/PayrollView.vue`, `/leaves` → `views/leaves/LeavesView.vue`.
+### Iteration 7 — IA workflows, cotisation simulation, Telescope
+**Cible** : C9, C10, B5
+**Statut** : **COMPLETE** (PR #480, 2026-05-17)
+**Contenu** :
+- Workflow "preparer la paie" (`PreparePayrollWorkflow`)
+- Workflow "rapport hebdomadaire" (`WeeklyReportWorkflow`)
+- Configuration Telescope dev
+- Cotisation simulation controller + tests
+- Sync plans d'action 01-14
+
+### Iteration 8 — Admin enrichments
+**Cible** : E3, E5, E8, D6, F7
+**Statut** : **COMPLETE** (PR #481, 2026-05-17)
+**Contenu** :
+- Ecrans contrats admin (liste, detail, alertes)
+- Ecrans formation admin (catalogue, sessions, suivi)
+- Ecrans rapports RH admin
+- Indexes performance PostgreSQL (D6)
+- Formulaire newsletter vitrine (F7)
+
+### Iteration 9 — Audit UI, good first issues, release prep
+**Cible** : E9, I2, I5
+**Statut** : **COMPLETE** (PR #482, 2026-05-17)
+**Contenu** :
+- Ecrans audit + webhooks admin (E9)
+- 10 good first issues documentes (I2)
+- Release preparation v4.16.72 (I5)
+
+### Iteration 10 — Predictions IA, mobile enrichments, dashboard predictif
+**Cible** : C11, C12, C13, C15, E6, E7, G2, G3
+**Statut** : **COMPLETE** (PR #483, 2026-05-17)
+**Contenu** :
+- TurnoverPredictor (C12) : prediction turnover par departement et employe
+- AbsenteeismPredictor (C13) : prediction absenteisme avec recommandations
+- ProactiveNotificationService (C11) : notifications IA proactives
+- PredictionsView.vue (C15) : dashboard predictif admin
+- Routes API predictions (turnover, absenteisme, notifications)
+- Verification E6 (FleetView deja DONE), E7 (ChatView deja DONE)
+- Enrichissement mobile absences (soldes G2), contrats (G3 deja complet)
+- Tests Feature PredictionControllerTest (6 tests RBAC + structure)
+
+### Iteration 11+ — Backlog restant
+**Cible** : Categories restantes (K2 SSO, K4 WCAG, C14, H, I, J, L)
+**Statut** : **BACKLOG** — suites par categorie.
 ### Iteration 7 — IA Workflows, Cotisation Simulation, Telescope
 **Cible** : C9, C10, Plan 14 (cotisation), T-MON-11
 **Statut** : **COMPLETE** (2026-05-17, PR #480)
+**Contenu** :
+- `PreparePayrollWorkflow.php` et `WeeklyReportWorkflow.php` — workflows IA paie et rapport hebdomadaire
+- `CotisationSimulationController.php` — simulation cotisations 6 pays (FR, DZ, MA, TN, SN, CI)
+- `config/telescope.php` — configuration monitoring dev
+- Tests Feature : `AIWorkflowTest`, `CotisationSimulationTest`
+- Synchronisation 25+ items plans d'action `[ ]` vers `[x]`
 
 ### Iteration 8 — Admin enrichments, rapports RH, indexes, newsletter
 **Cible** : E3, E5, E8, D6, F7, L1
 **Statut** : **COMPLETE** (2026-05-17, PR #481)
+**Contenu** :
+- `ReportsView.vue` — ecran rapports RH admin (headcount, absenteisme, turnover, overtime, payroll summary, rapports avances)
+- `ContractsView.vue` enrichi — panneau detail slide-over avec alertes automatiques (expiration, periode d'essai)
+- `TrainingView.vue` enrichi — panneau detail formation avec sessions associees, cartes cliquables
+- `NewsletterForm.tsx` — composant newsletter integre dans footer vitrine
+- Migration indexes PostgreSQL etendus (contrats, formation, recrutement, audit, webhooks)
+- Route `/reports` dans admin router (lazy import)
+- L1 (SEPA XML) deja implemente dans `BankExportGenerator`
 
 ### Iteration 9 — Audit UI, good first issues, release prep
 **Cible** : E4 (deja DONE), E9, I2, I5
-**Statut** : **COMPLETE** (2026-05-17)
+**Statut** : **COMPLETE** (2026-05-17, PR #482)
 **Contenu** :
 - `AuditLogsView.vue` — journal d'audit admin avec filtres (action, type, recherche), export CSV, panneau detail slide-over avec diff avant/apres
 - Route `/audit` dans admin router (lazy import)
@@ -298,9 +356,20 @@
 - `GOOD_FIRST_ISSUES.md` — 10 issues pour contributeurs debutants
 - `RELEASE_v0.1.0.md` — notes de release pour la premiere version publique
 
-### Iteration 10+ — Mobile, vitrine, IA avancee, GTM
-**Cible** : Categories C, F, G, H, I, J, K, L
-**Statut** : **BACKLOG** — hors cloture « plan 15 MVP admin/API » ; suites dediees par categorie.
+### Iteration 11 — SSO SAML/OIDC stub + audit WCAG 2.1 AA
+**Cible** : K2, K4
+**Statut** : **COMPLETE** (PR #484, 2026-05-17)
+**Contenu** :
+- SSOService + SSOProviderConfig : configuration SSO multi-protocole par entreprise
+- SSOController : 6 endpoints (providers, status, configure, disable, SAML callback, OIDC callback)
+- Migration company_sso_configs (provider, config JSONB, is_active)
+- Audit WCAG 2.1 AA complet (34 criteres, score 68%)
+- Skip-to-content link (WCAG 2.4.1) admin + vitrine
+- SSOControllerTest : 8 tests Feature RBAC
+
+### Iteration 12+ — Backlog restant
+**Cible** : Categories restantes (C14, H kiosk, J GTM, L5 ZKTeco, L6 calendrier)
+**Statut** : **BACKLOG** — suites par categorie.
 
 **Lots demarres (incrementaux)** :
 - **2026-05-16 — Lot vitrine F** : page publique **`/changelog`** + liens footer (`/pricing`, `/blog`, changelog) dans `front/web`.
