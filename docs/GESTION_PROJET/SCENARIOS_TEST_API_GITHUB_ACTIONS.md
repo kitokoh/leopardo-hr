@@ -702,3 +702,14 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Le middleware `CompressResponse` compresse les reponses JSON > 1 Ko pour les clients acceptant `Accept-Encoding: gzip`
 - Les reponses compressees portent `Content-Encoding: gzip` et `Vary: Accept-Encoding`
 - Les clients sans `Accept-Encoding: gzip` recoivent la reponse non compressees
+
+### Predictions IA (Plan 15 C11-C13, C15)
+- `GET /api/v1/predictions/turnover` retourne le scoring turnover par departement et employe, avec facteurs de risque et taux global
+- `GET /api/v1/predictions/absenteeism` retourne les predictions d'absenteisme avec periodes a risque, saisonnalite et recommandations
+- `GET /api/v1/predictions/notifications` retourne les notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, soldes conges faibles)
+- Les 3 endpoints sont reserves aux managers `principal` et `rh` (RBAC teste dans PredictionControllerTest)
+- Les employes non-managers recoivent un 403
+- Structure reponse : `{"data": {...}}` avec champs documentes
+- Le TurnoverPredictor analyse anciennete, taux departement, absences frequentes
+- L'AbsenteeismPredictor integre saisonnalite (juillet, aout, decembre) et tendances
+- Le ProactiveNotificationService agrege 6 types de notifications tries par severite (critical > warning > info)

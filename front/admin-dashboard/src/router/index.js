@@ -204,6 +204,15 @@ const routes = [
           title: 'Exports & Rapports',
           icon: 'ArrowDownTrayIcon'
         }
+      },
+      {
+        path: '/predictions',
+        name: 'predictions',
+        component: () => import('@/views/predictions/PredictionsView.vue'),
+        meta: {
+          title: 'Dashboard Prédictif IA',
+          icon: 'ChartBarSquareIcon'
+        }
       }
     ]
   },
