@@ -28,8 +28,8 @@ class WeeklyReportWorkflow
         $absences = $this->buildAbsenceSummary($companyId, $startStr, $endStr);
         $anomalies = $this->detectAnomalies($companyId, $startStr, $endStr);
 
-        $totalEmployees = (int) ($headcount['total'] ?? 0);
-        $totalAbsences = (int) ($absences['total'] ?? 0);
+        $totalEmployees = $headcount['total'];
+        $totalAbsences = $absences['total'];
         $absenceRate = $totalEmployees > 0
             ? round(($totalAbsences / $totalEmployees) * 100, 1)
             : 0;
@@ -90,8 +90,8 @@ class WeeklyReportWorkflow
 
         return [
             'total' => $total,
-            'by_department' => array_map(fn ($row) => ['department' => $row->department, 'count' => (int) $row->count], $byDepartment),
-            'by_status' => array_map(fn ($row) => ['status' => $row->status, 'count' => (int) $row->count], $byStatus),
+            'by_department' => array_map(fn (object $row): array => ['department' => (string) $row->department, 'count' => (int) $row->count], $byDepartment),
+            'by_status' => array_map(fn (object $row): array => ['status' => (string) $row->status, 'count' => (int) $row->count], $byStatus),
         ];
     }
 
@@ -119,7 +119,7 @@ class WeeklyReportWorkflow
 
         return [
             'total' => $total,
-            'by_type' => array_map(fn ($row) => ['type' => $row->type, 'count' => (int) $row->count], $byType),
+            'by_type' => array_map(fn (object $row): array => ['type' => (string) $row->type, 'count' => (int) $row->count], $byType),
             'pending' => $pending,
             'approved' => $approved,
             'rejected' => $rejected,
