@@ -6,12 +6,12 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class SSOControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesMvpSchema;
 
     private Company $company;
 
@@ -22,6 +22,7 @@ class SSOControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpMvpSchema();
 
         $this->company = Company::factory()->create();
 
@@ -35,6 +36,12 @@ class SSOControllerTest extends TestCase
             'company_id' => $this->company->id,
             'role' => 'employee',
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     public function test_providers_list_is_public(): void

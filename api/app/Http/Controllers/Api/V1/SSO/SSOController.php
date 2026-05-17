@@ -31,7 +31,7 @@ class SSOController extends Controller
             abort(403);
         }
 
-        $sso = $this->ssoService->getCompanySSO((int) $actor->company_id);
+        $sso = $this->ssoService->getCompanySSO($actor->company_id);
 
         return response()->json([
             'data' => [
@@ -60,7 +60,7 @@ class SSOController extends Controller
         ]);
 
         $config = $this->ssoService->configureSSO(
-            (int) $actor->company_id,
+            $actor->company_id,
             $validated['provider'],
             $validated,
         );
@@ -79,14 +79,14 @@ class SSOController extends Controller
             abort(403);
         }
 
-        $this->ssoService->disableSSO((int) $actor->company_id);
+        $this->ssoService->disableSSO($actor->company_id);
 
         return response()->json([
             'message' => 'SSO desactive.',
         ]);
     }
 
-    public function samlCallback(Request $request, int $companyId): JsonResponse
+    public function samlCallback(Request $request, string $companyId): JsonResponse
     {
         $samlResponse = $request->input('SAMLResponse', '');
 
@@ -106,7 +106,7 @@ class SSOController extends Controller
         }
     }
 
-    public function oidcCallback(Request $request, int $companyId): JsonResponse
+    public function oidcCallback(Request $request, string $companyId): JsonResponse
     {
         $tokenData = $request->only(['code', 'state', 'id_token']);
 

@@ -29,7 +29,7 @@ class AIWorkflowController extends Controller
 
         $workflow = new PreparePayrollWorkflow;
         $result = $workflow->execute(
-            (int) $actor->company_id,
+            $actor->company_id,
             $validated['period_start'],
             $validated['period_end'],
         );
@@ -52,7 +52,7 @@ class AIWorkflowController extends Controller
 
         $workflow = new WeeklyReportWorkflow;
         $result = $workflow->execute(
-            (int) $actor->company_id,
+            $actor->company_id,
             $validated['week_start'] ?? null,
         );
 

@@ -13,7 +13,7 @@ class SSOService
     /**
      * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null}
      */
-    public function getCompanySSO(int $companyId): array
+    public function getCompanySSO(string $companyId): array
     {
         $row = DB::table('company_sso_configs')
             ->where('company_id', $companyId)
@@ -43,7 +43,7 @@ class SSOService
     /**
      * @param  array<string, mixed>  $configData
      */
-    public function configureSSO(int $companyId, string $provider, array $configData): SSOProviderConfig
+    public function configureSSO(string $companyId, string $provider, array $configData): SSOProviderConfig
     {
         $config = SSOProviderConfig::fromArray([
             'provider' => $provider,
@@ -69,7 +69,7 @@ class SSOService
         return $config;
     }
 
-    public function disableSSO(int $companyId): void
+    public function disableSSO(string $companyId): void
     {
         DB::table('company_sso_configs')
             ->where('company_id', $companyId)
@@ -81,7 +81,7 @@ class SSOService
     /**
      * @return array{user_email: string, attributes: array<string, mixed>}
      */
-    public function handleSAMLResponse(int $companyId, string $samlResponse): array
+    public function handleSAMLResponse(string $companyId, string $samlResponse): array
     {
         $sso = $this->getCompanySSO($companyId);
 
@@ -106,7 +106,7 @@ class SSOService
      * @param  array<string, mixed>  $tokenData
      * @return array{user_email: string, claims: array<string, mixed>}
      */
-    public function handleOIDCCallback(int $companyId, array $tokenData): array
+    public function handleOIDCCallback(string $companyId, array $tokenData): array
     {
         $sso = $this->getCompanySSO($companyId);
 

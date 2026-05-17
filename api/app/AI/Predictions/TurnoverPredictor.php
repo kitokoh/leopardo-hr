@@ -11,7 +11,7 @@ class TurnoverPredictor
     /**
      * @return array{risk_score: float, high_risk_employees: list<array{employee_id: int, name: string, risk: float, factors: list<string>}>, department_risks: list<array{department: string, risk: float, headcount: int}>, overall_turnover_rate: float}
      */
-    public function predict(int $companyId, int $months = 6): array
+    public function predict(string $companyId, int $months = 6): array
     {
         $employees = DB::table('employees')
             ->where('company_id', $companyId)
