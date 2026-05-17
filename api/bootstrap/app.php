@@ -4,6 +4,7 @@ use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
@@ -42,7 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class]);
+        $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
