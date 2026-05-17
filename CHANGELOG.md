@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.75] - 2026-05-17
+
+### Docs — Iteration FINALE : mise a jour documentation globale Plan 15
+
+- Mise a jour : `AGENTS.md` — section "Iterations 7-11 Plan 15" avec 12 lecons operationnelles (predictions IA, SSO stub, WCAG, mobile existant, backlog).
+- Mise a jour : `15_PLAN_EXECUTION_CONSOLIDE.md` — synthese globale mise a jour avec pourcentages et declaration de cloture etendue iterations 1-11.
+- Mise a jour : date `AGENTS.md` → 2026-05-17.
+- Bilan Plan 15 iterations 1-11 : 5 PRs (7-11), 15+ services/controllers, 30+ tests Feature, 3 audits (WCAG, RBAC, conformite), SSO stub, predictions IA, dashboard predictif.
+
 ## [4.16.71] - 2026-05-17
 
 ### Feat — Iteration 9 : Audit UI, good first issues, release prep
