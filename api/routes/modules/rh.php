@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\AttendanceController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\DepartmentController;
 use App\Http\Controllers\Api\V1\EmployeeController;
+use App\Http\Controllers\Api\V1\EmployeeImportController;
 use App\Http\Controllers\Api\V1\EstimationController;
 use App\Http\Controllers\Api\V1\EvaluationController;
 use App\Http\Controllers\Api\V1\InvitationController;
@@ -34,6 +35,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee');
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
+    Route::post('/employees/import', [EmployeeImportController::class, 'import']);
+    Route::get('/employees/import-template', [EmployeeImportController::class, 'template']);
 
     // ── Estimations ───────────────────────────────────────────────────────────
     Route::get('/employees/{employee}/daily-summary', [EstimationController::class, 'dailySummary'])->whereNumber('employee');
