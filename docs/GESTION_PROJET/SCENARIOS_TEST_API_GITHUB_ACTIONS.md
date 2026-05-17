@@ -709,3 +709,11 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Les logs contiennent `user_name`, `action`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`
 - Filtrage par action (created, updated, deleted, login, logout, exported) et par type d'entite (Employee, Contract, Absence, PayrollRun, etc.)
 - Isolation tenant : les logs sont filtres par `company_id`
+
+### Optimisation planning IA (C14 - Iteration 12)
+- `GET /api/v1/planning/weekly-optimization` retourne l'analyse de couverture departement, les conflits planning et les recommandations pour la semaine donnee
+- `GET /api/v1/planning/weekly-optimization?week_start=2026-06-01` accepte une date de debut de semaine optionnelle
+- `GET /api/v1/planning/shift-rebalancing` retourne l'analyse de repartition des effectifs par departement avec suggestions de reequilibrage
+- Le score d'optimisation est un entier 0-100 base sur la couverture departementale et le nombre de conflits
+- Isolation tenant : toutes les requetes sont scopees au `company_id` de l'acteur authentifie
+- Authentification requise : les endpoints retournent 401 sans token valide
