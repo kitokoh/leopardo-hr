@@ -42,16 +42,26 @@ class TurnoverPredictor
         $departmentRisks = [];
 
         foreach ($employees->groupBy('department_id') as $deptId => $deptEmployees) {
-            $deptTerminated = DB::table('employees')
-                ->where('company_id', $companyId)
-                ->where('department_id', $deptId)
-                ->where('status', 'terminated')
-                ->where('updated_at', '>=', now()->subMonths(12))
-                ->count();
+            $departmentId = $this->nullableIntId($deptId);
 
-            $rawDeptName = DB::table('departments')
-                ->where('id', $deptId)
-                ->value('name');
+            $deptTerminatedQuery = DB::table('employees')
+                ->where('company_id', $companyId)
+                ->where('status', 'terminated')
+                ->where('updated_at', '>=', now()->subMonths(12));
+
+            if ($departmentId === null) {
+                $deptTerminatedQuery->whereNull('department_id');
+            } else {
+                $deptTerminatedQuery->where('department_id', $departmentId);
+            }
+
+            $deptTerminated = $deptTerminatedQuery->count();
+
+            $rawDeptName = $departmentId === null
+                ? null
+                : DB::table('departments')
+                    ->where('id', $departmentId)
+                    ->value('name');
             $deptName = is_string($rawDeptName) ? $rawDeptName : 'Non assigne';
 
             $deptRisk = $deptEmployees->count() > 0
@@ -137,5 +147,18 @@ class TurnoverPredictor
         }
 
         return is_numeric($id) ? (int) $id : 0;
+    }
+
+    private function nullableIntId(mixed $id): ?int
+    {
+        if (is_int($id)) {
+            return $id;
+        }
+
+        if (is_string($id) && ctype_digit($id)) {
+            return (int) $id;
+        }
+
+        return null;
     }
 }
