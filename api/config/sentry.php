@@ -6,7 +6,21 @@
  * @see https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/
  */
 return [
-    'dsn' => env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN')),
+    'dsn' => (function () {
+        $dsn = env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'));
+        // Guard against boolean-like values ("1", "true", "0", "false") that
+        // crash Symfony OptionsResolver with "The option dsn with value 1 is invalid".
+        if ($dsn === null || $dsn === '' || $dsn === '0' || $dsn === 'false') {
+
+            return null;
+        }
+        if (filter_var($dsn, FILTER_VALIDATE_URL) === false) {
+
+            return null;
+        }
+
+        return $dsn;
+    })(),
 
     'traces_sample_rate' => (float) env('SENTRY_TRACES_SAMPLE_RATE', 0.2),
 
