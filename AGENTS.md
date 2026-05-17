@@ -162,6 +162,12 @@ Procedure recommandee :
 
 - **Iteration 5** monitoring : code backend deja dans `main` (`CHANGELOG` [4.16.55]) ; reste **ops** sondes externes (UptimeRobot / Better Stack) + runbook `docs/GESTION_PROJET/RUNBOOK_OBSERVABILITY.md`.
 - **Iteration 4** perf/paie : PR **#468** en attente de merge ; preparation **iteration 6** admin-dashboard (`front/admin-dashboard/`, routes `/payroll`, `/leaves`) peut progresser sur une branche separee depuis `origin/main`, puis reconciliation `main` apres merge.
+### 2026-05-17 - Consolidation PR #487 SSO / IA workflows
+
+- Les routes publiques SSO doivent accepter les UUID `companies.id`; ne pas remettre `whereNumber('companyId')` sur `/api/v1/sso/saml/{companyId}/callback` ni `/oidc/{companyId}/callback`.
+- Pour `company_sso_configs`, eviter `created_at => DB::raw('COALESCE(created_at, NOW())')` dans `updateOrInsert` : PostgreSQL ne permet pas de referencer la colonne cible dans `VALUES`. Faire update puis insert explicites.
+- Les workflows IA doivent rester compatibles avec les schemas historiques et fixtures MVP : verifier `Schema::hasColumn('employees', 'salary_structure_id')` avant de filtrer dessus, et grouper les absences via `absence_type_id` / `absence_types`, jamais via une colonne fantome `absences.type`.
+- Dans les tests PostgreSQL partages, ne pas construire de `search_path` `company_{uuid}` non quote/sanitise ; la factory `Company` est shared par defaut et `shared_tenants,public` suffit.
 ### 2026-05-16 - Plan 15 iteration 4 (performance / paie async)
 
 - Iteration 4 cloture fonctionnelle : cache tenant `GET /api/v1/reports/headcount` (`HR_REPORT_HEADCOUNT_CACHE_TTL`), job `WarmPaySlipPdfPathsForPayrollRunJob` apres validation paie (`PAYROLL_QUEUE_PDF_WARMUP`), PDF bulletins via `pdf_path` sur disque `local`.

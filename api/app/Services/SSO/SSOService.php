@@ -50,16 +50,28 @@ class SSOService
             ...$configData,
         ]);
 
-        DB::table('company_sso_configs')->updateOrInsert(
-            ['company_id' => $companyId],
-            [
-                'provider' => $provider,
-                'config' => json_encode($config->toArray()),
-                'is_active' => true,
-                'updated_at' => now(),
-                'created_at' => DB::raw('COALESCE(created_at, NOW())'),
-            ],
-        );
+        $existing = DB::table('company_sso_configs')
+            ->where('company_id', $companyId)
+            ->exists();
+
+        $payload = [
+            'provider' => $provider,
+            'config' => json_encode($config->toArray()),
+            'is_active' => true,
+            'updated_at' => now(),
+        ];
+
+        if ($existing) {
+            DB::table('company_sso_configs')
+                ->where('company_id', $companyId)
+                ->update($payload);
+        } else {
+            DB::table('company_sso_configs')->insert([
+                'company_id' => $companyId,
+                ...$payload,
+                'created_at' => now(),
+            ]);
+        }
 
         Log::info('SSO configured', [
             'company_id' => $companyId,

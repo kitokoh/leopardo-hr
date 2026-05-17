@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AI\Predictions;
 
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 
 class ProactiveNotificationService
@@ -50,7 +51,7 @@ class ProactiveNotificationService
             ->get();
 
         foreach ($expiring as $contract) {
-            $daysLeft = (int) now()->diffInDays($contract->end_date);
+            $daysLeft = $this->daysUntil($contract->end_date);
             $severity = $daysLeft <= 7 ? 'critical' : 'warning';
             /** @var string $firstName */
             $firstName = $contract->first_name;
@@ -63,7 +64,7 @@ class ProactiveNotificationService
                 'title' => 'Contrat expire dans '.$daysLeft.' jours',
                 'message' => $firstName.' '.$lastName.' — renouvellement ou fin a planifier.',
                 'action_url' => '/contracts',
-                'entity_id' => $contract->id,
+                'entity_id' => (int) $contract->id,
             ];
         }
     }
@@ -88,7 +89,7 @@ class ProactiveNotificationService
             ->get();
 
         foreach ($trials as $contract) {
-            $daysLeft = (int) now()->diffInDays($contract->trial_end_date);
+            $daysLeft = $this->daysUntil($contract->trial_end_date);
             /** @var string $firstName */
             $firstName = $contract->first_name;
             /** @var string $lastName */
@@ -100,9 +101,18 @@ class ProactiveNotificationService
                 'title' => 'Periode d\'essai termine dans '.$daysLeft.' jours',
                 'message' => $firstName.' '.$lastName.' — evaluation a confirmer.',
                 'action_url' => '/contracts',
-                'entity_id' => $contract->id,
+                'entity_id' => (int) $contract->id,
             ];
         }
+    }
+
+    private function daysUntil(mixed $date): int
+    {
+        if ($date instanceof CarbonInterface || $date instanceof \DateTimeInterface || is_string($date)) {
+            return (int) now()->diffInDays($date);
+        }
+
+        return 0;
     }
 
     /**

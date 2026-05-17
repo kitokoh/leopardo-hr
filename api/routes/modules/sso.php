@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sso/providers', [SSOController::class, 'providers']);
 
 // Public: SSO callbacks (no auth required — these receive IdP responses)
-Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback'])->whereNumber('companyId');
-Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallback'])->whereNumber('companyId');
+Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback']);
+Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallback']);
 
 // Authenticated: SSO management (manager principal only)
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant'])->group(function (): void {

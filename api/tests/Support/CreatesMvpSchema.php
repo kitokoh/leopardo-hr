@@ -810,6 +810,37 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('salary_structures'))) {
+            Schema::create($this->moduleTable('salary_structures'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 150);
+                $table->string('code', 50);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasColumn($this->moduleTable('employees'), 'salary_structure_id')) {
+            Schema::table($this->moduleTable('employees'), function (Blueprint $table): void {
+                $table->unsignedBigInteger('salary_structure_id')->nullable();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('contracts'))) {
+            Schema::create($this->moduleTable('contracts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('type', 30)->default('CDI');
+                $table->string('status', 20)->default('active');
+                $table->date('start_date')->nullable();
+                $table->date('end_date')->nullable();
+                $table->date('trial_end_date')->nullable();
+                $table->timestamps();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('privacy_requests'))) {
             Schema::create($this->moduleTable('privacy_requests'), function (Blueprint $table): void {
                 $table->id();
@@ -1176,6 +1207,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "privacy_requests"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "contracts"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "salary_structures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);
