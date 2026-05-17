@@ -80,3 +80,22 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 ## Change Rule
 
 Any PR adding or moving protected routes must update this matrix, the matching scenario registry, and at least one Feature/security test when the allowed role set changes.
+
+### SSO Routes (added 2026-05-17, Iteration 11)
+
+| Route | Principal | RH | Dept Mgr | Finance | Supervisor | Employee | Notes |
+|---|---|---|---|---|---|---|---|
+| SSO providers `GET /sso/providers` | Public | Public | Public | Public | Public | Public | No auth required. |
+| SSO status `GET /sso/status` | R | - | - | - | - | - | Principal only. |
+| SSO configure `POST /sso/configure` | RW | - | - | - | - | - | Principal only. |
+| SSO disable `DELETE /sso/disable` | RW | - | - | - | - | - | Principal only. |
+| SSO SAML callback `POST /sso/saml/{id}/callback` | Public | Public | Public | Public | Public | Public | IdP callback, no auth. |
+| SSO OIDC callback `GET /sso/oidc/{id}/callback` | Public | Public | Public | Public | Public | Public | IdP callback, no auth. |
+
+### Prediction Routes (added 2026-05-17, Iteration 10)
+
+| Route | Principal | RH | Dept Mgr | Finance | Supervisor | Employee | Notes |
+|---|---|---|---|---|---|---|---|
+| Predictions turnover `GET /predictions/turnover` | R | R | - | - | - | - | P/RH via `hasManagerRole`. |
+| Predictions absenteeism `GET /predictions/absenteeism` | R | R | - | - | - | - | P/RH via `hasManagerRole`. |
+| Predictions notifications `GET /predictions/notifications` | R | R | - | - | - | - | P/RH via `hasManagerRole`. |
