@@ -1,4 +1,4 @@
-# <p align="center">🐆 Leopardo RH</p>
+# <p align="center"> 🐆 Leopardo RH</p>
 <p align="center"><b>Modern, AI-Powered, Multi-Tenant HR Management Platform for SMEs</b></p>
 
 <p align="center">
