@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
-use Illuminate\Support\Facades\DB;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -55,8 +54,6 @@ class PredictionControllerTest extends TestCase
 
     public function test_turnover_prediction_accessible_by_manager(): void
     {
-        DB::statement("SET search_path TO company_{$this->company->id}, public");
-
         $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/v1/predictions/turnover');
 
@@ -81,8 +78,6 @@ class PredictionControllerTest extends TestCase
 
     public function test_absenteeism_prediction_accessible_by_manager(): void
     {
-        DB::statement("SET search_path TO company_{$this->company->id}, public");
-
         $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/v1/predictions/absenteeism');
 
@@ -99,8 +94,6 @@ class PredictionControllerTest extends TestCase
 
     public function test_proactive_notifications_accessible_by_manager(): void
     {
-        DB::statement("SET search_path TO company_{$this->company->id}, public");
-
         $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/v1/predictions/notifications');
 

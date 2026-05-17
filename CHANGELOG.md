@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.76] - 2026-05-17
+
+### Fix — PR #487 consolidation backend gates
+
+- Fix : callbacks SSO publics compatibles UUID entreprise en supprimant la contrainte numerique de route.
+- Fix : configuration SSO sans `COALESCE(created_at, NOW())` dans un `INSERT`, incompatible PostgreSQL.
+- Fix : workflows IA paie/rapport hebdomadaire alignes avec le schema RH reel (`absence_type_id`, `salary_structure_id` optionnel).
+- Fix : predictions IA type-safe pour PHPStan (dates, ids, floats, listes de facteurs).
+- Tests : fixture MVP et tests predictions ajustes pour `shared_tenants`, `contracts` et `salary_structures`.
+
 ## [4.16.72] - 2026-05-17
 
 ### Feat — Iteration 12 : E1/E2/E10/E11 completion, C14 planning optimization, WCAG corrections

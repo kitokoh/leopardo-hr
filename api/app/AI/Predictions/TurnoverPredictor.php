@@ -36,7 +36,9 @@ class TurnoverPredictor
         $totalActive = $employees->count();
         $overallRate = $totalActive > 0 ? round(($recentDepartures / $totalActive) * 100, 2) : 0;
 
+        /** @var list<array{employee_id: int, name: string, risk: float, factors: list<string>}> $highRisk */
         $highRisk = [];
+        /** @var list<array{department: string, risk: float, headcount: int}> $departmentRisks */
         $departmentRisks = [];
 
         foreach ($employees->groupBy('department_id') as $deptId => $deptEmployees) {
@@ -47,10 +49,9 @@ class TurnoverPredictor
                 ->where('updated_at', '>=', now()->subMonths(12))
                 ->count();
 
-            /** @var string $deptName */
-            $deptName = DB::table('departments')
+            $deptName = (string) (DB::table('departments')
                 ->where('id', $deptId)
-                ->value('name') ?? 'Non assigne';
+                ->value('name') ?? 'Non assigne');
 
             $deptRisk = $deptEmployees->count() > 0
                 ? round(($deptTerminated / $deptEmployees->count()) * 100, 2)
@@ -58,11 +59,12 @@ class TurnoverPredictor
 
             $departmentRisks[] = [
                 'department' => $deptName,
-                'risk' => $deptRisk,
-                'headcount' => $deptEmployees->count(),
+                'risk' => (float) $deptRisk,
+                'headcount' => (int) $deptEmployees->count(),
             ];
 
             foreach ($deptEmployees as $emp) {
+                /** @var list<string> $factors */
                 $factors = [];
                 $risk = 0.0;
 
@@ -85,8 +87,10 @@ class TurnoverPredictor
                     $factors[] = 'Departement a fort turnover';
                 }
 
+                $employeeId = (int) $emp->id;
+
                 $absenceCount = DB::table('absences')
-                    ->where('employee_id', $emp->id)
+                    ->where('employee_id', $employeeId)
                     ->where('start_date', '>=', now()->subMonths(6))
                     ->count();
 
@@ -101,10 +105,10 @@ class TurnoverPredictor
                     /** @var string $lastName */
                     $lastName = $emp->last_name;
                     $highRisk[] = [
-                        'employee_id' => $emp->id,
+                        'employee_id' => $employeeId,
                         'name' => $firstName.' '.$lastName,
-                        'risk' => min($risk, 100),
-                        'factors' => $factors,
+                        'risk' => (float) min($risk, 100),
+                        'factors' => array_values($factors),
                     ];
                 }
             }
@@ -118,10 +122,10 @@ class TurnoverPredictor
             : 0;
 
         return [
-            'risk_score' => $avgRisk,
+            'risk_score' => (float) $avgRisk,
             'high_risk_employees' => array_slice($highRisk, 0, 20),
             'department_risks' => $departmentRisks,
-            'overall_turnover_rate' => $overallRate,
+            'overall_turnover_rate' => (float) $overallRate,
         ];
     }
 }

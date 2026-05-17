@@ -121,16 +121,17 @@ class WeeklyReportWorkflow
     private function buildAbsenceSummary(string $companyId, string $startDate, string $endDate): array
     {
         $query = DB::table('absences')
-            ->where('company_id', $companyId)
-            ->where('start_date', '<=', $endDate)
-            ->where('end_date', '>=', $startDate);
+            ->where('absences.company_id', $companyId)
+            ->where('absences.start_date', '<=', $endDate)
+            ->where('absences.end_date', '>=', $startDate);
 
         $total = (clone $query)->count();
 
         /** @var list<array{type: string, count: int}> $byType */
         $byType = (clone $query)
-            ->groupBy('type')
-            ->select('type', DB::raw('count(*) as count'))
+            ->leftJoin('absence_types', 'absences.absence_type_id', '=', 'absence_types.id')
+            ->groupBy('absence_types.code', 'absence_types.name')
+            ->select(DB::raw("COALESCE(absence_types.code, absence_types.name, 'unknown') as type"), DB::raw('count(*) as count'))
             ->get()
             ->map(function (\stdClass $row): array {
                 /** @var string $type */
