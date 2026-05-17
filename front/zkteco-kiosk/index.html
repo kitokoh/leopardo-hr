@@ -158,15 +158,13 @@
   </style>
 </head>
 <body>
-  <div class="app" role="main">
-    <div class="header">
-      <div>
-        <div class="eyebrow">ZKTeco Door Kiosk</div>
-        <h1 id="companyName">Chargement...</h1>
-        <p id="locationLabel">Initialisation de la borne...</p>
-      </div>
-      <div class="pill"><span id="syncDot" class="dot" role="status"></span><span id="syncLabel">Verification...</span></div>
-    </div>
+  <a href="#identifier" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Aller au formulaire de pointage</a>
+  <div class="app" role="main" aria-label="Borne de pointage ZKTeco">
+    <div class="eyebrow">ZKTeco Door Kiosk</div>
+    <h1 id="companyName">Chargement...</h1>
+    <p id="locationLabel">Initialisation de la borne d entree...</p>
+    <div class="pill" role="status" aria-live="polite"><span id="syncDot" class="dot" aria-hidden="true"></span><span id="syncLabel">Verification de l etat reseau...</span></div>
+
 
     <nav class="tabs" role="tablist" aria-label="Sections du kiosk">
       <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch">Pointage</button>
@@ -237,6 +235,9 @@
       </div>
     </div>
 
+        <div class="actions">
+          <button class="primary" id="checkInButton" aria-label="Pointer entree">Pointer entree</button>
+          <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Pointer sortie</button>
     <!-- TAB: Announcements (H2) -->
     <div id="panel-announcements" class="tab-panel" role="tabpanel" aria-labelledby="tab-announcements">
       <div class="card">
@@ -248,6 +249,8 @@
       </div>
     </div>
 
+        <div id="statusBox" class="status" role="status" aria-live="polite" aria-atomic="true">Pret a recevoir un pointage.</div>
+      </section>
     <!-- TAB: Leave Balance (H3) -->
     <div id="panel-leave" class="tab-panel" role="tabpanel" aria-labelledby="tab-leave">
       <div class="card">
