@@ -2,6 +2,22 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.73] - 2026-05-17
+
+### Feat — Iteration 10 : Predictions IA, dashboard predictif, mobile enrichments
+
+- Nouveau : `App\AI\Predictions\TurnoverPredictor` — prediction du turnover par departement et employe, scoring facteurs de risque (anciennete, absences frequentes, departement a fort turnover).
+- Nouveau : `App\AI\Predictions\AbsenteeismPredictor` — prediction absenteisme avec saisonnalite, tendances departementales et recommandations IA.
+- Nouveau : `App\AI\Predictions\ProactiveNotificationService` — notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, soldes conges faibles).
+- Nouveau : `PredictionController` — endpoints `/api/v1/predictions/turnover`, `/absenteeism`, `/notifications` avec controle RBAC manager principal/RH.
+- Nouveau : `PredictionsView.vue` — dashboard predictif admin avec cartes turnover, absenteisme, notifications proactives, barres de risque departement.
+- Route admin : `/predictions` ajoutee au router (lazy import).
+- Mobile : enrichissement absences (provider `leaveBalancesProvider`, methode `getLeaveBalances` dans `AbsenceRepository`).
+- Verification : E6 FleetView (197 lignes, DONE), E7 ChatView (191 lignes, DONE), G2-G7 mobile (DONE), G9 carte vehicule (DONE).
+- Tests : `PredictionControllerTest` — 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
+- Plan 15 : C11, C12, C13, C15, E6, E7, G2-G7, G9 passes en DONE.
+- REGISTRE scenarios test API mis a jour.
+
 ## [4.16.68] - 2026-05-17
 
 ### Docs — Plan 15 Batch 3 : Matrice conformite RGPD / loi 18-07 DZ / loi 09-08 MA
