@@ -12,6 +12,9 @@ use Illuminate\Support\Collection;
 
 class PlanningOptimizer
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function optimizeWeeklyPlanning(int $companyId, string $weekStart): array
     {
         $start = Carbon::parse($weekStart)->startOfWeek();
@@ -50,6 +53,9 @@ class PlanningOptimizer
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function suggestShiftRebalancing(int $companyId): array
     {
         $employees = Employee::where('company_id', $companyId)
@@ -57,8 +63,9 @@ class PlanningOptimizer
             ->with('department')
             ->get();
 
-        $departmentSizes = $employees->groupBy(fn ($e) => $e->department?->name ?? 'Non affecte')
-            ->map(fn (Collection $group) => $group->count())
+        /** @var array<string, int> $departmentSizes */
+        $departmentSizes = $employees->groupBy(fn (Employee $e): string => $e->department?->name ?? 'Non affecte')
+            ->map(fn (Collection $group): int => $group->count())
             ->toArray();
 
         $avgSize = count($departmentSizes) > 0
@@ -67,19 +74,20 @@ class PlanningOptimizer
 
         $suggestions = [];
         foreach ($departmentSizes as $dept => $size) {
+            $deptName = (string) $dept;
             if ($size > $avgSize * 1.5) {
                 $suggestions[] = [
-                    'department' => $dept,
+                    'department' => $deptName,
                     'current_size' => $size,
                     'suggestion' => 'sureffectif',
-                    'detail' => 'Le departement '.((string) $dept).' a '.((string) $size).' employes, superieur a 1.5x la moyenne ('.round($avgSize).').',
+                    'detail' => 'Le departement '.$deptName.' a '.$size.' employes, superieur a 1.5x la moyenne ('.round($avgSize).').',
                 ];
             } elseif ($size < $avgSize * 0.5 && $size > 0) {
                 $suggestions[] = [
-                    'department' => $dept,
+                    'department' => $deptName,
                     'current_size' => $size,
                     'suggestion' => 'sous-effectif',
-                    'detail' => 'Le departement '.((string) $dept).' a seulement '.((string) $size).' employes, inferieur a 0.5x la moyenne ('.round($avgSize).').',
+                    'detail' => 'Le departement '.$deptName.' a seulement '.$size.' employes, inferieur a 0.5x la moyenne ('.round($avgSize).').',
                 ];
             }
         }
@@ -91,12 +99,18 @@ class PlanningOptimizer
         ];
     }
 
+    /**
+     * @param  Collection<int, Employee>  $employees
+     * @param  Collection<int, Absence>  $absences
+     * @return array<string, array<string, mixed>>
+     */
     private function analyzeDepartmentCoverage(Collection $employees, Collection $absences, Carbon $start, Carbon $end): array
     {
         $coverage = [];
-        $grouped = $employees->groupBy(fn ($e) => $e->department?->name ?? 'Non affecte');
+        $grouped = $employees->groupBy(fn (Employee $e): string => $e->department?->name ?? 'Non affecte');
 
         foreach ($grouped as $dept => $deptEmployees) {
+            $deptName = (string) $dept;
             $total = $deptEmployees->count();
             $absentIds = $absences->whereIn('employee_id', $deptEmployees->pluck('id'))
                 ->pluck('employee_id')
@@ -106,7 +120,7 @@ class PlanningOptimizer
             $available = $total - $absentIds;
             $rate = $total > 0 ? round(($available / $total) * 100, 1) : 0;
 
-            $coverage[$dept] = [
+            $coverage[$deptName] = [
                 'total' => $total,
                 'absent' => $absentIds,
                 'available' => $available,
@@ -118,6 +132,11 @@ class PlanningOptimizer
         return $coverage;
     }
 
+    /**
+     * @param  Collection<int, Absence>  $absences
+     * @param  array<string, array<string, mixed>>  $departmentCoverage
+     * @return list<array<string, mixed>>
+     */
     private function detectSchedulingConflicts(Collection $absences, array $departmentCoverage): array
     {
         $conflicts = [];
@@ -150,6 +169,12 @@ class PlanningOptimizer
         return $conflicts;
     }
 
+    /**
+     * @param  array<string, array<string, mixed>>  $departmentCoverage
+     * @param  list<array<string, mixed>>  $conflicts
+     * @param  Collection<int, Contract>  $expiringContracts
+     * @return list<array<string, mixed>>
+     */
     private function generateRecommendations(array $departmentCoverage, array $conflicts, Collection $expiringContracts): array
     {
         $recommendations = [];
@@ -178,6 +203,10 @@ class PlanningOptimizer
         return $recommendations;
     }
 
+    /**
+     * @param  array<string, array<string, mixed>>  $departmentCoverage
+     * @param  list<array<string, mixed>>  $conflicts
+     */
     private function calculateScore(array $departmentCoverage, array $conflicts): int
     {
         $score = 100;

@@ -27,6 +27,7 @@ class AbsenteeismPredictor
                 ->where('absences.status', 'approved')
                 ->sum(DB::raw('EXTRACT(DAY FROM absences.end_date - absences.start_date) + 1'));
 
+            /** @var numeric $totalDays */
             $historicalData[] = [
                 'month' => $start->format('Y-m'),
                 'days' => (float) $totalDays,
@@ -61,6 +62,8 @@ class AbsenteeismPredictor
 
         $deptPredictions = [];
         foreach ($departments as $dept) {
+            /** @var string $deptName */
+            $deptName = $dept->name;
             $deptHistorical = DB::table('absences')
                 ->join('employees', 'absences.employee_id', '=', 'employees.id')
                 ->where('employees.company_id', $companyId)
@@ -69,10 +72,11 @@ class AbsenteeismPredictor
                 ->where('absences.status', 'approved')
                 ->sum(DB::raw('EXTRACT(DAY FROM absences.end_date - absences.start_date) + 1'));
 
+            /** @var numeric $deptHistorical */
             $deptAvg = (float) $deptHistorical / 6;
 
             $deptPredictions[] = [
-                'department' => $dept->name,
+                'department' => $deptName,
                 'predicted_days' => round($deptAvg * $trend, 1),
                 'historical_avg' => round($deptAvg, 1),
             ];

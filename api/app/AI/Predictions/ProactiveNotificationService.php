@@ -52,12 +52,16 @@ class ProactiveNotificationService
         foreach ($expiring as $contract) {
             $daysLeft = (int) now()->diffInDays($contract->end_date);
             $severity = $daysLeft <= 7 ? 'critical' : 'warning';
+            /** @var string $firstName */
+            $firstName = $contract->first_name;
+            /** @var string $lastName */
+            $lastName = $contract->last_name;
 
             $notifications[] = [
                 'type' => 'contract_expiring',
                 'severity' => $severity,
                 'title' => 'Contrat expire dans '.$daysLeft.' jours',
-                'message' => ((string) $contract->first_name).' '.((string) $contract->last_name).' — renouvellement ou fin a planifier.',
+                'message' => $firstName.' '.$lastName.' — renouvellement ou fin a planifier.',
                 'action_url' => '/contracts',
                 'entity_id' => $contract->id,
             ];
@@ -85,12 +89,16 @@ class ProactiveNotificationService
 
         foreach ($trials as $contract) {
             $daysLeft = (int) now()->diffInDays($contract->trial_end_date);
+            /** @var string $firstName */
+            $firstName = $contract->first_name;
+            /** @var string $lastName */
+            $lastName = $contract->last_name;
 
             $notifications[] = [
                 'type' => 'trial_ending',
                 'severity' => 'warning',
                 'title' => 'Periode d\'essai termine dans '.$daysLeft.' jours',
-                'message' => ((string) $contract->first_name).' '.((string) $contract->last_name).' — evaluation a confirmer.',
+                'message' => $firstName.' '.$lastName.' — evaluation a confirmer.',
                 'action_url' => '/contracts',
                 'entity_id' => $contract->id,
             ];

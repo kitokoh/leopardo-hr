@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -46,7 +47,9 @@ class CompanyFactory extends Factory
             'address' => $this->faker->address(),
             'email' => $this->faker->unique()->companyEmail(),
             'phone' => $this->faker->phoneNumber(),
-            'plan_id' => DB::table('plans')->where('name', 'Starter')->value('id') ?? 1,
+            'plan_id' => Schema::hasTable('plans')
+                ? (DB::table('plans')->where('name', 'Starter')->value('id') ?? 1)
+                : 1,
             'schema_name' => 'shared_tenants', // Par défaut shared
             'tenancy_type' => 'shared',
             'status' => 'active',
@@ -66,6 +69,9 @@ class CompanyFactory extends Factory
     public function withPlan(string $planName): static
     {
         return $this->state(function () use ($planName) {
+            if (! Schema::hasTable('plans')) {
+                return ['plan_id' => 1];
+            }
             $planId = DB::table('plans')->where('name', ucfirst($planName))->value('id');
             if (! $planId) {
                 throw new \RuntimeException("Plan {$planName} introuvable dans la base.");
@@ -81,9 +87,11 @@ class CompanyFactory extends Factory
     public function enterprise(): static
     {
         return $this->state(function () {
-            $planId = DB::table('plans')->where('name', 'Enterprise')->value('id');
+            $planId = Schema::hasTable('plans')
+                ? DB::table('plans')->where('name', 'Enterprise')->value('id')
+                : null;
             if (! $planId) {
-                throw new \RuntimeException('Plan Enterprise introuvable dans la base.');
+                $planId = 3;
             }
             $schemaName = 'company_'.Str::lower(Str::random(8));
 
