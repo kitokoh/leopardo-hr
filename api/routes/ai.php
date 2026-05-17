@@ -4,6 +4,7 @@ use App\Http\Controllers\AI\AgentController;
 use App\Http\Controllers\AI\AIAnalyticsController;
 use App\Http\Controllers\AI\AIGatewayController;
 use App\Http\Controllers\AI\VoiceController;
+use App\Http\Controllers\Api\V1\AIWorkflowController;
 use App\Http\Middleware\AI\AIFeatureCheck;
 use App\Http\Middleware\AI\AIRateLimiter;
 use App\Http\Middleware\AI\AITenantInjector;
@@ -38,8 +39,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'throttle:ai-sensitive', AIFe
 
     // Phase 5 — Workflows metier (C9, C10)
     Route::middleware([AIRateLimiter::class])->group(function () {
-        Route::post('/workflows/prepare-payroll', [\App\Http\Controllers\Api\V1\AIWorkflowController::class, 'preparePayroll']);
-        Route::get('/workflows/weekly-report', [\App\Http\Controllers\Api\V1\AIWorkflowController::class, 'weeklyReport']);
+        Route::post('/workflows/prepare-payroll', [AIWorkflowController::class, 'preparePayroll']);
+        Route::get('/workflows/weekly-report', [AIWorkflowController::class, 'weeklyReport']);
     });
 
     // Phase 2 — Analytics IA (Principal/RH only, Sprint 17-18)

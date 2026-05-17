@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\BankExportController;
+use App\Http\Controllers\Api\V1\CotisationSimulationController;
 use App\Http\Controllers\Api\V1\PayrollRunController;
 use App\Http\Controllers\Api\V1\PaySlipController;
 use App\Http\Controllers\Api\V1\SalaryComponentController;
@@ -69,6 +70,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
 
     // Cotisation Simulation
-    Route::post('/cotisation-simulation', [\App\Http\Controllers\Api\V1\CotisationSimulationController::class, 'simulate']);
+    Route::post('/cotisation-simulation', [CotisationSimulationController::class, 'simulate']);
 
 });
