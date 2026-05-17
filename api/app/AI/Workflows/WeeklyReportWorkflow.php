@@ -80,7 +80,14 @@ class WeeklyReportWorkflow
             ->select('departments.name as department', DB::raw('count(*) as count'))
             ->orderByDesc('count')
             ->get()
-            ->map(fn (\stdClass $row): array => ['department' => (string) $row->department, 'count' => (int) $row->count])
+            ->map(function (\stdClass $row): array {
+                /** @var string $dept */
+                $dept = $row->department;
+                /** @var int|string $cnt */
+                $cnt = $row->count;
+
+                return ['department' => $dept, 'count' => (int) $cnt];
+            })
             ->values()
             ->all();
 
@@ -90,7 +97,14 @@ class WeeklyReportWorkflow
             ->groupBy('status')
             ->select('status', DB::raw('count(*) as count'))
             ->get()
-            ->map(fn (\stdClass $row): array => ['status' => (string) $row->status, 'count' => (int) $row->count])
+            ->map(function (\stdClass $row): array {
+                /** @var string $status */
+                $status = $row->status;
+                /** @var int|string $cnt */
+                $cnt = $row->count;
+
+                return ['status' => $status, 'count' => (int) $cnt];
+            })
             ->values()
             ->all();
 
@@ -118,7 +132,14 @@ class WeeklyReportWorkflow
             ->groupBy('type')
             ->select('type', DB::raw('count(*) as count'))
             ->get()
-            ->map(fn (\stdClass $row): array => ['type' => (string) $row->type, 'count' => (int) $row->count])
+            ->map(function (\stdClass $row): array {
+                /** @var string $type */
+                $type = $row->type;
+                /** @var int|string $cnt */
+                $cnt = $row->count;
+
+                return ['type' => $type, 'count' => (int) $cnt];
+            })
             ->values()
             ->all();
 
