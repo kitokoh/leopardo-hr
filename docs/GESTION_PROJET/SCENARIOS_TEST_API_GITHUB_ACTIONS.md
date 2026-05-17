@@ -709,3 +709,14 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Les logs contiennent `user_name`, `action`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`
 - Filtrage par action (created, updated, deleted, login, logout, exported) et par type d'entite (Employee, Contract, Absence, PayrollRun, etc.)
 - Isolation tenant : les logs sont filtres par `company_id`
+
+### SSO SAML/OIDC (Plan 15 K2)
+- `GET /api/v1/sso/providers` retourne la liste des protocoles SSO supportes (SAML 2.0, OpenID Connect) — public, pas d'auth
+- `GET /api/v1/sso/status` retourne le statut SSO de l'entreprise (enabled, provider) — RBAC manager principal uniquement
+- `POST /api/v1/sso/configure` configure SSO pour l'entreprise (provider in:saml,oidc, entity_id URL, sso_url URL) — RBAC manager principal
+- `DELETE /api/v1/sso/disable` desactive SSO pour l'entreprise — RBAC manager principal
+- `POST /api/v1/sso/saml/{companyId}/callback` recoit la reponse SAML de l'IdP — stub, validation complete a implementer
+- `GET /api/v1/sso/oidc/{companyId}/callback` recoit le callback OIDC (code, state, id_token) — stub, echange token a implementer
+- Les endpoints de gestion (status, configure, disable) sont proteges par auth:sanctum + tenant
+- Les callbacks sont publics (recus directement de l'IdP)
+- Configuration stockee en JSONB dans company_sso_configs (unique par company_id)
