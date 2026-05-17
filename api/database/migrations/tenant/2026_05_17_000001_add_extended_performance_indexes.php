@@ -26,7 +26,7 @@ return new class extends Migration
             ['job_postings', 'idx_job_postings_company_status', '(company_id, status)'],
             ['applicants', 'idx_applicants_posting_status', '(job_posting_id, status)'],
             ['audit_logs', 'idx_audit_logs_company_created', '(company_id, created_at DESC)'],
-            ['webhook_endpoints', 'idx_webhook_endpoints_company', '(company_id, is_active)'],
+            ['webhook_endpoints', 'idx_webhook_endpoints_company', '(company_id)'],
         ];
 
         foreach ($indexes as [$table, $name, $columns]) {
