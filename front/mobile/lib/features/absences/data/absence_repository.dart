@@ -12,6 +12,12 @@ class AbsenceRepository {
     return items.map((e) => Absence.fromJson(e)).toList();
   }
 
+  Future<List<Map<String, dynamic>>> getLeaveBalances() async {
+    final response = await apiClient.dio.get('/leave-balances');
+    final items = response.data['data'] as List;
+    return items.cast<Map<String, dynamic>>();
+  }
+
   Future<Absence> requestAbsence({
     required int absenceTypeId,
     required DateTime startDate,
