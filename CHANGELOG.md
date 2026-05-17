@@ -1,4 +1,4 @@
-﻿# CHANGELOG - LEOPARDO RH 
+﻿#  CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
@@ -22,6 +22,20 @@
 - Confirme : E4 (recrutement pipeline Kanban) est DONE — 308 lignes avec KanbanBoard, 6 stages pipeline, avancer/retourner candidats, creation poste inline.
 - Plan 15 : E4, E9, I2, I5 passes en DONE.
 - SCENARIOS_TEST_API et REGISTRE mis a jour.
+
+## [4.16.69] - 2026-05-14
+
+### Feat — Iteration 7 : IA Workflows, cotisations simulation, Telescope, synchronisation plans
+
+- Nouveau : `AI/Workflows/PreparePayrollWorkflow.php` — workflow IA « preparer la paie » : collecte employes actifs, verifie structures salariales, absences en attente, runs existants. Retourne un rapport de readiness multi-etapes.
+- Nouveau : `AI/Workflows/WeeklyReportWorkflow.php` — workflow IA « rapport hebdomadaire » : effectifs par departement/statut, absences par type, anomalies (employes sans pointage ni absence, contrats expirants).
+- Nouveau : `AIWorkflowController.php` avec endpoints `POST /api/v1/ai/workflows/prepare-payroll` et `GET /api/v1/ai/workflows/weekly-report`.
+- Nouveau : `CotisationSimulationController.php` — simulation cotisations sociales temps reel pour 6 pays (DZ, MA, FR, TN, TR, SN) avec detail employeur/employe.
+- Nouveau : `POST /api/v1/cotisation-simulation` endpoint pour simulation cotisations.
+- Nouveau : `config/telescope.php` — configuration Telescope pour environnement dev (watchers queries, jobs, events, cache, etc.).
+- Tests : `AIWorkflowTest.php` (prepare payroll, weekly report, RBAC employe), `CotisationSimulationTest.php` (DZ/MA simulation, RBAC, validation pays).
+- Plans d'action 01-14 : synchronisation massive — 25+ taches passees de `[ ]` a `[x]` apres verification code existant (ApiVersion, cache Redis, compression gzip, Sentry, Slack alerts, slow queries, pre-commit, CNAS/CNSS, import CSV, write confirmation IA, multi-tenant isolation, AES-256 chiffrement, monitoring).
+- Plan 15 : C9 (workflow paie) et C10 (rapport hebdo) implementes. T-MON-11 (Telescope config) ajoute.
 
 ## [4.16.68] - 2026-05-17
 

@@ -703,6 +703,37 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Les reponses compressees portent `Content-Encoding: gzip` et `Vary: Accept-Encoding`
 - Les clients sans `Accept-Encoding: gzip` recoivent la reponse non compressees
 
+
+### IA Workflows metier
+- `POST /api/v1/ai/workflows/prepare-payroll` execute le workflow de preparation paie
+  - Requiert `period_start` et `period_end` (dates)
+  - Collecte les employes actifs du tenant
+  - Verifie les structures salariales manquantes
+  - Detecte les absences en attente de validation sur la periode
+  - Compte les absences approuvees a deduire
+  - Verifie si un run de paie existe deja pour la meme periode
+  - Retourne un rapport multi-etapes avec status `ready` ou `requires_attention`
+  - Reserve aux managers (role=manager) ; employes recoivent 403
+  - Isolation tenant : toutes les requetes sont scopees au `company_id` de l'acteur
+- `GET /api/v1/ai/workflows/weekly-report` genere un rapport hebdomadaire automatique
+  - Parametre optionnel `week_start` (date) ; par defaut la semaine precedente
+  - Effectifs par departement et par statut
+  - Absences par type avec comptage pending/approved/rejected
+  - Detection anomalies : employes sans pointage ni absence approuvee, contrats expirant sous 30 jours
+  - Retourne un resume texte synthetique
+  - Reserve aux managers ; employes recoivent 403
+
+### Simulation cotisations sociales
+- `POST /api/v1/cotisation-simulation` simule les cotisations pour un salaire brut donne
+  - Requiert `gross_salary` (numeric >= 0) et `country_code` (in:DZ,MA,FR,TN,TR,SN)
+  - Retourne le detail des cotisations employe et employeur par type
+  - Calcule le net avant impot et le cout total employeur
+  - Taux DZ : CNAS salarie 9%, employeur 26%
+  - Taux MA : CNSS salarie 4.48%, AMO 2.26%, employeur CNSS 8.98%, AMO 3.40%
+  - Pays non supportes retournent une erreur 422
+  - Reserve aux managers ; employes recoivent 403
+  - Aucune persistance : calcul en memoire uniquement
+
 ### Audit logs UI (E9 - Iteration 9)
 - `GET /api/v1/audit-logs` retourne les logs d'audit pagines, scopes au `company_id` de l'acteur
 - `GET /api/v1/audit-logs/export?format=csv` exporte les logs d'audit au format CSV
