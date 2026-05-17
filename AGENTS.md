@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-16
+Derniere mise a jour : 2026-05-17
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -383,3 +383,18 @@ Procedure recommandee :
 - Le harnais `front/mobile/test/helpers/mobile_test_harness.dart` remplace auth, preferences et storage par des fakes Riverpod afin de tester les ecrans sans Hive, secure storage ni reseau.
 - Les goldens actuels sont des baselines structurelles, pas encore des captures PNG. Ne les presenter comme goldens image qu'apres ajout de fixtures generees et validees par Flutter.
 - La derniere mesure coverage mobile connue est `21.85%` (`1469/6723`) sur PR #460. Le seuil par defaut est `21%`; prochaine cible `25%`.
+
+### 2026-05-17 - Iterations 7-11 Plan 15
+
+- Les services IA predictions (`App\AI\Predictions\*`) utilisent des requetes SQL directes (`DB::table(...)`) pour la performance sur grands volumes. Ne pas migrer vers Eloquent sans benchmark comparatif.
+- Le `ProactiveNotificationService` est extensible : ajouter un type = ajouter une methode `check*()` privee dans la classe.
+- Le `PredictionController` restreint l'acces aux managers `principal` et `rh` via `hasManagerRole()`. Ne pas elargir sans revue RBAC.
+- La route `/predictions` est lazy-importee dans `front/admin-dashboard/src/router/index.js`. Garder le code splitting actif.
+- Le SSO est un stub (K2) : `SSOService` + `SSOController` logguent les callbacks SAML/OIDC mais ne valident pas les assertions. L'implementation complete necessite `onelogin/php-saml` ou `lightSAML`.
+- La table `company_sso_configs` est publique (pas tenant-schema) car la config SSO doit etre lisible avant l'authentification tenant.
+- Les routes SSO callbacks (`/sso/saml/{id}/callback`, `/sso/oidc/{id}/callback`) sont publiques (recues de l'IdP). Les routes de gestion sont authentifiees `auth:sanctum` + `tenant`.
+- L'audit WCAG 2.1 AA (K4) est documente dans `docs/security/WCAG_ACCESSIBILITY_AUDIT.md`. Score actuel 68% (23/34 conformes, 11 partiels). Plan de remediation 8 items.
+- Le lien "Aller au contenu principal" (WCAG 2.4.1) est ajoute dans `DashboardLayout.vue` et `web/src/app/layout.tsx`. Ne pas le supprimer.
+- Les items mobile G2-G9 sont deja implementes dans Flutter (absences, contrats, formations, frais, chat IA, voice IA, carte vehicule). Avant d'ajouter un ecran mobile, verifier `front/mobile/lib/features/`.
+- Le plan 15 consolide (`docs/PLAN_ACTION/15_PLAN_EXECUTION_CONSOLIDE.md`) est le document de reference pour l'avancement. Les iterations 1-11 sont documentees avec PRs, contenus et statuts.
+- Backlog restant apres iteration 11 : C14 (optimisation planning), H (kiosk), J (GTM non-code), L5 (ZKTeco), L6 (calendrier sync), G8 (push Firebase), G10 (organigramme mobile).
