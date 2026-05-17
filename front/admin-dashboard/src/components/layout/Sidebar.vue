@@ -149,7 +149,9 @@ import {
   TruckIcon,
   SparklesIcon,
   LinkIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  ChartPieIcon,
+  ShieldCheckIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -248,6 +250,18 @@ const navigation = computed(() => [
     title: 'Chat IA',
     path: '/chat',
     icon: SparklesIcon
+  },
+  {
+    name: 'reports',
+    title: 'Rapports RH',
+    path: '/reports',
+    icon: ChartPieIcon
+  },
+  {
+    name: 'audit',
+    title: 'Journal d\'audit',
+    path: '/audit',
+    icon: ShieldCheckIcon
   },
   {
     name: 'webhooks',
