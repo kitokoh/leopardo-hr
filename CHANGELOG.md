@@ -26,6 +26,21 @@
 - Tests : `PredictionControllerTest` — 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
 - Plan 15 : C11, C12, C13, C15, E6, E7, G2-G7, G9 passes en DONE.
 - REGISTRE scenarios test API mis a jour.
+## [4.16.74] - 2026-05-17
+
+### Feat — Iteration 11 : SSO SAML/OIDC stub + audit WCAG 2.1 AA
+
+- Nouveau : `App\Services\SSO\SSOService` — service SSO multi-protocole (SAML 2.0, OpenID Connect) avec configuration par entreprise, activation/desactivation et callbacks stub.
+- Nouveau : `App\Services\SSO\SSOProviderConfig` — DTO configuration SSO (entity_id, sso_url, slo_url, certificate, name_id_format).
+- Nouveau : `SSOController` — 6 endpoints : `GET /sso/providers` (public), `GET /sso/status`, `POST /sso/configure`, `DELETE /sso/disable` (RBAC principal), `POST /sso/saml/{id}/callback`, `GET /sso/oidc/{id}/callback`.
+- Nouveau : migration `create_company_sso_configs_table` — table SSO config par entreprise (provider, config JSONB, is_active), idempotente.
+- Nouveau : `routes/modules/sso.php` — routes SSO separees (callbacks publics + gestion authentifiee).
+- Nouveau : `docs/security/WCAG_ACCESSIBILITY_AUDIT.md` — audit complet WCAG 2.1 AA (34 criteres, 23 conformes, 11 partiels, 0 non-conformes, score 68%).
+- Fix : `DashboardLayout.vue` — ajout lien "Aller au contenu principal" (WCAG 2.4.1) + `id="main-content"` sur `<main>`.
+- Fix : `web/src/app/layout.tsx` — ajout lien "Aller au contenu principal" (WCAG 2.4.1).
+- Tests : `SSOControllerTest` — 8 tests Feature (providers publics, RBAC status/configure/disable, validation provider, callback SAML).
+- Plan 15 : K2 (SSO stub) et K4 (WCAG audit) passes en DONE.
+
 ## [4.16.71] - 2026-05-17
 
 ### Feat — Iteration 9 : Audit UI, good first issues, release prep

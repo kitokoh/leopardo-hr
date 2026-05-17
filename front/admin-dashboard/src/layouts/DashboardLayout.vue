@@ -1,5 +1,11 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <!-- Skip to content (WCAG 2.4.1) -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-indigo-600 focus:shadow-lg"
+    >Aller au contenu principal</a>
+
     <!-- Sidebar -->
     <Sidebar
       :is-open="sidebarOpen"
@@ -16,7 +22,7 @@
       />
 
       <!-- Page content -->
-      <main class="py-6">
+      <main id="main-content" class="py-6">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <!-- Page header -->
           <div class="mb-6" v-if="$route.meta.title">

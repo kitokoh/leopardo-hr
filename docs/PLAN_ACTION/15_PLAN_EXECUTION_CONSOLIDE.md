@@ -177,9 +177,9 @@
 | # | Tache | Source | Effort | Priorite |
 |---|-------|--------|--------|----------|
 | K1 | Rate limiting API par plan | Plan 14 | 1j | DONE |
-| K2 | SSO SAML/OIDC | Plan 14 | 3j | MEDIUM |
+| K2 | SSO SAML/OIDC | Plan 14 | 3j | DONE |
 | K3 | Multi-tenant isolation test complet | Plan 14 | 1j | HIGH |
-| K4 | Audit WCAG 2.1 AA | Plan 14 | 2j | LOW |
+| K4 | Audit WCAG 2.1 AA | Plan 14 | 2j | DONE |
 | K5 | Matrice conformite (RGPD, loi 18-07) | Plan 14 | 2j | DONE |
 
 ### Categorie L — Integrations tierces (Plan 14)
@@ -363,9 +363,20 @@
 - `GOOD_FIRST_ISSUES.md` — 10 issues pour contributeurs debutants
 - `RELEASE_v0.1.0.md` — notes de release pour la premiere version publique
 
-### Iteration 10+ — Mobile, vitrine, IA avancee, GTM
-**Cible** : Categories C, F, G, H, I, J, K, L
-**Statut** : **BACKLOG** — hors cloture « plan 15 MVP admin/API » ; suites dediees par categorie.
+### Iteration 11 — SSO SAML/OIDC stub + audit WCAG 2.1 AA
+**Cible** : K2, K4
+**Statut** : **COMPLETE** (PR #484, 2026-05-17)
+**Contenu** :
+- SSOService + SSOProviderConfig : configuration SSO multi-protocole par entreprise
+- SSOController : 6 endpoints (providers, status, configure, disable, SAML callback, OIDC callback)
+- Migration company_sso_configs (provider, config JSONB, is_active)
+- Audit WCAG 2.1 AA complet (34 criteres, score 68%)
+- Skip-to-content link (WCAG 2.4.1) admin + vitrine
+- SSOControllerTest : 8 tests Feature RBAC
+
+### Iteration 12+ — Backlog restant
+**Cible** : Categories restantes (C14, H kiosk, J GTM, L5 ZKTeco, L6 calendrier)
+**Statut** : **BACKLOG** — suites par categorie.
 
 **Lots demarres (incrementaux)** :
 - **2026-05-16 — Lot vitrine F** : page publique **`/changelog`** + liens footer (`/pricing`, `/blog`, changelog) dans `front/web`.
