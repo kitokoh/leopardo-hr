@@ -18,6 +18,7 @@ class AIWorkflowTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+        config(['ai.enabled' => true]);
     }
 
     protected function tearDown(): void
