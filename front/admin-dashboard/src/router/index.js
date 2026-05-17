@@ -215,6 +215,15 @@ const routes = [
         }
       },
       {
+        path: '/predictions',
+        name: 'predictions',
+        component: () => import('@/views/predictions/PredictionsView.vue'),
+        meta: {
+          title: 'Dashboard Prédictif IA',
+          icon: 'ChartBarSquareIcon'
+        }
+      },
+      {
         path: '/audit',
         name: 'audit',
         component: () => import('@/views/audit/AuditLogsView.vue'),
