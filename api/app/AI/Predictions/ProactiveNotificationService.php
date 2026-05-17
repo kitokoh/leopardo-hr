@@ -215,12 +215,21 @@ class ProactiveNotificationService
      */
     private function checkLowLeaveBalances(string $companyId, array &$notifications): void
     {
+        if (! Schema::hasTable('leave_balances')) {
+            return;
+        }
+
+        $remainingColumn = $this->leaveBalanceRemainingColumn();
+        if ($remainingColumn === null) {
+            return;
+        }
+
         $lowBalanceCount = DB::table('leave_balances')
             ->join('employees', 'leave_balances.employee_id', '=', 'employees.id')
             ->where('employees.company_id', $companyId)
             ->where('employees.status', 'active')
-            ->where('leave_balances.remaining', '<=', 2)
-            ->where('leave_balances.remaining', '>=', 0)
+            ->where("leave_balances.$remainingColumn", '<=', 2)
+            ->where("leave_balances.$remainingColumn", '>=', 0)
             ->distinct('leave_balances.employee_id')
             ->count('leave_balances.employee_id');
 
@@ -234,5 +243,16 @@ class ProactiveNotificationService
                 'entity_id' => null,
             ];
         }
+    }
+
+    private function leaveBalanceRemainingColumn(): ?string
+    {
+        foreach (['remaining', 'remaining_days', 'balance'] as $column) {
+            if (Schema::hasColumn('leave_balances', $column)) {
+                return $column;
+            }
+        }
+
+        return null;
     }
 }

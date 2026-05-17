@@ -60,6 +60,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les tests Feature qui declenchent `AbsenceRequested`, `AbsenceApproved`, `AbsenceRejected`, `PayrollValidated` ou d'autres evenements metier peuvent passer par `WebhookListener`. Le schema de test MVP doit donc creer `webhook_endpoints` et `webhook_deliveries`, sinon PostgreSQL echoue avec `relation "webhook_endpoints" does not exist` avant meme les assertions.
 - Les contrats plateforme recents doivent rester dans `api/openapi.yaml`. Le workflow `OpenAPI CI` lance Redocly uniquement quand la spec ou son workflow changent ; corriger la spec plutot que laisser les frontends deviner les shapes `data` / `meta`.
 - Depuis v4.16.63, les contrats tracking/flotte sont aussi dans `api/openapi.yaml`. Pour toute evolution de `routes/modules/tracking.php`, garder la spec alignee sur les vrais champs Eloquent (`plate_number`, `traccar_*`, `assigned_driver_id`) et non sur les anciens noms generiques (`registration_number`, `tracker_id`).
+- Les predictions IA doivent rester defensives face aux donnees RH incompletes : `department_id` peut etre nul dans les groupements Eloquent, et les soldes conges historiques peuvent exposer `remaining`, `remaining_days` ou `balance` selon la migration/fixture. Utiliser des allowlists de colonnes et des `whereNull` explicites plutot que caster une cle vide.
 
 ### Audit 2026-05-13 - IA, RBAC et tenant runtime
 
