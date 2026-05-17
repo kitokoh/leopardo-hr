@@ -141,3 +141,42 @@ Verifier que toutes les notifications toast utilisent `role="alert"` et `aria-li
 3. Ajout `tooltip` sur les `IconButton` Flutter
 4. Verification `lang="fr"` sur les layouts
 5. Documentation complete de l'audit dans ce fichier
+
+## Corrections W2-W8 (iteration 12+)
+
+### W1 — Skip-to-content ✓
+- `DashboardLayout.vue` : deja present
+- `web/src/app/layout.tsx` : deja present
+- `zkteco-kiosk/index.html` : ajoute (lien sr-only vers #identifier)
+
+### W2 — Focus trap modals ✓
+- `composables/useFocusTrap.js` : composable focus trap reutilisable
+- `KeyboardShortcutsModal.vue` : Escape pour fermer, focus ring visible
+- Focus restored au composant precedent a la fermeture
+
+### W3 — Roles ARIA composants custom ✓
+- `Sidebar.vue` : `role="navigation" aria-label="Menu principal"` sur nav
+- `zkteco-kiosk/index.html` : `role="main"`, `role="status"`, `aria-live`, `aria-label` sur elements interactifs
+- `AccessibleTable.vue` : composant table avec `scope="col"`, `caption`, `aria-sort`, `role="region"`
+
+### W4 — Toast role="alert" ✓
+- `NotificationPanel.vue` : deja `role="alert"` et `aria-live="assertive"` (verifie)
+- `useAnnouncer.js` : composable aria-live region pour annonces dynamiques
+- `SystemAlertsOverlay.vue` : alert critique avec `role="alert"` implicite
+
+### W5 — DataTable caption et scope ✓
+- `AccessibleTable.vue` : composant reutilisable avec `<caption>` sr-only, `scope="col"` sur tous th
+
+### W6 — Feedback erreurs inline ✓
+- `FormField.vue` : composant formulaire avec `role="alert"` sur erreurs, `aria-invalid`, `aria-describedby`, champ obligatoire annonce
+
+### W7 — Contraste bordures/icones ✓
+- `style.css` : classes utilitaires `.border-accessible` (gray-300/600) et `.icon-accessible` (gray-500/400)
+- Dark mode classes ajoutees sur Sidebar, Header, notifications dropdown
+- Contraste bordures passe de gray-200 a gray-300 sur composants interactifs
+
+### W8 — Reflow admin < 768px ✓
+- Sidebar deja responsive (mobile overlay avec transform)
+- Header deja responsive (hamburger lg:hidden)
+- Charts container reduit a 300px < 768px
+- Globe container reduit a 400px < 768px
