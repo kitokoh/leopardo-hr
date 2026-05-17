@@ -770,6 +770,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Filtrage par action (created, updated, deleted, login, logout, exported) et par type d'entite (Employee, Contract, Absence, PayrollRun, etc.)
 - Isolation tenant : les logs sont filtres par `company_id`
 
+
 ### SSO SAML/OIDC (Plan 15 K2)
 - `GET /api/v1/sso/providers` retourne la liste des protocoles SSO supportes (SAML 2.0, OpenID Connect) — public, pas d'auth
 - `GET /api/v1/sso/status` retourne le statut SSO de l'entreprise (enabled, provider) — RBAC manager principal uniquement
@@ -780,3 +781,11 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Les endpoints de gestion (status, configure, disable) sont proteges par auth:sanctum + tenant
 - Les callbacks sont publics (recus directement de l'IdP)
 - Configuration stockee en JSONB dans company_sso_configs (unique par company_id)
+
+### Optimisation planning IA (C14 - Iteration 12)
+- `GET /api/v1/planning/weekly-optimization` retourne l'analyse de couverture departement, les conflits planning et les recommandations pour la semaine donnee
+- `GET /api/v1/planning/weekly-optimization?week_start=2026-06-01` accepte une date de debut de semaine optionnelle
+- `GET /api/v1/planning/shift-rebalancing` retourne l'analyse de repartition des effectifs par departement avec suggestions de reequilibrage
+- Le score d'optimisation est un entier 0-100 base sur la couverture departementale et le nombre de conflits
+- Isolation tenant : toutes les requetes sont scopees au `company_id` de l'acteur authentifie
+- Authentification requise : les endpoints retournent 401 sans token valide
