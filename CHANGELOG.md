@@ -17,6 +17,17 @@
 - Tests : `PredictionControllerTest` — 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
 - Plan 15 : C11, C12, C13, C15, E6, E7, G2-G7, G9 passes en DONE.
 - REGISTRE scenarios test API mis a jour.
+## [4.16.71] - 2026-05-17
+
+### Feat — Iteration 9 : Audit UI, good first issues, release prep
+
+- Nouveau : `AuditLogsView.vue` — journal d'audit admin avec filtres (action, type, recherche), export CSV, panneau detail slide-over avec diff avant/apres (old_values vs new_values).
+- Nouveau : route `/audit` dans admin router (lazy import, code splitting conserve).
+- Nouveau : `GOOD_FIRST_ISSUES.md` — 10 issues documentees pour contributeurs debutants (validation IBAN, i18n arabe, dark mode, export PDF, tests health, etc.).
+- Nouveau : `RELEASE_v0.1.0.md` — notes de release pour la premiere version publique GitHub.
+- Confirme : E4 (recrutement pipeline Kanban) est DONE — 308 lignes avec KanbanBoard, 6 stages pipeline, avancer/retourner candidats, creation poste inline.
+- Plan 15 : E4, E9, I2, I5 passes en DONE.
+- SCENARIOS_TEST_API et REGISTRE mis a jour.
 
 ## [4.16.68] - 2026-05-17
 
