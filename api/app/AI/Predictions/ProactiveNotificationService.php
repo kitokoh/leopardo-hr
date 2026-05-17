@@ -32,7 +32,7 @@ class ProactiveNotificationService
     }
 
     /**
-     * @param list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}> $notifications
+     * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
     private function checkExpiringContracts(int $companyId, array &$notifications): void
     {
@@ -65,7 +65,7 @@ class ProactiveNotificationService
     }
 
     /**
-     * @param list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}> $notifications
+     * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
     private function checkTrialPeriodEnding(int $companyId, array &$notifications): void
     {
@@ -98,7 +98,7 @@ class ProactiveNotificationService
     }
 
     /**
-     * @param list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}> $notifications
+     * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
     private function checkBirthdaysThisWeek(int $companyId, array &$notifications): void
     {
@@ -126,7 +126,7 @@ class ProactiveNotificationService
     }
 
     /**
-     * @param list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}> $notifications
+     * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
     private function checkPendingApprovals(int $companyId, array &$notifications): void
     {
@@ -150,7 +150,7 @@ class ProactiveNotificationService
     }
 
     /**
-     * @param list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}> $notifications
+     * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
     private function checkOverdueTraining(int $companyId, array &$notifications): void
     {
@@ -175,7 +175,7 @@ class ProactiveNotificationService
     }
 
     /**
-     * @param list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}> $notifications
+     * @param  list<array{type: string, severity: string, title: string, message: string, action_url: string|null, entity_id: int|null}>  $notifications
      */
     private function checkLowLeaveBalances(int $companyId, array &$notifications): void
     {
