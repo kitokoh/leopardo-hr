@@ -72,14 +72,14 @@ class PlanningOptimizer
                     'department' => $dept,
                     'current_size' => $size,
                     'suggestion' => 'sureffectif',
-                    'detail' => 'Le departement '.$dept.' a '.$size.' employes, superieur a 1.5x la moyenne ('.round($avgSize).').',
+                    'detail' => 'Le departement '.((string) $dept).' a '.((string) $size).' employes, superieur a 1.5x la moyenne ('.round($avgSize).').',
                 ];
             } elseif ($size < $avgSize * 0.5 && $size > 0) {
                 $suggestions[] = [
                     'department' => $dept,
                     'current_size' => $size,
                     'suggestion' => 'sous-effectif',
-                    'detail' => 'Le departement '.$dept.' a seulement '.$size.' employes, inferieur a 0.5x la moyenne ('.round($avgSize).').',
+                    'detail' => 'Le departement '.((string) $dept).' a seulement '.((string) $size).' employes, inferieur a 0.5x la moyenne ('.round($avgSize).').',
                 ];
             }
         }

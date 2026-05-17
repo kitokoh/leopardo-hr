@@ -57,7 +57,7 @@ class ProactiveNotificationService
                 'type' => 'contract_expiring',
                 'severity' => $severity,
                 'title' => 'Contrat expire dans '.$daysLeft.' jours',
-                'message' => $contract->first_name.' '.$contract->last_name.' — renouvellement ou fin a planifier.',
+                'message' => ((string) $contract->first_name).' '.((string) $contract->last_name).' — renouvellement ou fin a planifier.',
                 'action_url' => '/contracts',
                 'entity_id' => $contract->id,
             ];
@@ -90,7 +90,7 @@ class ProactiveNotificationService
                 'type' => 'trial_ending',
                 'severity' => 'warning',
                 'title' => 'Periode d\'essai termine dans '.$daysLeft.' jours',
-                'message' => $contract->first_name.' '.$contract->last_name.' — evaluation a confirmer.',
+                'message' => ((string) $contract->first_name).' '.((string) $contract->last_name).' — evaluation a confirmer.',
                 'action_url' => '/contracts',
                 'entity_id' => $contract->id,
             ];

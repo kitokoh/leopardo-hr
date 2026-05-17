@@ -97,7 +97,7 @@ class TurnoverPredictor
                 if ($risk >= 20) {
                     $highRisk[] = [
                         'employee_id' => $emp->id,
-                        'name' => $emp->first_name.' '.$emp->last_name,
+                        'name' => ((string) $emp->first_name).' '.((string) $emp->last_name),
                         'risk' => min($risk, 100),
                         'factors' => $factors,
                     ];
