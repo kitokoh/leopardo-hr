@@ -212,6 +212,13 @@ const routes = [
         meta: {
           title: 'Dashboard Prédictif IA',
           icon: 'ChartBarSquareIcon'
+       
+        path: '/audit',
+        name: 'audit',
+        component: () => import('@/views/audit/AuditLogsView.vue'),
+        meta: {
+          title: 'Journal d\'audit',
+          icon: 'ShieldCheckIcon'
         }
       }
     ]

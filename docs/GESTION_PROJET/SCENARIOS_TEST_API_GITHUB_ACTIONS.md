@@ -713,3 +713,9 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Le TurnoverPredictor analyse anciennete, taux departement, absences frequentes
 - L'AbsenteeismPredictor integre saisonnalite (juillet, aout, decembre) et tendances
 - Le ProactiveNotificationService agrege 6 types de notifications tries par severite (critical > warning > info)
+### Audit logs UI (E9 - Iteration 9)
+- `GET /api/v1/audit-logs` retourne les logs d'audit pagines, scopes au `company_id` de l'acteur
+- `GET /api/v1/audit-logs/export?format=csv` exporte les logs d'audit au format CSV
+- Les logs contiennent `user_name`, `action`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`, `created_at`
+- Filtrage par action (created, updated, deleted, login, logout, exported) et par type d'entite (Employee, Contract, Absence, PayrollRun, etc.)
+- Isolation tenant : les logs sont filtres par `company_id`
