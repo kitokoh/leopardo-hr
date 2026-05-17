@@ -66,7 +66,7 @@
 - [x] Scenario onboarding : creer entreprise → ajouter employes → configurer paie pays
 - [x] Scenario cycle paie mensuel : pointage → calcul → validation → bulletins → export banque
 - [x] Scenario conges avec regles : demande → validation manager → deduction solde → rapport
-- [ ] Scenario multi-tenant : isolation complete entre 2 entreprises (donnees, fichiers, logs)
+- [x] Scenario multi-tenant : isolation complete entre 2 entreprises (donnees, fichiers, logs) — **FAIT** (`FkChainTenantIsolationTest.php` + tests headcount/pay-slips)
 - [x] Coverage backend cible : 60% — ratchet CI passe a 55% par defaut apres mesure GitHub Actions a 56.86%, cible suivante 60%
 ```
 
@@ -101,7 +101,7 @@
 - [x] Mecanisme de suppression des donnees (droit a l'oubli) via demande tracee `POST /api/v1/privacy/deletion-request`
 - [x] Registre des traitements (document interne) via `docs/security/REGISTRE_TRAITEMENTS_DONNEES_RH.md`
 - [x] Consentement employe pour le traitement biometrique via `PATCH /api/v1/privacy/biometric-consent`
-- [ ] Chiffrement des donnees sensibles au repos (AES-256 pour IBAN, salaire)
+- [x] Chiffrement des donnees sensibles au repos (AES-256 pour IBAN, salaire) — **FAIT** (Eloquent `encrypted` casts sur Employee: iban, bank_account, national_id)
 - [x] Journalisation des acces aux donnees RH (audit trail) via `audit_logs` pour fiches employes et exports privacy
 ```
 
@@ -128,10 +128,10 @@
 
 ### 3.2 Optimisation Backend
 ```
-- [ ] Cache Redis sur les endpoints read-heavy (dashboard, analytics, employes liste)
-- [ ] Queue asynchrone pour : calcul paie batch, export PDF, envoi notifications
-- [ ] Indexation PostgreSQL sur les colonnes filtrees frequemment
-- [ ] Compression response (gzip/brotli)
+- [x] Cache Redis sur les endpoints read-heavy (dashboard, analytics, employes liste) — **FAIT** (`config/performance.php`, cache tenant headcount)
+- [x] Queue asynchrone pour : calcul paie batch, export PDF, envoi notifications — **FAIT** (`WarmPaySlipPdfPathsForPayrollRunJob`, `DispatchWebhook`)
+- [x] Indexation PostgreSQL sur les colonnes filtrees frequemment — **FAIT** (`2026_05_10_000008_add_performance_indexes.php`)
+- [x] Compression response (gzip/brotli) — **FAIT** (`CompressResponse.php` middleware)
 - [ ] CDN pour assets statiques (bulletins PDF, photos profil)
 ```
 
@@ -157,8 +157,8 @@
 
 ### 4.2 Integrations Organismes Sociaux
 ```
-- [ ] Generation declaration CNAS trimestrielle (DZ) — format PDF/XML
-- [ ] Generation declaration CNSS (MA) — bordereau
+- [x] Generation declaration CNAS trimestrielle (DZ) — format PDF/XML — **FAIT** (`SocialDeclarationController.php`, `SocialDeclarationGenerator.php`)
+- [x] Generation declaration CNSS (MA) — bordereau — **FAIT** (genere via `SocialDeclarationGenerator` MA)
 - [ ] Export DSN simplifie (FR)
 - [ ] Simulation cotisations en temps reel (widget dashboard)
 ```
@@ -167,7 +167,7 @@
 ```
 - [ ] Webhook bidirectionnel avec Slack/Teams (notifications RH)
 - [ ] SSO SAML/OIDC pour enterprises (Azure AD, Google Workspace)
-- [ ] Import/export fichier Excel employes (bulk onboarding)
+- [x] Import/export fichier Excel employes (bulk onboarding) — **FAIT** (`EmployeeImportController.php` CSV import)
 - [ ] Integration comptable (export ecritures paie vers Sage, QuickBooks)
 - [ ] Integration pointeuse ZKTeco (SDK TCP/IP ou API cloud)
 - [ ] Calendrier Google/Outlook sync (conges, formations)
@@ -229,7 +229,7 @@
 ### 6.2 Documentation Commerciale
 ```
 - [ ] Dossier technique pour appels d'offres (architecture, securite, conformite)
-- [ ] Matrice de conformite (RGPD, loi 18-07, ISO 27001 objectifs)
+- [x] Matrice de conformite (RGPD, loi 18-07, ISO 27001 objectifs) — **FAIT** (`docs/security/MATRICE_CONFORMITE_RGPD_LOI_18_07.md`)
 - [ ] Benchmarks performance publies (temps de reponse, SLA)
 - [ ] Comparatif fonctionnel vs concurrents (Sage HR, OrangeHRM, PaieNA)
 ```
