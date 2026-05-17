@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.66] - 2026-05-17
+
+### Fix — Sentry DSN crash & deployment readiness
+
+- Fix : `api/config/sentry.php` — validation du DSN Sentry avant passage a `ClientBuilder`. Les valeurs booleennes (`"1"`, `"true"`) ou non-URL sont desormais ignorees (retour `null`) au lieu de crasher `OptionsResolver` avec `The option "dsn" with value "1" is invalid`.
+- Fix : `front/web/vercel.json` — correction du rewrite `/api/:path*` qui pointait vers `https://api.leopardo.com` (domaine inexistant) au lieu de `https://gestionemployerbackend.onrender.com`.
+
 ## [4.16.65] - 2026-05-16
 
 ### Gouvernance — Statut Plan 15

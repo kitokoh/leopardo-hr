@@ -72,7 +72,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://api.leopardo.com/api/:path*"
+      "destination": "https://gestionemployerbackend.onrender.com/api/:path*"
     }
   ],
   "cleanUrls": true,
