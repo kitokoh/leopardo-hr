@@ -20,15 +20,15 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+    @apply inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
   }
 
   .card {
-    @apply bg-white overflow-hidden shadow rounded-lg;
+    @apply bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg;
   }
 
   .card-header {
-    @apply px-4 py-5 sm:px-6 border-b border-gray-200;
+    @apply px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700;
   }
 
   .card-body {
@@ -36,7 +36,7 @@
   }
 
   .stat-card {
-    @apply bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200;
+    @apply bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-200;
   }
 
   .sidebar-nav-item {
@@ -44,11 +44,25 @@
   }
 
   .sidebar-nav-item.active {
-    @apply bg-primary-100 text-primary-900;
+    @apply bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-200;
   }
 
   .sidebar-nav-item:not(.active) {
-    @apply text-gray-600 hover:bg-gray-50 hover:text-gray-900;
+    @apply text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200;
+  }
+
+  /* W7 — Improved contrast for borders and icons (WCAG 1.4.11 non-text contrast 3:1) */
+  .border-accessible {
+    @apply border-gray-300 dark:border-gray-600;
+  }
+
+  .icon-accessible {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  /* W2 — Focus visible ring for all interactive elements (WCAG 2.4.7) */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
   }
 }
 
