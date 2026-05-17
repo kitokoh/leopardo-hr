@@ -12,6 +12,26 @@
 - Plan de remediation : 7 gaps identifies avec priorite et responsable.
 - References code : mapping vers les fichiers sources (controllers, middleware, policies, config).
 - Plan 15 : K5 passe en DONE ; L2, L3, L4 passes en DONE (batch 1 PR #477).
+## [4.16.67] - 2026-05-17
+
+### Feat — Plan 15 Batch 2 : SEO dynamique (sitemap.ts, robots.ts)
+
+- Nouveau : `front/web/src/app/sitemap.ts` — sitemap dynamique Next.js Metadata API, genere automatiquement `/sitemap.xml` avec toutes les pages statiques + articles blog MDX.
+- Nouveau : `front/web/src/app/robots.ts` — robots.txt dynamique Next.js Metadata API, bloque bots nuisibles (MJ12bot, AhrefsBot, SemrushBot), reference le sitemap dynamique.
+- Suppression : `public/sitemap.xml` statique (170 lignes, dates figees 2024) remplace par generation dynamique.
+- Suppression : `public/robots.txt` statique remplace par generation dynamique.
+- Suppression : `src/app/api/sitemap/route.ts` (route API custom) remplace par l'approche canonique Next.js.
+- Plan 15 : couverture F4 (SEO sitemap + robots dynamiques). Schema.org JSON-LD deja present via `OrganizationJsonLd`.
+### Feat — Plan 15 Batch 1 : Integrations sociales, import employes, compression API
+
+- Nouveau : `SocialDeclarationGenerator` — generation declarations trimestrielles CNAS (Algerie) et CNSS (Maroc) a partir des bulletins valides.
+- Nouveau : `POST /api/v1/social-declarations/cnas-dz` — export declaration CNAS DZ trimestrielle (taux salarie 9%, employeur 26%).
+- Nouveau : `POST /api/v1/social-declarations/cnss-ma` — export declaration CNSS MA trimestrielle avec jours travailles.
+- Nouveau : `POST /api/v1/employees/import` — import employes depuis fichier CSV avec validation ligne par ligne, detection doublons email, rollback transactionnel.
+- Nouveau : `GET /api/v1/employees/import-template` — template CSV avec colonnes et exemple.
+- Nouveau : `CompressResponse` middleware — compression gzip des reponses JSON > 1 Ko pour les clients qui acceptent `Accept-Encoding: gzip`.
+- Routes : ajout des endpoints dans `routes/modules/payroll_engine.php`.
+- Plan 15 : couverture L2 (CNAS DZ), L3 (CNSS MA), L4 (import employes), D3 (compression reponse).
 
 ## [4.16.66] - 2026-05-17
 

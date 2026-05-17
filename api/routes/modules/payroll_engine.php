@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\PaySlipController;
 use App\Http\Controllers\Api\V1\SalaryComponentController;
 use App\Http\Controllers\Api\V1\SalaryStructureController;
 use App\Http\Controllers\Api\V1\SocialContributionController;
+use App\Http\Controllers\Api\V1\SocialDeclarationController;
 use App\Http\Controllers\Api\V1\TaxSlabController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,4 +63,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
     Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
     Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
+
+    // Social Declarations (CNAS DZ / CNSS MA)
+    Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
+    Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
+
 });

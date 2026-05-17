@@ -677,3 +677,28 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 ### Leave carry-forward
 - `leave:carry-forward` (annuel) : reporter les soldes non utilises selon LeavePolicy
 - Expiration des reports selon carry_forward_expiry_days
+
+### Declarations sociales (CNAS DZ / CNSS MA)
+- `POST /api/v1/social-declarations/cnas-dz` genere une declaration trimestrielle CNAS Algerie avec taux salarie 9% et employeur 26%
+- `POST /api/v1/social-declarations/cnss-ma` genere une declaration trimestrielle CNSS Maroc avec jours travailles
+- Les deux endpoints sont reserves aux roles RH/finance autorises
+- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du trimestre demande
+- Isolation tenant : les bulletins et employes doivent etre scopes au `company_id` de l'acteur
+- La requete company ne doit effectuer qu'un seul SELECT (pas de requetes dupliquees name + tax_id)
+
+### Import employes CSV
+- `POST /api/v1/employees/import` importe des employes depuis un fichier CSV avec validation ligne par ligne
+- `GET /api/v1/employees/import-template` retourne un template CSV avec colonnes et exemple
+- L'import utilise `Employee::create()` (pas `DB::insert`) pour respecter les casts `encrypted` sur `national_id`, `iban`, `bank_account`
+- Les colonnes CSV doivent correspondre au schema reel : `address_line`, `postal_code`, `nationality` (pas `address`, `city`, `country`)
+- Validation genre : `in:M,F` (pas `male/female/other`)
+- Validation contract_type : `in:CDI,CDD,Stage,Interim,Consultant`
+- Validation status : `in:active,inactive,on_leave,terminated,suspended`
+- Detection doublons email avant insertion
+- Rollback transactionnel en cas d'erreur
+- Isolation tenant : l'import scope au `company_id` de l'acteur
+
+### Compression reponse API
+- Le middleware `CompressResponse` compresse les reponses JSON > 1 Ko pour les clients acceptant `Accept-Encoding: gzip`
+- Les reponses compressees portent `Content-Encoding: gzip` et `Vary: Accept-Encoding`
+- Les clients sans `Accept-Encoding: gzip` recoivent la reponse non compressees
