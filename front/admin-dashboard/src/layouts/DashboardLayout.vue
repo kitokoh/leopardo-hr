@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Skip to content (WCAG 2.4.1) -->
     <a
       href="#main-content"
@@ -26,7 +26,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <!-- Page header -->
           <div class="mb-6" v-if="$route.meta.title">
-            <h1 class="text-2xl font-bold text-gray-900">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
               {{ $route.meta.title }}
             </h1>
             <nav class="mt-2" v-if="breadcrumbs.length > 1">
@@ -64,6 +64,9 @@
 
     <!-- System alerts overlay -->
     <SystemAlertsOverlay />
+
+    <!-- Keyboard shortcuts modal -->
+    <KeyboardShortcutsModal />
   </div>
 </template>
 
@@ -78,6 +81,8 @@ import Sidebar from '@/components/layout/Sidebar.vue'
 import Header from '@/components/layout/Header.vue'
 import NotificationPanel from '@/components/notifications/NotificationPanel.vue'
 import SystemAlertsOverlay from '@/components/alerts/SystemAlertsOverlay.vue'
+import KeyboardShortcutsModal from '@/components/common/KeyboardShortcutsModal.vue'
+import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -85,6 +90,9 @@ const realtimeStore = useRealtimeStore()
 const dashboardStore = useDashboardStore()
 
 const sidebarOpen = ref(false)
+
+// Initialize keyboard shortcuts
+useKeyboardShortcuts()
 
 // Breadcrumbs computation
 const breadcrumbs = computed(() => {
