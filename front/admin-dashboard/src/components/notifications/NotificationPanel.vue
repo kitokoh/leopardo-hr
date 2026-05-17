@@ -16,7 +16,7 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+        <div role="alert" class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
           <div class="p-4">
             <div class="flex items-start">
               <div class="flex-shrink-0">
