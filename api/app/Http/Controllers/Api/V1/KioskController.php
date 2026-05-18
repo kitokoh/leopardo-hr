@@ -173,7 +173,7 @@ class KioskController extends Controller
             })
             ->first();
 
-        abort_if(!$employee, 404, 'EMPLOYEE_NOT_FOUND');
+        abort_if(! $employee, 404, 'EMPLOYEE_NOT_FOUND');
 
         $today = now()->toDateString();
         $todayAttendance = DB::table('attendance_logs')
@@ -218,7 +218,7 @@ class KioskController extends Controller
         $company = $kiosk->company;
         $this->setTenantSearchPath($company);
 
-        $announcements = \App\Models\KioskAnnouncement::query()
+        $announcements = KioskAnnouncement::query()
             ->where('company_id', $company->id)
             ->active()
             ->orderByDesc('priority')
