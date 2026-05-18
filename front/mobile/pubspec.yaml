@@ -26,6 +26,11 @@ dependencies:
   image_picker: ^1.2.2
   local_auth: ^3.0.1
   json_annotation: ^4.11.0
+  url_launcher: ^6.3.1
+  firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.5
+  flutter_local_notifications: ^19.2.1
+  graphview: ^1.2.1
 
   flutter_animate: ^4.5.2
   google_sign_in: ^7.2.0
