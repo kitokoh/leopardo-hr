@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.79] - 2026-05-18
+
+### Docs - Nettoyage depot distant
+
+- Documentation : ajout dans `AGENTS.md` du retour d'experience sur le nettoyage des branches distantes Devin/GTM/mobile, la synchronisation des PR restantes apres chaque merge et le pruning des refs locales.
+
 ## [4.16.78] - 2026-05-18
 
 ### Fix — PR #495 GTM / vitrine
