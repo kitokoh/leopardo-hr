@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-17
+Derniere mise a jour : 2026-05-18
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -158,6 +158,14 @@ Procedure recommandee :
 - Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
 
 ## Historique utile
+
+### 2026-05-18 - Nettoyage depot distant Devin/GTM/mobile
+
+- Nettoyage realise via PRs vertes une par une : #491 vitrine, #488 integrations API, #495 GTM/vitrine, #489 mobile. Apres chaque merge dans `main`, refaire `git fetch origin main --prune` puis verifier si les PR restantes passent en `BEHIND`; si oui, merger `origin/main` dans la branche restante, pousser, et attendre les nouveaux checks.
+- `gh pr merge --merge --delete-branch` peut supprimer correctement la branche distante tout en laissant des refs locales `origin/devin/*` visibles. Verifier la verite distante avec `git ls-remote --heads origin`, puis nettoyer les refs locales via `git remote prune origin`.
+- Les jobs mobile `Build Debug APK` et `Mobile Flutter (Stable Channel)` peuvent rester plusieurs minutes en `pending/in_progress` apres analyse/tests verts. Ne pas merger tant que ces jobs ne sont pas explicitement `pass`, meme si `gh pr checks` retourne parfois un code de sortie 0.
+- Sur Windows local, PHP/Flutter peuvent etre absents ou non representatifs. Pour ces branches, GitHub Actions a servi de source de verite ; localement, seuls les builds Next.js cibles ont ete lances quand le rouge etait frontend.
+- Avant de nettoyer les branches locales, conserver les stashes et les branches non mergees (`git stash list`, `git branch --no-merged main`). Supprimer seulement les branches dont `git branch --merged main` confirme l'integration.
 
 ### 2026-05-16 - Plan 15 : parallel merge #468 et iteration 6
 
