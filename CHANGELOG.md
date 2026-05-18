@@ -35,6 +35,7 @@
 - Firebase config added to `config/services.php`
 - New route module `routes/modules/integrations.php`
 - Updated `SCENARIOS_TEST_API_GITHUB_ACTIONS.md` with all new endpoints
+- Maintenance: alignement Pint des nouvelles surfaces kiosk/ZKTeco avant merge de la PR.
 
 ## [4.16.76] - 2026-05-17
 
