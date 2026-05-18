@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.78] - 2026-05-18
+
+### Fix — PR #495 GTM / vitrine
+
+- Vitrine : compatibilite `CTASection` avec les contrats `title`/`description`/`primaryCta` utilises par les nouvelles pages GTM.
+- Gouvernance : ajout d'une trace changelog pour les nouvelles surfaces GTM avant merge.
 ## [4.16.77] - 2026-05-17
 
 ### Feat — PR #488: API Integrations (G8, L6, L5, H1-H4)
