@@ -789,3 +789,35 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Le score d'optimisation est un entier 0-100 base sur la couverture departementale et le nombre de conflits
 - Isolation tenant : toutes les requetes sont scopees au `company_id` de l'acteur authentifie
 - Authentification requise : les endpoints retournent 401 sans token valide
+
+### Push Notifications / Device Tokens (G8 - Batch 1)
+- `POST /api/v1/device-tokens` enregistre un token FCM (platform: ios/android/web, token: string) — self-service employe
+- `DELETE /api/v1/device-tokens` supprime un token FCM — self-service employe
+- `GET /api/v1/device-tokens` liste les tokens actifs de l'employe connecte
+- `POST /api/v1/push-notifications/send` envoie une notification push a un employe — RBAC manager uniquement
+- Les tokens invalides (NotRegistered, InvalidRegistration) sont automatiquement desactives
+
+### Calendar Sync (L6 - Batch 1)
+- `GET /api/v1/calendar/connections` liste les connexions calendrier de l'employe (Google, Outlook, CalDAV)
+- `POST /api/v1/calendar/connect` connecte un calendrier (provider, access_token, refresh_token, calendar_id)
+- `DELETE /api/v1/calendar/disconnect/{provider}` deconnecte un calendrier
+- `POST /api/v1/calendar/sync` synchronise les conges et formations vers le calendrier externe
+- `GET /api/v1/calendar/events?from=2026-01-01&to=2026-12-31` liste les evenements calendrier synchronises
+
+### ZKTeco Integration (L5 - Batch 1)
+- `GET /api/v1/zkteco/devices` liste les pointeuses ZKTeco de l'entreprise — RBAC manager
+- `POST /api/v1/zkteco/devices` enregistre une nouvelle pointeuse (serial_number, name, ip_address, port, protocol)
+- `GET /api/v1/zkteco/devices/{id}` detail pointeuse + historique sync
+- `PUT /api/v1/zkteco/devices/{id}` met a jour une pointeuse
+- `DELETE /api/v1/zkteco/devices/{id}` supprime une pointeuse
+- `POST /api/v1/zkteco/heartbeat/{serialNumber}` heartbeat device → marque online — pas d'auth Sanctum
+- `POST /api/v1/zkteco/sync-attendance/{serialNumber}` sync pointages depuis device — pas d'auth Sanctum
+- `POST /api/v1/zkteco/devices/{serialNumber}/push-users` pousse la liste employes vers le device — RBAC manager
+- `GET /api/v1/zkteco/devices/{id}/sync-logs` historique des synchronisations
+
+### Kiosk Extensions (H1-H4 - Batch 1)
+- `POST /api/v1/kiosks/{deviceCode}/employee-info` info employe post-pointage (nom, departement, poste, photo, pointage du jour, solde conges)
+- `GET /api/v1/kiosks/{deviceCode}/announcements` annonces actives pour le kiosk (titre, corps, priorite, dates)
+- `POST /api/v1/kiosks/{deviceCode}/leave-balance` solde conges par identifiant employe
+- `POST /api/v1/kiosks/{deviceCode}/qr-punch` pointage par QR code (decode base64 JSON → matricule/employee_id)
+- Tous les endpoints kiosk necessitent le header X-Kiosk-Token pour l'authentification device
