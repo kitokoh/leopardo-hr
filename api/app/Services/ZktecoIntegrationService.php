@@ -66,7 +66,7 @@ class ZktecoIntegrationService
                     })
                     ->first();
 
-                if (!$employee) {
+                if (! $employee) {
                     $errors++;
 
                     continue;
