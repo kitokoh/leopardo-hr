@@ -5,13 +5,23 @@ import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 export interface CTASectionProps {
-  headline: string;
+  headline?: string;
+  title?: string;
   subheadline?: string;
-  ctaPrimary: {
+  description?: string;
+  ctaPrimary?: {
+    text: string;
+    href: string;
+  };
+  primaryCta?: {
     text: string;
     href: string;
   };
   ctaSecondary?: {
+    text: string;
+    href: string;
+  };
+  secondaryCta?: {
     text: string;
     href: string;
   };
@@ -25,13 +35,21 @@ export interface CTASectionProps {
 
 export function CTASection({
   headline,
+  title,
   subheadline,
+  description,
   ctaPrimary,
+  primaryCta,
   ctaSecondary,
+  secondaryCta,
   background = 'gradient',
   backgroundImage,
   badge,
 }: CTASectionProps) {
+  const resolvedHeadline = headline ?? title ?? '';
+  const resolvedSubheadline = subheadline ?? description;
+  const resolvedPrimaryCta = ctaPrimary ?? primaryCta;
+  const resolvedSecondaryCta = ctaSecondary ?? secondaryCta;
   const bgClasses = {
     gradient: 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-cyan-600',
     solid: 'bg-slate-900 dark:bg-slate-950',
@@ -82,11 +100,11 @@ export function CTASection({
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight leading-[1.1]"
         >
-          {headline}
+          {resolvedHeadline}
         </motion.h2>
 
         {/* Subheadline */}
-        {subheadline && (
+        {resolvedSubheadline && (
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -94,7 +112,7 @@ export function CTASection({
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed font-light"
           >
-            {subheadline}
+            {resolvedSubheadline}
           </motion.p>
         )}
 
@@ -106,22 +124,24 @@ export function CTASection({
           transition={{ duration: 0.8, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link
-            href={ctaPrimary.href}
-            className="group relative px-8 py-4 bg-white text-emerald-600 font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] hover:scale-[1.03] active:scale-[0.98]"
-          >
-            <span className="relative z-10 flex items-center gap-2.5 text-base">
-              {ctaPrimary.text}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </span>
-          </Link>
-
-          {ctaSecondary && (
+          {resolvedPrimaryCta && (
             <Link
-              href={ctaSecondary.href}
+              href={resolvedPrimaryCta.href}
+              className="group relative px-8 py-4 bg-white text-emerald-600 font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] hover:scale-[1.03] active:scale-[0.98]"
+            >
+              <span className="relative z-10 flex items-center gap-2.5 text-base">
+                {resolvedPrimaryCta.text}
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+              </span>
+            </Link>
+          )}
+
+          {resolvedSecondaryCta && (
+            <Link
+              href={resolvedSecondaryCta.href}
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
-              {ctaSecondary.text}
+              {resolvedSecondaryCta.text}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           )}
