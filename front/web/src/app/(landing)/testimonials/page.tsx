@@ -1,82 +1,78 @@
 'use client';
 
 import { useState } from 'react';
-import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
+import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
-import { Star, Quote, Building2 } from 'lucide-react';
+import { Star, Building2, Users, Quote } from 'lucide-react';
 
-interface Testimonial {
-  name: string;
-  role: string;
-  company: string;
-  industry: string;
-  employees: string;
-  quote: string;
-  rating: number;
-  avatar: string;
-}
-
-const testimonials: Testimonial[] = [
+const testimonials = [
   {
-    name: 'Sophie Martin',
+    name: 'Amina Belkacem',
     role: 'DRH',
-    company: 'TechVision SAS',
+    company: 'TechCorp Algérie',
     industry: 'Technologie',
-    employees: '150 employes',
-    quote: 'Leopardo RH a completement transforme notre gestion des conges et de la paie. Nous avons gagne 20 heures par mois sur l\'administration.',
+    employees: '120 employés',
+    quote: 'Leopardo RH a transformé notre gestion des pointages. Nous avons réduit de 80% le temps consacré au suivi des présences grâce au module ZKTeco intégré.',
     rating: 5,
-    avatar: '',
+    avatar: 'AB',
   },
   {
-    name: 'Ahmed Benali',
-    role: 'Directeur General',
-    company: 'Atlas Consulting',
-    industry: 'Conseil',
-    employees: '85 employes',
-    quote: 'La gestion multi-pays nous a permis de centraliser la paie de nos bureaux en France, Algerie et Tunisie sur une seule plateforme.',
+    name: 'Mehdi Ouazzani',
+    role: 'Directeur Général',
+    company: 'Atlas Industries',
+    industry: 'Manufacture',
+    employees: '350 employés',
+    quote: 'La paie multi-pays nous a permis de gérer 3 filiales (Maroc, Tunisie, France) depuis une seule plateforme. Le ROI a été visible dès le premier mois.',
     rating: 5,
-    avatar: '',
+    avatar: 'MO',
   },
   {
-    name: 'Marie Dupont',
-    role: 'Responsable RH',
-    company: 'GreenEnergy Corp',
-    industry: 'Energie',
-    employees: '320 employes',
-    quote: 'L\'integration ZKTeco a ete un game changer. Le pointage biometrique en temps reel avec le mode offline nous a evite les problemes de connectivite.',
+    name: 'Fatima Zahra Idrissi',
+    role: 'Responsable Paie',
+    company: 'GreenEnergy SARL',
+    industry: 'Énergie',
+    employees: '85 employés',
+    quote: 'Les bulletins de paie PDF générés automatiquement et les exports SEPA nous font gagner 3 jours par mois. L\'interface est intuitive même pour notre équipe non-technique.',
     rating: 5,
-    avatar: '',
+    avatar: 'FZ',
   },
   {
-    name: 'Mehmet Yilmaz',
+    name: 'Karim Benali',
     role: 'CEO',
-    company: 'Istanbul Digital',
-    industry: 'Digital',
-    employees: '45 employes',
-    quote: 'L\'application mobile est excellente. Nos employes adorent pouvoir demander leurs conges et consulter leurs fiches de paie depuis leur telephone.',
+    company: 'LogiTrans Express',
+    industry: 'Transport & Logistique',
+    employees: '200 employés',
+    quote: 'Le suivi de flotte véhicules combiné à la gestion RH est unique sur le marché. Nos chauffeurs pointent depuis le kiosque ZKTeco et on suit tout en temps réel.',
     rating: 4,
-    avatar: '',
+    avatar: 'KB',
   },
   {
-    name: 'Fatima Zahra',
-    role: 'Chief People Officer',
-    company: 'Sahara Logistics',
-    industry: 'Logistique',
-    employees: '500+ employes',
-    quote: 'Le tableau de bord d\'administration nous donne une vue complete sur notre effectif. Les rapports sont clairs et actionables.',
+    name: 'Sarah Mansouri',
+    role: 'Office Manager',
+    company: 'Digital Agency Pro',
+    industry: 'Marketing Digital',
+    employees: '45 employés',
+    quote: 'Le module de recrutement et le suivi des formations nous ont permis de structurer notre croissance. On est passé de 15 à 45 employés sans augmenter l\'équipe RH.',
     rating: 5,
-    avatar: '',
+    avatar: 'SM',
   },
   {
-    name: 'Jean-Pierre Leroy',
-    role: 'Fondateur',
-    company: 'StartupFactory',
-    industry: 'Startup Studio',
-    employees: '25 employes',
-    quote: 'En tant que startup, nous avions besoin d\'une solution simple mais complete. Leopardo RH coche toutes les cases sans etre trop complexe.',
+    name: 'Youssef El Amrani',
+    role: 'DAF',
+    company: 'BâtiConstruct Group',
+    industry: 'BTP',
+    employees: '500+ employés',
+    quote: 'Pour le BTP avec des chantiers multiples, la gestion des absences et le pointage mobile sont essentiels. Leopardo RH comprend les réalités du terrain.',
     rating: 5,
-    avatar: '',
+    avatar: 'YE',
   },
+];
+
+const stats = [
+  { value: '500+', label: 'Entreprises clientes' },
+  { value: '50 000+', label: 'Employés gérés' },
+  { value: '4.8/5', label: 'Note moyenne' },
+  { value: '6', label: 'Pays couverts' },
 ];
 
 export default function TestimonialsPage() {
@@ -86,69 +82,78 @@ export default function TestimonialsPage() {
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+
       <HeroSection
-        headline="Ils Nous Font Confiance"
-        subheadline="Decouvrez les temoignages de nos clients a travers le monde"
-        badge={{ text: 'Temoignages', icon: <Star className="w-3 h-3" /> }}
+        headline="Ils nous font confiance"
+        subheadline="Découvrez comment nos clients transforment leur gestion RH avec Leopardo"
+        ctaPrimary={{ text: 'Démarrer l\'essai gratuit', href: '/signup' }}
+        ctaSecondary={{ text: 'Voir les études de cas', href: '/case-studies' }}
+        badge={{ text: 'Témoignages', icon: <Star className="w-3 h-3" /> }}
       />
 
-      {/* Stats */}
-      <section className="py-16 bg-slate-50 dark:bg-slate-900/50">
-        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
-          {[
-            { value: '500+', label: 'Entreprises' },
-            { value: '50 000+', label: 'Employes Geres' },
-            { value: '4.8/5', label: 'Note Moyenne' },
-            { value: '6', label: 'Pays Supportes' },
-          ].map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <div className="text-3xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400">{stat.value}</div>
-              <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials Grid */}
-      <section className="py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((t, i) => (
+      {/* Stats Banner */}
+      <section className="py-16 bg-emerald-600 dark:bg-emerald-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((stat, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow"
+              >
+                <p className="text-3xl sm:text-4xl font-black text-white">{stat.value}</p>
+                <p className="text-emerald-100 mt-1 text-sm">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Grid */}
+      <section className="py-24 bg-slate-50 dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow"
               >
                 <Quote className="w-8 h-8 text-emerald-500/30 mb-4" />
-                <p className="text-slate-700 dark:text-slate-300 leading-relaxed mb-6 italic">
+                <p className="text-slate-700 dark:text-slate-300 leading-relaxed mb-6 text-sm">
                   &ldquo;{t.quote}&rdquo;
                 </p>
+
                 <div className="flex items-center gap-1 mb-4">
-                  {Array.from({ length: 5 }).map((_, si) => (
-                    <Star key={si} className={`w-4 h-4 ${si < t.rating ? 'text-amber-400 fill-amber-400' : 'text-slate-300'}`} />
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <Star
+                      key={s}
+                      className={`w-4 h-4 ${s < t.rating ? 'text-yellow-400 fill-yellow-400' : 'text-slate-300'}`}
+                    />
                   ))}
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">
-                    {t.name.split(' ').map(n => n[0]).join('')}
+
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                  <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-700 dark:text-emerald-400 font-bold text-sm">
+                    {t.avatar}
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-semibold text-slate-900 dark:text-white text-sm">{t.name}</p>
-                    <p className="text-xs text-slate-500">{t.role}</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs">{t.role}</p>
                   </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center gap-2 text-xs text-slate-500">
-                  <Building2 className="w-3 h-3" />
-                  <span>{t.company} · {t.industry} · {t.employees}</span>
+                  <div className="text-right">
+                    <p className="text-slate-700 dark:text-slate-300 text-xs font-medium flex items-center gap-1">
+                      <Building2 className="w-3 h-3" />{t.company}
+                    </p>
+                    <p className="text-slate-400 text-xs flex items-center gap-1 justify-end">
+                      <Users className="w-3 h-3" />{t.employees}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -157,11 +162,10 @@ export default function TestimonialsPage() {
       </section>
 
       <CTASection
-        headline="Rejoignez nos Clients Satisfaits"
-        subheadline="Essayez Leopardo RH gratuitement pendant 14 jours"
-        ctaPrimary={{ text: 'Essai Gratuit', href: '/demo' }}
-        ctaSecondary={{ text: 'Nous Contacter', href: '/contact' }}
-        background="gradient"
+        title="Rejoignez nos 500+ clients satisfaits"
+        description="Démarrez votre essai gratuit de 14 jours"
+        primaryCta={{ text: 'Commencer maintenant', href: '/signup' }}
+        secondaryCta={{ text: 'Demander une démo', href: '/demo' }}
       />
 
       <Footer />
