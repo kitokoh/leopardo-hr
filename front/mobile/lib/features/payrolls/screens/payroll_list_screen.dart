@@ -25,7 +25,10 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
       final path = await repo.downloadPayslipPdf(payslipId);
       if (mounted) {
         final uri = Uri.file(path);
-        if (await canLaunchUrl(uri)) {
+        final canLaunch = await canLaunchUrl(uri);
+        if (!mounted) return;
+
+        if (canLaunch) {
           await launchUrl(uri);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
