@@ -131,12 +131,12 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: widget.depth == 0
-                        ? AppColors.primary.withValues(alpha: 0.15)
+                        ? AppColors.rh.withValues(alpha: 0.15)
                         : AppColors.cardDark,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: widget.depth == 0
-                          ? AppColors.primary.withValues(alpha: 0.4)
+                          ? AppColors.rh.withValues(alpha: 0.4)
                           : AppColors.textMutedDark.withValues(alpha: 0.2),
                     ),
                   ),
@@ -146,7 +146,7 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                       CircleAvatar(
                         radius: 20,
                         backgroundColor:
-                            AppColors.primary.withValues(alpha: 0.2),
+                            AppColors.rh.withValues(alpha: 0.2),
                         backgroundImage: node.photoUrl != null
                             ? NetworkImage(node.photoUrl!)
                             : null,
@@ -154,7 +154,7 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                             ? Text(
                                 _initials(node.name),
                                 style: AppTypography.bodySmall.copyWith(
-                                  color: AppColors.primary,
+                                  color: AppColors.rh,
                                   fontWeight: FontWeight.bold,
                                 ),
                               )
