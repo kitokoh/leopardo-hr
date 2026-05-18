@@ -14,7 +14,7 @@ export interface HeroSectionProps {
     text: string;
     label?: string;
   };
-  ctaPrimary: {
+  ctaPrimary?: {
     text: string;
     href: string;
   };
@@ -115,24 +115,27 @@ export function HeroSection({
           </motion.p>
 
           {/* CTAs */}
-          <motion.div
-            initial={animated ? { opacity: 0, y: 20 } : {}}
-            animate={animated ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href={ctaPrimary.href}
-              className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
+          {(ctaPrimary || ctaSecondary) && (
+            <motion.div
+              initial={animated ? { opacity: 0, y: 20 } : {}}
+              animate={animated ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
-              <span className="relative z-10 flex items-center gap-2.5 text-base">
-                {ctaPrimary.text}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </Link>
+              {ctaPrimary && (
+                <Link
+                  href={ctaPrimary.href}
+                  className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
+                >
+                  <span className="relative z-10 flex items-center gap-2.5 text-base">
+                    {ctaPrimary.text}
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </Link>
+              )}
 
-            {ctaSecondary && (
+              {ctaSecondary && (
               <Link
                 href={ctaSecondary.href}
                 className="group flex items-center gap-3.5 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all duration-300 hover:shadow-xl"
@@ -148,8 +151,9 @@ export function HeroSection({
                 )}
                 {ctaSecondary.text}
               </Link>
-            )}
-          </motion.div>
+              )}
+            </motion.div>
+          )}
 
           {/* Stats */}
           {stats && stats.length > 0 && (
