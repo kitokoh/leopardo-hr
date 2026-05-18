@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Absence;
 use App\Models\CalendarConnection;
 use App\Models\CalendarEvent;
 use App\Models\Employee;
+use DateTimeInterface;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CalendarSyncService
 {
-    public function connect(Employee $employee, string $provider, string $accessToken, ?string $refreshToken = null, ?string $calendarId = null, ?\DateTimeInterface $expiresAt = null): CalendarConnection
+    public function connect(Employee $employee, string $provider, string $accessToken, ?string $refreshToken = null, ?string $calendarId = null, ?DateTimeInterface $expiresAt = null): CalendarConnection
     {
         return CalendarConnection::query()->updateOrCreate(
             [
@@ -49,7 +54,7 @@ class CalendarSyncService
 
         foreach ($connections as $connection) {
             try {
-                $absences = \App\Models\Absence::query()
+                $absences = Absence::query()
                     ->where('employee_id', $employee->id)
                     ->where('status', 'approved')
                     ->where('start_date', '>=', now()->subMonth())
@@ -80,7 +85,7 @@ class CalendarSyncService
                 }
 
                 $connection->update(['last_synced_at' => now()]);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::error('Calendar sync leaves failed', [
                     'employee_id' => $employee->id,
                     'provider' => $connection->provider,
@@ -104,7 +109,7 @@ class CalendarSyncService
 
         foreach ($connections as $connection) {
             try {
-                $enrollments = \Illuminate\Support\Facades\DB::table('training_enrollments')
+                $enrollments = DB::table('training_enrollments')
                     ->join('training_sessions', 'training_enrollments.training_session_id', '=', 'training_sessions.id')
                     ->where('training_enrollments.employee_id', $employee->id)
                     ->where('training_sessions.start_date', '>=', now()->subMonth())
@@ -135,7 +140,7 @@ class CalendarSyncService
                 }
 
                 $connection->update(['last_synced_at' => now()]);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::error('Calendar sync training failed', [
                     'employee_id' => $employee->id,
                     'provider' => $connection->provider,
@@ -147,7 +152,7 @@ class CalendarSyncService
         return $synced;
     }
 
-    public function getEvents(Employee $employee, string $from, string $to): \Illuminate\Support\Collection
+    public function getEvents(Employee $employee, string $from, string $to): Collection
     {
         return CalendarEvent::query()
             ->where('employee_id', $employee->id)
@@ -171,7 +176,7 @@ class CalendarSyncService
             $event->update(['sync_status' => 'synced']);
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $event->update(['sync_status' => 'failed']);
             Log::warning('Calendar event push failed', [
                 'event_id' => $event->id,

@@ -6,8 +6,10 @@ namespace App\Services;
 
 use App\Models\ZktecoDevice;
 use App\Models\ZktecoSyncLog;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ZktecoIntegrationService
 {
@@ -107,7 +109,7 @@ class ZktecoIntegrationService
                 }
 
                 $processed++;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $errors++;
                 Log::warning('ZKTeco attendance record failed', [
                     'device_id' => $device->id,
@@ -154,7 +156,7 @@ class ZktecoIntegrationService
         return $syncLog;
     }
 
-    public function getSyncHistory(ZktecoDevice $device, int $limit = 20): \Illuminate\Support\Collection
+    public function getSyncHistory(ZktecoDevice $device, int $limit = 20): Collection
     {
         return $device->syncLogs()
             ->orderByDesc('created_at')
