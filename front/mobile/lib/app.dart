@@ -35,6 +35,7 @@ import 'package:leopardo_rh/features/ai_voice/screens/ai_voice_screen.dart';
 import 'package:leopardo_rh/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_rh/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_rh/features/onboarding/screens/onboarding_screen.dart';
+import 'package:leopardo_rh/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_rh/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -186,6 +187,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/organigramme',
+        builder: (context, state) => const OrganigrammeScreen(),
       ),
     ],
   );
