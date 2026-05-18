@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getAllBlogPosts } from '@/lib/mdx';
+import { getAllPosts } from '@/lib/mdx';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
 
@@ -24,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/guides/planning-employes`, lastModified: today, changeFrequency: 'monthly', priority: 0.7 },
   ];
 
-  const blogPosts = getAllBlogPosts();
+  const blogPosts = getAllPosts();
   const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
     lastModified: post.date ? new Date(post.date) : today,
