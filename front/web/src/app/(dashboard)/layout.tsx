@@ -98,22 +98,26 @@ export default function DashboardLayout({
             <span className="h-2 w-2 rounded-full bg-slate-600"></span>
             Absences
           </Link>
+          <Link href="/contracts" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
+            Contrats
+          </Link>
 
-          <div className="mb-2 mt-6 px-4 opacity-40">
-            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Phase 2</p>
+          <div className="mb-2 mt-6 px-4">
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Finance & Formation</p>
           </div>
-          <div className="cursor-not-allowed px-6 py-3 text-sm italic text-slate-500">
-            <div className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-finance opacity-30"></span>
-              Finance (Bientot)
-            </div>
-          </div>
-          <div className="cursor-not-allowed px-6 py-3 text-sm italic text-slate-500">
-            <div className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-security opacity-30"></span>
-              Cameras (Bientot)
-            </div>
-          </div>
+          <Link href="/payroll" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
+            Paie
+          </Link>
+          <Link href="/training" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
+            Formations
+          </Link>
+          <Link href="/reports" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
+            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
+            Rapports
+          </Link>
         </nav>
 
         <div className="m-4 rounded-xl border border-ia/20 bg-ia/10 p-4">
