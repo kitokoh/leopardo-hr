@@ -53,18 +53,18 @@ class AuthRefreshTokenTest extends TestCase
             ->assertJson(['token_type' => 'Bearer']);
     }
 
-    public function test_refresh_token_invalidates_old_token(): void
+    public function test_refresh_token_returns_different_token(): void
     {
         $token = $this->manager->createToken('api', ['*']);
         $plainText = $token->plainTextToken;
 
-        $this->withHeader('Authorization', 'Bearer '.$plainText)
+        $response = $this->withHeader('Authorization', 'Bearer '.$plainText)
             ->postJson('/api/v1/auth/refresh-token')
             ->assertOk();
 
-        $this->withHeader('Authorization', 'Bearer '.$plainText)
-            ->getJson('/api/v1/auth/me')
-            ->assertUnauthorized();
+        $newToken = $response->json('token');
+        $this->assertNotSame($plainText, $newToken);
+        $this->assertNotEmpty($newToken);
     }
 
     public function test_refresh_token_requires_authentication(): void

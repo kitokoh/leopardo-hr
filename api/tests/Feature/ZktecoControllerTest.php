@@ -73,7 +73,9 @@ class ZktecoControllerTest extends TestCase
     public function test_sync_attendance_rejects_invalid_serial(): void
     {
         $this->postJson('/api/v1/zkteco/sync-attendance/NONEXISTENT', [
-            'records' => [],
+            'records' => [
+                ['user_id' => '1', 'timestamp' => '2026-01-01 08:00:00'],
+            ],
         ])->assertStatus(404);
     }
 }
