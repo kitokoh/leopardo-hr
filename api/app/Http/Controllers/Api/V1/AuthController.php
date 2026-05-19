@@ -143,6 +143,29 @@ class AuthController extends Controller
         ]);
     }
 
+    public function refreshToken(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $currentToken = $user->currentAccessToken();
+
+        $expirationMinutes = (int) config('sanctum.expiration', 0);
+        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+
+        $newToken = $user->createToken(
+            $currentToken->name ?? 'api',
+            $currentToken->abilities ?? ['*'],
+            $expiresAt
+        );
+
+        $currentToken->delete();
+
+        return new JsonResponse([
+            'token' => $newToken->plainTextToken,
+            'token_type' => 'Bearer',
+            'token_expires_at' => $expiresAt?->toIso8601String(),
+        ]);
+    }
+
     public function logout(Request $request): JsonResponse
     {
         $token = $request->user()?->currentAccessToken();
