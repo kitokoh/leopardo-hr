@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       staging_url:
-        description: "Staging base URL to test"
+        description: "API/admin staging base URL to test"
+        required: false
+        default: ""
+      web_staging_url:
+        description: "Web vitrine staging base URL to test"
         required: false
         default: ""
   workflow_run:
@@ -19,6 +23,7 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DEFAULT_STAGING_URL: https://gestionemployerbackend.onrender.com
+  DEFAULT_WEB_STAGING_URL: https://gestionemployer-backend.vercel.app
 
 concurrency:
   group: e2e-staging-${{ github.ref }}
@@ -187,7 +192,7 @@ jobs:
         working-directory: front/web
         env:
           CI: true
-          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+          BASE_URL: ${{ github.event.inputs.web_staging_url || env.DEFAULT_WEB_STAGING_URL }}
         run: npx playwright test --project=chromium
 
       - name: Upload Playwright report
