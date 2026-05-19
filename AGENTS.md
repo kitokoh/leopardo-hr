@@ -54,6 +54,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Pour `front/zkteco-kiosk`, `apiBaseUrl` peut etre configure avec ou sans `/api/v1`; `app.js` normalise la base. Garder ce contrat pour eviter les URLs double-versionnees sur site client.
 - Le smoke E2E staging API doit tester les routes reelles du backend. Pour un check auth sans token, utiliser `/api/v1/auth/me`, pas `/api/v1/me`.
 - Les curls de smoke API doivent envoyer `Accept: application/json`; sinon Laravel peut retourner une redirection HTML `302 /login` au lieu du statut JSON attendu (`401`, `403`, etc.).
+- Pour l'E2E staging `front/web`, `BASE_URL` indique une cible distante : la config Playwright ne doit pas demarrer `npm run dev` dans ce cas, et le workflow doit rester aligne avec les navigateurs installes (`--project=chromium` si seul Chromium est installe).
 - Sur Next 16 / React 19, les routes dynamiques sous `front/web/src/app/**/[slug]` recoivent `params` sous forme de Promise. Dans les Server Components, `await params`; dans les Client Components, utiliser `use(params)`.
 - Dans `database-backup.yml`, ne pas installer `awscli` via `apt-get` sur `ubuntu-latest`; le paquet peut disparaitre. Installer `postgresql-client age`, puis utiliser l'AWS CLI preinstallee ou fallback `pip --user`.
 
