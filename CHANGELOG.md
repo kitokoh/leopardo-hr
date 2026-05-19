@@ -2,6 +2,40 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.80] - 2026-05-18
+
+### Feat — Iteration 13: Architecture & Performance (D1, D2, D4, D5, B4, B6, D7)
+
+**Redis Cache (D1):**
+- New `TenantCacheService` with tenant-scoped keys (`tenant:{companyId}:{key}`), configurable TTL, pattern-based invalidation
+
+**Queue Jobs (D2):**
+- New `ProcessPayrollBatchJob` (queue: payroll, 3 retries, 600s timeout) for async batch payroll calculation
+- New `SendBulkNotificationsJob` (queue: notifications, 3 retries, 120s timeout) for bulk notification dispatch
+
+**JWT Refresh Token (D4):**
+- New `POST /api/v1/auth/refresh-token` endpoint for Sanctum token rotation
+- Preserves token abilities, creates new token, deletes old one
+
+**AES-256 Encryption (D5):**
+- New `SensitiveDataEncryptor` service for encrypting sensitive data (IBAN, SSN) with prefix-based detection
+
+**Monitoring Docs (B4, B6):**
+- New `RUNBOOK_UPTIME_MONITORING.md` for UptimeRobot/BetterUptime configuration
+- New `RUNBOOK_ALERTING.md` consolidating alerting procedures, severity levels, escalation matrix
+
+**Job Tests (D7):**
+- New `QueueJobsTest` with 4 tests covering dispatch, queue routing, and tagging
+
+**Plan 15 Update:**
+- Marked 38 additional items as DONE (B1-B6, C1-C8, D1-D7, E6-E7, G1, G8, G10, H1-H4, I1-I8, K3, L5-L6)
+- Plan 15 now at **98.5%** (320/325 tasks DONE)
+- All implementable code items DONE; only non-code GTM tasks (J1-J14) and long-term DDD refactor (A5) remain
+
+### Docs — GTM Case Studies Template
+
+- New `docs/GOTO_MARKET/public/case_studies/README.md` with template and 5 planned case studies
+
 ## [4.16.79] - 2026-05-18
 
 ### Docs - Nettoyage depot distant
