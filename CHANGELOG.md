@@ -36,6 +36,20 @@
 
 - New `docs/GOTO_MARKET/public/case_studies/README.md` with template and 5 planned case studies
 
+## [4.16.81] - 2026-05-19
+
+### Tests — Iteration 14: Test Coverage Hardening
+
+**New test suites (7 files, 30+ tests):**
+- `AuthRefreshTokenTest` — token rotation, old token invalidation, ability preservation
+- `TenantCacheServiceTest` — tenant-scoped caching, isolation, put/get/forget round trips
+- `SensitiveDataEncryptorTest` — encrypt/decrypt, idempotent double-encrypt, array batch
+- `CalendarSyncControllerTest` — auth, validation, provider enum
+- `DeviceTokenControllerTest` — auth, platform validation, manager-only send-test
+- `PlanningControllerTest` — RBAC on optimize/coverage endpoints
+- `ZktecoControllerTest` — device list auth, heartbeat, sync validation
+- `CotisationSimulationControllerTest` — auth, RBAC, input validation
+
 ## [4.16.79] - 2026-05-18
 
 ### Docs - Nettoyage depot distant
