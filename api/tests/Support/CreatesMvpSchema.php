@@ -1222,6 +1222,8 @@ trait CreatesMvpSchema
                 $table->string('token', 512);
                 $table->string('platform', 20);
                 $table->string('device_name', 120)->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->timestampTz('last_used_at')->nullable();
                 $table->timestamps();
                 $table->unique(['employee_id', 'token']);
             });
