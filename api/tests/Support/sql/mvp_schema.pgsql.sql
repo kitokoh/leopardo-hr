@@ -610,6 +610,8 @@ CREATE TABLE IF NOT EXISTS shared_tenants.device_tokens (
     token varchar(512) NOT NULL,
     platform varchar(20) NOT NULL,
     device_name varchar(120) NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    last_used_at timestamptz NULL,
     created_at timestamptz NULL,
     updated_at timestamptz NULL,
     UNIQUE (employee_id, token)
