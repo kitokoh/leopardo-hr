@@ -46,7 +46,7 @@ class DeviceTokenControllerTest extends TestCase
 
     public function test_register_requires_authentication(): void
     {
-        $this->postJson('/api/v1/device-tokens/register', [
+        $this->postJson('/api/v1/device-tokens', [
             'token' => 'test-fcm-token',
             'platform' => 'android',
         ])->assertUnauthorized();
@@ -55,7 +55,7 @@ class DeviceTokenControllerTest extends TestCase
     public function test_register_validates_platform(): void
     {
         $this->actingAs($this->employee)
-            ->postJson('/api/v1/device-tokens/register', [
+            ->postJson('/api/v1/device-tokens', [
                 'token' => 'test-token',
                 'platform' => 'invalid',
             ])
@@ -65,13 +65,13 @@ class DeviceTokenControllerTest extends TestCase
     public function test_register_requires_token_and_platform(): void
     {
         $this->actingAs($this->employee)
-            ->postJson('/api/v1/device-tokens/register', [])
+            ->postJson('/api/v1/device-tokens', [])
             ->assertUnprocessable();
     }
 
     public function test_unregister_requires_authentication(): void
     {
-        $this->deleteJson('/api/v1/device-tokens/unregister', [
+        $this->deleteJson('/api/v1/device-tokens', [
             'token' => 'test-token',
         ])->assertUnauthorized();
     }
@@ -85,7 +85,8 @@ class DeviceTokenControllerTest extends TestCase
     public function test_send_test_requires_manager_role(): void
     {
         $this->actingAs($this->employee)
-            ->postJson('/api/v1/device-tokens/send-test', [
+            ->postJson('/api/v1/push-notifications/send', [
+                'employee_id' => $this->employee->id,
                 'title' => 'Test',
                 'body' => 'Test notification',
             ])
