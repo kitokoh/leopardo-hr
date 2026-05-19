@@ -589,3 +589,77 @@ CREATE TABLE public.user_invitations (
 
 CREATE UNIQUE INDEX user_invitations_token_hash_unique
     ON public.user_invitations (token_hash);
+
+-- SSO configs (public, FK to companies)
+CREATE TABLE IF NOT EXISTS public.company_sso_configs (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    provider varchar(20) NOT NULL,
+    config jsonb NOT NULL DEFAULT '{}',
+    is_active boolean NOT NULL DEFAULT false,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL,
+    UNIQUE (company_id)
+);
+
+-- Device tokens (shared_tenants)
+CREATE TABLE IF NOT EXISTS shared_tenants.device_tokens (
+    id bigserial PRIMARY KEY,
+    employee_id bigint NOT NULL,
+    company_id uuid NOT NULL,
+    token varchar(512) NOT NULL,
+    platform varchar(20) NOT NULL,
+    device_name varchar(120) NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL,
+    UNIQUE (employee_id, token)
+);
+
+-- Calendar connections (shared_tenants)
+CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
+    id bigserial PRIMARY KEY,
+    employee_id bigint NOT NULL,
+    company_id uuid NOT NULL,
+    provider varchar(20) NOT NULL,
+    calendar_id varchar(255) NULL,
+    access_token text NULL,
+    refresh_token text NULL,
+    token_expires_at timestamptz NULL,
+    sync_leaves boolean NOT NULL DEFAULT true,
+    sync_training boolean NOT NULL DEFAULT true,
+    is_active boolean NOT NULL DEFAULT true,
+    last_synced_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+-- Calendar events (shared_tenants)
+CREATE TABLE IF NOT EXISTS shared_tenants.calendar_events (
+    id bigserial PRIMARY KEY,
+    connection_id bigint NOT NULL,
+    company_id uuid NOT NULL,
+    external_event_id varchar(255) NULL,
+    source_type varchar(30) NOT NULL,
+    source_id bigint NOT NULL,
+    title varchar(255) NOT NULL,
+    start_at timestamptz NOT NULL,
+    end_at timestamptz NOT NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+-- ZKTeco devices (shared_tenants)
+CREATE TABLE IF NOT EXISTS shared_tenants.zkteco_devices (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    serial_number varchar(100) NOT NULL UNIQUE,
+    name varchar(100) NOT NULL,
+    ip_address varchar(45) NULL,
+    port smallint NOT NULL DEFAULT 4370,
+    protocol varchar(20) NOT NULL DEFAULT 'tcp',
+    status varchar(20) NOT NULL DEFAULT 'offline',
+    last_heartbeat_at timestamptz NULL,
+    last_sync_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
