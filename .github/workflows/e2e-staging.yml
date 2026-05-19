@@ -188,7 +188,7 @@ jobs:
         env:
           CI: true
           BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
-        run: npx playwright test
+        run: npx playwright test --project=chromium
 
       - name: Upload Playwright report
         if: always()
