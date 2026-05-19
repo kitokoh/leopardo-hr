@@ -1,8 +1,26 @@
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
+const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+
+function baseEndsWithV1(baseURL) {
+  return /\/api\/v1\/?$/.test(baseURL || '')
+}
+
+function normalizeApiPath(path, baseURL = apiBaseURL) {
+  if (!path || /^https?:\/\//i.test(path)) {
+    return path
+  }
+
+  if (baseEndsWithV1(baseURL) && path.startsWith('/v1/')) {
+    return path.slice(3)
+  }
+
+  return path
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL: apiBaseURL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -12,6 +30,8 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    config.url = normalizeApiPath(config.url, config.baseURL || apiBaseURL)
+
     const token = localStorage.getItem('admin_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -89,5 +109,35 @@ api.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+export async function downloadApiFile(path, filename = null) {
+  const response = await api.get(path, { responseType: 'blob' })
+  const contentType = response.headers['content-type'] || 'application/octet-stream'
+  let blob = new Blob([response.data], { type: contentType })
+  let downloadName = filename
+
+  if (contentType.includes('application/json')) {
+    const text = await response.data.text()
+    const payload = JSON.parse(text)
+    const data = payload.data || payload
+
+    if (data.content !== undefined) {
+      blob = new Blob([data.content], { type: data.format === 'json' ? 'application/json' : 'text/csv;charset=utf-8' })
+      downloadName = data.filename || downloadName
+    }
+  }
+
+  const objectUrl = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  const disposition = response.headers['content-disposition'] || ''
+  const match = disposition.match(/filename="?([^"]+)"?/i)
+
+  link.href = objectUrl
+  link.download = downloadName || match?.[1] || 'export'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(objectUrl)
+}
 
 export default api
