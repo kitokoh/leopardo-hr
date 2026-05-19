@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\PayrollRun;
+use App\Payroll\PayrollCalculator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -53,7 +54,7 @@ class ProcessPayrollBatchJob implements ShouldQueue
         $run->update(['status' => 'processing']);
 
         try {
-            app(\App\Payroll\PayrollCalculator::class)->calculateRun($run);
+            app(PayrollCalculator::class)->calculateRun($run);
             $run->update(['status' => 'calculated']);
 
             Log::channel('structured')->info('payroll.batch.complete', [

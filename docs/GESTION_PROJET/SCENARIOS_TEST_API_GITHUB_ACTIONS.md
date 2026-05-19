@@ -821,3 +821,15 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - `POST /api/v1/kiosks/{deviceCode}/leave-balance` solde conges par identifiant employe
 - `POST /api/v1/kiosks/{deviceCode}/qr-punch` pointage par QR code (decode base64 JSON → matricule/employee_id)
 - Tous les endpoints kiosk necessitent le header X-Kiosk-Token pour l'authentification device
+
+### Auth Token Refresh (D4 - Iteration 13)
+- `POST /api/v1/auth/refresh-token` genere un nouveau token Sanctum avec les memes abilities
+- L'ancien token est supprime apres rotation
+- Le nouveau token respecte la duree d'expiration configuree dans `sanctum.expiration`
+- Necessite `auth:sanctum` — tout role authentifie peut rafraichir son token
+
+### Queue Jobs (D2 - Iteration 13)
+- `ProcessPayrollBatchJob` dispatche sur la queue `payroll` avec 3 retries et 600s timeout
+- `SendBulkNotificationsJob` dispatche sur la queue `notifications` avec 3 retries et 120s timeout
+- Les jobs filtrent par `company_id` pour garantir l'isolation tenant
+- Tags Horizon : `company:{id}`, `payroll_run:{id}` / `notification:{class}`

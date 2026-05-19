@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Jobs\ProcessPayrollBatchJob;
 use App\Jobs\SendBulkNotificationsJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -31,7 +32,7 @@ class QueueJobsTest extends TestCase
 
         SendBulkNotificationsJob::dispatch(
             [1, 2, 3],
-            \Illuminate\Notifications\Notification::class,
+            Notification::class,
             [],
             1
         );
@@ -54,7 +55,7 @@ class QueueJobsTest extends TestCase
     {
         $job = new SendBulkNotificationsJob(
             [1, 2],
-            \Illuminate\Notifications\Notification::class,
+            Notification::class,
             [],
             5
         );
