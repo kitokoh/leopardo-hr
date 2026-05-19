@@ -140,6 +140,8 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Rapport mensuel attendance reste performant sur 500+ employes en groupant les logs par employe avant generation des lignes
 - Export CSV du rapport mensuel conserve les colonnes d'estimation paie et reste exploitable par comptable
 - PDF du rapport mensuel affiche les indicateurs de cloture et l'estimation globale sans casser le rendu
+- Exports admin `GET /api/v1/export/{employees,attendance,contracts,vehicles,pay-slips,absences,training}` restent authentifies, reserves manager et disponibles pour le dashboard Cloudflare Pages.
+- Le test contractuel `FrontendApiContractTest` garde les routes critiques admin, mobile et kiosk afin qu'un renommage backend ne casse pas silencieusement les frontends.
 
 ### 10. Notifications / evenements / audit
 

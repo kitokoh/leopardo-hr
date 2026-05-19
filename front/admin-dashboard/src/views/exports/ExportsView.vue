@@ -119,7 +119,7 @@ import {
   UsersIcon, DocumentTextIcon, CurrencyEuroIcon,
   AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon
 } from '@heroicons/vue/24/outline'
-import api from '@/services/api'
+import api, { downloadApiFile } from '@/services/api'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
@@ -160,7 +160,7 @@ const exportStatusMap = {
 async function downloadReport(report) {
   report.downloading = true
   try {
-    window.open(`/api${report.endpoint}?format=${report.format}`, '_blank')
+    await downloadApiFile(`${report.endpoint}?format=${report.format}`, `${report.key}.${report.format}`)
   } finally {
     setTimeout(() => { report.downloading = false }, 1000)
   }

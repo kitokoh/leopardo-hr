@@ -76,7 +76,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick, watch } from 'vue'
-import api from '@/services/api'
+import api, { downloadApiFile } from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
@@ -187,7 +187,7 @@ async function fetchData() {
 }
 
 function viewVehicle(id) { /* TODO: detail modal */ }
-function exportVehicles() { window.open('/api/v1/export/vehicles?format=csv', '_blank') }
+function exportVehicles() { downloadApiFile('/v1/export/vehicles?format=csv', 'vehicles.csv') }
 
 onMounted(async () => {
   await fetchData()

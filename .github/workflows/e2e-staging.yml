@@ -103,7 +103,7 @@ jobs:
           test_endpoint "Health" "${BASE}/health"
           test_endpoint "Health Live" "${BASE}/health/live"
           test_endpoint "Health Ready" "${BASE}/health/ready"
-          test_endpoint "Auth (no token)" "${BASE}/me" "401"
+          test_endpoint "Auth (no token)" "${BASE}/auth/me" "401"
 
           if [[ "${FAILED}" -gt 0 ]]; then
             echo "${FAILED} endpoint(s) failed."

@@ -29,6 +29,7 @@
 | 14 | `14_ROADMAP_EXECUTION_POST_LOTS.md` | **NOUVEAU** - Roadmap d'execution actualisee apres les lots plateforme metrics backend/admin |
 | 14b | `14_PLAN_SOLIDIFICATION_MARCHE.md` | Plan de solidification 7 phases (fiabilite, securite, performance, integrations, UX, docs, GTM) |
 | 15 | `15_PLAN_EXECUTION_CONSOLIDE.md` | **NOUVEAU 2026-05-14** — Plan d'execution consolide : audit code vs plans, taches restantes, iterations |
+| 16 | `16_PLAN_CONSOLIDATION_LANCEMENT.md` | **NOUVEAU 2026-05-19** — Consolidation lancement : contrats API/frontends, release readiness, design vendeur, GTM |
 
 ---
 

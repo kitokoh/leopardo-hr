@@ -55,7 +55,9 @@ async function fetchJson(url, options = {}) {
 }
 
 async function kioskApi(path, options = {}) {
-  const url = `${CONFIG.apiBaseUrl}/api/v1/kiosks/${CONFIG.deviceCode}${path}`;
+  const apiBaseUrl = (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
+  const versionedBaseUrl = apiBaseUrl.endsWith('/api/v1') ? apiBaseUrl : `${apiBaseUrl}/api/v1`;
+  const url = `${versionedBaseUrl}/kiosks/${CONFIG.deviceCode}${path}`;
   return fetchJson(url, {
     ...options,
     headers: {
