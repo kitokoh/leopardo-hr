@@ -41,7 +41,12 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client age awscli
+          sudo apt-get install -y postgresql-client age
+          if ! command -v aws >/dev/null 2>&1; then
+            python3 -m pip install --user --break-system-packages awscli
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          fi
+          aws --version
 
       - name: Validate backup secrets
         id: secrets
@@ -111,7 +116,12 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y postgresql-client age awscli
+          sudo apt-get install -y postgresql-client age
+          if ! command -v aws >/dev/null 2>&1; then
+            python3 -m pip install --user --break-system-packages awscli
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          fi
+          aws --version
 
       - name: Validate drill secrets
         id: secrets

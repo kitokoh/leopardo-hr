@@ -50,6 +50,11 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le controle generalise de release vit dans `docs/validation/RELEASE_READINESS_GATE.md` avec le script `dev-hub/tools/release-readiness.ps1`; produire ou mettre a jour un rapport `docs/validation/RELEASE_READINESS_REPORT_*.md` avant de declarer un score production-ready.
 - Le depot contient deja beaucoup de tests backend critiques (auth, guardrails, RBAC, absences, attendance, contrats mobile). Avant d'ajouter de nouveaux tests, verifier d'abord si le manque reel n'est pas plutot la visibilite CI (coverage, artifacts, reporting).
 - Les tests locaux Windows peuvent echouer avant PHPUnit si l'extension PHP `mbstring` manque (`mb_split()` introuvable dans Laravel). Dans ce cas, ne pas conclure a un rouge applicatif ; verifier la syntaxe et laisser GitHub Actions executer la suite complete.
+- Pour `front/admin-dashboard`, `VITE_API_URL` doit pointer vers la base versionnee (`.../api/v1`). Le client Axios normalise les anciens appels `/v1/*`; ne pas revenir a des `window.open('/api/v1/...')` pour les exports, car cela casse sur Cloudflare Pages et perd le bearer token.
+- Pour `front/zkteco-kiosk`, `apiBaseUrl` peut etre configure avec ou sans `/api/v1`; `app.js` normalise la base. Garder ce contrat pour eviter les URLs double-versionnees sur site client.
+- Le smoke E2E staging API doit tester les routes reelles du backend. Pour un check auth sans token, utiliser `/api/v1/auth/me`, pas `/api/v1/me`.
+- Sur Next 16 / React 19, les routes dynamiques sous `front/web/src/app/**/[slug]` recoivent `params` sous forme de Promise. Dans les Server Components, `await params`; dans les Client Components, utiliser `use(params)`.
+- Dans `database-backup.yml`, ne pas installer `awscli` via `apt-get` sur `ubuntu-latest`; le paquet peut disparaitre. Installer `postgresql-client age`, puis utiliser l'AWS CLI preinstallee ou fallback `pip --user`.
 
 ## Pieges connus
 

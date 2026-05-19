@@ -3,16 +3,17 @@ import { blogPosts } from '@/modules/vitrine/data/blog';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 
 interface BlogArticleLayoutProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
   children: React.ReactNode;
 }
 
 export async function generateMetadata({
   params,
 }: BlogArticleLayoutProps): Promise<Metadata> {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     return {

@@ -1,22 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Navbar, Footer, useScrollReveal, BlogArticle } from '@/modules/vitrine';
 import { blogPosts } from '@/modules/vitrine/data/blog';
 import { notFound } from 'next/navigation';
 
 interface BlogArticlePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function BlogArticlePage({ params }: BlogArticlePageProps) {
   const [isDark, setIsDark] = useState(false);
   useScrollReveal();
+  const { slug } = use(params);
 
   // Find the post
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();
