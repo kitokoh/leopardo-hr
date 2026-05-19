@@ -56,6 +56,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les curls de smoke API doivent envoyer `Accept: application/json`; sinon Laravel peut retourner une redirection HTML `302 /login` au lieu du statut JSON attendu (`401`, `403`, etc.).
 - Pour l'E2E staging `front/web`, `BASE_URL` indique une cible distante : la config Playwright ne doit pas demarrer `npm run dev` dans ce cas, et le workflow doit rester aligne avec les navigateurs installes (`--project=chromium` si seul Chromium est installe).
 - Le workflow `e2e-staging.yml` distingue l'URL API/admin Render (`DEFAULT_STAGING_URL`) de l'URL vitrine Vercel (`DEFAULT_WEB_STAGING_URL`). Ne pas pointer les tests landing `front/web` vers le backend API.
+- Sur la vitrine, garder le gate staging limite a `front/web/e2e/staging-smoke.spec.ts`. Les tests de conversion complets manipulent des formulaires et des CTA plus profonds ; ils sont utiles en local/preview, mais trop fragiles et trop larges pour une cible publique de production.
 - Sur Next 16 / React 19, les routes dynamiques sous `front/web/src/app/**/[slug]` recoivent `params` sous forme de Promise. Dans les Server Components, `await params`; dans les Client Components, utiliser `use(params)`.
 - Dans `database-backup.yml`, ne pas installer `awscli` via `apt-get` sur `ubuntu-latest`; le paquet peut disparaitre. Installer `postgresql-client age`, puis utiliser l'AWS CLI preinstallee ou fallback `pip --user`.
 
