@@ -91,7 +91,7 @@ jobs:
             local url="$2"
             local expected_status="${3:-200}"
             echo -n "Testing ${name}... "
-            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "${url}" || echo "000")
+            STATUS=$(curl -s -H 'Accept: application/json' -o /dev/null -w '%{http_code}' "${url}" || echo "000")
             if [[ "${STATUS}" == "${expected_status}" ]]; then
               echo "OK (${STATUS})"
             else
