@@ -60,4 +60,20 @@ class ExportControllerTest extends TestCase
         $response = $this->getJson('/api/v1/export/attendance?format=csv&from='.now()->startOfMonth()->toDateString().'&to='.now()->endOfMonth()->toDateString());
         $response->assertOk();
     }
+
+    public function test_manager_can_export_admin_dashboard_resources(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        foreach (['pay-slips', 'absences', 'training', 'contracts', 'vehicles'] as $resource) {
+            $this->getJson("/api/v1/export/{$resource}?format=csv")
+                ->assertOk()
+                ->assertJsonPath('data.format', 'csv');
+        }
+
+        $this->getJson('/api/v1/export/history')->assertOk();
+    }
 }

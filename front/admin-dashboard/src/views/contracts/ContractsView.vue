@@ -147,7 +147,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import api from '@/services/api'
+import api, { downloadApiFile } from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
@@ -233,7 +233,7 @@ function closeDetail() {
 }
 
 function exportContracts() {
-  window.open('/api/v1/export/contracts?format=csv', '_blank')
+  downloadApiFile('/v1/export/contracts?format=csv', 'contracts.csv')
 }
 
 onMounted(fetchData)

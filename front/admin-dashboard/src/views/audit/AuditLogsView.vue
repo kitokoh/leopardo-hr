@@ -144,7 +144,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import api from '@/services/api'
+import api, { downloadApiFile } from '@/services/api'
 import DataTable from '@/components/common/DataTable.vue'
 
 const loading = ref(false)
@@ -244,7 +244,7 @@ async function fetchAuditLogs() {
 }
 
 function exportAuditLogs() {
-  window.open('/api/v1/audit-logs/export?format=csv', '_blank')
+  downloadApiFile('/v1/audit-logs/export-csv', 'audit-logs.csv')
 }
 
 onMounted(fetchAuditLogs)
