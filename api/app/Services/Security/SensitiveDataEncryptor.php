@@ -16,7 +16,7 @@ class SensitiveDataEncryptor
             return $value;
         }
 
-        return self::ENCRYPTED_PREFIX . Crypt::encryptString($value);
+        return self::ENCRYPTED_PREFIX.Crypt::encryptString($value);
     }
 
     public function decrypt(string $value): string

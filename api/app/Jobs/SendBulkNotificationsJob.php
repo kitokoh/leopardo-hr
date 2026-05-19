@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -40,7 +41,7 @@ class SendBulkNotificationsJob implements ShouldQueue
             'type' => $this->notificationClass,
         ]);
 
-        $users = \App\Models\User::whereIn('id', $this->userIds)
+        $users = User::whereIn('id', $this->userIds)
             ->where('company_id', $this->companyId)
             ->get();
 
