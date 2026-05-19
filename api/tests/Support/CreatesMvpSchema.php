@@ -1201,6 +1201,80 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
+
+        if (! Schema::hasTable('company_sso_configs')) {
+            Schema::create('company_sso_configs', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('provider', 20);
+                $table->jsonb('config')->default('{}');
+                $table->boolean('is_active')->default(false);
+                $table->timestamps();
+                $table->unique('company_id');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('device_tokens'))) {
+            Schema::create($this->moduleTable('device_tokens'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('employee_id');
+                $table->uuid('company_id')->index();
+                $table->string('token', 512);
+                $table->string('platform', 20);
+                $table->string('device_name', 120)->nullable();
+                $table->timestamps();
+                $table->unique(['employee_id', 'token']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('calendar_connections'))) {
+            Schema::create($this->moduleTable('calendar_connections'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('employee_id');
+                $table->uuid('company_id')->index();
+                $table->string('provider', 20);
+                $table->string('calendar_id')->nullable();
+                $table->text('access_token')->nullable();
+                $table->text('refresh_token')->nullable();
+                $table->timestampTz('token_expires_at')->nullable();
+                $table->boolean('sync_leaves')->default(true);
+                $table->boolean('sync_training')->default(true);
+                $table->boolean('is_active')->default(true);
+                $table->timestampTz('last_synced_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('calendar_events'))) {
+            Schema::create($this->moduleTable('calendar_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('connection_id');
+                $table->uuid('company_id')->index();
+                $table->string('external_event_id')->nullable();
+                $table->string('source_type', 30);
+                $table->unsignedBigInteger('source_id');
+                $table->string('title');
+                $table->timestampTz('start_at');
+                $table->timestampTz('end_at');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('zkteco_devices'))) {
+            Schema::create($this->moduleTable('zkteco_devices'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('serial_number', 100)->unique();
+                $table->string('name', 100);
+                $table->string('ip_address', 45)->nullable();
+                $table->unsignedSmallInteger('port')->default(4370);
+                $table->string('protocol', 20)->default('tcp');
+                $table->string('status', 20)->default('offline');
+                $table->timestampTz('last_heartbeat_at')->nullable();
+                $table->timestampTz('last_sync_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     private function dropMvpTables(): void
@@ -1220,6 +1294,11 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "camera_permissions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "camera_access_tokens"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "cameras"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "zkteco_devices"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "calendar_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "calendar_connections"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "device_tokens"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "company_sso_configs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "vehicle_maintenances"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "vehicle_alerts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "vehicle_trips"'.$cascade);

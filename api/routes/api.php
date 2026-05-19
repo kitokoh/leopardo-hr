@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
         Route::patch('/auth/language', [AuthController::class, 'updateLanguage']);
         Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+        Route::post('/auth/refresh-token', [AuthController::class, 'refreshToken']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
