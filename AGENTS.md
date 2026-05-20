@@ -29,7 +29,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Si les workflows web sont fusionnes plus tard, conserver absolument les filtres `paths:` qui ont reduit le bruit CI a partir du 2026-05-06.
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
-- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.96, son seuil par defaut est `58%` (coverage mesuree 58,76% sur PR #514); viser `60%` via des lots de tests backend cibles avant tout nouveau ratchet.
+- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.96, son seuil par defaut est `60%` (coverage mesuree 60,01% sur PR #515); tout prochain ratchet doit s'appuyer sur une mesure CI verte.
 - Le workflow `backend-jobs-ci.yml` couvre les contrats queues/jobs critiques (`QueueJobsTest` et warmup PDF paie). Toute modification de `api/app/Jobs/**`, listeners d'evenements ou dispatch paie doit garder ce workflow vert.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
@@ -106,6 +106,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 
 - Les tables `tax_slabs` et `social_contributions` sont creees par les migrations tenant. Le seeder `PayrollCountryConfigSeeder` doit etre lance dans le schema tenant courant, pas depuis un contexte public qui n'a pas ces tables.
 - Les exports bancaires doivent utiliser les colonnes reelles de `employees` : `iban` et `bank_account`. Ne pas reintroduire `rib` ou `bank_name` sans migration correspondante.
+- Les declarations sociales CNAS/CNSS/DSN doivent lire les salaries via le modele `Employee`, pas via `DB::table('employees')`, afin de respecter les casts `encrypted` (`national_id`). Les identifiants entreprise viennent de `companies.metadata` (`nis`, `affiliate_number`, `siret`, `tax_id`) ; ne pas reintroduire `companies.tax_id` ni `employees.hire_date`.
 - Pour les barèmes fiscaux de paie, les tranches documentees sont inclusives (`0-5000`, `5001-20000`). Utiliser le helper progressif de `AbstractCountryRules` pour eviter les erreurs d'unite aux bornes.
 - Pour tester `PayrollRunController` sans rendre la suite fragile face aux baremes/salary structures, binder un faux `PayrollCalculator` dans le container et verifier le contrat controller : run calcule, pay slip cree, validation/cancel et isolation tenant.
 
@@ -401,8 +402,8 @@ Procedure recommandee :
 
 ### 2026-05-14 - Coverage backend ratchet
 
-- La derniere mesure GitHub Actions connue est `58.76%` de statement coverage backend (`9543/16242`) sur PR #514.
-- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `58%`. La prochaine cible Plan 17 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
+- La derniere mesure GitHub Actions connue est `60.01%` de statement coverage backend (`9748/16243`) sur PR #515.
+- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `60%` apres PR #515. Ne pas redescendre le seuil sauf incident CI documente.
 - Le workflow dedie `coverage-gate.yml` doit parser `clover.xml` pour eviter les faux `0%` issus d'une sortie texte PHPUnit variable.
 
 ### 2026-05-14 - Tests mobiles Plan 14
