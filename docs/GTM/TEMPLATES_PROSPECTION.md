@@ -1,6 +1,6 @@
 # Templates de Prospection — Leopardo RH
 
-Templates prets a l'emploi pour la prospection LinkedIn et WhatsApp.
+Templates prets a l'emploi pour la prospection LinkedIn, WhatsApp et email.
 
 ---
 
@@ -73,6 +73,60 @@ Templates prets a l'emploi pour la prospection LinkedIn et WhatsApp.
 | Enterprise | Sur devis | + Multi-site + API + SSO + Support dedie |
 
 Essai gratuit 14 jours sur tous les plans. Pas de carte bancaire requise.
+
+---
+
+## Email — Campagne outbound DRH
+
+### Template 1 : Cold email paie
+
+> **Objet** : [Societe] — La paie vous prend combien de temps par mois ?
+>
+> Bonjour [Prenom],
+>
+> Je suis [Nom], fondateur de Leopardo RH. Nous aidons les PME du Maghreb et d'Afrique a automatiser leur paie.
+>
+> En moyenne, nos clients passent de **2 jours a 2 heures** par mois pour produire tous leurs bulletins de paie.
+>
+> Ce qui change concretement :
+> - Baremes fiscaux DZ/MA/SN/TN/CI/TR integres automatiquement
+> - Bulletins PDF conformes generes en 1 clic
+> - Export bancaire pour virement massif
+>
+> Seriez-vous disponible pour une demo de 15 min cette semaine ?
+>
+> Cordialement,
+> [Nom]
+> [Telephone] | leopardo-rh.com
+
+### Template 2 : Follow-up J+3
+
+> **Objet** : Re: [Societe] — Exemple concret de gain de temps
+>
+> Bonjour [Prenom],
+>
+> Je me permets un court suivi. Voici ce qu'une PME de 45 employes a Alger a obtenu avec Leopardo RH :
+> - **-80%** de temps sur le traitement paie
+> - **0 erreur** de cotisation CNAS depuis 3 mois
+> - Bulletins disponibles sur mobile pour les employes
+>
+> Je peux vous montrer en 10 min comment ca marche pour [Secteur].
+>
+> Bonne journee,
+> [Nom]
+
+### Template 3 : Derniere relance J+7
+
+> **Objet** : Derniere question rapide, [Prenom]
+>
+> Bonjour [Prenom],
+>
+> Je comprends que le sujet n'est peut-etre pas prioritaire en ce moment. Si la gestion paie/pointage/conges redevient un sujet, voici notre page demo : leopardo-rh.com/demo
+>
+> Essai gratuit 14 jours, sans carte bancaire.
+>
+> A bientot,
+> [Nom]
 
 ---
 

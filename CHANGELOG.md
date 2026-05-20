@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.85] - 2026-05-19
+
+### Plan 16 Lot 5 — GTM operationnel
+
+- Docs : 3 scripts video demo (pointage 2m30, paie 2m45, dashboard 2m) dans `docs/GTM/SCRIPTS_VIDEO_DEMO.md`.
+- Docs : 3 templates email prospection (cold, follow-up J+3, relance J+7) ajoutes dans `TEMPLATES_PROSPECTION.md`.
+- Vitrine : page `/integrations` — 10 integrations (ZKTeco, Google Calendar, Outlook, API REST, Webhooks, Stripe, Chargily, SEPA, SSO, SAP/Sage) avec i18n FR/EN/AR/TR.
+- Docs : pack revendeur complet `docs/GTM/PACK_REVENDEUR.md` — pitch 30s, grille tarifaire, FAQ 6 objections, checklist installation 12 etapes, SLA support 3 niveaux.
+- Plan 16 entierement coche : Lots 16.1 a 16.5 termines.
+
 ## [4.16.84] - 2026-05-19
 
 ### Plan 16 Lot 3+4 — Social proof, product screenshots, robustesse production

@@ -57,11 +57,11 @@ Priorite : haute.
 
 Priorite : haute, non-code partiellement.
 
-- [ ] Rediger 5 mini cas clients a partir de donnees anonymisees.
-- [ ] Produire 3 scripts video demo : pointage, paie, dashboard manager.
-- [ ] Finaliser templates WhatsApp/LinkedIn/email pour prospection.
-- [ ] Ajouter page publique "Integrations" : ZKTeco, Google/Outlook, API partenaires.
-- [ ] Preparer pack revendeur : pitch, pricing, FAQ objections, checklist installation.
+- [x] Rediger 5 mini cas clients — deja present dans `docs/GTM/CAS_CLIENTS.md` (DZ, MA, SN, TN, CI).
+- [x] Produire 3 scripts video demo — `docs/GTM/SCRIPTS_VIDEO_DEMO.md` : pointage (2m30), paie (2m45), dashboard manager (2m).
+- [x] Finaliser templates WhatsApp/LinkedIn/email — 3 templates email ajoutes dans `docs/GTM/TEMPLATES_PROSPECTION.md`.
+- [x] Ajouter page publique "Integrations" — `/integrations` avec ZKTeco, Google Calendar, Outlook, API REST, Webhooks, Stripe, Chargily, SEPA, SSO (i18n FR/EN/AR/TR).
+- [x] Preparer pack revendeur — `docs/GTM/PACK_REVENDEUR.md` : pitch, grille tarifaire, FAQ objections, checklist installation 12 etapes, SLA support.
 
 ## Definition of done lancement
 
