@@ -1,0 +1,196 @@
+name: Backend Jobs CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'api/app/Jobs/**'
+      - 'api/app/Listeners/**'
+      - 'api/app/Services/WebhookDispatcher.php'
+      - 'api/app/Services/PayrollService.php'
+      - 'api/app/Http/Controllers/Api/V1/PayrollRunController.php'
+      - 'api/tests/Feature/QueueJobsTest.php'
+      - 'api/tests/Feature/PayrollRunControllerTest.php'
+      - '.github/workflows/backend-jobs-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/Jobs/**'
+      - 'api/app/Listeners/**'
+      - 'api/app/Services/WebhookDispatcher.php'
+      - 'api/app/Services/PayrollService.php'
+      - 'api/app/Http/Controllers/Api/V1/PayrollRunController.php'
+      - 'api/tests/Feature/QueueJobsTest.php'
+      - 'api/tests/Feature/PayrollRunControllerTest.php'
+      - '.github/workflows/backend-jobs-ci.yml'
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: backend-jobs-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jobs-and-queues:
+    name: Jobs & Queues Contracts
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, redis, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+          coverage: none
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        working-directory: ./api
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php84-
+
+      - name: Install Composer dependencies
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare environment
+        working-directory: ./api
+        run: |
+          cat > .env <<'EOF'
+          APP_NAME=LeopardoRH
+          APP_ENV=testing
+          APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          APP_DEBUG=true
+          APP_URL=http://localhost
+
+          DB_CONNECTION=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=leopardo_test
+          DB_USERNAME=leopardo_user
+          DB_PASSWORD=leopardo_pass_test
+          DB_SEARCH_PATH=shared_tenants,public
+
+          CACHE_STORE=array
+          QUEUE_CONNECTION=sync
+          SESSION_DRIVER=array
+          REDIS_HOST=127.0.0.1
+          REDIS_PORT=6379
+          EOF
+
+      - name: Bootstrap migration repositories
+        working-directory: ./api
+        run: |
+          php <<'PHP'
+          <?php
+          $dsn = 'pgsql:host=127.0.0.1;port=5432;dbname=leopardo_test';
+          $pdo = new PDO($dsn, 'leopardo_user', 'leopardo_pass_test', [
+              PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          ]);
+          $pdo->exec(<<<'SQL'
+          CREATE SCHEMA IF NOT EXISTS shared_tenants;
+          CREATE TABLE IF NOT EXISTS public.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS shared_tenants.migrations (
+              id serial PRIMARY KEY,
+              migration varchar(255) NOT NULL,
+              batch integer NOT NULL
+          );
+          SQL);
+          echo "Migration repositories ensured for jobs CI.\n";
+          PHP
+
+      - name: Run public migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=public php artisan migrate --path=database/migrations/public --force --isolated
+
+      - name: Run tenant migrations
+        working-directory: ./api
+        run: DB_SEARCH_PATH=shared_tenants php artisan migrate --path=database/migrations/tenant --force --isolated
+
+      - name: Run queue contract tests
+        id: queue_contracts
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: php artisan test tests/Feature/QueueJobsTest.php --log-junit=storage/test-results/jobs-queue.xml
+
+      - name: Run payroll warmup dispatch contract
+        id: payroll_warmup_contract
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+          PAYROLL_QUEUE_PDF_WARMUP: "true"
+        run: php artisan test tests/Feature/PayrollRunControllerTest.php --filter=test_validate_dispatches_pay_slip_pdf_warmup_job --log-junit=storage/test-results/jobs-payroll-warmup.xml
+
+      - name: Build jobs CI summary
+        if: always()
+        working-directory: ./api
+        run: |
+          mkdir -p storage/test-results
+          {
+            echo "- Queue contract tests: ${{ steps.queue_contracts.outcome }}"
+            echo "- Payroll PDF warmup dispatch: ${{ steps.payroll_warmup_contract.outcome }}"
+            echo "- Queues covered: payroll, notifications, payroll PDF warmup"
+          } > storage/test-results/jobs-ci-summary.md
+          cat storage/test-results/jobs-ci-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload jobs CI artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jobs-ci-reports
+          path: |
+            api/storage/test-results/jobs-*.xml
+            api/storage/test-results/jobs-ci-summary.md
+          if-no-files-found: ignore
