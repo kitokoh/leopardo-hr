@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.99] - 2026-05-21
+
+### Added
+
+- Tests : extension `FrontendApiContractTest` aux routes critiques mobile (pointage, conges, bulletins, notifications, push tokens).
+- Tests : extension du contrat kiosque aux routes sync offline, employee-info et leave-balance.
+- Docs : matrice `FRONTEND_API_CONTRACT_MATRIX.md` completee pour mobile, admin client et kiosk.
+
+### Changed
+
+- Docs : Plan 17 met a jour le statut du lot mobile/kiosque readiness et isole le reste a faire sur les tests JSON payload mobile detailles.
+
 ## [4.16.98] - 2026-05-21
 
 ### Added

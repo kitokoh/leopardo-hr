@@ -39,9 +39,10 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 
 ## Lot 17.4 — Mobile et kiosque readiness
 
-- [ ] Ajouter les parcours mobile prioritaires : conges, bulletins, notifications push.
-- [ ] Ajouter les contrats kiosk : post-pointage, QR code, affichage infos employe.
-- [ ] Documenter les endpoints obligatoires par frontend.
+- [x] Ajouter les contrats d'existence routes pour les parcours mobile prioritaires : conges, bulletins, notifications push et pointage.
+- [x] Ajouter les contrats kiosk : post-pointage, QR code, sync offline, affichage infos employe et soldes conges.
+- [x] Documenter les endpoints obligatoires par frontend dans `docs/validation/FRONTEND_API_CONTRACT_MATRIX.md`.
+- [ ] Ajouter des tests JSON payload mobile detailles pour conges, bulletins et notifications.
 
 ## Lot 17.5 — Observabilite lancement
 
