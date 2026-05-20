@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.97] - 2026-05-21
+
+### Added
+
+- Vitrine : pages `/pricing`, `/demo` et `/integrations` raccordees au rail FR/EN/TR/AR avec `dir=rtl` pour l'arabe.
+- Vitrine : formulaire demo enrichi avec la locale courante pour qualifier les leads marketing.
+
+### Changed
+
+- Vitrine : composants pricing/FAQ reutilisables capables de recevoir les libelles de periode, prix sur devis et filtre "Tous" localises.
+- Docs : Plan 17 mis a jour avec l'etat reel du lot vitrine multilingue conversion.
+
 ## [4.16.96] - 2026-05-20
 
 ### Added

@@ -21,6 +21,7 @@ export interface FAQSectionProps {
   items?: FAQItem[];
   faqs?: FAQItem[];
   categories?: string[];
+  allLabel?: string;
 }
 
 export function FAQSection({
@@ -30,6 +31,7 @@ export function FAQSection({
   items,
   faqs,
   categories,
+  allLabel = 'Tous',
 }: FAQSectionProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export function FAQSection({
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              Tous
+              {allLabel}
             </button>
             {categories.map((category) => (
               <button

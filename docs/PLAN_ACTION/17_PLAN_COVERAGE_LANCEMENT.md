@@ -29,9 +29,11 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 
 ## Lot 17.3 — Vitrine multilingue conversion
 
-- [ ] Finaliser `/pricing`, `/demo`, `/integrations`, `/blog` en FR/EN/AR/TR.
+- [x] Finaliser `/pricing`, `/demo` et `/integrations` en FR/EN/AR/TR avec support RTL arabe.
+- [ ] Auditer et finaliser `/blog` en FR/EN/AR/TR.
 - [ ] Ajouter schema.org, sitemap, robots et metadata par locale.
-- [ ] Brancher les formulaires demo/newsletter sur une API ou un endpoint server-side observable.
+- [x] Conserver le formulaire demo sur endpoint server-side `/api/forms/demo` et transmettre la locale courante.
+- [ ] Ajouter observabilite metier explicite sur les leads demo/newsletter.
 
 ## Lot 17.4 — Mobile et kiosque readiness
 
