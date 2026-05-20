@@ -15,6 +15,7 @@ export interface PricingCardProps {
     text: string;
     href: string;
   };
+  customPriceLabel?: string;
   highlighted?: boolean;
   badge?: string;
   index?: number;
@@ -28,6 +29,7 @@ export function PricingCard({
   description,
   features,
   cta,
+  customPriceLabel = 'Sur devis',
   highlighted = false,
   badge,
   index = 0,
@@ -67,8 +69,8 @@ export function PricingCard({
         {/* Price */}
         <div className="mb-8">
           <div className="flex items-baseline gap-1">
-            <span className="text-5xl font-black text-slate-900 dark:text-white">{price ?? 'Sur devis'}</span>
-            <span className="text-slate-500 dark:text-slate-400 font-medium">{currency}</span>
+            <span className="text-5xl font-black text-slate-900 dark:text-white">{price ?? customPriceLabel}</span>
+            {price !== null && <span className="text-slate-500 dark:text-slate-400 font-medium">{currency}</span>}
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">{period}</p>
         </div>
