@@ -1,6 +1,6 @@
 # 16 - Plan de consolidation lancement
 
-Derniere mise a jour : 2026-05-19
+Derniere mise a jour : 2026-05-20
 
 Objectif : transformer la base technique deja livree en plateforme prete pour acquisition marketing, premiers pics de trafic et onboarding client sans friction.
 
@@ -47,7 +47,7 @@ Priorite : haute.
 
 Priorite : haute.
 
-- [ ] Monter le seuil coverage backend de 55% vers 60% apres mesure verte stable.
+- [x] Monter le seuil coverage backend de 55% vers le niveau reellement vert en CI — `DEFAULT_BACKEND_COVERAGE_MIN=56` dans `tests.yml` et `coverage-gate.yml`, coverage mesuree 56,14% sur le run PR #510. Le palier 60% passe dans le prochain lot de tests backend cible.
 - [x] Ajouter alertes explicites sur erreurs API front admin (Sentry breadcrumb + toast contextualise) — `api.js` enhanced.
 - [x] Verifier idempotence des nouvelles migrations 2026-05-18 sur PostgreSQL/Render — toutes protegees par `hasTable()`.
 - [x] Ajouter un smoke post-deploy API : health, auth login, endpoint tenant read, endpoint export — `dev-hub/tools/smoke-post-deploy.sh`.

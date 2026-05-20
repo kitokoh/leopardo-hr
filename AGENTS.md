@@ -29,7 +29,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Si les workflows web sont fusionnes plus tard, conserver absolument les filtres `paths:` qui ont reduit le bruit CI a partir du 2026-05-06.
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
-- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.48, son seuil par defaut est `55%` et la cible suivante est `60%`.
+- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.94, son seuil par defaut est `56%` (coverage mesuree 56,14% sur PR #510); viser `60%` via un lot de tests backend cible avant tout nouveau ratchet.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
 - Pour `admin-dashboard/`, garder `web-ci.yml` cible sur `admin-dashboard/**` avec lint/build/Playwright.
@@ -399,8 +399,8 @@ Procedure recommandee :
 
 ### 2026-05-14 - Coverage backend ratchet
 
-- La derniere mesure GitHub Actions connue est `56.86%` de statement coverage backend (`7588/13346`) sur PR #458.
-- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `55%`. La prochaine cible Plan 14 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
+- La derniere mesure GitHub Actions connue est `56.14%` de statement coverage backend (`9119/16242`) sur PR #510.
+- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `56%`. La prochaine cible Plan 17 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
 - Le workflow dedie `coverage-gate.yml` doit parser `clover.xml` pour eviter les faux `0%` issus d'une sortie texte PHPUnit variable.
 
 ### 2026-05-14 - Tests mobiles Plan 14
