@@ -10,6 +10,7 @@ use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
+use App\Http\Middleware\TokenAutoRefreshMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
@@ -52,6 +53,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
+            'token.refresh' => TokenAutoRefreshMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

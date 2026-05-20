@@ -2,6 +2,34 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.90] - 2026-05-12
+
+### Feat — Plan 14 Phase 2-6 : Solidification technique & commerciale
+
+**Securite (Phase 2) :**
+- Nouveau : `TokenAutoRefreshMiddleware` — rotation automatique des tokens JWT via header `X-New-Token` quand le token approche l'expiration (fenetre configurable `sanctum.auto_refresh_window`)
+
+**Integrations bancaires (Phase 4.1) :**
+- Nouveau : export virement CPA (Credit Populaire d'Algerie) pipe-delimited dans `BankExportGenerator`
+- Nouveau : export virement BNA (Banque Nationale d'Algerie) pipe-delimited dans `BankExportGenerator`
+
+**Declarations sociales (Phase 4.2) :**
+- Nouveau : export DSN simplifie France (Declaration Sociale Nominative) — `SocialDeclarationGenerator::generateDsnFr()` format S10/S20/S21/S44
+- Nouveau : route `POST /api/v1/social-declarations/dsn-fr` avec mapping types contrat CDI/CDD/interim/apprentissage
+
+**Notifications temps reel (Phase 5.1) :**
+- Nouveau : `NotificationStreamController` — endpoint SSE `GET /api/v1/notifications/stream` avec heartbeat, reconnect, et timeout 120s
+- Nouveau : composable `useNotificationStream.js` — client SSE auto-reconnect pour le dashboard admin
+
+**UX Admin (Phase 5.1) :**
+- Nouveau : `CommandPalette.vue` — palette de commandes Ctrl+K avec recherche pages/actions, navigation fleches, dark mode
+- Nouveau : `SkeletonLoader.vue` — composant skeleton avec 6 variantes (card, table, chart, kpi-grid, form, text) et support dark mode
+
+**Documentation commerciale (Phase 6.2) :**
+- Nouveau : `docs/commercial/DOSSIER_TECHNIQUE_APPELS_OFFRES.md` — dossier technique complet (architecture, securite, modules, SLA, CI/CD)
+- Nouveau : `docs/commercial/COMPARATIF_CONCURRENTS.md` — comparatif vs Sage HR, OrangeHRM, PaieNA, Kiwi HR
+- Nouveau : `docs/commercial/BENCHMARKS_PERFORMANCE.md` — benchmarks k6 (core, 100 VU, paie 500 emp, dashboard 10K)
+
 ## [4.16.82] - 2026-05-19
 
 ### Fix — Consolidation connectivite API admin/kiosk
