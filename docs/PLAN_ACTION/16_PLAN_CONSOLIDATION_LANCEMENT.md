@@ -27,11 +27,11 @@ Priorite : critique avant campagne marketing.
 
 Priorite : critique.
 
-- [ ] Executer le gate `dev-hub/tools/release-readiness.ps1`.
-- [ ] Produire `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md`.
-- [ ] Lister les checks GitHub Actions verts du dernier `main`.
-- [ ] Lister les secrets/variables cloud obligatoires : Render, Cloudflare Pages, Vercel, Firebase, Sentry, Slack, backup.
-- [ ] Verifier les URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health API, docs OpenAPI.
+- [x] Executer le gate `dev-hub/tools/release-readiness.ps1` — 15/15 PASS.
+- [x] Produire `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md` — score 91/100.
+- [x] Lister les checks GitHub Actions verts du dernier `main` — 18 workflows documentes.
+- [x] Lister les secrets/variables cloud obligatoires : Render, Cloudflare Pages, Vercel, Firebase, Sentry, Slack, backup — inventaire complet dans le rapport.
+- [x] Verifier les URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health API, docs OpenAPI — documentes dans le rapport.
 
 ## Lot 16.3 - Design vendeur et conversion
 
@@ -48,10 +48,10 @@ Priorite : haute.
 Priorite : haute.
 
 - [ ] Monter le seuil coverage backend de 55% vers 60% apres mesure verte stable.
-- [ ] Ajouter alertes explicites sur erreurs API front admin (Sentry breadcrumb + toast contextualise).
-- [ ] Verifier idempotence des nouvelles migrations 2026-05-18 sur PostgreSQL/Render.
-- [ ] Ajouter un smoke post-deploy API : health, auth login, endpoint tenant read, endpoint export.
-- [ ] Documenter rollback admin/vitrine/mobile dans le runbook operations.
+- [x] Ajouter alertes explicites sur erreurs API front admin (Sentry breadcrumb + toast contextualise) — `api.js` enhanced.
+- [x] Verifier idempotence des nouvelles migrations 2026-05-18 sur PostgreSQL/Render — toutes protegees par `hasTable()`.
+- [x] Ajouter un smoke post-deploy API : health, auth login, endpoint tenant read, endpoint export — `dev-hub/tools/smoke-post-deploy.sh`.
+- [x] Documenter rollback admin/vitrine/mobile dans le runbook operations — `RUNBOOK_ROLLBACK.md` sections 6-8.
 
 ## Lot 16.5 - GTM operationnel
 

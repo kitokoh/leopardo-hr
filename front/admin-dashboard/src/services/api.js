@@ -1,6 +1,59 @@
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 
+const ERROR_BREADCRUMBS = []
+const MAX_BREADCRUMBS = 50
+
+function addBreadcrumb(category, message, data = {}) {
+  const entry = {
+    timestamp: new Date().toISOString(),
+    category,
+    message,
+    data,
+  }
+  ERROR_BREADCRUMBS.push(entry)
+  if (ERROR_BREADCRUMBS.length > MAX_BREADCRUMBS) {
+    ERROR_BREADCRUMBS.shift()
+  }
+  if (typeof window.__SENTRY__ !== 'undefined' && window.Sentry) {
+    window.Sentry.addBreadcrumb({
+      category,
+      message,
+      data,
+      level: data.status >= 500 ? 'error' : 'warning',
+    })
+  }
+}
+
+export function getErrorBreadcrumbs() {
+  return [...ERROR_BREADCRUMBS]
+}
+
+function contextualErrorMessage(status, data, url) {
+  const endpoint = url || 'inconnu'
+  const serverMsg = data?.message || ''
+  switch (status) {
+    case 401:
+      return 'Session expiree. Reconnexion en cours...'
+    case 403:
+      return `Acces refuse sur ${endpoint}. Permissions insuffisantes.`
+    case 404:
+      return `Ressource introuvable : ${endpoint}`
+    case 422:
+      return null
+    case 429:
+      return 'Trop de requetes. Veuillez patienter quelques secondes.'
+    case 500:
+      return `Erreur serveur sur ${endpoint}. ${serverMsg ? '(' + serverMsg + ')' : 'Reessayez plus tard.'}`
+    case 502:
+    case 503:
+    case 504:
+      return `Le serveur est temporairement indisponible (${status}). Reessayez dans quelques instants.`
+    default:
+      return serverMsg || `Erreur ${status} sur ${endpoint}.`
+  }
+}
+
 const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
 function baseEndsWithV1(baseURL) {
@@ -57,6 +110,14 @@ api.interceptors.response.use(
 
     if (error.response) {
       const { status, data } = error.response
+      const requestUrl = originalRequest?.url || ''
+
+      addBreadcrumb('api.error', `HTTP ${status} on ${originalRequest?.method?.toUpperCase() || 'GET'} ${requestUrl}`, {
+        status,
+        url: requestUrl,
+        method: originalRequest?.method,
+        serverMessage: data?.message,
+      })
 
       switch (status) {
         case 401:
@@ -66,17 +127,10 @@ api.interceptors.response.use(
             delete api.defaults.headers.common.Authorization
 
             if (window.location.pathname !== '/login') {
+              toast.warning(contextualErrorMessage(401, data, requestUrl))
               window.location.href = '/login'
             }
           }
-          break
-
-        case 403:
-          toast.error('Acces refuse. Permissions insuffisantes.')
-          break
-
-        case 404:
-          toast.error('Ressource non trouvee.')
           break
 
         case 422:
@@ -89,20 +143,21 @@ api.interceptors.response.use(
           }
           break
 
-        case 429:
-          toast.error('Trop de requetes. Veuillez patienter.')
-          break
-
-        case 500:
-          toast.error('Erreur serveur. Veuillez reessayer plus tard.')
-          break
-
-        default:
-          toast.error(data.message || 'Une erreur est survenue.')
+        default: {
+          const msg = contextualErrorMessage(status, data, requestUrl)
+          if (msg) {
+            toast.error(msg)
+          }
+        }
       }
     } else if (error.request) {
+      addBreadcrumb('api.network', 'Network error — no response received', {
+        url: originalRequest?.url,
+        method: originalRequest?.method,
+      })
       toast.error('Erreur de connexion. Verifiez votre connexion internet.')
     } else {
+      addBreadcrumb('api.unexpected', error.message || 'Unknown error')
       toast.error('Une erreur inattendue est survenue.')
     }
 
