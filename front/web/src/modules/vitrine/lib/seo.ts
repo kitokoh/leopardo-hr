@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
+const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
 export interface SEOMetadata {
   title: string;
@@ -22,6 +23,20 @@ export interface SEOMetadata {
 export function generateMetadata(seo: SEOMetadata): Metadata {
   const url = seo.canonical || siteUrl;
   const image = seo.ogImage || `${siteUrl}/og-image.png`;
+  const path = (() => {
+    try {
+      const parsed = new URL(url, siteUrl);
+      return parsed.pathname === "/" ? "/" : parsed.pathname;
+    } catch {
+      return "/";
+    }
+  })();
+  const localizedAlternates = Object.fromEntries(
+    supportedLocales.map((locale) => [
+      locale,
+      locale === "fr" ? url : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
+    ])
+  );
 
   return {
     title: seo.title,
@@ -54,6 +69,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
     },
     alternates: {
       canonical: url,
+      languages: localizedAlternates,
     },
   };
 }

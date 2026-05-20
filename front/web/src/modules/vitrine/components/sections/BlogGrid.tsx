@@ -16,6 +16,11 @@ export interface BlogGridProps {
   itemsPerPage?: number;
   showPagination?: boolean;
   showFilters?: boolean;
+  allLabel?: string;
+  previousLabel?: string;
+  nextLabel?: string;
+  dateLocale?: string;
+  readingTimeLabel?: string;
 }
 
 export function BlogGrid({
@@ -27,6 +32,11 @@ export function BlogGrid({
   itemsPerPage = 9,
   showPagination = true,
   showFilters = true,
+  allLabel = 'Tous',
+  previousLabel = 'Precedent',
+  nextLabel = 'Suivant',
+  dateLocale = 'fr-FR',
+  readingTimeLabel = 'min de lecture',
 }: BlogGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -102,7 +112,7 @@ export function BlogGrid({
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              Tous ({posts.length})
+              {allLabel} ({posts.length})
             </button>
             {uniqueCategories.map((category) => {
               const count = posts.filter((post) => post.category === category).length;
@@ -126,7 +136,13 @@ export function BlogGrid({
         {/* Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {paginatedPosts.map((post, index) => (
-            <BlogCard key={post.slug} {...post} index={index} />
+            <BlogCard
+              key={post.slug}
+              {...post}
+              index={index}
+              dateLocale={dateLocale}
+              readingTimeLabel={readingTimeLabel}
+            />
           ))}
         </div>
 
@@ -144,7 +160,7 @@ export function BlogGrid({
               disabled={currentPage === 1}
               className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
-              Précédent
+              {previousLabel}
             </button>
 
             {Array.from({ length: totalPages }).map((_, i) => {
@@ -169,7 +185,7 @@ export function BlogGrid({
               disabled={currentPage === totalPages}
               className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
-              Suivant
+              {nextLabel}
             </button>
           </motion.div>
         )}

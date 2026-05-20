@@ -524,6 +524,15 @@ function getCurrentLocale(): AppLocale {
     return 'fr'
   }
 
+  const urlLocale = new URLSearchParams(window.location.search).get('lang')
+    ?? new URLSearchParams(window.location.search).get('locale')
+
+  if (urlLocale) {
+    const normalized = normalizeLocale(urlLocale)
+    storePreferredLocale(normalized)
+    return normalized
+  }
+
   return normalizeLocale(getPreferredLocale())
 }
 
