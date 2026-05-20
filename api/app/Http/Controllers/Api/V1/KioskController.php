@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendanceKiosk;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\KioskAnnouncement;
 use App\Services\KioskAttendanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -185,12 +186,7 @@ class KioskController extends Controller
             ->where('employee_id', $employee->id)
             ->where('year', now()->year)
             ->get()
-            ->map(fn ($b) => [
-                'leave_type' => $b->leave_type ?? 'annual',
-                'total' => $b->total_days ?? $b->entitled_days ?? 0,
-                'used' => $b->used_days ?? 0,
-                'remaining' => ($b->total_days ?? $b->entitled_days ?? 0) - ($b->used_days ?? 0),
-            ]);
+            ->map(fn ($b) => $this->serializeLeaveBalance($b));
 
         return new JsonResponse([
             'data' => [
@@ -261,12 +257,7 @@ class KioskController extends Controller
             ->where('employee_id', $employee->id)
             ->where('year', now()->year)
             ->get()
-            ->map(fn ($b) => [
-                'leave_type' => $b->leave_type ?? 'annual',
-                'total' => $b->total_days ?? $b->entitled_days ?? 0,
-                'used' => $b->used_days ?? 0,
-                'remaining' => ($b->total_days ?? $b->entitled_days ?? 0) - ($b->used_days ?? 0),
-            ]);
+            ->map(fn ($b) => $this->serializeLeaveBalance($b));
 
         return new JsonResponse([
             'data' => [
@@ -355,6 +346,22 @@ class KioskController extends Controller
             'status' => $kiosk->status,
             'biometric_mode' => $kiosk->biometric_mode,
             'trusted_device_label' => $kiosk->trusted_device_label,
+        ];
+    }
+
+    private function serializeLeaveBalance(object $balance): array
+    {
+        $remaining = (float) ($balance->remaining ?? $balance->balance ?? 0);
+        $used = (float) ($balance->used_days ?? $balance->used ?? 0);
+        $pending = (float) ($balance->pending ?? 0);
+        $total = (float) ($balance->total_days ?? $balance->entitled_days ?? ($remaining + $used + $pending));
+
+        return [
+            'leave_type' => (string) ($balance->leave_type ?? $balance->absence_type_id ?? 'annual'),
+            'total' => $total,
+            'used' => $used,
+            'pending' => $pending,
+            'remaining' => $remaining,
         ];
     }
 }

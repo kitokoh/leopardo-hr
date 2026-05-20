@@ -23,8 +23,8 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 
 ## Lot 17.2 — Contrats API frontends
 
-- [ ] Ajouter des tests de contrat JSON pour les endpoints consommes par admin-dashboard, vitrine, mobile et kiosque.
-- [ ] Verifier les erreurs standardisees `message`, `errors`, `code`, `request_id`.
+- [x] Ajouter des tests de contrat JSON pour les endpoints consommes par admin-dashboard, mobile et kiosque.
+- [x] Verifier les erreurs standardisees `error`, `message`, `localized_message` et `errors`.
 - [ ] Verifier pagination, filtres, tri et payloads vides sur les listes RH critiques.
 
 ## Lot 17.3 — Vitrine multilingue conversion
