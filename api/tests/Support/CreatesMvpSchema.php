@@ -1233,32 +1233,37 @@ trait CreatesMvpSchema
             Schema::create($this->moduleTable('calendar_connections'), function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('employee_id');
-                $table->uuid('company_id')->index();
                 $table->string('provider', 20);
-                $table->string('calendar_id')->nullable();
                 $table->text('access_token')->nullable();
                 $table->text('refresh_token')->nullable();
+                $table->string('calendar_id')->nullable();
                 $table->timestampTz('token_expires_at')->nullable();
                 $table->boolean('sync_leaves')->default(true);
                 $table->boolean('sync_training')->default(true);
                 $table->boolean('is_active')->default(true);
                 $table->timestampTz('last_synced_at')->nullable();
                 $table->timestamps();
+                $table->unique(['employee_id', 'provider']);
             });
         }
 
         if (! Schema::hasTable($this->moduleTable('calendar_events'))) {
             Schema::create($this->moduleTable('calendar_events'), function (Blueprint $table): void {
                 $table->id();
-                $table->unsignedBigInteger('connection_id');
-                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('employee_id');
                 $table->string('external_event_id')->nullable();
+                $table->string('provider', 20)->default('google');
+                $table->string('title');
+                $table->text('description')->nullable();
+                $table->timestampTz('starts_at');
+                $table->timestampTz('ends_at');
+                $table->boolean('all_day')->default(false);
                 $table->string('source_type', 30);
                 $table->unsignedBigInteger('source_id');
-                $table->string('title');
-                $table->timestampTz('start_at');
-                $table->timestampTz('end_at');
+                $table->string('sync_status', 20)->default('pending');
                 $table->timestamps();
+                $table->index(['employee_id', 'starts_at']);
+                $table->index('sync_status');
             });
         }
 
