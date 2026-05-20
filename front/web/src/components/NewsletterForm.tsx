@@ -4,7 +4,23 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 
-export function NewsletterForm() {
+interface NewsletterFormProps {
+  locale?: string;
+  placeholder?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
+  successFallback?: string;
+  errorFallback?: string;
+}
+
+export function NewsletterForm({
+  locale = 'fr',
+  placeholder = 'Votre email',
+  submitLabel = "S'inscrire",
+  submittingLabel = 'Envoi...',
+  successFallback = 'Inscription reussie !',
+  errorFallback = "Erreur lors de l'inscription",
+}: NewsletterFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -19,6 +35,7 @@ export function NewsletterForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
+          locale,
           page: typeof window !== 'undefined' ? window.location.pathname : '/blog',
           timestamp: new Date().toISOString(),
         }),
@@ -27,15 +44,15 @@ export function NewsletterForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Erreur lors de l\'inscription');
+        throw new Error(data.message || errorFallback);
       }
 
       setStatus('success');
-      setMessage(data.message || 'Inscription reussie !');
+      setMessage(data.message || successFallback);
       setEmail('');
     } catch (err) {
       setStatus('error');
-      setMessage(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setMessage(err instanceof Error ? err.message : errorFallback);
     }
   };
 
@@ -66,7 +83,7 @@ export function NewsletterForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Votre email"
+          placeholder={placeholder}
           required
           disabled={status === 'loading'}
           className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all disabled:opacity-50"
@@ -76,7 +93,7 @@ export function NewsletterForm() {
           disabled={status === 'loading'}
           className="px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-bold transition-colors whitespace-nowrap"
         >
-          {status === 'loading' ? 'Envoi...' : "S'inscrire"}
+          {status === 'loading' ? submittingLabel : submitLabel}
         </button>
       </motion.form>
 
