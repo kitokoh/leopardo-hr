@@ -18,6 +18,8 @@ export interface BlogCardProps {
   category: string;
   readingTime?: number;
   index?: number;
+  dateLocale?: string;
+  readingTimeLabel?: string;
 }
 
 export function BlogCard({
@@ -30,8 +32,10 @@ export function BlogCard({
   category,
   readingTime,
   index = 0,
+  dateLocale = 'fr-FR',
+  readingTimeLabel = 'min de lecture',
 }: BlogCardProps) {
-  const formattedDate = new Date(date).toLocaleDateString('fr-FR', {
+  const formattedDate = new Date(date).toLocaleDateString(dateLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -75,7 +79,7 @@ export function BlogCard({
                 <Calendar className="w-3.5 h-3.5" />
                 {formattedDate}
               </div>
-              {readingTime && <span>{readingTime} min de lecture</span>}
+              {readingTime && <span>{readingTime} {readingTimeLabel}</span>}
             </div>
 
             {/* Title */}
