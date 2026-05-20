@@ -130,6 +130,92 @@ class SocialDeclarationGenerator
         return implode("\r\n", $lines)."\r\n";
     }
 
+    /**
+     * Generate a simplified DSN (Declaration Sociale Nominative) monthly export for France.
+     *
+     * DSN phase 3 simplified format: S10 (emetteur), S20 (entreprise), S21 (individu), S44 (versement).
+     *
+     * @param  Collection<int, array{employee_id: int, nir: string, last_name: string, first_name: string, date_naissance: string, gross_salary: float, net_salary: float, net_imposable: float, hours_worked: float, contract_type: string, start_date: string}>  $employees
+     */
+    public function generateDsnFr(
+        string $companyName,
+        string $companySiret,
+        string $month,
+        int $year,
+        Collection $employees,
+        string $emitterSiret = '',
+    ): string {
+        $lines = [];
+        $envoi = now()->format('YmdHis');
+
+        // S10 — Emetteur
+        $lines[] = "S10.G00.00.001,'{$this->sanitizeDsn($emitterSiret ?: $companySiret)}'";
+        $lines[] = "S10.G00.00.002,'Leopardo RH'";
+        $lines[] = "S10.G00.00.003,'{$envoi}'";
+        $lines[] = "S10.G00.00.005,'01'";
+        $lines[] = "S10.G00.00.006,'11'";
+        $lines[] = "S10.G00.00.008,'01'";
+
+        // S20 — Entreprise
+        $lines[] = "S20.G00.05.001,'{$this->sanitizeDsn($companySiret)}'";
+        $lines[] = "S20.G00.05.002,'{$this->sanitizeDsn($companyName)}'";
+        $lines[] = "S20.G00.05.003,'{$month}'";
+        $lines[] = "S20.G00.05.004,'{$year}'";
+
+        // S21 — Individus
+        foreach ($employees as $emp) {
+            $nir = $emp['nir'] ?? '';
+            $contractType = $this->mapContractTypeDsn($emp['contract_type'] ?? 'CDI');
+
+            $lines[] = "S21.G00.30.001,'{$this->sanitizeDsn($nir)}'";
+            $lines[] = "S21.G00.30.002,'{$this->sanitizeDsn(mb_strtoupper($emp['last_name'] ?? ''))}'";
+            $lines[] = "S21.G00.30.004,'{$this->sanitizeDsn(mb_strtoupper($emp['first_name'] ?? ''))}'";
+            $lines[] = "S21.G00.30.006,'{$emp['date_naissance'] ?? ''}'";
+
+            // S21.G00.40 — Contrat
+            $lines[] = "S21.G00.40.007,'{$contractType}'";
+            $lines[] = "S21.G00.40.001,'{$emp['start_date'] ?? ''}'";
+
+            // S21.G00.51 — Remuneration
+            $lines[] = "S21.G00.51.001,'001'";
+            $lines[] = "S21.G00.51.002,'".number_format((float) ($emp['gross_salary'] ?? 0), 2, '.', '')."'";
+            $lines[] = "S21.G00.51.011,'".number_format((float) ($emp['net_imposable'] ?? $emp['net_salary'] ?? 0), 2, '.', '')."'";
+            $lines[] = "S21.G00.51.012,'".number_format((float) ($emp['hours_worked'] ?? 151.67), 2, '.', '')."'";
+
+            // S21.G00.54 — Versement individu
+            $lines[] = "S21.G00.54.001,'".now()->format('d/m/Y')."'";
+            $lines[] = "S21.G00.54.002,'".number_format((float) ($emp['net_salary'] ?? 0), 2, '.', '')."'";
+        }
+
+        // S44 — Aggregats
+        $totalGross = $employees->sum('gross_salary');
+        $totalNet = $employees->sum('net_salary');
+
+        $lines[] = "S44.G00.00.001,'".number_format(round($totalGross, 2), 2, '.', '')."'";
+        $lines[] = "S44.G00.00.002,'{$employees->count()}'";
+        $lines[] = "S44.G00.00.003,'".number_format(round($totalNet, 2), 2, '.', '')."'";
+
+        return implode("\r\n", $lines)."\r\n";
+    }
+
+    private function mapContractTypeDsn(string $contractType): string
+    {
+        return match (mb_strtoupper($contractType)) {
+            'CDI' => '01',
+            'CDD' => '02',
+            'INTERIM' => '03',
+            'APPRENTISSAGE' => '04',
+            'PROFESSIONNALISATION' => '05',
+            'STAGE' => '07',
+            default => '01',
+        };
+    }
+
+    private function sanitizeDsn(string $value): string
+    {
+        return str_replace(["'", "\r", "\n"], ['', '', ''], $value);
+    }
+
     private function sanitize(string $value): string
     {
         return str_replace(['|', ';', "\r", "\n"], ['', '', '', ''], $value);
