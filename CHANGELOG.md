@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.95] - 2026-05-20
+
+### Added
+
+- CI : workflow dedie `Backend Jobs CI` pour tester les contrats queues/jobs (`QueueJobsTest` + warmup PDF paie).
+- Docs : creation du `docs/PLAN_ACTION/17_PLAN_COVERAGE_LANCEMENT.md` pour piloter le prochain vrai lot avant lancement marketing.
+- Docs : synchronisation des items `T-ARCH-19` et `T-CI-07` avec l'etat reel du depot.
+
 ## [4.16.94] - 2026-05-20
 
 ### Changed — Plan 16 finalisation coverage
