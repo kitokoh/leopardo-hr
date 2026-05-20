@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.98] - 2026-05-21
+
+### Added
+
+- Vitrine : blog et articles localises en FR/EN/TR/AR via `getBlogPosts(locale)` / `getBlogPost(locale)`.
+- SEO : sitemap enrichi avec alternates/hreflang compatibles avec le rail `?lang=` et metadata canonical multilingue.
+- Vitrine : formulaire newsletter enrichi avec la locale courante pour qualifier les leads.
+
+### Changed
+
+- Vitrine : cartes blog, grille, article et newsletter acceptent des libelles localises pour dates, pagination, temps de lecture et messages formulaire.
+- Docs : Plan 17 mis a jour avec l'etat reel du sous-lot blog/SEO.
+
 ## [4.16.97] - 2026-05-21
 
 ### Added
