@@ -30,9 +30,14 @@ class TokenAutoRefreshMiddleware
             return $response;
         }
 
+        $createdAt = $currentToken->created_at;
+        if ($createdAt === null || $createdAt === false) {
+            return $response;
+        }
+
         $refreshWindowMinutes = (int) config('sanctum.auto_refresh_window', 1440);
-        $expiresAt = $currentToken->created_at->addMinutes($expirationMinutes);
-        $refreshThreshold = $expiresAt->subMinutes($refreshWindowMinutes);
+        $expiresAt = $createdAt->copy()->addMinutes($expirationMinutes);
+        $refreshThreshold = $expiresAt->copy()->subMinutes($refreshWindowMinutes);
 
         if (now()->lt($refreshThreshold)) {
             return $response;
