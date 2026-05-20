@@ -680,13 +680,26 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - `leave:carry-forward` (annuel) : reporter les soldes non utilises selon LeavePolicy
 - Expiration des reports selon carry_forward_expiry_days
 
-### Declarations sociales (CNAS DZ / CNSS MA)
+### Declarations sociales (CNAS DZ / CNSS MA / DSN FR)
 - `POST /api/v1/social-declarations/cnas-dz` genere une declaration trimestrielle CNAS Algerie avec taux salarie 9% et employeur 26%
 - `POST /api/v1/social-declarations/cnss-ma` genere une declaration trimestrielle CNSS Maroc avec jours travailles
-- Les deux endpoints sont reserves aux roles RH/finance autorises
-- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du trimestre demande
+- `POST /api/v1/social-declarations/dsn-fr` genere une declaration mensuelle DSN simplifiee France (format S10/S20/S21/S44)
+  - Parametres : `month` (1-12), `year` (2020-2099)
+  - Mapping types contrat : CDI→01, CDD→02, INTERIM→03, APPRENTISSAGE→04, PROFESSIONNALISATION→05, STAGE→07
+  - La reponse contient `content` (texte DSN), `filename` (DSN_FR_MM_YYYY_date.dsn), `employee_count`
+- Les trois endpoints sont reserves aux roles manager (isManager)
+- Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du mois/trimestre demande
 - Isolation tenant : les bulletins et employes doivent etre scopes au `company_id` de l'acteur
 - La requete company ne doit effectuer qu'un seul SELECT (pas de requetes dupliquees name + tax_id)
+
+### Notifications temps reel (SSE)
+- `GET /api/v1/notifications/stream` ouvre un flux SSE (Server-Sent Events) pour les notifications en temps reel
+  - Event `notification` : nouvelles notifications avec `unread_count`
+  - Event `error` : session expiree
+  - Event `timeout` : signal de reconnexion apres 120s
+  - Heartbeat `: heartbeat` toutes les 5s
+- L'endpoint est authentifie via `auth:sanctum` + tenant isolation
+- Le stream verifie l'existence de l'employe a chaque iteration (securite session)
 
 ### Import employes CSV
 - `POST /api/v1/employees/import` importe des employes depuis un fichier CSV avec validation ligne par ligne

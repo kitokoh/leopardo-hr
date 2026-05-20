@@ -67,6 +67,9 @@
 
     <!-- Keyboard shortcuts modal -->
     <KeyboardShortcutsModal />
+
+    <!-- Command palette (Ctrl+K) -->
+    <CommandPalette />
   </div>
 </template>
 
@@ -82,6 +85,7 @@ import Header from '@/components/layout/Header.vue'
 import NotificationPanel from '@/components/notifications/NotificationPanel.vue'
 import SystemAlertsOverlay from '@/components/alerts/SystemAlertsOverlay.vue'
 import KeyboardShortcutsModal from '@/components/common/KeyboardShortcutsModal.vue'
+import CommandPalette from '@/components/common/CommandPalette.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const route = useRoute()

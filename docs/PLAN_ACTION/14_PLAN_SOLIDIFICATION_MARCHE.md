@@ -91,7 +91,7 @@
 - [x] Verifier CSRF/XSS protection sur formulaires admin
 - [x] Audit des permissions RBAC : matrice complete roles/routes
 - [x] Rate limiting sur endpoints sensibles auth, privacy, paie, plateforme et IA via limiters nommes configurables
-- [ ] Rotation automatique des tokens JWT (refresh token flow)
+- [x] Rotation automatique des tokens JWT — `TokenAutoRefreshMiddleware` auto-renouvelle via header `X-New-Token` quand le token approche l'expiration (fenetre configurable `sanctum.auto_refresh_window`)
 ```
 
 ### 2.2 Conformite RGPD / Loi 18-07 (DZ)
@@ -132,7 +132,7 @@
 - [x] Queue asynchrone pour : calcul paie batch, export PDF, envoi notifications — **FAIT** (`WarmPaySlipPdfPathsForPayrollRunJob`, `DispatchWebhook`)
 - [x] Indexation PostgreSQL sur les colonnes filtrees frequemment — **FAIT** (`2026_05_10_000008_add_performance_indexes.php`)
 - [x] Compression response (gzip/brotli) — **FAIT** (`CompressResponse.php` middleware)
-- [ ] CDN pour assets statiques (bulletins PDF, photos profil)
+- [ ] CDN pour assets statiques (bulletins PDF, photos profil) — a configurer sur Cloudflare/S3
 ```
 
 ### 3.3 Optimisation Frontend
@@ -140,7 +140,7 @@
 - [x] Code splitting par route (Vue.js lazy loading via `component: () => import(...)` dans `front/admin-dashboard/src/router/index.js`)
 - [ ] Service Worker pour mode offline mobile (cache API + assets)
 - [ ] Optimisation bundle size (tree-shaking, analyse webpack)
-- [ ] Skeleton loading sur tous les ecrans (pas de blank screen)
+- [x] Skeleton loading — `SkeletonLoader.vue` (card, table, chart, kpi-grid, form variants) avec dark mode
 ```
 
 ---
@@ -149,8 +149,8 @@
 
 ### 4.1 Integrations Bancaires
 ```
-- [ ] Export virement SEPA (XML ISO 20022) pour FR/MA
-- [ ] Export virement CPA/BNA format DZ
+- [x] Export virement SEPA (XML ISO 20022) pour FR/MA — `BankExportGenerator::generateSepaXml()` pain.001.001.03
+- [x] Export virement CPA/BNA format DZ — `BankExportGenerator::generateCpaBna()` formats CPA et BNA pipe-delimited
 - [ ] Integration API CIH/BMCE pour virements MA (si partenariat)
 - [ ] Statut virement suivi dans les bulletins
 ```
@@ -159,7 +159,7 @@
 ```
 - [x] Generation declaration CNAS trimestrielle (DZ) — format PDF/XML — **FAIT** (`SocialDeclarationController.php`, `SocialDeclarationGenerator.php`)
 - [x] Generation declaration CNSS (MA) — bordereau — **FAIT** (genere via `SocialDeclarationGenerator` MA)
-- [ ] Export DSN simplifie (FR)
+- [x] Export DSN simplifie (FR) — `SocialDeclarationGenerator::generateDsnFr()` format S10/S20/S21/S44, route `POST /api/v1/social-declarations/dsn-fr`
 - [ ] Simulation cotisations en temps reel (widget dashboard)
 ```
 
@@ -190,8 +190,8 @@
 ```
 - [ ] Mode sombre complet (Tailwind dark:)
 - [ ] Responsive mobile sur tous les ecrans
-- [ ] Raccourcis clavier (Ctrl+K search, navigation rapide)
-- [ ] Notifications temps reel (WebSocket ou SSE)
+- [x] Raccourcis clavier — `CommandPalette.vue` (Ctrl+K) avec recherche pages/actions, navigation fleches, selection entree
+- [x] Notifications temps reel (SSE) — `NotificationStreamController::stream()` via `GET /api/v1/notifications/stream`, composable `useNotificationStream.js`
 - [ ] Personnalisation dashboard (widgets drag & drop)
 - [ ] Multi-langue complet (FR/EN/AR/TR) avec RTL
 ```
@@ -199,7 +199,7 @@
 ### 5.2 App Mobile
 ```
 - [ ] Biometric login (empreinte / Face ID)
-- [ ] Push notifications Firebase (absences, paie, approbations)
+- [x] Push notifications Firebase — `PushNotificationService` (backend FCM, token registration, company broadcast) + `push_notification_service.dart` (Flutter FCM client, local notifications, background handler)
 - [ ] Mode offline avec sync (pointage, demandes conge)
 - [ ] Widget home screen (solde conges, prochain jour de paie)
 - [ ] Deep linking (notification → ecran specifique)
@@ -228,10 +228,10 @@
 
 ### 6.2 Documentation Commerciale
 ```
-- [ ] Dossier technique pour appels d'offres (architecture, securite, conformite)
+- [x] Dossier technique pour appels d'offres — `docs/commercial/DOSSIER_TECHNIQUE_APPELS_OFFRES.md` (architecture, securite, modules, SLA, CI/CD)
 - [x] Matrice de conformite (RGPD, loi 18-07, ISO 27001 objectifs) — **FAIT** (`docs/security/MATRICE_CONFORMITE_RGPD_LOI_18_07.md`)
-- [ ] Benchmarks performance publies (temps de reponse, SLA)
-- [ ] Comparatif fonctionnel vs concurrents (Sage HR, OrangeHRM, PaieNA)
+- [x] Benchmarks performance publies — `docs/commercial/BENCHMARKS_PERFORMANCE.md` (core, 100 VU, paie 500 emp, dashboard 10K)
+- [x] Comparatif fonctionnel vs concurrents — `docs/commercial/COMPARATIF_CONCURRENTS.md` (vs Sage HR, OrangeHRM, PaieNA, Kiwi HR)
 ```
 
 ### 6.3 Certifications (moyen terme)
