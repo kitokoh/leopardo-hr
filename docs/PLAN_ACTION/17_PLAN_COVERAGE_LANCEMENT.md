@@ -12,12 +12,14 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 - [x] Ajouter un premier lot de tests cibles sur des services critiques peu couverts : `SocialDeclarationGenerator` et `BankExportGenerator`.
 - [x] Ajouter un deuxieme lot de tests cibles sur l'integration flotte/GPS : `TraccarService` sans serveur externe.
 - [x] Ajouter un troisieme lot de tests cibles sur l'integration calendrier : `CalendarSyncService` Google/Outlook/CalDAV sans appels externes.
+- [x] Ajouter un quatrieme lot de tests API paie : declarations sociales CNAS DZ, CNSS MA et DSN FR avec RBAC, isolation tenant et champs reglementaires.
 - [ ] Priorite : paie, absences, attendance, notifications, webhooks, billing, onboarding.
 - [x] Mesurer la coverage statement apres ce PR : 57,51% (`9341/16242`) sur PR #512, seuil ratchete a `DEFAULT_BACKEND_COVERAGE_MIN=57`.
 - [x] Mesurer la coverage statement apres PR #513 : 57,86% (`9397/16242`), seuil conserve a 57 avant prochain ratchet.
 - [x] Mesurer la coverage statement apres PR #514 : 58,76% (`9543/16242`), seuil ratchete a `DEFAULT_BACKEND_COVERAGE_MIN=58`.
+- [x] Mesurer la coverage statement apres PR #515 : 60,01% (`9748/16243`), seuil ratchete a `DEFAULT_BACKEND_COVERAGE_MIN=60`.
 - [x] Publier la mesure dans `CHANGELOG.md` et `AGENTS.md`.
-- [ ] Continuer les lots cibles jusqu'a un run CI vert >= 60%, puis monter `DEFAULT_BACKEND_COVERAGE_MIN` a `60`.
+- [x] Continuer les lots cibles jusqu'a un run CI vert >= 60%, puis monter `DEFAULT_BACKEND_COVERAGE_MIN` a `60`.
 
 ## Lot 17.2 — Contrats API frontends
 
