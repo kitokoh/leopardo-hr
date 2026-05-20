@@ -31,3 +31,11 @@ export { CTASection, type CTASectionProps } from './CTASection';
 export { BlogCard, type BlogCardProps } from './BlogCard';
 export { BlogGrid, type BlogGridProps } from './BlogGrid';
 export { BlogArticle, type BlogArticleProps } from './BlogArticle';
+
+// Social Proof Components
+export { SocialProofMetrics, type SocialProofMetricsProps, type MetricItem } from './SocialProofMetrics';
+export { SocialProofTestimonial, type SocialProofTestimonialProps } from './SocialProofTestimonial';
+export { SocialProofCases, type SocialProofCasesProps, type MiniCaseItem } from './SocialProofCases';
+
+// Product Screenshots
+export { ProductScreenshots, type ProductScreenshotsProps, type ScreenshotItem } from './ProductScreenshots';

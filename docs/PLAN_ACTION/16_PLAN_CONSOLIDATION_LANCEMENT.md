@@ -37,10 +37,10 @@ Priorite : critique.
 
 Priorite : haute.
 
-- [ ] Audit visuel desktop/mobile de la vitrine : hero, pricing, demo, blog, temoignages.
-- [ ] Ajouter 3 blocs preuves sociales reutilisables : metriques client, temoignage, mini cas.
-- [ ] Ajouter variantes FR/EN/AR/TR sur les textes marketing critiques.
-- [ ] Ajouter screenshots produit reels ou placeholders propres pour admin, mobile et kiosk.
+- [x] Audit visuel desktop/mobile de la vitrine : hero, pricing, demo, blog, temoignages — structure validee.
+- [x] Ajouter 3 blocs preuves sociales reutilisables : `SocialProofMetrics`, `SocialProofTestimonial`, `SocialProofCases` integres sur la landing page.
+- [x] Ajouter variantes FR/EN/AR/TR sur les textes marketing critiques — `data/social-proof.ts` avec 4 locales completes.
+- [x] Ajouter screenshots produit placeholders propres pour admin, mobile et kiosk — `ProductScreenshots` avec tabs et 9 placeholders.
 - [ ] Verifier Lighthouse sur vitrine et corriger les regressions simples.
 
 ## Lot 16.4 - Robustesse production
