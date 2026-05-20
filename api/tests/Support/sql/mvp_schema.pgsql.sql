@@ -621,31 +621,34 @@ CREATE TABLE IF NOT EXISTS shared_tenants.device_tokens (
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
     id bigserial PRIMARY KEY,
     employee_id bigint NOT NULL,
-    company_id uuid NOT NULL,
     provider varchar(20) NOT NULL,
-    calendar_id varchar(255) NULL,
     access_token text NULL,
     refresh_token text NULL,
+    calendar_id varchar(255) NULL,
     token_expires_at timestamptz NULL,
     sync_leaves boolean NOT NULL DEFAULT true,
     sync_training boolean NOT NULL DEFAULT true,
     is_active boolean NOT NULL DEFAULT true,
     last_synced_at timestamptz NULL,
     created_at timestamptz NULL,
-    updated_at timestamptz NULL
+    updated_at timestamptz NULL,
+    UNIQUE (employee_id, provider)
 );
 
 -- Calendar events (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_events (
     id bigserial PRIMARY KEY,
-    connection_id bigint NOT NULL,
-    company_id uuid NOT NULL,
+    employee_id bigint NOT NULL,
     external_event_id varchar(255) NULL,
+    provider varchar(20) NOT NULL DEFAULT 'google',
+    title varchar(255) NOT NULL,
+    description text NULL,
+    starts_at timestamptz NOT NULL,
+    ends_at timestamptz NOT NULL,
+    all_day boolean NOT NULL DEFAULT false,
     source_type varchar(30) NOT NULL,
     source_id bigint NOT NULL,
-    title varchar(255) NOT NULL,
-    start_at timestamptz NOT NULL,
-    end_at timestamptz NOT NULL,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending',
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
