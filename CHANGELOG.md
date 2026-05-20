@@ -2,6 +2,22 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.92] - 2026-05-19
+
+### Feat — Plan 16 Lot 16.3 : Design vendeur et conversion vitrine
+
+**3 blocs preuves sociales reutilisables (FR/EN/TR/AR) :**
+- `SocialProofMetrics` — bandeau metriques clients (500+ entreprises, 50K+ employes, 99.9% SLA, 40% gain temps)
+- `TestimonialHighlight` — temoignage vedette grand format avec metrique impact (-40% temps admin)
+- `MiniCaseStudies` — 3 mini cas clients (TechAfrika DZ, Atlas Digital MA, SenLogistics SN) avec challenge/resultat
+
+**Screenshots produit :**
+- `ProductScreenshots` — mockups admin dashboard, app mobile, kiosque ZKTeco avec descriptions i18n et feature lists
+
+**Integration landing page :**
+- Ajout des 4 composants dans la page d'accueil vitrine entre hero/features/pricing/testimonials
+- Tous les textes disponibles en FR/EN/TR/AR via le systeme de locale existant
+
 ## [4.16.90] - 2026-05-12
 
 ### Feat — Plan 14 Phase 2-6 : Solidification technique & commerciale
