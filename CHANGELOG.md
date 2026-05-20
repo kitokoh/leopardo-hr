@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.83] - 2026-05-19
+
+### Plan 16 Lot 2 — Release Readiness factuelle
+
+- Gate release-readiness execute : 15/15 checks passes (backend 130 tests, 11 E2E admin, 16 tests mobile, 18 workflows).
+- Rapport `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md` : score global 91/100 (precedent 86/100).
+- Inventaire complet secrets/variables cloud : 17 secrets GitHub Actions + 6 variables + env production documentes.
+- Matrice URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health, OpenAPI docs.
+- Plan 16 mis a jour : Lot 16.2 entierement coche.
+
 ## [4.16.82] - 2026-05-19
 
 ### Fix — Consolidation connectivite API admin/kiosk

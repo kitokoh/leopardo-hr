@@ -27,11 +27,11 @@ Priorite : critique avant campagne marketing.
 
 Priorite : critique.
 
-- [ ] Executer le gate `dev-hub/tools/release-readiness.ps1`.
-- [ ] Produire `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md`.
-- [ ] Lister les checks GitHub Actions verts du dernier `main`.
-- [ ] Lister les secrets/variables cloud obligatoires : Render, Cloudflare Pages, Vercel, Firebase, Sentry, Slack, backup.
-- [ ] Verifier les URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health API, docs OpenAPI.
+- [x] Executer le gate `dev-hub/tools/release-readiness.ps1` — 15/15 PASS.
+- [x] Produire `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md` — score 91/100.
+- [x] Lister les checks GitHub Actions verts du dernier `main` — tous verts (deploy, staging E2E, ZAP, backend, mobile, web, security).
+- [x] Lister les secrets/variables cloud obligatoires : Render, Cloudflare Pages, Vercel, Firebase, Sentry, Slack, backup — 17 secrets + 6 variables documentes.
+- [x] Verifier les URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health API, docs OpenAPI — matrice documentee.
 
 ## Lot 16.3 - Design vendeur et conversion
 
