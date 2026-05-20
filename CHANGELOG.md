@@ -2,6 +2,27 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.93] - 2026-05-19
+
+### Feat — Plan 16 Lot 16.5 : GTM operationnel
+
+**Scripts video demo :**
+- `demo_3min_paie_fr_script.md` — script 8 slides : paie multi-pays, exports bancaires SEPA/CPA, declarations sociales, bulletins mobile
+- `demo_3min_dashboard_manager_fr_script.md` — script 8 slides : KPI temps reel, conges, recrutement kanban, exports, Chat IA
+
+**Templates email prospection :**
+- Sequence trial automatique (J1 bienvenue, J3 paie, J7 mi-parcours, J12 expiration)
+- 3 emails prospection froide (DRH PME, DG, follow-up J+5)
+
+**Page publique Integrations :**
+- `/integrations` — 12 integrations (ZKTeco, Stripe, Chargily, Google/Outlook Calendar, API REST, Webhooks, SSO, Sage, QuickBooks, Firebase, Slack/Teams)
+- Filtrage par categorie, badges disponible/bientot, i18n FR/EN
+
+**Pack revendeur :**
+- Programme partenaire 3 tiers (Silver 15%, Gold 20%, Platinum 25% MRR)
+- Kit de vente inclus (one-pager, PPT, video, comparatif, templates, cas clients, grille tarifaire)
+- Processus onboarding revendeur en 3 semaines
+
 ## [4.16.90] - 2026-05-12
 
 ### Feat — Plan 14 Phase 2-6 : Solidification technique & commerciale
