@@ -145,6 +145,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - PDF du rapport mensuel affiche les indicateurs de cloture et l'estimation globale sans casser le rendu
 - Exports admin `GET /api/v1/export/{employees,attendance,contracts,vehicles,pay-slips,absences,training}` restent authentifies, reserves manager et disponibles pour le dashboard Cloudflare Pages.
 - Le test contractuel `FrontendApiContractTest` garde les routes critiques admin, mobile et kiosk afin qu'un renommage backend ne casse pas silencieusement les frontends.
+- Les endpoints kiosque terrain `employee-info`, `announcements`, `leave-balance` et `qr-punch` restent accessibles avec `X-Kiosk-Token` sans bearer Sanctum utilisateur.
 
 ### 10. Notifications / evenements / audit
 
