@@ -17,6 +17,10 @@ export interface PricingSectionProps {
     monthly: string;
     annual: string;
   };
+  periodLabel?: {
+    monthly: string;
+    annual: string;
+  };
 }
 
 export function PricingSection({
@@ -26,6 +30,7 @@ export function PricingSection({
   plans,
   showToggle = false,
   toggleLabel = { monthly: 'Mensuel', annual: 'Annuel' },
+  periodLabel = { monthly: '/mois', annual: '/an' },
 }: PricingSectionProps) {
   const [isAnnual, setIsAnnual] = useState(false);
 
@@ -107,7 +112,7 @@ export function PricingSection({
               {...plan}
               index={index}
               price={isAnnual && plan.price ? Math.round(plan.price * 12 * 0.8) : plan.price}
-              period={isAnnual ? '/an' : '/mois'}
+              period={isAnnual ? periodLabel.annual : periodLabel.monthly}
             />
           ))}
         </div>
