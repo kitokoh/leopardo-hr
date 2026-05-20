@@ -30,11 +30,12 @@ type Integration = {
   category: string;
 };
 
-const integrationsByLocale: Record<string, { title: string; subtitle: string; badge: string; statusLabels: { available: string; coming_soon: string }; categories: string[]; integrations: Integration[] }> = {
+const integrationsByLocale: Record<string, { title: string; subtitle: string; badge: string; docsNote: string; statusLabels: { available: string; coming_soon: string }; categories: string[]; integrations: Integration[] }> = {
   fr: {
     title: 'Integrations',
     subtitle: 'Connectez Leopardo RH a vos outils existants',
     badge: 'Ecosysteme',
+    docsNote: 'API publique documentee sur',
     statusLabels: { available: 'Disponible', coming_soon: 'Bientot' },
     categories: ['Tous', 'Pointage', 'Paiement', 'Calendrier', 'API', 'Securite'],
     integrations: [
@@ -56,6 +57,7 @@ const integrationsByLocale: Record<string, { title: string; subtitle: string; ba
     title: 'Integrations',
     subtitle: 'Connect Leopardo RH to your existing tools',
     badge: 'Ecosystem',
+    docsNote: 'Public API documented at',
     statusLabels: { available: 'Available', coming_soon: 'Coming soon' },
     categories: ['All', 'Attendance', 'Payment', 'Calendar', 'API', 'Security'],
     integrations: [
@@ -73,23 +75,66 @@ const integrationsByLocale: Record<string, { title: string; subtitle: string; ba
       { icon: <Building2 className="w-6 h-6" />, name: 'Slack / Teams', description: 'HR notifications in your existing communication channels.', status: 'coming_soon', category: 'API' },
     ],
   },
+  tr: {
+    title: 'Entegrasyonlar',
+    subtitle: 'Leopardo RH yi kullandiginiz araclara baglayin',
+    badge: 'Ekosistem',
+    docsNote: 'Herkese acik API dokumani',
+    statusLabels: { available: 'Hazir', coming_soon: 'Yakinda' },
+    categories: ['Tumu', 'Devam', 'Odeme', 'Takvim', 'API', 'Guvenlik'],
+    integrations: [
+      { icon: <Fingerprint className="w-6 h-6" />, name: 'ZKTeco', description: 'TCP/IP biyometrik cihazlar. Devam kayitlari otomatik senkronize edilir.', status: 'available', category: 'Devam' },
+      { icon: <CreditCard className="w-6 h-6" />, name: 'Stripe', description: 'Kartla SaaS odemeleri. Abonelik ve faturalar otomatik yonetilir.', status: 'available', category: 'Odeme' },
+      { icon: <CreditCard className="w-6 h-6" />, name: 'Chargily', description: 'Cezayir icin online odeme: CIB, EDAHABIA ve banka transferi.', status: 'available', category: 'Odeme' },
+      { icon: <CalendarClock className="w-6 h-6" />, name: 'Google Calendar', description: 'Izin ve egitim etkinliklerini Google Calendar ile senkronize edin.', status: 'available', category: 'Takvim' },
+      { icon: <CalendarClock className="w-6 h-6" />, name: 'Outlook Calendar', description: 'IK etkinliklerini Microsoft Outlook ile senkronize edin.', status: 'available', category: 'Takvim' },
+      { icon: <Globe className="w-6 h-6" />, name: 'Herkese acik REST API', description: 'OpenAPI dokumanli versiyonlu API (v1). Plana gore rate limit.', status: 'available', category: 'API' },
+      { icon: <Webhook className="w-6 h-6" />, name: 'Webhooks', description: 'Ise alim, bordro, izin ve devam olaylari icin HTTP bildirimleri.', status: 'available', category: 'API' },
+      { icon: <Shield className="w-6 h-6" />, name: 'SSO SAML/OIDC', description: 'Azure AD, Google Workspace veya Okta ile tek oturum acma.', status: 'coming_soon', category: 'Guvenlik' },
+      { icon: <FileText className="w-6 h-6" />, name: 'Sage Muhasebe', description: 'Bordro muhasebe kayitlarini Sage 50/100 formatina aktarim.', status: 'coming_soon', category: 'API' },
+      { icon: <FileText className="w-6 h-6" />, name: 'QuickBooks', description: 'Bordro muhasebe kayitlarini QuickBooks Online ile senkronize edin.', status: 'coming_soon', category: 'API' },
+      { icon: <Smartphone className="w-6 h-6" />, name: 'Firebase', description: 'Mobil uygulama icin push bildirimleri: devam, bordro ve izin uyarilari.', status: 'available', category: 'API' },
+      { icon: <Building2 className="w-6 h-6" />, name: 'Slack / Teams', description: 'IK bildirimlerini mevcut iletisim kanallariniza tasiyin.', status: 'coming_soon', category: 'API' },
+    ],
+  },
+  ar: {
+    title: 'التكاملات',
+    subtitle: 'اربط Leopardo RH بأدواتك الحالية',
+    badge: 'النظام البيئي',
+    docsNote: 'توثيق API العام على',
+    statusLabels: { available: 'متاح', coming_soon: 'قريبا' },
+    categories: ['الكل', 'الحضور', 'الدفع', 'التقويم', 'API', 'الأمان'],
+    integrations: [
+      { icon: <Fingerprint className="w-6 h-6" />, name: 'ZKTeco', description: 'أجهزة حضور بيومترية عبر TCP/IP مع مزامنة تلقائية للحضور.', status: 'available', category: 'الحضور' },
+      { icon: <CreditCard className="w-6 h-6" />, name: 'Stripe', description: 'مدفوعات SaaS بالبطاقة مع اشتراكات وفواتير آلية.', status: 'available', category: 'الدفع' },
+      { icon: <CreditCard className="w-6 h-6" />, name: 'Chargily', description: 'مدفوعات إلكترونية للجزائر عبر CIB و EDAHABIA والتحويل البنكي.', status: 'available', category: 'الدفع' },
+      { icon: <CalendarClock className="w-6 h-6" />, name: 'Google Calendar', description: 'مزامنة الإجازات والتكوينات مع Google Calendar.', status: 'available', category: 'التقويم' },
+      { icon: <CalendarClock className="w-6 h-6" />, name: 'Outlook Calendar', description: 'مزامنة أحداث الموارد البشرية مع Microsoft Outlook.', status: 'available', category: 'التقويم' },
+      { icon: <Globe className="w-6 h-6" />, name: 'REST API عام', description: 'API بإصدار v1 مع توثيق OpenAPI وحدود استخدام حسب الخطة.', status: 'available', category: 'API' },
+      { icon: <Webhook className="w-6 h-6" />, name: 'Webhooks', description: 'إشعارات HTTP لأحداث التوظيف والرواتب والإجازات والحضور.', status: 'available', category: 'API' },
+      { icon: <Shield className="w-6 h-6" />, name: 'SSO SAML/OIDC', description: 'تسجيل دخول موحد عبر Azure AD أو Google Workspace أو Okta.', status: 'coming_soon', category: 'الأمان' },
+      { icon: <FileText className="w-6 h-6" />, name: 'Sage Accounting', description: 'تصدير قيود الرواتب إلى Sage 50/100 بتنسيق متوافق.', status: 'coming_soon', category: 'API' },
+      { icon: <FileText className="w-6 h-6" />, name: 'QuickBooks', description: 'مزامنة قيود الرواتب مع QuickBooks Online.', status: 'coming_soon', category: 'API' },
+      { icon: <Smartphone className="w-6 h-6" />, name: 'Firebase', description: 'إشعارات فورية لتطبيق الهاتف: الحضور، الرواتب والإجازات.', status: 'available', category: 'API' },
+      { icon: <Building2 className="w-6 h-6" />, name: 'Slack / Teams', description: 'إشعارات الموارد البشرية داخل قنوات التواصل الحالية.', status: 'coming_soon', category: 'API' },
+    ],
+  },
 };
 
 export default function IntegrationsPage() {
   const [isDark, setIsDark] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
   useScrollReveal();
-  const { locale } = useVitrineLocale();
+  const { locale, direction } = useVitrineLocale();
 
   const data = integrationsByLocale[locale] ?? integrationsByLocale.fr;
-  const allCategoryLabel = data.categories[0];
 
   const filtered = activeCategory === 0
     ? data.integrations
     : data.integrations.filter((i) => i.category === data.categories[activeCategory]);
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
+    <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
       <section className="relative pt-32 pb-20 overflow-hidden">
@@ -170,7 +215,7 @@ export default function IntegrationsPage() {
             className="mt-16 text-center"
           >
             <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-full px-6 py-3 text-slate-600 dark:text-slate-400">
-              <span className="text-sm">API publique documentee sur</span>
+              <span className="text-sm">{data.docsNote}</span>
               <a href="https://gestionemployerbackend.onrender.com/docs" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
                 /docs <ArrowRight className="w-3 h-3" />
               </a>
