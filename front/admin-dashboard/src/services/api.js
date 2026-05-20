@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
+import { addApiErrorBreadcrumb } from '@/plugins/sentry'
 
 const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
@@ -55,8 +56,11 @@ api.interceptors.response.use(
     const toast = useToast()
     const originalRequest = error.config
 
+    addApiErrorBreadcrumb(error)
+
     if (error.response) {
       const { status, data } = error.response
+      const endpoint = originalRequest?.url || ''
 
       switch (status) {
         case 401:
@@ -72,11 +76,11 @@ api.interceptors.response.use(
           break
 
         case 403:
-          toast.error('Acces refuse. Permissions insuffisantes.')
+          toast.error(`Acces refuse sur ${endpoint}. Permissions insuffisantes.`)
           break
 
         case 404:
-          toast.error('Ressource non trouvee.')
+          toast.error(`Ressource introuvable : ${endpoint}`)
           break
 
         case 422:
@@ -90,18 +94,23 @@ api.interceptors.response.use(
           break
 
         case 429:
-          toast.error('Trop de requetes. Veuillez patienter.')
+          toast.error('Trop de requetes. Veuillez patienter quelques secondes.')
           break
 
         case 500:
-          toast.error('Erreur serveur. Veuillez reessayer plus tard.')
+          toast.error(`Erreur serveur (${endpoint}). L'equipe technique a ete notifiee.`)
+          break
+
+        case 502:
+        case 503:
+          toast.error('Le serveur est temporairement indisponible. Reessayez dans un instant.')
           break
 
         default:
-          toast.error(data.message || 'Une erreur est survenue.')
+          toast.error(data.message || `Erreur ${status} sur ${endpoint}.`)
       }
     } else if (error.request) {
-      toast.error('Erreur de connexion. Verifiez votre connexion internet.')
+      toast.error('Impossible de contacter le serveur. Verifiez votre connexion internet.')
     } else {
       toast.error('Une erreur inattendue est survenue.')
     }

@@ -108,9 +108,81 @@ A utiliser si le deploy incriminé **a applique des migrations destructrices**
 - Toute execution de ce runbook est tracee dans `JOURNAL_RACINE.md`
 - Le post-mortem suit le template de `RUNBOOK_INCIDENT_P1.md`
 
-## 6. References
+## 6. Rollback Admin Dashboard (Cloudflare Pages)
+
+Le dashboard admin est un SPA Vue.js deploye sur Cloudflare Pages.
+
+### Etapes
+
+1. **Identifier le deployment a rollback**
+   Aller dans le dashboard Cloudflare Pages > Projet admin > Deployments.
+   Chaque deployment est lie a un commit SHA.
+
+2. **Promouvoir un deployment precedent**
+   Dans Cloudflare Pages, cliquer sur le deployment precedent vert et choisir "Promote to Production".
+   Le rollback est instantane car Cloudflare sert les assets deja construits.
+
+3. **Verification**
+   - Ouvrir l'URL admin et verifier que le login fonctionne
+   - Verifier que le dashboard principal affiche les KPI
+   - Verifier la version dans le footer ou la console (`__APP_VERSION__`)
+
+### Temps cible : < 5 min
+
+## 7. Rollback Vitrine (Vercel)
+
+La vitrine Next.js est deployee sur Vercel.
+
+### Etapes
+
+1. **Via le dashboard Vercel**
+   Aller dans Vercel > Projet vitrine > Deployments.
+   Cliquer sur le deployment precedent sain et choisir "Promote to Production".
+
+2. **Via CLI** (si acces CLI configure)
+   ```bash
+   vercel rollback --yes
+   ```
+
+3. **Verification**
+   - Ouvrir la page d'accueil et verifier le rendu
+   - Verifier `/blog`, `/demo`, `/pricing`
+   - Verifier que les meta OG et le sitemap sont corrects
+
+### Temps cible : < 5 min
+
+## 8. Rollback Mobile (Firebase App Distribution)
+
+L'APK debug est distribue via Firebase App Distribution.
+
+### Etapes
+
+1. **Supprimer la release defectueuse**
+   Aller dans Firebase Console > App Distribution > Releases.
+   Supprimer ou desactiver la release problematique.
+
+2. **Redistribuer la version precedente**
+   Option A : Depuis Firebase, re-distribuer l'APK de la release precedente.
+   Option B : Depuis le CI, relancer le workflow `mobile-ci.yml` sur le commit precedent :
+   ```bash
+   gh workflow run mobile-ci.yml --ref <commit-sha-sain>
+   ```
+
+3. **Pour les stores (Play Store / App Store)**
+   Si une version defectueuse a ete publiee sur les stores :
+   - Play Store : "Halt rollout" dans la Console Google Play, puis publier un hotfix
+   - App Store : contacter Apple pour retirer la version ou publier un patch en review acceleree
+
+4. **Verification**
+   - Installer l'APK precedent sur un device de test
+   - Verifier le login, le pointage et la consultation des bulletins
+
+### Temps cible : < 15 min (App Distribution), < 24h (stores)
+
+## 9. References
 
 - Deploy : `RUNBOOK_DEPLOY.md`
 - Backup : `RUNBOOK_BACKUP_RESTORE.md`
 - Incident P1 : `RUNBOOK_INCIDENT_P1.md`
 - Journal : `JOURNAL_RACINE.md`
+- Smoke post-deploy : `dev-hub/tools/smoke-post-deploy.sh`

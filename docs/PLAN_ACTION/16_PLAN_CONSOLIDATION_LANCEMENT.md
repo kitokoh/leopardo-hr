@@ -48,10 +48,10 @@ Priorite : haute.
 Priorite : haute.
 
 - [ ] Monter le seuil coverage backend de 55% vers 60% apres mesure verte stable.
-- [ ] Ajouter alertes explicites sur erreurs API front admin (Sentry breadcrumb + toast contextualise).
-- [ ] Verifier idempotence des nouvelles migrations 2026-05-18 sur PostgreSQL/Render.
-- [ ] Ajouter un smoke post-deploy API : health, auth login, endpoint tenant read, endpoint export.
-- [ ] Documenter rollback admin/vitrine/mobile dans le runbook operations.
+- [x] Ajouter alertes explicites sur erreurs API front admin — `@sentry/vue` integre, `addApiErrorBreadcrumb` dans interceptor, toasts contextualises avec endpoint.
+- [x] Verifier idempotence des nouvelles migrations 2026-05-18 — les 3 migrations tenant utilisent `Schema::hasTable()` guard, conformes au pattern AGENTS.md.
+- [x] Ajouter un smoke post-deploy API — `dev-hub/tools/smoke-post-deploy.sh` : 12 checks (health, auth, tenant, export, platform, OpenAPI).
+- [x] Documenter rollback admin/vitrine/mobile — sections 6/7/8 ajoutees dans `RUNBOOK_ROLLBACK.md` (Cloudflare Pages, Vercel, Firebase).
 
 ## Lot 16.5 - GTM operationnel
 

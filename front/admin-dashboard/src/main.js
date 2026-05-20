@@ -5,6 +5,7 @@ import App from './App.vue'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 import './style.css'
+import { initSentry } from '@/plugins/sentry'
 
 // Configuration Toast
 const toastOptions = {
@@ -24,6 +25,8 @@ const toastOptions = {
 
 const app = createApp(App)
 const pinia = createPinia()
+
+initSentry(app, router)
 
 app.use(pinia)
 app.use(router)

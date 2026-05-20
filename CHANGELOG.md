@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.84] - 2026-05-19
+
+### Plan 16 Lot 3+4 — Social proof, product screenshots, robustesse production
+
+- Vitrine : 3 blocs preuves sociales reutilisables (`SocialProofMetrics`, `SocialProofTestimonial`, `SocialProofCases`) integres sur la landing page avec i18n FR/EN/AR/TR.
+- Vitrine : `ProductScreenshots` — galerie tabulee admin/mobile/kiosk avec 9 placeholders produit.
+- Admin dashboard : `@sentry/vue` integre avec breadcrumbs API, capture automatique erreurs 5xx, toasts contextualises par endpoint.
+- Smoke post-deploy : `dev-hub/tools/smoke-post-deploy.sh` — 12 checks automatises (health, auth, tenant, export, platform, OpenAPI).
+- Rollback : sections admin (Cloudflare Pages), vitrine (Vercel) et mobile (Firebase App Distribution) ajoutees dans `RUNBOOK_ROLLBACK.md`.
+- Migrations 2026-05-18 : idempotence verifiee (3 tenant migrations avec `Schema::hasTable()` guard).
+
 ## [4.16.83] - 2026-05-19
 
 ### Plan 16 Lot 2 — Release Readiness factuelle
