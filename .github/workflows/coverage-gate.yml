@@ -14,7 +14,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_BACKEND_COVERAGE_MIN: "55"
+  DEFAULT_BACKEND_COVERAGE_MIN: "56"
   BACKEND_COVERAGE_TARGET: "60"
 
 concurrency:
@@ -183,7 +183,7 @@ jobs:
         id: gate
         shell: bash
         env:
-          COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN || '55' }}
+          COVERAGE_MIN: ${{ vars.BACKEND_COVERAGE_MIN || '56' }}
         run: |
           set -euo pipefail
           ACTUAL="${{ steps.coverage.outputs.percentage }}"
@@ -218,7 +218,7 @@ jobs:
         with:
           script: |
             const percentage = `${{ steps.coverage.outputs.percentage }}`;
-            const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '55' }}`;
+            const threshold = `${{ vars.BACKEND_COVERAGE_MIN || '56' }}`;
             const passed = `${{ steps.gate.outputs.passed }}` === 'true';
             const icon = passed ? ':white_check_mark:' : ':x:';
             const body = [
@@ -230,8 +230,8 @@ jobs:
               `| **Threshold** | ${threshold}% |`,
               `| **Status** | ${passed ? 'PASSED' : 'FAILED'} |`,
               '',
-              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 55).`,
-              `> Target: 60% backend statement coverage, then ratchet by module.`,
+              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 56).`,
+              `> Target: ratchet to 60% after the next backend coverage uplift lot is stable.`,
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
