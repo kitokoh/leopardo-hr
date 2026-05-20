@@ -19,6 +19,8 @@ class BankExportGenerator
         return match ($format) {
             'sepa_xml' => $this->generateSepaXml($run, $slips),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
+            'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
+            'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
             'virement_ma' => $this->generateCsvGeneric($run, $slips),
             'csv_generic' => $this->generateCsvGeneric($run, $slips),
             default => throw new \InvalidArgumentException("Unsupported bank export format: {$format}"),
@@ -30,6 +32,8 @@ class BankExportGenerator
         return match ($format) {
             'sepa_xml' => 'xml',
             'ccp_dz' => 'txt',
+            'cpa_dz' => 'txt',
+            'bna_dz' => 'txt',
             'virement_ma' => 'csv',
             'csv_generic' => 'csv',
             default => 'dat',
@@ -41,6 +45,8 @@ class BankExportGenerator
         return match ($format) {
             'sepa_xml' => 'application/xml',
             'ccp_dz' => 'text/plain',
+            'cpa_dz' => 'text/plain',
+            'bna_dz' => 'text/plain',
             'virement_ma' => 'text/csv',
             'csv_generic' => 'text/csv',
             default => 'application/octet-stream',
@@ -140,6 +146,52 @@ class BankExportGenerator
         }
 
         return $csv;
+    }
+
+    private function generateCpaBna(PayrollRun $run, Collection $slips, string $bank): string
+    {
+        $lines = [];
+        $batchDate = now()->format('dmY');
+        $batchRef = strtoupper($bank).'-'.now()->format('YmdHis').'-'.$run->id;
+        $totalAmount = $slips->sum('net_salary');
+
+        $lines[] = implode('|', [
+            'HEADER',
+            $bank,
+            $batchRef,
+            $batchDate,
+            (string) $slips->count(),
+            number_format($totalAmount, 2, '.', ''),
+            'DZD',
+            'LEOPARDO RH',
+        ]);
+
+        $seq = 1;
+        foreach ($slips as $slip) {
+            $employee = $slip->employee;
+            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
+            $account = $employee->bank_account ?? $employee->iban ?? '';
+
+            $lines[] = implode('|', [
+                'DETAIL',
+                str_pad((string) $seq, 6, '0', STR_PAD_LEFT),
+                $account,
+                $name,
+                number_format($slip->net_salary, 2, '.', ''),
+                'DZD',
+                'SAL-'.$run->id.'-'.$slip->employee_id,
+                'Salaire '.$run->period_start->format('m/Y'),
+            ]);
+            $seq++;
+        }
+
+        $lines[] = implode('|', [
+            'FOOTER',
+            (string) $slips->count(),
+            number_format($totalAmount, 2, '.', ''),
+        ]);
+
+        return implode("\r\n", $lines)."\r\n";
     }
 
     private function xmlEscape(string $value): string
