@@ -18,6 +18,41 @@
 
 **Verification idempotence :**
 - Verifie : migrations `2026_05_18` (device_tokens, calendar_sync, zkteco_devices) toutes protegees par `hasTable()` — safe pour Render/PostgreSQL
+## [4.16.92] - 2026-05-19
+
+### Feat — Plan 16 Lot 16.3 : Design vendeur et conversion vitrine
+
+**3 blocs preuves sociales reutilisables (FR/EN/TR/AR) :**
+- `SocialProofMetrics` — bandeau metriques clients (500+ entreprises, 50K+ employes, 99.9% SLA, 40% gain temps)
+- `TestimonialHighlight` — temoignage vedette grand format avec metrique impact (-40% temps admin)
+- `MiniCaseStudies` — 3 mini cas clients (TechAfrika DZ, Atlas Digital MA, SenLogistics SN) avec challenge/resultat
+
+**Screenshots produit :**
+- `ProductScreenshots` — mockups admin dashboard, app mobile, kiosque ZKTeco avec descriptions i18n et feature lists
+
+**Integration landing page :**
+- Ajout des 4 composants dans la page d'accueil vitrine entre hero/features/pricing/testimonials
+- Tous les textes disponibles en FR/EN/TR/AR via le systeme de locale existant
+## [4.16.93] - 2026-05-19
+
+### Feat — Plan 16 Lot 16.5 : GTM operationnel
+
+**Scripts video demo :**
+- `demo_3min_paie_fr_script.md` — script 8 slides : paie multi-pays, exports bancaires SEPA/CPA, declarations sociales, bulletins mobile
+- `demo_3min_dashboard_manager_fr_script.md` — script 8 slides : KPI temps reel, conges, recrutement kanban, exports, Chat IA
+
+**Templates email prospection :**
+- Sequence trial automatique (J1 bienvenue, J3 paie, J7 mi-parcours, J12 expiration)
+- 3 emails prospection froide (DRH PME, DG, follow-up J+5)
+
+**Page publique Integrations :**
+- `/integrations` — 12 integrations (ZKTeco, Stripe, Chargily, Google/Outlook Calendar, API REST, Webhooks, SSO, Sage, QuickBooks, Firebase, Slack/Teams)
+- Filtrage par categorie, badges disponible/bientot, i18n FR/EN
+
+**Pack revendeur :**
+- Programme partenaire 3 tiers (Silver 15%, Gold 20%, Platinum 25% MRR)
+- Kit de vente inclus (one-pager, PPT, video, comparatif, templates, cas clients, grille tarifaire)
+- Processus onboarding revendeur en 3 semaines
 
 ## [4.16.90] - 2026-05-12
 
