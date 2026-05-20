@@ -1,6 +1,6 @@
 # Frontend API Contract Matrix
 
-Derniere mise a jour : 2026-05-19
+Derniere mise a jour : 2026-05-21
 
 Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend Laravel. Toute nouvelle route critique doit avoir un endpoint backend, un role attendu et un test associe.
 
@@ -10,7 +10,26 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 |---|---|---|---|---|
 | Mobile | Connexion | `POST /api/v1/auth/login` | public | `FrontendApiContractTest` |
 | Mobile | Session courante | `GET /api/v1/auth/me` | authentifie | `FrontendApiContractTest` |
+| Mobile | Langue utilisateur | `PATCH /api/v1/auth/language` | authentifie | `FrontendApiContractTest` |
+| Mobile | Changement mot de passe | `POST /api/v1/auth/change-password` | authentifie | `FrontendApiContractTest` |
 | Mobile | Deconnexion | `POST /api/v1/auth/logout` | authentifie | `FrontendApiContractTest` |
+| Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `FrontendApiContractTest` |
+| Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` |
+| Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
+| Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
+| Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `FrontendApiContractTest` |
+| Mobile | Demande absence | `POST /api/v1/absences` | employe | `Absences\AbsenceStoreTest`, `FrontendApiContractTest` |
+| Mobile | Detail absence | `GET /api/v1/absences/{absence}` | employe/manager | `Absences\AbsenceShowTest`, `FrontendApiContractTest` |
+| Mobile | Annulation absence | `DELETE /api/v1/absences/{absence}` | employe/manager | `FrontendApiContractTest` |
+| Mobile | Soldes conges | `GET /api/v1/me/leave-balances` | employe | `FrontendApiContractTest` |
+| Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `FrontendApiContractTest` |
+| Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `FrontendApiContractTest` |
+| Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
+| Mobile | Notifications | `GET /api/v1/notifications` | authentifie | `FrontendApiContractTest` |
+| Mobile | Marquer notification lue | `PUT /api/v1/notifications/{notification}/read` | authentifie | `FrontendApiContractTest` |
+| Mobile | Tout marquer lu | `PUT /api/v1/notifications/read-all` | authentifie | `FrontendApiContractTest` |
+| Mobile | Enregistrer push token | `POST /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
+| Mobile | Supprimer push token | `DELETE /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
 | Admin client | Resume dashboard | `GET /api/v1/dashboard/summary` | manager | `FrontendApiContractTest` |
 | Admin client | Export audit | `GET /api/v1/audit-logs/export-csv` | manager/admin | `FrontendApiContractTest` |
 | Admin client | Export employes | `GET /api/v1/export/employees` | manager | `ExportControllerTest`, `FrontendApiContractTest` |
@@ -22,7 +41,10 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Kiosk | Enregistrement appareil | `POST /api/v1/kiosks` | device/public controle | `FrontendApiContractTest` |
 | Kiosk | Pointage badge | `POST /api/v1/kiosks/{deviceCode}/punch` | device | `FrontendApiContractTest` |
 | Kiosk | Pointage QR | `POST /api/v1/kiosks/{deviceCode}/qr-punch` | device | `FrontendApiContractTest` |
+| Kiosk | Synchronisation offline | `POST /api/v1/kiosks/{deviceCode}/sync` | device | `FrontendApiContractTest` |
 | Kiosk | Roster local | `GET /api/v1/kiosks/{deviceCode}/roster` | device | `FrontendApiContractTest` |
+| Kiosk | Infos employe | `POST /api/v1/kiosks/{deviceCode}/employee-info` | device | `FrontendJsonContractTest`, `FrontendApiContractTest` |
+| Kiosk | Solde conges employe | `POST /api/v1/kiosks/{deviceCode}/leave-balance` | device | `FrontendJsonContractTest`, `FrontendApiContractTest` |
 | Kiosk | Annonces | `GET /api/v1/kiosks/{deviceCode}/announcements` | device | `FrontendApiContractTest` |
 
 ## Regles
