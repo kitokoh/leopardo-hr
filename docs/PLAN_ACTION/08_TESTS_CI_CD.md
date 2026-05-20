@@ -408,7 +408,7 @@ repos:
 - [x] **T-CI-04** : Creer le workflow deploy staging — **FAIT** (`deploy-staging.yml`)
 - [x] **T-CI-05** : Configurer les seuils de coverage progressifs — **FAIT** (`coverage-gate.yml` seuil 55%, cible 60%)
 - [x] **T-CI-06** : Ajouter `.pre-commit-config.yaml` — **FAIT** (`.pre-commit-config.yaml` avec trailing-whitespace, end-of-file-fixer, check-yaml, check-json, detect-secrets)
-- [ ] **T-CI-07** : Ajouter les badges CI/coverage au README.md — **RESTE**
+- [x] **T-CI-07** : Ajouter les badges CI/coverage au README.md — **FAIT** (badges CI, coverage, security, licence, PHP et Flutter presents dans `README.md`)
 - [ ] **T-CI-08** : Configurer les branch protection rules sur GitHub — **RESTE** (config GitHub UI)
 - [x] **T-CI-09** : Creer les factories manquantes pour les nouveaux modeles — **FAIT** (factories dans `database/factories/`)
 - [x] **T-CI-10** : Ecrire les tests Feature pour tous les nouveaux modules — **FAIT** (60+ test files dans `tests/Feature/`)

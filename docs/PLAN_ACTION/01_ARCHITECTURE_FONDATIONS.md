@@ -202,7 +202,7 @@ Jobs a mettre en queue :
 
 - [x] **T-ARCH-17** : Creer les Job classes dans `app/Jobs/` — **FAIT** (`app/Jobs/DispatchWebhook.php` implementant ShouldQueue)
 - [x] **T-ARCH-18** : Configurer `config/queue.php` avec les queues nommees — **FAIT** (`config/queue.php` configure)
-- [ ] **T-ARCH-19** : Ajouter le workflow CI pour tester les jobs
+- [x] **T-ARCH-19** : Ajouter le workflow CI pour tester les jobs — **FAIT** (`.github/workflows/backend-jobs-ci.yml` couvre les contrats queues + warmup PDF paie)
 - [x] **T-ARCH-20** : Documenter le setup worker dans `DEPLOYMENT_GUIDE.md` (Render Worker) — **FAIT**
 
 ---
