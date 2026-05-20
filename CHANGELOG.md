@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.91] - 2026-05-19
+
+### Feat — Plan 16 Lot 16.2 : Release readiness + robustesse production
+
+**Release readiness :**
+- Nouveau : rapport `RELEASE_READINESS_REPORT_2026-05-19.md` — score 91/100 (15/15 checks passes)
+- Nouveau : inventaire secrets/variables cloud obligatoires (Render, Cloudflare, Vercel, Firebase, S3)
+- Nouveau : verification URLs publiques API/admin/vitrine
+
+**Robustesse production :**
+- Nouveau : `dev-hub/tools/smoke-post-deploy.sh` — smoke API post-deploy (health, auth, tenant, exports, OpenAPI)
+- Ameliore : `RUNBOOK_ROLLBACK.md` — ajout procedures rollback admin (Cloudflare Pages), vitrine (Vercel), mobile (Firebase/stores/feature flags)
+- Ameliore : `api.js` admin dashboard — breadcrumbs erreurs API avec support Sentry + messages contextuels endpoint/status + gestion 502/503/504
+
+**Verification idempotence :**
+- Verifie : migrations `2026_05_18` (device_tokens, calendar_sync, zkteco_devices) toutes protegees par `hasTable()` — safe pour Render/PostgreSQL
+
 ## [4.16.90] - 2026-05-12
 
 ### Feat — Plan 14 Phase 2-6 : Solidification technique & commerciale

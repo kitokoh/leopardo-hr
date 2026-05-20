@@ -108,9 +108,86 @@ A utiliser si le deploy incriminé **a applique des migrations destructrices**
 - Toute execution de ce runbook est tracee dans `JOURNAL_RACINE.md`
 - Le post-mortem suit le template de `RUNBOOK_INCIDENT_P1.md`
 
-## 6. References
+## 6. Rollback Admin Dashboard (Cloudflare Pages)
+
+Cloudflare Pages conserve un historique de deployments. Chaque push sur `main` cree un nouveau deployment.
+
+### Etapes
+
+1. **Aller sur le dashboard Cloudflare Pages** → Projet admin → Deployments
+2. **Identifier le deployment precedent** (avant le deploy en cause)
+3. **Cliquer "Rollback to this deployment"** → confirmer
+4. **Verifier** : ouvrir l'URL admin et tester login + navigation dashboard
+5. **Temps cible** : < 5 min (pas de rebuild necessaire)
+
+### Alternative CLI
+
+```bash
+# Lister les deployments recents
+npx wrangler pages deployments list --project-name=<project>
+# Rollback vers un deployment specifique
+npx wrangler pages deployments rollback --project-name=<project> --deployment-id=<id>
+```
+
+## 7. Rollback Vitrine (Vercel)
+
+Vercel conserve un historique complet de deployments. Chaque push sur `main` cree un nouveau deployment.
+
+### Etapes
+
+1. **Aller sur le dashboard Vercel** → Projet vitrine → Deployments
+2. **Identifier le deployment precedent** (status "Ready", avant le deploy en cause)
+3. **Menu "..." → "Promote to Production"** → confirmer
+4. **Verifier** : ouvrir la vitrine et tester pages critiques (/, /pricing, /demo, /blog)
+5. **Temps cible** : < 3 min (promotion instantanee)
+
+### Alternative CLI
+
+```bash
+# Lister les deployments recents
+npx vercel ls --scope=<org>
+# Promouvoir un deployment precedent en production
+npx vercel promote <deployment-url> --scope=<org>
+```
+
+## 8. Rollback Mobile (Flutter)
+
+L'APK mobile est distribue via Firebase App Distribution ou le store. Le rollback mobile est different car les utilisateurs ont deja telecharge l'app.
+
+### Option A — Hotfix rapide (prefere)
+
+1. **Corriger le bug** dans une branche hotfix
+2. **Pousser** → CI `mobile-ci.yml` valide → `mobile-distribute.yml` distribue
+3. **Temps cible** : < 30 min pour un fix simple
+
+### Option B — Rollback version store
+
+1. **Google Play Console** → Release management → choisir le track
+2. **Halt rollout** sur la version en cause
+3. **Re-publier** la version precedente (ou une nouvelle version corrigee)
+4. **Apple App Store** → si version pas encore approuvee, annuler la soumission ; sinon publier un correctif
+
+### Option C — Desactiver la feature via feature flag
+
+Si le bug est lie a une feature specifique couverte par le `FeatureRegistry` :
+1. **Basculer le flag** via l'API admin : `PUT /api/v1/feature-flags/matrix`
+2. L'app mobile reagit au prochain appel API sans mise a jour necessaire
+3. **Temps cible** : < 2 min
+
+## 9. Smoke post-deploy
+
+Apres tout rollback ou deploy, executer le smoke post-deploy :
+
+```bash
+./dev-hub/tools/smoke-post-deploy.sh https://gestionemployerbackend.onrender.com
+```
+
+Verifie : health live, health ready, auth, tenant read, export, OpenAPI docs, platform login.
+
+## 10. References
 
 - Deploy : `RUNBOOK_DEPLOY.md`
 - Backup : `RUNBOOK_BACKUP_RESTORE.md`
 - Incident P1 : `RUNBOOK_INCIDENT_P1.md`
 - Journal : `JOURNAL_RACINE.md`
+- Smoke post-deploy : `dev-hub/tools/smoke-post-deploy.sh`
