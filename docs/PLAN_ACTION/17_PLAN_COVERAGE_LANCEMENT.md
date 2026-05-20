@@ -9,10 +9,11 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 
 ## Lot 17.1 — Coverage backend 60%
 
-- [ ] Ajouter des tests cibles sur les services et controllers les plus critiques non couverts.
+- [x] Ajouter un premier lot de tests cibles sur des services critiques peu couverts : `SocialDeclarationGenerator` et `BankExportGenerator`.
 - [ ] Priorite : paie, absences, attendance, notifications, webhooks, billing, onboarding.
-- [ ] Mesurer la coverage statement apres chaque PR et ne monter `DEFAULT_BACKEND_COVERAGE_MIN` a `60` qu'apres un run CI vert >= 60%.
-- [ ] Publier la mesure dans `CHANGELOG.md` et `AGENTS.md`.
+- [x] Mesurer la coverage statement apres ce PR : 57,51% (`9341/16242`) sur PR #512, seuil ratchete a `DEFAULT_BACKEND_COVERAGE_MIN=57`.
+- [x] Publier la mesure dans `CHANGELOG.md` et `AGENTS.md`.
+- [ ] Continuer les lots cibles jusqu'a un run CI vert >= 60%, puis monter `DEFAULT_BACKEND_COVERAGE_MIN` a `60`.
 
 ## Lot 17.2 — Contrats API frontends
 
