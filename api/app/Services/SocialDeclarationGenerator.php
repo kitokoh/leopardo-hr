@@ -165,26 +165,44 @@ class SocialDeclarationGenerator
         // S21 — Individus
         foreach ($employees as $emp) {
             $nir = $emp['nir'] ?? '';
+            $lastName = mb_strtoupper($emp['last_name'] ?? '');
+            $firstName = mb_strtoupper($emp['first_name'] ?? '');
+            $dateNaissance = $emp['date_naissance'] ?? '';
             $contractType = $this->mapContractTypeDsn($emp['contract_type'] ?? 'CDI');
+            $startDate = $emp['start_date'] ?? '';
+            $gross = (float) ($emp['gross_salary'] ?? 0);
+            $netImposable = (float) ($emp['net_imposable'] ?? $emp['net_salary'] ?? 0);
+            $hours = (float) ($emp['hours_worked'] ?? 151.67);
+            $netSalary = (float) ($emp['net_salary'] ?? 0);
 
-            $lines[] = "S21.G00.30.001,'{$this->sanitizeDsn($nir)}'";
-            $lines[] = "S21.G00.30.002,'{$this->sanitizeDsn(mb_strtoupper($emp['last_name'] ?? ''))}'";
-            $lines[] = "S21.G00.30.004,'{$this->sanitizeDsn(mb_strtoupper($emp['first_name'] ?? ''))}'";
-            $lines[] = "S21.G00.30.006,'{$emp['date_naissance'] ?? ''}'";
+            $nirClean = $this->sanitizeDsn($nir);
+            $lastNameClean = $this->sanitizeDsn($lastName);
+            $firstNameClean = $this->sanitizeDsn($firstName);
+
+            $lines[] = "S21.G00.30.001,'{$nirClean}'";
+            $lines[] = "S21.G00.30.002,'{$lastNameClean}'";
+            $lines[] = "S21.G00.30.004,'{$firstNameClean}'";
+            $lines[] = "S21.G00.30.006,'{$dateNaissance}'";
 
             // S21.G00.40 — Contrat
             $lines[] = "S21.G00.40.007,'{$contractType}'";
-            $lines[] = "S21.G00.40.001,'{$emp['start_date'] ?? ''}'";
+            $lines[] = "S21.G00.40.001,'{$startDate}'";
 
             // S21.G00.51 — Remuneration
+            $grossFmt = number_format($gross, 2, '.', '');
+            $netImposableFmt = number_format($netImposable, 2, '.', '');
+            $hoursFmt = number_format($hours, 2, '.', '');
+            $netSalaryFmt = number_format($netSalary, 2, '.', '');
+            $payDate = now()->format('d/m/Y');
+
             $lines[] = "S21.G00.51.001,'001'";
-            $lines[] = "S21.G00.51.002,'".number_format((float) ($emp['gross_salary'] ?? 0), 2, '.', '')."'";
-            $lines[] = "S21.G00.51.011,'".number_format((float) ($emp['net_imposable'] ?? $emp['net_salary'] ?? 0), 2, '.', '')."'";
-            $lines[] = "S21.G00.51.012,'".number_format((float) ($emp['hours_worked'] ?? 151.67), 2, '.', '')."'";
+            $lines[] = "S21.G00.51.002,'{$grossFmt}'";
+            $lines[] = "S21.G00.51.011,'{$netImposableFmt}'";
+            $lines[] = "S21.G00.51.012,'{$hoursFmt}'";
 
             // S21.G00.54 — Versement individu
-            $lines[] = "S21.G00.54.001,'".now()->format('d/m/Y')."'";
-            $lines[] = "S21.G00.54.002,'".number_format((float) ($emp['net_salary'] ?? 0), 2, '.', '')."'";
+            $lines[] = "S21.G00.54.001,'{$payDate}'";
+            $lines[] = "S21.G00.54.002,'{$netSalaryFmt}'";
         }
 
         // S44 — Aggregats
