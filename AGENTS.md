@@ -29,7 +29,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Si les workflows web sont fusionnes plus tard, conserver absolument les filtres `paths:` qui ont reduit le bruit CI a partir du 2026-05-06.
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
-- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.96, son seuil par defaut est `57%` (coverage mesuree 57,51% sur PR #512); viser `60%` via des lots de tests backend cibles avant tout nouveau ratchet.
+- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.96, son seuil par defaut est `58%` (coverage mesuree 58,76% sur PR #514); viser `60%` via des lots de tests backend cibles avant tout nouveau ratchet.
 - Le workflow `backend-jobs-ci.yml` couvre les contrats queues/jobs critiques (`QueueJobsTest` et warmup PDF paie). Toute modification de `api/app/Jobs/**`, listeners d'evenements ou dispatch paie doit garder ce workflow vert.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
@@ -245,6 +245,7 @@ Procedure recommandee :
 - Attention aux tables historiques homonymes dans `public` et `shared_tenants` (`invoices`, notamment) : en PostgreSQL, `Schema::hasTable()` peut donner un faux positif si le `search_path` inclut `public`. Pour un fixture ou une migration tenant, preferer une table qualifiee ou un rattrapage idempotent.
 - L'ancien `audit_logs` tenant utilise `employee_id`, `target_type`, `target_id`, `changes`, `ip`; le code actuel ecrit `user_id`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `ip_address`, `user_agent`. Toute migration de compatibilite doit ajouter le contrat moderne sans relancer de SQL apres erreur PostgreSQL.
 - Pour tester les endpoints flotte, injecter un faux `TraccarService` dans le container plutot que de laisser les tests appeler Traccar/HTTP. Le contrat utile est `vehicle_id` + `position`, pas la disponibilite du serveur Traccar externe.
+- Les tests calendrier doivent garder `CreatesMvpSchema` et `tests/Support/sql/mvp_schema.pgsql.sql` alignes sur la migration tenant `2026_05_18_000002_create_calendar_sync_table.php` : `calendar_connections` porte `employee_id/provider/access_token/...`, et `calendar_events` porte `employee_id/provider/starts_at/ends_at/sync_status` (pas l'ancien couple `connection_id/start_at/end_at`).
 - Les routes `routes/modules/tracking.php` doivent rester dans un groupe `auth:sanctum` + `tenant`. Sans ce garde, un appel anonyme peut atteindre `FleetController` avec `$request->user() === null` et produire un 500.
 - Les tests de bulletins de paie ont besoin de `pay_slip_lines` dans `CreatesMvpSchema`; `PaySlipController` charge toujours la relation `lines`, donc un fixture sans cette table casse les endpoints meme si le test ne cree pas explicitement de lignes.
 - Pour les conges avances, ne pas se fier uniquement au middleware `tenant` : les listes `leave_policies`, `leave_balances` et `leave_accruals` doivent filtrer explicitement par `company_id`, et les creations d'accrual doivent verifier que l'employe et la policy appartiennent au tenant courant.
@@ -400,8 +401,8 @@ Procedure recommandee :
 
 ### 2026-05-14 - Coverage backend ratchet
 
-- La derniere mesure GitHub Actions connue est `57.51%` de statement coverage backend (`9341/16242`) sur PR #512.
-- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `57%`. La prochaine cible Plan 17 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
+- La derniere mesure GitHub Actions connue est `58.76%` de statement coverage backend (`9543/16242`) sur PR #514.
+- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `58%`. La prochaine cible Plan 17 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
 - Le workflow dedie `coverage-gate.yml` doit parser `clover.xml` pour eviter les faux `0%` issus d'une sortie texte PHPUnit variable.
 
 ### 2026-05-14 - Tests mobiles Plan 14
