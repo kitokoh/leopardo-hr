@@ -128,6 +128,9 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Refus d'acces payroll pour roles non autorises
 - Calculs exposes sans fuite inter-tenant
 - Etats de paie invalides rejetes proprement
+- Declarations sociales CNAS DZ, CNSS MA et DSN FR reservees aux managers, validees par periode et scopees au tenant courant
+- Les declarations sociales utilisent les identifiants entreprise depuis `companies.metadata` et les donnees salarie via les casts Eloquent, notamment `national_id` `encrypted`
+- Les declarations CNSS MA comptent les jours travailles depuis `attendance_logs` du trimestre courant sans inclure les autres tenants
 - Admin middleware : seul manager `principal` est considere admin cote tenant ; les sous-roles `dept` et `superviseur` doivent recevoir `403`
 
 ### 9. Estimation / PDF / documents

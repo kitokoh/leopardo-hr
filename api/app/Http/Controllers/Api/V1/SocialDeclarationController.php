@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Services\SocialDeclarationGenerator;
+use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,10 +26,9 @@ class SocialDeclarationController extends Controller
             'year' => 'required|integer|min:2020|max:2099',
         ]);
 
-        $employees = DB::table('employees')
+        $employees = Employee::query()
             ->where('company_id', $actor->company_id)
             ->where('status', 'active')
-            ->select(['id', 'first_name', 'last_name', 'national_id', 'date_of_birth'])
             ->get();
 
         $quarterMonths = match ($validated['quarter']) {
@@ -52,13 +53,10 @@ class SocialDeclarationController extends Controller
             ->get()
             ->keyBy('employee_id');
 
-        $company = DB::table('companies')
-            ->where('id', $actor->company_id)
-            ->select(['name', 'tax_id'])
-            ->first();
+        $company = Company::query()->whereKey($actor->company_id)->first();
 
-        $companyName = $company->name ?? 'N/A';
-        $companyNis = $company->tax_id ?? '';
+        $companyName = $company?->name ?? 'N/A';
+        $companyNis = $this->companyRegistrationNumber($company);
 
         $declarationRows = $employees->map(function ($emp) use ($payrollData) {
             $payroll = $payrollData->get($emp->id);
@@ -68,7 +66,7 @@ class SocialDeclarationController extends Controller
                 'num_ss' => $emp->national_id ?? '',
                 'last_name' => $emp->last_name ?? '',
                 'first_name' => $emp->first_name ?? '',
-                'date_naissance' => $emp->date_of_birth ?? '',
+                'date_naissance' => $this->dateValue($emp->date_of_birth ?? null),
                 'gross_salary' => (float) ($payroll->total_gross ?? 0),
                 'months_worked' => (int) ($payroll->months_worked ?? 0),
             ];
@@ -108,10 +106,9 @@ class SocialDeclarationController extends Controller
             'year' => 'required|integer|min:2020|max:2099',
         ]);
 
-        $employees = DB::table('employees')
+        $employees = Employee::query()
             ->where('company_id', $actor->company_id)
             ->where('status', 'active')
-            ->select(['id', 'first_name', 'last_name', 'national_id'])
             ->get();
 
         $quarterMonths = match ($validated['quarter']) {
@@ -147,13 +144,10 @@ class SocialDeclarationController extends Controller
             ->get()
             ->keyBy('employee_id');
 
-        $company = DB::table('companies')
-            ->where('id', $actor->company_id)
-            ->select(['name', 'tax_id'])
-            ->first();
+        $company = Company::query()->whereKey($actor->company_id)->first();
 
-        $companyName = $company->name ?? 'N/A';
-        $companyAffiliate = $company->tax_id ?? '';
+        $companyName = $company?->name ?? 'N/A';
+        $companyAffiliate = $this->companyRegistrationNumber($company);
 
         $declarationRows = $employees->map(function ($emp) use ($payrollData, $attendanceData) {
             $payroll = $payrollData->get($emp->id);
@@ -204,10 +198,9 @@ class SocialDeclarationController extends Controller
             'year' => 'required|integer|min:2020|max:2099',
         ]);
 
-        $employees = DB::table('employees')
+        $employees = Employee::query()
             ->where('company_id', $actor->company_id)
             ->where('status', 'active')
-            ->select(['id', 'first_name', 'last_name', 'national_id', 'date_of_birth', 'contract_type', 'hire_date'])
             ->get();
 
         $payrollData = DB::table('pay_slips')
@@ -225,13 +218,10 @@ class SocialDeclarationController extends Controller
             ->get()
             ->keyBy('employee_id');
 
-        $company = DB::table('companies')
-            ->where('id', $actor->company_id)
-            ->select(['name', 'tax_id'])
-            ->first();
+        $company = Company::query()->whereKey($actor->company_id)->first();
 
-        $companyName = $company->name ?? 'N/A';
-        $companySiret = $company->tax_id ?? '';
+        $companyName = $company?->name ?? 'N/A';
+        $companySiret = $this->companyRegistrationNumber($company);
 
         $declarationRows = $employees->map(function ($emp) use ($payrollData) {
             $payroll = $payrollData->get($emp->id);
@@ -241,13 +231,13 @@ class SocialDeclarationController extends Controller
                 'nir' => $emp->national_id ?? '',
                 'last_name' => $emp->last_name ?? '',
                 'first_name' => $emp->first_name ?? '',
-                'date_naissance' => $emp->date_of_birth ?? '',
+                'date_naissance' => $this->dateValue($emp->date_of_birth ?? null),
                 'gross_salary' => (float) ($payroll->total_gross ?? 0),
                 'net_salary' => (float) ($payroll->total_net ?? 0),
                 'net_imposable' => (float) ($payroll->total_net ?? 0),
                 'hours_worked' => 151.67,
                 'contract_type' => $emp->contract_type ?? 'CDI',
-                'start_date' => $emp->hire_date ?? '',
+                'start_date' => $this->dateValue($emp->contract_start ?? null),
             ];
         })->filter(fn (array $row) => $row['gross_salary'] > 0);
 
@@ -270,5 +260,31 @@ class SocialDeclarationController extends Controller
                 'filename' => sprintf('DSN_FR_%02d_%d_%s.dsn', $validated['month'], $validated['year'], now()->format('Ymd')),
             ],
         ]);
+    }
+
+    private function companyRegistrationNumber(?Company $company): string
+    {
+        if ($company === null) {
+            return '';
+        }
+
+        $metadata = $company->metadata ?? [];
+
+        return (string) (
+            $metadata['tax_id']
+            ?? $metadata['nis']
+            ?? $metadata['affiliate_number']
+            ?? $metadata['siret']
+            ?? ''
+        );
+    }
+
+    private function dateValue(mixed $value): string
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        return $value === null ? '' : (string) $value;
     }
 }
