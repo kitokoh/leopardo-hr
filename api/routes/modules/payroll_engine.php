@@ -65,9 +65,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
     Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
 
-    // Social Declarations (CNAS DZ / CNSS MA)
+    // Social Declarations (CNAS DZ / CNSS MA / DSN FR)
     Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
     Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
+    Route::post('/social-declarations/dsn-fr', [SocialDeclarationController::class, 'generateDsnFr']);
 
     // Cotisation Simulation
     Route::post('/cotisation-simulation', [CotisationSimulationController::class, 'simulate']);
