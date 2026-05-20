@@ -10,6 +10,7 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 ## Lot 17.1 — Coverage backend 60%
 
 - [x] Ajouter un premier lot de tests cibles sur des services critiques peu couverts : `SocialDeclarationGenerator` et `BankExportGenerator`.
+- [x] Ajouter un deuxieme lot de tests cibles sur l'integration flotte/GPS : `TraccarService` sans serveur externe.
 - [ ] Priorite : paie, absences, attendance, notifications, webhooks, billing, onboarding.
 - [x] Mesurer la coverage statement apres ce PR : 57,51% (`9341/16242`) sur PR #512, seuil ratchete a `DEFAULT_BACKEND_COVERAGE_MIN=57`.
 - [x] Publier la mesure dans `CHANGELOG.md` et `AGENTS.md`.
