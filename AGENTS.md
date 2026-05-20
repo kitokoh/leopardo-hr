@@ -60,6 +60,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le workflow `e2e-staging.yml` distingue l'URL API/admin Render (`DEFAULT_STAGING_URL`) de l'URL vitrine Vercel (`DEFAULT_WEB_STAGING_URL`). Ne pas pointer les tests landing `front/web` vers le backend API.
 - Sur la vitrine, garder le gate staging limite a `front/web/e2e/staging-smoke.spec.ts`. Les tests de conversion complets manipulent des formulaires et des CTA plus profonds ; ils sont utiles en local/preview, mais trop fragiles et trop larges pour une cible publique de production.
 - Les pages vitrine conversion `/pricing`, `/demo` et `/integrations` utilisent `useVitrineLocale()` avec contenu FR/EN/TR/AR et `dir=rtl` pour l'arabe. Toute evolution marketing sur ces pages doit ajouter les 4 locales dans le meme changement.
+- Le blog vitrine utilise `getBlogPosts(locale)` / `getBlogPost(slug, locale)` et le rail `?lang=` pour les alternates sitemap/hreflang. Toute nouvelle entree blog doit conserver slug stable et champs localises FR/EN/TR/AR.
 - Sur Next 16 / React 19, les routes dynamiques sous `front/web/src/app/**/[slug]` recoivent `params` sous forme de Promise. Dans les Server Components, `await params`; dans les Client Components, utiliser `use(params)`.
 - Dans `database-backup.yml`, ne pas installer `awscli` via `apt-get` sur `ubuntu-latest`; le paquet peut disparaitre. Installer `postgresql-client age`, puis utiliser l'AWS CLI preinstallee ou fallback `pip --user`.
 
