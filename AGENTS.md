@@ -29,7 +29,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Si les workflows web sont fusionnes plus tard, conserver absolument les filtres `paths:` qui ont reduit le bruit CI a partir du 2026-05-06.
 - Pour Composer en CI, preferer un cache base sur `composer.lock` ou le cache officiel plutot qu'un cache brut de `vendor/`.
 - Pour la coverage backend, mesurer puis activer un seuil progressif ; ne pas imposer `60%` d'un coup sans baseline reelle.
-- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.94, son seuil par defaut est `56%` (coverage mesuree 56,14% sur PR #510); viser `60%` via un lot de tests backend cible avant tout nouveau ratchet.
+- Le workflow `coverage-gate.yml` doit creer `api/storage/coverage` avant tout `tee` vers `storage/coverage/summary.txt`. Depuis v4.16.96, son seuil par defaut est `57%` (coverage mesuree 57,51% sur PR #512); viser `60%` via des lots de tests backend cibles avant tout nouveau ratchet.
 - Le workflow `backend-jobs-ci.yml` couvre les contrats queues/jobs critiques (`QueueJobsTest` et warmup PDF paie). Toute modification de `api/app/Jobs/**`, listeners d'evenements ou dispatch paie doit garder ce workflow vert.
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
@@ -400,8 +400,8 @@ Procedure recommandee :
 
 ### 2026-05-14 - Coverage backend ratchet
 
-- La derniere mesure GitHub Actions connue est `56.14%` de statement coverage backend (`9119/16242`) sur PR #510.
-- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `56%`. La prochaine cible Plan 17 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
+- La derniere mesure GitHub Actions connue est `57.51%` de statement coverage backend (`9341/16242`) sur PR #512.
+- Le seuil par defaut `DEFAULT_BACKEND_COVERAGE_MIN` est remonte a `57%`. La prochaine cible Plan 17 est `60%`; ne pas redescendre le seuil sauf incident CI documente.
 - Le workflow dedie `coverage-gate.yml` doit parser `clover.xml` pour eviter les faux `0%` issus d'une sortie texte PHPUnit variable.
 
 ### 2026-05-14 - Tests mobiles Plan 14
