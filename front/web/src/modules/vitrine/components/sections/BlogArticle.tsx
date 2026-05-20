@@ -12,10 +12,23 @@ import { BlogPost } from '@/modules/vitrine/data/blog';
 export interface BlogArticleProps {
   post: BlogPost;
   relatedPosts: BlogPost[];
+  dateLocale?: string;
+  readingTimeLabel?: string;
+  tableOfContentsLabel?: string;
+  authorRoleLabel?: string;
+  relatedTitle?: string;
 }
 
-export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
-  const formattedDate = new Date(post.date).toLocaleDateString('fr-FR', {
+export function BlogArticle({
+  post,
+  relatedPosts,
+  dateLocale = 'fr-FR',
+  readingTimeLabel = 'min de lecture',
+  tableOfContentsLabel = 'Table des matieres',
+  authorRoleLabel = 'Auteur et expert en gestion RH',
+  relatedTitle = 'Articles recommandes',
+}: BlogArticleProps) {
+  const formattedDate = new Date(post.date).toLocaleDateString(dateLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -139,7 +152,7 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                {post.readingTime} min de lecture
+                {post.readingTime} {readingTimeLabel}
               </div>
             </div>
 
@@ -173,7 +186,7 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
               {tableOfContents.length > 0 && (
                 <div className="sticky top-24 mb-8 p-6 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">
-                    Table des Matières
+                    {tableOfContentsLabel}
                   </h3>
                   <ul className="space-y-2">
                     {tableOfContents.map((item) => (
@@ -204,7 +217,7 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
                   {post.author.name}
                 </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Auteur et expert en gestion RH
+                  {authorRoleLabel}
                 </p>
               </div>
             </motion.div>
@@ -246,7 +259,7 @@ export function BlogArticle({ post, relatedPosts }: BlogArticleProps) {
               className="text-center mb-16"
             >
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
-                Articles Recommandés
+                {relatedTitle}
               </h2>
             </motion.div>
 
