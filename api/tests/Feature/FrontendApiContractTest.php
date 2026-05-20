@@ -28,7 +28,10 @@ class FrontendApiContractTest extends TestCase
             'kiosk register' => ['POST', 'api/v1/kiosks'],
             'kiosk punch' => ['POST', 'api/v1/kiosks/{deviceCode}/punch'],
             'kiosk qr punch' => ['POST', 'api/v1/kiosks/{deviceCode}/qr-punch'],
+            'kiosk sync' => ['POST', 'api/v1/kiosks/{deviceCode}/sync'],
             'kiosk roster' => ['GET', 'api/v1/kiosks/{deviceCode}/roster'],
+            'kiosk employee info' => ['POST', 'api/v1/kiosks/{deviceCode}/employee-info'],
+            'kiosk leave balance' => ['POST', 'api/v1/kiosks/{deviceCode}/leave-balance'],
             'kiosk announcements' => ['GET', 'api/v1/kiosks/{deviceCode}/announcements'],
         ];
     }
