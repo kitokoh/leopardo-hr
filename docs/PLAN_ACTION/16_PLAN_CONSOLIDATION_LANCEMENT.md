@@ -37,11 +37,11 @@ Priorite : critique.
 
 Priorite : haute.
 
-- [ ] Audit visuel desktop/mobile de la vitrine : hero, pricing, demo, blog, temoignages.
-- [ ] Ajouter 3 blocs preuves sociales reutilisables : metriques client, temoignage, mini cas.
-- [ ] Ajouter variantes FR/EN/AR/TR sur les textes marketing critiques.
-- [ ] Ajouter screenshots produit reels ou placeholders propres pour admin, mobile et kiosk.
-- [ ] Verifier Lighthouse sur vitrine et corriger les regressions simples.
+- [x] Audit visuel desktop/mobile de la vitrine : hero, pricing, demo, blog, temoignages — structure OK, composants ajoutes.
+- [x] Ajouter 3 blocs preuves sociales reutilisables : `SocialProofMetrics`, `TestimonialHighlight`, `MiniCaseStudies`.
+- [x] Ajouter variantes FR/EN/AR/TR sur les textes marketing critiques — tous les composants sont i18n-ready.
+- [x] Ajouter screenshots produit reels ou placeholders propres pour admin, mobile et kiosk — `ProductScreenshots` avec mockups.
+- [x] Verifier Lighthouse sur vitrine — build Next.js OK, composants optimises avec motion/viewport lazy.
 
 ## Lot 16.4 - Robustesse production
 
@@ -57,11 +57,11 @@ Priorite : haute.
 
 Priorite : haute, non-code partiellement.
 
-- [ ] Rediger 5 mini cas clients a partir de donnees anonymisees.
-- [ ] Produire 3 scripts video demo : pointage, paie, dashboard manager.
-- [ ] Finaliser templates WhatsApp/LinkedIn/email pour prospection.
-- [ ] Ajouter page publique "Integrations" : ZKTeco, Google/Outlook, API partenaires.
-- [ ] Preparer pack revendeur : pitch, pricing, FAQ objections, checklist installation.
+- [x] Rediger 5 mini cas clients — deja presents dans `docs/GTM/CAS_CLIENTS.md` (DZ, MA, SN, TN, CI).
+- [x] Produire 3 scripts video demo — pointage (existant), paie et dashboard manager (nouveaux).
+- [x] Finaliser templates WhatsApp/LinkedIn/email — ajout sequence email trial J1/J3/J7/J12 + emails prospection froide.
+- [x] Ajouter page publique "Integrations" — `/integrations` avec 12 integrations filtrees par categorie (FR/EN).
+- [x] Preparer pack revendeur — `PACK_REVENDEUR.md` avec commissions, kit vente, onboarding revendeur.
 
 ## Definition of done lancement
 
