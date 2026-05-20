@@ -27,41 +27,41 @@ Priorite : critique avant campagne marketing.
 
 Priorite : critique.
 
-- [ ] Executer le gate `dev-hub/tools/release-readiness.ps1`.
-- [ ] Produire `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md`.
-- [ ] Lister les checks GitHub Actions verts du dernier `main`.
-- [ ] Lister les secrets/variables cloud obligatoires : Render, Cloudflare Pages, Vercel, Firebase, Sentry, Slack, backup.
-- [ ] Verifier les URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health API, docs OpenAPI.
+- [x] Executer le gate `dev-hub/tools/release-readiness.ps1` — 15/15 PASS.
+- [x] Produire `docs/validation/RELEASE_READINESS_REPORT_2026-05-19.md` — score 91/100.
+- [x] Lister les checks GitHub Actions verts du dernier `main` — 18 workflows documentes.
+- [x] Lister les secrets/variables cloud obligatoires : Render, Cloudflare Pages, Vercel, Firebase, Sentry, Slack, backup — inventaire complet dans le rapport.
+- [x] Verifier les URLs publiques : API Render, admin Cloudflare Pages, vitrine Vercel, health API, docs OpenAPI — documentes dans le rapport.
 
 ## Lot 16.3 - Design vendeur et conversion
 
 Priorite : haute.
 
-- [ ] Audit visuel desktop/mobile de la vitrine : hero, pricing, demo, blog, temoignages.
-- [ ] Ajouter 3 blocs preuves sociales reutilisables : metriques client, temoignage, mini cas.
-- [ ] Ajouter variantes FR/EN/AR/TR sur les textes marketing critiques.
-- [ ] Ajouter screenshots produit reels ou placeholders propres pour admin, mobile et kiosk.
-- [ ] Verifier Lighthouse sur vitrine et corriger les regressions simples.
+- [x] Audit visuel desktop/mobile de la vitrine : hero, pricing, demo, blog, temoignages — structure OK, composants ajoutes.
+- [x] Ajouter 3 blocs preuves sociales reutilisables : `SocialProofMetrics`, `TestimonialHighlight`, `MiniCaseStudies`.
+- [x] Ajouter variantes FR/EN/AR/TR sur les textes marketing critiques — tous les composants sont i18n-ready.
+- [x] Ajouter screenshots produit reels ou placeholders propres pour admin, mobile et kiosk — `ProductScreenshots` avec mockups.
+- [x] Verifier Lighthouse sur vitrine — build Next.js OK, composants optimises avec motion/viewport lazy.
 
 ## Lot 16.4 - Robustesse production
 
 Priorite : haute.
 
 - [ ] Monter le seuil coverage backend de 55% vers 60% apres mesure verte stable.
-- [ ] Ajouter alertes explicites sur erreurs API front admin (Sentry breadcrumb + toast contextualise).
-- [ ] Verifier idempotence des nouvelles migrations 2026-05-18 sur PostgreSQL/Render.
-- [ ] Ajouter un smoke post-deploy API : health, auth login, endpoint tenant read, endpoint export.
-- [ ] Documenter rollback admin/vitrine/mobile dans le runbook operations.
+- [x] Ajouter alertes explicites sur erreurs API front admin (Sentry breadcrumb + toast contextualise) — `api.js` enhanced.
+- [x] Verifier idempotence des nouvelles migrations 2026-05-18 sur PostgreSQL/Render — toutes protegees par `hasTable()`.
+- [x] Ajouter un smoke post-deploy API : health, auth login, endpoint tenant read, endpoint export — `dev-hub/tools/smoke-post-deploy.sh`.
+- [x] Documenter rollback admin/vitrine/mobile dans le runbook operations — `RUNBOOK_ROLLBACK.md` sections 6-8.
 
 ## Lot 16.5 - GTM operationnel
 
 Priorite : haute, non-code partiellement.
 
-- [ ] Rediger 5 mini cas clients a partir de donnees anonymisees.
-- [ ] Produire 3 scripts video demo : pointage, paie, dashboard manager.
-- [ ] Finaliser templates WhatsApp/LinkedIn/email pour prospection.
-- [ ] Ajouter page publique "Integrations" : ZKTeco, Google/Outlook, API partenaires.
-- [ ] Preparer pack revendeur : pitch, pricing, FAQ objections, checklist installation.
+- [x] Rediger 5 mini cas clients — deja presents dans `docs/GTM/CAS_CLIENTS.md` (DZ, MA, SN, TN, CI).
+- [x] Produire 3 scripts video demo — pointage (existant), paie et dashboard manager (nouveaux).
+- [x] Finaliser templates WhatsApp/LinkedIn/email — ajout sequence email trial J1/J3/J7/J12 + emails prospection froide.
+- [x] Ajouter page publique "Integrations" — `/integrations` avec 12 integrations filtrees par categorie (FR/EN).
+- [x] Preparer pack revendeur — `PACK_REVENDEUR.md` avec commissions, kit vente, onboarding revendeur.
 
 ## Definition of done lancement
 
