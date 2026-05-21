@@ -79,6 +79,7 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
         tableOfContentsLabel={copy.tableOfContents}
         authorRoleLabel={copy.authorRole}
         relatedTitle={copy.relatedTitle}
+        locale={locale}
       />
 
       <Footer />

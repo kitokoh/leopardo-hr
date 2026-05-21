@@ -44,25 +44,25 @@ export default function AboutPage() {
       name: 'Ahmed Benali',
       role: 'Fondateur & CEO',
       bio: 'Entrepreneur passionné avec 10 ans d\'expérience en RH et technologie.',
-      image: '/avatars/ahmed.jpg',
+      image: '/avatars/ahmed.svg',
     },
     {
       name: 'Fatima Dupont',
       role: 'CTO',
       bio: 'Architecte logiciel avec expertise en scalabilité et sécurité.',
-      image: '/avatars/fatima.jpg',
+      image: '/avatars/fatima.svg',
     },
     {
       name: 'Jean Martin',
       role: 'VP Product',
       bio: 'Product manager avec passion pour l\'expérience utilisateur.',
-      image: '/avatars/jean.jpg',
+      image: '/avatars/jean.svg',
     },
     {
       name: 'Sophie Bernard',
       role: 'VP Sales',
       bio: 'Sales leader avec track record de croissance exponentielle.',
-      image: '/avatars/sophie.jpg',
+      image: '/avatars/sophie.svg',
     },
   ];
 
