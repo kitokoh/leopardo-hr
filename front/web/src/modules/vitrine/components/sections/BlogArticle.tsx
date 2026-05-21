@@ -17,6 +17,7 @@ export interface BlogArticleProps {
   tableOfContentsLabel?: string;
   authorRoleLabel?: string;
   relatedTitle?: string;
+  locale?: string;
 }
 
 export function BlogArticle({
@@ -27,6 +28,7 @@ export function BlogArticle({
   tableOfContentsLabel = 'Table des matieres',
   authorRoleLabel = 'Auteur et expert en gestion RH',
   relatedTitle = 'Articles recommandes',
+  locale = 'fr',
 }: BlogArticleProps) {
   const formattedDate = new Date(post.date).toLocaleDateString(dateLocale, {
     year: 'numeric',
@@ -92,9 +94,10 @@ export function BlogArticle({
       });
   };
 
-  const articleUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/blog/${post.slug}`
-    : `https://leopardo.com/blog/${post.slug}`;
+  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://leopardo.com';
+  const localeQuery = locale && locale !== 'fr' ? `?lang=${locale}` : '';
+  const articleUrl = `${siteOrigin}/blog/${post.slug}${localeQuery}`;
+  const articleImageUrl = new URL(post.image, siteOrigin).toString();
 
   return (
     <>
@@ -102,9 +105,10 @@ export function BlogArticle({
         title={post.title}
         description={post.excerpt}
         url={articleUrl}
-        image={post.image}
+        image={articleImageUrl}
         datePublished={new Date(post.date).toISOString()}
         author={post.author.name}
+        inLanguage={locale}
       />
     <div className="min-h-screen">
       {/* Hero Image */}

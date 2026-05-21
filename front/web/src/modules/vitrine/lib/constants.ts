@@ -162,7 +162,7 @@ export const testimonials = [
     author: "Marie Dupont",
     role: "Manager RH",
     company: "TechStartup Inc",
-    avatar: "/avatars/marie.jpg",
+    avatar: "/avatars/marie.svg",
     rating: 5,
   },
   {
@@ -170,7 +170,7 @@ export const testimonials = [
     author: "Jean Martin",
     role: "Comptable",
     company: "Finance Pro",
-    avatar: "/avatars/jean.jpg",
+    avatar: "/avatars/jean.svg",
     rating: 5,
   },
   {
@@ -178,7 +178,7 @@ export const testimonials = [
     author: "Sophie Bernard",
     role: "Directrice",
     company: "Retail Solutions",
-    avatar: "/avatars/sophie.jpg",
+    avatar: "/avatars/sophie.svg",
     rating: 5,
   },
 ];
