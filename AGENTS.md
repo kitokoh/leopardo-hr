@@ -183,6 +183,7 @@ Procedure recommandee :
 - Le bouton demo de `front/admin-dashboard/` doit rester limite aux comptes super-admin plateforme : ce frontend appelle `/api/v1/platform/auth/login`, donc les comptes RH/employes tenant doivent rester sur `front/web` ou mobile.
 - Pour prouver un login pret marche, tester le contrat complet `login -> token -> /auth/me` et `platform/login -> token -> /platform/auth/me`, pas seulement la presence d'un token dans la reponse.
 - Sur `front/web`, `npm audit fix --force` peut proposer des regressions majeures incoherentes (ex. downgrade Next). Preferer un patch mineur cible, relancer lint/build, puis documenter les advisories restantes si elles dependent d'un upstream non corrige.
+- Ne pas utiliser `useSyncExternalStore` avec un getter qui parse `localStorage` et retourne un nouvel objet a chaque snapshot : React peut boucler en erreur #185. Hydrater l'utilisateur stocke via `useState` + `useEffect`, puis tester le parcours login -> dashboard avec Playwright.
 
 ### 2026-05-18 - Nettoyage depot distant Devin/GTM/mobile
 
