@@ -4,7 +4,7 @@ Date : 2026-05-21
 
 ## Objectif
 
-Mesurer le parcours client critique `login -> dashboard utilisable` sans dependre d'un fournisseur analytics externe. Le portail web emet des evenements navigateur stables, verifies par Playwright, qui pourront ensuite etre relayes vers le backend, un CRM ou un data warehouse.
+Mesurer le parcours client critique `login -> dashboard utilisable` sans dependre d'un fournisseur analytics externe. Le portail web emet des evenements navigateur stables, verifies par Playwright, puis persiste les evenements authentifies via `POST /api/v1/client-events`.
 
 ## Evenements contractuels
 
@@ -16,6 +16,16 @@ Mesurer le parcours client critique `login -> dashboard utilisable` sans dependr
 | `feature_blocked` | `front/web` | Module masque par plan ou role | `module`, `reason`, `state` |
 | `demo_user_selected` | `front/web` | Selection d'un compte demo | `role`, `country`, `email_domain` |
 | `leopardo:kiosk-status` | `front/zkteco-kiosk` | Rafraichissement etat bridge local | `online`, `queue_count`, `device_code`, `last_sync_at` |
+
+## Persistance API
+
+- Endpoint : `POST /api/v1/client-events`
+- Authentification : Sanctum employee + middleware `tenant` + `api-plan`
+- Rate limit dedie : `client-analytics` (`RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE`, defaut 120/min/company)
+- Stockage : table tenant `client_events`
+- Evenements acceptes cote backend : `login_success`, `dashboard_loaded`, `feature_blocked`, `demo_user_selected`, `kiosk_status`
+- Evenement volontairement non persiste : `login_failed`, car il peut etre anonyme et ne dispose pas toujours d un tenant fiable. Il reste observable localement et dans Playwright.
+- Minimisation : l API garde uniquement une allowlist de proprietes scalaires et rejette les champs PII accidentels comme email complet ou payload imbrique.
 
 ## Seuils UX
 
@@ -36,4 +46,4 @@ Mesurer le parcours client critique `login -> dashboard utilisable` sans dependr
 
 ## Prochaine evolution
 
-Brancher `trackClientEvent` sur un endpoint backend dedie, par exemple `POST /api/v1/client-events`, avec rate limiting, minimisation PII et correlation `request_id`. Tant que cet endpoint n'est pas stabilise, les evenements restent locaux et testables pour eviter un couplage fragile avec le marketing ou un outil tiers.
+Prochaine evolution : ajouter un endpoint de lecture agrege pour le dashboard plateforme, puis exporter les agregats vers CRM/data warehouse sans exposer les evenements individuels aux utilisateurs tenant.
