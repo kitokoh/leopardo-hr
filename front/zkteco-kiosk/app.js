@@ -17,6 +17,7 @@ const CONFIG = {
 const state = {
   status: null,
   currentTab: 'punch',
+  lastStatusRefreshAt: null,
 };
 
 // ── Selectors ────────────────────────────────────────
@@ -28,6 +29,7 @@ const els = {
   locationLabel: $('#locationLabel'),
   deviceCode: $('#deviceCode'),
   queueCount: $('#queueCount'),
+  lastSyncAt: $('#lastSyncAt'),
   identifier: $('#identifier'),
   biometricType: $('#biometricType'),
   statusBox: $('#statusBox'),
@@ -106,6 +108,10 @@ function renderStatus() {
   els.locationLabel.textContent = state.status.location_label || 'Entree principale';
   els.deviceCode.textContent = state.status.device_code || '-';
   els.queueCount.textContent = `${state.status.queue_count || 0} evenement(s) en attente`;
+  if (els.lastSyncAt) {
+    const lastSync = state.status.last_sync_at || state.status.last_synced_at || state.lastStatusRefreshAt;
+    els.lastSyncAt.textContent = lastSync ? formatDateTime(lastSync) : 'Aucune synchronisation confirmee';
+  }
 
   const ok = state.status.online === true;
   els.syncDot.classList.toggle('ok', ok);
@@ -113,15 +119,28 @@ function renderStatus() {
   els.syncLabel.textContent = ok
     ? 'Connexion OK - synchronisation auto active'
     : `Mode offline - sync plus tard (${state.status.last_error || 'reseau indisponible'})`;
+
+  window.dispatchEvent(new CustomEvent('leopardo:kiosk-status', {
+    detail: {
+      online: ok,
+      queue_count: Number(state.status.queue_count || 0),
+      device_code: state.status.device_code || CONFIG.deviceCode || null,
+      last_sync_at: state.status.last_sync_at || state.status.last_synced_at || null,
+    },
+  }));
 }
 
 async function refreshStatus() {
   try {
     const payload = await fetchJson(`${CONFIG.localBridgeUrl}/status`);
     state.status = payload.data;
+    state.lastStatusRefreshAt = new Date().toISOString();
     renderStatus();
   } catch (error) {
     setStatus('#statusBox', error.message || 'Bridge local indisponible.', true);
+    if (els.lastSyncAt) {
+      els.lastSyncAt.textContent = 'Bridge local indisponible';
+    }
   }
 }
 
@@ -320,6 +339,21 @@ function formatTime(isoString) {
     return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   } catch {
     return isoString.substring(11, 16) || '-';
+  }
+}
+
+function formatDateTime(isoString) {
+  if (!isoString) return '-';
+  try {
+    return new Date(isoString).toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return String(isoString);
   }
 }
 
