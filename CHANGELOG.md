@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.121] - 2026-05-22
+
+### Added
+
+- Web vitrine : section de conversion lancement RH reliant demo, blog/guides et pricing au parcours espace client.
+- Web vitrine : assets SEO/PWA `icon.svg`, `favicon.svg`, image OpenGraph et manifeste nettoye pour eviter les icones fantomes.
+- Documentation : Plan 19 communication interne, guide liens plateforme/serveurs/outils gratuits, et integration des PDFs de conception ajoutes.
+
+### Changed
+
+- Web vitrine : navigation et footer exposent des liens reels vers blog, guides, pricing, demo, integrations et contact.
+- Web vitrine : metadonnees OpenGraph/Twitter/SEO repositionnees sur le message SaaS RH multilingue terrain.
+- Plan 18 : definition de fin enrichie avec la vitrine marketing reliee au funnel client.
+
 ## [4.16.120] - 2026-05-22
 
 ### Added

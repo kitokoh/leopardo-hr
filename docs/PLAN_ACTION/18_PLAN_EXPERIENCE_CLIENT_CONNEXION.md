@@ -52,6 +52,8 @@ Note 2026-05-21 : le portail web emet maintenant les evenements `leopardo:analyt
 
 Note 2026-05-22 : les evenements authentifies sont persistables via `POST /api/v1/client-events` dans la table tenant `client_events`, avec rate limit dedie, allowlist d evenements et minimisation des proprietes pour eviter la fuite PII. `login_failed` reste volontairement local tant que le tenant n est pas fiable.
 
+Note 2026-05-22 : la vitrine est renforcee pour le lancement marketing avec liens directs `/blog`, `/guides/rh-startup`, `/pricing` et `/demo`, une section de conversion reliee au parcours client, des metadonnees sociales et des assets PWA/SEO propres. Cette couche oriente le trafic public vers un parcours concret : lire, comparer, demander une demo, s'inscrire, puis se connecter a l'espace client.
+
 ## Definition of done
 
 - Un client manager peut se connecter depuis la vitrine et arriver dans un espace utile sans intervention technique.

@@ -8,11 +8,20 @@ import { NewsletterForm } from './NewsletterForm'
 function getFooterHref(sectionIndex: number, linkIndex: number): string {
   const key = `${sectionIndex}-${linkIndex}`
   const routes: Record<string, string> = {
+    '0-0': '#fonctionnalites',
     '0-1': '/pricing',
+    '0-2': '/integrations',
+    '0-3': '/integrations#api',
     '0-4': '/changelog',
+    '1-0': '/guides/rh-startup',
     '1-1': '/blog',
+    '1-2': '/contact',
+    '1-3': '/contact?topic=status',
+    '1-4': '/contact?topic=community',
     '2-0': '/privacy',
     '2-1': '/terms',
+    '2-2': '/terms',
+    '2-3': '/privacy',
   }
 
   return routes[key] ?? '#'
