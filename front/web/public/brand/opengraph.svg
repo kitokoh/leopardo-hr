@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Leopardo RH SaaS RH multilingue">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <path d="M0 520h1200v110H0z" fill="#ecfeff" opacity=".04"/>
+  <rect x="112" y="108" width="96" height="96" rx="20" fill="#10b981"/>
+  <path d="M132 177V132h14v34h28v11h-42Z" fill="#ecfeff"/>
+  <path d="M690 120h320c44 0 80 36 80 80v250c0 44-36 80-80 80H690c-44 0-80-36-80-80V200c0-44 36-80 80-80Z" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <path d="M650 186h400" stroke="#334155" stroke-width="2"/>
+  <rect x="668" y="216" width="150" height="92" rx="8" fill="#10b981" opacity=".18"/>
+  <rect x="838" y="216" width="192" height="92" rx="8" fill="#22d3ee" opacity=".14"/>
+  <rect x="668" y="332" width="362" height="32" rx="8" fill="#ecfeff" opacity=".12"/>
+  <rect x="668" y="384" width="290" height="32" rx="8" fill="#ecfeff" opacity=".09"/>
+  <rect x="668" y="436" width="214" height="32" rx="8" fill="#34d399" opacity=".28"/>
+  <text x="112" y="282" fill="#ecfeff" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="800">Leopardo RH</text>
+  <text x="112" y="354" fill="#bae6fd" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="600">SaaS RH multilingue pour equipes terrain</text>
+  <text x="112" y="424" fill="#cbd5e1" font-family="Arial, Helvetica, sans-serif" font-size="30">Pointage, paie, absences, onboarding, mobile et kiosque.</text>
+  <text x="112" y="503" fill="#34d399" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Web client + Admin + API + IA-ready</text>
+</svg>

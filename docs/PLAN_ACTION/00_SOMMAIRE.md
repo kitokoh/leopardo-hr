@@ -30,6 +30,9 @@
 | 14b | `14_PLAN_SOLIDIFICATION_MARCHE.md` | Plan de solidification 7 phases (fiabilite, securite, performance, integrations, UX, docs, GTM) |
 | 15 | `15_PLAN_EXECUTION_CONSOLIDE.md` | **NOUVEAU 2026-05-14** — Plan d'execution consolide : audit code vs plans, taches restantes, iterations |
 | 16 | `16_PLAN_CONSOLIDATION_LANCEMENT.md` | **NOUVEAU 2026-05-19** — Consolidation lancement : contrats API/frontends, release readiness, design vendeur, GTM |
+| 17 | `17_PLAN_COVERAGE_LANCEMENT.md` | **NOUVEAU 2026-05-20** - Coverage lancement et priorites tests |
+| 18 | `18_PLAN_EXPERIENCE_CLIENT_CONNEXION.md` | **NOUVEAU 2026-05-21** - Connexion client, features par role/plan, UX login et observabilite |
+| 19 | `19_PLAN_COMMUNICATION_INTERNE.md` | **NOUVEAU 2026-05-22** - Notifications web/mobile, emails, SMS, WhatsApp et orchestration communication |
 
 ---
 
