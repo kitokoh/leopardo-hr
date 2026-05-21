@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'demo_mode_enabled' => env('DEMO_MODE_ENABLED', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Version

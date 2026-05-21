@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ApiError, apiFetch } from '@/lib/api-client';
@@ -30,6 +30,7 @@ export default function LoginPage() {
   }, []);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDemoModal, setShowDemoModal] = useState(false);
   const locale: AppLocale = localeOverride ?? storedLocale;
   const labels = useMemo(() => getCopy(locale), [locale]);
 
@@ -96,6 +97,39 @@ export default function LoginPage() {
       setSubmitting(false);
     }
   };
+
+  const demoCompanies = useMemo(() => [
+    {
+      name: 'TechCorp Algerie SARL', slug: 'techcorp-algerie', country: 'DZ',
+      users: [
+        { email: 'ahmed.benali@techcorp-algerie.dz', name: 'Ahmed Benali', role: 'manager', managerRole: 'principal', password: 'password123' },
+        { email: 'fatima.meziane@techcorp-algerie.dz', name: 'Fatima Meziane', role: 'manager', managerRole: 'rh', password: 'password123' },
+        { email: 'karim.aouad@techcorp-algerie.dz', name: 'Karim Aouad', role: 'employee', managerRole: null, password: 'password123' },
+      ],
+    },
+    {
+      name: 'PharmaPlus Casablanca', slug: 'pharmaplus-casablanca', country: 'MA',
+      users: [
+        { email: 'amina.tahiri@pharmaplus.ma', name: 'Amina Tahiri', role: 'manager', managerRole: 'principal', password: 'password123' },
+        { email: 'sara.mansouri@pharmaplus.ma', name: 'Sara Mansouri', role: 'manager', managerRole: 'rh', password: 'password123' },
+        { email: 'youssef.bennani@pharmaplus.ma', name: 'Youssef Bennani', role: 'employee', managerRole: null, password: 'password123' },
+      ],
+    },
+    {
+      name: 'DigitalFlow Tunis', slug: 'digitalflow-tunis', country: 'TN',
+      users: [
+        { email: 'sofiane.mrad@digitalflow.tn', name: 'Sofiane Mrad', role: 'manager', managerRole: 'principal', password: 'password123' },
+        { email: 'olfa.trabelsi@digitalflow.tn', name: 'Olfa Trabelsi', role: 'manager', managerRole: 'rh', password: 'password123' },
+        { email: 'aziz.khelifi@digitalflow.tn', name: 'Aziz Khelifi', role: 'employee', managerRole: null, password: 'password123' },
+      ],
+    },
+  ], []);
+
+  const selectDemoUser = useCallback((demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setShowDemoModal(false);
+  }, []);
 
   if (!mounted) return null;
 
@@ -195,7 +229,66 @@ export default function LoginPage() {
               {submitting ? labels.login.loading : labels.login.submit}
             </button>
           </div>
+
+          <div className="border-t border-slate-200 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowDemoModal(true)}
+              className="group relative flex w-full justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+            >
+              Acces Demo
+            </button>
+          </div>
         </form>
+
+        {showDemoModal ? (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={(e) => { if (e.target === e.currentTarget) setShowDemoModal(false); }}
+          >
+            <div className="w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-xl bg-white shadow-2xl">
+              <div className="sticky top-0 flex items-center justify-between border-b bg-white px-6 py-4 rounded-t-xl">
+                <h3 className="text-lg font-bold text-gray-900">Choisir un compte demo</h3>
+                <button
+                  type="button"
+                  className="rounded-md text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowDemoModal(false)}
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                {demoCompanies.map((company) => (
+                  <div key={company.slug}>
+                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">{company.name} ({company.country})</h4>
+                    <div className="space-y-2">
+                      {company.users.map((user) => (
+                        <button
+                          key={user.email}
+                          type="button"
+                          className="w-full text-left rounded-lg border border-gray-200 p-3 hover:border-primary hover:bg-primary/5 transition"
+                          onClick={() => selectDemoUser(user.email, user.password)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-900">{user.name}</span>
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                              user.managerRole === 'principal' ? 'bg-purple-100 text-purple-700' :
+                              user.managerRole === 'rh' ? 'bg-blue-100 text-blue-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}>
+                              {user.managerRole ?? user.role}
+                            </span>
+                          </div>
+                          <span className="text-sm text-gray-500">{user.email}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
