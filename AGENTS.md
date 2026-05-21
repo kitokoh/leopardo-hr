@@ -76,6 +76,9 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le Plan 18 demarre la phase experience client : login reel vitrine -> espace manager, features par plan/role, pages de connexion modernes et smoke E2E staging. Toute evolution auth/client doit garder ce plan a jour.
 - Sur Next 16 / React 19, les routes dynamiques sous `front/web/src/app/**/[slug]` recoivent `params` sous forme de Promise. Dans les Server Components, `await params`; dans les Client Components, utiliser `use(params)`.
 - Dans `database-backup.yml`, ne pas installer `awscli` via `apt-get` sur `ubuntu-latest`; le paquet peut disparaitre. Installer `postgresql-client age`, puis utiliser l'AWS CLI preinstallee ou fallback `pip --user`.
+- Depuis Plan 18, le login web client `/auth/login` doit afficher les erreurs `POST /api/v1/auth/login` localement. Dans `front/web/src/lib/api-client.ts`, ne pas rediriger automatiquement sur les `401` des endpoints de login, sinon les mauvais identifiants deviennent une session expiree confuse.
+- Le parcours client web critique est documente dans `docs/validation/CLIENT_LOGIN_READINESS.md` et couvert par `front/web/e2e/auth-client-smoke.spec.ts` : login manager, mauvais identifiants, session expiree, dashboard non vide et toggle mot de passe.
+- `NEXT_PUBLIC_ADMIN_URL` est la cible recommandee pour rediriger un `super_admin` qui arriverait sur le login client ; sans variable, le fallback reste `/dashboard` pour eviter un lien mort en preview.
 
 ## Pieges connus
 

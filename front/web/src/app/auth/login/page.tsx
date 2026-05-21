@@ -3,6 +3,17 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Globe2,
+  Loader2,
+  LockKeyhole,
+  ShieldCheck,
+  Sparkles,
+  X,
+} from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import {
   applyDocumentLocale,
@@ -17,22 +28,59 @@ import {
 
 const emptySubscribe = () => () => {};
 
+const ADMIN_FALLBACK_PATH = '/dashboard';
+
+type LoginPayload = {
+  data?: StoredAuthUser | { token?: string };
+  token?: string;
+};
+
+function extractToken(payload: LoginPayload): string | null {
+  if (typeof payload.token === 'string' && payload.token.trim() !== '') {
+    return payload.token;
+  }
+
+  if (payload.data && typeof payload.data === 'object' && 'token' in payload.data && typeof payload.data.token === 'string') {
+    return payload.data.token;
+  }
+
+  return null;
+}
+
+function resolvePostLoginTarget(user: StoredAuthUser): string {
+  if (user.role === 'super_admin') {
+    return process.env.NEXT_PUBLIC_ADMIN_URL || ADMIN_FALLBACK_PATH;
+  }
+
+  return '/dashboard';
+}
+
+function goToPostLoginTarget(target: string, router: ReturnType<typeof useRouter>): void {
+  if (/^https?:\/\//.test(target)) {
+    window.location.assign(target);
+    return;
+  }
+
+  router.push(target);
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [mounted, setMounted] = useState(false);
   const storedLocale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const locale: AppLocale = localeOverride ?? storedLocale;
   const labels = useMemo(() => getCopy(locale), [locale]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     applyDocumentLocale(locale);
@@ -60,16 +108,11 @@ export default function LoginPage() {
         }),
       });
 
-      const loginPayload = await loginResponse.json() as Record<string, unknown>;
-      const rootToken = typeof loginPayload.token === 'string' ? loginPayload.token : null;
-      const nestedData = loginPayload.data && typeof loginPayload.data === 'object'
-        ? loginPayload.data as Record<string, unknown>
-        : null;
-      const nestedToken = nestedData && typeof nestedData.token === 'string' ? nestedData.token : null;
-      const token = rootToken || nestedToken;
+      const loginPayload = await loginResponse.json() as LoginPayload;
+      const token = extractToken(loginPayload);
 
       if (!token) {
-        throw new Error('Authentication token missing from login response.');
+        throw new Error(labels.login.errors.missingToken);
       }
 
       localStorage.setItem('auth_token', token);
@@ -79,19 +122,19 @@ export default function LoginPage() {
       const user = mePayload.data;
 
       if (!user) {
-        throw new Error('Authenticated user missing from profile response.');
+        throw new Error(labels.login.errors.missingUser);
       }
 
       storeAuthSession(token, user);
       applyDocumentLocale(normalizeLocale(user.language), user.is_rtl);
-      router.push('/dashboard');
+      goToPostLoginTarget(resolvePostLoginTarget(user), router);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Une erreur est survenue.');
+        setError(labels.login.errors.generic);
       }
     } finally {
       setSubmitting(false);
@@ -128,168 +171,227 @@ export default function LoginPage() {
   const selectDemoUser = useCallback((demoEmail: string, demoPassword: string) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
+    setError(null);
     setShowDemoModal(false);
   }, []);
 
   if (!mounted) return null;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-md">
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <select
-              aria-label="Language"
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-              value={locale}
-              onChange={(e) => handleLocaleChange(e.target.value)}
-            >
-              <option value="fr">Francais</option>
-              <option value="ar">العربية</option>
-              <option value="tr">Turkce</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            {labels.login.title}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            <Link href="/" className="font-medium text-primary hover:text-primary/90">
+    <main className="min-h-screen bg-[#f6f7fb] px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
+      <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl shadow-slate-200/70 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="relative hidden flex-col justify-between bg-slate-950 p-10 text-white lg:flex">
+          <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(45,212,191,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
+          <div className="relative">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200 transition hover:text-white">
+              <ArrowRight className="h-4 w-4 rotate-180" aria-hidden="true" />
               {labels.login.back}
             </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error ? (
-            <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </div>
-          ) : null}
-          <div className="-space-y-px rounded-md shadow-sm">
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                {labels.login.email}
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="relative block w-full rounded-t-md border-0 px-3 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                placeholder={labels.login.email}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                {labels.login.password}
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="relative block w-full rounded-b-md border-0 px-3 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                placeholder={labels.login.password}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+            <div className="mt-16 space-y-5">
+              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/30 bg-teal-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-teal-100">
+                <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                {labels.login.secureBadge}
+              </span>
+              <h1 className="max-w-md text-4xl font-bold leading-tight tracking-normal">
+                {labels.login.heroTitle}
+              </h1>
+              <p className="max-w-md text-sm leading-6 text-slate-300">
+                {labels.login.heroCopy}
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                {labels.login.remember}
-              </label>
-            </div>
+          <div className="relative grid gap-3">
+            {labels.login.trustPoints.map((item) => (
+              <div key={item} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-slate-200">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-300/15 text-teal-100">
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                </span>
+                {item}
+              </div>
+            ))}
+          </div>
+        </section>
 
-            <div className="text-sm">
-              <Link href="#" className="font-medium text-primary hover:text-primary/90">
-                {labels.login.forgot}
+        <section className="flex items-center justify-center px-5 py-8 sm:px-10 lg:px-14">
+          <div className="w-full max-w-md">
+            <div className="mb-8 flex items-center justify-between gap-4">
+              <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-slate-950 lg:hidden">
+                <ArrowRight className="h-4 w-4 rotate-180" aria-hidden="true" />
+                {labels.login.back}
               </Link>
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="group relative flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {submitting ? labels.login.loading : labels.login.submit}
-            </button>
-          </div>
-
-          <div className="border-t border-slate-200 pt-4">
-            <button
-              type="button"
-              onClick={() => setShowDemoModal(true)}
-              className="group relative flex w-full justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-            >
-              Acces Demo
-            </button>
-          </div>
-        </form>
-
-        {showDemoModal ? (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            onClick={(e) => { if (e.target === e.currentTarget) setShowDemoModal(false); }}
-          >
-            <div className="w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-xl bg-white shadow-2xl">
-              <div className="sticky top-0 flex items-center justify-between border-b bg-white px-6 py-4 rounded-t-xl">
-                <h3 className="text-lg font-bold text-gray-900">Choisir un compte demo</h3>
-                <button
-                  type="button"
-                  className="rounded-md text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowDemoModal(false)}
+              <label className="ml-auto inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">
+                <Globe2 className="h-4 w-4 text-slate-500" aria-hidden="true" />
+                <span className="sr-only">{labels.dashboard.language}</span>
+                <select
+                  aria-label={labels.dashboard.language}
+                  className="bg-transparent text-sm font-semibold outline-none"
+                  value={locale}
+                  onChange={(e) => handleLocaleChange(e.target.value)}
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
-              <div className="p-6 space-y-4">
-                {demoCompanies.map((company) => (
-                  <div key={company.slug}>
-                    <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">{company.name} ({company.country})</h4>
-                    <div className="space-y-2">
-                      {company.users.map((user) => (
-                        <button
-                          key={user.email}
-                          type="button"
-                          className="w-full text-left rounded-lg border border-gray-200 p-3 hover:border-primary hover:bg-primary/5 transition"
-                          onClick={() => selectDemoUser(user.email, user.password)}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-gray-900">{user.name}</span>
-                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                              user.managerRole === 'principal' ? 'bg-purple-100 text-purple-700' :
-                              user.managerRole === 'rh' ? 'bg-blue-100 text-blue-700' :
-                              'bg-gray-100 text-gray-700'
-                            }`}>
-                              {user.managerRole ?? user.role}
-                            </span>
-                          </div>
-                          <span className="text-sm text-gray-500">{user.email}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  <option value="fr">Francais</option>
+                  <option value="ar">Arabic</option>
+                  <option value="tr">Turkce</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
             </div>
+
+            <div className="space-y-3">
+              <p className="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">{labels.login.clientSpace}</p>
+              <h2 className="text-3xl font-bold tracking-normal text-slate-950">{labels.login.title}</h2>
+              <p className="text-sm leading-6 text-slate-600">{labels.login.subtitle}</p>
+            </div>
+
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+              {error ? (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+                >
+                  {error}
+                </div>
+              ) : null}
+
+              <div className="space-y-4">
+                <label htmlFor="email-address" className="block text-sm font-semibold text-slate-800">
+                  {labels.login.email}
+                </label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="block h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+                  placeholder="manager@entreprise.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <label htmlFor="password" className="block text-sm font-semibold text-slate-800">
+                  {labels.login.password}
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    className="block h-12 w-full rounded-xl border border-slate-300 bg-white px-4 pr-12 text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+                    placeholder={labels.login.password}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? labels.login.hidePassword : labels.login.showPassword}
+                    className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                    onClick={() => setShowPassword((value) => !value)}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <label className="flex items-center gap-2 text-sm text-slate-700">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-slate-300 text-teal-700 focus:ring-teal-600"
+                  />
+                  {labels.login.remember}
+                </label>
+
+                <Link href="/contact?topic=password" className="text-sm font-semibold text-teal-700 transition hover:text-teal-900">
+                  {labels.login.forgot}
+                </Link>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LockKeyhole className="h-4 w-4" aria-hidden="true" />}
+                {submitting ? labels.login.loading : labels.login.submit}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowDemoModal(true)}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 text-sm font-bold text-teal-900 transition hover:border-teal-300 hover:bg-teal-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+              >
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                {labels.login.demoAccess}
+              </button>
+
+              <p className="text-center text-xs leading-5 text-slate-500">
+                {labels.login.supportCopy}{' '}
+                <Link href="/contact" className="font-semibold text-slate-800 underline-offset-4 hover:underline">
+                  {labels.login.supportLink}
+                </Link>
+              </p>
+            </form>
+
+            {showDemoModal ? (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4"
+                onClick={(e) => { if (e.target === e.currentTarget) setShowDemoModal(false); }}
+              >
+                <div className="max-h-[84vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+                  <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 py-5">
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-950">{labels.login.demoTitle}</h3>
+                      <p className="mt-1 text-sm text-slate-500">{labels.login.demoSubtitle}</p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={labels.login.close}
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                      onClick={() => setShowDemoModal(false)}
+                    >
+                      <X className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div className="space-y-5 p-6">
+                    {demoCompanies.map((company) => (
+                      <div key={company.slug}>
+                        <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                          {company.name} ({company.country})
+                        </h4>
+                        <div className="grid gap-2">
+                          {company.users.map((user) => (
+                            <button
+                              key={user.email}
+                              type="button"
+                              className="w-full rounded-xl border border-slate-200 p-4 text-left transition hover:border-teal-300 hover:bg-teal-50/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                              onClick={() => selectDemoUser(user.email, user.password)}
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="font-semibold text-slate-950">{user.name}</span>
+                                <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                                  {user.managerRole ?? user.role}
+                                </span>
+                              </div>
+                              <span className="mt-1 block text-sm text-slate-500">{user.email}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
