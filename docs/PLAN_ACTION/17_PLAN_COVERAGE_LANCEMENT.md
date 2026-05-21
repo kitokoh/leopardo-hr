@@ -32,10 +32,10 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 - [x] Finaliser `/pricing`, `/demo` et `/integrations` en FR/EN/AR/TR avec support RTL arabe.
 - [x] Auditer et finaliser `/blog` en FR/EN/AR/TR.
 - [x] Ajouter alternates sitemap/hreflang et metadata canonical compatibles avec le rail `?lang=`.
-- [ ] Auditer schema.org par locale sur les contenus marketing dynamiques.
+- [x] Auditer schema.org par locale sur les contenus marketing dynamiques : JSON-LD article avec URL/image absolues et `inLanguage`.
 - [x] Conserver le formulaire demo sur endpoint server-side `/api/forms/demo` et transmettre la locale courante.
 - [x] Conserver le formulaire newsletter sur endpoint server-side `/api/forms/newsletter` et transmettre la locale courante.
-- [ ] Ajouter observabilite metier explicite sur les leads demo/newsletter.
+- [x] Ajouter observabilite metier explicite sur les leads demo/newsletter/signup/contact : identifiant lead, locale, source, UTM, logs structures et webhooks CRM/email optionnels.
 
 ## Lot 17.4 — Mobile et kiosque readiness
 
