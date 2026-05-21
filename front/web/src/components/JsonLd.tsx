@@ -18,6 +18,7 @@ export function ArticleJsonLd({
   image,
   datePublished,
   author,
+  inLanguage,
 }: {
   title: string;
   description: string;
@@ -25,6 +26,7 @@ export function ArticleJsonLd({
   image: string;
   datePublished: string;
   author: string;
+  inLanguage?: string;
 }) {
   return (
     <JsonLd
@@ -35,6 +37,7 @@ export function ArticleJsonLd({
         description,
         image,
         url,
+        inLanguage,
         datePublished,
         author: {
           '@type': 'Person',
@@ -64,6 +67,7 @@ export function OrganizationJsonLd() {
         operatingSystem: 'Web, Android',
         description:
           'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+        availableLanguage: ['fr', 'en', 'ar', 'tr'],
         offers: {
           '@type': 'AggregateOffer',
           priceCurrency: 'EUR',
