@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.107] - 2026-05-21
+
+### Docs
+
+- Validation : rapport release readiness 2026-05-21 ajoute avec score, livraisons, risques restants, commandes executees et echecs classes.
+
 ## [4.16.106] - 2026-05-21
 
 ### Tests
