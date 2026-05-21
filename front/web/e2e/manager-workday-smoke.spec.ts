@@ -71,7 +71,7 @@ async function mockManagerSession(page: Page) {
     });
   });
 
-  await page.route('**/api/v1/dashboard/recent-activity?limit=5', async (route) => {
+  await page.route('**/api/v1/dashboard/recent-activity**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -181,9 +181,9 @@ test.describe('Client web manager workday smoke', () => {
   test('HR manager can move through dashboard, team, attendance and absences then logout', async ({ page }) => {
     await mockManagerSession(page);
 
-    await page.goto('/auth/login');
-    await page.getByPlaceholder(/email/i).fill('fatima.meziane@techcorp-algerie.dz');
-    await page.getByPlaceholder(/password|mot de passe/i).fill('password123');
+    await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+    await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
+    await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
     await page.getByRole('button', { name: /sign in|se connecter/i }).click();
 
     await expect(page).toHaveURL(/\/dashboard$/);
@@ -191,20 +191,20 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('39');
     await expect(page.locator('body')).toContainText('absence.requested');
 
-    await page.getByRole('link', { name: /Employes|Equipe/i }).click();
+    await page.locator('aside a[href="/employees"]').click();
     await expect(page).toHaveURL(/\/employees$/);
     await expect(page.locator('body')).toContainText('Total equipe');
     await expect(page.locator('body')).toContainText('42');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText('EMP-501');
 
-    await page.getByRole('link', { name: /Pointages?|Attendance/i }).click();
+    await page.locator('aside a[href="/attendance"]').click();
     await expect(page).toHaveURL(/\/attendance$/);
     await expect(page.locator('body')).toContainText('Manager');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText('present');
 
-    await page.getByRole('link', { name: /Absences/i }).click();
+    await page.locator('aside a[href="/absences"]').click();
     await expect(page).toHaveURL(/\/absences$/);
     await expect(page.locator('body')).toContainText('Demandes visibles');
     await expect(page.locator('body')).toContainText('Conges payes');

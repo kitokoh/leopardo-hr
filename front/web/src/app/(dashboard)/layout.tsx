@@ -41,7 +41,8 @@ export default function DashboardLayout({
     }
 
     if (!user) {
-      router.replace('/auth/login');
+      clearAuthSession();
+      window.location.replace('/auth/login');
       return;
     }
     applyDocumentLocale(locale, user.is_rtl);

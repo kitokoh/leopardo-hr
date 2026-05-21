@@ -30,6 +30,7 @@ export class ApiError extends Error {
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
+  const isLoginRequest = endpoint === '/auth/login' || endpoint === '/platform/auth/login';
 
   const headers = {
     'Content-Type': 'application/json',
@@ -44,9 +45,9 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     headers,
   });
 
-  if (response.status === 401 && typeof window !== 'undefined') {
+  if (response.status === 401 && typeof window !== 'undefined' && !isLoginRequest) {
     clearAuthSession();
-    window.location.href = '/auth/login';
+    window.location.replace('/auth/login');
     throw new Error('Unauthorized: redirecting to login');
   }
 
