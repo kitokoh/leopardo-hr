@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-18
+Derniere mise a jour : 2026-05-21
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -177,6 +177,12 @@ Procedure recommandee :
 - Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
 
 ## Historique utile
+
+### 2026-05-21 - Auth readiness marche : client, mobile, plateforme
+
+- Le bouton demo de `front/admin-dashboard/` doit rester limite aux comptes super-admin plateforme : ce frontend appelle `/api/v1/platform/auth/login`, donc les comptes RH/employes tenant doivent rester sur `front/web` ou mobile.
+- Pour prouver un login pret marche, tester le contrat complet `login -> token -> /auth/me` et `platform/login -> token -> /platform/auth/me`, pas seulement la presence d'un token dans la reponse.
+- Sur `front/web`, `npm audit fix --force` peut proposer des regressions majeures incoherentes (ex. downgrade Next). Preferer un patch mineur cible, relancer lint/build, puis documenter les advisories restantes si elles dependent d'un upstream non corrige.
 
 ### 2026-05-18 - Nettoyage depot distant Devin/GTM/mobile
 
