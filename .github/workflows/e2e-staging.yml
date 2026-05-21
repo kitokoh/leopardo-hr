@@ -11,6 +11,10 @@ on:
         description: "Web vitrine staging base URL to test"
         required: false
         default: ""
+      demo_auth_smoke:
+        description: "Run real demo auth smoke with staging/demo credentials"
+        required: false
+        default: "false"
   workflow_run:
     workflows: ["Deploy - Leopardo RH"]
     types: [completed]
@@ -115,6 +119,19 @@ jobs:
             exit 1
           fi
           echo "All API smoke tests passed."
+
+      - name: Optional demo auth smoke
+        shell: bash
+        env:
+          BASE_URL: ${{ steps.url.outputs.base_url }}
+          STAGING_DEMO_AUTH_SMOKE: ${{ github.event.inputs.demo_auth_smoke || secrets.STAGING_DEMO_AUTH_SMOKE || 'false' }}
+          STAGING_MANAGER_EMAIL: ${{ secrets.STAGING_MANAGER_EMAIL }}
+          STAGING_MANAGER_PASSWORD: ${{ secrets.STAGING_MANAGER_PASSWORD }}
+          STAGING_EMPLOYEE_EMAIL: ${{ secrets.STAGING_EMPLOYEE_EMAIL }}
+          STAGING_EMPLOYEE_PASSWORD: ${{ secrets.STAGING_EMPLOYEE_PASSWORD }}
+          STAGING_PLATFORM_EMAIL: ${{ secrets.STAGING_PLATFORM_EMAIL }}
+          STAGING_PLATFORM_PASSWORD: ${{ secrets.STAGING_PLATFORM_PASSWORD }}
+        run: bash dev-hub/tools/staging-demo-auth-smoke.sh "${BASE_URL}"
 
   e2e-admin-dashboard:
     name: Admin Dashboard E2E (Playwright)
