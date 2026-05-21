@@ -160,6 +160,7 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - Liste notifications supporte filtre `type`, filtre `unread`, tri chronologique allowliste, pagination, `unread_count` et payload vide stable
 - Endpoint de lecture marque lu / non lu correctement
 - `POST /api/v1/client-events` persiste uniquement les evenements UX allowlistes, exige auth + tenant, minimise les proprietes et refuse les evenements non fiables comme `login_failed`
+- `GET/PATCH /api/v1/notification-preferences` cree et met a jour les preferences de canaux de l'utilisateur authentifie, avec audit `communication_events`
 - Journalisation des actions sensibles disponible si prevue
 - `AuditLogger` listener ecoute les 8 domain events et ecrit dans `audit_logs`
 - `WebhookListener` dispatche les events vers les endpoints webhook du tenant

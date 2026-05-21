@@ -2,6 +2,30 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.122] - 2026-05-22
+
+### Added
+
+- API : tables tenant `notification_preferences` et `communication_events` pour le socle communication interne Plan 19.1.
+- API : endpoints authentifies `GET/PATCH /api/v1/notification-preferences`.
+- API : `CommunicationService`, `DispatchCommunicationJob` et `MessageProviderInterface` pour orchestrer app, email, push, SMS et WhatsApp avec audit centralise.
+- API : provider SMS/WhatsApp audit-only par defaut afin de livrer le flux sans cout externe ni secret fournisseur en CI.
+- Web client : centre de notifications visible dans le header dashboard avec badge non lu et dernieres notifications.
+- Web client : page `/settings/notifications` pour gerer canaux, categories et heures calmes.
+
+### Changed
+
+- Notifications : la lecture d'une notification et le marquage global creent maintenant un evenement d'audit communication.
+- Push : l'envoi test manager passe par l'orchestrateur communication pour respecter preferences et audit.
+- Plan 18 : cloture fonctionnelle documentee avant demarrage Plan 19.
+- OpenAPI, RBAC route matrix et frontend/API matrix alignes avec les preferences de notification.
+
+### Tests
+
+- Backend : `NotificationPreferenceControllerTest` couvre auth, defaults, update, validation et audit.
+- Backend : `CommunicationServiceTest` couvre creation notification app, opt-out, provider email fake et payloads SMS/WhatsApp sans donnees sensibles.
+- Backend : `NotificationControllerTest` verifie l'audit communication sur lecture de notifications.
+
 ## [4.16.121] - 2026-05-22
 
 ### Added

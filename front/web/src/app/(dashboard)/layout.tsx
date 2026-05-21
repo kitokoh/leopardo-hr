@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { LockKeyhole, Sparkles } from 'lucide-react';
+import { Bell, LockKeyhole, Sparkles } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, type ClientModuleAccess } from '@/lib/client-features';
@@ -30,6 +30,9 @@ export default function DashboardLayout({
   const [mounted, setMounted] = useState(false);
   const [userOverride, setUserOverride] = useState<StoredAuthUser | null>(null);
   const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
+  const [notificationPreview, setNotificationPreview] = useState<ClientNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const user = userOverride ?? storedUser;
   const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
@@ -58,6 +61,42 @@ export default function DashboardLayout({
     clearAuthSession();
     router.push('/auth/login');
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadNotifications() {
+      if (!mounted || !user) {
+        return;
+      }
+
+      try {
+        const response = await apiFetch('/notifications?per_page=5&sort_dir=desc');
+        const payload = await response.json() as {
+          data?: ClientNotification[];
+          meta?: { unread_count?: number };
+        };
+
+        if (cancelled) {
+          return;
+        }
+
+        setNotificationPreview(Array.isArray(payload.data) ? payload.data : []);
+        setUnreadCount(Number(payload.meta?.unread_count ?? 0));
+      } catch {
+        if (!cancelled) {
+          setNotificationPreview([]);
+          setUnreadCount(0);
+        }
+      }
+    }
+
+    void loadNotifications();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted, user]);
 
   const handleLanguageChange = async (value: string) => {
     const nextLocale = normalizeLocale(value);
@@ -161,6 +200,51 @@ export default function DashboardLayout({
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-app-border bg-white px-8">
           <h2 className="text-lg font-bold text-slate-800">{labels.dashboard.heading}</h2>
           <div className="flex items-center gap-4">
+            <div className="relative">
+              <button
+                type="button"
+                className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-teal-300 hover:text-teal-700"
+                aria-label="Notifications"
+                aria-expanded={notificationsOpen}
+                onClick={() => setNotificationsOpen((value) => !value)}
+              >
+                <Bell className="h-5 w-5" aria-hidden="true" />
+                {unreadCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                ) : null}
+              </button>
+              {notificationsOpen ? (
+                <div className="absolute right-0 top-12 z-20 w-80 rounded-lg border border-slate-200 bg-white p-3 shadow-xl">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <p className="text-sm font-bold text-slate-900">Notifications</p>
+                    <span className="text-xs font-semibold text-slate-500">{unreadCount} non lue(s)</span>
+                  </div>
+                  <div className="mt-2 max-h-80 space-y-2 overflow-auto">
+                    {notificationPreview.length > 0 ? notificationPreview.map((notification) => (
+                      <div key={notification.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-bold text-slate-900">{notification.title}</p>
+                          {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-teal-500" aria-label="Non lue" /> : null}
+                        </div>
+                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
+                        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{notification.type}</p>
+                      </div>
+                    )) : (
+                      <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600">Aucune notification recente.</p>
+                    )}
+                  </div>
+                  <Link
+                    href="/settings/notifications"
+                    className="mt-3 flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-teal-300 hover:text-teal-700"
+                    onClick={() => setNotificationsOpen(false)}
+                  >
+                    Gerer mes preferences
+                  </Link>
+                </div>
+              ) : null}
+            </div>
             <label className="flex items-center gap-2 text-sm text-gray-600">
               <span>{labels.dashboard.language}</span>
               <select
@@ -191,6 +275,14 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+type ClientNotification = {
+  id: number | string;
+  type: string;
+  title: string;
+  body?: string | null;
+  is_read?: boolean;
+};
 
 function SidebarLink({ module, active }: { module: ClientModuleAccess; active: boolean }) {
   const className = [
