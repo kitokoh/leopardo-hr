@@ -61,6 +61,6 @@ Les modules non inclus affichent une page d upgrade explicite au lieu de rendre 
 ## Points restants Plan 18
 
 - Ajouter la recuperation mot de passe reelle cote backend/web quand le flux email sera pret.
-- Brancher le tracking produit `login_success`, `login_failed`, `dashboard_loaded`.
+- Persister le tracking produit cote backend/data warehouse quand l endpoint analytics sera stabilise ; le tracking navigateur local est deja couvert dans `CLIENT_UX_OBSERVABILITY.md`.
 - Completer les gates backend si un endpoint critique n applique pas encore les feature flags serveur.
-- Brancher l onboarding incomplet, les notifications temps reel et l etat kiosque lorsque les endpoints dedies seront stabilises.
+- Brancher l onboarding incomplet et les notifications temps reel lorsque les endpoints dedies seront stabilises.
