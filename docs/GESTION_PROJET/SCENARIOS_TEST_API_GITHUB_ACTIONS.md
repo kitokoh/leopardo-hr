@@ -39,6 +39,8 @@ Note 2026-05-14 : les endpoints sensibles utilisent des limiters nommes configur
 
 Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version`, `X-API-Supported-Versions`) et refuse un `X-API-Version` non supporte. Les routes authentifiees tenant portent aussi un limiter `api-plan` configurable par plan commercial ; garder un test `429` dedie sur un plan Starter avec seuil abaisse en test.
 
+Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`, `absences`, `attendance`, `me/pay-slips`, `notifications`) doivent conserver pagination, filtres, tri allowliste, payload vide et erreurs de validation couverts par `ApiListQueryContractTest`. Aucun `sort_by` libre ne doit atteindre une requete SQL.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -90,6 +92,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 ### 5. Employes et organisation
 
 - Liste employees avec pagination, tri, filtre
+- Liste employees refuse les tris non allowlistes et retourne un payload vide stable quand la recherche ne matche rien
 - Organigramme retourne uniquement les employes du tenant courant et construit l'arbre sans scans repetes par noeud
 - Chaine manager et subordonnes refusent les IDs hors tenant
 - Creation employee avec validations metier
@@ -105,6 +108,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Double check-in interdit
 - Check-out sans check-in interdit
 - Historique presence retourne des donnees coherentes
+- Historique presence supporte filtre statut, intervalle de dates, tri allowliste, pagination et payload vide
 - Resume du jour correct selon fuseau et etat
 - Conflits ou doublons geres sans corruption des donnees
 - `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
@@ -118,12 +122,15 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 - Solde mis a jour correctement
 - Chevauchement de periodes refuse
 - Consultation historique des demandes par role
+- Liste absences supporte filtres statut/periode/employe, tri allowliste, pagination et payload vide
 - Employee ne peut pas valider sa propre demande sans permission speciale
 - Liste paginee `GET /api/v1/absences` expose pour le dashboard manager les champs derives `employee_name` et `type` (nom du type d'absence) en plus des relations `absence_type` / `absenceType`
 
 ### 8. Paie / finance
 
 - Acces bulletins par employee
+- Liste `GET /api/v1/me/pay-slips` supporte filtre statut `validated|sent`, tri allowliste, pagination et refuse les statuts internes `calculated`
+- Detail `GET /api/v1/me/pay-slips/{id}` expose les lignes du bulletin dans un payload stable pour mobile
 - Acces synthese payroll par finance / HR
 - Refus d'acces payroll pour roles non autorises
 - Calculs exposes sans fuite inter-tenant
@@ -150,6 +157,7 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 ### 10. Notifications / evenements / audit
 
 - Evenement metier declenche la notification attendue
+- Liste notifications supporte filtre `type`, filtre `unread`, tri chronologique allowliste, pagination, `unread_count` et payload vide stable
 - Endpoint de lecture marque lu / non lu correctement
 - Journalisation des actions sensibles disponible si prevue
 - `AuditLogger` listener ecoute les 8 domain events et ecrit dans `audit_logs`

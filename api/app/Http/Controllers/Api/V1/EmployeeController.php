@@ -14,6 +14,7 @@ use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Employee;
 use App\Services\DataAccessAuditLogger;
 use App\Services\EmployeeService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -51,8 +52,21 @@ class EmployeeController extends Controller
 
         $this->authorize('viewAny', Employee::class);
 
-        $perPage = max(1, min(100, (int) request()->integer('per_page', 20)));
-        $paginator = Employee::query()
+        $validated = $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'status' => ['nullable', 'in:active,archived,suspended'],
+            'role' => ['nullable', 'in:employee,manager,admin,super_admin'],
+            'search' => ['nullable', 'string', 'max:100'],
+            'sort_by' => ['nullable', 'in:id,first_name,last_name,email,role,status'],
+            'sort_dir' => ['nullable', 'in:asc,desc'],
+        ]);
+
+        $perPage = (int) ($validated['per_page'] ?? 20);
+        $sortBy = (string) ($validated['sort_by'] ?? 'id');
+        $sortDir = (string) ($validated['sort_dir'] ?? 'asc');
+
+        $query = Employee::query()
             ->with(['company:id,name,language,timezone,currency,features'])
             ->select([
                 'id',
@@ -68,7 +82,29 @@ class EmployeeController extends Controller
                 'contract_start',
                 'preferred_language',
                 'extra_data',
-            ])
+            ]);
+
+        if (! empty($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
+
+        if (! empty($validated['role'])) {
+            $query->where('role', $validated['role']);
+        }
+
+        if (! empty($validated['search'])) {
+            $needle = '%'.addcslashes((string) $validated['search'], '%_\\').'%';
+            $query->where(function (Builder $query) use ($needle): void {
+                $query
+                    ->where('first_name', 'like', $needle)
+                    ->orWhere('last_name', 'like', $needle)
+                    ->orWhere('email', 'like', $needle)
+                    ->orWhere('matricule', 'like', $needle);
+            });
+        }
+
+        $paginator = $query
+            ->orderBy($sortBy, $sortDir)
             ->orderBy('id')
             ->paginate($perPage);
 

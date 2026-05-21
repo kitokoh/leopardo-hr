@@ -14,9 +14,28 @@ class NotificationController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
-        $notifications = $user->notifications()
-            ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
+        $validated = $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'type' => ['nullable', 'string', 'max:80'],
+            'unread' => ['nullable', 'boolean'],
+            'sort_dir' => ['nullable', 'in:asc,desc'],
+        ]);
+
+        $query = $user->notifications();
+
+        if (! empty($validated['type'])) {
+            $query->where('type', $validated['type']);
+        }
+
+        if ($request->has('unread') && $request->boolean('unread')) {
+            $query->where('is_read', false);
+        }
+
+        $notifications = $query
+            ->orderBy('created_at', (string) ($validated['sort_dir'] ?? 'desc'))
+            ->orderByDesc('id')
+            ->paginate((int) ($validated['per_page'] ?? 20));
 
         return response()->json([
             'data' => $notifications->items(),
