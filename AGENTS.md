@@ -65,6 +65,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les composants vitrine utilises avec `react-hook-form` doivent forwarder leur `ref` vers le vrai champ HTML. Le bug corrige sur `Input` provoquait des submissions sans valeur reelle malgre des champs visuellement remplis.
 - Les pages vitrine conversion `/pricing`, `/demo` et `/integrations` utilisent `useVitrineLocale()` avec contenu FR/EN/TR/AR et `dir=rtl` pour l'arabe. Toute evolution marketing sur ces pages doit ajouter les 4 locales dans le meme changement.
 - Le blog vitrine utilise `getBlogPosts(locale)` / `getBlogPost(slug, locale)` et le rail `?lang=` pour les alternates sitemap/hreflang. Toute nouvelle entree blog doit conserver slug stable et champs localises FR/EN/TR/AR.
+- Les listes API critiques consommees par mobile/admin (`employees`, `absences`, `attendance`, `me/pay-slips`, `notifications`) doivent garder des filtres/tris allowlistes et couverts par `ApiListQueryContractTest`. Ne pas accepter de `sort_by` libre ou de champ SQL arbitraire.
 - Sur Next 16 / React 19, les routes dynamiques sous `front/web/src/app/**/[slug]` recoivent `params` sous forme de Promise. Dans les Server Components, `await params`; dans les Client Components, utiliser `use(params)`.
 - Dans `database-backup.yml`, ne pas installer `awscli` via `apt-get` sur `ubuntu-latest`; le paquet peut disparaitre. Installer `postgresql-client age`, puis utiliser l'AWS CLI preinstallee ou fallback `pip --user`.
 
