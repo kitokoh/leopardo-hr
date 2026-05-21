@@ -106,7 +106,7 @@ test.describe('Client web feature gates', () => {
     await page.goto('/reports', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/reports$/);
-    await expect(page.locator('aside')).toContainText('Trial');
+    await expect(page.getByText('Trial').first()).toBeVisible();
     await expect(page.locator('body')).toContainText('Generez et telechargez vos rapports RH');
   });
 

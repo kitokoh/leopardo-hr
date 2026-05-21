@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -15,9 +16,15 @@ import {
   Search,
   Download,
   CheckCircle2,
+  Building2,
+  ClipboardList,
+  FileCheck,
+  Languages,
+  ArrowRight,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { getDisplayName, getPreferredLocale, getStoredUser, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
+import { getClientModuleAccess } from '@/lib/client-features';
 
 const emptySubscribe = () => () => {};
 
@@ -90,19 +97,42 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 export default function DashboardPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [activeTab, setActiveTab] = useState('today');
+  const [user, setUser] = useState<StoredAuthUser | null>(null);
+  const [userLoaded, setUserLoaded] = useState(false);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [activities, setActivities] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const role = user?.role?.toLowerCase() ?? null;
+  const isEmployee = role === 'employee';
+  const isSuperAdmin = role === 'super_admin';
+  const companyName = user?.company?.name ?? 'Votre entreprise';
+  const modules = getClientModuleAccess(user);
+  const activeModules = modules.filter((module) => module.enabled && module.key !== 'dashboard').length;
+  const lockedModules = modules.filter((module) => !module.enabled).length;
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
   useEffect(() => {
+    setUser(getStoredUser());
+    setUserLoaded(true);
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function loadDashboard() {
+      if (!userLoaded) {
+        return;
+      }
+
+      if (isEmployee || isSuperAdmin) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setLoadError(null);
 
@@ -140,7 +170,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isEmployee, isSuperAdmin, userLoaded]);
 
   const stats: DashboardStat[] = [
     {
@@ -193,6 +223,18 @@ export default function DashboardPage() {
       }))
     : [];
 
+  if (!userLoaded) {
+    return null;
+  }
+
+  if (isEmployee) {
+    return <EmployeeDashboard user={user} />;
+  }
+
+  if (isSuperAdmin) {
+    return <SuperAdminBridge user={user} />;
+  }
+
   return (
     <div className="space-y-6 p-6">
       <motion.div
@@ -227,6 +269,37 @@ export default function DashboardPage() {
           </button>
         </div>
       </motion.div>
+
+      <section className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Entreprise</p>
+              <h2 className="mt-2 text-2xl font-black text-slate-950">{companyName}</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                {activeModules} modules actifs, {lockedModules} a activer selon votre plan.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div className="rounded-xl bg-emerald-50 px-4 py-3">
+                <p className="text-2xl font-black text-emerald-700">{activeModules}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-900">Actifs</p>
+              </div>
+              <div className="rounded-xl bg-amber-50 px-4 py-3">
+                <p className="text-2xl font-black text-amber-700">{lockedModules}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900">Upgrade</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-200">Actions prioritaires</p>
+          <div className="mt-4 grid gap-3 text-sm">
+            <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
+            <PriorityAction label="Verifier les presences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
@@ -405,6 +478,88 @@ export default function DashboardPage() {
           </GlassCard>
         </div>
       </div>
+    </div>
+  );
+}
+
+function PriorityAction({ label, value, href }: { label: string; value: number; href: string }) {
+  return (
+    <Link href={href} className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3 transition hover:bg-white/15">
+      <span>{label}</span>
+      <span className="inline-flex items-center gap-2 font-bold text-teal-100">
+        {value}
+        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+      </span>
+    </Link>
+  );
+}
+
+function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
+  const cards = [
+    { icon: CheckCircle2, title: 'Pointage', text: 'Voir votre etat du jour.', href: '/attendance' },
+    { icon: Calendar, title: 'Absences', text: 'Suivre vos demandes et soldes.', href: '/absences' },
+    { icon: FileCheck, title: 'Bulletins', text: 'Consulter vos documents de paie.', href: '/payroll' },
+    { icon: Languages, title: 'Langue', text: 'Votre interface suit vos preferences.', href: '/dashboard' },
+  ];
+
+  return (
+    <div className="space-y-6 p-6">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Espace employe</p>
+        <h1 className="mt-3 text-3xl font-black text-slate-950">Bonjour {getDisplayName(user)}</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Retrouvez vos actions utiles sans passer par les vues manager : pointage, absences, bulletins et langue.
+        </p>
+      </section>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => (
+          <Link key={card.title} href={card.href} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <card.icon className="h-7 w-7 text-emerald-600" aria-hidden="true" />
+            <h2 className="mt-4 text-lg font-bold text-slate-950">{card.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">{card.text}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SuperAdminBridge({ user }: { user: StoredAuthUser | null }) {
+  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
+
+  return (
+    <div className="space-y-6 p-6">
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
+          <Building2 className="h-6 w-6" aria-hidden="true" />
+        </div>
+        <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Super admin</p>
+        <h1 className="mt-2 text-3xl font-black text-slate-950">Bonjour {getDisplayName(user)}</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Cette surface est optimisee pour les espaces clients. L administration plateforme se fait depuis le dashboard admin dedie.
+        </p>
+        {adminUrl ? (
+          <Link href={adminUrl} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
+            Ouvrir le dashboard admin
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        ) : (
+          <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            Configurez NEXT_PUBLIC_ADMIN_URL pour ajouter le lien direct vers l administration plateforme.
+          </div>
+        )}
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        {['Sante plateforme', 'Demandes clients', 'Tenants a risque'].map((item) => (
+          <div key={item} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <ClipboardList className="h-6 w-6 text-slate-500" aria-hidden="true" />
+            <h2 className="mt-4 text-lg font-bold text-slate-950">{item}</h2>
+            <p className="mt-2 text-sm text-slate-500">Disponible dans le dashboard plateforme.</p>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
