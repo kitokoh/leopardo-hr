@@ -8,11 +8,11 @@ Garantir qu'un client peut reellement se connecter, comprendre son espace, acced
 
 ## Lot 18.1 - Contrat connexion client reel
 
-- [ ] Verifier le parcours complet : vitrine -> login -> dashboard manager.
-- [ ] Tester identifiants valides, mauvais mot de passe, compte inactif, compte sans tenant, session expiree.
-- [ ] Garantir les redirections par role : manager principal, RH, comptable, employe, super admin.
-- [ ] Ajouter un smoke E2E preview qui valide login client + affichage des donnees dashboard non vides.
-- [ ] Documenter les variables d'environnement requises : API base, URL vitrine, URL admin, credentials demo/staging.
+- [x] Verifier le parcours complet : vitrine -> login -> dashboard manager.
+- [~] Tester identifiants valides, mauvais mot de passe, compte inactif, compte sans tenant, session expiree.
+- [x] Garantir les redirections par role : manager principal, RH, comptable, employe, super admin.
+- [x] Ajouter un smoke E2E preview qui valide login client + affichage des donnees dashboard non vides.
+- [x] Documenter les variables d'environnement requises : API base, URL vitrine, URL admin, credentials demo/staging.
 
 ## Lot 18.2 - Acces features par plan et par role
 
@@ -23,10 +23,12 @@ Garantir qu'un client peut reellement se connecter, comprendre son espace, acced
 
 ## Lot 18.3 - Modernisation login UX
 
-- [ ] Harmoniser les pages login web client, admin plateforme, mobile et kiosque.
-- [ ] Ajouter et tester : afficher/masquer mot de passe, etat loading, erreurs lisibles, recuperation mot de passe, acces demo si autorise.
-- [ ] Optimiser responsive mobile, contraste, navigation clavier, focus visible et ARIA.
-- [ ] Eviter les pages marketing dans le login : priorite a l'action, confiance, securite et clarte.
+- [~] Harmoniser les pages login web client, admin plateforme, mobile et kiosque.
+- [~] Ajouter et tester : afficher/masquer mot de passe, etat loading, erreurs lisibles, recuperation mot de passe, acces demo si autorise.
+- [x] Optimiser responsive mobile, contraste, navigation clavier, focus visible et ARIA.
+- [x] Eviter les pages marketing dans le login : priorite a l'action, confiance, securite et clarte.
+
+Note 2026-05-21 : le login web client est modernise et couvert par Playwright. Les cas compte inactif / sans tenant dependront du contrat d'erreur backend dedie, et la recuperation mot de passe reste a brancher quand le flux email sera expose.
 
 ## Lot 18.4 - Premiere experience apres connexion
 
