@@ -8,6 +8,7 @@ Documentation fonctionnelle orientee **usage quotidien**, par role.
 | Manager principal / RH / Superviseur | [GUIDE_MANAGER.md](GUIDE_MANAGER.md) | Inviter des employes, gerer l equipe, biometrie, rapports, paie |
 | Responsable RH | [GUIDE_RH.md](GUIDE_RH.md) | Focus sur le onboarding, la relance d invitations, l archivage |
 | Employe | [GUIDE_EMPLOYEE.md](GUIDE_EMPLOYEE.md) | Utiliser l app mobile (pointage, Mon mois, historique) |
+| Operations / deploiement | [GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md](GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md) | URLs API/web/admin, variables front, serveurs et outils gratuits de communication |
 
 > **Ou va ce que je cherche ?**
 >

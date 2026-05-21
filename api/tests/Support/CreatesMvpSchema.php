@@ -761,6 +761,24 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('client_events'))) {
+            Schema::create($this->moduleTable('client_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->nullable()->index();
+                $table->string('event_name', 80);
+                $table->string('surface', 40)->default('web');
+                $table->string('session_id', 120)->nullable();
+                $table->unsignedInteger('duration_ms')->nullable();
+                $table->json('properties')->nullable();
+                $table->string('ip_address', 45)->nullable();
+                $table->string('user_agent', 255)->nullable();
+                $table->timestampTz('occurred_at')->useCurrent();
+                $table->timestamps();
+                $table->index(['company_id', 'event_name', 'occurred_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('webhook_endpoints'))) {
             Schema::create($this->moduleTable('webhook_endpoints'), function (Blueprint $table): void {
                 $table->id();
@@ -1328,6 +1346,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "contracts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_structures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "client_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_tool_registry"'.$cascade);

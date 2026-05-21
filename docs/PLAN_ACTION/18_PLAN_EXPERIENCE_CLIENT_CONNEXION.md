@@ -50,6 +50,10 @@ Note 2026-05-21 : le dashboard web client presente maintenant l entreprise, les 
 
 Note 2026-05-21 : le portail web emet maintenant les evenements `leopardo:analytics` via `trackClientEvent`, couverts par Playwright. Les captures login/dashboard sont attachees au rapport CI `web-client-playwright-report`, et les seuils UX sont formalises dans `docs/validation/CLIENT_UX_OBSERVABILITY.md`. La page login est ajoutee au contrat Lighthouse. Le kiosque expose aussi un evenement `leopardo:kiosk-status` et une derniere synchronisation lisible pour clarifier l etat offline.
 
+Note 2026-05-22 : les evenements authentifies sont persistables via `POST /api/v1/client-events` dans la table tenant `client_events`, avec rate limit dedie, allowlist d evenements et minimisation des proprietes pour eviter la fuite PII. `login_failed` reste volontairement local tant que le tenant n est pas fiable.
+
+Note 2026-05-22 : la vitrine est renforcee pour le lancement marketing avec liens directs `/blog`, `/guides/rh-startup`, `/pricing` et `/demo`, une section de conversion reliee au parcours client, des metadonnees sociales et des assets PWA/SEO propres. Cette couche oriente le trafic public vers un parcours concret : lire, comparer, demander une demo, s'inscrire, puis se connecter a l'espace client.
+
 ## Definition of done
 
 - Un client manager peut se connecter depuis la vitrine et arriver dans un espace utile sans intervention technique.
@@ -57,4 +61,4 @@ Note 2026-05-21 : le portail web emet maintenant les evenements `leopardo:analyt
 - Les pages login sont modernes, accessibles, rapides et testees.
 - Les smoke tests staging couvrent API auth, web login client, admin login et mobile contract.
 - Toute regression de connexion bloque la PR ou le deploy.
-- Lot 18 web client : livre fonctionnellement. Les reliquats futurs sont des integrations serveur/ops dediees : endpoint analytics persistant, contrats backend pour compte inactif/sans tenant et endpoints notifications/onboarding/kiosque avances.
+- Lot 18 web client : livre fonctionnellement. Les reliquats futurs sont des integrations serveur/ops dediees : lecture analytics agregee, contrats backend pour compte inactif/sans tenant et endpoints notifications/onboarding/kiosque avances.

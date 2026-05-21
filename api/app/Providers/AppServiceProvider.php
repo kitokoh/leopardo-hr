@@ -158,6 +158,16 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('security.rate_limits.ai_per_minute', 20))
                 ->by('ai:'.$key);
         });
+
+        RateLimiter::for('client-analytics', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.client_analytics_per_minute', 120))
+                ->by('client-analytics:'.$key);
+        });
     }
 
     private function resolvePlanLimit(string $plan): int

@@ -2,6 +2,41 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.121] - 2026-05-22
+
+### Added
+
+- Web vitrine : section de conversion lancement RH reliant demo, blog/guides et pricing au parcours espace client.
+- Web vitrine : assets SEO/PWA `icon.svg`, `favicon.svg`, image OpenGraph et manifeste nettoye pour eviter les icones fantomes.
+- Documentation : Plan 19 communication interne, guide liens plateforme/serveurs/outils gratuits, et integration des PDFs de conception ajoutes.
+
+### Changed
+
+- Web vitrine : navigation et footer exposent des liens reels vers blog, guides, pricing, demo, integrations et contact.
+- Web vitrine : metadonnees OpenGraph/Twitter/SEO repositionnees sur le message SaaS RH multilingue terrain.
+- Plan 18 : definition de fin enrichie avec la vitrine marketing reliee au funnel client.
+
+### Fixed
+
+- Backend : migration tenant `client_events` alignee sur le type non declare de `$withinTransaction` attendu par Laravel.
+
+## [4.16.120] - 2026-05-22
+
+### Added
+
+- API : endpoint authentifie `POST /api/v1/client-events` pour persister les evenements UX client tenant-scopes.
+- Backend : table tenant `client_events`, modele `ClientEvent`, FormRequest allowlist et rate limiter `client-analytics`.
+- OpenAPI : contrat `ClientEventRequest` / `ClientEventResponse` documente.
+
+### Changed
+
+- Web client : `trackClientEvent` persiste les evenements authentifies sans bloquer l experience utilisateur.
+- Plan 18 : observabilite UX mise a jour avec stockage tenant-safe et minimisation des proprietes.
+
+### Tests
+
+- Backend : `ClientEventControllerTest` couvre creation tenant-scopee, authentification obligatoire et rejet d evenements non allowlistes.
+
 ## [4.16.119] - 2026-05-21
 
 ### Added
