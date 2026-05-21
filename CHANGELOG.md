@@ -2,6 +2,22 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.117] - 2026-05-21
+
+### Added
+
+- Plan 18 : moteur UI `client-features` pour calculer les modules web client depuis les capabilities, les features entreprise/plan et le role utilisateur.
+- Web client : ecran upgrade explicite pour les modules non inclus afin d eviter les 404 confuses ou les pages metier cassees.
+
+### Changed
+
+- Web client : la navigation dashboard indique les modules actifs, en trial ou a upgrader, avec blocage role/plan centralise dans le layout.
+- CI vitrine : le smoke Playwright authentifie couvre aussi les feature gates client.
+
+### Tests
+
+- Web client : tests Playwright ajoutes pour module accessible, module verrouille, module trial et blocage role employe sur la paie manager.
+
 ## [4.16.116] - 2026-05-21
 
 ### Added

@@ -105,4 +105,4 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
-        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts --project=chromium --workers=1
+        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts --project=chromium --workers=1
