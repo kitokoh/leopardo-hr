@@ -46,9 +46,9 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 
 ## Lot 17.5 — Observabilite lancement
 
-- [ ] Creer un tableau de bord lancement : health API, erreurs 5xx, temps p95, queue depth, jobs failed, leads demo.
-- [ ] Ajouter alerting externe pour `/api/v1/health`, `/docs`, vitrine et admin.
-- [ ] Formaliser le rollback marketing : comment stopper acquisition, queue, emails, webhooks et deploy.
+- [x] Creer un tableau de bord lancement : health API, erreurs 5xx, temps p95, queue depth, jobs failed, leads demo.
+- [x] Ajouter alerting externe pour `/api/v1/health`, `/docs`, vitrine et admin.
+- [x] Formaliser le rollback marketing : comment stopper acquisition, queue, emails, webhooks et deploy.
 
 ## Definition of done
 
