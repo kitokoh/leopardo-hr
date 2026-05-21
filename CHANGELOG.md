@@ -2,6 +2,21 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.116] - 2026-05-21
+
+### Added
+
+- Plan 18 : documentation `CLIENT_LOGIN_READINESS.md` ajoutée pour formaliser le parcours vitrine -> login -> dashboard, les variables d'environnement et les gardes Playwright.
+
+### Changed
+
+- Web client : page `/auth/login` modernisée avec UX responsive, contexte securite, acces demo, lien support, redirection post-login par role et toggle afficher/masquer le mot de passe.
+- Client API web : les `401` du login ne declenchent plus de redirection globale afin d'afficher les erreurs d'identifiants sur la page login.
+
+### Tests
+
+- Web client : smoke Playwright etendu pour couvrir login manager valide, mauvais identifiants, session expiree, affichage/masquage du mot de passe et dashboard tenant non vide.
+
 ## [4.16.115] - 2026-05-21
 
 ### Added
