@@ -99,6 +99,8 @@ Seuils : p95 dashboard < 1500 ms, liste/search employes < 1800 ms.
 | `MANAGER_DURATION` | `1m` | Duree manager |
 | `EMPLOYEE_DURATION` | `1m` | Duree employe |
 
+Les valeurs `*_VUS` inferieures a `1` sont normalisees a leur defaut pour respecter la configuration k6.
+
 ## Procedure de benchmark Plan 14
 
 1. Creer un tenant staging avec au moins 100 employes.
