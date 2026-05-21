@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.120] - 2026-05-22
+
+### Added
+
+- API : endpoint authentifie `POST /api/v1/client-events` pour persister les evenements UX client tenant-scopes.
+- Backend : table tenant `client_events`, modele `ClientEvent`, FormRequest allowlist et rate limiter `client-analytics`.
+- OpenAPI : contrat `ClientEventRequest` / `ClientEventResponse` documente.
+
+### Changed
+
+- Web client : `trackClientEvent` persiste les evenements authentifies sans bloquer l experience utilisateur.
+- Plan 18 : observabilite UX mise a jour avec stockage tenant-safe et minimisation des proprietes.
+
+### Tests
+
+- Backend : `ClientEventControllerTest` couvre creation tenant-scopee, authentification obligatoire et rejet d evenements non allowlistes.
+
 ## [4.16.119] - 2026-05-21
 
 ### Added
