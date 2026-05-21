@@ -10,24 +10,33 @@ const dashboardLatency = new Trend('dashboard_latency_ms');
 const attendanceLatency = new Trend('attendance_latency_ms');
 const payrollLatency = new Trend('payroll_latency_ms');
 
+function positiveInteger(value, fallback) {
+  const parsed = Number(value || fallback);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return fallback;
+  }
+
+  return Math.floor(parsed);
+}
+
 export const options = {
   scenarios: {
     health: {
       executor: 'constant-vus',
-      vus: Number(__ENV.HEALTH_VUS || 5),
+      vus: positiveInteger(__ENV.HEALTH_VUS, 5),
       duration: __ENV.HEALTH_DURATION || '1m',
       exec: 'healthScenario',
     },
     manager_read_paths: {
       executor: 'constant-vus',
-      vus: Number(__ENV.MANAGER_VUS || 5),
+      vus: positiveInteger(__ENV.MANAGER_VUS, 5),
       duration: __ENV.MANAGER_DURATION || '1m',
       exec: 'managerReadScenario',
       startTime: '5s',
     },
     employee_read_paths: {
       executor: 'constant-vus',
-      vus: Number(__ENV.EMPLOYEE_VUS || 5),
+      vus: positiveInteger(__ENV.EMPLOYEE_VUS, 5),
       duration: __ENV.EMPLOYEE_DURATION || '1m',
       exec: 'employeeReadScenario',
       startTime: '10s',
