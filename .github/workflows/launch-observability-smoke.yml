@@ -1,0 +1,60 @@
+name: Launch Observability Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: "API Render base URL"
+        required: false
+        default: "https://gestionemployerbackend.onrender.com"
+      web_url:
+        description: "Public web/vitrine base URL"
+        required: false
+        default: "https://gestionemployer-backend.vercel.app"
+      admin_url:
+        description: "Admin dashboard base URL"
+        required: false
+        default: "https://leo-admin.pages.dev"
+      max_latency_ms:
+        description: "Maximum accepted latency per probe"
+        required: false
+        default: "2500"
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: launch-observability-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: Probe launch surfaces
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Run launch probes
+        env:
+          LAUNCH_MAX_P95_MS: ${{ github.event.inputs.max_latency_ms || '2500' }}
+        run: |
+          bash dev-hub/tools/launch-observability-smoke.sh \
+            "${{ github.event.inputs.api_url || 'https://gestionemployerbackend.onrender.com' }}" \
+            "${{ github.event.inputs.web_url || 'https://gestionemployer-backend.vercel.app' }}" \
+            "${{ github.event.inputs.admin_url || 'https://leo-admin.pages.dev' }}"
+
+      - name: Upload launch smoke report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: launch-observability-smoke-report
+          path: dev-hub/observability/reports/launch-observability-smoke.json
+          if-no-files-found: ignore
+          retention-days: 14
