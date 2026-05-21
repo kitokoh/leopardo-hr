@@ -1,103 +1,75 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
+import { captureMarketingLead, getClientIp } from '../_lib/lead-capture';
+import { RateLimiter, sanitizeEmail, sanitizeInput } from '@/modules/vitrine/lib/validation';
 
-const safeLog = (..._args: unknown[]) => {};
+const rateLimiter = new RateLimiter(5, 15 * 60 * 1000);
 
-// Rate limiter instance (in production, use Redis)
-const rateLimiter = new RateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
-
-// Signup schema
 const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  page: z.string().optional(),
+  email: z.string().email().max(255),
+  password: z.string().min(8).max(200),
+  company: z.string().max(120).optional().or(z.literal('')),
+  plan: z.string().max(80).optional(),
+  module: z.string().max(80).optional(),
+  locale: z.enum(['fr', 'en', 'ar', 'tr']).optional(),
+  page: z.string().max(300).optional(),
+  source: z.string().max(120).optional(),
   timestamp: z.string().optional(),
 });
 
-/**
- * POST /api/forms/signup
- * Handle signup form submission
- */
 export async function POST(request: NextRequest) {
   try {
-    // Get client IP for rate limiting
-    const ip =
-      request.headers.get('x-forwarded-for') ||
-      request.headers.get('x-real-ip') ||
-      'unknown';
+    const ip = getClientIp(request);
 
-    // Check rate limit
     if (!rateLimiter.isAllowed(ip)) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Trop de tentatives. Veuillez réessayer plus tard.',
+          message: 'Trop de tentatives. Veuillez reessayer plus tard.',
           error: 'RATE_LIMIT_EXCEEDED',
         },
         { status: 429 }
       );
     }
 
-    // Parse request body
-    const body = await request.json();
-
-    // Validate input
-    const validatedData = signupSchema.parse(body);
-
-    // Sanitize inputs
-    const sanitizedEmail = sanitizeEmail(validatedData.email);
-
-    // TODO: In production, implement:
-    // 1. Check if email already exists in database
-    // 2. Hash password
-    // 3. Create user in database
-    // 4. Send confirmation email
-    // 5. Log signup event
-
-    // Mock implementation - simulate database operations
-    safeLog('Signup attempt:', {
-      email: sanitizedEmail,
-      page: validatedData.page,
+    const validatedData = signupSchema.parse(await request.json());
+    const email = sanitizeEmail(validatedData.email);
+    const company = validatedData.company ? sanitizeInput(validatedData.company) : undefined;
+    const lead = await captureMarketingLead(request, {
+      type: 'signup',
+      email,
+      locale: validatedData.locale,
+      page: validatedData.page || '/signup',
+      source: validatedData.source || 'signup_form',
       timestamp: validatedData.timestamp,
-      ip,
+      data: {
+        email,
+        company,
+        plan: validatedData.plan,
+        module: validatedData.module,
+        passwordCaptured: false,
+      },
     });
 
-    // Simulate email sending
-    // In production, use a service like SendGrid, Mailgun, or AWS SES
-    const emailSent = await sendConfirmationEmail(sanitizedEmail);
-
-    if (!emailSent) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Erreur lors de l\'envoi de l\'email de confirmation',
-          error: 'EMAIL_SEND_FAILED',
-        },
-        { status: 500 }
-      );
-    }
-
-    // Return success response
     return NextResponse.json(
       {
         success: true,
-        message: 'Inscription réussie! Vérifiez votre email.',
+        message: "Demande d'essai enregistree. Verifiez votre email.",
         data: {
-          email: sanitizedEmail,
-          confirmationSent: true,
+          id: lead.id,
+          email,
+          confirmationSent: lead.emailForwarded,
+          crmForwarded: lead.crmForwarded,
         },
       },
       { status: 201 }
     );
   } catch (error) {
-    safeLog('Signup error:', error);
-
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Données invalides',
+          message: 'Donnees invalides',
           error: 'VALIDATION_ERROR',
           details: error.issues,
         },
@@ -108,36 +80,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: 'Erreur lors de l\'inscription',
+        message: "Erreur lors de la demande d'essai",
         error: 'INTERNAL_SERVER_ERROR',
       },
       { status: 500 }
     );
-  }
-}
-
-/**
- * Mock email sending function
- * In production, integrate with email service
- */
-async function sendConfirmationEmail(email: string): Promise<boolean> {
-  try {
-    // TODO: Implement actual email sending
-    // Example with SendGrid:
-    // const sgMail = require('@sendgrid/mail');
-    // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    // await sgMail.send({
-    //   to: email,
-    //   from: 'noreply@leopardo.com',
-    //   subject: 'Confirmez votre email',
-    //   html: confirmationEmailTemplate(email),
-
-    // });
-
-    safeLog('Confirmation email would be sent to:', email);
-    return true;
-  } catch (error) {
-    safeLog('Email sending error:', error);
-    return false;
   }
 }

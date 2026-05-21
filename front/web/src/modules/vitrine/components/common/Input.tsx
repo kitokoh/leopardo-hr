@@ -13,17 +13,20 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   required?: boolean;
 }
 
-export function Input({
-  label,
-  error,
-  icon,
-  iconPosition = 'left',
-  helperText,
-  required = false,
-  className = '',
-  id,
-  ...props
-}: InputProps) {
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    label,
+    error,
+    icon,
+    iconPosition = 'left',
+    helperText,
+    required = false,
+    className = '',
+    id,
+    ...props
+  },
+  ref
+) {
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
   return (
@@ -49,6 +52,7 @@ export function Input({
           whileFocus={{ scale: 1.01 }}
           transition={{ duration: 0.2 }}
           id={inputId}
+          ref={ref}
           className={`
             w-full px-4 py-2.5 text-sm font-medium
             bg-white dark:bg-slate-900
@@ -88,4 +92,4 @@ export function Input({
       )}
     </div>
   );
-}
+});

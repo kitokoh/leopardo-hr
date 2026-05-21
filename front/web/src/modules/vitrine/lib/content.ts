@@ -109,7 +109,7 @@ export const modulePageContent = {
           author: "Marie Dupont",
           role: "Manager RH",
           company: "TechStartup Inc",
-          avatar: "/avatars/marie.jpg",
+          avatar: "/avatars/marie.svg",
           rating: 5,
         },
         {
@@ -117,7 +117,7 @@ export const modulePageContent = {
           author: "Jean Martin",
           role: "Comptable",
           company: "Finance Pro",
-          avatar: "/avatars/jean.jpg",
+          avatar: "/avatars/jean.svg",
           rating: 5,
         },
         {
@@ -125,7 +125,7 @@ export const modulePageContent = {
           author: "Sophie Bernard",
           role: "Directrice",
           company: "Retail Solutions",
-          avatar: "/avatars/sophie.jpg",
+          avatar: "/avatars/sophie.svg",
           rating: 5,
         },
         {
@@ -133,7 +133,7 @@ export const modulePageContent = {
           author: "Pierre Leclerc",
           role: "Fondateur",
           company: "Growth Ventures",
-          avatar: "/avatars/pierre.jpg",
+          avatar: "/avatars/pierre.svg",
           rating: 5,
         },
       ],
@@ -288,7 +288,7 @@ export const modulePageContent = {
           author: "Maître Dubois",
           role: "Avocat",
           company: "Cabinet Dubois & Associés",
-          avatar: "/avatars/dubois.jpg",
+          avatar: "/avatars/dubois.svg",
           rating: 5,
         },
         {
@@ -296,7 +296,7 @@ export const modulePageContent = {
           author: "Isabelle Moreau",
           role: "Responsable RH",
           company: "Groupe Moreau",
-          avatar: "/avatars/moreau.jpg",
+          avatar: "/avatars/moreau.svg",
           rating: 5,
         },
         {
@@ -304,7 +304,7 @@ export const modulePageContent = {
           author: "Thomas Lefevre",
           role: "Directeur Financier",
           company: "Finance Solutions",
-          avatar: "/avatars/lefevre.jpg",
+          avatar: "/avatars/lefevre.svg",
           rating: 5,
         },
         {
@@ -312,7 +312,7 @@ export const modulePageContent = {
           author: "Claire Rousseau",
           role: "Manager",
           company: "Consulting Pro",
-          avatar: "/avatars/rousseau.jpg",
+          avatar: "/avatars/rousseau.svg",
           rating: 5,
         },
       ],
@@ -467,7 +467,7 @@ export const modulePageContent = {
           author: "Jean Martin",
           role: "Comptable",
           company: "Finance Pro",
-          avatar: "/avatars/martin.jpg",
+          avatar: "/avatars/martin.svg",
           rating: 5,
         },
         {
@@ -475,7 +475,7 @@ export const modulePageContent = {
           author: "Sophie Leclerc",
           role: "Manager RH",
           company: "Tech Solutions",
-          avatar: "/avatars/leclerc.jpg",
+          avatar: "/avatars/leclerc.svg",
           rating: 5,
         },
         {
@@ -483,7 +483,7 @@ export const modulePageContent = {
           author: "Marc Dubois",
           role: "Expert-Comptable",
           company: "Dubois & Associés",
-          avatar: "/avatars/dubois.jpg",
+          avatar: "/avatars/dubois.svg",
           rating: 5,
         },
         {
@@ -491,7 +491,7 @@ export const modulePageContent = {
           author: "Nathalie Rousseau",
           role: "Directrice",
           company: "Groupe Rousseau",
-          avatar: "/avatars/rousseau.jpg",
+          avatar: "/avatars/rousseau.svg",
           rating: 5,
         },
       ],
@@ -646,7 +646,7 @@ export const modulePageContent = {
           author: "Luc Moreau",
           role: "Marketing Manager",
           company: "Tech Marketing",
-          avatar: "/avatars/moreau.jpg",
+          avatar: "/avatars/moreau.svg",
           rating: 5,
         },
         {
@@ -654,7 +654,7 @@ export const modulePageContent = {
           author: "Céline Dupont",
           role: "Responsable Marketing",
           company: "Growth Co",
-          avatar: "/avatars/dupont.jpg",
+          avatar: "/avatars/dupont.svg",
           rating: 5,
         },
         {
@@ -662,7 +662,7 @@ export const modulePageContent = {
           author: "David Leclerc",
           role: "Marketing Director",
           company: "Digital Solutions",
-          avatar: "/avatars/leclerc.jpg",
+          avatar: "/avatars/leclerc.svg",
           rating: 5,
         },
         {
@@ -670,7 +670,7 @@ export const modulePageContent = {
           author: "Valérie Rousseau",
           role: "CMO",
           company: "Rousseau Group",
-          avatar: "/avatars/rousseau.jpg",
+          avatar: "/avatars/rousseau.svg",
           rating: 5,
         },
       ],
