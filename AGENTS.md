@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-21
+Derniere mise a jour : 2026-05-22
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -35,6 +35,9 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
 - Pour `admin-dashboard/`, garder `web-ci.yml` cible sur `admin-dashboard/**` avec lint/build/Playwright.
 - Pour `web/`, utiliser un workflow dedie vitrine (`web-marketing-ci.yml`) sur `web/**` au lieu de recycler les checks admin.
+- La vitrine `front/web` doit garder les liens commerciaux reels dans la navigation et le footer (`/blog`, `/guides/rh-startup`, `/pricing`, `/demo`, `/contact`). Eviter les CTA `#` ou routes API relatives cote Vercel.
+- Les assets SEO/PWA canoniques de la vitrine sont `front/web/public/icon.svg`, `favicon.svg`, `brand/opengraph.svg` et `manifest.json`; si un PNG est ajoute plus tard, verifier qu'il existe vraiment avant de le declarer dans le manifeste.
+- Le Plan 19 communication interne vit dans `docs/PLAN_ACTION/19_PLAN_COMMUNICATION_INTERNE.md`; le guide des URLs, serveurs et options gratuites vit dans `docs/GUIDES/GUIDE_LIENS_PLATEFORME_ET_COMMUNICATION.md`.
 - Dans `tests.yml`, ne pas faire porter la dette mobile historique a des PR backend/web en declenchant `mobile-tests` uniquement parce que le workflow lui-meme change. Le job mobile doit rester cale sur `mobile/**` tant que la base n'est pas completement assainie.
 - Pour `Backend Quality`, garder Pint et PHPStan en gates diff-aware sur les fichiers PHP backend modifies. Cela bloque les nouvelles regressions sans faire porter la dette historique hors perimetre au PR courant. Garder les artefacts et la visibilite du baseline.
 - Le workflow `OWASP ZAP Baseline` scanne la cible staging apres un deploy `main` reussi ou via `workflow_dispatch`. Il produit des artefacts HTML/Markdown/JSON et utilise `-I` pour ne pas bloquer sur les warnings informatifs ; traiter les alertes en lots dedies plutot que desactiver le scan.

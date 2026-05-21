@@ -17,6 +17,7 @@ CHANGELOG.md merge=union
 *.jpeg  binary
 *.gif   binary
 *.ico   binary
+*.pdf   binary
 *.apk   binary
 *.aab   binary
 *.png filter=lfs diff=lfs merge=lfs -text

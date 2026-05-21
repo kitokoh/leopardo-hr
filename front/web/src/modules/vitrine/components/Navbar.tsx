@@ -11,6 +11,25 @@ type Props = {
   onToggleDark: () => void
 }
 
+const routeLinks = {
+  fr: [
+    { href: '/blog', label: 'Blog' },
+    { href: '/guides/rh-startup', label: 'Guides' },
+  ],
+  en: [
+    { href: '/blog', label: 'Blog' },
+    { href: '/guides/rh-startup', label: 'Guides' },
+  ],
+  tr: [
+    { href: '/blog', label: 'Blog' },
+    { href: '/guides/rh-startup', label: 'Rehberler' },
+  ],
+  ar: [
+    { href: '/blog', label: 'Blog' },
+    { href: '/guides/rh-startup', label: 'Guides' },
+  ],
+} as const
+
 export function Navbar({ isDark, onToggleDark }: Props) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -53,6 +72,15 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               <Link
                 key={item.id}
                 href={`#${item.id}`}
+                className="relative px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80"
+              >
+                {item.label}
+              </Link>
+            ))}
+            {routeLinks[locale].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
                 className="relative px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80"
               >
                 {item.label}
@@ -147,6 +175,22 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                 >
                   <Link
                     href={`#${item.id}`}
+                    className="block px-4 py-3 text-lg font-semibold text-slate-900 dark:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
+              {routeLinks[locale].map((item, index) => (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: (copy.nav.sections.length + index) * 0.05 }}
+                >
+                  <Link
+                    href={item.href}
                     className="block px-4 py-3 text-lg font-semibold text-slate-900 dark:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
