@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.110] - 2026-05-21
+
+### Tests
+
+- Client web : smoke Playwright "journee RH" ajoute pour verifier login manager, dashboard, equipe, pointage, absences et logout.
+- CI vitrine : le workflow preview execute maintenant ce smoke manager avec les tests funnel et auth existants.
+
 ## [4.16.109] - 2026-05-21
 
 ### Changed
