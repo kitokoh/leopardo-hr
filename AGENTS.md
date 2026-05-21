@@ -79,6 +79,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis Plan 18, le login web client `/auth/login` doit afficher les erreurs `POST /api/v1/auth/login` localement. Dans `front/web/src/lib/api-client.ts`, ne pas rediriger automatiquement sur les `401` des endpoints de login, sinon les mauvais identifiants deviennent une session expiree confuse.
 - Le parcours client web critique est documente dans `docs/validation/CLIENT_LOGIN_READINESS.md` et couvert par `front/web/e2e/auth-client-smoke.spec.ts` : login manager, mauvais identifiants, session expiree, dashboard non vide et toggle mot de passe.
 - `NEXT_PUBLIC_ADMIN_URL` est la cible recommandee pour rediriger un `super_admin` qui arriverait sur le login client ; sans variable, le fallback reste `/dashboard` pour eviter un lien mort en preview.
+- Les feature gates du portail client vivent dans `front/web/src/lib/client-features.ts` et sont appliquees dans `front/web/src/app/(dashboard)/layout.tsx`. Ajouter un nouveau module client implique de declarer sa route, ses cles `capabilities`/`features`, ses roles autorises et un test Playwright dans `front/web/e2e/client-feature-gates.spec.ts`.
 
 ## Pieges connus
 
