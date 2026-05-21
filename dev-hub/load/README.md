@@ -28,6 +28,17 @@ EMPLOYEE_TOKEN="..." \
 k6 run dev-hub/load/k6/api-core-smoke.js
 ```
 
+## Execution GitHub Actions
+
+Le workflow manuel `k6 Load Smoke - Leopardo RH` lance `k6/api-core-smoke.js` via Docker et publie `api-core-smoke-summary.json` en artefact.
+
+Secrets optionnels :
+
+- `K6_MANAGER_TOKEN` : token Sanctum manager/RH du tenant staging.
+- `K6_EMPLOYEE_TOKEN` : token Sanctum employe du meme tenant.
+
+Sans token, le workflow reste utile en smoke health-only : les scenarios manager/employe retombent sur les sondes health au lieu de muter des donnees.
+
 ## Benchmarks cibles Plan 14
 
 ### 100 employes simultanes

@@ -1,0 +1,88 @@
+name: k6 Load Smoke - Leopardo RH
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "API staging base URL"
+        required: false
+        default: "https://gestionemployerbackend.onrender.com"
+      health_vus:
+        description: "Health virtual users"
+        required: false
+        default: "5"
+      manager_vus:
+        description: "Manager virtual users"
+        required: false
+        default: "5"
+      employee_vus:
+        description: "Employee virtual users"
+        required: false
+        default: "5"
+      duration:
+        description: "Duration for each scenario"
+        required: false
+        default: "1m"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: k6-load-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  api-core-smoke:
+    name: API core read-only smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Prepare reports directory
+        run: mkdir -p dev-hub/load/reports
+
+      - name: Run k6 API core smoke
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url }}
+          MANAGER_TOKEN: ${{ secrets.K6_MANAGER_TOKEN }}
+          EMPLOYEE_TOKEN: ${{ secrets.K6_EMPLOYEE_TOKEN }}
+          HEALTH_VUS: ${{ github.event.inputs.health_vus }}
+          MANAGER_VUS: ${{ github.event.inputs.manager_vus }}
+          EMPLOYEE_VUS: ${{ github.event.inputs.employee_vus }}
+          HEALTH_DURATION: ${{ github.event.inputs.duration }}
+          MANAGER_DURATION: ${{ github.event.inputs.duration }}
+          EMPLOYEE_DURATION: ${{ github.event.inputs.duration }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MANAGER_TOKEN}" ]]; then
+            echo "::notice::K6_MANAGER_TOKEN is not configured; manager scenario will fall back to health probes."
+          fi
+          if [[ -z "${EMPLOYEE_TOKEN}" ]]; then
+            echo "::notice::K6_EMPLOYEE_TOKEN is not configured; employee scenario will reuse manager token or fall back to health probes."
+          fi
+
+          docker run --rm \
+            -e BASE_URL \
+            -e MANAGER_TOKEN \
+            -e EMPLOYEE_TOKEN \
+            -e HEALTH_VUS \
+            -e MANAGER_VUS \
+            -e EMPLOYEE_VUS \
+            -e HEALTH_DURATION \
+            -e MANAGER_DURATION \
+            -e EMPLOYEE_DURATION \
+            -v "${PWD}:/work" \
+            grafana/k6:latest run \
+            --summary-export /work/dev-hub/load/reports/api-core-smoke-summary.json \
+            /work/dev-hub/load/k6/api-core-smoke.js
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: k6-api-core-smoke-summary
+          path: dev-hub/load/reports/api-core-smoke-summary.json
+          if-no-files-found: ignore
+          retention-days: 14
