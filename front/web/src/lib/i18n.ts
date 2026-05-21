@@ -10,6 +10,19 @@ export type StoredAuthUser = {
   is_rtl?: boolean;
   role?: string | null;
   manager_role?: string | null;
+  capabilities?: Record<string, unknown> | null;
+  company?: {
+    id?: number | string | null;
+    name?: string | null;
+    language?: string | null;
+    timezone?: string | null;
+    currency?: string | null;
+    features?: Record<string, unknown> | null;
+  } | null;
+  plan?: {
+    name?: string | null;
+    features?: Record<string, unknown> | null;
+  } | null;
 };
 
 export const SUPPORTED_LOCALES: AppLocale[] = ['fr', 'ar', 'tr', 'en'];
