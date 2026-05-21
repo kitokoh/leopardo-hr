@@ -16,6 +16,7 @@ import {
   Download,
   CheckCircle2,
 } from 'lucide-react';
+import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 const emptySubscribe = () => () => {};
@@ -29,6 +30,21 @@ type DashboardStat = {
   color: string;
   bgColor: string;
   suffix?: string;
+};
+
+type DashboardSummary = {
+  employees_total: number;
+  employees_active: number;
+  departments: number;
+  today_attendance: number;
+  pending_absences: number;
+};
+
+type RecentActivity = {
+  id: number | string;
+  action: string;
+  auditable_type?: string | null;
+  created_at?: string | null;
 };
 
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
@@ -74,16 +90,63 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 export default function DashboardPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const [activeTab, setActiveTab] = useState('today');
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [activities, setActivities] = useState<RecentActivity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadDashboard() {
+      setLoading(true);
+      setLoadError(null);
+
+      try {
+        const [summaryResponse, activityResponse] = await Promise.all([
+          apiFetch('/dashboard/summary'),
+          apiFetch('/dashboard/recent-activity?limit=5'),
+        ]);
+
+        const summaryPayload = await summaryResponse.json() as { data?: Partial<DashboardSummary> };
+        const activityPayload = await activityResponse.json() as { data?: RecentActivity[] };
+
+        if (cancelled) return;
+
+        setSummary({
+          employees_total: Number(summaryPayload.data?.employees_total ?? 0),
+          employees_active: Number(summaryPayload.data?.employees_active ?? 0),
+          departments: Number(summaryPayload.data?.departments ?? 0),
+          today_attendance: Number(summaryPayload.data?.today_attendance ?? 0),
+          pending_absences: Number(summaryPayload.data?.pending_absences ?? 0),
+        });
+        setActivities(Array.isArray(activityPayload.data) ? activityPayload.data : []);
+      } catch (error) {
+        if (cancelled) return;
+        setLoadError(error instanceof ApiError ? error.message : 'Impossible de charger les donnees du dashboard.');
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const stats: DashboardStat[] = [
     {
       title: 'Employes actifs',
-      value: 24,
-      change: '+2',
+      value: summary?.employees_active ?? 0,
+      change: `${summary?.employees_total ?? 0} total`,
       trend: 'up',
       icon: Users,
       color: 'from-blue-500 to-blue-600',
@@ -91,27 +154,28 @@ export default function DashboardPage() {
     },
     {
       title: 'Presents aujourd hui',
-      value: 18,
-      change: '75%',
+      value: summary?.today_attendance ?? 0,
+      change: summary && summary.employees_active > 0
+        ? `${Math.round((summary.today_attendance / summary.employees_active) * 100)}%`
+        : '0%',
       trend: 'up',
       icon: CheckCircle2,
       color: 'from-emerald-500 to-emerald-600',
       bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
     },
     {
-      title: 'Retards ce mois',
-      value: 2,
-      change: '-15%',
+      title: 'Absences en attente',
+      value: summary?.pending_absences ?? 0,
+      change: 'a traiter',
       trend: 'down',
       icon: Clock,
       color: 'from-amber-500 to-amber-600',
       bgColor: 'bg-amber-50 dark:bg-amber-900/20',
     },
     {
-      title: 'Heures travaillees',
-      value: 142,
-      suffix: 'h',
-      change: '+12h',
+      title: 'Departements',
+      value: summary?.departments ?? 0,
+      change: 'actifs',
       trend: 'up',
       icon: Clock,
       color: 'from-violet-500 to-violet-600',
@@ -119,13 +183,15 @@ export default function DashboardPage() {
     },
   ];
 
-  const activities = [
-    { name: 'Ahmed Ben', action: 'pointage entree', time: '08:30', status: 'present', avatar: 'AB' },
-    { name: 'Sarah Mou', action: 'pointage entree', time: '08:35', status: 'present', avatar: 'SM' },
-    { name: 'Karim Had', action: 'demande conge', time: '09:15', status: 'pending', avatar: 'KH' },
-    { name: 'Leila Ben', action: 'pointage entree', time: '09:20', status: 'late', avatar: 'LB' },
-    { name: 'Youssef A', action: 'pointage entree', time: '08:45', status: 'present', avatar: 'YA' },
-  ] as const;
+  const activityRows = activities.length > 0
+    ? activities.map((activity) => ({
+        key: String(activity.id),
+        name: activity.auditable_type?.split('\\').pop() ?? 'Systeme',
+        action: activity.action,
+        time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '--:--',
+        avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
+      }))
+    : [];
 
   return (
     <div className="space-y-6 p-6">
@@ -136,7 +202,14 @@ export default function DashboardPage() {
       >
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Tableau de bord</h1>
-          <p className="mt-1 text-slate-500 dark:text-slate-400">Bienvenue ! Voici ce qui se passe aujourd&apos;hui.</p>
+          <p className="mt-1 text-slate-500 dark:text-slate-400">
+            {loading ? 'Chargement des donnees tenant...' : 'Bienvenue ! Voici ce qui se passe aujourd hui.'}
+          </p>
+          {loadError ? (
+            <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              {loadError}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-3">
@@ -219,21 +292,19 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {activities.map((activity, index) => (
+              {activityRows.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-slate-200 p-6 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                  Aucune activite recente a afficher pour ce tenant.
+                </div>
+              ) : activityRows.map((activity, index) => (
                 <motion.div
-                  key={`${activity.name}-${activity.time}`}
+                  key={activity.key}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
                   className="group flex cursor-pointer items-center gap-4 rounded-xl p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 >
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold ${
-                    activity.status === 'present'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      : activity.status === 'late'
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                  }`}>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-sm font-bold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
                     {activity.avatar}
                   </div>
                   <div className="flex-1">
@@ -242,14 +313,8 @@ export default function DashboardPage() {
                       {activity.action} • {activity.time}
                     </p>
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    activity.status === 'present'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      : activity.status === 'late'
-                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                  }`}>
-                    {activity.status === 'present' ? 'Present' : activity.status === 'late' ? 'Retard' : 'En attente'}
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    Journal
                   </span>
                 </motion.div>
               ))}
