@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { trackClientEvent } from '@/lib/client-analytics';
 import {
   applyDocumentLocale,
   getCopy,
@@ -97,6 +98,7 @@ export default function LoginPage() {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
+    const startedAt = performance.now();
 
     try {
       const loginResponse = await apiFetch('/auth/login', {
@@ -127,14 +129,38 @@ export default function LoginPage() {
 
       storeAuthSession(token, user);
       applyDocumentLocale(normalizeLocale(user.language), user.is_rtl);
-      goToPostLoginTarget(resolvePostLoginTarget(user), router);
+      const target = resolvePostLoginTarget(user);
+      trackClientEvent('login_success', {
+        duration_ms: Math.round(performance.now() - startedAt),
+        role: user.role,
+        manager_role: user.manager_role ?? null,
+        locale: normalizeLocale(user.language),
+        target,
+        company_id: user.company?.id ?? null,
+      });
+      goToPostLoginTarget(target, router);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
+        trackClientEvent('login_failed', {
+          duration_ms: Math.round(performance.now() - startedAt),
+          status: err.status,
+          code: err.code ?? null,
+        });
       } else if (err instanceof Error) {
         setError(err.message);
+        trackClientEvent('login_failed', {
+          duration_ms: Math.round(performance.now() - startedAt),
+          status: null,
+          code: err.name,
+        });
       } else {
         setError(labels.login.errors.generic);
+        trackClientEvent('login_failed', {
+          duration_ms: Math.round(performance.now() - startedAt),
+          status: null,
+          code: 'unknown',
+        });
       }
     } finally {
       setSubmitting(false);
@@ -168,11 +194,16 @@ export default function LoginPage() {
     },
   ], []);
 
-  const selectDemoUser = useCallback((demoEmail: string, demoPassword: string) => {
+  const selectDemoUser = useCallback((demoEmail: string, demoPassword: string, role?: string | null, country?: string | null) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
     setError(null);
     setShowDemoModal(false);
+    trackClientEvent('demo_user_selected', {
+      role: role ?? null,
+      country: country ?? null,
+      email_domain: demoEmail.split('@')[1] ?? null,
+    });
   }, []);
 
   if (!mounted) return null;
@@ -371,7 +402,7 @@ export default function LoginPage() {
                               key={user.email}
                               type="button"
                               className="w-full rounded-xl border border-slate-200 p-4 text-left transition hover:border-teal-300 hover:bg-teal-50/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
-                              onClick={() => selectDemoUser(user.email, user.password)}
+                              onClick={() => selectDemoUser(user.email, user.password, user.managerRole ?? user.role, company.country)}
                             >
                               <div className="flex items-center justify-between gap-3">
                                 <span className="font-semibold text-slate-950">{user.name}</span>

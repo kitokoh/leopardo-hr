@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
+type AnalyticsWindow = Window & {
+  __LEOPARDO_ANALYTICS_EVENTS__?: Array<{
+    name: string;
+    timestamp: string;
+    properties: Record<string, string | number | boolean | null>;
+  }>;
+};
+
 const baseUser = {
   id: 101,
   first_name: 'Fatima',
@@ -12,11 +20,19 @@ const baseUser = {
 };
 
 async function seedSession(page: Page, overrides: Record<string, unknown> = {}) {
+  await page.addInitScript(() => {
+    (window as AnalyticsWindow).__LEOPARDO_ANALYTICS_EVENTS__ = [];
+  });
+
   await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
   await page.evaluate((user) => {
     window.localStorage.setItem('auth_token', 'feature-gate-token');
     window.localStorage.setItem('auth_user', JSON.stringify(user));
   }, { ...baseUser, ...overrides });
+}
+
+async function analyticsEvents(page: Page) {
+  return page.evaluate(() => (window as AnalyticsWindow).__LEOPARDO_ANALYTICS_EVENTS__ ?? []);
 }
 
 test.describe('Client web feature gates', () => {
@@ -87,6 +103,11 @@ test.describe('Client web feature gates', () => {
     await expect(page.locator('body')).toContainText('Ce module n est pas inclus dans votre plan actuel.');
     await expect(page.locator('body')).toContainText('Demander l activation');
     await expect(page.locator('body')).not.toContainText('Gestion des bulletins de paie et cycles de paie');
+
+    const events = await analyticsEvents(page);
+    const blockedEvent = events.find((event) => event.name === 'feature_blocked');
+    expect(blockedEvent?.properties.module).toBe('payroll');
+    expect(blockedEvent?.properties.reason).toBe('feature_locked');
   });
 
   test('trial module is visible as trial and remains usable', async ({ page }) => {
@@ -130,5 +151,7 @@ test.describe('Client web feature gates', () => {
 
     await expect(page.getByText('Module non inclus').first()).toBeVisible();
     await expect(page.locator('body')).toContainText('Votre role actuel ne permet pas d acceder a ce module.');
+    const events = await analyticsEvents(page);
+    expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
   });
 });

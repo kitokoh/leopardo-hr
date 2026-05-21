@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { LockKeyhole, Sparkles } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, type ClientModuleAccess } from '@/lib/client-features';
 import {
   applyDocumentLocale,
@@ -216,6 +217,14 @@ function FeatureLockedPanel({ module }: { module: ClientModuleAccess }) {
   const reason = module.reason === 'role_locked'
     ? 'Votre role actuel ne permet pas d acceder a ce module.'
     : 'Ce module n est pas inclus dans votre plan actuel.';
+
+  useEffect(() => {
+    trackClientEvent('feature_blocked', {
+      module: module.key,
+      reason: module.reason,
+      state: module.state,
+    });
+  }, [module.key, module.reason, module.state]);
 
   return (
     <section className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
