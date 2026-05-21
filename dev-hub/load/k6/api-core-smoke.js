@@ -85,6 +85,17 @@ export function managerReadScenario() {
   }
 
   group('manager dashboard and HR reads', () => {
+    const me = http.get(`${baseUrl}/api/v1/auth/me`, authHeaders(managerToken));
+    expectOk(me, 'manager auth me');
+
+    const summary = http.get(`${baseUrl}/api/v1/dashboard/summary`, authHeaders(managerToken));
+    dashboardLatency.add(summary.timings.duration);
+    expectOk(summary, 'dashboard summary');
+
+    const recentActivity = http.get(`${baseUrl}/api/v1/dashboard/recent-activity?limit=5`, authHeaders(managerToken));
+    dashboardLatency.add(recentActivity.timings.duration);
+    expectOk(recentActivity, 'dashboard recent activity');
+
     const dashboard = http.get(`${baseUrl}/api/v1/dashboard/kpi`, authHeaders(managerToken));
     dashboardLatency.add(dashboard.timings.duration);
     expectOk(dashboard, 'dashboard kpi');
