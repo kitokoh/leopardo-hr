@@ -98,4 +98,11 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
-        run: npx playwright test e2e/marketing-funnel.spec.ts e2e/auth-client-smoke.spec.ts --project=chromium
+        run: npx playwright test e2e/marketing-funnel.spec.ts --project=chromium --workers=1
+
+      - name: Run preview authenticated client smokes
+        working-directory: front/web
+        env:
+          NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
+          PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
+        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts --project=chromium --workers=1
