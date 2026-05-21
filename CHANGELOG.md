@@ -16,6 +16,10 @@
 - Web vitrine : metadonnees OpenGraph/Twitter/SEO repositionnees sur le message SaaS RH multilingue terrain.
 - Plan 18 : definition de fin enrichie avec la vitrine marketing reliee au funnel client.
 
+### Fixed
+
+- Backend : migration tenant `client_events` alignee sur le type non declare de `$withinTransaction` attendu par Laravel.
+
 ## [4.16.120] - 2026-05-22
 
 ### Added
