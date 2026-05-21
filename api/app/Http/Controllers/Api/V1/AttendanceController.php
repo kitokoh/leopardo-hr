@@ -167,9 +167,7 @@ class AttendanceController extends Controller
 
         $query = AttendanceLog::query()
             ->with(['employee:id,first_name,last_name,matricule,photo_path'])
-            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'source_device_code', 'late_minutes'])
-            ->orderByDesc('date')
-            ->orderByDesc('id');
+            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'source_device_code', 'late_minutes']);
 
         if ($target) {
             $query->where('employee_id', $target->id);
@@ -185,10 +183,18 @@ class AttendanceController extends Controller
         if (! empty($validated['date_to'])) {
             $query->where('date', '<=', $validated['date_to']);
         }
+        if (! empty($validated['status'])) {
+            $query->where('status', $validated['status']);
+        }
 
         $perPage = $validated['per_page'] ?? 20;
+        $sortBy = (string) ($validated['sort_by'] ?? 'date');
+        $sortDir = (string) ($validated['sort_dir'] ?? 'desc');
 
-        $paginator = $query->paginate($perPage);
+        $paginator = $query
+            ->orderBy($sortBy, $sortDir)
+            ->orderByDesc('id')
+            ->paginate($perPage);
 
         return AttendanceLogResource::collection($paginator)->response();
 

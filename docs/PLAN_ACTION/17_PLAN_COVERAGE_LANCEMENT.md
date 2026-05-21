@@ -25,7 +25,7 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 
 - [x] Ajouter des tests de contrat JSON pour les endpoints consommes par admin-dashboard, mobile et kiosque.
 - [x] Verifier les erreurs standardisees `error`, `message`, `localized_message` et `errors`.
-- [ ] Verifier pagination, filtres, tri et payloads vides sur les listes RH critiques.
+- [x] Verifier pagination, filtres, tri et payloads vides sur les listes RH critiques : `employees`, `absences`, `attendance`, `me/pay-slips`, `notifications`.
 
 ## Lot 17.3 — Vitrine multilingue conversion
 
@@ -42,7 +42,7 @@ Amener le socle API au niveau de confiance necessaire pour absorber les premiers
 - [x] Ajouter les contrats d'existence routes pour les parcours mobile prioritaires : conges, bulletins, notifications push et pointage.
 - [x] Ajouter les contrats kiosk : post-pointage, QR code, sync offline, affichage infos employe et soldes conges.
 - [x] Documenter les endpoints obligatoires par frontend dans `docs/validation/FRONTEND_API_CONTRACT_MATRIX.md`.
-- [ ] Ajouter des tests JSON payload mobile detailles pour conges, bulletins et notifications.
+- [x] Ajouter des tests JSON payload mobile detailles pour conges, bulletins et notifications.
 
 ## Lot 17.5 — Observabilite lancement
 

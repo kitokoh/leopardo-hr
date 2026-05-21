@@ -64,8 +64,15 @@ class AbsenceController extends Controller
                 ->where('end_date', '>=', $periodStart->toDateString());
         }
 
-        $perPage = $request->integer('per_page', 15);
-        $paginated = $query->orderByDesc('created_at')->paginate($perPage);
+        $validated = $request->validated();
+        $perPage = (int) ($validated['per_page'] ?? 15);
+        $sortBy = (string) ($validated['sort_by'] ?? 'created_at');
+        $sortDir = (string) ($validated['sort_dir'] ?? 'desc');
+
+        $paginated = $query
+            ->orderBy($sortBy, $sortDir)
+            ->orderByDesc('id')
+            ->paginate($perPage);
 
         return response()->json([
             'data' => $paginated->map(fn ($a) => $this->serialize($a)),

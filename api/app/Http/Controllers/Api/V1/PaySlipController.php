@@ -30,6 +30,9 @@ class PaySlipController extends Controller
             'payroll_run_id' => 'sometimes|nullable|integer',
             'status' => 'sometimes|nullable|string|in:calculated,validated,sent',
             'per_page' => 'sometimes|integer|min:1|max:100',
+            'page' => 'sometimes|integer|min:1',
+            'sort_by' => 'sometimes|nullable|string|in:period_start,period_end,net_salary,status,id',
+            'sort_dir' => 'sometimes|nullable|string|in:asc,desc',
         ]);
 
         $query = PaySlip::query()
@@ -52,9 +55,14 @@ class PaySlipController extends Controller
             $query->where('status', $validated['status']);
         }
 
-        $perPage = $validated['per_page'] ?? 50;
+        $perPage = (int) ($validated['per_page'] ?? 50);
+        $sortBy = (string) ($validated['sort_by'] ?? 'period_start');
+        $sortDir = (string) ($validated['sort_dir'] ?? 'desc');
 
-        $slips = $query->orderByDesc('period_start')->orderByDesc('id')->paginate($perPage);
+        $slips = $query
+            ->orderBy($sortBy, $sortDir)
+            ->orderByDesc('id')
+            ->paginate($perPage);
 
         return response()->json([
             'data' => $slips->items(),
@@ -114,12 +122,27 @@ class PaySlipController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $validated = $request->validate([
+            'status' => 'sometimes|nullable|string|in:validated,sent',
+            'per_page' => 'sometimes|integer|min:1|max:100',
+            'page' => 'sometimes|integer|min:1',
+            'sort_by' => 'sometimes|nullable|string|in:period_start,period_end,net_salary,status,id',
+            'sort_dir' => 'sometimes|nullable|string|in:asc,desc',
+        ]);
+
+        $statuses = ! empty($validated['status'])
+            ? [(string) $validated['status']]
+            : ['validated', 'sent'];
+        $sortBy = (string) ($validated['sort_by'] ?? 'period_start');
+        $sortDir = (string) ($validated['sort_dir'] ?? 'desc');
+
         $slips = PaySlip::where('employee_id', $actor->id)
             ->where('company_id', $actor->company_id)
-            ->whereIn('status', ['validated', 'sent'])
+            ->whereIn('status', $statuses)
             ->with('payrollRun:id,period_start,period_end,country_code')
-            ->orderByDesc('period_start')
-            ->paginate($request->integer('per_page', 12));
+            ->orderBy($sortBy, $sortDir)
+            ->orderByDesc('id')
+            ->paginate((int) ($validated['per_page'] ?? 12));
 
         return response()->json([
             'data' => $slips->items(),
