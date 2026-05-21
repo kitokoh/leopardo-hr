@@ -63,3 +63,4 @@ Les modules non inclus affichent une page d upgrade explicite au lieu de rendre 
 - Ajouter la recuperation mot de passe reelle cote backend/web quand le flux email sera pret.
 - Brancher le tracking produit `login_success`, `login_failed`, `dashboard_loaded`.
 - Completer les gates backend si un endpoint critique n applique pas encore les feature flags serveur.
+- Brancher l onboarding incomplet, les notifications temps reel et l etat kiosque lorsque les endpoints dedies seront stabilises.

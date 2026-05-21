@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.118] - 2026-05-21
+
+### Changed
+
+- Web client : dashboard post-login enrichi avec etat entreprise, modules actifs/a upgrader et actions prioritaires manager.
+- Web client : premiere experience employee dediee pour pointage, absences, bulletins et preference langue.
+- Web client : experience super-admin clarifiee avec orientation vers le dashboard plateforme via `NEXT_PUBLIC_ADMIN_URL`.
+
+### Tests
+
+- Web client : smoke auth etendu pour verifier qu un employe hydrate depuis sa session arrive sur un dashboard employe utile.
+
 ## [4.16.117] - 2026-05-21
 
 ### Added
