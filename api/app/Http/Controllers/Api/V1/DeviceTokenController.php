@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\DeviceToken;
 use App\Models\Employee;
+use App\Services\Communication\CommunicationService;
 use App\Services\PushNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class DeviceTokenController extends Controller
 {
     public function __construct(
         private readonly PushNotificationService $pushService,
+        private readonly CommunicationService $communicationService,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -83,15 +85,19 @@ class DeviceTokenController extends Controller
             ->where('id', $validated['employee_id'])
             ->firstOrFail();
 
-        $sent = $this->pushService->sendToEmployee(
-            $target,
-            $validated['title'],
-            $validated['body']
-        );
+        $result = $this->communicationService->notifyEmployee($target, 'generic', [
+            'category' => 'system',
+            'title' => $validated['title'],
+            'body' => $validated['body'],
+            'source' => 'manager_push_test',
+            'employee_id' => $target->id,
+        ], ['app', 'push']);
 
         return new JsonResponse([
             'data' => [
-                'sent' => $sent,
+                'sent' => ($result['results']['push'] ?? 'skipped') === 'sent' ? 1 : 0,
+                'results' => $result['results'],
+                'notification_id' => $result['notification_id'],
                 'employee_id' => $target->id,
             ],
         ]);

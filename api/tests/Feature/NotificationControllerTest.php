@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\CommunicationEvent;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Notification;
@@ -134,6 +135,12 @@ class NotificationControllerTest extends TestCase
 
         $this->assertTrue($first->fresh()->is_read);
         $this->assertFalse($second->fresh()->is_read);
+        $this->assertDatabaseHas('communication_events', [
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'notification_id' => $first->id,
+            'event_name' => 'notification_read',
+        ]);
 
         $this->postJson('/api/v1/notifications/mark-all-read')
             ->assertOk()
@@ -141,6 +148,7 @@ class NotificationControllerTest extends TestCase
 
         $this->assertTrue($second->fresh()->is_read);
         $this->assertFalse($other->fresh()->is_read);
+        $this->assertSame(2, CommunicationEvent::query()->where('employee_id', $employee->id)->count());
     }
 
     /**

@@ -45,7 +45,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Payroll legacy `/payrolls*` | RW | R | - | RW | - | self where exposed | Use `throttle:payroll-sensitive`; payroll writes must remain policy-gated. |
 | Payroll engine `/salary-*`, `/tax-slabs`, `/social-contributions`, `/payroll-runs`, `/bank-exports` | RW | R | - | RW | - | self payslips only | Self-service payslip routes are `/me/pay-slips*`; manager routes must not leak across tenant/FK chains. |
 | HR referentials `/departments`, `/positions`, `/sites`, `/schedules` | RW | RW | R scoped | R | R scoped | - | Direct mutations should stay principal/RH unless policy explicitly broadens. |
-| Notifications `/notifications*` | self | self | self | self | self | self | Notification resources must be actor-scoped. |
+| Notifications `/notifications*`, `/notification-preferences` | self | self | self | self | self | self | Notification resources and channel preferences must be actor-scoped; communication audit events are tenant-scoped. |
 | Projects/tasks `/projects*`, `/tasks*` | RW | RW | RW scoped | - | RW team | assigned/self | Task comments are actor-scoped and tenant-scoped. |
 | Evaluations `/evaluations*` | RW | RW | R scoped | - | R scoped | self acknowledge/read | `EvaluationSecurityTest` covers cross-tenant and forbidden actions. |
 | Leave policies/balances `/leave-*`, `/me/leave-balances` | RW | RW | R scoped | - | R scoped | self R | `LeavePolicyApiTest` covers role and company scoping. |
