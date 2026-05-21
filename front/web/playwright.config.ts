@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.BASE_URL || 'http://localhost:3000';
 const shouldStartLocalServer = !process.env.BASE_URL;
+const webServerCommand = process.env.PLAYWRIGHT_WEB_SERVER_COMMAND || 'npm run dev';
 
 /**
  * Read environment variables from file.
@@ -79,8 +80,9 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: shouldStartLocalServer
     ? {
-        command: 'npm run dev',
+        command: webServerCommand,
         url: 'http://localhost:3000',
+        timeout: 120_000,
         reuseExistingServer: !process.env.CI,
       }
     : undefined,

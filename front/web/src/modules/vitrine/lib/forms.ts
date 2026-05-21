@@ -10,6 +10,33 @@ import {
 
 const safeLog = (..._args: unknown[]) => {};
 
+function getBrowserLocale(): string {
+  if (typeof document === "undefined") {
+    return "fr";
+  }
+
+  return document.documentElement.lang || "fr";
+}
+
+function getSearchMetadata(): Record<string, string> {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const metadata: Record<string, string> = {};
+
+  ["plan", "module", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((key) => {
+    const value = params.get(key);
+
+    if (value) {
+      metadata[key] = value;
+    }
+  });
+
+  return metadata;
+}
+
 /**
  * Form submission handlers
  */
@@ -43,6 +70,9 @@ export async function submitSignupForm(
       },
       body: JSON.stringify({
         ...sanitizedData,
+        ...getSearchMetadata(),
+        locale: getBrowserLocale(),
+        source: "signup_form",
         page,
         timestamp: new Date().toISOString(),
       }),
@@ -100,6 +130,9 @@ export async function submitDemoForm(
       },
       body: JSON.stringify({
         ...sanitizedData,
+        ...getSearchMetadata(),
+        locale: getBrowserLocale(),
+        source: "demo_form",
         page,
         timestamp: new Date().toISOString(),
       }),
@@ -156,6 +189,9 @@ export async function submitContactForm(
       },
       body: JSON.stringify({
         ...sanitizedData,
+        ...getSearchMetadata(),
+        locale: getBrowserLocale(),
+        source: "contact_form",
         page,
         timestamp: new Date().toISOString(),
       }),
@@ -208,6 +244,9 @@ export async function submitNewsletterForm(
       },
       body: JSON.stringify({
         ...sanitizedData,
+        ...getSearchMetadata(),
+        locale: getBrowserLocale(),
+        source: "newsletter_form",
         page,
         timestamp: new Date().toISOString(),
       }),

@@ -68,3 +68,34 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
         run: npm run build
+
+  web-marketing-funnel-e2e:
+    name: Web Marketing Funnel E2E
+    runs-on: ubuntu-latest
+    needs: web-marketing-build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/web/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: front/web
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: front/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Run preview funnel tests
+        working-directory: front/web
+        env:
+          NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
+          PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
+        run: npx playwright test e2e/marketing-funnel.spec.ts --project=chromium

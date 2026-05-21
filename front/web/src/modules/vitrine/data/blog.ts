@@ -65,11 +65,11 @@ Pour garder vos meilleurs talents:
 ## Conclusion
 
 Une bonne gestion RH est la clé du succès d'une startup. En suivant ces étapes, vous pouvez construire une équipe forte et engagée.`,
-    image: '/blog/startup-rh.jpg',
+    image: '/blog/startup-rh.svg',
     date: new Date('2024-01-15'),
     author: {
       name: 'Ahmed Benali',
-      avatar: '/avatars/ahmed.jpg',
+      avatar: '/avatars/ahmed.svg',
     },
     category: 'RH',
     readingTime: 8,
@@ -127,11 +127,11 @@ Assurez-vous que votre équipe:
 ## Conclusion
 
 La migration de Excel vers un logiciel de paie peut sembler intimidante, mais avec une bonne planification, c'est un processus fluide qui vous fera gagner du temps et réduira les erreurs.`,
-    image: '/blog/paie-excel.jpg',
+    image: '/blog/paie-excel.svg',
     date: new Date('2024-01-10'),
     author: {
       name: 'Jean Martin',
-      avatar: '/avatars/jean.jpg',
+      avatar: '/avatars/jean.svg',
     },
     category: 'Paie',
     readingTime: 10,
@@ -181,11 +181,11 @@ La technologie transforme la RH:
 ## Conclusion
 
 2024 sera une année de transformation pour la RH. Les entreprises qui s'adaptent à ces tendances seront mieux positionnées pour le succès.`,
-    image: '/blog/tendances-rh.jpg',
+    image: '/blog/tendances-rh.svg',
     date: new Date('2024-01-05'),
     author: {
       name: 'Sophie Bernard',
-      avatar: '/avatars/sophie.jpg',
+      avatar: '/avatars/sophie.svg',
     },
     category: 'Tendances',
     readingTime: 7,
@@ -235,11 +235,11 @@ La technologie est votre allié:
 ## Conclusion
 
 En suivant ces conseils, vous pouvez économiser des heures chaque semaine et vous concentrer sur les tâches stratégiques.`,
-    image: '/blog/productivite.jpg',
+    image: '/blog/productivite.svg',
     date: new Date('2023-12-28'),
     author: {
       name: 'Fatima Dupont',
-      avatar: '/avatars/fatima.jpg',
+      avatar: '/avatars/fatima.svg',
     },
     category: 'Productivité',
     readingTime: 6,
@@ -290,11 +290,11 @@ Les employés ont le droit de:
 ## Conclusion
 
 La conformité RGPD est essentielle. En mettant en place les bonnes mesures, vous protégez vos employés et votre entreprise.`,
-    image: '/blog/rgpd.jpg',
+    image: '/blog/rgpd.svg',
     date: new Date('2023-12-20'),
     author: {
       name: 'Jean Martin',
-      avatar: '/avatars/jean.jpg',
+      avatar: '/avatars/jean.svg',
     },
     category: 'Conformité',
     readingTime: 9,
@@ -345,11 +345,11 @@ Vous pouvez mesurer la culture par:
 ## Conclusion
 
 Une bonne culture d'entreprise est un investissement qui paie. Elle crée un environnement où les employés veulent travailler et où l'entreprise prospère.`,
-    image: '/blog/culture.jpg',
+    image: '/blog/culture.svg',
     date: new Date('2023-12-15'),
     author: {
       name: 'Sophie Bernard',
-      avatar: '/avatars/sophie.jpg',
+      avatar: '/avatars/sophie.svg',
     },
     category: 'Culture',
     readingTime: 8,
@@ -404,11 +404,11 @@ Les coûts incluent:
 ## Conclusion
 
 Le pointage biométrique est une solution moderne qui améliore la sécurité et l'efficacité. Avec une bonne implémentation, c'est un investissement rentable.`,
-    image: '/blog/biometrique.jpg',
+    image: '/blog/biometrique.svg',
     date: new Date('2023-12-10'),
     author: {
       name: 'Ahmed Benali',
-      avatar: '/avatars/ahmed.jpg',
+      avatar: '/avatars/ahmed.svg',
     },
     category: 'Technologie',
     readingTime: 7,
@@ -463,11 +463,11 @@ Vous devez:
 ## Conclusion
 
 Une gestion efficace des absences améliore la satisfaction des employés et réduit les erreurs administratives.`,
-    image: '/blog/absences.jpg',
+    image: '/blog/absences.svg',
     date: new Date('2023-12-05'),
     author: {
       name: 'Fatima Dupont',
-      avatar: '/avatars/fatima.jpg',
+      avatar: '/avatars/fatima.svg',
     },
     category: 'RH',
     readingTime: 6,
@@ -523,11 +523,11 @@ Optimisez votre processus:
 ## Conclusion
 
 Le recrutement digital est essentiel pour attirer les meilleurs talents. En utilisant les bons canaux et stratégies, vous pouvez construire une équipe exceptionnelle.`,
-    image: '/blog/recrutement.jpg',
+    image: '/blog/recrutement.svg',
     date: new Date('2023-11-30'),
     author: {
       name: 'Sophie Bernard',
-      avatar: '/avatars/sophie.jpg',
+      avatar: '/avatars/sophie.svg',
     },
     category: 'Recrutement',
     readingTime: 8,
@@ -583,11 +583,11 @@ Mesurez l'impact:
 ## Conclusion
 
 Investir dans la formation de vos employés est un investissement dans l'avenir de votre entreprise. Cela crée une équipe plus compétente et engagée.`,
-    image: '/blog/formation.jpg',
+    image: '/blog/formation.svg',
     date: new Date('2023-11-25'),
     author: {
       name: 'Ahmed Benali',
-      avatar: '/avatars/ahmed.jpg',
+      avatar: '/avatars/ahmed.svg',
     },
     category: 'Développement',
     readingTime: 7,
