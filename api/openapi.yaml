@@ -112,6 +112,29 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /client-events:
+    post:
+      tags: ["Auth"]
+      summary: "Persister un evenement UX client tenant-scope"
+      description: "Endpoint authentifie pour les mesures produit non bloquantes du portail client. Les proprietes sont minimisee cote API."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientEventRequest"
+      responses:
+        "201":
+          description: "Evenement stocke"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientEventResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /auth/profile:
     patch:
       tags: ["Auth"]
@@ -3199,6 +3222,46 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
+    ClientEventRequest:
+      type: object
+      required: ["name"]
+      properties:
+        name:
+          type: string
+          enum: ["login_success", "dashboard_loaded", "feature_blocked", "demo_user_selected", "kiosk_status"]
+        surface:
+          type: string
+          enum: ["web", "admin", "mobile", "kiosk"]
+          default: "web"
+        session_id:
+          type: string
+          nullable: true
+          maxLength: 120
+        duration_ms:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 600000
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+        properties:
+          type: object
+          additionalProperties: true
+          nullable: true
+    ClientEventResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            stored:
+              type: boolean
     Vehicle:
       type: object
       properties:

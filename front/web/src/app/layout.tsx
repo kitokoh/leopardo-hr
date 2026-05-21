@@ -9,23 +9,52 @@ import { OrganizationJsonLd } from "@/components/JsonLd";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leopardo.com';
 
 export const metadata: Metadata = {
-  title: "Leopardo RH - Plateforme RH multilingue pour PME et groupes terrain",
+  title: {
+    default: "Leopardo RH - SaaS RH multilingue pour equipes terrain",
+    template: "%s | Leopardo RH",
+  },
   description:
-    "Leopardo RH centralise pointage, paie, absences, onboarding et operations terrain sur web, mobile et kiosque.",
+    "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.",
+  keywords: [
+    "SaaS RH",
+    "logiciel RH",
+    "paie",
+    "pointage mobile",
+    "absences",
+    "kiosque RH",
+    "multi-tenant",
+    "RH multilingue",
+  ],
   manifest: "/manifest.json",
   metadataBase: new URL(siteUrl),
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
     siteName: 'Leopardo RH',
-    title: 'Leopardo RH - Plateforme RH multilingue pour PME',
-    description: 'Leopardo RH centralise pointage, paie, absences, onboarding et operations terrain.',
+    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
+    description: 'Une plateforme RH connectee pour vendre, onboarder et servir vos clients sur web, mobile et kiosque.',
     url: siteUrl,
+    images: [
+      {
+        url: '/brand/opengraph.svg',
+        width: 1200,
+        height: 630,
+        alt: 'Leopardo RH - dashboard RH multilingue',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Leopardo RH - Plateforme RH multilingue pour PME',
-    description: 'Leopardo RH centralise pointage, paie, absences, onboarding et operations terrain.',
+    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
+    description: 'Pointage, paie, absences, onboarding et operations terrain en un seul espace client.',
+    images: ['/brand/opengraph.svg'],
   },
   appleWebApp: {
     capable: true,
@@ -56,9 +85,8 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Leopardo" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
 
         {gaId && (
           <>

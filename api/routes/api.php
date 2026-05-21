@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\FeatureManifestController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
+use App\Http\Controllers\Api\V1\ClientEventController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\DemoUserController;
 use App\Http\Controllers\Api\V1\HealthController;
@@ -58,6 +59,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
         Route::post('/auth/refresh-token', [AuthController::class, 'refreshToken']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::post('/client-events', [ClientEventController::class, 'store'])->middleware('throttle:client-analytics');
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {

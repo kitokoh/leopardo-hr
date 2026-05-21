@@ -37,3 +37,4 @@ export { SocialProofMetrics, type SocialProofMetricsProps } from './SocialProofM
 export { TestimonialHighlight, type TestimonialHighlightProps } from './TestimonialHighlight';
 export { MiniCaseStudies, type MiniCaseStudiesProps } from './MiniCaseStudies';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
+export { MarketingReadinessSection } from './MarketingReadinessSection';
