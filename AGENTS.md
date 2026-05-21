@@ -81,6 +81,8 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - `NEXT_PUBLIC_ADMIN_URL` est la cible recommandee pour rediriger un `super_admin` qui arriverait sur le login client ; sans variable, le fallback reste `/dashboard` pour eviter un lien mort en preview.
 - Les feature gates du portail client vivent dans `front/web/src/lib/client-features.ts` et sont appliquees dans `front/web/src/app/(dashboard)/layout.tsx`. Ajouter un nouveau module client implique de declarer sa route, ses cles `capabilities`/`features`, ses roles autorises et un test Playwright dans `front/web/e2e/client-feature-gates.spec.ts`.
 - Le dashboard client `front/web/src/app/(dashboard)/dashboard/page.tsx` est role-aware : manager charge les KPI tenant, employe evite les endpoints manager et affiche son espace personnel, super-admin est oriente vers la plateforme. Garder ce comportement dans les prochains lots Plan 18.
+- Depuis v4.16.119, l observabilite UX client est contractuelle : `trackClientEvent` emet `login_success`, `login_failed`, `dashboard_loaded`, `feature_blocked`, `demo_user_selected` et les tests Playwright les verifient. Ne pas brancher un outil tiers directement dans les composants ; ajouter d abord un endpoint/backend stable ou adapter `front/web/src/lib/client-analytics.ts`.
+- Le kiosque ZKTeco emet `leopardo:kiosk-status` et affiche la derniere synchronisation. Garder cet etat offline-first lisible lors des evolutions kiosk/bridge, car c est le signal terrain principal pour les clients.
 
 ## Pieges connus
 

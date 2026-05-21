@@ -37,16 +37,18 @@ Note 2026-05-21 : le login web client est modernise et couvert par Playwright. L
 - [~] Dashboard manager : etat de l'entreprise, actions prioritaires, onboarding incomplet, donnees RH recentes.
 - [~] Employe : pointage, absences, bulletins, notifications, langue.
 - [~] Super admin : sante plateforme, demandes clients, tenants a risque.
-- [ ] Kiosque : etat appareil, synchro, mode offline clair.
+- [x] Kiosque : etat appareil, synchro, mode offline clair.
 
-Note 2026-05-21 : le dashboard web client presente maintenant l entreprise, les actions prioritaires et les donnees RH recentes pour manager ; un espace employe dedie expose pointage, absences, bulletins et langue ; un super admin est oriente vers le dashboard plateforme. L onboarding incomplet, les notifications reelles et l etat kiosque restent a brancher avec les endpoints dedies.
+Note 2026-05-21 : le dashboard web client presente maintenant l entreprise, les actions prioritaires et les donnees RH recentes pour manager ; un espace employe dedie expose pointage, absences, bulletins et langue ; un super admin est oriente vers le dashboard plateforme. Le kiosque affiche l etat appareil, la file locale, le mode offline et la derniere synchronisation. L onboarding incomplet et les notifications reelles restent a brancher avec les endpoints dedies.
 
 ## Lot 18.5 - Qualite et observabilite UX
 
-- [ ] Mesurer temps login -> dashboard utilisable.
-- [ ] Ajouter tracking evenements : login_success, login_failed, dashboard_loaded, feature_blocked, demo_user_selected.
-- [ ] Ajouter captures E2E Playwright sur login et dashboard.
-- [ ] Definir seuils Lighthouse/Web Vitals pour pages login et dashboard.
+- [x] Mesurer temps login -> dashboard utilisable.
+- [x] Ajouter tracking evenements : login_success, login_failed, dashboard_loaded, feature_blocked, demo_user_selected.
+- [x] Ajouter captures E2E Playwright sur login et dashboard.
+- [x] Definir seuils Lighthouse/Web Vitals pour pages login et dashboard.
+
+Note 2026-05-21 : le portail web emet maintenant les evenements `leopardo:analytics` via `trackClientEvent`, couverts par Playwright. Les captures login/dashboard sont attachees au rapport CI `web-client-playwright-report`, et les seuils UX sont formalises dans `docs/validation/CLIENT_UX_OBSERVABILITY.md`. La page login est ajoutee au contrat Lighthouse. Le kiosque expose aussi un evenement `leopardo:kiosk-status` et une derniere synchronisation lisible pour clarifier l etat offline.
 
 ## Definition of done
 
@@ -55,3 +57,4 @@ Note 2026-05-21 : le dashboard web client presente maintenant l entreprise, les 
 - Les pages login sont modernes, accessibles, rapides et testees.
 - Les smoke tests staging couvrent API auth, web login client, admin login et mobile contract.
 - Toute regression de connexion bloque la PR ou le deploy.
+- Lot 18 web client : livre fonctionnellement. Les reliquats futurs sont des integrations serveur/ops dediees : endpoint analytics persistant, contrats backend pour compte inactif/sans tenant et endpoints notifications/onboarding/kiosque avances.
