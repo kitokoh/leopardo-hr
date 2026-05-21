@@ -25,6 +25,9 @@ class AbsenceIndexRequest extends FormRequest
             'month' => ['nullable', 'integer', 'between:1,12'],
             'year' => ['nullable', 'integer', 'min:2000'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'sort_by' => ['nullable', 'in:created_at,start_date,end_date,status,days_count'],
+            'sort_dir' => ['nullable', 'in:asc,desc'],
         ];
     }
 

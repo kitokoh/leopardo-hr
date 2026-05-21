@@ -16,16 +16,16 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `FrontendApiContractTest` |
 | Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` |
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
-| Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
-| Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `FrontendApiContractTest` |
+| Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
+| Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Demande absence | `POST /api/v1/absences` | employe | `Absences\AbsenceStoreTest`, `FrontendApiContractTest` |
 | Mobile | Detail absence | `GET /api/v1/absences/{absence}` | employe/manager | `Absences\AbsenceShowTest`, `FrontendApiContractTest` |
 | Mobile | Annulation absence | `DELETE /api/v1/absences/{absence}` | employe/manager | `FrontendApiContractTest` |
 | Mobile | Soldes conges | `GET /api/v1/me/leave-balances` | employe | `FrontendApiContractTest` |
-| Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `FrontendApiContractTest` |
-| Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `FrontendApiContractTest` |
+| Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
+| Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
-| Mobile | Notifications | `GET /api/v1/notifications` | authentifie | `FrontendApiContractTest` |
+| Mobile | Notifications | `GET /api/v1/notifications` | authentifie | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Marquer notification lue | `PUT /api/v1/notifications/{notification}/read` | authentifie | `FrontendApiContractTest` |
 | Mobile | Tout marquer lu | `PUT /api/v1/notifications/read-all` | authentifie | `FrontendApiContractTest` |
 | Mobile | Enregistrer push token | `POST /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
