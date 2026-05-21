@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/core/widgets/demo_user_bottom_sheet.dart';
 import 'package:leopardo_rh/features/user_auth/providers/user_auth_provider.dart';
 
 class UserLoginScreen extends ConsumerStatefulWidget {
@@ -275,6 +276,24 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                   'Pas encore de compte ? S\'inscrire',
                   style: TextStyle(color: AppColors.ia),
                 ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final user = await showDemoUserBottomSheet(context);
+                if (user != null) {
+                  _emailCtrl.text = user.email;
+                  _passwordCtrl.text = user.password;
+                }
+              },
+              icon: const Icon(Icons.group_outlined),
+              label: const Text('Acces Demo'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF059669),
+                foregroundColor: Colors.white,
               ),
             ),
           ],
