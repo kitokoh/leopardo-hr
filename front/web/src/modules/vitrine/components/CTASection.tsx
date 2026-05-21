@@ -47,7 +47,7 @@ export function CTASection() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="#"
+              href="/demo"
               className="px-8 py-4 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/10 transition-all duration-300"
             >
               {copy.cta.secondary}
