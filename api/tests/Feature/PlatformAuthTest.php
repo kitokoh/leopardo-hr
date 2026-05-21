@@ -41,7 +41,39 @@ class PlatformAuthTest extends TestCase
         ]);
 
         $response->assertOk();
-        $response->assertJsonStructure(['data' => ['id', 'name', 'email'], 'token']);
+        $response->assertJsonPath('data.role', 'super_admin');
+        $response->assertJsonPath('data.two_fa_enabled', false);
+        $response->assertJsonPath('token_type', 'Bearer');
+        $response->assertJsonStructure(['data' => ['id', 'name', 'email', 'role', 'two_fa_enabled'], 'token']);
+    }
+
+    public function test_platform_login_token_opens_platform_admin_session(): void
+    {
+        $login = $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+            'device_name' => 'admin-dashboard-contract',
+        ])->assertOk();
+
+        $token = $login->json('token');
+        $this->assertIsString($token);
+        $this->assertNotSame('', $token);
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/platform/auth/me')
+            ->assertOk()
+            ->assertJsonPath('data.email', 'admin@leopardo.test')
+            ->assertJsonPath('data.role', 'super_admin')
+            ->assertJsonPath('data.two_fa_enabled', false)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'email',
+                    'role',
+                    'two_fa_enabled',
+                ],
+            ]);
     }
 
     public function test_super_admin_can_setup_2fa(): void
