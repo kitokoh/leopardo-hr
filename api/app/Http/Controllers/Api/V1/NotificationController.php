@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\CommunicationEvent;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class NotificationController extends Controller
 
         $query = $user->notifications();
 
-        if (! empty($validated['type'])) {
+        if (($validated['type'] ?? '') !== '') {
             $query->where('type', $validated['type']);
         }
 
@@ -68,6 +69,9 @@ class NotificationController extends Controller
         $user = $request->user();
         $notification = $user->notifications()->where('id', $id)->firstOrFail();
         $notification->markAsRead();
+        $this->recordCommunicationEvent($user, 'notification_read', (int) $notification->id, [
+            'type' => $notification->type,
+        ]);
 
         return response()->json(['data' => $notification->fresh()]);
     }
@@ -80,7 +84,27 @@ class NotificationController extends Controller
             'is_read' => true,
             'read_at' => now(),
         ]);
+        $this->recordCommunicationEvent($user, 'notifications_marked_read', null, [
+            'scope' => 'all_unread',
+        ]);
 
         return response()->json(['message' => 'All notifications marked as read.']);
+    }
+
+    /**
+     * @param  array<string, mixed>  $metadata
+     */
+    private function recordCommunicationEvent(Employee $employee, string $eventName, ?int $notificationId, array $metadata = []): void
+    {
+        CommunicationEvent::query()->create([
+            'company_id' => (string) $employee->company_id,
+            'employee_id' => $employee->id,
+            'notification_id' => $notificationId,
+            'event_name' => $eventName,
+            'channel' => 'app',
+            'status' => 'recorded',
+            'metadata' => $metadata,
+            'occurred_at' => now(),
+        ]);
     }
 }

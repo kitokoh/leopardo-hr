@@ -22,6 +22,8 @@ Cette couche ne remplace pas les workflows RH existants. Elle les rend visibles,
 
 Priorite : critique
 
+Statut : livre 2026-05-22.
+
 Livrables :
 
 - Table tenant `notification_preferences` par employe/utilisateur.
@@ -38,17 +40,21 @@ Tests :
 - Lecture notification par proprietaire seulement.
 - Badge non lu coherent.
 
+Note 2026-05-22 : le backend possede deja la liste/lecture de notifications. Le lot 19.1 etend ce socle avec `notification_preferences`, `communication_events`, API preferences, centre de notifications visible dans le portail client web et page utilisateur `/settings/notifications`.
+
 ## Lot 19.2 - Emails transactionnels
 
 Priorite : critique
 
 Livrables :
 
-- Templates email versionnes pour invitation, reset password, absence approuvee/refusee, bulletin disponible, paie validee, demo demandee.
-- Choix provider : Resend/Brevo free tier en dev, Amazon SES ou Resend Pro en production.
-- Queue `emails` separee.
-- Tracking technique : delivered, bounced, failed si le provider l'expose.
+- Templates metier versionnes dans `config/communication.php` pour absence approuvee/refusee, bulletin disponible, alerte securite et fallback generique.
+- Choix provider : provider mail Laravel par defaut, Resend/Brevo/SES activables par configuration production.
+- Queue `notifications` dediee via `COMMUNICATION_QUEUE`.
+- Tracking technique : `communication_events` trace queued/sent/skipped/failed ; delivered/bounced reste a brancher quand un provider expose le webhook.
 - Pages vitrine : formulaires demo/newsletter reliees a une notification interne et un email accuse reception.
+
+Statut : socle livre 2026-05-22. Les emails transactionnels critiques passent maintenant par l'orchestrateur `CommunicationService`; les webhooks provider restent un lot ops/provider.
 
 Tests :
 
@@ -64,9 +70,11 @@ Livrables :
 
 - Web Push pour le portail client avec consentement explicite.
 - Mobile push via Firebase Cloud Messaging.
-- Stockage des device tokens par tenant/utilisateur.
-- Endpoint `POST /api/v1/devices` et `DELETE /api/v1/devices/{id}`.
+- Stockage des device tokens par tenant/utilisateur via `/api/v1/device-tokens`.
+- Envoi test manager via `/api/v1/push-notifications/send`, desormais route par `CommunicationService`.
 - Evenements cibles : absence approuvee/refusee, retard detecte, bulletin disponible, invitation, rappel onboarding.
+
+Statut : socle livre 2026-05-22. Le registry device et FCM existaient deja ; le dispatch est maintenant audite et respecte les preferences utilisateur. Le consentement Web Push navigateur reste a finaliser cote PWA quand le worker public sera stabilise.
 
 Outils :
 
@@ -86,10 +94,13 @@ Priorite : haute mais a activer progressivement
 Livrables :
 
 - Abstraction `MessageProviderInterface` pour SMS/WhatsApp.
+- Provider audit-only par defaut pour developpement/CI sans cout externe.
 - Templates courts sans donnees sensibles.
 - Opt-in/opt-out explicite par canal.
 - Webhook provider pour statuts d'envoi.
 - Quotas par plan pour eviter explosion couts.
+
+Statut : socle livre 2026-05-22. SMS/WhatsApp sont opt-in, audites et sans donnees sensibles ; providers reels, signatures webhook et quotas commerciaux restent a activer au moment du choix fournisseur.
 
 Outils :
 
@@ -111,10 +122,12 @@ Priorite : moyenne
 
 Livrables :
 
-- Moteur de regles : canal prefere, fallback, heures calmes, urgence.
-- Analytics : taux lu, taux echec, canaux les plus utilises par tenant/langue/module.
+- Moteur de regles : preferences canal/categorie, fallback app, provider audit-only, metadata allowlist.
+- Analytics : base `communication_events` exploitable pour taux lu, taux echec, canaux les plus utilises par tenant/langue/module.
 - Integration future IA : l'agent peut proposer un message, mais l'envoi actionnable exige permission et audit.
 - Playbook support : relancer une invitation, prevenir un manager, notifier une equipe.
+
+Statut : fondation livre 2026-05-22. Les heures calmes sont stockees dans les preferences et exposees au portail ; l'application stricte des heures calmes et le dashboard analytics sont les prochains raffinements produit.
 
 Tests :
 
@@ -124,11 +137,11 @@ Tests :
 
 ## Roadmap d'execution
 
-1. Implementer lot 19.1 + migration + API + tests.
-2. Brancher lot 19.2 avec provider email configure par environnement.
-3. Ajouter push web/mobile avec device registry.
-4. Integrer SMS/WhatsApp en mode provider fake puis provider reel.
-5. Ajouter analytics, quotas, dashboard super-admin et commandes IA encadrees.
+1. Fait : implementer lot 19.1 + migration + API + tests.
+2. Fait : brancher l'orchestrateur avec provider email configure par environnement.
+3. Fait : relier push web/mobile au device registry existant et a l'audit communication.
+4. Fait : integrer SMS/WhatsApp en mode provider audit-only.
+5. Prochain raffinement : analytics dashboard super-admin, quotas par plan et commandes IA encadrees.
 
 ## Risques
 

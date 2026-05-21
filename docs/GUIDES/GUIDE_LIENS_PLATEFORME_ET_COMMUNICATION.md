@@ -51,12 +51,24 @@ Les URLs finales devront etre remplacees par les domaines officiels apres achat 
 
 ## Strategie gratuite au lancement
 
-1. Emails : demarrer avec Resend ou Brevo en free tier pour demo, invitation et reset password.
+1. Emails : demarrer avec le mailer Laravel puis Resend ou Brevo en free tier pour demo, invitation et reset password.
 2. Push mobile : utiliser Firebase Cloud Messaging, gratuit et standard Flutter.
 3. Web push : utiliser le protocole Web Push natif pour eviter un abonnement SaaS au debut.
-4. SMS : garder un provider fake/sandbox en dev ; activer seulement les workflows critiques en production.
+4. SMS : garder le provider audit-only/sandbox en dev ; activer seulement les workflows critiques en production.
 5. WhatsApp : commencer avec Meta Cloud API test number pour valider les templates et webhooks.
 6. Observabilite : garder GitHub Actions + logs Render + artefacts Playwright, puis ajouter Better Stack/Sentry paid quand le trafic augmente.
+
+## Etat implementation communication
+
+| Bloc | Etat | Note |
+| --- | --- | --- |
+| Preferences utilisateur | Livre | `GET/PATCH /api/v1/notification-preferences` + page web `/settings/notifications` |
+| Audit multi-canal | Livre | `communication_events` trace app, push, email, SMS, WhatsApp |
+| Orchestrateur | Livre | `App\Services\Communication\CommunicationService` |
+| Async | Livre fondation | `DispatchCommunicationJob` sur queue `COMMUNICATION_QUEUE` |
+| Push | Livre fondation | Device tokens + Firebase existants, dispatch audite |
+| SMS/WhatsApp | Sandbox | `MessageProviderInterface` + provider audit-only par defaut |
+| Providers production | A configurer | Choix fournisseur, secrets, signatures webhook, quotas par plan |
 
 ## Regles operationnelles
 
