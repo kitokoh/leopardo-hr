@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api-client';
 import {
@@ -16,15 +16,14 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 
-const emptySubscribe = () => () => {};
-
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const storedUser = useSyncExternalStore<StoredAuthUser | null>(emptySubscribe, getStoredUser, () => null);
+  const [storedUser, setStoredUser] = useState<StoredAuthUser | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [userOverride, setUserOverride] = useState<StoredAuthUser | null>(null);
   const [localeOverride, setLocaleOverride] = useState<AppLocale | null>(null);
   const user = userOverride ?? storedUser;
@@ -32,12 +31,21 @@ export default function DashboardLayout({
   const labels = useMemo(() => getCopy(locale), [locale]);
 
   useEffect(() => {
+    setStoredUser(getStoredUser());
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
     if (!user) {
       router.replace('/auth/login');
       return;
     }
     applyDocumentLocale(locale, user.is_rtl);
-  }, [locale, router, user]);
+  }, [locale, mounted, router, user]);
 
   const handleLogout = () => {
     clearAuthSession();
@@ -65,6 +73,10 @@ export default function DashboardLayout({
     setLocaleOverride(normalizeLocale(payload.data.language));
     applyDocumentLocale(normalizeLocale(payload.data.language), payload.data.is_rtl);
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen bg-app-card">
