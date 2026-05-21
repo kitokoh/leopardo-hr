@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\DemoUserController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\MetricsController;
+use App\Http\Controllers\Api\V1\NotificationPreferenceController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
@@ -60,6 +61,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/refresh-token', [AuthController::class, 'refreshToken']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::post('/client-events', [ClientEventController::class, 'store'])->middleware('throttle:client-analytics');
+        Route::get('/notification-preferences', [NotificationPreferenceController::class, 'show']);
+        Route::patch('/notification-preferences', [NotificationPreferenceController::class, 'update']);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {

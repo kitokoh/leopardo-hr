@@ -472,6 +472,38 @@ trait CreatesMvpSchema
             $table->index('created_at');
         });
 
+        Schema::create($this->tenantTable('notification_preferences'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->unique();
+            $table->boolean('app_enabled')->default(true);
+            $table->boolean('email_enabled')->default(true);
+            $table->boolean('push_enabled')->default(true);
+            $table->boolean('sms_enabled')->default(false);
+            $table->boolean('whatsapp_enabled')->default(false);
+            $table->char('locale', 2)->nullable();
+            $table->string('timezone', 64)->nullable();
+            $table->json('categories')->nullable();
+            $table->json('quiet_hours')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create($this->tenantTable('communication_events'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->nullable()->index();
+            $table->unsignedInteger('notification_id')->nullable()->index();
+            $table->string('event_name', 80);
+            $table->string('channel', 40)->default('app');
+            $table->string('status', 40)->default('recorded');
+            $table->string('provider', 80)->nullable();
+            $table->string('template_key', 120)->nullable();
+            $table->json('metadata')->nullable();
+            $table->text('error_message')->nullable();
+            $table->timestampTz('occurred_at')->useCurrent();
+            $table->timestamps();
+        });
+
         Schema::create($this->tenantTable('cabinet_folders'), function (Blueprint $table): void {
             $table->id();
             $table->uuid('company_id')->index();
@@ -776,6 +808,42 @@ trait CreatesMvpSchema
                 $table->timestampTz('occurred_at')->useCurrent();
                 $table->timestamps();
                 $table->index(['company_id', 'event_name', 'occurred_at']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('notification_preferences'))) {
+            Schema::create($this->moduleTable('notification_preferences'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->unique();
+                $table->boolean('app_enabled')->default(true);
+                $table->boolean('email_enabled')->default(true);
+                $table->boolean('push_enabled')->default(true);
+                $table->boolean('sms_enabled')->default(false);
+                $table->boolean('whatsapp_enabled')->default(false);
+                $table->char('locale', 2)->nullable();
+                $table->string('timezone', 64)->nullable();
+                $table->json('categories')->nullable();
+                $table->json('quiet_hours')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('communication_events'))) {
+            Schema::create($this->moduleTable('communication_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->nullable()->index();
+                $table->unsignedInteger('notification_id')->nullable()->index();
+                $table->string('event_name', 80);
+                $table->string('channel', 40)->default('app');
+                $table->string('status', 40)->default('recorded');
+                $table->string('provider', 80)->nullable();
+                $table->string('template_key', 120)->nullable();
+                $table->json('metadata')->nullable();
+                $table->text('error_message')->nullable();
+                $table->timestampTz('occurred_at')->useCurrent();
+                $table->timestamps();
             });
         }
 
@@ -1346,6 +1414,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "contracts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "salary_structures"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payroll_runs"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "communication_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "notification_preferences"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "client_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);
