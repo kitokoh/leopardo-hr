@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.114] - 2026-05-21
+
+### Changed
+
+- CI : le workflow k6 force les actions JavaScript en Node 24 pour eviter les annotations de deprecation Node 20.
+
 ## [4.16.113] - 2026-05-21
 
 ### Fixed
