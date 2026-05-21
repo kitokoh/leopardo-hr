@@ -37,6 +37,7 @@ class FrontendApiContractTest extends TestCase
             'mobile device token register' => ['POST', 'api/v1/device-tokens'],
             'mobile device token unregister' => ['DELETE', 'api/v1/device-tokens'],
             'admin dashboard summary' => ['GET', 'api/v1/dashboard/summary'],
+            'admin dashboard recent activity' => ['GET', 'api/v1/dashboard/recent-activity'],
             'admin audit export' => ['GET', 'api/v1/audit-logs/export-csv'],
             'admin employees export' => ['GET', 'api/v1/export/employees'],
             'admin contracts export' => ['GET', 'api/v1/export/contracts'],
