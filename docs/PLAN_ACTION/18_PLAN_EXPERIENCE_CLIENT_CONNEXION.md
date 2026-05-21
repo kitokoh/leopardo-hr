@@ -16,10 +16,12 @@ Garantir qu'un client peut reellement se connecter, comprendre son espace, acced
 
 ## Lot 18.2 - Acces features par plan et par role
 
-- [ ] Afficher dans l'espace client les modules disponibles selon `features`/plan.
-- [ ] Bloquer proprement les modules non inclus avec message upgrade, jamais avec 404 confuse.
-- [ ] Verifier les features critiques : employees, attendance, absences, payroll, reports, billing, integrations.
-- [ ] Ajouter tests API + UI sur feature accessible, feature interdite, feature en trial.
+- [x] Afficher dans l'espace client les modules disponibles selon `features`/plan.
+- [x] Bloquer proprement les modules non inclus avec message upgrade, jamais avec 404 confuse.
+- [~] Verifier les features critiques : employees, attendance, absences, payroll, reports, billing, integrations.
+- [~] Ajouter tests API + UI sur feature accessible, feature interdite, feature en trial.
+
+Note 2026-05-21 : le portail client calcule les modules depuis les `capabilities`, les `features` entreprise/plan et le role utilisateur. Les tests UI couvrent module accessible, module interdit, module en trial et blocage role employe. Les tests API de gate serveur restent a etendre cote backend si de nouveaux endpoints feature-gated sont ajoutes.
 
 ## Lot 18.3 - Modernisation login UX
 

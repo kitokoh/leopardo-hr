@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { LockKeyhole, Sparkles } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { getClientModuleAccess, getModuleAccessForPath, type ClientModuleAccess } from '@/lib/client-features';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -22,6 +24,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [storedUser, setStoredUser] = useState<StoredAuthUser | null>(null);
   const [mounted, setMounted] = useState(false);
   const [userOverride, setUserOverride] = useState<StoredAuthUser | null>(null);
@@ -29,6 +32,8 @@ export default function DashboardLayout({
   const user = userOverride ?? storedUser;
   const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
+  const modules = useMemo(() => getClientModuleAccess(user), [user]);
+  const currentModule = useMemo(() => getModuleAccessForPath(pathname, user), [pathname, user]);
 
   useEffect(() => {
     setStoredUser(getStoredUser());
@@ -79,6 +84,13 @@ export default function DashboardLayout({
     return null;
   }
 
+  const navGroups = {
+    general: modules.filter((module) => module.group === 'general' && module.href),
+    hr: modules.filter((module) => module.group === 'hr' && module.href),
+    finance: modules.filter((module) => module.group === 'finance' && module.href),
+    platform: modules.filter((module) => module.group === 'platform'),
+  };
+
   return (
     <div className="flex min-h-screen bg-app-card">
       <aside className="hidden w-64 flex-col bg-slate-900 text-white md:flex">
@@ -91,56 +103,40 @@ export default function DashboardLayout({
           <div className="mb-2 px-4">
             <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">General</p>
           </div>
-          <Link href="/dashboard" className="flex items-center gap-3 border-r-4 border-rh bg-slate-800/50 px-6 py-3 transition-colors hover:bg-slate-800">
-            <span className="h-2 w-2 rounded-full bg-rh"></span>
-            {labels.dashboard.heading}
-          </Link>
+          {navGroups.general.map((module) => (
+            <SidebarLink key={module.key} module={module} active={pathname === module.href} />
+          ))}
 
           <div className="mb-2 mt-6 px-4">
             <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Module RH</p>
           </div>
-          <Link href="/employees" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            {labels.dashboard.team}
-          </Link>
-          <Link href="/attendance" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            {labels.dashboard.attendance}
-          </Link>
-          <Link href="/absences" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            Absences
-          </Link>
-          <Link href="/contracts" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            Contrats
-          </Link>
+          {navGroups.hr.map((module) => (
+            <SidebarLink key={module.key} module={module} active={pathname === module.href} />
+          ))}
 
           <div className="mb-2 mt-6 px-4">
             <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Finance & Formation</p>
           </div>
-          <Link href="/payroll" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            Paie
-          </Link>
-          <Link href="/training" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            Formations
-          </Link>
-          <Link href="/reports" className="flex items-center gap-3 px-6 py-3 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white">
-            <span className="h-2 w-2 rounded-full bg-slate-600"></span>
-            Rapports
-          </Link>
+          {navGroups.finance.map((module) => (
+            <SidebarLink key={module.key} module={module} active={pathname === module.href} />
+          ))}
         </nav>
 
-        <div className="m-4 rounded-xl border border-ia/20 bg-ia/10 p-4">
-          <div className="mb-2 flex items-center gap-2 text-ia">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            <span className="text-xs font-bold uppercase tracking-wider">Leo IA</span>
+        <div className="m-4 space-y-3 rounded-xl border border-ia/20 bg-ia/10 p-4">
+          <div className="flex items-center gap-2 text-ia">
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            <span className="text-xs font-bold uppercase tracking-wider">Modules du plan</span>
           </div>
-          <p className="text-[10px] leading-relaxed text-slate-400">
-            Leo arrive bientot sur le web pour vous aider a analyser vos donnees RH par simple commande vocale.
-          </p>
+          <div className="grid gap-2">
+            {navGroups.platform.map((module) => (
+              <div key={module.key} className="flex items-center justify-between gap-2 text-[11px] font-semibold text-slate-300">
+                <span>{module.label}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] ${module.enabled ? 'bg-emerald-400/15 text-emerald-200' : 'bg-slate-700 text-slate-400'}`}>
+                  {module.enabled ? (module.state === 'trial' ? 'Trial' : 'Actif') : 'Upgrade'}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="border-t border-slate-800 p-6">
@@ -184,9 +180,71 @@ export default function DashboardLayout({
           </div>
         </header>
         <main className="mx-auto w-full max-w-7xl p-8">
-          {children}
+          {currentModule && !currentModule.enabled ? (
+            <FeatureLockedPanel module={currentModule} />
+          ) : (
+            children
+          )}
         </main>
       </div>
     </div>
+  );
+}
+
+function SidebarLink({ module, active }: { module: ClientModuleAccess; active: boolean }) {
+  const className = [
+    'flex items-center justify-between gap-3 px-6 py-3 transition-colors',
+    active ? 'border-r-4 border-rh bg-slate-800/50 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white',
+    module.enabled ? '' : 'text-slate-500 hover:text-slate-300',
+  ].filter(Boolean).join(' ');
+
+  return (
+    <Link href={module.href ?? '#'} className={className} aria-disabled={!module.enabled}>
+      <span className="flex items-center gap-3">
+        <span className={`h-2 w-2 rounded-full ${module.enabled ? 'bg-rh' : 'bg-slate-600'}`}></span>
+        {module.label}
+      </span>
+      {!module.enabled ? <LockKeyhole className="h-3.5 w-3.5" aria-label="Module non inclus" /> : null}
+      {module.enabled && module.state === 'trial' ? (
+        <span className="rounded-full bg-amber-300/15 px-2 py-0.5 text-[10px] font-bold text-amber-200">Trial</span>
+      ) : null}
+    </Link>
+  );
+}
+
+function FeatureLockedPanel({ module }: { module: ClientModuleAccess }) {
+  const reason = module.reason === 'role_locked'
+    ? 'Votre role actuel ne permet pas d acceder a ce module.'
+    : 'Ce module n est pas inclus dans votre plan actuel.';
+
+  return (
+    <section className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
+      <div className="grid gap-6 p-6 lg:grid-cols-[1fr_280px] lg:items-center">
+        <div className="space-y-4">
+          <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
+            <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+            Module non inclus
+          </span>
+          <div>
+            <h1 className="text-3xl font-black text-slate-950">{module.upgradeLabel}</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+              {reason} Leopardo RH garde l interface explicite afin d eviter les 404 confuses et les erreurs API inutiles.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            Demandez l activation au super administrateur de la plateforme ou passez sur un plan incluant ce module.
+          </div>
+        </div>
+        <div className="rounded-2xl bg-slate-950 p-5 text-white">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-200">Plan & role</p>
+          <p className="mt-3 text-sm leading-6 text-slate-300">
+            Les modules visibles dans cet espace sont calcules depuis les droits, le plan de l entreprise et le role utilisateur.
+          </p>
+          <Link href="/contact?topic=upgrade" className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-teal-400 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-300">
+            Demander l activation
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
