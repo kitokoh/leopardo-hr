@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -23,6 +23,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { trackClientEvent } from '@/lib/client-analytics';
 import { getDisplayName, getPreferredLocale, getStoredUser, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
 
@@ -103,6 +104,8 @@ export default function DashboardPage() {
   const [activities, setActivities] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const dashboardStartRef = useRef<number>(0);
+  const dashboardTrackedRef = useRef(false);
   const role = user?.role?.toLowerCase() ?? null;
   const isEmployee = role === 'employee';
   const isSuperAdmin = role === 'super_admin';
@@ -116,9 +119,28 @@ export default function DashboardPage() {
   }, [locale]);
 
   useEffect(() => {
+    dashboardStartRef.current = performance.now();
     setUser(getStoredUser());
     setUserLoaded(true);
   }, []);
+
+  const trackDashboardLoaded = useCallback((extra: Record<string, unknown> = {}) => {
+    if (dashboardTrackedRef.current) {
+      return;
+    }
+
+    dashboardTrackedRef.current = true;
+    trackClientEvent('dashboard_loaded', {
+      duration_ms: Math.round(performance.now() - dashboardStartRef.current),
+      role: user?.role ?? null,
+      manager_role: user?.manager_role ?? null,
+      company_id: user?.company?.id ?? null,
+      company_name: user?.company?.name ?? null,
+      active_modules: activeModules,
+      locked_modules: lockedModules,
+      ...extra,
+    });
+  }, [activeModules, lockedModules, user]);
 
   useEffect(() => {
     let cancelled = false;
@@ -130,6 +152,7 @@ export default function DashboardPage() {
 
       if (isEmployee || isSuperAdmin) {
         setLoading(false);
+        trackDashboardLoaded({ surface: isEmployee ? 'employee' : 'super_admin' });
         return;
       }
 
@@ -155,9 +178,18 @@ export default function DashboardPage() {
           pending_absences: Number(summaryPayload.data?.pending_absences ?? 0),
         });
         setActivities(Array.isArray(activityPayload.data) ? activityPayload.data : []);
+        trackDashboardLoaded({
+          surface: 'manager',
+          employees_active: Number(summaryPayload.data?.employees_active ?? 0),
+          pending_absences: Number(summaryPayload.data?.pending_absences ?? 0),
+        });
       } catch (error) {
         if (cancelled) return;
         setLoadError(error instanceof ApiError ? error.message : 'Impossible de charger les donnees du dashboard.');
+        trackDashboardLoaded({
+          surface: 'manager',
+          status: 'error',
+        });
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -170,7 +202,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isEmployee, isSuperAdmin, userLoaded]);
+  }, [isEmployee, isSuperAdmin, trackDashboardLoaded, userLoaded]);
 
   const stats: DashboardStat[] = [
     {

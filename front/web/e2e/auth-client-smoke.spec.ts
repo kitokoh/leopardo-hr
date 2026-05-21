@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
+type AnalyticsWindow = Window & {
+  __LEOPARDO_ANALYTICS_EVENTS__?: Array<{
+    name: string;
+    timestamp: string;
+    properties: Record<string, string | number | boolean | null>;
+  }>;
+};
+
 const managerUser = {
   id: 101,
   first_name: 'Fatima',
@@ -57,10 +65,22 @@ async function mockDashboardApis(page: Page) {
   });
 }
 
+async function captureAnalytics(page: Page) {
+  await page.addInitScript(() => {
+    (window as AnalyticsWindow).__LEOPARDO_ANALYTICS_EVENTS__ = [];
+  });
+}
+
+async function analyticsEvents(page: Page) {
+  return page.evaluate(() => (window as AnalyticsWindow).__LEOPARDO_ANALYTICS_EVENTS__ ?? []);
+}
+
 test.describe('Client web auth smoke', () => {
   test.describe.configure({ mode: 'serial' });
 
   test('employee or HR manager can sign in and reach a tenant-backed dashboard', async ({ page }) => {
+    await captureAnalytics(page);
+
     await page.route('**/api/v1/auth/login', async (route) => {
       await route.fulfill({
         status: 200,
@@ -97,9 +117,23 @@ test.describe('Client web auth smoke', () => {
     await expect(page.locator('body')).toContainText('6');
     await expect(page.locator('body')).toContainText('7 total');
     await expect(page.locator('body')).toContainText('employee.updated');
+
+    await expect.poll(async () => {
+      const events = await analyticsEvents(page);
+      return events.map((event) => event.name);
+    }).toEqual(expect.arrayContaining(['login_success', 'dashboard_loaded']));
+
+    const events = await analyticsEvents(page);
+    const loginEvent = events.find((event) => event.name === 'login_success');
+    const dashboardEvent = events.find((event) => event.name === 'dashboard_loaded');
+    expect(loginEvent?.properties.role).toBe('manager');
+    expect(dashboardEvent?.properties.surface).toBe('manager');
+    expect(Number(dashboardEvent?.properties.duration_ms)).toBeLessThan(5000);
   });
 
   test('invalid credentials stay on login with a readable API error', async ({ page }) => {
+    await captureAnalytics(page);
+
     await page.route('**/api/v1/auth/login', async (route) => {
       await route.fulfill({
         status: 401,
@@ -115,6 +149,8 @@ test.describe('Client web auth smoke', () => {
 
     await expect(page).toHaveURL(/\/auth\/login$/);
     await expect(page.getByText('Identifiants invalides.')).toBeVisible();
+    const events = await analyticsEvents(page);
+    expect(events.find((event) => event.name === 'login_failed')?.properties.status).toBe(401);
   });
 
   test('expired dashboard session clears storage and returns to login', async ({ page }) => {
@@ -157,6 +193,8 @@ test.describe('Client web auth smoke', () => {
   });
 
   test('employee reaches a focused employee dashboard after session hydration', async ({ page }) => {
+    await captureAnalytics(page);
+
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
       window.localStorage.setItem('auth_token', 'employee-web-token');
@@ -190,5 +228,24 @@ test.describe('Client web auth smoke', () => {
     await expect(page.locator('body')).toContainText('Espace employe');
     await expect(page.locator('body')).toContainText('Pointage');
     await expect(page.locator('body')).toContainText('Bulletins');
+
+    await expect.poll(async () => {
+      const events = await analyticsEvents(page);
+      return events.map((event) => event.name);
+    }).toContain('dashboard_loaded');
+  });
+
+  test('demo account selection emits an analytics event and hydrates credentials', async ({ page }) => {
+    await captureAnalytics(page);
+
+    await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: /try a demo account|acces demo|accès démo|demo access/i }).click();
+    await page.getByRole('button', { name: /Ahmed Benali/i }).click();
+
+    await expect(page.getByLabel(/adresse email|email address/i)).toHaveValue('ahmed.benali@techcorp-algerie.dz');
+    await expect(page.getByLabel(/^mot de passe$|^password$/i)).toHaveValue('password123');
+
+    const events = await analyticsEvents(page);
+    expect(events.find((event) => event.name === 'demo_user_selected')?.properties.country).toBe('DZ');
   });
 });

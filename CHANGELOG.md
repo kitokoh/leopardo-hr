@@ -2,6 +2,24 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.119] - 2026-05-21
+
+### Added
+
+- Plan 18 : observabilite UX client avec evenements `login_success`, `login_failed`, `dashboard_loaded`, `feature_blocked` et `demo_user_selected`.
+- Web client : captures Playwright login/dashboard attachees au rapport CI `web-client-playwright-report`.
+- Documentation : `CLIENT_UX_OBSERVABILITY.md` formalise les evenements, seuils Web Vitals/Lighthouse et objectifs login -> dashboard.
+
+### Changed
+
+- CI vitrine : le smoke authentifie execute aussi les captures visuelles client et publie le rapport Playwright.
+- Lighthouse vitrine : la page `/auth/login` rejoint les URLs auditees.
+- Kiosque ZKTeco : etat offline clarifie avec derniere synchronisation lisible et evenement navigateur `leopardo:kiosk-status`.
+
+### Tests
+
+- Web client : Playwright verifie les evenements analytics critiques et le temps dashboard utilisable sous 5 secondes en environnement mocke.
+
 ## [4.16.118] - 2026-05-21
 
 ### Changed
