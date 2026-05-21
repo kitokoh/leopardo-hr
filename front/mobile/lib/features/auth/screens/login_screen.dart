@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/core/widgets/demo_user_bottom_sheet.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -211,6 +212,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           label: const Text('Connexion compte personnel'),
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.ia,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            final user = await showDemoUserBottomSheet(context);
+                            if (user != null) {
+                              _emailController.text = user.email;
+                              _passwordController.text = user.password;
+                            }
+                          },
+                          icon: const Icon(Icons.group_outlined),
+                          label: const Text('Acces Demo'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF059669),
+                            foregroundColor: Colors.white,
                           ),
                         ),
                       ],

@@ -133,6 +133,34 @@
     .ann-priority.normal { background: rgba(56,189,248,0.2); color: #7dd3fc; }
     .ann-priority.low { background: rgba(148,163,184,0.15); color: var(--muted); }
 
+    /* Demo modal */
+    .demo-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .demo-modal {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+      width: min(520px, 100%); max-height: 80vh; overflow-y: auto; padding: 24px;
+    }
+    .demo-company-title {
+      font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
+      margin: 16px 0 8px; font-weight: 700;
+    }
+    .demo-company-title:first-child { margin-top: 0; }
+    .demo-user-btn {
+      width: 100%; text-align: left; padding: 12px 14px; border-radius: 14px;
+      border: 1px solid var(--line); background: rgba(2,6,23,0.5); color: var(--text);
+      cursor: pointer; margin-bottom: 8px; transition: border-color .2s;
+    }
+    .demo-user-btn:hover { border-color: var(--accent); background: rgba(16,185,129,0.08); }
+    .demo-user-name { font-weight: 700; font-size: 14px; }
+    .demo-user-email { font-size: 12px; color: var(--muted); }
+    .demo-user-role {
+      display: inline-block; padding: 2px 8px; border-radius: 8px;
+      font-size: 11px; font-weight: 600; background: rgba(16,185,129,0.15); color: #6ee7b7;
+      float: right; margin-top: 2px;
+    }
+
     /* QR */
     .qr-area {
       min-height: 200px; border: 2px dashed var(--line); border-radius: 18px;
@@ -189,6 +217,9 @@
           <div class="actions">
             <button class="primary" id="checkInButton" aria-label="Pointer entree">Pointer entree</button>
             <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Pointer sortie</button>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="info" id="demoAccessBtn" style="background:#059669;color:white;" aria-label="Acces Demo">Acces Demo — Choisir un employe</button>
           </div>
           <div id="statusBox" class="status" role="alert" aria-live="polite">Pret a recevoir un pointage.</div>
         </section>
@@ -285,6 +316,17 @@
         </div>
         <div id="qrStatus" class="status hidden" role="alert" aria-live="polite"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Demo users modal (hidden by default) -->
+  <div id="demoOverlay" class="demo-overlay hidden">
+    <div class="demo-modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="margin:0;">Choisir un employe demo</h2>
+        <button class="secondary" style="width:auto;padding:8px 14px;font-size:13px;" id="demoCloseBtn">Fermer</button>
+      </div>
+      <div id="demoUsersList"></div>
     </div>
   </div>
 

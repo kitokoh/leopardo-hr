@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\FeatureManifestController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
+use App\Http\Controllers\Api\V1\DemoUserController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\MetricsController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
@@ -40,6 +41,9 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/i18n/catalog', [TranslationCatalogController::class, 'index']);
         Route::get('/i18n/catalog/{locale}', [TranslationCatalogController::class, 'show']);
     });
+
+    // Demo users (public, disabled in production unless DEMO_MODE_ENABLED=true)
+    Route::get('/demo-users', [DemoUserController::class, 'index']);
 
     // Module 6 — Public Onboarding (sans auth, throttle strict)
     Route::middleware(['throttle:10,1'])->prefix('onboarding')->group(function (): void {
