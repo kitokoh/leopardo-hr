@@ -171,34 +171,9 @@
                   </button>
                 </div>
 
-                <!-- Companies -->
-                <div v-for="company in demoCompanies" :key="company.slug">
-                  <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ company.name }} ({{ company.country }})</h4>
-                  <div class="space-y-2">
-                    <button
-                      v-for="user in company.users"
-                      :key="user.email"
-                      type="button"
-                      class="w-full text-left rounded-lg border border-gray-200 p-3 hover:border-indigo-400 hover:bg-indigo-50 transition"
-                      @click="selectDemoUser(user.email, user.password)"
-                    >
-                      <div class="flex items-center justify-between">
-                        <div class="font-medium text-gray-900">{{ user.name }}</div>
-                        <span
-                          :class="[
-                            'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-                            user.manager_role === 'principal' ? 'bg-purple-100 text-purple-700' :
-                            user.manager_role === 'rh' ? 'bg-blue-100 text-blue-700' :
-                            'bg-gray-100 text-gray-700'
-                          ]"
-                        >
-                          {{ user.manager_role || user.role }}
-                        </span>
-                      </div>
-                      <div class="text-sm text-gray-500">{{ user.email }}</div>
-                    </button>
-                  </div>
-                </div>
+                <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                  Cet espace est reserve aux administrateurs plateforme. Les comptes RH et employes de demonstration se connectent depuis le portail client ou l'application mobile.
+                </p>
               </div>
             </div>
           </div>
@@ -256,33 +231,6 @@ const error = ref('')
 const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
 const showDemoModal = ref(false)
-
-const demoCompanies = [
-  {
-    name: 'TechCorp Algerie SARL', slug: 'techcorp-algerie', country: 'DZ',
-    users: [
-      { email: 'ahmed.benali@techcorp-algerie.dz', name: 'Ahmed Benali', role: 'manager', manager_role: 'principal', password: 'password123' },
-      { email: 'fatima.meziane@techcorp-algerie.dz', name: 'Fatima Meziane', role: 'manager', manager_role: 'rh', password: 'password123' },
-      { email: 'karim.aouad@techcorp-algerie.dz', name: 'Karim Aouad', role: 'employee', manager_role: null, password: 'password123' },
-    ],
-  },
-  {
-    name: 'PharmaPlus Casablanca', slug: 'pharmaplus-casablanca', country: 'MA',
-    users: [
-      { email: 'amina.tahiri@pharmaplus.ma', name: 'Amina Tahiri', role: 'manager', manager_role: 'principal', password: 'password123' },
-      { email: 'sara.mansouri@pharmaplus.ma', name: 'Sara Mansouri', role: 'manager', manager_role: 'rh', password: 'password123' },
-      { email: 'youssef.bennani@pharmaplus.ma', name: 'Youssef Bennani', role: 'employee', manager_role: null, password: 'password123' },
-    ],
-  },
-  {
-    name: 'DigitalFlow Tunis', slug: 'digitalflow-tunis', country: 'TN',
-    users: [
-      { email: 'sofiane.mrad@digitalflow.tn', name: 'Sofiane Mrad', role: 'manager', manager_role: 'principal', password: 'password123' },
-      { email: 'olfa.trabelsi@digitalflow.tn', name: 'Olfa Trabelsi', role: 'manager', manager_role: 'rh', password: 'password123' },
-      { email: 'aziz.khelifi@digitalflow.tn', name: 'Aziz Khelifi', role: 'employee', manager_role: null, password: 'password123' },
-    ],
-  },
-]
 
 function selectDemoUser(email, password) {
   form.email = email
