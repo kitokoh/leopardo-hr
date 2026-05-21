@@ -32,8 +32,34 @@ Le smoke `front/web/e2e/auth-client-smoke.spec.ts` couvre maintenant :
 - mauvais identifiants avec message API lisible et maintien sur `/auth/login` ;
 - session expiree sur le dashboard avec purge du token local et retour login.
 
+## Acces features Plan 18.2
+
+Le portail client applique les modules visibles depuis trois sources, dans cet ordre :
+
+1. `auth/me.data.capabilities`
+2. `auth/me.data.company.features`
+3. `auth/me.data.plan.features`
+
+En absence de contrat explicite, le module reste disponible afin de ne pas couper les clients historiques. Une valeur `false`, `disabled`, `locked` ou equivalente bloque le module ; une valeur `trial` laisse le module utilisable avec un badge Trial.
+
+Modules controles cote UI :
+
+| Module | Route | Cles reconnues |
+| --- | --- | --- |
+| Employes | `/employees` | `employees`, `employee_management`, `can_view_employees`, `can_create_employees` |
+| Pointages | `/attendance` | `attendance`, `time_tracking`, `can_view_attendance` |
+| Absences | `/absences` | `absences`, `leave_management`, `can_view_absences` |
+| Contrats | `/contracts` | `contracts`, `can_view_contracts` |
+| Paie | `/payroll` | `payroll`, `pay_slips`, `can_view_payroll`, `can_manage_payroll` |
+| Formation | `/training` | `training`, `can_view_training` |
+| Rapports | `/reports` | `reports`, `analytics`, `can_view_reports` |
+| Facturation | navigation plan | `billing`, `can_manage_billing` |
+| Integrations | navigation plan | `integrations`, `api_access`, `webhooks`, `can_manage_integrations` |
+
+Les modules non inclus affichent une page d upgrade explicite au lieu de rendre la page metier ou de produire une 404.
+
 ## Points restants Plan 18
 
 - Ajouter la recuperation mot de passe reelle cote backend/web quand le flux email sera pret.
 - Brancher le tracking produit `login_success`, `login_failed`, `dashboard_loaded`.
-- Ajouter les verrous UI par feature/plan dans le dashboard client.
+- Completer les gates backend si un endpoint critique n applique pas encore les feature flags serveur.
