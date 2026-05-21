@@ -126,6 +126,84 @@
           </button>
         </div>
 
+        <div class="mt-4 border-t border-gray-200 pt-4">
+          <button
+            type="button"
+            class="group relative flex w-full justify-center rounded-md bg-emerald-600 py-2 px-3 text-sm font-semibold text-white hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+            @click="showDemoModal = true"
+          >
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <UserGroupIcon class="h-5 w-5 group-hover:text-emerald-300" aria-hidden="true" />
+            </span>
+            Acces Demo
+          </button>
+        </div>
+
+        <!-- Demo users modal -->
+        <Teleport to="body">
+          <div
+            v-if="showDemoModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            @click.self="showDemoModal = false"
+          >
+            <div class="w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-xl bg-white shadow-2xl">
+              <div class="sticky top-0 flex items-center justify-between border-b bg-white px-6 py-4 rounded-t-xl">
+                <h3 class="text-lg font-bold text-gray-900">Choisir un compte demo</h3>
+                <button
+                  type="button"
+                  class="rounded-md text-gray-400 hover:text-gray-600"
+                  @click="showDemoModal = false"
+                >
+                  <XMarkIcon class="h-6 w-6" />
+                </button>
+              </div>
+              <div class="p-6 space-y-4">
+                <!-- Super Admin -->
+                <div>
+                  <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Super Admin</h4>
+                  <button
+                    type="button"
+                    class="w-full text-left rounded-lg border border-gray-200 p-3 hover:border-indigo-400 hover:bg-indigo-50 transition"
+                    @click="selectDemoUser('admin@leopardo-rh.com', 'password123')"
+                  >
+                    <div class="font-medium text-gray-900">Super Administrateur</div>
+                    <div class="text-sm text-gray-500">admin@leopardo-rh.com</div>
+                  </button>
+                </div>
+
+                <!-- Companies -->
+                <div v-for="company in demoCompanies" :key="company.slug">
+                  <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ company.name }} ({{ company.country }})</h4>
+                  <div class="space-y-2">
+                    <button
+                      v-for="user in company.users"
+                      :key="user.email"
+                      type="button"
+                      class="w-full text-left rounded-lg border border-gray-200 p-3 hover:border-indigo-400 hover:bg-indigo-50 transition"
+                      @click="selectDemoUser(user.email, user.password)"
+                    >
+                      <div class="flex items-center justify-between">
+                        <div class="font-medium text-gray-900">{{ user.name }}</div>
+                        <span
+                          :class="[
+                            'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                            user.manager_role === 'principal' ? 'bg-purple-100 text-purple-700' :
+                            user.manager_role === 'rh' ? 'bg-blue-100 text-blue-700' :
+                            'bg-gray-100 text-gray-700'
+                          ]"
+                        >
+                          {{ user.manager_role || user.role }}
+                        </span>
+                      </div>
+                      <div class="text-sm text-gray-500">{{ user.email }}</div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Teleport>
+
         <div class="mt-6 border-t border-gray-200 pt-6">
           <div class="text-center">
             <p class="text-xs text-gray-500">Statut du systeme</p>
@@ -158,6 +236,8 @@ import {
   ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
+  UserGroupIcon,
+  XMarkIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 
@@ -175,6 +255,40 @@ const isLoading = ref(false)
 const error = ref('')
 const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
+const showDemoModal = ref(false)
+
+const demoCompanies = [
+  {
+    name: 'TechCorp Algerie SARL', slug: 'techcorp-algerie', country: 'DZ',
+    users: [
+      { email: 'ahmed.benali@techcorp-algerie.dz', name: 'Ahmed Benali', role: 'manager', manager_role: 'principal', password: 'password123' },
+      { email: 'fatima.meziane@techcorp-algerie.dz', name: 'Fatima Meziane', role: 'manager', manager_role: 'rh', password: 'password123' },
+      { email: 'karim.aouad@techcorp-algerie.dz', name: 'Karim Aouad', role: 'employee', manager_role: null, password: 'password123' },
+    ],
+  },
+  {
+    name: 'PharmaPlus Casablanca', slug: 'pharmaplus-casablanca', country: 'MA',
+    users: [
+      { email: 'amina.tahiri@pharmaplus.ma', name: 'Amina Tahiri', role: 'manager', manager_role: 'principal', password: 'password123' },
+      { email: 'sara.mansouri@pharmaplus.ma', name: 'Sara Mansouri', role: 'manager', manager_role: 'rh', password: 'password123' },
+      { email: 'youssef.bennani@pharmaplus.ma', name: 'Youssef Bennani', role: 'employee', manager_role: null, password: 'password123' },
+    ],
+  },
+  {
+    name: 'DigitalFlow Tunis', slug: 'digitalflow-tunis', country: 'TN',
+    users: [
+      { email: 'sofiane.mrad@digitalflow.tn', name: 'Sofiane Mrad', role: 'manager', manager_role: 'principal', password: 'password123' },
+      { email: 'olfa.trabelsi@digitalflow.tn', name: 'Olfa Trabelsi', role: 'manager', manager_role: 'rh', password: 'password123' },
+      { email: 'aziz.khelifi@digitalflow.tn', name: 'Aziz Khelifi', role: 'employee', manager_role: null, password: 'password123' },
+    ],
+  },
+]
+
+function selectDemoUser(email, password) {
+  form.email = email
+  form.password = password
+  showDemoModal.value = false
+}
 
 async function handleLogin() {
   if (isLoading.value) return
