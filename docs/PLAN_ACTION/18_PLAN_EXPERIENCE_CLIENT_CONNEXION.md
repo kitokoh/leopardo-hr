@@ -34,10 +34,12 @@ Note 2026-05-21 : le login web client est modernise et couvert par Playwright. L
 
 ## Lot 18.4 - Premiere experience apres connexion
 
-- [ ] Dashboard manager : etat de l'entreprise, actions prioritaires, onboarding incomplet, donnees RH recentes.
-- [ ] Employe : pointage, absences, bulletins, notifications, langue.
-- [ ] Super admin : sante plateforme, demandes clients, tenants a risque.
+- [~] Dashboard manager : etat de l'entreprise, actions prioritaires, onboarding incomplet, donnees RH recentes.
+- [~] Employe : pointage, absences, bulletins, notifications, langue.
+- [~] Super admin : sante plateforme, demandes clients, tenants a risque.
 - [ ] Kiosque : etat appareil, synchro, mode offline clair.
+
+Note 2026-05-21 : le dashboard web client presente maintenant l entreprise, les actions prioritaires et les donnees RH recentes pour manager ; un espace employe dedie expose pointage, absences, bulletins et langue ; un super admin est oriente vers le dashboard plateforme. L onboarding incomplet, les notifications reelles et l etat kiosque restent a brancher avec les endpoints dedies.
 
 ## Lot 18.5 - Qualite et observabilite UX
 

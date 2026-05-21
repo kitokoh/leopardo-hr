@@ -84,7 +84,7 @@ test.describe('Client web auth smoke', () => {
     await mockDashboardApis(page);
 
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText(/Connexion a Leopardo RH|Sign in to Leopardo RH/).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /sign in|se connecter/i })).toBeVisible();
     await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
     await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
     await page.getByRole('button', { name: /afficher le mot de passe|show password/i }).click();
@@ -154,5 +154,41 @@ test.describe('Client web auth smoke', () => {
     await expect(page).toHaveURL(/\/auth\/login$/);
     await expect(page.locator('body')).toContainText(/Connexion a Leopardo RH|Sign in to Leopardo RH/);
     expect(await page.evaluate(() => window.localStorage.getItem('auth_token'))).toBeNull();
+  });
+
+  test('employee reaches a focused employee dashboard after session hydration', async ({ page }) => {
+    await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      window.localStorage.setItem('auth_token', 'employee-web-token');
+      window.localStorage.setItem('auth_user', JSON.stringify({
+        id: 301,
+        first_name: 'Karim',
+        last_name: 'Aouad',
+        email: 'karim.aouad@techcorp-algerie.dz',
+        role: 'employee',
+        manager_role: null,
+        language: 'fr',
+        is_rtl: false,
+        capabilities: {
+          attendance: true,
+          absences: true,
+        },
+        company: {
+          id: 'company-1',
+          name: 'TechCorp Algerie SARL',
+          features: {
+            attendance: true,
+            absences: true,
+          },
+        },
+      }));
+    });
+
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+
+    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page.locator('body')).toContainText('Espace employe');
+    await expect(page.locator('body')).toContainText('Pointage');
+    await expect(page.locator('body')).toContainText('Bulletins');
   });
 });
