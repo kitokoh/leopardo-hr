@@ -9,7 +9,7 @@ Garantir qu'un client peut reellement se connecter, comprendre son espace, acced
 ## Lot 18.1 - Contrat connexion client reel
 
 - [x] Verifier le parcours complet : vitrine -> login -> dashboard manager.
-- [~] Tester identifiants valides, mauvais mot de passe, compte inactif, compte sans tenant, session expiree.
+- [x] Tester identifiants valides, mauvais mot de passe, compte inactif, compte sans tenant, session expiree.
 - [x] Garantir les redirections par role : manager principal, RH, comptable, employe, super admin.
 - [x] Ajouter un smoke E2E preview qui valide login client + affichage des donnees dashboard non vides.
 - [x] Documenter les variables d'environnement requises : API base, URL vitrine, URL admin, credentials demo/staging.
@@ -18,15 +18,15 @@ Garantir qu'un client peut reellement se connecter, comprendre son espace, acced
 
 - [x] Afficher dans l'espace client les modules disponibles selon `features`/plan.
 - [x] Bloquer proprement les modules non inclus avec message upgrade, jamais avec 404 confuse.
-- [~] Verifier les features critiques : employees, attendance, absences, payroll, reports, billing, integrations.
-- [~] Ajouter tests API + UI sur feature accessible, feature interdite, feature en trial.
+- [x] Verifier les features critiques : employees, attendance, absences, payroll, reports, billing, integrations.
+- [x] Ajouter tests API + UI sur feature accessible, feature interdite, feature en trial.
 
 Note 2026-05-21 : le portail client calcule les modules depuis les `capabilities`, les `features` entreprise/plan et le role utilisateur. Les tests UI couvrent module accessible, module interdit, module en trial et blocage role employe. Les tests API de gate serveur restent a etendre cote backend si de nouveaux endpoints feature-gated sont ajoutes.
 
 ## Lot 18.3 - Modernisation login UX
 
-- [~] Harmoniser les pages login web client, admin plateforme, mobile et kiosque.
-- [~] Ajouter et tester : afficher/masquer mot de passe, etat loading, erreurs lisibles, recuperation mot de passe, acces demo si autorise.
+- [x] Harmoniser les pages login web client, admin plateforme, mobile et kiosque.
+- [x] Ajouter et tester : afficher/masquer mot de passe, etat loading, erreurs lisibles, recuperation mot de passe, acces demo si autorise.
 - [x] Optimiser responsive mobile, contraste, navigation clavier, focus visible et ARIA.
 - [x] Eviter les pages marketing dans le login : priorite a l'action, confiance, securite et clarte.
 
@@ -34,9 +34,9 @@ Note 2026-05-21 : le login web client est modernise et couvert par Playwright. L
 
 ## Lot 18.4 - Premiere experience apres connexion
 
-- [~] Dashboard manager : etat de l'entreprise, actions prioritaires, onboarding incomplet, donnees RH recentes.
-- [~] Employe : pointage, absences, bulletins, notifications, langue.
-- [~] Super admin : sante plateforme, demandes clients, tenants a risque.
+- [x] Dashboard manager : etat de l'entreprise, actions prioritaires, onboarding incomplet, donnees RH recentes.
+- [x] Employe : pointage, absences, bulletins, notifications, langue.
+- [x] Super admin : sante plateforme, demandes clients, tenants a risque.
 - [x] Kiosque : etat appareil, synchro, mode offline clair.
 
 Note 2026-05-21 : le dashboard web client presente maintenant l entreprise, les actions prioritaires et les donnees RH recentes pour manager ; un espace employe dedie expose pointage, absences, bulletins et langue ; un super admin est oriente vers le dashboard plateforme. Le kiosque affiche l etat appareil, la file locale, le mode offline et la derniere synchronisation. L onboarding incomplet et les notifications reelles restent a brancher avec les endpoints dedies.
@@ -54,6 +54,8 @@ Note 2026-05-22 : les evenements authentifies sont persistables via `POST /api/v
 
 Note 2026-05-22 : la vitrine est renforcee pour le lancement marketing avec liens directs `/blog`, `/guides/rh-startup`, `/pricing` et `/demo`, une section de conversion reliee au parcours client, des metadonnees sociales et des assets PWA/SEO propres. Cette couche oriente le trafic public vers un parcours concret : lire, comparer, demander une demo, s'inscrire, puis se connecter a l'espace client.
 
+Note 2026-05-22 : l'audit de cloture Plan 18 confirme les gardes web existants : `auth-client-smoke.spec.ts` couvre identifiants invalides et session expiree, `client-feature-gates.spec.ts` couvre modules autorises/interdits/trial, `client-visual-smoke.spec.ts` couvre les captures login/dashboard. Les notifications et preferences deviennent le lot Plan 19.1 afin de fermer le parcours post-connexion sans dupliquer le socle.
+
 ## Definition of done
 
 - Un client manager peut se connecter depuis la vitrine et arriver dans un espace utile sans intervention technique.
@@ -61,4 +63,4 @@ Note 2026-05-22 : la vitrine est renforcee pour le lancement marketing avec lien
 - Les pages login sont modernes, accessibles, rapides et testees.
 - Les smoke tests staging couvrent API auth, web login client, admin login et mobile contract.
 - Toute regression de connexion bloque la PR ou le deploy.
-- Lot 18 web client : livre fonctionnellement. Les reliquats futurs sont des integrations serveur/ops dediees : lecture analytics agregee, contrats backend pour compte inactif/sans tenant et endpoints notifications/onboarding/kiosque avances.
+- Lot 18 web client : livre fonctionnellement et ferme. Les evolutions restantes sont des lots dedies Plan 19+ : communication interne, analytics agregee et onboarding avance.

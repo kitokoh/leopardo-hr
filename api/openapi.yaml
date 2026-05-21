@@ -2327,10 +2327,19 @@ paths:
       tags: ["Notifications"]
       summary: "Lister les notifications de l'utilisateur courant"
       parameters:
-        - name: unread_only
+        - name: unread
           in: query
           schema:
             type: boolean
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
@@ -2339,6 +2348,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NotificationIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /notification-preferences:
+    get:
+      tags: ["Notifications"]
+      summary: "Lire les preferences de notification de l'utilisateur courant"
+      responses:
+        "200":
+          description: "Preferences de notification"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/NotificationPreference"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Notifications"]
+      summary: "Mettre a jour les preferences de notification de l'utilisateur courant"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPreferenceUpdateRequest"
+      responses:
+        "200":
+          description: "Preferences de notification mises a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/NotificationPreference"
         "401":
           $ref: "#/components/responses/Error401"
         "422":
@@ -4859,6 +4908,81 @@ components:
               type: integer
             unread_count:
               type: integer
+
+    NotificationPreference:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: integer
+        app_enabled:
+          type: boolean
+        email_enabled:
+          type: boolean
+        push_enabled:
+          type: boolean
+        sms_enabled:
+          type: boolean
+        whatsapp_enabled:
+          type: boolean
+        locale:
+          type: string
+          enum: [fr, ar, en, tr]
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+        categories:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: boolean
+        quiet_hours:
+          type: object
+          nullable: true
+          additionalProperties: true
+
+    NotificationPreferenceUpdateRequest:
+      type: object
+      properties:
+        app_enabled:
+          type: boolean
+        email_enabled:
+          type: boolean
+        push_enabled:
+          type: boolean
+        sms_enabled:
+          type: boolean
+        whatsapp_enabled:
+          type: boolean
+        locale:
+          type: string
+          enum: [fr, ar, en, tr]
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+        categories:
+          type: object
+          additionalProperties:
+            type: boolean
+        quiet_hours:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            start:
+              type: string
+              nullable: true
+              example: "20:00"
+            end:
+              type: string
+              nullable: true
+              example: "07:00"
 
     PaginationMeta:
       type: object
