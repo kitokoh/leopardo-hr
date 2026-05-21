@@ -9,7 +9,8 @@
         "http://localhost:3000/marketing",
         "http://localhost:3000/pricing",
         "http://localhost:3000/about",
-        "http://localhost:3000/blog"
+        "http://localhost:3000/blog",
+        "http://localhost:3000/auth/login"
       ],
       "numberOfRuns": 1,
       "settings": {
