@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.109] - 2026-05-21
+
+### Changed
+
+- Load testing : le smoke k6 API couvre maintenant `auth/me`, `dashboard/summary` et `dashboard/recent-activity` cote manager afin de mesurer le parcours dashboard client reel.
+
 ## [4.16.108] - 2026-05-21
 
 ### Tests
