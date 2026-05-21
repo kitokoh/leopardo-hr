@@ -6,7 +6,7 @@ Ce dossier contient les scripts de charge k6 utilises pour mesurer les parcours 
 
 | Script | Objectif | Mutations |
 |---|---|---|
-| `k6/api-core-smoke.js` | Health, dashboard manager, employees, attendance, payroll et self-service employe | Non |
+| `k6/api-core-smoke.js` | Health, auth session, dashboard manager, employees, attendance, payroll et self-service employe | Non |
 | `k6/employee-100-attendance-payroll.js` | Benchmark 100 employes simultanes sur pointage, historique et consultation paie | Non par defaut ; check-in optionnel avec `ALLOW_ATTENDANCE_MUTATIONS=true` |
 | `k6/payroll-500-batch.js` | Benchmark calcul paie 500 employes avec seuil < 30 s | Lecture par defaut ; calcul optionnel avec `ALLOW_PAYROLL_MUTATIONS=true` |
 | `k6/admin-dashboard-10k.js` | Benchmark dashboard admin + pagination/search sur tenant 10k employes | Non |
@@ -71,6 +71,7 @@ Seuils : p95 dashboard < 1500 ms, liste/search employes < 1800 ms.
 - `EMPLOYEE_VUS=5` pendant `1m`
 - seuil global : moins de 2% d'erreurs HTTP ;
 - p95 global sous 1200 ms ;
+- p95 dashboard sous 1000 ms sur `auth/me`, `dashboard/summary`, `dashboard/recent-activity` et `dashboard/kpi` ;
 - p95 paie sous 1500 ms.
 
 ## Variables utiles
