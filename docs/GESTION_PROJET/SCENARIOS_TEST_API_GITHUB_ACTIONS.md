@@ -161,6 +161,8 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - Endpoint de lecture marque lu / non lu correctement
 - `POST /api/v1/client-events` persiste uniquement les evenements UX allowlistes, exige auth + tenant, minimise les proprietes et refuse les evenements non fiables comme `login_failed`
 - `GET/PATCH /api/v1/notification-preferences` cree et met a jour les preferences de canaux de l'utilisateur authentifie, avec audit `communication_events`
+- `GET /api/v1/communication/analytics` est reserve aux managers `principal` et `rh`, retourne uniquement les agregats du tenant courant, et refuse les employes.
+- `GET /api/v1/launch-readiness` est reserve aux managers `principal` et `rh`, retourne score, blocages requis, prochaines actions et checks go-live tenant-scopes.
 - Journalisation des actions sensibles disponible si prevue
 - `AuditLogger` listener ecoute les 8 domain events et ecrit dans `audit_logs`
 - `WebhookListener` dispatche les events vers les endpoints webhook du tenant
