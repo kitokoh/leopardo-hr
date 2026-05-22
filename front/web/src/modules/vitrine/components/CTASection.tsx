@@ -40,7 +40,7 @@ export function CTASection() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/auth/login"
+              href="/signup"
               className="group px-8 py-4 bg-white text-slate-900 font-bold rounded-2xl hover:bg-slate-100 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-2xl flex items-center gap-2.5"
             >
               {copy.cta.primary}

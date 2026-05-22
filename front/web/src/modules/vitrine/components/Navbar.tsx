@@ -15,18 +15,22 @@ const routeLinks = {
   fr: [
     { href: '/blog', label: 'Blog' },
     { href: '/guides/rh-startup', label: 'Guides' },
+    { href: '/demo', label: 'Demo' },
   ],
   en: [
     { href: '/blog', label: 'Blog' },
     { href: '/guides/rh-startup', label: 'Guides' },
+    { href: '/demo', label: 'Demo' },
   ],
   tr: [
     { href: '/blog', label: 'Blog' },
     { href: '/guides/rh-startup', label: 'Rehberler' },
+    { href: '/demo', label: 'Demo' },
   ],
   ar: [
     { href: '/blog', label: 'Blog' },
     { href: '/guides/rh-startup', label: 'Guides' },
+    { href: '/demo', label: 'Demo' },
   ],
 } as const
 
@@ -122,7 +126,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             </Link>
 
             <Link
-              href="/auth/login"
+              href="/signup"
               className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
             >
               {copy.nav.trial}
@@ -201,7 +205,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
 
               <div className="pt-4">
                 <Link
-                  href="/auth/login"
+                  href="/signup"
                   className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                   onClick={() => setMobileOpen(false)}
                 >
