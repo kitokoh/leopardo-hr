@@ -26,6 +26,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Platform auth | `/api/v1/platform/auth/login` | `throttle:auth-sensitive` | PUBLIC | Creates `super_admin_api` session; 2FA may return `202 TWO_FA_REQUIRED`. |
 | Public onboarding | `/api/v1/onboarding/invitation/*` | `throttle:10,1` | PUBLIC | Token-bound onboarding only. |
 | Tenant authenticated base | `/api/v1/auth/me`, profile, privacy, features, company requests, onboarding checklist, `/api/v1/auth/refresh-token` | `throttle:api`, `auth:sanctum`, `tenant` | P, RH, DEPT, FIN, SUP, EMP | `tenant` must resolve company and reject suspended/archived contexts before controller access. Token refresh rotates Sanctum token preserving abilities. |
+| Launch readiness | `/api/v1/launch-readiness` | `throttle:api`, `auth:sanctum`, `tenant`, controller RBAC | P, RH | Go-live cockpit tenant. Employees and non-RH managers stay forbidden. |
 | Platform administration | `/api/v1/platform/*` except login | `auth:super_admin_api`, `throttle:platform-sensitive` | SA | Includes companies, plans, health, subscriptions, feature flags, company requests, metrics overview. |
 | AI gateway | `/api/v1/ai/chat`, `/voice/*`, `/agent/*` | `auth:sanctum`, `tenant`, `AIFeatureCheck`, `AITenantInjector`, `AIRateLimiter`, `throttle:ai-sensitive` | P, RH, DEPT, FIN, SUP, EMP with AI feature | Voice and agent routes remain experimental and rate-limited. |
 | AI analytics | `/api/v1/ai/analytics/*` | AI base middleware + `EnsureAIAnalyticsAccess` | P, RH | Security test should keep non-principal/non-RH managers and employees out. |
@@ -46,6 +47,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Payroll engine `/salary-*`, `/tax-slabs`, `/social-contributions`, `/payroll-runs`, `/bank-exports` | RW | R | - | RW | - | self payslips only | Self-service payslip routes are `/me/pay-slips*`; manager routes must not leak across tenant/FK chains. |
 | HR referentials `/departments`, `/positions`, `/sites`, `/schedules` | RW | RW | R scoped | R | R scoped | - | Direct mutations should stay principal/RH unless policy explicitly broadens. |
 | Notifications `/notifications*`, `/notification-preferences` | self | self | self | self | self | self | Notification resources and channel preferences must be actor-scoped; communication audit events are tenant-scoped. |
+| Communication analytics `/communication/analytics` | R | R | - | - | - | - | Tenant-scoped aggregates from `communication_events`; only managers principal/RH can inspect failure rates and channel usage. |
 | Projects/tasks `/projects*`, `/tasks*` | RW | RW | RW scoped | - | RW team | assigned/self | Task comments are actor-scoped and tenant-scoped. |
 | Evaluations `/evaluations*` | RW | RW | R scoped | - | R scoped | self acknowledge/read | `EvaluationSecurityTest` covers cross-tenant and forbidden actions. |
 | Leave policies/balances `/leave-*`, `/me/leave-balances` | RW | RW | R scoped | - | R scoped | self R | `LeavePolicyApiTest` covers role and company scoping. |
