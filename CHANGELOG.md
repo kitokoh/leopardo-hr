@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.126] - 2026-05-22
+
+### Added
+
+- Documentation : Plan 21 readiness fonctionnelle par profil, avec matrice super-admin, principal, RH, manager departement, comptable, superviseur, employe et kiosk.
+- API : `/api/v1/demo-users` expose maintenant les personas operationnels, leurs surfaces, routes conseillees et cas de test.
+- Seeders : `DemoCompanySeeder` enrichit la demo avec preferences de notification, evenements communication, evenements client, tokens device, kiosk actif et demandes biometrie quand les tables sont disponibles.
+
+### Tests
+
+- Backend : `DemoUserControllerTest` verrouille le contrat public des comptes demo.
+- Backend : `ProfileFunctionalReadinessTest` couvre les acces API/web critiques par profil.
+
 ## [4.16.125] - 2026-05-22
 
 ### Fixed
