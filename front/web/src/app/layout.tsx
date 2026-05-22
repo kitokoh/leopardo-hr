@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: '/brand/opengraph.svg',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
         alt: 'Leopardo RH - dashboard RH multilingue',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
     description: 'Pointage, paie, absences, onboarding et operations terrain en un seul espace client.',
-    images: ['/brand/opengraph.svg'],
+    images: ['/twitter-image'],
   },
   appleWebApp: {
     capable: true,
