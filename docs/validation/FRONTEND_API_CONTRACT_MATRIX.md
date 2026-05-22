@@ -33,6 +33,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Supprimer push token | `DELETE /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
 | Admin client | Resume dashboard | `GET /api/v1/dashboard/summary` | manager | `DashboardControllerTest`, `FrontendApiContractTest` |
 | Admin client | Activite recente dashboard | `GET /api/v1/dashboard/recent-activity` | manager | `DashboardControllerTest`, `FrontendApiContractTest` |
+| Admin client | Readiness lancement | `GET /api/v1/launch-readiness` | manager principal/RH | `LaunchReadinessControllerTest` |
 | Admin client | Export audit | `GET /api/v1/audit-logs/export-csv` | manager/admin | `FrontendApiContractTest` |
 | Admin client | Export employes | `GET /api/v1/export/employees` | manager | `ExportControllerTest`, `FrontendApiContractTest` |
 | Admin client | Export contrats | `GET /api/v1/export/contracts` | manager | `ExportControllerTest`, `FrontendApiContractTest` |
