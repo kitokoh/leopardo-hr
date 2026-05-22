@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, CalendarCheck, FileText, ShieldCheck, Sparkles, Workflow } from 'lucide-react';
+import { ArrowRight, BookOpen, CalendarCheck, FileText, ShieldCheck, Sparkles, UserPlus, Workflow } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
 
 type ReadinessCopy = {
@@ -28,6 +28,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
       { title: 'Voir le produit en action', text: 'Un parcours demo clair pour comprendre la valeur avant achat.', href: '/demo', cta: 'Planifier une demo' },
       { title: 'Lire les guides RH', text: 'Des contenus concrets pour attirer managers, RH et dirigeants.', href: '/blog', cta: 'Explorer le blog' },
       { title: 'Comparer les plans', text: 'Une offre lisible pour demarrer petit puis activer les modules avances.', href: '/pricing', cta: 'Voir les tarifs' },
+      { title: 'Ouvrir votre espace client', text: 'Un chemin direct pour creer le compte entreprise et rejoindre le dashboard.', href: '/signup', cta: 'Commencer maintenant' },
     ],
   },
   en: {
@@ -39,6 +40,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
       { title: 'See the product live', text: 'A clear demo path to understand value before purchase.', href: '/demo', cta: 'Book a demo' },
       { title: 'Read HR guides', text: 'Practical content for managers, HR leaders, and founders.', href: '/blog', cta: 'Explore the blog' },
       { title: 'Compare plans', text: 'Start lean, then activate advanced modules when the team grows.', href: '/pricing', cta: 'View pricing' },
+      { title: 'Open your client workspace', text: 'A direct path to create the company account and reach the dashboard.', href: '/signup', cta: 'Start now' },
     ],
   },
   tr: {
@@ -50,6 +52,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
       { title: 'Urunu canli gorun', text: 'Satinalmadan once degeri anlamak icin net demo akisi.', href: '/demo', cta: 'Demo planla' },
       { title: 'IK rehberlerini okuyun', text: 'Yoneticiler, IK ekipleri ve kurucular icin pratik icerik.', href: '/blog', cta: 'Blogu kesfet' },
       { title: 'Planlari karsilastirin', text: 'Kucuk baslayin, ekip buyudukce gelismis modulleri acin.', href: '/pricing', cta: 'Fiyatlari gor' },
+      { title: 'Musteri alaninizi acin', text: 'Sirket hesabini olusturup panele ulasmak icin dogrudan yol.', href: '/signup', cta: 'Hemen baslayin' },
     ],
   },
   ar: {
@@ -61,11 +64,12 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
       { title: 'شاهد المنتج', text: 'مسار عرض واضح قبل قرار الشراء.', href: '/demo', cta: 'احجز عرضا' },
       { title: 'اقرأ أدلة الموارد البشرية', text: 'موارد عملية للموارد البشرية والمديرين.', href: '/blog', cta: 'استكشف المدونة' },
       { title: 'قارن الباقات', text: 'ابدأ ببساطة ثم فعّل الوحدات المتقدمة لاحقا.', href: '/pricing', cta: 'عرض الأسعار' },
+      { title: 'افتح مساحة العميل', text: 'مسار مباشر لإنشاء الحساب والوصول إلى لوحة التحكم.', href: '/signup', cta: 'ابدأ الآن' },
     ],
   },
 };
 
-const icons = [CalendarCheck, BookOpen, FileText];
+const icons = [CalendarCheck, BookOpen, FileText, UserPlus];
 
 export function MarketingReadinessSection({ locale = 'fr' }: { locale?: AppLocale }) {
   const copy = copyByLocale[locale] ?? copyByLocale.fr;
@@ -102,7 +106,7 @@ export function MarketingReadinessSection({ locale = 'fr' }: { locale?: AppLocal
             </div>
           </motion.div>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {copy.cards.map((card, index) => {
               const Icon = icons[index] ?? Workflow;
 

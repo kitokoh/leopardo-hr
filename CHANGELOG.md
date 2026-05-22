@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.123] - 2026-05-22
+
+### Changed
+
+- Web vitrine : les CTA d'acquisition `Essai gratuit`, hero, pricing et CTA final pointent maintenant vers `/signup` au lieu du login existant, afin de garder un funnel public clair avant connexion.
+- Web vitrine : la navigation principale expose aussi `/demo` en plus de `/blog` et des guides pour fluidifier le parcours marketing.
+- Web vitrine : la section lancement RH ajoute une carte inscription directe vers l'espace client.
+- SEO : ajout d'images OpenGraph/Twitter generees par Next en PNG pour des partages sociaux plus robustes que l'ancien SVG statique.
+
+### Tests
+
+- Web vitrine : lint, TypeScript et build Next.js a executer sur ce lot.
+
 ## [4.16.122] - 2026-05-22
 
 ### Added

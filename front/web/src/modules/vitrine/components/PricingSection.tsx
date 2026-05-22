@@ -10,6 +10,10 @@ function showsCurrency(price: string) {
   return !['Sur devis', 'Custom', 'Teklif', 'حسب الطلب'].includes(price)
 }
 
+function getPlanCtaHref(price: string) {
+  return showsCurrency(price) ? '/signup' : '/demo'
+}
+
 export function PricingSection() {
   const { copy, locale } = useVitrineLocale()
   const pricingPlans = getPricingPlans(locale)
@@ -81,7 +85,7 @@ export function PricingSection() {
                 </ul>
 
                 <Link
-                  href="/auth/login"
+                  href={getPlanCtaHref(plan.price)}
                   className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 ${
                     plan.popular
                       ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
