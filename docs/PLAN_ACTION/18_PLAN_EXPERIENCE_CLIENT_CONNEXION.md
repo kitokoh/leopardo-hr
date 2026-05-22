@@ -56,6 +56,8 @@ Note 2026-05-22 : la vitrine est renforcee pour le lancement marketing avec lien
 
 Note 2026-05-22 : l'audit de cloture Plan 18 confirme les gardes web existants : `auth-client-smoke.spec.ts` couvre identifiants invalides et session expiree, `client-feature-gates.spec.ts` couvre modules autorises/interdits/trial, `client-visual-smoke.spec.ts` couvre les captures login/dashboard. Les notifications et preferences deviennent le lot Plan 19.1 afin de fermer le parcours post-connexion sans dupliquer le socle.
 
+Note 2026-05-22 : consolidation marketing finale du Plan 18. Les CTA d'acquisition de la vitrine (`Essai gratuit`, hero, pricing, CTA final) pointent vers `/signup`, tandis que le login reste reserve aux comptes existants. La navigation publique expose explicitement `/blog`, `/guides/rh-startup` et `/demo`; la section de conversion ajoute un lien direct vers l'ouverture de l'espace client. Les cartes sociales sont generees en PNG via `opengraph-image.tsx` et `twitter-image.tsx`.
+
 ## Definition of done
 
 - Un client manager peut se connecter depuis la vitrine et arriver dans un espace utile sans intervention technique.
