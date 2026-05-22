@@ -44,6 +44,8 @@ jobs:
       - name: Run launch probes
         env:
           LAUNCH_MAX_P95_MS: ${{ github.event.inputs.max_latency_ms || '2500' }}
+          LAUNCH_SMOKE_RETRIES: "5"
+          LAUNCH_SMOKE_RETRY_DELAY_SECONDS: "15"
         run: |
           bash dev-hub/tools/launch-observability-smoke.sh \
             "${{ github.event.inputs.api_url || 'https://gestionemployerbackend.onrender.com' }}" \
