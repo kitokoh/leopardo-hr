@@ -56,6 +56,8 @@ bash dev-hub/tools/launch-observability-smoke.sh \
 | Variable | Usage |
 |---|---|
 | `LAUNCH_MAX_P95_MS` | seuil de latence par probe dans le smoke |
+| `LAUNCH_SMOKE_RETRIES` | nombre de tentatives par probe avant echec definitif (`5` par defaut) |
+| `LAUNCH_SMOKE_RETRY_DELAY_SECONDS` | pause entre deux tentatives quand une probe time out, retourne 5xx ou depasse la latence cible |
 | `MARKETING_CRM_WEBHOOK_URL` | transmission CRM des leads |
 | `MARKETING_EMAIL_WEBHOOK_URL` | confirmation email / notification interne |
 | `MARKETING_LEAD_WEBHOOK_TOKEN` | secret Bearer pour webhooks marketing |
