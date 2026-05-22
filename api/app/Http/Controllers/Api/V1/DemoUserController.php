@@ -22,6 +22,13 @@ class DemoUserController extends Controller
                     'email' => config('demo.super_admin_email', 'admin@leopardo-rh.com'),
                     'password' => 'password123',
                     'role' => 'super_admin',
+                    'surface' => 'admin-platform',
+                    'primary_path' => '/platform',
+                    'use_cases' => [
+                        'Administrer les tenants',
+                        'Suivre les plans et demandes clients',
+                        'Controler la sante globale de la plateforme',
+                    ],
                 ],
                 'companies' => $this->demoCompanies(),
             ],
@@ -38,9 +45,36 @@ class DemoUserController extends Controller
                 'country' => 'DZ',
                 'plan' => 'Starter',
                 'users' => [
-                    ['email' => 'ahmed.benali@techcorp-algerie.dz', 'name' => 'Ahmed Benali', 'role' => 'manager', 'manager_role' => 'principal', 'password' => 'password123'],
-                    ['email' => 'fatima.meziane@techcorp-algerie.dz', 'name' => 'Fatima Meziane', 'role' => 'manager', 'manager_role' => 'rh', 'password' => 'password123'],
-                    ['email' => 'karim.aouad@techcorp-algerie.dz', 'name' => 'Karim Aouad', 'role' => 'employee', 'manager_role' => null, 'password' => 'password123'],
+                    $this->persona('Ahmed Benali', 'ahmed.benali@techcorp-algerie.dz', 'manager', 'principal', 'web-manager', '/dashboard', [
+                        'Dashboard dirigeant',
+                        'Readiness lancement',
+                        'Paie et exports',
+                    ]),
+                    $this->persona('Fatima Meziane', 'fatima.meziane@techcorp-algerie.dz', 'manager', 'rh', 'web-manager', '/dashboard', [
+                        'Employes et absences',
+                        'Analytics communication',
+                        'Onboarding RH',
+                    ]),
+                    $this->persona('Samir Boukhalfa', 'samir.boukhalfa@techcorp-algerie.dz', 'manager', 'dept', 'web-manager', '/dashboard', [
+                        'Equipe departement',
+                        'Absences equipe',
+                        'Projets et taches',
+                    ]),
+                    $this->persona('Lina Haddad', 'lina.haddad@techcorp-algerie.dz', 'manager', 'comptable', 'web-manager', '/dashboard', [
+                        'Paie',
+                        'Exports bancaires',
+                        'Suivi financier RH',
+                    ]),
+                    $this->persona('Nassim Cheriet', 'nassim.cheriet@techcorp-algerie.dz', 'manager', 'superviseur', 'kiosk-supervisor', '/biometrics', [
+                        'Pointage terrain',
+                        'Kiosk',
+                        'Demandes biometrie',
+                    ]),
+                    $this->persona('Karim Aouad', 'karim.aouad@techcorp-algerie.dz', 'employee', null, 'mobile-employee', '/me', [
+                        'Self-service employe',
+                        'Pointage mobile',
+                        'Notifications et absences',
+                    ]),
                 ],
             ],
             [
@@ -49,9 +83,22 @@ class DemoUserController extends Controller
                 'country' => 'MA',
                 'plan' => 'Business',
                 'users' => [
-                    ['email' => 'amina.tahiri@pharmaplus.ma', 'name' => 'Amina Tahiri', 'role' => 'manager', 'manager_role' => 'principal', 'password' => 'password123'],
-                    ['email' => 'sara.mansouri@pharmaplus.ma', 'name' => 'Sara Mansouri', 'role' => 'manager', 'manager_role' => 'rh', 'password' => 'password123'],
-                    ['email' => 'youssef.bennani@pharmaplus.ma', 'name' => 'Youssef Bennani', 'role' => 'employee', 'manager_role' => null, 'password' => 'password123'],
+                    $this->persona('Amina Tahiri', 'amina.tahiri@pharmaplus.ma', 'manager', 'principal', 'web-manager', '/dashboard', [
+                        'Dashboard dirigeant',
+                        'Readiness lancement',
+                    ]),
+                    $this->persona('Sara Mansouri', 'sara.mansouri@pharmaplus.ma', 'manager', 'rh', 'web-manager', '/dashboard', [
+                        'Employes et absences',
+                        'Communication interne',
+                    ]),
+                    $this->persona('Rachid Benjelloun', 'rachid.benjelloun@pharmaplus.ma', 'manager', 'comptable', 'web-manager', '/dashboard', [
+                        'Paie',
+                        'Exports',
+                    ]),
+                    $this->persona('Youssef Bennani', 'youssef.bennani@pharmaplus.ma', 'employee', null, 'mobile-employee', '/me', [
+                        'Self-service employe',
+                        'Notifications',
+                    ]),
                 ],
             ],
             [
@@ -60,11 +107,46 @@ class DemoUserController extends Controller
                 'country' => 'TN',
                 'plan' => 'Business',
                 'users' => [
-                    ['email' => 'sofiane.mrad@digitalflow.tn', 'name' => 'Sofiane Mrad', 'role' => 'manager', 'manager_role' => 'principal', 'password' => 'password123'],
-                    ['email' => 'olfa.trabelsi@digitalflow.tn', 'name' => 'Olfa Trabelsi', 'role' => 'manager', 'manager_role' => 'rh', 'password' => 'password123'],
-                    ['email' => 'aziz.khelifi@digitalflow.tn', 'name' => 'Aziz Khelifi', 'role' => 'employee', 'manager_role' => null, 'password' => 'password123'],
+                    $this->persona('Sofiane Mrad', 'sofiane.mrad@digitalflow.tn', 'manager', 'principal', 'web-manager', '/dashboard', [
+                        'Dashboard dirigeant',
+                        'Readiness lancement',
+                    ]),
+                    $this->persona('Olfa Trabelsi', 'olfa.trabelsi@digitalflow.tn', 'manager', 'rh', 'web-manager', '/dashboard', [
+                        'Employes et absences',
+                        'Communication interne',
+                    ]),
+                    $this->persona('Marwen Chakroun', 'marwen.chakroun@digitalflow.tn', 'manager', 'superviseur', 'kiosk-supervisor', '/biometrics', [
+                        'Pointage terrain',
+                        'Demandes biometrie',
+                    ]),
+                    $this->persona('Aziz Khelifi', 'aziz.khelifi@digitalflow.tn', 'employee', null, 'mobile-employee', '/me', [
+                        'Self-service employe',
+                        'Pointage mobile',
+                    ]),
                 ],
             ],
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function persona(
+        string $name,
+        string $email,
+        string $role,
+        ?string $managerRole,
+        string $surface,
+        string $primaryPath,
+        array $useCases,
+    ): array {
+        return [
+            'email' => $email,
+            'name' => $name,
+            'role' => $role,
+            'manager_role' => $managerRole,
+            'password' => 'password123',
+            'surface' => $surface,
+            'primary_path' => $primaryPath,
+            'use_cases' => $useCases,
         ];
     }
 }
