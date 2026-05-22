@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\Notification;
 use App\Models\NotificationPreference;
 use App\Services\Communication\CommunicationService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -110,6 +111,73 @@ class CommunicationServiceTest extends TestCase
             ->each(function (CommunicationEvent $event): void {
                 $this->assertSame(['payroll_run_id' => 7], $event->metadata);
             });
+    }
+
+    public function test_quiet_hours_skip_external_channels_but_keep_app_notifications(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-22 22:15:00', 'Africa/Algiers'));
+        try {
+            $employee = $this->employee();
+            NotificationPreference::query()->create([
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'app_enabled' => true,
+                'email_enabled' => true,
+                'push_enabled' => true,
+                'sms_enabled' => true,
+                'whatsapp_enabled' => true,
+                'timezone' => 'Africa/Algiers',
+                'categories' => ['hr' => true],
+                'quiet_hours' => [
+                    'enabled' => true,
+                    'start' => '20:00',
+                    'end' => '07:00',
+                ],
+            ]);
+
+            $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['app', 'email', 'sms']);
+
+            $this->assertSame('sent', $result['results']['app']);
+            $this->assertSame('skipped', $result['results']['email']);
+            $this->assertSame('skipped', $result['results']['sms']);
+            $this->assertSame(1, Notification::query()->count());
+            $this->assertSame(2, CommunicationEvent::query()->where('error_message', 'Quiet hours active.')->count());
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
+    public function test_sms_and_whatsapp_monthly_quota_blocks_extra_dispatch(): void
+    {
+        config()->set('communication.monthly_channel_quotas.sms', 1);
+        $employee = $this->employee();
+        NotificationPreference::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'app_enabled' => true,
+            'sms_enabled' => true,
+            'categories' => ['hr' => true],
+        ]);
+        CommunicationEvent::query()->create([
+            'company_id' => $employee->company_id,
+            'employee_id' => $employee->id,
+            'event_name' => 'communication_dispatched',
+            'channel' => 'sms',
+            'status' => 'queued',
+            'provider' => 'audit',
+            'template_key' => 'absence_approved',
+            'occurred_at' => now(),
+        ]);
+
+        $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['sms']);
+
+        $this->assertSame('skipped', $result['results']['sms']);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'channel' => 'sms',
+            'status' => 'skipped',
+            'error_message' => 'Monthly channel quota exceeded.',
+        ]);
     }
 
     private function employee(): Employee

@@ -23,6 +23,16 @@ return [
 
     'default_channels' => ['app', 'push'],
 
+    'quiet_hours' => [
+        'bypass_categories' => ['security'],
+        'defer_status' => 'skipped',
+    ],
+
+    'monthly_channel_quotas' => [
+        'sms' => (int) env('COMMUNICATION_SMS_MONTHLY_QUOTA', 0),
+        'whatsapp' => (int) env('COMMUNICATION_WHATSAPP_MONTHLY_QUOTA', 0),
+    ],
+
     'public_metadata_keys' => [
         'absence_id',
         'attendance_log_id',
