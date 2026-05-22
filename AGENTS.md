@@ -201,6 +201,13 @@ Procedure recommandee :
 
 ## Historique utile
 
+### 2026-05-22 - Plan 21 readiness fonctionnelle profils
+
+- `/api/v1/demo-users` est le contrat canonique pour les personas de demonstration. Le garder aligne avec `DemoCompanySeeder` quand un nouveau profil, pays ou surface est ajoute.
+- `DemoCompanySeeder` seed maintenant aussi preferences de notification, communication events, client events, device tokens, kiosks et demandes biometrie de facon defensive. Toute nouvelle table demo optionnelle doit etre inseree via une detection `Schema::hasTable` / colonnes existantes pour rester compatible avec les environnements partiellement migres.
+- Les tests `DemoUserControllerTest` et `ProfileFunctionalReadinessTest` couvrent le minimum attendu avant demo commerciale : principal/RH accedent aux analytics/readiness, les autres roles restent bloques, les pages web sensibles respectent les sous-roles.
+- Pour un nouveau parcours profil, ne pas se contenter d'ajouter un email au seeder : ajouter aussi la surface cible, la route conseillee, les donnees de readiness et une assertion de role.
+
 ### 2026-05-21 - Auth readiness marche : client, mobile, plateforme
 
 - Le bouton demo de `front/admin-dashboard/` doit rester limite aux comptes super-admin plateforme : ce frontend appelle `/api/v1/platform/auth/login`, donc les comptes RH/employes tenant doivent rester sur `front/web` ou mobile.

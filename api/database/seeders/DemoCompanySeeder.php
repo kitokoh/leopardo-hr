@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -203,6 +205,11 @@ class DemoCompanySeeder extends Seeder
             $this->seedProjectsAndTasks($companyId, $managerIds, $activeEmployeeIds, $config['name']);
             $this->seedEvaluations($companyId, $managerIds, $employeeIds);
             $this->seedNotifications($companyId, $allEmployeeIds, $config['name']);
+            $this->seedNotificationPreferences($companyId, $allEmployeeIds, $config);
+            $this->seedCommunicationEvents($companyId, $allEmployeeIds, $config);
+            $this->seedClientEvents($companyId, $managerIds, $employeeIds, $config);
+            $this->seedDeviceTokens($companyId, $allEmployeeIds, $config);
+            $this->seedKioskReadiness($companyId, $siteId, $managerIds, $employeeIds, $config);
             $this->seedAuditLogs($companyId, $managerIds, $employeeIds);
             $this->seedCompanySettings();
         });
@@ -245,6 +252,28 @@ SQL);
         $companyId = $company->id;
 
         $this->withSharedTenantSearchPath(function () use ($companyId): void {
+            $employeeIds = DB::table($this->sharedTable('employees'))
+                ->where('company_id', $companyId)
+                ->pluck('id');
+
+            $this->deleteCompanyScopedRowsIfTableExists($companyId, [
+                'communication_events',
+                'notification_preferences',
+                'client_events',
+                'attendance_kiosks',
+                'biometric_enrollment_requests',
+            ]);
+
+            if ($employeeIds->isNotEmpty() && $this->sharedTableExists('device_tokens')) {
+                $query = DB::table($this->sharedTable('device_tokens'));
+
+                if ($this->sharedColumnExists('device_tokens', 'company_id')) {
+                    $query->where('company_id', $companyId)->delete();
+                } else {
+                    $query->whereIn('employee_id', $employeeIds)->delete();
+                }
+            }
+
             $batchIds = DB::table($this->sharedTable('payroll_export_batches'))
                 ->where('company_id', $companyId)
                 ->pluck('id');
@@ -793,6 +822,256 @@ SQL);
         }
     }
 
+    private function seedNotificationPreferences(string $companyId, array $employeeIds, array $config): void
+    {
+        if (! $this->sharedTableExists('notification_preferences')) {
+            return;
+        }
+
+        $rows = [];
+
+        foreach ($employeeIds as $index => $employeeId) {
+            $isExternalChannelReady = $index < 4;
+            $rows[] = [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'app_enabled' => true,
+                'email_enabled' => true,
+                'push_enabled' => true,
+                'sms_enabled' => $isExternalChannelReady,
+                'whatsapp_enabled' => $isExternalChannelReady,
+                'locale' => $config['language'] ?? 'fr',
+                'timezone' => $config['timezone'] ?? 'UTC',
+                'categories' => json_encode([
+                    'hr' => true,
+                    'payroll' => true,
+                    'attendance' => true,
+                    'security' => $index < 2,
+                ]),
+                'quiet_hours' => json_encode([
+                    'enabled' => true,
+                    'start' => '21:00',
+                    'end' => '07:00',
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('notification_preferences', $rows, ['company_id', 'employee_id'], [
+            'app_enabled',
+            'email_enabled',
+            'push_enabled',
+            'sms_enabled',
+            'whatsapp_enabled',
+            'locale',
+            'timezone',
+            'categories',
+            'quiet_hours',
+            'updated_at',
+        ]);
+    }
+
+    private function seedCommunicationEvents(string $companyId, array $employeeIds, array $config): void
+    {
+        if (! $this->sharedTableExists('communication_events') || $employeeIds === []) {
+            return;
+        }
+
+        $templates = [
+            ['template_key' => 'welcome_employee', 'channel' => 'email', 'status' => 'sent'],
+            ['template_key' => 'absence_approved', 'channel' => 'app', 'status' => 'sent'],
+            ['template_key' => 'payroll_ready', 'channel' => 'push', 'status' => 'queued'],
+            ['template_key' => 'security_alert', 'channel' => 'sms', 'status' => 'sent'],
+            ['template_key' => 'shift_reminder', 'channel' => 'whatsapp', 'status' => 'queued'],
+        ];
+
+        $rows = [];
+
+        foreach ($templates as $index => $template) {
+            $rows[] = [
+                'company_id' => $companyId,
+                'employee_id' => $employeeIds[$index % count($employeeIds)],
+                'notification_id' => null,
+                'event_name' => 'communication_dispatched',
+                'channel' => $template['channel'],
+                'status' => $template['status'],
+                'provider' => in_array($template['channel'], ['sms', 'whatsapp'], true) ? 'audit' : 'demo',
+                'template_key' => $template['template_key'],
+                'metadata' => json_encode([
+                    'demo' => true,
+                    'company_slug' => $config['slug'],
+                    'profile_readiness' => true,
+                ]),
+                'error_message' => null,
+                'occurred_at' => now()->subHours(8 - $index),
+                'created_at' => now()->subHours(8 - $index),
+                'updated_at' => now()->subHours(8 - $index),
+            ];
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('communication_events', $rows);
+    }
+
+    private function seedClientEvents(string $companyId, array $managerIds, array $employeeIds, array $config): void
+    {
+        if (! $this->sharedTableExists('client_events')) {
+            return;
+        }
+
+        $rows = [];
+        $managerEvents = [
+            'principal' => ['event_name' => 'launch_readiness_viewed', 'surface' => 'web'],
+            'rh' => ['event_name' => 'communication_analytics_viewed', 'surface' => 'web'],
+            'dept' => ['event_name' => 'team_dashboard_loaded', 'surface' => 'web'],
+            'comptable' => ['event_name' => 'payroll_export_opened', 'surface' => 'web'],
+            'superviseur' => ['event_name' => 'kiosk_panel_opened', 'surface' => 'kiosk'],
+        ];
+
+        foreach ($managerEvents as $managerKey => $event) {
+            if (! isset($managerIds[$managerKey])) {
+                continue;
+            }
+
+            $rows[] = [
+                'company_id' => $companyId,
+                'employee_id' => $managerIds[$managerKey],
+                'event_name' => $event['event_name'],
+                'surface' => $event['surface'],
+                'session_id' => 'demo-'.$config['slug'].'-'.$managerKey,
+                'duration_ms' => 1800 + (count($rows) * 250),
+                'properties' => json_encode([
+                    'manager_role' => $managerKey,
+                    'demo' => true,
+                ]),
+                'ip' => '127.0.0.1',
+                'user_agent' => 'LeopardoDemoSeeder/21',
+                'occurred_at' => now()->subMinutes(45 - (count($rows) * 4)),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        foreach (array_slice($employeeIds, 0, 3) as $index => $employeeId) {
+            $rows[] = [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'event_name' => $index === 0 ? 'mobile_home_opened' : 'notification_center_opened',
+                'surface' => 'mobile',
+                'session_id' => 'demo-'.$config['slug'].'-employee-'.$index,
+                'duration_ms' => 900 + ($index * 180),
+                'properties' => json_encode([
+                    'role' => 'employee',
+                    'demo' => true,
+                ]),
+                'ip' => '127.0.0.1',
+                'user_agent' => 'LeopardoDemoSeeder/21',
+                'occurred_at' => now()->subMinutes(20 - ($index * 3)),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('client_events', $rows);
+    }
+
+    private function seedDeviceTokens(string $companyId, array $employeeIds, array $config): void
+    {
+        if (! $this->sharedTableExists('device_tokens')) {
+            return;
+        }
+
+        $platforms = ['android', 'ios', 'web'];
+        $rows = [];
+
+        foreach ($employeeIds as $index => $employeeId) {
+            $platform = $platforms[$index % count($platforms)];
+            $rows[] = [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'token' => 'demo-'.$config['slug'].'-'.$employeeId.'-'.$platform,
+                'platform' => $platform,
+                'device_name' => Str::headline($platform).' Demo '.$config['country'],
+                'is_active' => true,
+                'last_used_at' => now()->subMinutes($index * 7),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('device_tokens', $rows, ['employee_id', 'token'], [
+            'platform',
+            'device_name',
+            'is_active',
+            'last_used_at',
+            'updated_at',
+        ]);
+    }
+
+    private function seedKioskReadiness(string $companyId, int $siteId, array $managerIds, array $employeeIds, array $config): void
+    {
+        if ($this->sharedTableExists('attendance_kiosks')) {
+            $deviceCode = Str::upper(Str::substr(Str::slug($config['slug'], ''), 0, 18)).'-KIOSK-01';
+
+            $this->insertSharedRowsUsingExistingColumns('attendance_kiosks', [[
+                'company_id' => $companyId,
+                'site_id' => $siteId,
+                'name' => $config['site_name'].' Kiosk',
+                'location_label' => $config['site_name'],
+                'device_code' => $deviceCode,
+                'sync_token_hash' => Hash::make($deviceCode.'-demo-sync'),
+                'status' => 'active',
+                'biometric_mode' => 'fingerprint',
+                'trusted_device_label' => 'Tablette reception demo',
+                'last_seen_at' => now()->subMinutes(5),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]], ['device_code'], [
+                'name',
+                'location_label',
+                'status',
+                'biometric_mode',
+                'trusted_device_label',
+                'last_seen_at',
+                'updated_at',
+            ]);
+        }
+
+        if (! $this->sharedTableExists('biometric_enrollment_requests')) {
+            return;
+        }
+
+        $reviewerId = $managerIds['superviseur'] ?? $managerIds['rh'] ?? $managerIds['principal'];
+        $rows = [];
+
+        foreach (array_slice($employeeIds, 0, 2) as $index => $employeeId) {
+            $rows[] = [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'approver_employee_id' => $index === 0 ? $reviewerId : null,
+                'requested_by' => $managerIds['rh'] ?? $managerIds['principal'],
+                'reviewed_by' => $index === 0 ? $reviewerId : null,
+                'status' => $index === 0 ? 'approved' : 'pending',
+                'type' => 'fingerprint',
+                'requested_face_enabled' => false,
+                'requested_fingerprint_enabled' => true,
+                'requested_fingerprint_device_id' => 'demo-'.$config['slug'].'-kiosk',
+                'request_source' => 'kiosk',
+                'employee_note' => 'Inscription biometrie demo',
+                'manager_note' => $index === 0 ? 'Valide pour la demo.' : null,
+                'reason' => 'Preparation kiosk lancement',
+                'review_comment' => $index === 0 ? 'Valide pour la demo.' : null,
+                'submitted_at' => now()->subDays(2 - $index),
+                'approved_at' => $index === 0 ? now()->subDays(1) : null,
+                'reviewed_at' => $index === 0 ? now()->subDays(1) : null,
+                'created_at' => now()->subDays(2 - $index),
+                'updated_at' => now()->subDays($index === 0 ? 1 : 0),
+            ];
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('biometric_enrollment_requests', $rows);
+    }
+
     private function seedAuditLogs(string $companyId, array $managerIds, array $employeeIds): void
     {
         $targets = array_slice($employeeIds, 0, 2);
@@ -831,6 +1110,66 @@ SQL);
                 ],
             ], ['key'], ['value', 'value_type', 'updated_at']);
         });
+    }
+
+    private function deleteCompanyScopedRowsIfTableExists(string $companyId, array $tables): void
+    {
+        foreach ($tables as $table) {
+            if (! $this->sharedTableExists($table) || ! $this->sharedColumnExists($table, 'company_id')) {
+                continue;
+            }
+
+            DB::table($this->sharedTable($table))->where('company_id', $companyId)->delete();
+        }
+    }
+
+    private function insertSharedRowsUsingExistingColumns(
+        string $table,
+        array $rows,
+        array $uniqueBy = [],
+        array $updateColumns = [],
+    ): void {
+        if ($rows === [] || ! $this->sharedTableExists($table)) {
+            return;
+        }
+
+        $columns = Schema::getColumnListing($table);
+        $filteredRows = [];
+
+        foreach ($rows as $row) {
+            $filtered = Arr::only($row, $columns);
+
+            if ($filtered !== []) {
+                $filteredRows[] = $filtered;
+            }
+        }
+
+        if ($filteredRows === []) {
+            return;
+        }
+
+        if ($uniqueBy !== []) {
+            $filteredUniqueBy = array_values(array_intersect($uniqueBy, $columns));
+            $filteredUpdateColumns = array_values(array_intersect($updateColumns, $columns));
+
+            if ($filteredUniqueBy !== [] && $filteredUpdateColumns !== []) {
+                DB::table($this->sharedTable($table))->upsert($filteredRows, $filteredUniqueBy, $filteredUpdateColumns);
+
+                return;
+            }
+        }
+
+        DB::table($this->sharedTable($table))->insert($filteredRows);
+    }
+
+    private function sharedTableExists(string $table): bool
+    {
+        return Schema::hasTable($table);
+    }
+
+    private function sharedColumnExists(string $table, string $column): bool
+    {
+        return Schema::hasColumn($table, $column);
     }
 
     private function workingDaysThisMonth(): array
@@ -906,6 +1245,9 @@ SQL);
             $this->command->info("  - {$company['name']} ({$company['plan']}, {$company['country']}, shared)");
             $this->command->info("    principal : {$company['principal_manager']['email']} / password123");
             $this->command->info("    RH        : {$company['hr_manager']['email']} / password123");
+            foreach ($company['managers'] ?? [] as $key => $manager) {
+                $this->command->info("    {$key} : {$manager['email']} / password123");
+            }
             $this->command->info("    employe   : {$company['employees'][0]['email']} / password123");
         }
     }
