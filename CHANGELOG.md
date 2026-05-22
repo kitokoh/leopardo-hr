@@ -2,6 +2,28 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.124] - 2026-05-22
+
+### Added
+
+- API : endpoint `GET /api/v1/communication/analytics` pour exposer aux managers `principal`/`rh` les volumes, echecs, statuts, canaux et templates de communication du tenant.
+- API : endpoint `GET /api/v1/launch-readiness` pour calculer un score go-live tenant, les blocages requis et les prochaines actions avant lancement marketing/client.
+- Web client : carte readiness lancement dans le dashboard manager, non bloquante si le role courant n'a pas acces au cockpit.
+- Documentation : Plan 20 readiness lancement production avec lots support et go-live automatique.
+
+### Changed
+
+- Communication : l'orchestrateur applique les heures calmes sur les canaux externes, avec bypass securite configurable.
+- Communication : SMS/WhatsApp respectent des quotas mensuels configurables (`COMMUNICATION_SMS_MONTHLY_QUOTA`, `COMMUNICATION_WHATSAPP_MONTHLY_QUOTA`, `0` = illimite).
+- OpenAPI, matrice RBAC et scenarios API alignes avec analytics communication et readiness lancement.
+
+### Tests
+
+- Backend : `CommunicationServiceTest` couvre heures calmes et quotas mensuels.
+- Backend : `CommunicationAnalyticsControllerTest` couvre analytics tenant et RBAC.
+- Backend : `LaunchReadinessControllerTest` couvre tenant pret, blocages requis et refus employe.
+- Backend : `FrontendApiContractTest` garde le contrat `/api/v1/launch-readiness` utilise par le dashboard client.
+
 ## [4.16.123] - 2026-05-22
 
 ### Changed

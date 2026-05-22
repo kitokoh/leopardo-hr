@@ -4,9 +4,11 @@ use App\Http\Controllers\Api\FeatureManifestController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\ClientEventController;
+use App\Http\Controllers\Api\V1\CommunicationAnalyticsController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\DemoUserController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\LaunchReadinessController;
 use App\Http\Controllers\Api\V1\MetricsController;
 use App\Http\Controllers\Api\V1\NotificationPreferenceController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
@@ -63,6 +65,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/client-events', [ClientEventController::class, 'store'])->middleware('throttle:client-analytics');
         Route::get('/notification-preferences', [NotificationPreferenceController::class, 'show']);
         Route::patch('/notification-preferences', [NotificationPreferenceController::class, 'update']);
+        Route::get('/communication/analytics', CommunicationAnalyticsController::class)->middleware('throttle:platform-sensitive');
+        Route::get('/launch-readiness', LaunchReadinessController::class);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {
