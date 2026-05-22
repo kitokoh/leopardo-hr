@@ -55,6 +55,13 @@ type RecentActivity = {
   created_at?: string | null;
 };
 
+type LaunchReadiness = {
+  score: number;
+  go_live_ready: boolean;
+  required_blockers?: Array<{ key: string; label: string }>;
+  next_actions?: Array<{ key: string; label: string; required: boolean }>;
+};
+
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
 
@@ -102,6 +109,7 @@ export default function DashboardPage() {
   const [userLoaded, setUserLoaded] = useState(false);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [activities, setActivities] = useState<RecentActivity[]>([]);
+  const [readiness, setReadiness] = useState<LaunchReadiness | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const dashboardStartRef = useRef<number>(0);
@@ -160,9 +168,12 @@ export default function DashboardPage() {
       setLoadError(null);
 
       try {
-        const [summaryResponse, activityResponse] = await Promise.all([
+        const [summaryResponse, activityResponse, readinessPayload] = await Promise.all([
           apiFetch('/dashboard/summary'),
           apiFetch('/dashboard/recent-activity?limit=5'),
+          apiFetch('/launch-readiness')
+            .then((response) => response.json() as Promise<{ data?: LaunchReadiness }>)
+            .catch(() => null),
         ]);
 
         const summaryPayload = await summaryResponse.json() as { data?: Partial<DashboardSummary> };
@@ -178,10 +189,12 @@ export default function DashboardPage() {
           pending_absences: Number(summaryPayload.data?.pending_absences ?? 0),
         });
         setActivities(Array.isArray(activityPayload.data) ? activityPayload.data : []);
+        setReadiness(readinessPayload?.data ?? null);
         trackDashboardLoaded({
           surface: 'manager',
           employees_active: Number(summaryPayload.data?.employees_active ?? 0),
           pending_absences: Number(summaryPayload.data?.pending_absences ?? 0),
+          launch_readiness_score: readinessPayload?.data?.score ?? null,
         });
       } catch (error) {
         if (cancelled) return;
@@ -332,6 +345,34 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
+
+      {readiness ? (
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Readiness lancement</p>
+              <h2 className="mt-2 text-2xl font-black text-slate-950">
+                {readiness.go_live_ready ? 'Votre espace est pret pour le go-live' : 'Actions requises avant le go-live'}
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                Score {readiness.score}/100 base sur les donnees tenant, la communication, la paie, le pointage et l instrumentation client.
+              </p>
+            </div>
+            <div className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl text-3xl font-black ${
+              readiness.go_live_ready ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+            }`}>
+              {readiness.score}
+            </div>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {(readiness.go_live_ready ? readiness.next_actions : readiness.required_blockers)?.slice(0, 2).map((item) => (
+              <div key={item.key} className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                {item.label}
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (

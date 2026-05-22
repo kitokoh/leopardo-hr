@@ -100,7 +100,7 @@ Livrables :
 - Webhook provider pour statuts d'envoi.
 - Quotas par plan pour eviter explosion couts.
 
-Statut : socle livre 2026-05-22. SMS/WhatsApp sont opt-in, audites et sans donnees sensibles ; providers reels, signatures webhook et quotas commerciaux restent a activer au moment du choix fournisseur.
+Statut : livre 2026-05-22. SMS/WhatsApp sont opt-in, audites et sans donnees sensibles ; les quotas mensuels par canal sont appliques via `COMMUNICATION_SMS_MONTHLY_QUOTA` et `COMMUNICATION_WHATSAPP_MONTHLY_QUOTA` (0 = illimite). Les providers reels et signatures webhook restent a activer au moment du choix fournisseur.
 
 Outils :
 
@@ -127,7 +127,7 @@ Livrables :
 - Integration future IA : l'agent peut proposer un message, mais l'envoi actionnable exige permission et audit.
 - Playbook support : relancer une invitation, prevenir un manager, notifier une equipe.
 
-Statut : fondation livre 2026-05-22. Les heures calmes sont stockees dans les preferences et exposees au portail ; l'application stricte des heures calmes et le dashboard analytics sont les prochains raffinements produit.
+Statut : livre 2026-05-22. Les heures calmes sont maintenant appliquees par l'orchestrateur sur les canaux externes, avec bypass securite configurable. `GET /api/v1/communication/analytics` expose les volumes, echecs, statuts, canaux et templates aux managers `principal` et `rh`.
 
 Tests :
 
@@ -141,11 +141,12 @@ Tests :
 2. Fait : brancher l'orchestrateur avec provider email configure par environnement.
 3. Fait : relier push web/mobile au device registry existant et a l'audit communication.
 4. Fait : integrer SMS/WhatsApp en mode provider audit-only.
-5. Prochain raffinement : analytics dashboard super-admin, quotas par plan et commandes IA encadrees.
+5. Fait : analytics API tenant, quotas canaux coutants et application stricte des heures calmes.
+6. Suite produit : visualiser ces analytics dans le super-admin, puis encadrer les commandes IA de communication avec validation humaine.
 
 ## Risques
 
-- Cout SMS/WhatsApp si les quotas ne sont pas poses des le depart.
+- Cout SMS/WhatsApp si les quotas ne sont pas alignes avec les futurs plans commerciaux.
 - Donnees sensibles dans les messages courts si les templates ne sont pas controles.
 - Fatigue utilisateur si les preferences et heures calmes arrivent trop tard.
 - Deliverability email si domaine, SPF, DKIM, DMARC ne sont pas configures.
@@ -158,3 +159,5 @@ Tests :
 - Les envois sont queues, audites et retryables.
 - Les canaux gratuits/dev sont utilisables sans bloquer CI.
 - Les providers production sont interchangeables par configuration.
+- Les canaux externes respectent les heures calmes et les quotas.
+- Les managers autorises disposent d'une synthese analytics communication.

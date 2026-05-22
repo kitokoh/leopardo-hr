@@ -10,14 +10,13 @@ use App\Models\NotificationPreference;
 use App\Services\Communication\Providers\AuditMessageProvider;
 use App\Services\PushNotificationService;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class CommunicationService
 {
-    public function __construct(
-        private readonly PushNotificationService $pushNotifications,
-    ) {}
+    public function __construct(private readonly PushNotificationService $pushNotifications) {}
 
     /**
      * @param  array<string, mixed>  $context
@@ -38,9 +37,23 @@ class CommunicationService
         $results = [];
 
         foreach ($requestedChannels as $channel) {
-            if (! $this->allows($preference, $channel, $category)) {
+            if ($this->allows($preference, $channel, $category) === false) {
                 $results[$channel] = 'skipped';
                 $this->recordEvent($employee, $notification, $templateKey, $channel, 'skipped', $metadata, 'Preference disabled.');
+
+                continue;
+            }
+
+            if ($this->shouldSkipForQuietHours($preference, $channel, $category)) {
+                $results[$channel] = (string) config('communication.quiet_hours.defer_status', 'skipped');
+                $this->recordEvent($employee, $notification, $templateKey, $channel, $results[$channel], $metadata, 'Quiet hours active.');
+
+                continue;
+            }
+
+            if ($this->quotaExceeded($employee, $channel)) {
+                $results[$channel] = 'skipped';
+                $this->recordEvent($employee, $notification, $templateKey, $channel, 'skipped', $metadata, 'Monthly channel quota exceeded.');
 
                 continue;
             }
@@ -79,7 +92,7 @@ class CommunicationService
         $templates = config('communication.templates', []);
         $template = is_array($templates) ? Arr::get($templates, $templateKey) : null;
 
-        if (! is_array($template)) {
+        if (is_array($template) === false) {
             $fallback = Arr::get((array) $templates, 'generic', []);
 
             return is_array($fallback) ? $fallback : [
@@ -126,7 +139,7 @@ class CommunicationService
         $normalized = [];
 
         foreach ($channels as $channel) {
-            if (is_string($channel) && in_array($channel, $allowed, true) && ! in_array($channel, $normalized, true)) {
+            if (is_string($channel) && in_array($channel, $allowed, true) && in_array($channel, $normalized, true) === false) {
                 $normalized[] = $channel;
             }
         }
@@ -139,13 +152,77 @@ class CommunicationService
         $flag = $channel.'_enabled';
         $channelAllowed = (bool) ($preference->{$flag} ?? false);
 
-        if (! $channelAllowed) {
+        if ($channelAllowed === false) {
             return false;
         }
 
         $categories = $preference->categories;
 
-        return ! is_array($categories) || (bool) ($categories[$category] ?? true);
+        return is_array($categories) === false || (bool) ($categories[$category] ?? true);
+    }
+
+    private function shouldSkipForQuietHours(NotificationPreference $preference, string $channel, string $category): bool
+    {
+        if ($channel === 'app') {
+            return false;
+        }
+
+        $bypassCategories = config('communication.quiet_hours.bypass_categories', ['security']);
+        $bypassCategories = is_array($bypassCategories) ? $bypassCategories : [];
+
+        if (in_array($category, $bypassCategories, true)) {
+            return false;
+        }
+
+        $quietHours = $preference->quiet_hours;
+
+        if (is_array($quietHours) === false || (bool) ($quietHours['enabled'] ?? false) === false) {
+            return false;
+        }
+
+        $start = $quietHours['start'] ?? null;
+        $end = $quietHours['end'] ?? null;
+
+        if (is_string($start) === false || is_string($end) === false || $start === '' || $end === '') {
+            return false;
+        }
+
+        $timezone = is_string($preference->timezone) && $preference->timezone !== ''
+            ? $preference->timezone
+            : (string) config('app.timezone', 'UTC');
+
+        $now = Carbon::now($timezone);
+        $current = $now->format('H:i');
+
+        if ($start === $end) {
+            return true;
+        }
+
+        if ($start < $end) {
+            return $current >= $start && $current < $end;
+        }
+
+        return $current >= $start || $current < $end;
+    }
+
+    private function quotaExceeded(Employee $employee, string $channel): bool
+    {
+        $limit = (int) config('communication.monthly_channel_quotas.'.$channel, 0);
+
+        if ($limit <= 0) {
+            return false;
+        }
+
+        $periodStart = now()->startOfMonth();
+
+        $used = CommunicationEvent::query()
+            ->where('company_id', (string) $employee->company_id)
+            ->where('channel', $channel)
+            ->whereIn('status', ['sent', 'queued'])
+            ->where('occurred_at', '>=', $periodStart)
+            ->count();
+
+        return $used >= $limit;
     }
 
     /**
@@ -216,7 +293,7 @@ class CommunicationService
     {
         $email = $employee->email ?? null;
 
-        if (! is_string($email) || $email === '') {
+        if (is_string($email) === false || $email === '') {
             return 'skipped';
         }
 

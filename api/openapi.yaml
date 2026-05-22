@@ -34,6 +34,7 @@ tags:
   - name: "Payrolls"
   - name: "HR Referentials"
   - name: "Notifications"
+  - name: "Readiness"
   - name: "Projects"
   - name: "Tasks"
   - name: "Evaluations"
@@ -134,6 +135,23 @@ paths:
           $ref: "#/components/responses/Error401"
         "422":
           $ref: "#/components/responses/Validation422"
+
+  /launch-readiness:
+    get:
+      tags: ["Readiness"]
+      summary: "Lire le score de readiness lancement du tenant"
+      description: "Endpoint manager principal/RH pour verifier les pre-requis go-live avant campagne marketing ou onboarding client."
+      responses:
+        "200":
+          description: "Readiness lancement"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LaunchReadinessResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
 
   /auth/profile:
     patch:
@@ -2393,6 +2411,33 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /communication/analytics:
+    get:
+      tags: ["Notifications"]
+      summary: "Analytics communication tenant"
+      description: "Reserve aux managers principal/RH. Retourne volumes, echecs, canaux et templates sur la periode demandee."
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 90
+            default: 30
+      responses:
+        "200":
+          description: "Synthese communication"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunicationAnalyticsResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /notifications/read-all:
     put:
       tags: ["Notifications"]
@@ -3311,6 +3356,131 @@ components:
               type: string
             stored:
               type: boolean
+    LaunchReadinessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            company_id:
+              type: string
+              format: uuid
+            score:
+              type: integer
+              minimum: 0
+              maximum: 100
+            go_live_ready:
+              type: boolean
+            required_blockers:
+              type: array
+              items:
+                $ref: "#/components/schemas/LaunchReadinessBlocker"
+            next_actions:
+              type: array
+              items:
+                $ref: "#/components/schemas/LaunchReadinessAction"
+            checks:
+              type: array
+              items:
+                $ref: "#/components/schemas/LaunchReadinessCheck"
+    LaunchReadinessCheck:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+            - company_profile
+            - manager_access
+            - employee_base
+            - communication_governance
+            - payroll_base
+            - attendance_entry
+            - client_experience_tracking
+        label:
+          type: string
+        required:
+          type: boolean
+        completed:
+          type: boolean
+        metrics:
+          type: object
+          additionalProperties: true
+    LaunchReadinessBlocker:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        metrics:
+          type: object
+          additionalProperties: true
+    LaunchReadinessAction:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        required:
+          type: boolean
+    CommunicationAnalyticsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            period:
+              type: object
+              properties:
+                days:
+                  type: integer
+                since:
+                  type: string
+                  format: date-time
+            totals:
+              type: object
+              properties:
+                events:
+                  type: integer
+                sent_or_queued:
+                  type: integer
+                failed:
+                  type: integer
+                skipped:
+                  type: integer
+                failure_rate:
+                  type: number
+                  format: float
+            by_channel:
+              type: array
+              items:
+                $ref: "#/components/schemas/KeyCount"
+            by_status:
+              type: array
+              items:
+                $ref: "#/components/schemas/KeyCount"
+            by_template:
+              type: array
+              items:
+                $ref: "#/components/schemas/KeyCount"
+            daily:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  count:
+                    type: integer
+    KeyCount:
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
     Vehicle:
       type: object
       properties:
