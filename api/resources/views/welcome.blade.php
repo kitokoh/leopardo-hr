@@ -83,6 +83,14 @@
                     <strong>Espace Plateforme</strong>
                     <span>Super admin: creation societes et onboarding managers</span>
                 </a>
+                <a class="tile" href="/tester-guide">
+                    <strong>Guide Testeur</strong>
+                    <span>Parcours web client, mobile et admin plateforme</span>
+                </a>
+                <a class="tile" href="/api-explorer">
+                    <strong>API Explorer</strong>
+                    <span>Tester les API avec profils demo pre-remplis</span>
+                </a>
             </div>
 
             <span class="badge">MVP Beta - Laravel 11 + PostgreSQL</span>
