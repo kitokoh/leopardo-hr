@@ -111,7 +111,15 @@ class AuthService
             $tokenName = $deviceName ?: 'api';
             $expirationMinutes = (int) config('sanctum.expiration', 0);
             $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
-            $tokenResult = $employee->createToken($tokenName, ['*'], $expiresAt);
+            $abilities = ['*'];
+            if ($employeeSchema !== null) {
+                $abilities[] = 'tenant_schema:'.$employeeSchema;
+                $abilities[] = 'tenant_email:'.$employee->email;
+                $abilities[] = 'tenant_company:'.$company->id;
+                $abilities[] = 'tenant_employee:'.$employee->id;
+            }
+
+            $tokenResult = $employee->createToken($tokenName, $abilities, $expiresAt);
 
             return [
                 'employee' => $employee,
