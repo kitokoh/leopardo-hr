@@ -110,6 +110,14 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            if (`${{ github.event_name }}` === 'workflow_dispatch') {
+              core.info('Manual deployment on main: bypassing workflow_run lookup.');
+              core.setOutput('tests_conclusion', 'manual-dispatch');
+              core.setOutput('web_conclusion', 'manual-dispatch');
+              core.setOutput('should_deploy', 'true');
+              return;
+            }
+
             const sha = `${{ steps.context.outputs.sha }}`;
             const webChanged = `${{ steps.changes.outputs.web_changed }}` === 'true';
             const { owner, repo } = context.repo;
