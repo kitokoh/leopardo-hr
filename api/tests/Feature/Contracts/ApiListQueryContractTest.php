@@ -274,10 +274,14 @@ class ApiListQueryContractTest extends TestCase
         $company = Company::factory()->create();
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
+            'first_name' => 'Nadir',
+            'last_name' => 'Manager',
             'email' => fake()->unique()->safeEmail(),
         ]);
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
+            'first_name' => 'Yanis',
+            'last_name' => 'Employee',
             'email' => fake()->unique()->safeEmail(),
         ]);
 
