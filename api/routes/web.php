@@ -21,6 +21,14 @@ Route::get('/docs', function () {
     return view('docs.openapi');
 })->name('docs.openapi');
 
+Route::get('/tester-guide', function () {
+    return view('docs.tester-guide');
+})->name('docs.tester-guide');
+
+Route::get('/api-explorer', function () {
+    return view('docs.api-explorer');
+})->name('docs.api-explorer');
+
 Route::get('/docs/openapi.yaml', function () {
     $path = base_path('openapi.yaml');
 
