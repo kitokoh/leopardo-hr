@@ -28,19 +28,24 @@ class DemoCompanyOnceSeeder extends Seeder
 
         DB::statement('SET search_path TO public');
 
+        $existingDemoSlugs = DB::table('companies')
+            ->whereIn('slug', self::DEMO_SLUGS)
+            ->pluck('slug');
+
         $alreadyRan = DB::table('seed_locks')
             ->where('lock_key', self::LOCK_KEY)
             ->exists();
 
-        if ($alreadyRan) {
+        if ($alreadyRan && $existingDemoSlugs->count() === count(self::DEMO_SLUGS)) {
             $this->command?->info('DemoCompanyOnceSeeder skipped (already executed).');
 
             return;
         }
 
-        $existingDemoSlugs = DB::table('companies')
-            ->whereIn('slug', self::DEMO_SLUGS)
-            ->pluck('slug');
+        if ($alreadyRan) {
+            DB::table('seed_locks')->where('lock_key', self::LOCK_KEY)->delete();
+            $this->command?->warn('DemoCompanyOnceSeeder stale lock cleared (demo companies missing).');
+        }
 
         if ($existingDemoSlugs->count() === count(self::DEMO_SLUGS)) {
             DB::table('seed_locks')->updateOrInsert(
