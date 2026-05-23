@@ -94,8 +94,7 @@ export default function LoginPage() {
     applyDocumentLocale(nextLocale);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App') => {
     setSubmitting(true);
     setError(null);
     const startedAt = performance.now();
@@ -104,9 +103,9 @@ export default function LoginPage() {
       const loginResponse = await apiFetch('/auth/login', {
         method: 'POST',
         body: JSON.stringify({
-          email,
-          password,
-          device_name: 'Web App',
+          email: loginEmail,
+          password: loginPassword,
+          device_name: deviceName,
         }),
       });
 
@@ -165,6 +164,11 @@ export default function LoginPage() {
     } finally {
       setSubmitting(false);
     }
+  }, [labels.login.errors.generic, labels.login.errors.missingToken, labels.login.errors.missingUser, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await performLogin(email, password);
   };
 
   const demoCompanies = useMemo(() => [
@@ -204,7 +208,8 @@ export default function LoginPage() {
       country: country ?? null,
       email_domain: demoEmail.split('@')[1] ?? null,
     });
-  }, []);
+    void performLogin(demoEmail, demoPassword, 'Web Demo');
+  }, [performLogin]);
 
   if (!mounted) return null;
 

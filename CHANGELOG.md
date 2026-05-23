@@ -2,6 +2,25 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.127] - 2026-05-23
+
+### Added
+
+- API : page publique `/tester-guide` pour guider les testeurs sur web client, mobile, admin plateforme et contrats API.
+- API : page publique `/api-explorer` avec profils demo pre-remplis, login Bearer et endpoints critiques testables depuis Render.
+- Documentation : Plan 22 pour demo runtime, API Explorer avance, notifications temps reel et QA commerciale.
+
+### Changed
+
+- Auth : le login retrouve un employe dans les schemas tenants connus quand `public.user_lookups` manque, puis regenere le lookup.
+- Web client, mobile et admin : la selection d'un compte demo lance maintenant la connexion directement.
+- Notifications web/mobile : rafraichissement regulier, lecture immediate et actions de marquage lues.
+
+### Tests
+
+- Backend : `DemoUserControllerTest` couvre la recuperation login sans lookup public.
+- Backend : `OpenApiDocsTest` couvre les nouvelles entrees racine, guide testeur et API Explorer.
+
 ## [4.16.126] - 2026-05-22
 
 ### Added
