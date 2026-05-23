@@ -9,15 +9,19 @@ class DemoCompanyOnceSeeder extends Seeder
 {
     private const LOCK_KEY = 'demo_company_seed_v2';
 
-    private const SHARED_SCHEMA = 'shared_tenants';
+    private const DEMO_SLUGS = [
+        'techcorp-algerie',
+        'pharmaplus-casablanca',
+        'digitalflow-tunis',
+    ];
 
     public function run(): void
     {
         $isProduction = app()->environment('production');
-        $allowOnce = filter_var(env('DEMO_SEED_ONCE', false), FILTER_VALIDATE_BOOLEAN);
+        $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
 
-        if ($isProduction && ! $allowOnce) {
-            $this->command?->info('DemoCompanyOnceSeeder skipped (production without DEMO_SEED_ONCE=true).');
+        if ($isProduction && $disabled) {
+            $this->command?->info('DemoCompanyOnceSeeder skipped (DISABLE_DEMO_SEEDING=true).');
 
             return;
         }
@@ -34,11 +38,11 @@ class DemoCompanyOnceSeeder extends Seeder
             return;
         }
 
-        $sharedCompanyAlreadyExists = DB::table('companies')
-            ->where('schema_name', self::SHARED_SCHEMA)
-            ->exists();
+        $existingDemoSlugs = DB::table('companies')
+            ->whereIn('slug', self::DEMO_SLUGS)
+            ->pluck('slug');
 
-        if ($sharedCompanyAlreadyExists) {
+        if ($existingDemoSlugs->count() === count(self::DEMO_SLUGS)) {
             DB::table('seed_locks')->updateOrInsert(
                 ['lock_key' => self::LOCK_KEY],
                 [
@@ -48,7 +52,7 @@ class DemoCompanyOnceSeeder extends Seeder
                 ]
             );
 
-            $this->command?->warn('DemoCompanyOnceSeeder skipped (shared_tenants company already exists).');
+            $this->command?->warn('DemoCompanyOnceSeeder skipped (demo companies already exist).');
 
             return;
         }
@@ -61,6 +65,7 @@ class DemoCompanyOnceSeeder extends Seeder
         ]);
 
         try {
+            app()->instance('leopardo.demo_seed_once', true);
             $this->call(DemoCompanySeeder::class);
 
             DB::statement('SET search_path TO public');

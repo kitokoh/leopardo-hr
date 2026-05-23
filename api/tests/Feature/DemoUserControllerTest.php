@@ -45,6 +45,16 @@ class DemoUserControllerTest extends TestCase
         $this->assertSame('/me', $users->firstWhere('role', 'employee')['primary_path']);
     }
 
+    public function test_demo_users_remain_available_for_public_tester_guides_in_production(): void
+    {
+        app()->detectEnvironment(fn (): string => 'production');
+        config(['app.demo_mode_enabled' => false]);
+
+        $this->getJson('/api/v1/demo-users')
+            ->assertOk()
+            ->assertJsonPath('data.companies.0.users.0.email', 'ahmed.benali@techcorp-algerie.dz');
+    }
+
     public function test_demo_login_recovers_missing_lookup_from_shared_tenant_schema(): void
     {
         $company = Company::factory()->create([
