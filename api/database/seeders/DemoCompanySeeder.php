@@ -34,8 +34,9 @@ class DemoCompanySeeder extends Seeder
     {
         $allowOutsideLocal = filter_var(env('ALLOW_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
         $allowOnce = filter_var(env('DEMO_SEED_ONCE', false), FILTER_VALIDATE_BOOLEAN);
+        $allowFromOnceSeeder = (bool) app()->bound('leopardo.demo_seed_once');
 
-        if (! app()->environment('local', 'development', 'testing') && ! $allowOutsideLocal && ! $allowOnce) {
+        if (! app()->environment('local', 'development', 'testing') && ! $allowOutsideLocal && ! $allowOnce && ! $allowFromOnceSeeder) {
             $this->command->error('DemoCompanySeeder interdit hors environnement de dev.');
             $this->command->warn('Definir ALLOW_DEMO_SEEDING=true ou DEMO_SEED_ONCE=true pour un seed exceptionnel.');
 

@@ -6,6 +6,11 @@ Date : 2026-05-23
 
 Le lancement commercial demande une validation plus directe par des testeurs non developpeurs. Les comptes demo existent dans le plan fonctionnel, mais l'experience doit etre lisible quand un seed manque, quand Render repond lentement ou quand une notification arrive apres le chargement initial.
 
+Le controle Render du 2026-05-23 a aussi montre deux risques operationnels :
+
+- une ancienne variable `DEMO_MODE_ENABLED=false` peut masquer `/api/v1/demo-users` alors que cette route alimente maintenant la documentation testeur ;
+- un seed "once" base sur `schema_name=shared_tenants` saute a tort les donnees demo lorsqu'une vraie entreprise shared existe deja.
+
 ## Objectifs
 
 1. Rendre les profils demo connectables sur web client et mobile sans spinner infini.
@@ -21,6 +26,8 @@ Le lancement commercial demande une validation plus directe par des testeurs non
 - Ajouter une commande ops `demo:doctor` qui verifie plans, companies, employees, user_lookups, notifications et preferences.
 - Ajouter un endpoint super-admin `POST /api/v1/platform/demo/repair` reserve aux environnements autorises.
 - Publier dans le guide testeur l'etat `demo_ready` calcule cote API.
+- Garder `/api/v1/demo-users` public et faire reposer la securite sur le fait que ces identifiants sont des personas QA dedies.
+- Le seed Render doit verifier les slugs demo attendus, pas la simple existence du schema shared.
 
 ### Lot 22.2 - API Explorer avance
 
