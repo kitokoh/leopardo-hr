@@ -31,6 +31,8 @@ export class ApiError extends Error {
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
   const isLoginRequest = endpoint === '/auth/login' || endpoint === '/platform/auth/login';
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
 
   const headers = {
     'Content-Type': 'application/json',
@@ -40,10 +42,23 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+      signal: options.signal ?? controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError('Le serveur met trop de temps a repondre. Reessayez dans quelques instants.', 408, 'TIMEOUT');
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (response.status === 401 && typeof window !== 'undefined' && !isLoginRequest) {
     clearAuthSession();

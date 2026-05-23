@@ -204,7 +204,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   LockClosedIcon,
@@ -232,10 +232,12 @@ const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
 const showDemoModal = ref(false)
 
-function selectDemoUser(email, password) {
+async function selectDemoUser(email, password) {
   form.email = email
   form.password = password
   showDemoModal.value = false
+  await nextTick()
+  await handleLogin()
 }
 
 async function handleLogin() {
