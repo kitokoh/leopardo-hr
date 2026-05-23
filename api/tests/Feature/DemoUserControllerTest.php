@@ -77,6 +77,7 @@ class DemoUserControllerTest extends TestCase
             'leave_balance' => 12,
         ]);
 
+        DB::statement('CREATE TABLE IF NOT EXISTS shared_tenants.companies (LIKE public.companies INCLUDING ALL)');
         DB::table('public.user_lookups')->where('email', $employee->email)->delete();
         DB::statement('SET search_path TO public');
 
