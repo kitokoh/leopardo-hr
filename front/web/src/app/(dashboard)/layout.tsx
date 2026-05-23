@@ -92,11 +92,30 @@ export default function DashboardLayout({
     }
 
     void loadNotifications();
+    const timer = window.setInterval(() => {
+      void loadNotifications();
+    }, 30000);
 
     return () => {
       cancelled = true;
+      window.clearInterval(timer);
     };
   }, [mounted, user]);
+
+  const markNotificationRead = async (notification: ClientNotification) => {
+    if (notification.is_read) {
+      return;
+    }
+
+    await apiFetch(`/notifications/${notification.id}/read`, {
+      method: 'PUT',
+    });
+
+    setNotificationPreview((items) => items.map((item) => (
+      item.id === notification.id ? { ...item, is_read: true } : item
+    )));
+    setUnreadCount((count) => Math.max(0, count - 1));
+  };
 
   const handleLanguageChange = async (value: string) => {
     const nextLocale = normalizeLocale(value);
@@ -223,14 +242,19 @@ export default function DashboardLayout({
                   </div>
                   <div className="mt-2 max-h-80 space-y-2 overflow-auto">
                     {notificationPreview.length > 0 ? notificationPreview.map((notification) => (
-                      <div key={notification.id} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
+                      <button
+                        key={notification.id}
+                        type="button"
+                        className="w-full rounded-lg border border-slate-100 bg-slate-50 p-3 text-left transition hover:border-teal-200 hover:bg-teal-50"
+                        onClick={() => void markNotificationRead(notification)}
+                      >
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-sm font-bold text-slate-900">{notification.title}</p>
                           {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-teal-500" aria-label="Non lue" /> : null}
                         </div>
                         <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
                         <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{notification.type}</p>
-                      </div>
+                      </button>
                     )) : (
                       <p className="rounded-lg bg-slate-50 p-3 text-sm text-slate-600">Aucune notification recente.</p>
                     )}

@@ -223,6 +223,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             if (user != null) {
                               _emailController.text = user.email;
                               _passwordController.text = user.password;
+                              await ref
+                                  .read(authProvider.notifier)
+                                  .login(user.email, user.password);
                             }
                           },
                           icon: const Icon(Icons.group_outlined),
