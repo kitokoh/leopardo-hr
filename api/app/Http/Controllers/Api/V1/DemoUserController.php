@@ -11,10 +11,6 @@ class DemoUserController extends Controller
 {
     public function index(): JsonResponse
     {
-        if (app()->environment('production') && ! filter_var(config('app.demo_mode_enabled'), FILTER_VALIDATE_BOOLEAN)) {
-            return response()->json(['message' => 'Demo mode is not available.'], 403);
-        }
-
         return response()->json([
             'data' => [
                 'super_admin' => [
