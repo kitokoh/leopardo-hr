@@ -80,7 +80,7 @@ class DemoUserControllerTest extends TestCase
         DB::table('public.user_lookups')->where('email', $employee->email)->delete();
         DB::statement('SET search_path TO public');
 
-        $this->postJson('/api/v1/auth/login', [
+        $loginResponse = $this->postJson('/api/v1/auth/login', [
             'email' => $employee->email,
             'password' => 'password123',
             'device_name' => 'Feature test',
@@ -89,6 +89,12 @@ class DemoUserControllerTest extends TestCase
             ->assertJsonPath('data.email', $employee->email)
             ->assertJsonPath('data.company.id', $company->id)
             ->assertJsonStructure(['token']);
+
+        $this->withToken($loginResponse->json('token'))
+            ->getJson('/api/v1/auth/me')
+            ->assertOk()
+            ->assertJsonPath('data.email', $employee->email)
+            ->assertJsonPath('data.company.id', $company->id);
 
         $this->assertDatabaseHas('user_lookups', [
             'email' => $employee->email,
