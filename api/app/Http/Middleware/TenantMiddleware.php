@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Company;
 use App\Models\Employee;
 use App\Services\TenantManager;
 use Closure;
@@ -223,7 +224,32 @@ class TenantMiddleware
             return null;
         }
 
+        $this->resolveCompanyForEmployee($tenantEmployee);
+
         return $tenantEmployee;
+    }
+
+    private function resolveCompanyForEmployee(Employee $employee): ?Company
+    {
+        $company = $employee->company;
+        if ($company instanceof Company) {
+            return $company;
+        }
+
+        if (DB::getDriverName() !== 'pgsql' || ! $employee->company_id) {
+            return null;
+        }
+
+        $company = Company::query()
+            ->from('public.companies')
+            ->whereKey($employee->company_id)
+            ->first();
+
+        if ($company instanceof Company) {
+            $employee->setRelation('company', $company);
+        }
+
+        return $company;
     }
 
     private function replaceRequestUser(Employee $originalEmployee, Employee $tenantEmployee, Request $request): Employee
