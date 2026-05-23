@@ -21,4 +21,26 @@ class OpenApiDocsTest extends TestCase
             ->assertSee('openapi: "3.0.3"', false)
             ->assertSee('Leopardo RH API', false);
     }
+
+    public function test_root_exposes_tester_guide_and_api_explorer(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Guide Testeur')
+            ->assertSee('/tester-guide')
+            ->assertSee('API Explorer')
+            ->assertSee('/api-explorer');
+
+        $this->get('/tester-guide')
+            ->assertOk()
+            ->assertSee('Guide testeur Leopardo RH')
+            ->assertSee('Application mobile')
+            ->assertSee('Admin plateforme');
+
+        $this->get('/api-explorer')
+            ->assertOk()
+            ->assertSee('API Explorer Leopardo RH')
+            ->assertSee('/demo-users')
+            ->assertSee('/notifications');
+    }
 }

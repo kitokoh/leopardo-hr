@@ -35,6 +35,7 @@
 | 19 | `19_PLAN_COMMUNICATION_INTERNE.md` | **NOUVEAU 2026-05-22** - Notifications web/mobile, emails, SMS, WhatsApp et orchestration communication |
 | 20 | `20_PLAN_READINESS_LANCEMENT_PRODUCTION.md` | **NOUVEAU 2026-05-22** - Readiness lancement, support client et controle go-live tenant |
 | 21 | `21_PLAN_PROFILS_READINESS_FONCTIONNELLE.md` | **NOUVEAU 2026-05-22** - Tests multi-profils, seeders demo, parcours API/web/mobile/kiosk |
+| 22 | `22_PLAN_DOC_TESTEUR_API_NOTIFICATIONS.md` | **NOUVEAU 2026-05-23** - Documentation testeur, API explorer, demo login et notifications vivantes |
 
 ---
 
