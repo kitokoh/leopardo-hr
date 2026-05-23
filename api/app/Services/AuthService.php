@@ -7,6 +7,7 @@ use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
+use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -93,7 +94,7 @@ class AuthService
                 ]);
             }
 
-            $company = $employee->company;
+            $company = $this->resolveCompanyForEmployee($employee);
             if (! $company) {
                 throw new CompanyNotFoundException;
             }
@@ -159,6 +160,29 @@ class AuthService
             'failed_login_attempts',
             'locked_until',
         ]);
+    }
+
+    private function resolveCompanyForEmployee(Employee $employee): ?Company
+    {
+        $company = $employee->company;
+        if ($company instanceof Company) {
+            return $company;
+        }
+
+        if (DB::getDriverName() !== 'pgsql' || ! $employee->company_id) {
+            return null;
+        }
+
+        $company = Company::query()
+            ->from('public.companies')
+            ->whereKey($employee->company_id)
+            ->first();
+
+        if ($company instanceof Company) {
+            $employee->setRelation('company', $company);
+        }
+
+        return $company;
     }
 
     /**
