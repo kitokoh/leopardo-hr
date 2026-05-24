@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ApprovalRequestResource;
 use App\Models\ApprovalDecision;
 use App\Models\ApprovalRequest;
 use App\Models\ApprovalWorkflow;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ApprovalController extends Controller
 {
@@ -112,7 +114,7 @@ class ApprovalController extends Controller
         return response()->json($requests);
     }
 
-    public function approve(Request $request, ApprovalRequest $approvalRequest): JsonResponse
+    public function approve(Request $request, ApprovalRequest $approvalRequest): ApprovalRequestResource
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -127,32 +129,33 @@ class ApprovalController extends Controller
             'comment' => 'nullable|string|max:500',
         ]);
 
-        ApprovalDecision::create([
-            'approval_request_id' => $approvalRequest->id,
-            'level' => $approvalRequest->current_level,
-            'approver_id' => $actor->id,
-            'decision' => 'approved',
-            'comment' => $validated['comment'] ?? null,
-            'decided_at' => now(),
-        ]);
+        $result = DB::transaction(function () use ($approvalRequest, $actor, $validated) {
+            ApprovalDecision::create([
+                'approval_request_id' => $approvalRequest->id,
+                'level' => $approvalRequest->current_level,
+                'approver_id' => $actor->id,
+                'decision' => 'approved',
+                'comment' => $validated['comment'] ?? null,
+                'decided_at' => now(),
+            ]);
 
-        $workflow = $approvalRequest->workflow;
-        $levels = is_array($workflow->levels) ? $workflow->levels : [];
-        $maxLevel = count($levels);
+            $workflow = $approvalRequest->workflow;
+            $levels = is_array($workflow->levels) ? $workflow->levels : [];
+            $maxLevel = count($levels);
 
-        if ($approvalRequest->current_level >= $maxLevel) {
-            $approvalRequest->update(['status' => 'approved']);
-        } else {
-            $approvalRequest->update(['current_level' => $approvalRequest->current_level + 1]);
-        }
+            if ($approvalRequest->current_level >= $maxLevel) {
+                $approvalRequest->update(['status' => 'approved']);
+            } else {
+                $approvalRequest->update(['current_level' => $approvalRequest->current_level + 1]);
+            }
 
-        /** @var ApprovalRequest $approvalRequestFresh */
-        $approvalRequestFresh = $approvalRequest->fresh();
+            return $approvalRequest->fresh();
+        });
 
-        return response()->json(['data' => $approvalRequestFresh->load('decisions')]);
+        return new ApprovalRequestResource($result->load('decisions'));
     }
 
-    public function reject(Request $request, ApprovalRequest $approvalRequest): JsonResponse
+    public function reject(Request $request, ApprovalRequest $approvalRequest): ApprovalRequestResource
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -167,21 +170,22 @@ class ApprovalController extends Controller
             'comment' => 'required|string|max:500',
         ]);
 
-        ApprovalDecision::create([
-            'approval_request_id' => $approvalRequest->id,
-            'level' => $approvalRequest->current_level,
-            'approver_id' => $actor->id,
-            'decision' => 'rejected',
-            'comment' => $validated['comment'],
-            'decided_at' => now(),
-        ]);
+        $result = DB::transaction(function () use ($approvalRequest, $actor, $validated) {
+            ApprovalDecision::create([
+                'approval_request_id' => $approvalRequest->id,
+                'level' => $approvalRequest->current_level,
+                'approver_id' => $actor->id,
+                'decision' => 'rejected',
+                'comment' => $validated['comment'],
+                'decided_at' => now(),
+            ]);
 
-        $approvalRequest->update(['status' => 'rejected']);
+            $approvalRequest->update(['status' => 'rejected']);
 
-        /** @var ApprovalRequest $approvalRequestFresh */
-        $approvalRequestFresh = $approvalRequest->fresh();
+            return $approvalRequest->fresh();
+        });
 
-        return response()->json(['data' => $approvalRequestFresh->load('decisions')]);
+        return new ApprovalRequestResource($result->load('decisions'));
     }
 
     public function history(Request $request): JsonResponse
