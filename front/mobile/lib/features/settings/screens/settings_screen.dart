@@ -12,6 +12,17 @@ import 'package:leopardo_rh/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_rh/features/settings/data/settings_repository.dart';
 import 'package:local_auth/local_auth.dart';
 
+const _bgPrimary = Color(0xFF0B1120);
+const _bgCard = Color(0xFF111B2E);
+const _borderCard = Color(0xFF1A2B44);
+const _textPrimary = Color(0xFFE2EAF6);
+const _textSecondary = Color(0xFF3D5470);
+const _textMid = Color(0xFF7A9CC0);
+const _accentGreen = Color(0xFF10B981);
+const _accentGreenBg = Color(0xFF0D4F3C);
+const _accentRed = Color(0xFFEF4444);
+const _accentAmber = Color(0xFFF59E0B);
+
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
@@ -121,12 +132,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final authState = ref.watch(authProvider);
     final employee = authState.employee;
     final isManager = employee?.isManager == true;
+    final firstName = employee?.firstName ?? '';
+    final lastName = employee?.lastName ?? '';
+    final initials =
+        '${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}'
+            .toUpperCase();
 
     return Scaffold(
+      backgroundColor: _bgPrimary,
       appBar: AppBar(
-        title: const Text('Parametres'),
+        backgroundColor: _bgPrimary,
+        foregroundColor: _textPrimary,
+        elevation: 0,
+        title: const Text('Parametres', style: TextStyle(color: _textPrimary)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: _textPrimary),
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
@@ -134,8 +154,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _buildIdentityCard(context, employee?.role),
+          _buildAccountHeader(initials, firstName, lastName, employee?.role, isManager),
           const SizedBox(height: 20),
+          if (isManager) ...[
+            _buildManagerQuickActions(context),
+            const SizedBox(height: 20),
+          ],
           _buildProfileSection(context, authState),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
@@ -145,43 +169,223 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 20),
             _buildBiometricSection(context),
           ],
+          const SizedBox(height: 20),
+          _buildLogoutSection(context),
+          const SizedBox(height: 40),
         ],
       ),
     );
   }
 
-  Widget _buildIdentityCard(BuildContext context, String? role) {
+  Widget _buildAccountHeader(
+      String initials, String firstName, String lastName, String? role, bool isManager) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: _bgCard,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          const Text(
-            'Acces mobile',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Container(
+            width: 52,
+            height: 52,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: _accentGreenBg,
+            ),
+            child: Center(
+              child: Text(
+                initials,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: _accentGreen,
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            role == 'manager'
-                ? 'Profil RH / manager: acces au suivi de l equipe et a l historique.'
-                : 'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
-            style: const TextStyle(color: AppColors.textMuted),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$firstName $lastName',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: _textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _accentGreen.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _accentGreen.withValues(alpha: 0.25),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Text(
+                    isManager ? 'Manager' : 'Employe',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: _accentGreen,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildManagerQuickActions(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12, left: 4),
+            child: Text(
+              'ESPACE MANAGER',
+              style: TextStyle(
+                fontSize: 11,
+                color: _textSecondary,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          _SettingsTile(
+            icon: Icons.person_outline,
+            label: 'Mon compte',
+            subtitle: 'Profil, email, informations personnelles',
+            onTap: () {
+              // Scroll to profile section
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Section profil ci-dessous')),
+              );
+            },
+          ),
+          const Divider(color: _borderCard, height: 1, thickness: 0.5),
+          _SettingsTile(
+            icon: Icons.calendar_today_outlined,
+            label: 'Mon plan',
+            subtitle: 'Abonnement, limites, facturation',
+            onTap: () => context.push('/modules'),
+          ),
+          const Divider(color: _borderCard, height: 1, thickness: 0.5),
+          _SettingsTile(
+            icon: Icons.groups_outlined,
+            label: 'Mon equipe',
+            subtitle: 'Gerer les collaborateurs, invitations',
+            onTap: () => context.push('/team'),
+          ),
+          const Divider(color: _borderCard, height: 1, thickness: 0.5),
+          _SettingsTile(
+            icon: Icons.approval_outlined,
+            label: 'Approbations',
+            subtitle: 'Demandes en attente de validation',
+            onTap: () => context.push('/approvals'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutSection(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                backgroundColor: _bgCard,
+                title: const Text(
+                  'Deconnexion',
+                  style: TextStyle(color: _textPrimary),
+                ),
+                content: const Text(
+                  'Voulez-vous vraiment vous deconnecter ?',
+                  style: TextStyle(color: _textMid),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text(
+                      'Annuler',
+                      style: TextStyle(color: _textSecondary),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      ref.read(authProvider.notifier).logout();
+                    },
+                    child: const Text(
+                      'Deconnexion',
+                      style: TextStyle(color: _accentRed),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            child: Row(
+              children: [
+                Icon(Icons.logout, size: 22, color: _accentRed),
+                SizedBox(width: 14),
+                Text(
+                  'Deconnexion',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: _accentRed,
+                  ),
+                ),
+                Spacer(),
+                Icon(Icons.chevron_right, size: 18, color: _textSecondary),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildProfileSection(BuildContext context, AuthState authState) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: _bgCard,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
       ),
       child: Form(
         key: _profileFormKey,
@@ -190,7 +394,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           children: [
             const Text(
               'Mon profil',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textPrimary),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -251,20 +455,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: _bgCard,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Langue',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textPrimary),
           ),
           const SizedBox(height: 8),
           const Text(
             'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.',
-            style: TextStyle(color: AppColors.textMuted),
+            style: TextStyle(color: _textSecondary),
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
@@ -311,8 +516,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: _bgCard,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
       ),
       child: Form(
         key: _passwordFormKey,
@@ -321,12 +527,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           children: [
             const Text(
               'Securite',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textPrimary),
             ),
             const SizedBox(height: 8),
             const Text(
               'Changez votre mot de passe avant les prochaines etapes de modernisation.',
-              style: TextStyle(color: AppColors.textMuted),
+              style: TextStyle(color: _textSecondary),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -392,26 +598,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: _bgCard,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _borderCard, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Preparation biometrie',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _textPrimary),
           ),
           const SizedBox(height: 8),
           Text(
             'Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.',
-            style: const TextStyle(color: AppColors.textMuted),
+            style: const TextStyle(color: _textSecondary),
           ),
           const SizedBox(height: 12),
           if (employee != null)
             Text(
               'Actif aujourd hui - visage: ${employee.biometricFaceEnabled ? "oui" : "non"} | empreinte: ${employee.biometricFingerprintEnabled ? "oui" : "non"}',
-              style: const TextStyle(color: AppColors.textMuted),
+              style: const TextStyle(color: _textSecondary),
             ),
           if (_latestEnrollment != null) ...[
             const SizedBox(height: 8),
@@ -431,7 +638,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   'Retour manager/RH: ${_latestEnrollment!.managerNote}',
-                  style: const TextStyle(color: AppColors.textMuted),
+                  style: const TextStyle(color: _textSecondary),
                 ),
               ),
           ],
@@ -532,7 +739,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 8),
           const Text(
             'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+            style: TextStyle(color: _textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -718,5 +925,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         setState(() => _biometricSubmitting = false);
       }
     }
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: _accentGreen.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: _accentGreen),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: _textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: _textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, size: 18, color: _textSecondary),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
