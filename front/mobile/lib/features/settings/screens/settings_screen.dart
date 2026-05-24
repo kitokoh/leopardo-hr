@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
+import 'package:leopardo_rh/core/theme/app_typography.dart';
+import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_rh/features/settings/data/settings_repository.dart';
@@ -123,10 +125,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final isManager = employee?.isManager == true;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Parametres'),
+      backgroundColor: MobileSurface.background,
+      appBar: MobileTopBar(
+        title: 'Compte',
+        subtitle: 'Profil, langue et securite',
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
@@ -153,23 +157,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildIdentityCard(BuildContext context, String? role) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: MobileSurface.cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Acces mobile',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
           Text(
             role == 'manager'
                 ? 'Profil RH / manager: acces au suivi de l equipe et a l historique.'
                 : 'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
-            style: const TextStyle(color: AppColors.textMuted),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
         ],
       ),
@@ -179,18 +182,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildProfileSection(BuildContext context, AuthState authState) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: MobileSurface.cardDecoration(),
       child: Form(
         key: _profileFormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Mon profil',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -250,21 +250,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildLanguageSection(BuildContext context, AuthState authState) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: MobileSurface.cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Langue',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.',
-            style: TextStyle(color: AppColors.textMuted),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
@@ -310,23 +309,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildPasswordSection(BuildContext context, AuthState authState) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: MobileSurface.cardDecoration(),
       child: Form(
         key: _passwordFormKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Securite',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Changez votre mot de passe avant les prochaines etapes de modernisation.',
-              style: TextStyle(color: AppColors.textMuted),
+              style: AppTypography.bodySmall.copyWith(
+                color: MobileSurface.secondary,
+              ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -391,27 +389,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final employee = ref.read(authProvider).employee;
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: MobileSurface.cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Preparation biometrie',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
           Text(
             'Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.',
-            style: const TextStyle(color: AppColors.textMuted),
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
           const SizedBox(height: 12),
           if (employee != null)
             Text(
               'Actif aujourd hui - visage: ${employee.biometricFaceEnabled ? "oui" : "non"} | empreinte: ${employee.biometricFingerprintEnabled ? "oui" : "non"}',
-              style: const TextStyle(color: AppColors.textMuted),
+              style: AppTypography.caption.copyWith(
+                color: MobileSurface.secondary,
+              ),
             ),
           if (_latestEnrollment != null) ...[
             const SizedBox(height: 8),
@@ -431,7 +430,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   'Retour manager/RH: ${_latestEnrollment!.managerNote}',
-                  style: const TextStyle(color: AppColors.textMuted),
+                  style: AppTypography.caption.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
                 ),
               ),
           ],
@@ -530,9 +531,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+            style: AppTypography.caption.copyWith(
+              color: MobileSurface.secondary,
+            ),
           ),
         ],
       ),

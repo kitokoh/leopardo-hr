@@ -101,6 +101,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.119, l observabilite UX client est contractuelle : `trackClientEvent` emet `login_success`, `login_failed`, `dashboard_loaded`, `feature_blocked`, `demo_user_selected` et les tests Playwright les verifient. Ne pas brancher un outil tiers directement dans les composants ; ajouter d abord un endpoint/backend stable ou adapter `front/web/src/lib/client-analytics.ts`.
 - Depuis v4.16.120, les evenements UX authentifies se persistent via `POST /api/v1/client-events` dans `client_events`. Garder `login_failed` hors persistance tant que le tenant n est pas fiable, conserver la minimisation PII dans `ClientEventController`, et etendre `ClientEventControllerTest` pour tout nouvel evenement allowliste.
 - Le kiosque ZKTeco emet `leopardo:kiosk-status` et affiche la derniere synchronisation. Garder cet etat offline-first lisible lors des evolutions kiosk/bridge, car c est le signal terrain principal pour les clients.
+- Depuis v4.16.134, le mobile utilise un socle visuel sombre inspire du mockup pointage v3 via `front/mobile/lib/core/widgets/mobile_surface.dart`. Pour tout nouvel ecran mobile, privilegier `MobileTopBar`, `MobilePanel`, `MobileStatusPill`, `MobileIconBubble` et les couleurs `MobileSurface.*` afin de garder une experience 2026 coherente sans dupliquer des `BoxDecoration`.
 
 ## Pieges connus
 
