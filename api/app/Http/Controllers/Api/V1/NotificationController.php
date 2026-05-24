@@ -62,7 +62,7 @@ class NotificationController extends Controller
         return NotificationResource::collection($unread)->response();
     }
 
-    public function markRead(Request $request, string $id): NotificationResource
+    public function markRead(Request $request, string $id): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -77,7 +77,9 @@ class NotificationController extends Controller
             return $notification->fresh();
         });
 
-        return new NotificationResource($notification);
+        return response()->json([
+            'data' => (new NotificationResource($notification))->resolve($request),
+        ]);
     }
 
     public function markAllRead(Request $request): JsonResponse
