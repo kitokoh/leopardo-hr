@@ -1,334 +1,428 @@
-import 'package:leopardo_rh/core/widgets/pulse_button.dart';
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_rh/models/attendance_log.dart';
 
-class AttendanceScreen extends ConsumerWidget {
+class AttendanceScreen extends ConsumerStatefulWidget {
   const AttendanceScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AttendanceScreen> createState() => _AttendanceScreenState();
+}
+
+class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
+  static const Color _bg = Color(0xFF0B1120);
+  static const Color _card = Color(0xFF111B2E);
+  static const Color _text = Color(0xFFE2EAF6);
+  static const Color _muted = Color(0xFF3D5470);
+  static const Color _secondary = Color(0xFF7A9CC0);
+  static const Color _border = Color(0xFF1A2B44);
+  static const Color _soft = Color(0xFF2A4560);
+
+  late Timer _clockTimer;
+  DateTime _now = DateTime.now();
+  bool _fingerprintAvailable = false;
+  bool _fingerprintEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _clockTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => setState(() => _now = DateTime.now()),
+    );
+    _loadFingerprintAvailability();
+  }
+
+  @override
+  void dispose() {
+    _clockTimer.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadFingerprintAvailability() async {
+    try {
+      final auth = LocalAuthentication();
+      final canCheck = await auth.canCheckBiometrics;
+      final supported = await auth.isDeviceSupported();
+      final methods = await auth.getAvailableBiometrics();
+      if (!mounted) return;
+      setState(() {
+        _fingerprintAvailable =
+            supported &&
+            canCheck &&
+            methods.any((type) => type == BiometricType.fingerprint);
+      });
+    } catch (_) {
+      if (mounted) setState(() => _fingerprintAvailable = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final attState = ref.watch(attendanceProvider);
-    final isManager =
-        authState.employee?.isManager == true ||
-        attState.context?['mode'] == 'collection';
+    final weekAsync = ref.watch(historyProvider(_now));
+    final week = _buildWeekSummaries(weekAsync.valueOrNull ?? const []);
+    final employee = authState.employee;
+    final isCheckedIn =
+        attState.todayLog?.checkIn != null &&
+        attState.todayLog?.checkOut == null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1120),
+      backgroundColor: _bg,
       body: SafeArea(
-        child:
-            attState.error != null &&
-                    attState.error!.contains('NOT_IMPLEMENTED')
-                ? _buildStubScreen(context, ref)
-                : RefreshIndicator(
-                  onRefresh:
-                      () =>
-                          ref.read(attendanceProvider.notifier).loadTodayData(),
-                  child: ListView(
-                    padding: const EdgeInsets.all(24.0),
-                    children: [
-                      _buildHeader(context, authState, isManager),
-                      const SizedBox(height: 24),
-                      isManager
-                          ? _buildManagerOverviewCard(context, ref, attState)
-                          : _buildActionCard(context, ref, attState),
-                      const SizedBox(height: 32),
-                      if (!isManager) _buildSummaryCard(context, attState),
-                      if (attState.notice != null) ...[
-                        _buildNoticeCard(context, attState.notice!),
-                        const SizedBox(height: 32),
-                      ],
-                      const SizedBox(height: 32),
-                      _buildActions(context, ref, attState, isManager),
-                    ],
-                  ),
-                ),
-      ),
-    );
-  }
-
-  Widget _buildStubScreen(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.build_circle_outlined,
-            size: 64,
-            color: AppColors.textMuted,
+        child: RefreshIndicator(
+          color: AppColors.rh,
+          backgroundColor: _card,
+          onRefresh: () async {
+            ref.invalidate(historyProvider(_now));
+            await ref.read(attendanceProvider.notifier).loadTodayData();
+          },
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+            children: [
+              _buildHeader(
+                firstName: employee?.firstName ?? 'Leo',
+                roleLabel: _roleLabel(employee?.role, employee?.managerRole),
+              ),
+              const SizedBox(height: 22),
+              _buildLiveClock(),
+              const SizedBox(height: 28),
+              _buildPunchButton(
+                isCheckedIn: isCheckedIn,
+                isLoading: attState.isLoading,
+                onTap: () => _handlePunch(isCheckedIn),
+              ),
+              const SizedBox(height: 22),
+              _buildTodayCard(attState),
+              if (attState.error != null) ...[
+                const SizedBox(height: 12),
+                _buildNoticeCard(attState.error!, AppColors.danger),
+              ] else if (attState.notice != null) ...[
+                const SizedBox(height: 12),
+                _buildNoticeCard(attState.notice!, AppColors.warning),
+              ],
+              const SizedBox(height: 24),
+              _buildSectionTitle('CETTE SEMAINE'),
+              const SizedBox(height: 10),
+              if (weekAsync.isLoading && week.isEmpty)
+                _buildLoadingWeek()
+              else
+                ...week.map(_buildDayRow),
+              const SizedBox(height: 10),
+              _buildWeekSummary(week),
+            ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Fonction bientot disponible',
-            style: TextStyle(fontSize: 20),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(attendanceProvider.notifier).loadTodayData();
-            },
-            child: const Text('Reessayer'),
-          ),
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () {
-              ref.read(authProvider.notifier).logout();
-            },
-            child: const Text(
-              'Deconnexion',
-              style: TextStyle(color: AppColors.danger),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, AuthState state, bool isManager) {
-    final now = DateFormat('HH:mm').format(DateTime.now());
-
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF111827), Color(0xFF0F766E)],
         ),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.rh.withValues(alpha: 0.18),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Bonjour ${state.employee?.firstName ?? ''}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  isManager ? 'Espace RH / manager' : 'Pointage employe',
-                  style: const TextStyle(color: Color(0xFFB6F4DD)),
-                ),
-              ],
-            ),
+    );
+  }
+
+  Future<void> _handlePunch(bool isCheckedIn) async {
+    HapticFeedback.mediumImpact();
+    if (isCheckedIn) {
+      await ref.read(attendanceProvider.notifier).checkOut();
+    } else {
+      await ref.read(attendanceProvider.notifier).checkIn();
+    }
+    ref.invalidate(historyProvider(_now));
+  }
+
+  Widget _buildHeader({required String firstName, required String roleLabel}) {
+    final initial =
+        firstName.trim().isEmpty
+            ? 'L'
+            : firstName.trim().characters.first.toUpperCase();
+
+    return Row(
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: AppColors.rh.withValues(alpha: 0.16),
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.rh.withValues(alpha: 0.35)),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(18),
-            ),
+          child: Center(
             child: Text(
-              now,
+              initial,
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
+                color: AppColors.rh,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionCard(
-    BuildContext context,
-    WidgetRef ref,
-    AttendanceState state,
-  ) {
-    final isCheckedIn =
-        state.todayLog?.checkIn != null && state.todayLog?.checkOut == null;
-
-    return Container(
-      padding: const EdgeInsets.all(26),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x33000000),
-            blurRadius: 30,
-            offset: Offset(0, 16),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            DateFormat('EEEE d MMMM').format(DateTime.now()),
-            style: const TextStyle(
-              color: AppColors.textMuted,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 18),
-          if (state.isLoading && state.todayLog == null)
-            Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.12),
-              ),
-              child: Center(
-                child: Semantics(
-                  label: 'Chargement de votre présence...',
-                  child: SizedBox(
-                    height: 28,
-                    width: 28,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                firstName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _text,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            )
-          else
-            PulseButton(
-              isCheckedIn: isCheckedIn,
-              isLoading: state.isLoading,
-              onTap: () {
-                if (isCheckedIn) {
-                  ref.read(attendanceProvider.notifier).checkOut();
-                } else {
-                  ref.read(attendanceProvider.notifier).checkIn();
-                }
-              },
-            ),
-          const SizedBox(height: 28),
-          if (state.isLoading && state.todayLog == null) ...[
-            const Text(
-              'Chargement de votre presence du jour...',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textMuted),
-            ),
-          ] else if (state.error != null && state.todayLog == null) ...[
-            Text(
-              state.error!,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed:
-                  () => ref.read(attendanceProvider.notifier).loadTodayData(),
-              child: const Text('Reessayer'),
-            ),
-          ] else if (state.todayLog?.checkIn != null)
-            Text(
-              'Arrivee : ${state.todayLog!.checkIn!.hour.toString().padLeft(2, '0')}:${state.todayLog!.checkIn!.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(fontSize: 18),
-            )
-          else
-            const Text(
-              'Pret pour le pointage du jour.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textMuted),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildManagerOverviewCard(
-    BuildContext context,
-    WidgetRef ref,
-    AttendanceState state,
-  ) {
-    final items = state.context?['items'];
-    final employees = items is List ? items : const [];
-    final checkedInCount =
-        employees.whereType<Map>().where((item) {
-          final status = item['status']?.toString();
-          return status != null && status != 'absent';
-        }).length;
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Suivi de l equipe',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              const SizedBox(height: 2),
+              Text(
+                roleLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: _secondary, fontSize: 12),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          if (state.isLoading && employees.isEmpty) ...[
-            Row(
-              children: [
-                Semantics(
-                  label: 'Chargement du suivi d\'équipe...',
-                  child: SizedBox(
-                    height: 18,
-                    width: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+        PopupMenuButton<String>(
+          icon: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              3,
+              (_) => Container(
+                width: 3,
+                height: 3,
+                margin: const EdgeInsets.symmetric(vertical: 1.5),
+                decoration: const BoxDecoration(
+                  color: _muted,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+          color: _card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          onSelected: (value) {
+            switch (value) {
+              case 'correction':
+                _showCorrectionSheet(context);
+                break;
+              case 'monthly':
+                context.push('/me/monthly');
+                break;
+              case 'profile':
+                context.push('/settings');
+                break;
+            }
+          },
+          itemBuilder:
+              (_) => const [
+                PopupMenuItem(
+                  value: 'correction',
+                  child: _MenuItem(
+                    icon: Icons.edit_calendar_outlined,
+                    label: 'Demander une correction',
                   ),
                 ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Chargement du suivi d equipe...',
-                    style: TextStyle(color: AppColors.textMuted),
+                PopupMenuItem(
+                  value: 'monthly',
+                  child: _MenuItem(
+                    icon: Icons.calendar_month_outlined,
+                    label: 'Mon mois complet',
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'profile',
+                  child: _MenuItem(
+                    icon: Icons.person_outline,
+                    label: 'Mon profil',
                   ),
                 ),
               ],
-            ),
-          ] else ...[
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLiveClock() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
             Text(
-              employees.isEmpty
-                  ? 'Le suivi du jour sera disponible apres actualisation.'
-                  : '${employees.length} collaborateurs charges, $checkedInCount deja pointes aujourd hui.',
-              style: const TextStyle(color: AppColors.textMuted),
+              DateFormat('HH:mm').format(_now),
+              style: const TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.w200,
+                color: _text,
+                letterSpacing: -2,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
             ),
-            const SizedBox(height: 16),
-            OutlinedButton(
-              onPressed:
-                  () => ref.read(attendanceProvider.notifier).loadTodayData(),
-              child: const Text('Actualiser le suivi'),
+            Text(
+              ':${_now.second.toString().padLeft(2, '0')}',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w200,
+                color: _muted,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
             ),
           ],
-        ],
-      ),
+        ),
+        Text(
+          DateFormat('EEEE d MMMM yyyy', 'fr_FR').format(_now),
+          style: const TextStyle(fontSize: 12, color: _muted),
+        ),
+      ],
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context, AttendanceState state) {
-    if (state.summary == null) return const SizedBox.shrink();
-
-    final currencyFormat = NumberFormat.currency(
-      locale: 'fr_DZ',
-      symbol: state.summary!.currency,
-      decimalDigits: 2,
+  Widget _buildPunchButton({
+    required bool isCheckedIn,
+    required bool isLoading,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: isLoading ? null : onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 188,
+            height: 188,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.rh.withValues(alpha: 0.08),
+              border: Border.all(
+                color: AppColors.rh.withValues(alpha: 0.28),
+                width: 16,
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.rh.withValues(alpha: 0.13),
+                border: Border.all(
+                  color: AppColors.rh.withValues(alpha: 0.42),
+                  width: 10,
+                ),
+              ),
+              child: Container(
+                margin: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      isCheckedIn ? AppColors.rhDark : const Color(0xFF0D5C3A),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.rh.withValues(alpha: 0.28),
+                      blurRadius: 28,
+                      spreadRadius: 4,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child:
+                      isLoading
+                          ? const SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.4,
+                            ),
+                          )
+                          : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildFingerprintIcon(),
+                              const SizedBox(height: 10),
+                              Text(
+                                isCheckedIn ? 'SORTIR' : 'POINTER',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (_fingerprintAvailable)
+          GestureDetector(
+            onTap:
+                () =>
+                    setState(() => _fingerprintEnabled = !_fingerprintEnabled),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.fingerprint,
+                  size: 13,
+                  color: _fingerprintEnabled ? AppColors.rhDark : _soft,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  _fingerprintEnabled
+                      ? 'Empreinte activee (optionnel)'
+                      : 'Activer l\'empreinte (optionnel)',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color:
+                        _fingerprintEnabled ? _soft : const Color(0xFF1E3050),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
+  }
+
+  Widget _buildFingerprintIcon() {
+    return const SizedBox(
+      width: 44,
+      height: 44,
+      child: CustomPaint(painter: _FingerprintPainter(color: AppColors.rh)),
+    );
+  }
+
+  Widget _buildTodayCard(AttendanceState state) {
+    final log = state.todayLog;
+    final checkIn = _formatTime(log?.checkIn);
+    final checkOut = _formatTime(log?.checkOut);
+    final statusLabel = _statusLabel(log);
+    final statusColor = _statusColor(log);
+    final gain =
+        state.summary?.totalEstimated ??
+        _estimatedEarnings(log?.workedHours ?? 0);
+    final currency = state.summary?.currency ?? 'DZD';
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        color: _card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,56 +430,182 @@ class AttendanceScreen extends ConsumerWidget {
           Row(
             children: [
               const Text(
-                'Gain estime aujourd\'hui',
-                style: TextStyle(fontSize: 16),
+                'AUJOURD\'HUI',
+                style: TextStyle(
+                  color: _secondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const Spacer(),
+              _StatusBadge(label: statusLabel, color: statusColor),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(child: _TimeChip(label: 'Arrivee', value: checkIn)),
+              const SizedBox(width: 10),
+              Expanded(child: _TimeChip(label: 'Depart', value: checkOut)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Divider(color: _border, height: 1),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              const Text(
+                'Gain estime du jour',
+                style: TextStyle(color: _muted, fontSize: 12),
               ),
               const Spacer(),
               Text(
-                currencyFormat.format(state.summary!.totalEstimated),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+                '${gain.toStringAsFixed(0)} $currency',
+                style: const TextStyle(
+                  color: AppColors.rh,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Heures sup : ${state.summary!.overtimeGain > 0 ? (state.summary!.overtimeGain).toStringAsFixed(0) : "0h"}',
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Estimation - net final calcule en fin de mois',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textMuted,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildNoticeCard(BuildContext context, String notice) {
+  Widget _buildSectionTitle(String label) {
+    return Text(
+      label,
+      style: const TextStyle(
+        color: _secondary,
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.8,
+      ),
+    );
+  }
+
+  Widget _buildLoadingWeek() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 18),
+      child: Center(
+        child: SizedBox(
+          width: 22,
+          height: 22,
+          child: CircularProgressIndicator(color: AppColors.rh, strokeWidth: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDayRow(AttendanceDaySummary day) {
+    final barColor =
+        day.isAbsent
+            ? _soft
+            : day.lateMinutes > 0
+            ? AppColors.warning
+            : AppColors.rh;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
+        color: _card,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _border),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline, color: AppColors.warning),
-          const SizedBox(width: 12),
+          Container(
+            width: 3,
+            height: 54,
+            decoration: BoxDecoration(
+              color: barColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+              ),
+            ),
+          ),
           Expanded(
-            child: Text(
-              notice,
-              style: const TextStyle(color: AppColors.textLight),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          day.dayLabel,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: _secondary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          day.isAbsent
+                              ? 'Absent'
+                              : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
+                                  '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
+                          style: const TextStyle(fontSize: 10, color: _soft),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        day.isAbsent ? '--' : day.hoursFormatted,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                          color: day.isAbsent ? _soft : const Color(0xFFC8D8F0),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        day.isAbsent
+                            ? '0 DZD'
+                            : '${day.estimatedEarnings.toStringAsFixed(0)} DZD',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: day.isAbsent ? _soft : AppColors.rh,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => _showCorrectionSheet(context, forDate: day.date),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+              decoration: const BoxDecoration(
+                border: Border(left: BorderSide(color: _border, width: 0.5)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  3,
+                  (_) => Container(
+                    width: 2.5,
+                    height: 2.5,
+                    margin: const EdgeInsets.symmetric(vertical: 1.5),
+                    decoration: const BoxDecoration(
+                      color: _soft,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -393,72 +613,604 @@ class AttendanceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActions(
-    BuildContext context,
-    WidgetRef ref,
-    AttendanceState state,
-    bool isManager,
-  ) {
-    final employee = ref.read(authProvider).employee;
-    final canManageTeam = employee?.canManageTeam == true;
+  Widget _buildWeekSummary(List<AttendanceDaySummary> week) {
+    final totalMinutes = week
+        .where((day) => !day.isAbsent)
+        .fold<int>(0, (sum, day) => sum + day.workedMinutes);
+    final totalEarnings = week
+        .where((day) => !day.isAbsent)
+        .fold<double>(0, (sum, day) => sum + day.estimatedEarnings);
+    final totalLate = week.fold<int>(0, (sum, day) => sum + day.lateMinutes);
+    final hours = totalMinutes ~/ 60;
+    final mins = totalMinutes % 60;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (!isManager && state.isLoading && state.todayLog == null) ...[
-          const Text(
-            'L ecran est disponible pendant le chargement. Vous pouvez attendre quelques secondes ou tirer pour actualiser.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      decoration: BoxDecoration(
+        color: _card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _border),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _WeekStat(
+            value: '${hours}h${mins.toString().padLeft(2, '0')}',
+            label: 'Heures semaine',
+            color: const Color(0xFFC8D8F0),
           ),
-          const SizedBox(height: 16),
+          _WeekStat(
+            value: '${totalEarnings.toStringAsFixed(0)} DZD',
+            label: 'Gain estime',
+            color: AppColors.rh,
+          ),
+          _WeekStat(
+            value: totalLate > 0 ? '$totalLate min' : 'Aucun',
+            label: 'Retard cumule',
+            color: totalLate > 0 ? AppColors.warning : AppColors.rh,
+          ),
         ],
-        OutlinedButton.icon(
-          onPressed: () => context.push('/me/monthly'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+      ),
+    );
+  }
+
+  Widget _buildNoticeCard(String message, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.34)),
+      ),
+      child: Text(message, style: const TextStyle(color: _secondary)),
+    );
+  }
+
+  void _showCorrectionSheet(BuildContext context, {DateTime? forDate}) {
+    final targetDate = forDate ?? DateTime.now();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _CorrectionSheet(targetDate: targetDate),
+    );
+  }
+
+  List<AttendanceDaySummary> _buildWeekSummaries(List<AttendanceLog> logs) {
+    final today = DateTime(_now.year, _now.month, _now.day);
+    final byDay = <String, AttendanceLog>{};
+    for (final log in logs) {
+      final key = _dateKey(log.date);
+      byDay[key] = log;
+    }
+
+    return List.generate(5, (index) {
+      final date = today.subtract(Duration(days: index));
+      final log = byDay[_dateKey(date)];
+      final labelPrefix =
+          index == 0
+              ? 'Aujourd hui'
+              : index == 1
+              ? 'Hier'
+              : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
+      final label =
+          '$labelPrefix - ${DateFormat('d MMM', 'fr_FR').format(date)}';
+      return AttendanceDaySummary.fromLog(
+        date: date,
+        dayLabel: label,
+        log: log,
+      );
+    });
+  }
+
+  static String _dateKey(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+  static String _formatTime(DateTime? date) =>
+      date == null ? '--:--' : DateFormat('HH:mm').format(date);
+
+  static double _estimatedEarnings(double hours) => hours * 550;
+
+  static String _roleLabel(String? role, String? managerRole) {
+    if (role == 'manager') {
+      return switch (managerRole) {
+        'principal' => 'Manager principal',
+        'rh' => 'Responsable RH',
+        'finance' => 'Finance',
+        _ => 'Manager',
+      };
+    }
+    return 'Employe';
+  }
+
+  static String _statusLabel(AttendanceLog? log) {
+    if (log == null || log.checkIn == null) return 'A pointer';
+    if (log.checkOut == null) return 'En cours';
+    if ((log.lateMinutes ?? 0) > 0) return 'Retard';
+    return 'Complet';
+  }
+
+  static Color _statusColor(AttendanceLog? log) {
+    if (log == null || log.checkIn == null) return _soft;
+    if ((log.lateMinutes ?? 0) > 0) return AppColors.warning;
+    return AppColors.rh;
+  }
+
+  static String _capitalize(String value) {
+    if (value.isEmpty) return value;
+    return value[0].toUpperCase() + value.substring(1);
+  }
+}
+
+class _FingerprintPainter extends CustomPainter {
+  final Color color;
+  const _FingerprintPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final paint =
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.8
+          ..strokeCap = StrokeCap.round;
+
+    canvas.drawCircle(Offset(cx, cy), 1.5, paint..style = PaintingStyle.fill);
+    paint.style = PaintingStyle.stroke;
+
+    final radii = [5.0, 9.0, 13.0, 17.0, 21.0];
+    final alphas = [1.0, 0.85, 0.70, 0.55, 0.40];
+    for (var i = 0; i < radii.length; i++) {
+      final r = radii[i];
+      paint.color = color.withValues(alpha: alphas[i]);
+      final sweep = i == radii.length - 1 ? 0.55 : 0.70;
+      canvas.drawArc(
+        Rect.fromCircle(center: Offset(cx, cy), radius: r),
+        -3.14 * sweep,
+        3.14 * sweep * 2,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FingerprintPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _CorrectionSheet extends ConsumerStatefulWidget {
+  final DateTime targetDate;
+  const _CorrectionSheet({required this.targetDate});
+
+  @override
+  ConsumerState<_CorrectionSheet> createState() => _CorrectionSheetState();
+}
+
+class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _reasonCtrl = TextEditingController();
+  TimeOfDay? _checkIn;
+  TimeOfDay? _checkOut;
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _reasonCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _isTimeFuture(TimeOfDay time) {
+    final now = DateTime.now();
+    final isToday =
+        widget.targetDate.day == now.day &&
+        widget.targetDate.month == now.month &&
+        widget.targetDate.year == now.year;
+    if (!isToday) return false;
+    final candidate = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
+    return candidate.isAfter(now);
+  }
+
+  Future<void> _pickTime({required bool isCheckIn}) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      helpText:
+          isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
+      builder:
+          (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!,
           ),
-          icon: const Icon(Icons.calendar_month),
-          label: const Text('Mon mois (heures, heures sup, du)'),
+    );
+    if (picked == null) return;
+
+    if (_isTimeFuture(picked)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible de saisir une heure future'),
+          backgroundColor: AppColors.danger,
         ),
-        const SizedBox(height: 16),
-        OutlinedButton(
-          onPressed: () => context.push('/history'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: const Text('Voir historique'),
+      );
+      return;
+    }
+
+    setState(() => isCheckIn ? _checkIn = picked : _checkOut = picked);
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (_checkIn == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Saisir l\'heure d\'arrivee reelle')),
+      );
+      return;
+    }
+
+    setState(() => _submitting = true);
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+
+    if (!mounted) return;
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Demande du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} '
+          'soumise au RH - vous serez notifie de la decision',
         ),
-        if (canManageTeam) ...[
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            onPressed: () => context.push('/team'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+        backgroundColor: AppColors.rh,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2A3C5A),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
             ),
-            icon: const Icon(Icons.groups),
-            label: const Text('Equipe (ajouter, inviter, archiver)'),
+            const SizedBox(height: 16),
+            Text(
+              'Correction du ${DateFormat('EEEE d MMMM', 'fr_FR').format(widget.targetDate)}',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFFE2EAF6),
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'La demande sera transmise au RH pour validation.',
+              style: TextStyle(fontSize: 12, color: Color(0xFF3D5470)),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: _TimeTile(
+                    label: 'Arrivee reelle *',
+                    value: _checkIn,
+                    onTap: () => _pickTime(isCheckIn: true),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _TimeTile(
+                    label: 'Depart reel',
+                    value: _checkOut,
+                    onTap: () => _pickTime(isCheckIn: false),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _reasonCtrl,
+              maxLines: 2,
+              maxLength: 200,
+              style: const TextStyle(fontSize: 13, color: Color(0xFFE2EAF6)),
+              decoration: InputDecoration(
+                hintText: 'Motif (ex: oubli de pointage a 8h)',
+                hintStyle: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF3D5470),
+                ),
+                filled: true,
+                fillColor: const Color(0xFF0C1525),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF1A2B44)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF1A2B44)),
+                ),
+              ),
+              validator:
+                  (value) =>
+                      value == null || value.trim().isEmpty
+                          ? 'Motif obligatoire'
+                          : null,
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _submitting ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.rh,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child:
+                    _submitting
+                        ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Text(
+                          'Soumettre au RH',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TimeTile extends StatelessWidget {
+  final String label;
+  final TimeOfDay? value;
+  final VoidCallback onTap;
+
+  const _TimeTile({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0C1525),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFF1A2B44)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, color: Color(0xFF3D5470)),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value != null
+                  ? '${value!.hour.toString().padLeft(2, '0')}:${value!.minute.toString().padLeft(2, '0')}'
+                  : '--:--',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: value != null ? AppColors.rh : const Color(0xFF2A4560),
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TimeChip extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _TimeChip({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C1525),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: const Color(0xFF1A2B44)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 10, color: Color(0xFF3D5470)),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              color: Color(0xFFE2EAF6),
+              fontWeight: FontWeight.w600,
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
           ),
         ],
-        const SizedBox(height: 16),
-        OutlinedButton(
-          onPressed: () => context.push('/settings'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: const Text('Parametres'),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _StatusBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.34)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
         ),
-        const SizedBox(height: 16),
-        TextButton(
-          onPressed: () {
-            ref.read(authProvider.notifier).logout();
-          },
-          child: const Text(
-            'Deconnexion',
-            style: TextStyle(color: AppColors.danger),
-          ),
+      ),
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _MenuItem({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: const Color(0xFF7A9CC0)),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 13, color: Color(0xFFE2EAF6)),
         ),
       ],
     );
+  }
+}
+
+class _WeekStat extends StatelessWidget {
+  final String value;
+  final String label;
+  final Color color;
+
+  const _WeekStat({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: color,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: Color(0xFF2A4560)),
+        ),
+      ],
+    );
+  }
+}
+
+class AttendanceDaySummary {
+  final DateTime date;
+  final String dayLabel;
+  final bool isAbsent;
+  final int workedMinutes;
+  final int lateMinutes;
+  final double estimatedEarnings;
+  final String checkInFormatted;
+  final String checkOutFormatted;
+
+  const AttendanceDaySummary({
+    required this.date,
+    required this.dayLabel,
+    required this.isAbsent,
+    required this.workedMinutes,
+    required this.lateMinutes,
+    required this.estimatedEarnings,
+    required this.checkInFormatted,
+    required this.checkOutFormatted,
+  });
+
+  factory AttendanceDaySummary.fromLog({
+    required DateTime date,
+    required String dayLabel,
+    required AttendanceLog? log,
+  }) {
+    final hours = log?.workedHours ?? 0;
+    final workedMinutes = (hours * 60).round();
+    return AttendanceDaySummary(
+      date: date,
+      dayLabel: dayLabel,
+      isAbsent: log == null || log.checkIn == null,
+      workedMinutes: workedMinutes,
+      lateMinutes: log?.lateMinutes ?? 0,
+      estimatedEarnings: hours * 550,
+      checkInFormatted: _AttendanceScreenState._formatTime(log?.checkIn),
+      checkOutFormatted: _AttendanceScreenState._formatTime(log?.checkOut),
+    );
+  }
+
+  String get hoursFormatted {
+    final hours = workedMinutes ~/ 60;
+    final mins = workedMinutes % 60;
+    return '${hours}h${mins.toString().padLeft(2, '0')}';
   }
 }
