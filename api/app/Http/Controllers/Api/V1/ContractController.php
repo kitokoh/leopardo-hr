@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ContractController extends Controller
@@ -292,31 +294,37 @@ class ContractController extends Controller
             'base_salary' => 'nullable|numeric|min:0',
         ]);
 
-        $newContract = Contract::create([
-            'company_id' => $contract->company_id,
-            'employee_id' => $contract->employee_id,
-            'contract_type' => $contract->contract_type,
-            'reference' => null,
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'] ?? null,
-            'job_title' => $contract->job_title,
-            'department_id' => $contract->department_id,
-            'position_id' => $contract->position_id,
-            'base_salary' => $validated['base_salary'] ?? $contract->base_salary,
-            'currency' => $contract->currency,
-            'salary_frequency' => $contract->salary_frequency,
-            'work_hours_per_week' => $contract->work_hours_per_week,
-            'benefits' => $contract->benefits,
-            'clauses' => $contract->clauses,
-            'status' => 'draft',
-            'created_by' => $actor->id,
-        ]);
+        $newContract = DB::transaction(function () use ($contract, $validated, $actor) {
+            $newContract = Contract::create([
+                'company_id' => $contract->company_id,
+                'employee_id' => $contract->employee_id,
+                'contract_type' => $contract->contract_type,
+                'reference' => null,
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'] ?? null,
+                'job_title' => $contract->job_title,
+                'department_id' => $contract->department_id,
+                'position_id' => $contract->position_id,
+                'base_salary' => $validated['base_salary'] ?? $contract->base_salary,
+                'currency' => $contract->currency,
+                'salary_frequency' => $contract->salary_frequency,
+                'work_hours_per_week' => $contract->work_hours_per_week,
+                'benefits' => $contract->benefits,
+                'clauses' => $contract->clauses,
+                'status' => 'draft',
+                'created_by' => $actor->id,
+            ]);
 
-        if (in_array($contract->status, ['active', 'suspended'], true)) {
-            $contract->update(['status' => 'expired']);
-        }
+            if (in_array($contract->status, ['active', 'suspended'], true)) {
+                $contract->update(['status' => 'expired']);
+            }
 
-        return response()->json(['data' => $newContract->load('employee:id,first_name,last_name')], 201);
+            return $newContract;
+        });
+
+        return (new ContractResource($newContract->load('employee:id,first_name,last_name')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function myContracts(Request $request): JsonResponse
