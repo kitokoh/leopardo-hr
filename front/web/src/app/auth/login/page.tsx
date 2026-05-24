@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
+  Chrome,
   Eye,
   EyeOff,
   Globe2,
@@ -36,6 +37,39 @@ type LoginPayload = {
   token?: string;
 };
 
+type DemoPersona = {
+  email: string;
+  name: string;
+  role: string;
+  managerRole: string | null;
+  password: string;
+};
+
+type DemoCompany = {
+  name: string;
+  slug: string;
+  country: string;
+  users: DemoPersona[];
+};
+
+type DemoUsersPayload = {
+  data?: {
+    companies?: Array<{
+      name?: string;
+      slug?: string;
+      country?: string;
+      users?: Array<{
+        email?: string;
+        name?: string;
+        role?: string;
+        manager_role?: string | null;
+        managerRole?: string | null;
+        password?: string;
+      }>;
+    }>;
+  };
+};
+
 function extractToken(payload: LoginPayload): string | null {
   if (typeof payload.token === 'string' && payload.token.trim() !== '') {
     return payload.token;
@@ -65,6 +99,64 @@ function goToPostLoginTarget(target: string, router: ReturnType<typeof useRouter
   router.push(target);
 }
 
+const fallbackDemoCompanies: DemoCompany[] = [
+  {
+    name: 'TechCorp Algerie SARL', slug: 'techcorp-algerie', country: 'DZ',
+    users: [
+      { email: 'ahmed.benali@techcorp-algerie.dz', name: 'Ahmed Benali', role: 'manager', managerRole: 'principal', password: 'password123' },
+      { email: 'fatima.meziane@techcorp-algerie.dz', name: 'Fatima Meziane', role: 'manager', managerRole: 'rh', password: 'password123' },
+      { email: 'samir.boukhalfa@techcorp-algerie.dz', name: 'Samir Boukhalfa', role: 'manager', managerRole: 'dept', password: 'password123' },
+      { email: 'lina.haddad@techcorp-algerie.dz', name: 'Lina Haddad', role: 'manager', managerRole: 'comptable', password: 'password123' },
+      { email: 'karim.aouad@techcorp-algerie.dz', name: 'Karim Aouad', role: 'employee', managerRole: null, password: 'password123' },
+    ],
+  },
+  {
+    name: 'PharmaPlus Casablanca', slug: 'pharmaplus-casablanca', country: 'MA',
+    users: [
+      { email: 'amina.tahiri@pharmaplus.ma', name: 'Amina Tahiri', role: 'manager', managerRole: 'principal', password: 'password123' },
+      { email: 'sara.mansouri@pharmaplus.ma', name: 'Sara Mansouri', role: 'manager', managerRole: 'rh', password: 'password123' },
+      { email: 'rachid.benjelloun@pharmaplus.ma', name: 'Rachid Benjelloun', role: 'manager', managerRole: 'comptable', password: 'password123' },
+      { email: 'youssef.bennani@pharmaplus.ma', name: 'Youssef Bennani', role: 'employee', managerRole: null, password: 'password123' },
+    ],
+  },
+  {
+    name: 'DigitalFlow Tunis', slug: 'digitalflow-tunis', country: 'TN',
+    users: [
+      { email: 'sofiane.mrad@digitalflow.tn', name: 'Sofiane Mrad', role: 'manager', managerRole: 'principal', password: 'password123' },
+      { email: 'olfa.trabelsi@digitalflow.tn', name: 'Olfa Trabelsi', role: 'manager', managerRole: 'rh', password: 'password123' },
+      { email: 'aziz.khelifi@digitalflow.tn', name: 'Aziz Khelifi', role: 'employee', managerRole: null, password: 'password123' },
+    ],
+  },
+];
+
+function normalizeDemoCompanies(payload: DemoUsersPayload): DemoCompany[] {
+  return (payload.data?.companies ?? [])
+    .map((company) => ({
+      name: company.name ?? 'Demo company',
+      slug: company.slug ?? company.name ?? 'demo-company',
+      country: company.country ?? 'GLOBAL',
+      users: (company.users ?? [])
+        .filter((user) => typeof user.email === 'string' && typeof user.password === 'string')
+        .map((user) => ({
+          email: user.email as string,
+          name: user.name ?? (user.email as string),
+          role: user.role ?? 'employee',
+          managerRole: user.manager_role ?? user.managerRole ?? null,
+          password: user.password as string,
+        })),
+    }))
+    .filter((company) => company.users.length > 0);
+}
+
+function googleAuthHref(): string {
+  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+  const baseUrl = process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
+    ? directApi
+    : 'https://gestionemployerbackend.onrender.com/api/v1';
+
+  return `${baseUrl}/auth/google`;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -76,6 +168,7 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDemoModal, setShowDemoModal] = useState(false);
+  const [demoCompanies, setDemoCompanies] = useState<DemoCompany[]>(fallbackDemoCompanies);
   const locale: AppLocale = localeOverride ?? storedLocale;
   const labels = useMemo(() => getCopy(locale), [locale]);
 
@@ -86,6 +179,29 @@ export default function LoginPage() {
   useEffect(() => {
     applyDocumentLocale(locale);
   }, [locale]);
+
+  useEffect(() => {
+    let active = true;
+
+    apiFetch('/demo-users', { method: 'GET' }, { maxRetries: 1 })
+      .then((response) => response.json() as Promise<DemoUsersPayload>)
+      .then((payload) => {
+        if (!active) return;
+        const companies = normalizeDemoCompanies(payload);
+        if (companies.length > 0) {
+          setDemoCompanies(companies);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setDemoCompanies(fallbackDemoCompanies);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleLocaleChange = (value: string) => {
     const nextLocale = normalizeLocale(value);
@@ -194,33 +310,6 @@ export default function LoginPage() {
     e.preventDefault();
     await performLogin(email, password);
   };
-
-  const demoCompanies = useMemo(() => [
-    {
-      name: 'TechCorp Algerie SARL', slug: 'techcorp-algerie', country: 'DZ',
-      users: [
-        { email: 'ahmed.benali@techcorp-algerie.dz', name: 'Ahmed Benali', role: 'manager', managerRole: 'principal', password: 'password123' },
-        { email: 'fatima.meziane@techcorp-algerie.dz', name: 'Fatima Meziane', role: 'manager', managerRole: 'rh', password: 'password123' },
-        { email: 'karim.aouad@techcorp-algerie.dz', name: 'Karim Aouad', role: 'employee', managerRole: null, password: 'password123' },
-      ],
-    },
-    {
-      name: 'PharmaPlus Casablanca', slug: 'pharmaplus-casablanca', country: 'MA',
-      users: [
-        { email: 'amina.tahiri@pharmaplus.ma', name: 'Amina Tahiri', role: 'manager', managerRole: 'principal', password: 'password123' },
-        { email: 'sara.mansouri@pharmaplus.ma', name: 'Sara Mansouri', role: 'manager', managerRole: 'rh', password: 'password123' },
-        { email: 'youssef.bennani@pharmaplus.ma', name: 'Youssef Bennani', role: 'employee', managerRole: null, password: 'password123' },
-      ],
-    },
-    {
-      name: 'DigitalFlow Tunis', slug: 'digitalflow-tunis', country: 'TN',
-      users: [
-        { email: 'sofiane.mrad@digitalflow.tn', name: 'Sofiane Mrad', role: 'manager', managerRole: 'principal', password: 'password123' },
-        { email: 'olfa.trabelsi@digitalflow.tn', name: 'Olfa Trabelsi', role: 'manager', managerRole: 'rh', password: 'password123' },
-        { email: 'aziz.khelifi@digitalflow.tn', name: 'Aziz Khelifi', role: 'employee', managerRole: null, password: 'password123' },
-      ],
-    },
-  ], []);
 
   const selectDemoUser = useCallback((demoEmail: string, demoPassword: string, role?: string | null, country?: string | null) => {
     setEmail(demoEmail);
@@ -381,6 +470,20 @@ export default function LoginPage() {
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LockKeyhole className="h-4 w-4" aria-hidden="true" />}
                 {submitting ? labels.login.loading : labels.login.submit}
               </button>
+
+              <a
+                href={googleAuthHref()}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+              >
+                <Chrome className="h-4 w-4" aria-hidden="true" />
+                {locale === 'fr'
+                  ? 'Continuer avec Google'
+                  : locale === 'tr'
+                    ? 'Google ile devam et'
+                    : locale === 'ar'
+                      ? 'المتابعة عبر Google'
+                      : 'Continue with Google'}
+              </a>
 
               {coldStartHint && submitting ? (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 space-y-2">
