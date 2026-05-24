@@ -94,10 +94,14 @@ export default function LoginPage() {
     applyDocumentLocale(nextLocale);
   };
 
-  const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App') => {
+  const [coldStartHint, setColdStartHint] = useState(false);
+
+  const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App', retryCount = 0) => {
     setSubmitting(true);
     setError(null);
     const startedAt = performance.now();
+
+    const coldStartTimer = setTimeout(() => setColdStartHint(true), 5000);
 
     try {
       const loginResponse = await apiFetch('/auth/login', {
@@ -139,6 +143,19 @@ export default function LoginPage() {
       });
       goToPostLoginTarget(target, router);
     } catch (err) {
+      const isTimeout = err instanceof ApiError && err.code === 'TIMEOUT';
+      const isNetworkError = err instanceof TypeError && err.message.includes('fetch');
+
+      if ((isTimeout || isNetworkError) && retryCount < 1) {
+        clearTimeout(coldStartTimer);
+        setColdStartHint(true);
+        setError(locale === 'fr'
+          ? 'Le serveur demarre, nouvelle tentative en cours...'
+          : 'Server is waking up, retrying...');
+        await new Promise(r => setTimeout(r, 3000));
+        return performLogin(loginEmail, loginPassword, deviceName, retryCount + 1);
+      }
+
       if (err instanceof ApiError) {
         setError(err.message);
         trackClientEvent('login_failed', {
@@ -162,9 +179,11 @@ export default function LoginPage() {
         });
       }
     } finally {
+      clearTimeout(coldStartTimer);
+      setColdStartHint(false);
       setSubmitting(false);
     }
-  }, [labels.login.errors.generic, labels.login.errors.missingToken, labels.login.errors.missingUser, router]);
+  }, [labels.login.errors.generic, labels.login.errors.missingToken, labels.login.errors.missingUser, locale, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -357,6 +376,14 @@ export default function LoginPage() {
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LockKeyhole className="h-4 w-4" aria-hidden="true" />}
                 {submitting ? labels.login.loading : labels.login.submit}
               </button>
+
+              {coldStartHint && submitting ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  {locale === 'fr'
+                    ? 'Le serveur de demo se reveille, cela peut prendre jusqu a 30 secondes...'
+                    : 'Demo server is waking up, this may take up to 30 seconds...'}
+                </div>
+              ) : null}
 
               <button
                 type="button"
