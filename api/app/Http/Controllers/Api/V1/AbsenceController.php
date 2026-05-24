@@ -12,13 +12,14 @@ use App\Models\Employee;
 use App\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
 
 class AbsenceController extends Controller
 {
     public function __construct(private readonly AbsenceService $absenceService) {}
 
-    public function index(AbsenceIndexRequest $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(AbsenceIndexRequest $request): AnonymousResourceCollection
     {
         /** @var Employee $actor */
         $actor = $request->user();
