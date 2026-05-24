@@ -292,7 +292,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
               icon: const Icon(Icons.group_outlined),
               label: const Text('Acces Demo'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF059669),
+                backgroundColor: AppColors.rhDark,
                 foregroundColor: Colors.white,
               ),
             ),
