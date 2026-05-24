@@ -23,6 +23,7 @@ class ApprovalController extends Controller
         }
 
         $workflows = ApprovalWorkflow::query()
+            ->select(['id', 'company_id', 'name', 'levels', 'active', 'created_at'])
             ->where('company_id', $actor->company_id)
             ->orderBy('name')
             ->get();

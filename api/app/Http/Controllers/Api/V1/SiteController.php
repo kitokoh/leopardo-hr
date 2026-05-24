@@ -18,7 +18,11 @@ class SiteController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => Site::orderBy('name')->get()->map(fn ($s) => $this->serialize($s))]);
+        return response()->json(['data' => Site::query()
+            ->select(['id', 'company_id', 'name', 'address', 'gps_lat', 'gps_lng', 'gps_radius_m', 'created_at'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($s) => $this->serialize($s))]);
     }
 
     public function store(Request $request): JsonResponse
