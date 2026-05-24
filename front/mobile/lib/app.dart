@@ -239,7 +239,7 @@ class LeopardoApp extends ConsumerWidget {
       title: 'Leopardo RH',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.dark,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,
