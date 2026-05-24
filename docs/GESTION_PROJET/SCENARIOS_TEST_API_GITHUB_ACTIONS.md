@@ -864,3 +864,25 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - `SendBulkNotificationsJob` dispatche sur la queue `notifications` avec 3 retries et 120s timeout
 - Les jobs filtrent par `company_id` pour garantir l'isolation tenant
 - Tags Horizon : `company:{id}`, `payroll_run:{id}` / `notification:{class}`
+
+### API Resources Normalization (Plan 23 - Iteration 1)
+- Les controllers AbsenceController, DepartmentController, PositionController, ScheduleController, SiteController, NotificationController, WebhookController, ApprovalController, ContractController retournent des JsonResource au lieu de tableaux manuels
+- Chaque Resource expose un contrat JSON stable (dates ISO-8601, relations conditionnelles via whenLoaded)
+- Les collections paginees conservent les meta standard Laravel (current_page, last_page, per_page, total)
+
+### FormRequests Extraction (Plan 23 - Iteration 2)
+- StoreDepartmentRequest, UpdateDepartmentRequest, StorePositionRequest, UpdatePositionRequest validations avec authorize() gates
+- StoreScheduleRequest, UpdateScheduleRequest validations horaires, jours, tolerances
+- StoreSiteRequest, UpdateSiteRequest validations GPS (lat -90/90, lng -180/180, radius 10-5000m)
+- StoreWebhookEndpointRequest, UpdateWebhookEndpointRequest validations URL + events whitelist
+
+### ApiError Enum (Plan 23 - Iteration 4)
+- ApiError backed enum avec ~40 codes (auth, authz, not found, validation, business logic, rate limit, server)
+- Methode `->status()` retourne le HTTP status code correspondant
+- Methode `->message()` charge la traduction i18n (FR/EN/AR/TR) ou fallback anglais
+- Methode `->response()` retourne une JsonResponse formatee {error, message}
+
+### DB Transactions (Plan 23 - Iteration 3)
+- ContractController::renew enveloppe creation nouveau contrat + expiration ancien dans DB::transaction
+- ApprovalController::approve/reject enveloppe creation decision + mise a jour statut dans DB::transaction
+- NotificationController::markRead/markAllRead enveloppe update + audit CommunicationEvent dans DB::transaction
