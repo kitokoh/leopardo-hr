@@ -19,6 +19,7 @@ class AttendanceScreen extends ConsumerWidget {
         attState.context?['mode'] == 'collection';
 
     return Scaffold(
+      backgroundColor: const Color(0xFF0B1120),
       body: SafeArea(
         child:
             attState.error != null &&
@@ -32,7 +33,7 @@ class AttendanceScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(24.0),
                     children: [
                       _buildHeader(context, authState, isManager),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
                       isManager
                           ? _buildManagerOverviewCard(context, ref, attState)
                           : _buildActionCard(context, ref, attState),
@@ -89,23 +90,62 @@ class AttendanceScreen extends ConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context, AuthState state, bool isManager) {
+    final now = DateFormat('HH:mm').format(DateTime.now());
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Bonjour ${state.employee?.firstName ?? ''}',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF111827), Color(0xFF0F766E)],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Colors.white12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.rh.withValues(alpha: 0.18),
+            blurRadius: 28,
+            offset: const Offset(0, 14),
           ),
-          const SizedBox(height: 4),
-          Text(
-            isManager ? 'Espace RH / manager' : 'Espace employe',
-            style: const TextStyle(color: AppColors.textMuted),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bonjour ${state.employee?.firstName ?? ''}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  isManager ? 'Espace RH / manager' : 'Pointage employe',
+                  style: const TextStyle(color: Color(0xFFB6F4DD)),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Text(
+              now,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
         ],
       ),
@@ -121,13 +161,28 @@ class AttendanceScreen extends ConsumerWidget {
         state.todayLog?.checkIn != null && state.todayLog?.checkOut == null;
 
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x33000000),
+            blurRadius: 30,
+            offset: Offset(0, 16),
+          ),
+        ],
       ),
       child: Column(
         children: [
+          Text(
+            DateFormat('EEEE d MMMM').format(DateTime.now()),
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 18),
           if (state.isLoading && state.todayLog == null)
             Container(
               width: 200,
@@ -159,7 +214,7 @@ class AttendanceScreen extends ConsumerWidget {
                 }
               },
             ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
           if (state.isLoading && state.todayLog == null) ...[
             const Text(
               'Chargement de votre presence du jour...',
