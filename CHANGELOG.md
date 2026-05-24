@@ -32,6 +32,21 @@
 - Policies : 11 nouvelles classes Policy (AbsencePolicy, ContractPolicy, DepartmentPolicy, PositionPolicy, SchedulePolicy, SitePolicy, ApprovalRequestPolicy, LoanPolicy, ExpenseClaimPolicy, WebhookEndpointPolicy, InvoicePolicy) avec RBAC granulaire par role.
 - AuthServiceProvider : les 11 nouvelles policies sont enregistrees via Gate::policy() pour tous les modeles metier.
 - RBAC Route Matrix : section « Model Policies » ajoutee avec matrice complete viewAny/view/create/update/delete/approve par role.
+## [4.16.130] - 2026-05-24
+
+### Added
+
+- API Resources : 11 nouvelles classes Resource (AbsenceResource, DepartmentResource, PositionResource, ScheduleResource, SiteResource, NotificationResource, ApprovalRequestResource, InvoiceResource, AuditLogResource, WebhookEndpointResource, PayrollResource) normalisent les contrats JSON API.
+- FormRequests : 10 classes extraites (StoreDepartment, UpdateDepartment, StorePosition, UpdatePosition, StoreSchedule, UpdateSchedule, StoreSite, UpdateSite, StoreWebhookEndpoint, UpdateWebhookEndpoint) avec validation et authorize gates.
+- ApiError enum : catalogue centralise de ~40 codes erreur API avec traductions FR/EN/AR/TR, codes HTTP semantiques et methode `->response()`.
+- Traductions api_errors : fichiers i18n `lang/{en,fr,ar,tr}/api_errors.php` pour les messages erreur API.
+- Plan 23 : document `docs/PLAN_ACTION/23_PLAN_API_PRODUCTION_GRADE.md` — audit architecture + plan 8 iterations production-grade.
+
+### Changed
+
+- Controllers refactorises : AbsenceController, DepartmentController, PositionController, ScheduleController, SiteController, NotificationController, WebhookController, ApprovalController, ContractController utilisent desormais les API Resources au lieu de serialisations manuelles.
+- DB::transaction ajoutees : ContractController::renew, ApprovalController::approve/reject, NotificationController::markRead/markAllRead protegent les ecritures multi-tables.
+- FormRequests injectees dans les signatures store/update des controllers Department, Position, Schedule, Site, Webhook — la validation et l'autorisation quittent le corps du controller.
 
 ## [4.16.128] - 2026-05-23
 
