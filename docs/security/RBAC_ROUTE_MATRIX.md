@@ -119,3 +119,20 @@ Any PR adding or moving protected routes must update this matrix, the matching s
 | ExpenseClaim | ExpenseClaimPolicy | ALL | owner+managers | active employees | — | owner (draft only) | P, FIN, RH | |
 | Invoice | InvoicePolicy | P, FIN | P, FIN | P | — | — | — | pay restricted to P |
 | WebhookEndpoint | WebhookEndpointPolicy | P | P (same company) | P | P (same company) | P (same company) | — | Platform integration, principal-only |
+
+### API Manager Middleware (added 2026-05-24, API Consolidation)
+
+New `api.manager` middleware (`EnsureApiManagerMiddleware`) enforces route-level RBAC for API endpoints. Supports both `api.manager` (any manager) and `api.manager:principal,rh` (specific roles).
+
+| Route Group | Middleware | Principal | RH | Dept | Finance | Supervisor | Employee | Notes |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| Dashboard `/dashboard/*` | `api.manager` | R | R | R | R | R | - | Any manager via `api.manager`. |
+| Exports `/export/*` | `api.manager:principal,rh,comptable` | R | R | - | R | - | - | P/RH/FIN only. |
+| Billing `/billing/*` | `api.manager:principal` | RW | - | - | - | - | - | Principal only. |
+| Feature flags write | `api.manager:principal` | RW | - | - | - | - | - | Read open to all auth. |
+| Onboarding setup | `api.manager` | RW | RW | RW | RW | RW | - | Any manager. |
+| Payroll engine (mgr) | `api.manager:principal,comptable` | RW | - | - | RW | - | - | P/FIN only. |
+| Payroll self-service `/me/pay-slips` | none (auth+tenant) | R | R | R | R | R | R | Own pay slips. |
+| HR extended self-service `/me/*` | none (auth+tenant) | R | R | R | R | R | R | Own contracts/trainings/loans. |
+| Contracts/Recruitment/Training/Loans CRUD | `api.manager` | RW | RW | RW | RW | RW | - | Any manager. |
+| Reports/Webhooks/Audit/Predictions | `api.manager:principal,rh,comptable` | R | R | - | R | - | - | P/RH/FIN. |
