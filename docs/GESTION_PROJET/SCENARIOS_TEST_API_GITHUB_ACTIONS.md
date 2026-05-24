@@ -864,3 +864,15 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - `SendBulkNotificationsJob` dispatche sur la queue `notifications` avec 3 retries et 120s timeout
 - Les jobs filtrent par `company_id` pour garantir l'isolation tenant
 - Tags Horizon : `company:{id}`, `payroll_run:{id}` / `notification:{class}`
+
+### Model Policies (Plan 23 - Iteration 5)
+- AbsencePolicy : viewAny (tous), view (owner+managers), create (employes actifs), approve/reject (managers), delete (owner, pending uniquement)
+- ContractPolicy : viewAny (managers), view (owner+managers), create/update/activate/terminate/renew (P, RH)
+- DepartmentPolicy, PositionPolicy, SchedulePolicy : viewAny (tous), view (meme entreprise), create/update (managers), delete (P, RH)
+- SitePolicy : viewAny (tous), view (meme entreprise), create/update (managers), delete (P uniquement)
+- ApprovalRequestPolicy : viewAny (tous), view (demandeur+managers), create (employes actifs), approve/reject (managers, pending uniquement)
+- LoanPolicy : viewAny (tous), view (owner+managers), create (employes actifs), approve/reject/disburse (P, FIN)
+- ExpenseClaimPolicy : viewAny (tous), view (owner+managers), create (employes actifs), approve/reject (P, FIN, RH), delete (owner, brouillon uniquement)
+- InvoicePolicy : viewAny/view (P, FIN), create/pay (P)
+- WebhookEndpointPolicy : viewAny/view/create/update/delete (P uniquement)
+- Toutes les policies enregistrees dans AuthServiceProvider via Gate::policy()

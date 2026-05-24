@@ -38,3 +38,4 @@ export { TestimonialHighlight, type TestimonialHighlightProps } from './Testimon
 export { MiniCaseStudies, type MiniCaseStudiesProps } from './MiniCaseStudies';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
 export { MarketingReadinessSection } from './MarketingReadinessSection';
+export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';

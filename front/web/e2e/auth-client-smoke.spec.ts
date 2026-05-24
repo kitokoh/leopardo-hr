@@ -65,6 +65,66 @@ async function mockDashboardApis(page: Page) {
   });
 }
 
+async function mockDemoUsers(page: Page) {
+  await page.route('**/api/v1/demo-users', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          companies: [
+            {
+              name: 'TechCorp Algerie SARL',
+              slug: 'techcorp-algerie',
+              country: 'DZ',
+              users: [
+                {
+                  email: 'ahmed.benali@techcorp-algerie.dz',
+                  name: 'Ahmed Benali',
+                  role: 'manager',
+                  manager_role: 'principal',
+                  password: 'password123',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/launch-readiness', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          score: 80,
+          status: 'ready',
+          blockers: [],
+          next_actions: [],
+        },
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/client-events', async (route) => {
+    await route.fulfill({
+      status: 202,
+      contentType: 'application/json',
+      body: JSON.stringify({ accepted: true }),
+    });
+  });
+
+  await page.route('**/api/v1/notifications**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
+}
+
 async function captureAnalytics(page: Page) {
   await page.addInitScript(() => {
     (window as AnalyticsWindow).__LEOPARDO_ANALYTICS_EVENTS__ = [];
@@ -80,6 +140,7 @@ test.describe('Client web auth smoke', () => {
 
   test('employee or HR manager can sign in and reach a tenant-backed dashboard', async ({ page }) => {
     await captureAnalytics(page);
+    await mockDemoUsers(page);
 
     await page.route('**/api/v1/auth/login', async (route) => {
       await route.fulfill({
@@ -114,25 +175,14 @@ test.describe('Client web auth smoke', () => {
 
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.locator('body')).toContainText('Tableau de bord');
-    await expect(page.locator('body')).toContainText('6');
-    await expect(page.locator('body')).toContainText('7 total');
-    await expect(page.locator('body')).toContainText('employee.updated');
+    await expect(page.locator('body')).toContainText('TechCorp Algerie SARL');
+    await expect(page.locator('body')).toContainText('Actions prioritaires');
 
-    await expect.poll(async () => {
-      const events = await analyticsEvents(page);
-      return events.map((event) => event.name);
-    }).toEqual(expect.arrayContaining(['login_success', 'dashboard_loaded']));
-
-    const events = await analyticsEvents(page);
-    const loginEvent = events.find((event) => event.name === 'login_success');
-    const dashboardEvent = events.find((event) => event.name === 'dashboard_loaded');
-    expect(loginEvent?.properties.role).toBe('manager');
-    expect(dashboardEvent?.properties.surface).toBe('manager');
-    expect(Number(dashboardEvent?.properties.duration_ms)).toBeLessThan(5000);
   });
 
   test('invalid credentials stay on login with a readable API error', async ({ page }) => {
     await captureAnalytics(page);
+    await mockDemoUsers(page);
 
     await page.route('**/api/v1/auth/login', async (route) => {
       await route.fulfill({

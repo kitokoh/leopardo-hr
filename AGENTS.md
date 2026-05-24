@@ -210,6 +210,14 @@ Procedure recommandee :
 
 ## Historique utile
 
+### 2026-05-24 - Vitrine proxy API, pricing et plan Jules i18n
+
+- Pour `front/web`, le login navigateur doit passer par le proxy Next same-origin `/api/v1/[...path]` en production. Ne pas forcer `NEXT_PUBLIC_API_URL` en direct cote browser sauf avec `NEXT_PUBLIC_API_DIRECT=true`, sinon les erreurs CORS Render/Vercel reviennent.
+- Le pricing vitrine n'est plus un simple tarif par employe tres bas : garder une structure SaaS credible avec forfait mensuel, employes inclus, surcout par employe, essai 30 jours et Enterprise sur devis.
+- Les traductions gerees par Jules doivent rester dans les fichiers dedies de `shared/i18n`, `api/lang`, `front/admin-dashboard/src/i18n/locales` et `front/mobile/lib/l10n`; ne pas lui faire modifier les composants metier pour de la traduction simple.
+- Le plan multilingue Jules canonique vit dans `docs/PLAN_ACTION/24_PLAN_MULTILINGUE_JULES_TRANSLATION.md` avec les prompts anglais, arabe et turc.
+- La navigation vitrine garde les docs sous Ressources, le blog sous un libelle plus vendeur type Insights RH, et les liens desktop/mobile sous "Installer Leopardo".
+
 ### 2026-05-22 - Plan 21 readiness fonctionnelle profils
 
 - `/api/v1/demo-users` est le contrat canonique pour les personas de demonstration. Le garder aligne avec `DemoCompanySeeder` quand un nouveau profil, pays ou surface est ajoute.
