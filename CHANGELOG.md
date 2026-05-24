@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.129] - 2026-05-24
+
+### Added
+
+- API : `EnsureApiManagerMiddleware` — RBAC paramétré par rôle (`api.manager`, `api.manager:principal,rh`) pour protéger les routes sensibles.
+- Routes : dashboard (managers only), exports (P/RH/FIN), billing (principal), payroll engine (P/FIN), hr_extended 3-tier RBAC.
+- Seeder : `DemoCompanySeeder` enrichi avec contrats, formations, recrutement, prêts et notes de frais pour faciliter les tests API.
+- API Explorer : boutons endpoints groupés par catégorie (auth, dashboard, self-service, paie, billing, plateforme).
+- Sécurité : matrice RBAC mise à jour dans `docs/security/RBAC_ROUTE_MATRIX.md` avec documentation `api.manager`.
+
+### Tests
+
+- Backend : `ApiManagerMiddlewareTest` couvre 5 scénarios (allow any manager, reject employee, allow specific roles, reject wrong role, reject unauthenticated).
+
 ## [4.16.128] - 2026-05-23
 
 ### Fixed
