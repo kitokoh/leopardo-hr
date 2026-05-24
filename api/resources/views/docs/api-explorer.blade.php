@@ -49,13 +49,56 @@
 
         <section class="card">
             <h2>Requete API</h2>
+            <p class="muted" style="margin:0 0 8px">Auth & Profil</p>
             <div class="row">
                 <button data-endpoint="/auth/me" type="button">/auth/me</button>
                 <button data-endpoint="/notifications?per_page=10" type="button">/notifications</button>
                 <button data-endpoint="/notification-preferences" type="button">/notification-preferences</button>
                 <button data-endpoint="/launch-readiness" type="button">/launch-readiness</button>
-                <button data-endpoint="/communication/analytics" type="button">/communication/analytics</button>
                 <button data-endpoint="/platform/auth/me" data-platform="1" type="button">/platform/auth/me</button>
+            </div>
+            <p class="muted" style="margin:10px 0 8px">Dashboard & RH (managers)</p>
+            <div class="row">
+                <button data-endpoint="/dashboard/summary" type="button">/dashboard/summary</button>
+                <button data-endpoint="/dashboard/kpi" type="button">/dashboard/kpi</button>
+                <button data-endpoint="/employees" type="button">/employees</button>
+                <button data-endpoint="/departments" type="button">/departments</button>
+                <button data-endpoint="/absences" type="button">/absences</button>
+                <button data-endpoint="/org-chart" type="button">/org-chart</button>
+            </div>
+            <p class="muted" style="margin:10px 0 8px">Self-service (employe)</p>
+            <div class="row">
+                <button data-endpoint="/me/daily-summary" type="button">/me/daily-summary</button>
+                <button data-endpoint="/me/leave-balances" type="button">/me/leave-balances</button>
+                <button data-endpoint="/me/contracts" type="button">/me/contracts</button>
+                <button data-endpoint="/me/pay-slips" type="button">/me/pay-slips</button>
+                <button data-endpoint="/me/trainings" type="button">/me/trainings</button>
+                <button data-endpoint="/me/loans" type="button">/me/loans</button>
+            </div>
+            <p class="muted" style="margin:10px 0 8px">Paie, Contrats, Formation, Recrutement</p>
+            <div class="row">
+                <button data-endpoint="/contracts" type="button">/contracts</button>
+                <button data-endpoint="/payrolls" type="button">/payrolls</button>
+                <button data-endpoint="/payroll-runs" type="button">/payroll-runs</button>
+                <button data-endpoint="/training/courses" type="button">/training/courses</button>
+                <button data-endpoint="/recruitment/jobs" type="button">/recruitment/jobs</button>
+                <button data-endpoint="/loans" type="button">/loans</button>
+                <button data-endpoint="/expense-claims" type="button">/expense-claims</button>
+            </div>
+            <p class="muted" style="margin:10px 0 8px">Billing, Reports, Audit</p>
+            <div class="row">
+                <button data-endpoint="/billing/subscription" type="button">/billing/subscription</button>
+                <button data-endpoint="/billing/invoices" type="button">/billing/invoices</button>
+                <button data-endpoint="/reports/headcount" type="button">/reports/headcount</button>
+                <button data-endpoint="/reports/turnover" type="button">/reports/turnover</button>
+                <button data-endpoint="/audit-logs" type="button">/audit-logs</button>
+                <button data-endpoint="/communication/analytics" type="button">/communication/analytics</button>
+            </div>
+            <p class="muted" style="margin:10px 0 8px">Plateforme (super admin)</p>
+            <div class="row">
+                <button data-endpoint="/platform/companies" data-platform="1" type="button">/platform/companies</button>
+                <button data-endpoint="/platform/metrics/overview" data-platform="1" type="button">/platform/metrics</button>
+                <button data-endpoint="/platform/company-requests" data-platform="1" type="button">/platform/requests</button>
             </div>
             <label for="method">Methode</label>
             <select id="method">
