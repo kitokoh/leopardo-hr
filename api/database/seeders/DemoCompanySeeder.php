@@ -211,6 +211,11 @@ class DemoCompanySeeder extends Seeder
             $this->seedClientEvents($companyId, $managerIds, $employeeIds, $config);
             $this->seedDeviceTokens($companyId, $allEmployeeIds, $config);
             $this->seedKioskReadiness($companyId, $siteId, $managerIds, $employeeIds, $config);
+            $this->seedContracts($companyId, $allEmployeeIds, $managerIds['principal'], $config);
+            $this->seedTrainingCourses($companyId, $managerIds, $employeeIds);
+            $this->seedRecruitmentJobs($companyId, $managerIds);
+            $this->seedLoans($companyId, $employeeIds, $managerIds, $config['currency']);
+            $this->seedExpenseClaims($companyId, $employeeIds, $managerIds, $config['currency']);
             $this->seedAuditLogs($companyId, $managerIds, $employeeIds);
             $this->seedCompanySettings();
         });
@@ -284,6 +289,18 @@ SQL);
             }
 
             $tables = [
+                'expense_items',
+                'expense_claims',
+                'loan_repayments',
+                'employee_loans',
+                'training_enrollments',
+                'training_sessions',
+                'training_courses',
+                'interviews',
+                'applicants',
+                'job_postings',
+                'contract_amendments',
+                'contracts',
                 'notifications',
                 'audit_logs',
                 'payroll_export_batches',
@@ -1111,6 +1128,276 @@ SQL);
                 ],
             ], ['key'], ['value', 'value_type', 'updated_at']);
         });
+    }
+
+    private function seedContracts(string $companyId, array $employeeIds, int $createdBy, array $config): void
+    {
+        if (! $this->sharedTableExists('contracts')) {
+            return;
+        }
+
+        $currency = $config['currency'] ?? 'DZD';
+        $types = ['cdi', 'cdd', 'stage'];
+        $statuses = ['active', 'active', 'active', 'draft', 'expired'];
+
+        foreach (array_slice($employeeIds, 0, 6) as $index => $employeeId) {
+            $type = $types[$index % count($types)];
+            $status = $statuses[$index % count($statuses)];
+            $start = now()->subMonths(rand(3, 18))->startOfMonth();
+
+            $this->insertSharedRowsUsingExistingColumns('contracts', [[
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'contract_type' => $type,
+                'reference' => strtoupper($config['country'] ?? 'XX').'-'.now()->format('Y').'-'.str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT),
+                'start_date' => $start->toDateString(),
+                'end_date' => $type === 'cdi' ? null : $start->copy()->addYear()->toDateString(),
+                'job_title' => 'Employe '.$index,
+                'base_salary' => rand(6, 18) * 10000,
+                'currency' => $currency,
+                'salary_frequency' => 'monthly',
+                'work_hours_per_week' => 40,
+                'probation_end_date' => $start->copy()->addMonths(3)->toDateString(),
+                'status' => $status,
+                'signed_at' => $status === 'active' ? $start->copy()->addDay()->toIso8601String() : null,
+                'created_by' => $createdBy,
+                'created_at' => $start->toIso8601String(),
+                'updated_at' => now()->toIso8601String(),
+            ]]);
+        }
+    }
+
+    private function seedTrainingCourses(string $companyId, array $managerIds, array $employeeIds): void
+    {
+        if (! $this->sharedTableExists('training_courses')) {
+            return;
+        }
+
+        $courses = [
+            ['title' => 'Securite au travail', 'category' => 'compliance', 'duration_hours' => 8],
+            ['title' => 'Introduction a Laravel', 'category' => 'technical', 'duration_hours' => 16],
+            ['title' => 'Leadership et management', 'category' => 'soft_skills', 'duration_hours' => 12],
+        ];
+
+        foreach ($courses as $index => $course) {
+            $courseId = $this->insertSharedRowUsingExistingColumnsReturningId('training_courses', [
+                'company_id' => $companyId,
+                'title' => $course['title'],
+                'description' => 'Formation demo '.$course['title'],
+                'category' => $course['category'],
+                'duration_hours' => $course['duration_hours'],
+                'max_participants' => 20,
+                'status' => 'active',
+                'created_by' => $managerIds['rh'] ?? $managerIds['principal'],
+                'created_at' => now()->subDays(30 - $index * 5)->toIso8601String(),
+                'updated_at' => now()->toIso8601String(),
+            ]);
+
+            if ($courseId && $this->sharedTableExists('training_sessions')) {
+                $sessionId = $this->insertSharedRowUsingExistingColumnsReturningId('training_sessions', [
+                    'training_course_id' => $courseId,
+                    'company_id' => $companyId,
+                    'location' => 'Salle de conference A',
+                    'instructor_name' => 'Formateur Demo',
+                    'starts_at' => now()->addDays(7 + $index * 7)->setHour(9)->toIso8601String(),
+                    'ends_at' => now()->addDays(7 + $index * 7)->setHour(17)->toIso8601String(),
+                    'max_participants' => 15,
+                    'status' => 'scheduled',
+                    'created_at' => now()->toIso8601String(),
+                    'updated_at' => now()->toIso8601String(),
+                ]);
+
+                if ($sessionId && $this->sharedTableExists('training_enrollments') && count($employeeIds) > 0) {
+                    $this->insertSharedRowsUsingExistingColumns('training_enrollments', [[
+                        'training_session_id' => $sessionId,
+                        'employee_id' => $employeeIds[0],
+                        'company_id' => $companyId,
+                        'status' => 'enrolled',
+                        'enrolled_at' => now()->toIso8601String(),
+                        'created_at' => now()->toIso8601String(),
+                        'updated_at' => now()->toIso8601String(),
+                    ]]);
+                }
+            }
+        }
+    }
+
+    private function seedRecruitmentJobs(string $companyId, array $managerIds): void
+    {
+        if (! $this->sharedTableExists('job_postings')) {
+            return;
+        }
+
+        $jobs = [
+            ['title' => 'Developpeur Full-Stack', 'department' => 'Developpement', 'status' => 'published'],
+            ['title' => 'Responsable Commercial', 'department' => 'Ventes', 'status' => 'published'],
+            ['title' => 'Comptable Junior', 'department' => 'Finance', 'status' => 'draft'],
+        ];
+
+        foreach ($jobs as $job) {
+            $jobId = $this->insertSharedRowUsingExistingColumnsReturningId('job_postings', [
+                'company_id' => $companyId,
+                'title' => $job['title'],
+                'department' => $job['department'],
+                'description' => 'Poste demo '.$job['title'].'. Rejoignez notre equipe dynamique.',
+                'requirements' => "- 2+ ans d'experience\n- Maitrise des outils du domaine\n- Capacite d'adaptation",
+                'location' => 'Alger / Remote',
+                'contract_type' => 'cdi',
+                'status' => $job['status'],
+                'created_by' => $managerIds['rh'] ?? $managerIds['principal'],
+                'published_at' => $job['status'] === 'published' ? now()->subDays(rand(3, 14))->toIso8601String() : null,
+                'closing_date' => now()->addDays(rand(14, 45))->toDateString(),
+                'created_at' => now()->subDays(rand(5, 20))->toIso8601String(),
+                'updated_at' => now()->toIso8601String(),
+            ]);
+
+            if ($jobId && $this->sharedTableExists('applicants') && $job['status'] === 'published') {
+                foreach (['Mehdi Saidi', 'Ines Boukhris'] as $i => $name) {
+                    $parts = explode(' ', $name);
+                    $this->insertSharedRowsUsingExistingColumns('applicants', [[
+                        'job_posting_id' => $jobId,
+                        'company_id' => $companyId,
+                        'first_name' => $parts[0],
+                        'last_name' => $parts[1],
+                        'email' => strtolower($parts[0]).'.'.strtolower($parts[1]).'@demo.test',
+                        'phone' => '+213 6'.rand(10, 99).' '.rand(10, 99).' '.rand(10, 99).' '.rand(10, 99),
+                        'status' => $i === 0 ? 'shortlisted' : 'new',
+                        'created_at' => now()->subDays(rand(1, 10))->toIso8601String(),
+                        'updated_at' => now()->toIso8601String(),
+                    ]]);
+                }
+            }
+        }
+    }
+
+    private function seedLoans(string $companyId, array $employeeIds, array $managerIds, string $currency): void
+    {
+        if (! $this->sharedTableExists('employee_loans') || empty($employeeIds)) {
+            return;
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('employee_loans', [
+            [
+                'company_id' => $companyId,
+                'employee_id' => $employeeIds[0],
+                'amount' => 50000,
+                'currency' => $currency,
+                'reason' => 'Achat voiture',
+                'monthly_deduction' => 5000,
+                'total_installments' => 10,
+                'remaining_installments' => 7,
+                'status' => 'active',
+                'approved_by' => $managerIds['principal'],
+                'approved_at' => now()->subMonths(3)->toIso8601String(),
+                'disbursed_at' => now()->subMonths(3)->toIso8601String(),
+                'created_at' => now()->subMonths(4)->toIso8601String(),
+                'updated_at' => now()->toIso8601String(),
+            ],
+            [
+                'company_id' => $companyId,
+                'employee_id' => $employeeIds[1] ?? $employeeIds[0],
+                'amount' => 20000,
+                'currency' => $currency,
+                'reason' => 'Rentrée scolaire',
+                'monthly_deduction' => 4000,
+                'total_installments' => 5,
+                'remaining_installments' => 5,
+                'status' => 'pending',
+                'approved_by' => null,
+                'approved_at' => null,
+                'disbursed_at' => null,
+                'created_at' => now()->subDays(3)->toIso8601String(),
+                'updated_at' => now()->toIso8601String(),
+            ],
+        ]);
+    }
+
+    private function seedExpenseClaims(string $companyId, array $employeeIds, array $managerIds, string $currency): void
+    {
+        if (! $this->sharedTableExists('expense_claims') || empty($employeeIds)) {
+            return;
+        }
+
+        $claimId = $this->insertSharedRowUsingExistingColumnsReturningId('expense_claims', [
+            'company_id' => $companyId,
+            'employee_id' => $employeeIds[0],
+            'title' => 'Deplacement client Oran',
+            'description' => 'Transport + hotel pour visite client',
+            'total_amount' => 15000,
+            'currency' => $currency,
+            'status' => 'submitted',
+            'submitted_at' => now()->subDays(5)->toIso8601String(),
+            'created_at' => now()->subDays(7)->toIso8601String(),
+            'updated_at' => now()->toIso8601String(),
+        ]);
+
+        if ($claimId && $this->sharedTableExists('expense_items')) {
+            $this->insertSharedRowsUsingExistingColumns('expense_items', [
+                [
+                    'expense_claim_id' => $claimId,
+                    'description' => 'Billet train Alger-Oran AR',
+                    'amount' => 4500,
+                    'category' => 'transport',
+                    'receipt_date' => now()->subDays(6)->toDateString(),
+                    'created_at' => now()->subDays(7)->toIso8601String(),
+                    'updated_at' => now()->toIso8601String(),
+                ],
+                [
+                    'expense_claim_id' => $claimId,
+                    'description' => 'Hotel 2 nuits',
+                    'amount' => 8000,
+                    'category' => 'accommodation',
+                    'receipt_date' => now()->subDays(6)->toDateString(),
+                    'created_at' => now()->subDays(7)->toIso8601String(),
+                    'updated_at' => now()->toIso8601String(),
+                ],
+                [
+                    'expense_claim_id' => $claimId,
+                    'description' => 'Repas client',
+                    'amount' => 2500,
+                    'category' => 'meals',
+                    'receipt_date' => now()->subDays(5)->toDateString(),
+                    'created_at' => now()->subDays(7)->toIso8601String(),
+                    'updated_at' => now()->toIso8601String(),
+                ],
+            ]);
+        }
+
+        $this->insertSharedRowsUsingExistingColumns('expense_claims', [[
+            'company_id' => $companyId,
+            'employee_id' => $employeeIds[1] ?? $employeeIds[0],
+            'title' => 'Fournitures bureau',
+            'description' => 'Achat clavier et souris ergonomiques',
+            'total_amount' => 6000,
+            'currency' => $currency,
+            'status' => 'approved',
+            'submitted_at' => now()->subDays(12)->toIso8601String(),
+            'approved_by' => $managerIds['rh'] ?? $managerIds['principal'],
+            'approved_at' => now()->subDays(10)->toIso8601String(),
+            'created_at' => now()->subDays(14)->toIso8601String(),
+            'updated_at' => now()->subDays(10)->toIso8601String(),
+        ]]);
+    }
+
+    /**
+     * Insert a single row into a shared tenant table and return the generated ID.
+     */
+    private function insertSharedRowUsingExistingColumnsReturningId(string $table, array $row): ?int
+    {
+        $fullTable = $this->sharedTable($table);
+
+        if (! Schema::hasTable($fullTable)) {
+            return null;
+        }
+
+        $columns = Schema::getColumnListing($fullTable);
+        $filtered = Arr::only($row, $columns);
+
+        if (empty($filtered)) {
+            return null;
+        }
+
+        return (int) DB::table($fullTable)->insertGetId($filtered);
     }
 
     private function deleteCompanyScopedRowsIfTableExists(string $companyId, array $tables): void
