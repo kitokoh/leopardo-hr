@@ -14,6 +14,7 @@ import {
   Laptop,
   Monitor,
   Shield,
+  Smartphone,
   Wifi,
   WifiOff,
   Zap,
@@ -200,11 +201,39 @@ const copy: Record<AppLocale, {
   },
 };
 
+const platformLabels: Record<AppLocale, Array<{ platform: string; title: string; description: string; href: string }>> = {
+  fr: [
+    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Synchronisation ZKTeco, mode hors-ligne et supervision site.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les equipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/contact?topic=download-android' },
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/contact?topic=download-ios' },
+  ],
+  en: [
+    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco sync, offline mode and site supervision.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Desktop client for field teams and administrators.', href: '/contact?topic=download-macos' },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobile attendance, HR requests and employee notifications.', href: '/contact?topic=download-android' },
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Mobile experience for managers and employees on iPhone.', href: '/contact?topic=download-ios' },
+  ],
+  tr: [
+    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco senkronizasyonu, cevrimdisi mod ve saha denetimi.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Saha ekipleri ve yoneticiler icin masaustu istemcisi.', href: '/contact?topic=download-macos' },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobil yoklama, IK talepleri ve calisan bildirimleri.', href: '/contact?topic=download-android' },
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'iPhone uzerinde yonetici ve calisan deneyimi.', href: '/contact?topic=download-ios' },
+  ],
+  ar: [
+    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'مزامنة ZKTeco ووضع عدم الاتصال وإشراف المواقع.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'عميل مكتبي لفرق الميدان والمسؤولين.', href: '/contact?topic=download-macos' },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'الحضور عبر الهاتف وطلبات الموارد البشرية والإشعارات.', href: '/contact?topic=download-android' },
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'تجربة موبايل للمديرين والموظفين على iPhone.', href: '/contact?topic=download-ios' },
+  ],
+};
+
 export default function DownloadPage() {
   const [isDark, setIsDark] = useState(false);
   useScrollReveal();
   const { locale } = useVitrineLocale();
   const c = copy[locale as AppLocale] ?? copy.fr;
+  const platforms = platformLabels[locale as AppLocale] ?? platformLabels.fr;
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
@@ -249,6 +278,27 @@ export default function DownloadPage() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      <section className="relative -mt-10 pb-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {platforms.map((item) => (
+              <Link
+                key={item.platform}
+                href={item.href}
+                className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-5 shadow-sm hover:border-emerald-300 hover:shadow-lg transition-all"
+              >
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-300">
+                  {item.platform === 'Android' || item.platform === 'iPhone' ? <Smartphone className="h-5 w-5" /> : <Laptop className="h-5 w-5" />}
+                </div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">{item.platform}</p>
+                <h2 className="mt-2 text-base font-black text-slate-900 dark:text-white">{item.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
