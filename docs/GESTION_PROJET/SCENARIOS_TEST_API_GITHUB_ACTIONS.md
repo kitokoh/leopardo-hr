@@ -864,3 +864,24 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - `SendBulkNotificationsJob` dispatche sur la queue `notifications` avec 3 retries et 120s timeout
 - Les jobs filtrent par `company_id` pour garantir l'isolation tenant
 - Tags Horizon : `company:{id}`, `payroll_run:{id}` / `notification:{class}`
+
+### API Manager Middleware RBAC (API Consolidation - v4.16.129)
+- `EnsureApiManagerMiddleware` enregistre comme `api.manager` dans `bootstrap/app.php`
+- `api.manager` sans parametres autorise tout manager (principal, rh, dept, comptable, superviseur) — refuse les employes simples avec `403 MANAGER_REQUIRED`
+- `api.manager:principal,rh` autorise uniquement les roles specifies — refuse les autres managers avec `403 INSUFFICIENT_ROLE`
+- `api.manager:principal` sur `/billing/subscription` refuse RH, dept, superviseur et employes
+- `api.manager:principal,comptable` sur `/payroll-runs` refuse RH, dept, superviseur et employes
+- `api.manager:principal,rh,comptable` sur `/export/employees` refuse dept, superviseur et employes
+- `GET /me/pay-slips`, `GET /me/contracts`, `GET /me/trainings`, `GET /me/loans` accessibles a tout employe authentifie (pas de middleware api.manager)
+- `GET /org-chart` accessible a tout employe authentifie
+- `GET /dashboard/summary` refuse les employes non-managers
+- `ApiManagerMiddlewareTest` couvre : allow any manager, reject employee, allow specific roles, reject wrong role, reject unauthenticated
+
+### DemoCompanySeeder Extensions (API Consolidation - v4.16.129)
+- `seedContracts()` cree 6 contrats demo (CDI/CDD/stage, active/draft/expired) pour chaque entreprise demo
+- `seedTrainingCourses()` cree 3 formations avec sessions et enrollments
+- `seedRecruitmentJobs()` cree 3 postes avec pipeline candidats
+- `seedLoans()` cree 1 pret actif + 1 en attente avec echeances
+- `seedExpenseClaims()` cree 2 notes de frais avec lignes detaillees
+- Tous utilisent `sharedTableExists()` pour tolerer les tables absentes
+- `cleanupExistingCompany()` nettoie les 12 nouvelles tables avant re-seed
