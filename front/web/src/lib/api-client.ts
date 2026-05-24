@@ -16,19 +16,25 @@ const LOCAL_API_BASE_URL = 'http://localhost:8000/api/v1';
 const DEPLOYED_API_BASE_URL = 'https://gestionemployerbackend.onrender.com/api/v1';
 
 /**
- * On Vercel, use the rewrite proxy (/api/v1/...) to avoid CORS issues
- * and Render cold-start timeouts. The rewrite in vercel.json forwards
- * /api/:path* to the Render backend transparently.
+ * In the browser, production requests go through the Next same-origin proxy
+ * (/api/v1/...) by default. This avoids CORS drift between Vercel and Render
+ * while keeping the Laravel API as the single backend.
  */
 const VERCEL_PROXY_BASE_URL = '/api/v1';
 
 function resolveApiBaseUrl(): string {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+    if (process.env.NEXT_PUBLIC_API_DIRECT === 'true' && process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+
+    return VERCEL_PROXY_BASE_URL;
+  }
+
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-    return VERCEL_PROXY_BASE_URL;
-  }
+
   if (process.env.NODE_ENV === 'production') {
     return DEPLOYED_API_BASE_URL;
   }

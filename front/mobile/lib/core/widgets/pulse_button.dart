@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
 class PulseButton extends StatefulWidget {
@@ -67,23 +68,27 @@ class _PulseButtonState extends State<PulseButton>
               scale: widget.isLoading ? 1.0 : _animation.value,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                width: 200,
-                height: 200,
+                width: 184,
+                height: 184,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color:
-                      widget.isCheckedIn
-                          ? Theme.of(context).colorScheme.error
-                          : Theme.of(context).primaryColor,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors:
+                        widget.isCheckedIn
+                            ? const [Color(0xFFEF4444), Color(0xFFB91C1C)]
+                            : const [AppColors.rh, Color(0xFF06B6D4)],
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: (widget.isCheckedIn
-                              ? Theme.of(context).colorScheme.error
-                              : Theme.of(context).primaryColor)
-                          .withValues(alpha: 0.3),
-                      blurRadius: 30,
+                              ? AppColors.danger
+                              : AppColors.rh)
+                          .withValues(alpha: 0.32),
+                      blurRadius: 34,
                       spreadRadius:
-                          widget.isLoading ? 5 : 15 * _animation.value,
+                          widget.isLoading ? 4 : 12 * _animation.value,
                     ),
                   ],
                 ),
@@ -91,14 +96,37 @@ class _PulseButtonState extends State<PulseButton>
                   child:
                       widget.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                            widget.isCheckedIn ? 'TERMINER' : 'POINTER',
-                            style: AppTypography.subtitle.copyWith(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.6,
-                            ),
+                          : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                widget.isCheckedIn
+                                    ? Icons.logout_rounded
+                                    : Icons.fingerprint_rounded,
+                                color: Colors.white,
+                                size: 38,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                widget.isCheckedIn ? 'SORTIR' : 'POINTER',
+                                style: AppTypography.subtitle.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.isCheckedIn
+                                    ? 'Fin de journee'
+                                    : 'Arrivee',
+                                style: AppTypography.caption.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.82),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                 ),
               ),
