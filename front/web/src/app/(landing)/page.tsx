@@ -17,6 +17,7 @@ import {
   MiniCaseStudies,
   ProductScreenshots,
   MarketingReadinessSection,
+  TrustedBrands,
 } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
@@ -31,6 +32,7 @@ export default function LandingPage() {
       <main id="main-content">
         <LegacyHeroSection />
         <SocialProofMetrics locale={locale} />
+        <TrustedBrands locale={locale} />
         <LegacyFeaturesSection />
         <ProductScreenshots locale={locale} />
         <MarketingReadinessSection locale={locale} />
