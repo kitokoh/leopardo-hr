@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
+import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/absences/providers/absence_provider.dart';
 
 class AbsenceListScreen extends ConsumerWidget {
@@ -13,21 +14,19 @@ class AbsenceListScreen extends ConsumerWidget {
     final absencesAsync = ref.watch(absencesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgDark,
-      appBar: AppBar(
-        backgroundColor: AppColors.bgDark,
-        elevation: 0,
-        title: Text(
-          'Mes Absences',
-          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
-        ),
+      backgroundColor: MobileSurface.background,
+      appBar: MobileTopBar(
+        title: 'Mes Absences',
+        subtitle: 'Demandes et decisions RH',
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: RefreshIndicator(
+        color: AppColors.rh,
+        backgroundColor: MobileSurface.background,
         onRefresh: () async => ref.refresh(absencesProvider.future),
         child: absencesAsync.when(
           data:
@@ -50,28 +49,43 @@ class AbsenceListScreen extends ConsumerWidget {
                         itemCount: absences.length,
                         itemBuilder: (context, index) {
                           final absence = absences[index];
-                          return Card(
-                            color: AppColors.cardDark,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: ListTile(
-                              title: Text(
-                                absence.absenceTypeName ?? 'Absence',
-                                style: AppTypography.subtitle.copyWith(
-                                  color: AppColors.textDark,
+                          final color = _getStatusColor(absence.status);
+                          return MobilePanel(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                MobileIconBubble(
+                                  icon: Icons.event_available_outlined,
+                                  color: color,
                                 ),
-                              ),
-                              subtitle: Text(
-                                '${absence.startDate.day}/${absence.startDate.month} - ${absence.endDate.day}/${absence.endDate.month}',
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: AppColors.textMutedDark,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        absence.absenceTypeName ?? 'Absence',
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: MobileSurface.text,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${absence.startDate.day}/${absence.startDate.month} - ${absence.endDate.day}/${absence.endDate.month}',
+                                        style: AppTypography.caption.copyWith(
+                                          color: MobileSurface.secondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              trailing: Text(
-                                absence.status,
-                                style: TextStyle(
-                                  color: _getStatusColor(absence.status),
+                                MobileStatusPill(
+                                  label: absence.status,
+                                  color: color,
                                 ),
-                              ),
+                              ],
                             ),
                           );
                         },
