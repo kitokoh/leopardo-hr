@@ -531,7 +531,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
             style: AppTypography.caption.copyWith(
               color: MobileSurface.secondary,
