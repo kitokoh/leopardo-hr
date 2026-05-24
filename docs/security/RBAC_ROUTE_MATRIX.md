@@ -103,3 +103,19 @@ Any PR adding or moving protected routes must update this matrix, the matching s
 | Predictions turnover `GET /predictions/turnover` | R | R | - | - | - | - | P/RH via `hasManagerRole`. |
 | Predictions absenteeism `GET /predictions/absenteeism` | R | R | - | - | - | - | P/RH via `hasManagerRole`. |
 | Predictions notifications `GET /predictions/notifications` | R | R | - | - | - | - | P/RH via `hasManagerRole`. |
+
+## Model Policies (Plan 23 — Iteration 5)
+
+| Model | Policy Class | viewAny | view | create | update | delete | approve/reject | Notes |
+|---|---|---|---|---|---|---|---|---|
+| Absence | AbsencePolicy | ALL | owner+managers | active employees | — | owner (pending only) | managers | Employee sees own; managers see all in company |
+| Contract | ContractPolicy | managers | owner+managers | P, RH | P, RH | — | — | activate/terminate/renew restricted to P, RH |
+| Department | DepartmentPolicy | ALL | same company | managers | managers | P, RH | — | |
+| Position | PositionPolicy | ALL | same company | managers | managers | P, RH | — | |
+| Schedule | SchedulePolicy | ALL | same company | managers | managers | P, RH | — | |
+| Site | SitePolicy | ALL | same company | managers | managers | P | — | Delete restricted to principal only |
+| ApprovalRequest | ApprovalRequestPolicy | ALL | requester+managers | active employees | — | — | managers (pending only) | |
+| EmployeeLoan | LoanPolicy | ALL | owner+managers | active employees | — | — | P, FIN | disburse also P, FIN |
+| ExpenseClaim | ExpenseClaimPolicy | ALL | owner+managers | active employees | — | owner (draft only) | P, FIN, RH | |
+| Invoice | InvoicePolicy | P, FIN | P, FIN | P | — | — | — | pay restricted to P |
+| WebhookEndpoint | WebhookEndpointPolicy | P | P (same company) | P | P (same company) | P (same company) | — | Platform integration, principal-only |

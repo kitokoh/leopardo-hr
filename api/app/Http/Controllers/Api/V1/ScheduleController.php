@@ -18,7 +18,11 @@ class ScheduleController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => Schedule::orderBy('name')->get()->map(fn ($s) => $this->serialize($s))]);
+        return response()->json(['data' => Schedule::query()
+            ->select(['id', 'company_id', 'name', 'start_time', 'end_time', 'break_minutes', 'work_days', 'late_tolerance_minutes', 'overtime_threshold_daily', 'overtime_threshold_weekly', 'is_default', 'created_at'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($s) => $this->serialize($s))]);
     }
 
     public function store(Request $request): JsonResponse
