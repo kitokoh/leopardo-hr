@@ -120,7 +120,7 @@ class NotificationListScreen extends ConsumerWidget {
             (e, _) => Center(
               child: Text(
                 e.toString(),
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(color: AppColors.danger),
               ),
             ),
       ),

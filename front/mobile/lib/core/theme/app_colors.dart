@@ -33,6 +33,11 @@ class AppColors {
   static const Color iaLight = Color(0xFFEDE9FE); // violet-100
   static const Color iaDark = Color(0xFF5B21B6); // violet-800
 
+  /// Cabinet numerique — documents et dossiers.
+  static const Color cabinet = Color(0xFF8B6914); // gold/amber
+  static const Color cabinetLight = Color(0xFFFEF3C7); // amber-100
+  static const Color cabinetDark = Color(0xFF6B4F10); // darker gold
+
   // ─── Semantique (alerte / succes / info) ────────────────────────────────
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
@@ -103,6 +108,9 @@ class AppColors {
       case 'ia':
       case 'leo_ai':
         return ia;
+      case 'cabinet':
+      case 'documents':
+        return cabinet;
       default:
         return textMuted;
     }
@@ -121,6 +129,9 @@ class AppColors {
       case 'ia':
       case 'leo_ai':
         return iaLight;
+      case 'cabinet':
+      case 'documents':
+        return cabinetLight;
       default:
         return borderLight;
     }
