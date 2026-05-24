@@ -157,7 +157,7 @@ class UserHomeScreen extends ConsumerWidget {
               child: _QuickActionCard(
                 icon: Icons.door_sliding_outlined,
                 label: 'Placard',
-                color: const Color(0xFF8B6914),
+                color: AppColors.cabinet,
                 onTap: () {
                   HapticFeedback.lightImpact();
                   context.push('/cabinet');
