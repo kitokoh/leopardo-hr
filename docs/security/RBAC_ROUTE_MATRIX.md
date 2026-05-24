@@ -135,4 +135,4 @@ New `api.manager` middleware (`EnsureApiManagerMiddleware`) enforces route-level
 | Payroll self-service `/me/pay-slips` | none (auth+tenant) | R | R | R | R | R | R | Own pay slips. |
 | HR extended self-service `/me/*` | none (auth+tenant) | R | R | R | R | R | R | Own contracts/trainings/loans. |
 | Contracts/Recruitment/Training/Loans CRUD | `api.manager` | RW | RW | RW | RW | RW | - | Any manager. |
-| Reports/Webhooks/Audit/Predictions | `api.manager:principal,rh,comptable` | R | R | - | R | - | - | P/RH/FIN. |
+| Reports/Webhooks/Audit/Predictions | `api.manager` + controller policies where present | R | R | R | R | R | - | Any tenant manager can access report surfaces covered by existing feature tests. |

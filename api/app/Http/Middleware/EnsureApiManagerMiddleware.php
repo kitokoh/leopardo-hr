@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureApiManagerMiddleware
@@ -14,7 +15,7 @@ class EnsureApiManagerMiddleware
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $employee = $request->user();
+        $employee = $request->user() ?? Auth::user();
 
         if (! $employee || ! method_exists($employee, 'isManager') || ! $employee->isManager()) {
             return response()->json([
