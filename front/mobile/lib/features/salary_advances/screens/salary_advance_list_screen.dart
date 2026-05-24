@@ -107,7 +107,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                         child: Text(
                           e.toString(),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.red),
+                          style: const TextStyle(color: AppColors.danger),
                         ),
                       ),
                     ),
@@ -144,7 +144,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
       case 'pending':
         return AppColors.info;
       case 'rejected':
-        return Colors.red;
+        return AppColors.danger;
       default:
         return AppColors.textMutedDark;
     }
