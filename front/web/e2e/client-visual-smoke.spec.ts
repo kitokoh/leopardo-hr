@@ -66,6 +66,37 @@ async function mockDashboard(page: Page) {
       }),
     });
   });
+
+  await page.route('**/api/v1/launch-readiness', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          score: 86,
+          status: 'ready',
+          blockers: [],
+          next_actions: [],
+        },
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/client-events', async (route) => {
+    await route.fulfill({
+      status: 202,
+      contentType: 'application/json',
+      body: JSON.stringify({ accepted: true }),
+    });
+  });
+
+  await page.route('**/api/v1/notifications**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
 }
 
 test.describe('Client visual smoke attachments', () => {

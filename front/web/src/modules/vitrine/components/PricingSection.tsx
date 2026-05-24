@@ -8,7 +8,7 @@ import { getPricingPlans } from '../data/pricing'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
 function showsCurrency(price: string) {
-  return !['Sur devis', 'Custom', 'Teklif', 'حسب الطلب'].includes(price)
+  return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض'].includes(price)
 }
 
 function getPlanCtaHref(price: string) {
@@ -19,7 +19,7 @@ const savingsLabel: Record<string, string> = {
   fr: 'Economisez 20%',
   en: 'Save 20%',
   tr: '%20 tasarruf',
-  ar: 'وفر 20%',
+  ar: 'وفّر 20%',
 }
 
 const billingToggle: Record<string, { monthly: string; annual: string }> = {
@@ -85,7 +85,7 @@ export function PricingSection() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {pricingPlans.map((plan, index) => {
             const displayPrice = isAnnual ? plan.annualPrice : plan.price
             const displayPeriod = isAnnual ? plan.annualPeriod : plan.period
@@ -131,7 +131,7 @@ export function PricingSection() {
                       <span className="text-sm text-slate-500">{displayPeriod}</span>
                     )}
                     {plan.priceNote && (
-                      <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500">{plan.priceNote}</p>
+                      <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{plan.priceNote}</p>
                     )}
                     {isAnnual && hasNumericPrice && (
                       <div className="mt-1">
