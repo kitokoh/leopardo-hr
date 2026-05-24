@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.133] - 2026-05-24
+
+### Changed
+
+- Mobile : `AttendanceScreen` reconstruit en design v3 final avec horloge live HH:MM:SS, bouton pointage double anneau, icone empreinte custom, carte du jour, semaine recente et resume hebdomadaire.
+- Mobile : correction de pointage accessible uniquement via les menus `...` du header ou des lignes jour, avec bottom sheet, controle anti-heure future et retour utilisateur clair.
+- Mobile : hint empreinte affiche seulement si `local_auth` confirme une empreinte disponible sur le device.
+- API : consolidation RBAC ajustee pour conserver les contrats JSON existants des absences, notifications, contrats et rapports RH tout en ajoutant Resources/FormRequests et middleware `api.manager`.
+
 ## [4.16.132] - 2026-05-24
 
 ### Added
@@ -24,6 +33,34 @@
 - Policies : 11 nouvelles classes Policy (AbsencePolicy, ContractPolicy, DepartmentPolicy, PositionPolicy, SchedulePolicy, SitePolicy, ApprovalRequestPolicy, LoanPolicy, ExpenseClaimPolicy, WebhookEndpointPolicy, InvoicePolicy) avec RBAC granulaire par role.
 - AuthServiceProvider : les 11 nouvelles policies sont enregistrees via Gate::policy() pour tous les modeles metier.
 - RBAC Route Matrix : section « Model Policies » ajoutee avec matrice complete viewAny/view/create/update/delete/approve par role.
+## [4.16.130] - 2026-05-24
+
+### Added
+
+- API Resources : 11 nouvelles classes Resource (AbsenceResource, DepartmentResource, PositionResource, ScheduleResource, SiteResource, NotificationResource, ApprovalRequestResource, InvoiceResource, AuditLogResource, WebhookEndpointResource, PayrollResource) normalisent les contrats JSON API.
+- FormRequests : 10 classes extraites (StoreDepartment, UpdateDepartment, StorePosition, UpdatePosition, StoreSchedule, UpdateSchedule, StoreSite, UpdateSite, StoreWebhookEndpoint, UpdateWebhookEndpoint) avec validation et authorize gates.
+- ApiError enum : catalogue centralise de ~40 codes erreur API avec traductions FR/EN/AR/TR, codes HTTP semantiques et methode `->response()`.
+- Traductions api_errors : fichiers i18n `lang/{en,fr,ar,tr}/api_errors.php` pour les messages erreur API.
+- Plan 23 : document `docs/PLAN_ACTION/23_PLAN_API_PRODUCTION_GRADE.md` — audit architecture + plan 8 iterations production-grade.
+
+### Changed
+
+- Controllers refactorises : AbsenceController, DepartmentController, PositionController, ScheduleController, SiteController, NotificationController, WebhookController, ApprovalController, ContractController utilisent desormais les API Resources au lieu de serialisations manuelles.
+- DB::transaction ajoutees : ContractController::renew, ApprovalController::approve/reject, NotificationController::markRead/markAllRead protegent les ecritures multi-tables.
+- FormRequests injectees dans les signatures store/update des controllers Department, Position, Schedule, Site, Webhook — la validation et l'autorisation quittent le corps du controller.
+## [4.16.129] - 2026-05-24
+
+### Added
+
+- API : `EnsureApiManagerMiddleware` — RBAC paramétré par rôle (`api.manager`, `api.manager:principal,rh`) pour protéger les routes sensibles.
+- Routes : dashboard (managers only), exports (P/RH/FIN), billing (principal), payroll engine (P/FIN), hr_extended 3-tier RBAC.
+- Seeder : `DemoCompanySeeder` enrichi avec contrats, formations, recrutement, prêts et notes de frais pour faciliter les tests API.
+- API Explorer : boutons endpoints groupés par catégorie (auth, dashboard, self-service, paie, billing, plateforme).
+- Sécurité : matrice RBAC mise à jour dans `docs/security/RBAC_ROUTE_MATRIX.md` avec documentation `api.manager`.
+
+### Tests
+
+- Backend : `ApiManagerMiddlewareTest` couvre 5 scénarios (allow any manager, reject employee, allow specific roles, reject wrong role, reject unauthenticated).
 
 ## [4.16.128] - 2026-05-23
 
