@@ -63,7 +63,7 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Changelog', description: 'Dernieres mises a jour produit' },
       ],
     },
-    { href: '/documents', label: 'Docs' },
+    { href: '/docs', label: 'Docs' },
     { href: '/contact', label: 'Contact' },
     {
       label: 'Communaute',
@@ -85,7 +85,7 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Changelog', description: 'Latest product updates' },
       ],
     },
-    { href: '/documents', label: 'Docs' },
+    { href: '/docs', label: 'Docs' },
     { href: '/contact', label: 'Contact' },
     {
       label: 'Community',
@@ -107,7 +107,7 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Degisiklikler', description: 'Son urun guncellemeleri' },
       ],
     },
-    { href: '/documents', label: 'Dokuman' },
+    { href: '/docs', label: 'Dokuman' },
     { href: '/contact', label: 'Iletisim' },
     {
       label: 'Topluluk',
@@ -129,7 +129,7 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'سجل التغييرات', description: 'آخر تحديثات المنتج' },
       ],
     },
-    { href: '/documents', label: 'الوثائق' },
+    { href: '/docs', label: 'الوثائق' },
     { href: '/contact', label: 'اتصل بنا' },
     {
       label: 'المجتمع',

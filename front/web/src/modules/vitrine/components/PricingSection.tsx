@@ -130,6 +130,9 @@ export function PricingSection() {
                     {displayPeriod && (
                       <span className="text-sm text-slate-500">{displayPeriod}</span>
                     )}
+                    {plan.priceNote && (
+                      <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500">{plan.priceNote}</p>
+                    )}
                     {isAnnual && hasNumericPrice && (
                       <div className="mt-1">
                         <span className="text-xs text-slate-400 line-through">{copy.pricing.currency} {plan.price}</span>
