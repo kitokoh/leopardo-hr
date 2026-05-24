@@ -8,6 +8,7 @@ import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_rh/core/widgets/alert_banner.dart';
 import 'package:leopardo_rh/core/widgets/leopardo_badge.dart';
+import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/models/mobile_experience.dart';
 
@@ -36,7 +37,7 @@ class HomeScreen extends ConsumerWidget {
             ? employee!.firstName
             : employee?.email.split('@').first ?? '';
     final canManageTeam = employee?.canManageTeam == true;
-    final background = AppColors.backgroundFor(context);
+    const background = MobileSurface.background;
 
     return Scaffold(
       backgroundColor: background,
@@ -46,9 +47,9 @@ class HomeScreen extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.tint(context, AppColors.rh, lightAlpha: 0.08),
+              AppColors.rh.withValues(alpha: 0.08),
               background,
-              AppColors.tint(context, AppColors.ia, lightAlpha: 0.04),
+              AppColors.ia.withValues(alpha: 0.05),
             ],
           ),
         ),
@@ -57,14 +58,14 @@ class HomeScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                   children: [
                     _HeaderRow(
                       firstName: firstName,
                       stage: stage,
                       canManageTeam: canManageTeam,
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 14),
                     _LeoCard(
                       firstName: firstName,
                       stage: stage,
@@ -76,7 +77,7 @@ class HomeScreen extends ConsumerWidget {
                       canManageTeam: canManageTeam,
                       upcomingModules: upcomingModules,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     _SectionTitle(
                       title: 'Actions rapides',
                       subtitle:
@@ -86,7 +87,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     _SectionTitle(
                       title: 'Modules actifs',
                       subtitle:
@@ -95,7 +96,7 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     _ModulesScroller(modules: activeModules),
                     if (upcomingModules.isNotEmpty) ...[
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       const _SectionTitle(
                         title: 'Bientot dans Leopardo',
                         subtitle:
@@ -105,7 +106,7 @@ class HomeScreen extends ConsumerWidget {
                       _UpcomingModules(modules: upcomingModules),
                     ],
                     if (canManageTeam) ...[
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       const _ManagerDigestCard(),
                     ],
                   ],
@@ -144,10 +145,16 @@ class _HeaderRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        IconButton.filledTonal(
-          onPressed: () => context.push('/settings'),
-          icon: const Icon(Icons.tune),
-          tooltip: 'Parametres',
+        Container(
+          decoration: MobileSurface.cardDecoration(
+            color: MobileSurface.chip,
+            radius: 14,
+          ),
+          child: IconButton(
+            onPressed: () => context.push('/settings'),
+            icon: const Icon(Icons.tune, color: MobileSurface.secondary),
+            tooltip: 'Parametres',
+          ),
         ),
       ],
     );
@@ -167,8 +174,8 @@ class _HeroHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
+    const text = MobileSurface.text;
+    const muted = MobileSurface.muted;
     final dateLabel = DateFormat.EEEE(
       'fr_FR',
     ).add_d().add_MMMM().format(DateTime.now());
@@ -176,14 +183,14 @@ class _HeroHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.borderFor(context)),
+        color: MobileSurface.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: MobileSurface.border, width: 0.7),
         boxShadow: [
           BoxShadow(
-            color: AppColors.rh.withValues(alpha: 0.06),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
+            color: AppColors.rh.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -210,7 +217,7 @@ class _HeroHeader extends StatelessWidget {
             firstName.isEmpty
                 ? _greetingForHour(DateTime.now().hour)
                 : '${_greetingForHour(DateTime.now().hour)}, $firstName',
-            style: AppTypography.display.copyWith(color: text, fontSize: 30),
+            style: AppTypography.display.copyWith(color: text, fontSize: 28),
           ),
           const SizedBox(height: 6),
           Text(
@@ -242,8 +249,8 @@ class _LeoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
+    const text = MobileSurface.text;
+    const muted = MobileSurface.secondary;
     final shortName = firstName.isEmpty ? 'vous' : firstName;
     final guidance =
         stage == 'new'
@@ -255,19 +262,11 @@ class _LeoCard extends StatelessWidget {
             : 'Aujourd hui, tout part du pointage, puis de la consultation de votre mois et de vos documents RH.';
 
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.tint(context, AppColors.ia, lightAlpha: 0.15),
-            AppColors.surfaceFor(context),
-            AppColors.tint(context, AppColors.rh, lightAlpha: 0.06),
-          ],
-        ),
-        border: Border.all(color: AppColors.borderFor(context)),
+        borderRadius: BorderRadius.circular(18),
+        color: MobileSurface.surface,
+        border: Border.all(color: MobileSurface.border, width: 0.7),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,12 +278,7 @@ class _LeoCard extends StatelessWidget {
                 height: 46,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.tint(
-                    context,
-                    AppColors.ia,
-                    lightAlpha: 0.18,
-                    darkAlpha: 0.24,
-                  ),
+                  color: AppColors.ia.withValues(alpha: 0.18),
                 ),
                 child: const Icon(Icons.auto_awesome, color: AppColors.ia),
               ),
@@ -384,14 +378,14 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
+    const text = MobileSurface.text;
+    const muted = MobileSurface.secondary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTypography.title.copyWith(color: text)),
-        const SizedBox(height: 4),
+        Text(title, style: AppTypography.subtitle.copyWith(color: text)),
+        const SizedBox(height: 3),
         Text(subtitle, style: AppTypography.bodySmall.copyWith(color: muted)),
       ],
     );
@@ -442,14 +436,14 @@ class _QuickActionCard extends StatelessWidget {
     final muted = AppColors.textSecondaryFor(context);
 
     return InkWell(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(16),
       onTap: () => context.push(action.route),
       child: Ink(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderFor(context)),
+          color: MobileSurface.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: MobileSurface.border, width: 0.7),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,7 +524,7 @@ class _ModuleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = AppColors.forDomain(module.domain);
     final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
+    const muted = MobileSurface.secondary;
 
     return InkWell(
       onTap: module.isActive ? () => context.push(module.route!) : null,
@@ -783,8 +777,10 @@ class _ChatInputBar extends StatelessWidget {
         10 + MediaQuery.of(context).padding.bottom,
       ),
       decoration: BoxDecoration(
-        color: AppColors.backgroundFor(context),
-        border: Border(top: BorderSide(color: AppColors.borderFor(context))),
+        color: MobileSurface.background,
+        border: const Border(
+          top: BorderSide(color: MobileSurface.border, width: 0.7),
+        ),
       ),
       child: Row(
         children: [
@@ -820,7 +816,7 @@ class _ChatInputBar extends StatelessWidget {
                           : 'Leo arrive bientot dans cette conversation...',
                   hintStyle: AppTypography.bodySmall.copyWith(color: muted),
                   filled: true,
-                  fillColor: AppColors.surfaceFor(context),
+                  fillColor: MobileSurface.chip,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(999),
                     borderSide: BorderSide.none,

@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.134] - 2026-05-24
+
+### Changed
+
+- Mobile : theme sombre par defaut aligne sur le design pointage v3 (`#0B1120`, cartes `#111B2E`, bordures fines, actions compactes).
+- Mobile : ajout d'un kit de surfaces partagees (`MobileSurface`, panels, top bars, pills, bulles icones) pour eviter les styles eparpilles entre les ecrans.
+- Mobile : ecrans Accueil, Modules RH, Notifications, Absences, Fiches de paie et Parametres polis dans un style plus epure, dense et coherent avec le mockup `leopardo_attendance_v3_final.html`.
+
 ## [4.16.133] - 2026-05-24
 
 ### Changed
