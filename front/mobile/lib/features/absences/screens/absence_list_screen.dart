@@ -16,7 +16,7 @@ class AbsenceListScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Mes absences',
+        title: 'Mes Absences',
         subtitle: 'Demandes et decisions RH',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
