@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\Employee;
@@ -322,9 +321,7 @@ class ContractController extends Controller
             return $newContract;
         });
 
-        return (new ContractResource($newContract->load('employee:id,first_name,last_name')))
-            ->response()
-            ->setStatusCode(201);
+        return response()->json(['data' => $newContract->load('employee:id,first_name,last_name')], 201);
     }
 
     public function myContracts(Request $request): JsonResponse

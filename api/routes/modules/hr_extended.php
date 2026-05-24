@@ -7,7 +7,7 @@
  * RBAC:
  *   - /me/* routes: all authenticated employees
  *   - Admin routes (policies, contracts CRUD, recruitment, webhooks, audit): managers
- *   - Reports & predictions: managers (principal, rh, comptable)
+ *   - Reports, audit and predictions: all managers; controller policies still apply where relevant
  *   - Org chart: all authenticated (read-only)
  *   - Approval actions: context-dependent (manager for workflows, all for own approvals)
  */
@@ -139,9 +139,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     });
 
     // ══════════════════════════════════════════════════════════════════════
-    //   ADMIN ROUTES (principal, rh, comptable)
+    //   ADMIN ROUTES (all managers; controller policies still apply)
     // ══════════════════════════════════════════════════════════════════════
-    Route::middleware('api.manager:principal,rh,comptable')->group(function (): void {
+    Route::middleware('api.manager')->group(function (): void {
 
         // ── HR Reports ───────────────────────────────────────────────────
         Route::prefix('reports')->group(function (): void {

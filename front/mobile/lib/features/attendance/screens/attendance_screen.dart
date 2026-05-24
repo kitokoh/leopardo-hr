@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -72,7 +71,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final authState = ref.watch(authProvider);
     final attState = ref.watch(attendanceProvider);
     final weekAsync = ref.watch(historyProvider(_now));
-    final week = _buildWeekSummaries(weekAsync.valueOrNull ?? const []);
+    final weekLogs = weekAsync.maybeWhen(
+      data: (value) => value,
+      orElse: () => const <AttendanceLog>[],
+    );
+    final week = _buildWeekSummaries(weekLogs);
     final employee = authState.employee;
     final isCheckedIn =
         attState.todayLog?.checkIn != null &&
