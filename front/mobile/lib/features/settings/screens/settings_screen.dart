@@ -21,7 +21,6 @@ const _textMid = Color(0xFF7A9CC0);
 const _accentGreen = Color(0xFF10B981);
 const _accentGreenBg = Color(0xFF0D4F3C);
 const _accentRed = Color(0xFFEF4444);
-const _accentAmber = Color(0xFFF59E0B);
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
