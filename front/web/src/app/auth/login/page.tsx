@@ -95,10 +95,12 @@ export default function LoginPage() {
   };
 
   const [coldStartHint, setColdStartHint] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
 
-  const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App', retryCount = 0) => {
+  const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App') => {
     setSubmitting(true);
     setError(null);
+    setRetryAttempt(0);
     const startedAt = performance.now();
 
     const coldStartTimer = setTimeout(() => setColdStartHint(true), 5000);
@@ -111,6 +113,21 @@ export default function LoginPage() {
           password: loginPassword,
           device_name: deviceName,
         }),
+      }, {
+        maxRetries: 3,
+        onRetry: (attempt) => {
+          setColdStartHint(true);
+          setRetryAttempt(attempt);
+          setError(
+            locale === 'fr'
+              ? `Le serveur demarre, tentative ${attempt + 1}/4...`
+              : locale === 'tr'
+                ? `Sunucu baslatiliyor, deneme ${attempt + 1}/4...`
+                : locale === 'ar'
+                  ? `...${attempt + 1}/4 الخادم يستيقظ، المحاولة`
+                  : `Server is waking up, attempt ${attempt + 1}/4...`,
+          );
+        },
       });
 
       const loginPayload = await loginResponse.json() as LoginPayload;
@@ -143,19 +160,6 @@ export default function LoginPage() {
       });
       goToPostLoginTarget(target, router);
     } catch (err) {
-      const isTimeout = err instanceof ApiError && err.code === 'TIMEOUT';
-      const isNetworkError = err instanceof TypeError && err.message.includes('fetch');
-
-      if ((isTimeout || isNetworkError) && retryCount < 1) {
-        clearTimeout(coldStartTimer);
-        setColdStartHint(true);
-        setError(locale === 'fr'
-          ? 'Le serveur demarre, nouvelle tentative en cours...'
-          : 'Server is waking up, retrying...');
-        await new Promise(r => setTimeout(r, 3000));
-        return performLogin(loginEmail, loginPassword, deviceName, retryCount + 1);
-      }
-
       if (err instanceof ApiError) {
         setError(err.message);
         trackClientEvent('login_failed', {
@@ -181,6 +185,7 @@ export default function LoginPage() {
     } finally {
       clearTimeout(coldStartTimer);
       setColdStartHint(false);
+      setRetryAttempt(0);
       setSubmitting(false);
     }
   }, [labels.login.errors.generic, labels.login.errors.missingToken, labels.login.errors.missingUser, locale, router]);
@@ -378,10 +383,27 @@ export default function LoginPage() {
               </button>
 
               {coldStartHint && submitting ? (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                  {locale === 'fr'
-                    ? 'Le serveur de demo se reveille, cela peut prendre jusqu a 30 secondes...'
-                    : 'Demo server is waking up, this may take up to 30 seconds...'}
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 space-y-2">
+                  <p className="font-medium">
+                    {locale === 'fr'
+                      ? 'Le serveur de demo se reveille, cela peut prendre jusqu\'a 60 secondes...'
+                      : locale === 'tr'
+                        ? 'Demo sunucusu uyaniyor, 60 saniye kadar surebilir...'
+                        : locale === 'ar'
+                          ? '...خادم العرض يستيقظ، قد يستغرق حتى 60 ثانية'
+                          : 'Demo server is waking up, this may take up to 60 seconds...'}
+                  </p>
+                  {retryAttempt > 0 && (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1.5 bg-amber-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min((retryAttempt / 3) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-mono text-amber-600">{retryAttempt}/3</span>
+                    </div>
+                  )}
                 </div>
               ) : null}
 
