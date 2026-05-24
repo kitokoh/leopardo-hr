@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Schedule\StoreScheduleRequest;
+use App\Http\Requests\Api\V1\Schedule\UpdateScheduleRequest;
+use App\Http\Resources\Api\V1\ScheduleResource;
 use App\Models\Employee;
 use App\Models\Schedule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ScheduleController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -18,33 +22,33 @@ class ScheduleController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => Schedule::query()
+        return ScheduleResource::collection(Schedule::query()
             ->select(['id', 'company_id', 'name', 'start_time', 'end_time', 'break_minutes', 'work_days', 'late_tolerance_minutes', 'overtime_threshold_daily', 'overtime_threshold_weekly', 'is_default', 'created_at'])
             ->orderBy('name')
-            ->get()
-            ->map(fn ($s) => $this->serialize($s))]);
+            ->get());
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreScheduleRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
-        $data = $request->validate(['name' => ['required', 'string', 'max:100'], 'start_time' => ['required', 'date_format:H:i'], 'end_time' => ['required', 'date_format:H:i'], 'break_minutes' => ['nullable', 'integer', 'min:0', 'max:480'], 'work_days' => ['nullable', 'array'], 'work_days.*' => ['integer', 'between:1,7'], 'late_tolerance_minutes' => ['nullable', 'integer', 'min:0', 'max:120'], 'overtime_threshold_daily' => ['nullable', 'numeric', 'min:0'], 'overtime_threshold_weekly' => ['nullable', 'numeric', 'min:0'], 'is_default' => ['nullable', 'boolean']]);
-
-        if (! empty($data['is_default'])) {
+        if (! empty($request->validated('is_default'))) {
             Schedule::where('company_id', $actor->company_id)->where('is_default', true)->update(['is_default' => false]);
         }
 
-        $schedule = Schedule::create(['company_id' => $actor->company_id, 'work_days' => $data['work_days'] ?? [1, 2, 3, 4, 5], ...$data]);
+        $schedule = Schedule::create([
+            'company_id' => $actor->company_id,
+            'work_days' => $request->validated('work_days') ?? [1, 2, 3, 4, 5],
+            ...$request->validated(),
+        ]);
 
-        return response()->json(['data' => $this->serialize($schedule)], 201);
+        return (new ScheduleResource($schedule))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    public function show(Request $request, Schedule $schedule): JsonResponse
+    public function show(Request $request, Schedule $schedule): ScheduleResource
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -52,26 +56,21 @@ class ScheduleController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($schedule)]);
+        return new ScheduleResource($schedule);
     }
 
-    public function update(Request $request, Schedule $schedule): JsonResponse
+    public function update(UpdateScheduleRequest $request, Schedule $schedule): ScheduleResource
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
 
-        $data = $request->validate(['name' => ['sometimes', 'string', 'max:100'], 'start_time' => ['sometimes', 'date_format:H:i'], 'end_time' => ['sometimes', 'date_format:H:i'], 'break_minutes' => ['nullable', 'integer', 'min:0', 'max:480'], 'work_days' => ['nullable', 'array'], 'work_days.*' => ['integer', 'between:1,7'], 'late_tolerance_minutes' => ['nullable', 'integer', 'min:0', 'max:120'], 'overtime_threshold_daily' => ['nullable', 'numeric', 'min:0'], 'overtime_threshold_weekly' => ['nullable', 'numeric', 'min:0'], 'is_default' => ['nullable', 'boolean']]);
-
-        if (! empty($data['is_default'])) {
+        if (! empty($request->validated('is_default'))) {
             Schedule::where('company_id', $actor->company_id)->where('id', '!=', $schedule->id)->where('is_default', true)->update(['is_default' => false]);
         }
 
-        $schedule->update($data);
+        $schedule->update($request->validated());
 
-        return response()->json(['data' => $this->serialize($schedule->fresh())]);
+        return new ScheduleResource($schedule->fresh());
     }
 
     public function destroy(Request $request, Schedule $schedule): JsonResponse
@@ -88,10 +87,5 @@ class ScheduleController extends Controller
         $schedule->delete();
 
         return response()->json(['message' => 'Schedule deleted successfully']);
-    }
-
-    private function serialize(Schedule $s): array
-    {
-        return ['id' => $s->id, 'name' => $s->name, 'start_time' => $s->start_time, 'end_time' => $s->end_time, 'break_minutes' => $s->break_minutes, 'work_days' => $s->work_days, 'late_tolerance_minutes' => $s->late_tolerance_minutes, 'overtime_threshold_daily' => $s->overtime_threshold_daily, 'overtime_threshold_weekly' => $s->overtime_threshold_weekly, 'is_default' => $s->is_default, 'created_at' => $s->created_at?->toIso8601String()];
     }
 }
