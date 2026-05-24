@@ -86,7 +86,7 @@ class AbsenceListScreen extends ConsumerWidget {
               (e, _) => Center(
                 child: Text(
                   e.toString(),
-                  style: const TextStyle(color: Colors.red),
+                  style: const TextStyle(color: AppColors.danger),
                 ),
               ),
         ),
@@ -101,7 +101,7 @@ class AbsenceListScreen extends ConsumerWidget {
       case 'pending':
         return AppColors.info;
       case 'rejected':
-        return Colors.red;
+        return AppColors.danger;
       default:
         return AppColors.textMutedDark;
     }
