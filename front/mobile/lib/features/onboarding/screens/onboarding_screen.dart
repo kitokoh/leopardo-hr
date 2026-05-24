@@ -199,7 +199,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               height: 400,
               child: Center(
                 child:
-                    Text(e.toString(), style: const TextStyle(color: Colors.red)),
+                    Text(e.toString(), style: const TextStyle(color: AppColors.danger)),
               ),
             ),
           ),

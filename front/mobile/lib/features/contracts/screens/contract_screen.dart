@@ -110,7 +110,7 @@ class ContractScreen extends ConsumerWidget {
             child: SizedBox(
               height: 400,
               child: Center(
-                child: Text(e.toString(), style: const TextStyle(color: Colors.red)),
+                child: Text(e.toString(), style: const TextStyle(color: AppColors.danger)),
               ),
             ),
           ),

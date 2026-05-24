@@ -44,7 +44,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erreur: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.danger,
           ),
         );
       }
@@ -172,7 +172,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
               child: Center(
                 child: Text(
                   e.toString(),
-                  style: const TextStyle(color: Colors.red),
+                  style: const TextStyle(color: AppColors.danger),
                 ),
               ),
             ),

@@ -13,9 +13,11 @@ class AuthRepository {
   AuthRepository(this.apiClient, this.storage, this.preferences);
 
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/auth/login',
+      method: 'POST',
       data: {'email': email, 'password': password, 'device_name': 'Mobile App'},
+      isLoginRequest: true,
     );
 
     final data = response.data as Map<String, dynamic>;
