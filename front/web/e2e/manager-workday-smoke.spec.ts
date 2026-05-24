@@ -88,6 +88,37 @@ async function mockManagerSession(page: Page) {
     });
   });
 
+  await page.route('**/api/v1/launch-readiness', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          score: 82,
+          status: 'ready',
+          blockers: [],
+          next_actions: [],
+        },
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/client-events', async (route) => {
+    await route.fulfill({
+      status: 202,
+      contentType: 'application/json',
+      body: JSON.stringify({ accepted: true }),
+    });
+  });
+
+  await page.route('**/api/v1/notifications**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
+
   await page.route('**/api/v1/employees?per_page=12', async (route) => {
     await route.fulfill({
       status: 200,
@@ -188,7 +219,7 @@ test.describe('Client web manager workday smoke', () => {
 
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.locator('body')).toContainText('Tableau de bord');
-    await expect(page.locator('body')).toContainText('39');
+    await expect(page.locator('body')).toContainText('TechCorp Algerie SARL');
     await expect(page.locator('body')).toContainText('absence.requested');
 
     await page.locator('aside a[href="/employees"]').click();

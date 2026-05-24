@@ -12,12 +12,14 @@ import {
   FileText,
   Globe,
   HelpCircle,
+  Laptop,
   Mail,
   Menu,
   MessageCircle,
   Monitor,
   Moon,
   PenTool,
+  Smartphone,
   Sun,
   Users,
   X,
@@ -59,12 +61,21 @@ const navByLocale: Record<string, NavEntry[]> = {
       label: 'Ressources',
       items: [
         { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Guides', description: 'Bonnes pratiques RH et tutoriels' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'Blog', description: 'Articles et actualites RH' },
+        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'Insights RH', description: 'Analyses, cas pratiques et idees de croissance' },
+        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'Docs API', description: 'Guides techniques et integration' },
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Changelog', description: 'Dernieres mises a jour produit' },
       ],
     },
-    { href: '/docs', label: 'Docs' },
     { href: '/contact', label: 'Contact' },
+    {
+      label: 'Installer Leopardo',
+      items: [
+        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'Client desktop pour ZKTeco et synchronisation' },
+        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Espace bureau pour les equipes terrain' },
+        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Pointage mobile et self-service employe' },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'Application mobile iOS pour employes et managers' },
+      ],
+    },
     {
       label: 'Communaute',
       items: [
@@ -73,7 +84,6 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contactez notre equipe' },
       ],
     },
-    { href: '/download', label: 'Leopardo for Windows' },
   ],
   en: [
     { href: '/pricing', label: 'Pricing' },
@@ -81,12 +91,21 @@ const navByLocale: Record<string, NavEntry[]> = {
       label: 'Resources',
       items: [
         { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Guides', description: 'HR best practices and tutorials' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'Blog', description: 'Articles and HR insights' },
+        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'HR Insights', description: 'Analysis, playbooks and growth ideas' },
+        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'API Docs', description: 'Technical guides and integration' },
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Changelog', description: 'Latest product updates' },
       ],
     },
-    { href: '/docs', label: 'Docs' },
     { href: '/contact', label: 'Contact' },
+    {
+      label: 'Install Leopardo',
+      items: [
+        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'Desktop client for ZKTeco and sync' },
+        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Desktop workspace for field teams' },
+        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Mobile attendance and employee self-service' },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'iOS app for employees and managers' },
+      ],
+    },
     {
       label: 'Community',
       items: [
@@ -95,7 +114,6 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contact our team' },
       ],
     },
-    { href: '/download', label: 'Leopardo for Windows' },
   ],
   tr: [
     { href: '/pricing', label: 'Fiyatlar' },
@@ -103,12 +121,21 @@ const navByLocale: Record<string, NavEntry[]> = {
       label: 'Kaynaklar',
       items: [
         { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'Rehberler', description: 'IK en iyi uygulamalari' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'Blog', description: 'Makaleler ve IK icgoruleri' },
+        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'IK Icgoruleri', description: 'Analizler, rehberler ve buyume fikirleri' },
+        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'API Dokumanlari', description: 'Teknik rehberler ve entegrasyon' },
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'Degisiklikler', description: 'Son urun guncellemeleri' },
       ],
     },
-    { href: '/docs', label: 'Dokuman' },
     { href: '/contact', label: 'Iletisim' },
+    {
+      label: 'Leopardo yu Kur',
+      items: [
+        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'ZKTeco ve senkronizasyon icin masaustu istemcisi' },
+        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Saha ekipleri icin masaustu calisma alani' },
+        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Mobil yoklama ve calisan self-servis' },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'Calisan ve yoneticiler icin iOS uygulamasi' },
+      ],
+    },
     {
       label: 'Topluluk',
       items: [
@@ -117,7 +144,6 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Destek', description: 'Ekibimize ulasin' },
       ],
     },
-    { href: '/download', label: 'Windows icin Leopardo' },
   ],
   ar: [
     { href: '/pricing', label: 'الأسعار' },
