@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/theme/mobile_experience_icons.dart';
+import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/models/mobile_experience.dart';
 
@@ -18,16 +19,17 @@ class ModulesHubScreen extends ConsumerWidget {
     final activeModules = experience?.activeModules ?? const <MobileModule>[];
     final upcomingModules =
         experience?.upcomingModules ?? const <MobileModule>[];
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
-    final background = AppColors.backgroundFor(context);
+    const text = MobileSurface.text;
+    const muted = MobileSurface.secondary;
+    const background = MobileSurface.background;
 
     return Scaffold(
       backgroundColor: background,
-      appBar: AppBar(
-        title: const Text('Modules RH'),
+      appBar: MobileTopBar(
+        title: 'Modules RH',
+        subtitle: 'Vos outils actifs',
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
@@ -49,9 +51,9 @@ class ModulesHubScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.surfaceFor(context),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: AppColors.borderFor(context)),
+                color: MobileSurface.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: MobileSurface.border, width: 0.7),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +73,7 @@ class ModulesHubScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             Text(
               'Modules actifs',
-              style: AppTypography.title.copyWith(color: text),
+              style: AppTypography.subtitle.copyWith(color: text),
             ),
             const SizedBox(height: 6),
             Text(
@@ -135,20 +137,20 @@ class _ModuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.forDomain(module.domain);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
+    const text = MobileSurface.text;
+    const muted = MobileSurface.secondary;
 
     return Material(
-      color: AppColors.surfaceFor(context),
-      borderRadius: BorderRadius.circular(24),
+      color: MobileSurface.surface,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.borderFor(context)),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: MobileSurface.border, width: 0.7),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,15 +200,15 @@ class _UpcomingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.forDomain(module.domain);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
+    const text = MobileSurface.text;
+    const muted = MobileSurface.secondary;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderFor(context)),
+        color: MobileSurface.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: MobileSurface.border, width: 0.7),
       ),
       child: Row(
         children: [

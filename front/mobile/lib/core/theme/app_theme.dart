@@ -25,12 +25,18 @@ class AppTheme {
 
   static ThemeData _buildTheme(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
-    final scaffold = isDark ? AppColors.bgDark : AppColors.bgLight;
-    final surface = isDark ? AppColors.cardDark : AppColors.cardLight;
-    final fieldFill = isDark ? AppColors.cardDark : AppColors.bgLight;
-    final border = isDark ? AppColors.borderDark : AppColors.borderLight;
-    final text = isDark ? AppColors.textDark : AppColors.textLight;
-    final muted = isDark ? AppColors.textMutedDark : AppColors.textMuted;
+    const mobileDarkBackground = Color(0xFF0B1120);
+    const mobileDarkSurface = Color(0xFF111B2E);
+    const mobileDarkField = Color(0xFF0C1525);
+    const mobileDarkBorder = Color(0xFF1A2B44);
+    const mobileDarkText = Color(0xFFE2EAF6);
+    const mobileDarkMuted = Color(0xFF7A9CC0);
+    final scaffold = isDark ? mobileDarkBackground : AppColors.bgLight;
+    final surface = isDark ? mobileDarkSurface : AppColors.cardLight;
+    final fieldFill = isDark ? mobileDarkField : AppColors.bgLight;
+    final border = isDark ? mobileDarkBorder : AppColors.borderLight;
+    final text = isDark ? mobileDarkText : AppColors.textLight;
+    final muted = isDark ? mobileDarkMuted : AppColors.textMuted;
     final scheme = ColorScheme.fromSeed(
       seedColor: AppColors.rh,
       brightness: brightness,
@@ -78,8 +84,8 @@ class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: border),
+          borderRadius: BorderRadius.circular(isDark ? 16 : 24),
+          side: BorderSide(color: border, width: isDark ? 0.7 : 1),
         ),
       ),
       dividerTheme: DividerThemeData(color: border, thickness: 1, space: 1),
@@ -103,10 +109,10 @@ class AppTheme {
           backgroundColor: AppColors.rh,
           foregroundColor: Colors.white,
           elevation: 0,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: Size.fromHeight(isDark ? 46 : 52),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(isDark ? 12 : 18),
           ),
           textStyle: AppTypography.subtitle,
         ),
@@ -115,9 +121,9 @@ class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.rh,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: Size.fromHeight(isDark ? 46 : 52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(isDark ? 12 : 18),
           ),
           textStyle: AppTypography.subtitle,
         ),
@@ -126,10 +132,10 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: text,
           side: BorderSide(color: border),
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: Size.fromHeight(isDark ? 46 : 52),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(isDark ? 12 : 18),
           ),
           textStyle: AppTypography.subtitle,
         ),

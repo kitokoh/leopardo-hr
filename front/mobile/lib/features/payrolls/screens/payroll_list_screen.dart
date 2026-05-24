@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
+import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/payrolls/providers/payroll_provider.dart';
 import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,125 +59,134 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
     final payrollsAsync = ref.watch(payrollsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgDark,
-      appBar: AppBar(
-        backgroundColor: AppColors.bgDark,
-        elevation: 0,
-        title: Text(
-          'Mes Fiches de Paie',
-          style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
-        ),
+      backgroundColor: MobileSurface.background,
+      appBar: MobileTopBar(
+        title: 'Fiches de paie',
+        subtitle: 'Bulletins valides et exports PDF',
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+          icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
       ),
       body: RefreshIndicator(
+        color: AppColors.rh,
+        backgroundColor: MobileSurface.background,
         onRefresh: () async => await ref.refresh(payrollsProvider.future),
         child: payrollsAsync.when(
-          data: (payrolls) => payrolls.isEmpty
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 80),
-                    EmptyState(
-                      icon: Icons.description,
-                      title: 'Aucune fiche de paie',
-                      description:
-                          'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.',
-                    ),
-                  ],
-                )
-              : ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(20),
-                  itemCount: payrolls.length,
-                  itemBuilder: (context, index) {
-                    final payroll = payrolls[index];
-                    final isDownloading = _downloadingId == payroll.id;
-                    return Card(
-                      color: AppColors.cardDark,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        title: Text(
-                          'Mois: ${payroll.month}/${payroll.year}',
-                          style: AppTypography.subtitle.copyWith(
-                            color: AppColors.textDark,
+          data:
+              (payrolls) =>
+                  payrolls.isEmpty
+                      ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: const [
+                          SizedBox(height: 80),
+                          EmptyState(
+                            icon: Icons.description,
+                            title: 'Aucune fiche de paie',
+                            description:
+                                'Vos fiches de paie apparaîtront ici dès qu\'elles seront validées.',
                           ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Salaire Net: ${payroll.netSalary.toStringAsFixed(2)} DZD',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textMutedDark,
-                              ),
-                            ),
-                            if (payroll.status == 'validated')
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.check_circle,
-                                        size: 14, color: AppColors.success),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Validé',
-                                      style: AppTypography.bodySmall.copyWith(
-                                        color: AppColors.success,
+                        ],
+                      )
+                      : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(20),
+                        itemCount: payrolls.length,
+                        itemBuilder: (context, index) {
+                          final payroll = payrolls[index];
+                          final isDownloading = _downloadingId == payroll.id;
+                          return MobilePanel(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                const MobileIconBubble(
+                                  icon: Icons.receipt_long_outlined,
+                                  color: AppColors.rh,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Mois ${payroll.month}/${payroll.year}',
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: MobileSurface.text,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${payroll.netSalary.toStringAsFixed(2)} DZD net',
+                                        style: AppTypography.caption.copyWith(
+                                          color: MobileSurface.secondary,
+                                        ),
+                                      ),
+                                      if (payroll.status == 'validated')
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 6),
+                                          child: MobileStatusPill(
+                                            label: 'Valide',
+                                            color: AppColors.success,
+                                            icon: Icons.check_circle,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                isDownloading
+                                    ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        semanticsLabel:
+                                            'Telechargement en cours...',
+                                      ),
+                                    )
+                                    : IconButton(
+                                      icon: const Icon(
+                                        Icons.picture_as_pdf,
+                                        color: AppColors.info,
+                                      ),
+                                      tooltip: 'Telecharger le bulletin PDF',
+                                      onPressed:
+                                          payroll.pdfPath != null
+                                              ? () => _downloadPdf(payroll.id)
+                                              : null,
                                     ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
-                        trailing: isDownloading
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  semanticsLabel: 'Téléchargement en cours...',
-                                ),
-                              )
-                            : IconButton(
-                                icon: const Icon(Icons.picture_as_pdf,
-                                    color: AppColors.info),
-                                tooltip: 'Télécharger le bulletin PDF',
-                                onPressed: payroll.pdfPath != null
-                                    ? () => _downloadPdf(payroll.id)
-                                    : null,
-                              ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-          loading: () => const SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: SizedBox(
-              height: 400,
-              child: Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: 'Chargement des fiches de paie...',
-                ),
-              ),
-            ),
-          ),
-          error: (e, _) => SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: SizedBox(
-              height: 400,
-              child: Center(
-                child: Text(
-                  e.toString(),
-                  style: const TextStyle(color: AppColors.danger),
+          loading:
+              () => const SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: 400,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      semanticsLabel: 'Chargement des fiches de paie...',
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
+          error:
+              (e, _) => SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: 400,
+                  child: Center(
+                    child: Text(
+                      e.toString(),
+                      style: const TextStyle(color: AppColors.danger),
+                    ),
+                  ),
+                ),
+              ),
         ),
       ),
     );
