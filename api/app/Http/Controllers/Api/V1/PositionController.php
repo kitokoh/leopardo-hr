@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Position\StorePositionRequest;
+use App\Http\Requests\Api\V1\Position\UpdatePositionRequest;
+use App\Http\Resources\Api\V1\PositionResource;
 use App\Models\Employee;
 use App\Models\Position;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PositionController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -26,14 +30,21 @@ class PositionController extends Controller
             $query->where('department_id', $request->integer('department_id'));
         }
 
-        return response()->json([
-            'data' => $query->orderBy('name')
-                ->get()
-                ->map(fn ($p) => $this->serialize($p)),
-        ]);
+        return PositionResource::collection($query->orderBy('name')->get());
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StorePositionRequest $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+        $pos = Position::create(['company_id' => $user->company_id, ...$request->validated()]);
+
+        return (new PositionResource($pos))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function show(Request $request, Position $position): PositionResource
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -41,35 +52,14 @@ class PositionController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['name' => ['required', 'string', 'max:100'], 'department_id' => ['nullable', 'integer', 'min:1']]);
-        $pos = Position::create(['company_id' => $user->company_id, ...$data]);
-
-        return response()->json(['data' => $this->serialize($pos)], 201);
+        return new PositionResource($position->load('department'));
     }
 
-    public function show(Request $request, Position $position): JsonResponse
+    public function update(UpdatePositionRequest $request, Position $position): PositionResource
     {
-        /** @var Employee $user */
-        $user = $request->user();
-        if (! $user->isManager()) {
-            abort(403);
-        }
+        $position->update($request->validated());
 
-        return response()->json(['data' => $this->serialize($position->load('department'))]);
-    }
-
-    public function update(Request $request, Position $position): JsonResponse
-    {
-        /** @var Employee $user */
-        $user = $request->user();
-        if (! $user->isManager()) {
-            abort(403);
-        }
-
-        $data = $request->validate(['name' => ['sometimes', 'string', 'max:100'], 'department_id' => ['nullable', 'integer', 'min:1']]);
-        $position->update($data);
-
-        return response()->json(['data' => $this->serialize($position->fresh())]);
+        return new PositionResource($position->fresh());
     }
 
     public function destroy(Request $request, Position $position): JsonResponse
@@ -83,16 +73,5 @@ class PositionController extends Controller
         $position->delete();
 
         return response()->json(['message' => 'Position deleted successfully']);
-    }
-
-    private function serialize(Position $p): array
-    {
-        return [
-            'id' => $p->id,
-            'name' => $p->name,
-            'department_id' => $p->department_id,
-            'department' => $p->relationLoaded('department') && $p->department ? ['id' => $p->department->id, 'name' => $p->department->name] : null,
-            'created_at' => $p->created_at?->toIso8601String(),
-        ];
     }
 }

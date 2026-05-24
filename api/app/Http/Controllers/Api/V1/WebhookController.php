@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Webhook\StoreWebhookEndpointRequest;
+use App\Http\Requests\Api\V1\Webhook\UpdateWebhookEndpointRequest;
+use App\Http\Resources\Api\V1\WebhookEndpointResource;
 use App\Models\Employee;
 use App\Models\WebhookEndpoint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Str;
 
 class WebhookController extends Controller
@@ -32,7 +36,7 @@ class WebhookController extends Controller
         'expense.approved',
     ];
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -40,39 +44,20 @@ class WebhookController extends Controller
             abort(403);
         }
 
-        $webhooks = WebhookEndpoint::query()
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(fn (WebhookEndpoint $w) => [
-                'id' => $w->id,
-                'url' => $w->url,
-                'events' => $w->events,
-                'active' => $w->active,
-                'failure_count' => $w->failure_count,
-                'last_triggered_at' => $w->last_triggered_at?->toIso8601String(),
-            ]);
-
-        return response()->json(['data' => $webhooks]);
+        return WebhookEndpointResource::collection(
+            WebhookEndpoint::query()->orderByDesc('created_at')->get()
+        );
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreWebhookEndpointRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'url' => 'required|url|max:500',
-            'events' => 'required|array|min:1',
-            'events.*' => 'string|in:'.implode(',', self::AVAILABLE_EVENTS),
-        ]);
 
         $webhook = WebhookEndpoint::create([
             'company_id' => $actor->company_id,
-            'url' => $validated['url'],
-            'events' => $validated['events'],
+            'url' => $request->validated('url'),
+            'events' => $request->validated('events'),
             'secret' => Str::random(40),
             'active' => true,
         ]);
@@ -115,30 +100,18 @@ class WebhookController extends Controller
         ]);
     }
 
-    public function update(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
+    public function update(UpdateWebhookEndpointRequest $request, WebhookEndpoint $webhookEndpoint): WebhookEndpointResource
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
-        if ($webhookEndpoint->company_id !== $actor->company_id) {
+        if ($webhookEndpoint->company_id !== $request->user()->company_id) {
             abort(404);
         }
 
-        $validated = $request->validate([
-            'url' => 'sometimes|url|max:500',
-            'events' => 'sometimes|array|min:1',
-            'events.*' => 'string|in:'.implode(',', self::AVAILABLE_EVENTS),
-            'active' => 'boolean',
-        ]);
-
-        $webhookEndpoint->update($validated);
-        if (isset($validated['active']) && $validated['active']) {
+        $webhookEndpoint->update($request->validated());
+        if ($request->validated('active')) {
             $webhookEndpoint->update(['failure_count' => 0]);
         }
 
-        return response()->json(['data' => $webhookEndpoint->fresh()]);
+        return new WebhookEndpointResource($webhookEndpoint->fresh());
     }
 
     public function destroy(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
