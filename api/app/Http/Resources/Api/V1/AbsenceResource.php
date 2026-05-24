@@ -37,6 +37,12 @@ class AbsenceResource extends JsonResource
                 'code' => $this->absenceType->code,
                 'deducts_leave' => $this->absenceType->deducts_leave,
             ]),
+            'absenceType' => $this->whenLoaded('absenceType', fn () => [
+                'id' => $this->absenceType->id,
+                'name' => $this->absenceType->name,
+                'code' => $this->absenceType->code,
+                'deducts_leave' => $this->absenceType->deducts_leave,
+            ]),
             'type' => $this->whenLoaded('absenceType', fn () => $this->absenceType->name),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
