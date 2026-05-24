@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:leopardo_rh/core/storage/app_preferences.dart';
 import 'package:leopardo_rh/core/storage/secure_storage.dart';
 import 'package:leopardo_rh/core/api/api_exceptions.dart';
 import 'package:leopardo_rh/core/api/mock_interceptor.dart';
+
+typedef RetryCallback = void Function(int attempt, Object error);
 
 class ApiClient {
   static const String _defaultRemoteBaseUrl =
@@ -12,6 +16,12 @@ class ApiClient {
       'http://10.0.2.2:8000/api/v1';
   static const String _defaultLocalLoopbackBaseUrl =
       'http://127.0.0.1:8000/api/v1';
+
+  static const int _defaultMaxRetries = 2;
+  static const int _loginMaxRetries = 3;
+  static const Duration _defaultTimeout = Duration(seconds: 20);
+  static const Duration _loginTimeout = Duration(seconds: 60);
+
   final Dio _dio;
   final SecureStorage _storage;
   final AppPreferences _preferences;
@@ -21,8 +31,8 @@ class ApiClient {
     : _dio = Dio(
         BaseOptions(
           baseUrl: resolveBaseUrl(),
-          connectTimeout: const Duration(seconds: 20),
-          receiveTimeout: const Duration(seconds: 20),
+          connectTimeout: _defaultTimeout,
+          receiveTimeout: _defaultTimeout,
           headers: {'Accept': 'application/json'},
         ),
       ) {
@@ -93,6 +103,78 @@ class ApiClient {
         return _defaultLocalLoopbackBaseUrl;
     }
   }
+
+  /// Performs a request with automatic retry for cold-start (502/503/504)
+  /// and network errors. Uses extended timeouts for login requests.
+  Future<Response<T>> requestWithRetry<T>(
+    String path, {
+    String method = 'GET',
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    bool isLoginRequest = false,
+    RetryCallback? onRetry,
+  }) async {
+    final maxRetries = isLoginRequest ? _loginMaxRetries : _defaultMaxRetries;
+    final timeout = isLoginRequest ? _loginTimeout : _defaultTimeout;
+
+    Object? lastError;
+
+    for (int attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        final response = await _dio.request<T>(
+          path,
+          data: data,
+          queryParameters: queryParameters,
+          options: (options ?? Options()).copyWith(
+            method: method,
+            sendTimeout: timeout,
+            receiveTimeout: timeout,
+          ),
+        );
+
+        final statusCode = response.statusCode ?? 0;
+        if (_isColdStartStatus(statusCode) && attempt < maxRetries) {
+          onRetry?.call(attempt + 1, ApiException(
+            'Server returned $statusCode',
+            statusCode: statusCode,
+            code: 'COLD_START',
+          ));
+          await _backoff(attempt);
+          continue;
+        }
+
+        return response;
+      } on DioException catch (e) {
+        lastError = e;
+
+        final isColdStart = _isColdStartStatus(e.response?.statusCode ?? 0);
+        final isTimeout = e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout;
+        final isNetwork = e.type == DioExceptionType.connectionError;
+
+        if ((isColdStart || isTimeout || isNetwork) && attempt < maxRetries) {
+          onRetry?.call(attempt + 1, e);
+          await _backoff(attempt);
+          continue;
+        }
+
+        rethrow;
+      }
+    }
+
+    if (lastError is DioException) {
+      throw lastError;
+    }
+    throw ApiException('Request failed after retries');
+  }
+
+  bool _isColdStartStatus(int statusCode) =>
+      statusCode == 502 || statusCode == 503 || statusCode == 504;
+
+  Future<void> _backoff(int attempt) =>
+      Future.delayed(Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)));
 
   DioException _handleError(DioException e) {
     String message = "Impossible de se connecter au serveur";

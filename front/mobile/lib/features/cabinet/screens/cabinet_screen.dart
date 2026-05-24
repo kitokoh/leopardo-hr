@@ -44,7 +44,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           children: [
             Icon(
               isRoot ? Icons.door_sliding_outlined : Icons.folder_open,
-              color: const Color(0xFF8B6914),
+              color: AppColors.cabinet,
               size: 24,
             ),
             const SizedBox(width: 10),
@@ -71,7 +71,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
             colors: [
               AppColors.tint(
                 context,
-                const Color(0xFF8B6914),
+                AppColors.cabinet,
                 lightAlpha: 0.06,
               ),
               background,
@@ -183,7 +183,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
 
   Widget _buildFab(Color text) {
     return FloatingActionButton(
-      backgroundColor: const Color(0xFF8B6914),
+      backgroundColor: AppColors.cabinet,
       foregroundColor: Colors.white,
       onPressed: () => _showAddMenu(),
       child: const Icon(Icons.add),
@@ -206,7 +206,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: AppColors.borderLight,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -214,7 +214,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 ListTile(
                   leading: const Icon(
                     Icons.create_new_folder_outlined,
-                    color: Color(0xFF8B6914),
+                    color: AppColors.cabinet,
                   ),
                   title: const Text('Nouveau dossier'),
                   onTap: () {
@@ -225,7 +225,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 ListTile(
                   leading: const Icon(
                     Icons.upload_file_outlined,
-                    color: Color(0xFF8B6914),
+                    color: AppColors.cabinet,
                   ),
                   title: const Text('Ajouter un document'),
                   subtitle: const Text('Depuis vos fichiers ou la camera'),
@@ -328,7 +328,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 const SizedBox(height: 16),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.link, color: Color(0xFF8B6914)),
+                  leading: const Icon(Icons.link, color: AppColors.cabinet),
                   title: const Text('Creer un lien de partage'),
                   onTap: () async {
                     Navigator.pop(ctx);
@@ -400,7 +400,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 child: const Text('Annuler'),
               ),
               FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
                 onPressed: () async {
                   Navigator.pop(ctx);
                   final repo = ref.read(cabinetRepositoryProvider);
@@ -453,12 +453,12 @@ class _FolderTile extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF8B6914).withValues(alpha: 0.12),
+                    color: AppColors.cabinet.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.folder,
-                    color: Color(0xFF8B6914),
+                    color: AppColors.cabinet,
                     size: 24,
                   ),
                 ),
@@ -514,9 +514,9 @@ class _DocumentTile extends StatelessWidget {
   }
 
   Color get _iconColor {
-    if (document.isPdf) return Colors.red.shade700;
-    if (document.isImage) return Colors.blue.shade700;
-    return Colors.grey.shade700;
+    if (document.isPdf) return AppColors.danger;
+    if (document.isImage) return AppColors.info;
+    return AppColors.textMuted;
   }
 
   @override
@@ -569,13 +569,13 @@ class _DocumentTile extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.share_outlined, size: 20),
-              color: const Color(0xFF8B6914),
+              color: AppColors.cabinet,
               tooltip: 'Partager',
               onPressed: onShare,
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 20),
-              color: Colors.red.shade400,
+              color: AppColors.danger,
               tooltip: 'Supprimer',
               onPressed: onDelete,
             ),

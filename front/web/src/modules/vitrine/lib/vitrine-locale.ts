@@ -207,8 +207,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: "La solution moderne et intelligente pour gerer vos ressources humaines a l'ere de l'IA.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog'] },
-        { title: 'Ressources', links: ['Documentation', 'Blog', 'Support', 'Status', 'Communaute'] },
+        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute'] },
         { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
       ],
       rights: 'Tous droits reserves.',
@@ -308,8 +308,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'A modern HR platform for payroll, attendance, workforce visibility, and AI-assisted operations.',
       sections: [
-        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog'] },
-        { title: 'Resources', links: ['Documentation', 'Blog', 'Support', 'Status', 'Community'] },
+        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
+        { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
         { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
       ],
       rights: 'All rights reserved.',
@@ -409,8 +409,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Bordro, devam takibi, saha gorunurlugu ve yapay zeka destekli operasyonlar icin modern IK platformu.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler'] },
-        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Blog', 'Destek', 'Durum', 'Topluluk'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo'] },
+        { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
       ],
       rights: 'Tum haklari saklidir.',
@@ -510,8 +510,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'منصة حديثة للموارد البشرية للرواتب والحضور والرؤية التشغيلية مع قدرات ذكاء اصطناعي.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات'] },
-        { title: 'الموارد', links: ['التوثيق', 'المدونة', 'الدعم', 'الحالة', 'المجتمع'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز'] },
+        { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
       ],
       rights: 'جميع الحقوق محفوظة.',
