@@ -14,7 +14,7 @@ function getFooterHref(sectionIndex: number, linkIndex: number): string {
     '0-3': '/integrations#api',
     '0-4': '/changelog',
     '0-5': '/download',
-    '1-0': '/documents',
+    '1-0': '/docs',
     '1-1': '/guides/rh-startup',
     '1-2': '/blog',
     '1-3': '/contact',
