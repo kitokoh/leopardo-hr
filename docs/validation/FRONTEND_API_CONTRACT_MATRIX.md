@@ -25,12 +25,16 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Demande absence | `POST /api/v1/absences` | employe | `Absences\AbsenceStoreTest`, `FrontendApiContractTest` |
 | Mobile | Detail absence | `GET /api/v1/absences/{absence}` | employe/manager | `Absences\AbsenceShowTest`, `FrontendApiContractTest` |
 | Mobile | Annulation absence | `DELETE /api/v1/absences/{absence}` | employe/manager | `FrontendApiContractTest` |
+| Mobile | Approbation absence | `PUT /api/v1/absences/{absence}/approve` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
+| Mobile | Refus absence | `PUT /api/v1/absences/{absence}/reject` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
 | Mobile | Soldes conges | `GET /api/v1/me/leave-balances` | employe | `FrontendApiContractTest` |
 | Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
 | Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |
+| Mobile | Approbation avance salaire | `PUT /api/v1/salary-advances/{salaryAdvance}/approve` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
+| Mobile | Refus avance salaire | `PUT /api/v1/salary-advances/{salaryAdvance}/reject` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
 | Mobile / web client | Notifications | `GET /api/v1/notifications` | authentifie | `ApiListQueryContractTest`, `FrontendApiContractTest`, `NotificationControllerTest` |
 | Mobile | Marquer notification lue | `PUT /api/v1/notifications/{notification}/read` | authentifie | `FrontendApiContractTest` |
 | Mobile | Tout marquer lu | `PUT /api/v1/notifications/read-all` | authentifie | `FrontendApiContractTest` |
