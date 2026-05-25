@@ -90,9 +90,54 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
   return {
     request,
 
+    /** Couts IA par periode */
+    getAiAnalyticsCosts(options = {}) {
+      return request("GET", "/ai/analytics/costs", options);
+    },
+
+    /** Erreurs IA recentes */
+    getAiAnalyticsErrors(options = {}) {
+      return request("GET", "/ai/analytics/errors", options);
+    },
+
+    /** Usage des outils IA */
+    getAiAnalyticsTools(options = {}) {
+      return request("GET", "/ai/analytics/tools", options);
+    },
+
+    /** Metriques d'usage IA */
+    getAiAnalyticsUsage(options = {}) {
+      return request("GET", "/ai/analytics/usage", options);
+    },
+
+    /** Envoyer un message au chatbot IA */
+    postAiChat(options = {}) {
+      return request("POST", "/ai/chat", options);
+    },
+
+    /** Supprimer une conversation IA */
+    deleteAiChatByConversationId(options = {}) {
+      return request("DELETE", "/ai/chat/{conversationId}", options);
+    },
+
+    /** Historique des conversations IA */
+    getAiChatHistory(options = {}) {
+      return request("GET", "/ai/chat/history", options);
+    },
+
+    /** Liste des outils IA disponibles */
+    getAiTools(options = {}) {
+      return request("GET", "/ai/tools", options);
+    },
+
     /** Historique de pointage */
     getAttendance(options = {}) {
       return request("GET", "/attendance", options);
+    },
+
+    /** Modifier directement un pointage */
+    putAttendanceByAttendanceLog(options = {}) {
+      return request("PUT", "/attendance/{attendanceLog}", options);
     },
 
     /** Check-in */
@@ -103,6 +148,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Check-out */
     postAttendanceCheckOut(options = {}) {
       return request("POST", "/attendance/check-out", options);
+    },
+
+    /** Demander une correction de pointage */
+    postAttendanceCorrections(options = {}) {
+      return request("POST", "/attendance/corrections", options);
     },
 
     /** Etat du jour */
@@ -235,6 +285,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cameras/test-rtsp", options);
     },
 
+    /** Persister un evenement UX client tenant-scope */
+    postClientEvents(options = {}) {
+      return request("POST", "/client-events", options);
+    },
+
+    /** Analytics communication tenant */
+    getCommunicationAnalytics(options = {}) {
+      return request("GET", "/communication/analytics", options);
+    },
+
     /** Lister les employes */
     getEmployees(options = {}) {
       return request("GET", "/employees", options);
@@ -320,6 +380,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/evaluations/{evaluation}/submit", options);
     },
 
+    /** Carte temps reel des vehicules */
+    getFleetLiveMap(options = {}) {
+      return request("GET", "/fleet/live-map", options);
+    },
+
+    /** Vue d'ensemble de la flotte */
+    getFleetOverview(options = {}) {
+      return request("GET", "/fleet/overview", options);
+    },
+
+    /** Rapport consommation carburant */
+    getFleetReportsFuel(options = {}) {
+      return request("GET", "/fleet/reports/fuel", options);
+    },
+
+    /** Vehicules necessitant une maintenance */
+    getFleetReportsMaintenanceDue(options = {}) {
+      return request("GET", "/fleet/reports/maintenance-due", options);
+    },
+
+    /** Rapport kilometrage */
+    getFleetReportsMileage(options = {}) {
+      return request("GET", "/fleet/reports/mileage", options);
+    },
+
     /** Healthcheck live + ready */
     getHealth(options = {}) {
       return request("GET", "/health", options);
@@ -360,6 +445,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/kiosks/{deviceCode}/sync", options);
     },
 
+    /** Lire le score de readiness lancement du tenant */
+    getLaunchReadiness(options = {}) {
+      return request("GET", "/launch-readiness", options);
+    },
+
     /** Resume journalier utilisateur courant */
     getMeDailySummary(options = {}) {
       return request("GET", "/me/daily-summary", options);
@@ -373,6 +463,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Estimation utilisateur courant */
     getMeQuickEstimate(options = {}) {
       return request("GET", "/me/quick-estimate", options);
+    },
+
+    /** Lire les preferences de notification de l'utilisateur courant */
+    getNotificationPreferences(options = {}) {
+      return request("GET", "/notification-preferences", options);
+    },
+
+    /** Mettre a jour les preferences de notification de l'utilisateur courant */
+    patchNotificationPreferences(options = {}) {
+      return request("PATCH", "/notification-preferences", options);
     },
 
     /** Lister les notifications de l'utilisateur courant */
@@ -393,6 +493,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Marquer toutes les notifications comme lues */
     putNotificationsReadAll(options = {}) {
       return request("PUT", "/notifications/read-all", options);
+    },
+
+    /** Lister les bulletins du tenant (manager) */
+    getPaySlips(options = {}) {
+      return request("GET", "/pay-slips", options);
     },
 
     /** Connexion super-admin */
@@ -553,6 +658,121 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Ajouter un commentaire sur une tache */
     postTasksByTaskComments(options = {}) {
       return request("POST", "/tasks/{task}/comments", options);
+    },
+
+    /** Synchroniser les devices Traccar */
+    postTrackingSyncDevices(options = {}) {
+      return request("POST", "/tracking/sync-devices", options);
+    },
+
+    /** Synchroniser les positions Traccar */
+    postTrackingSyncPositions(options = {}) {
+      return request("POST", "/tracking/sync-positions", options);
+    },
+
+    /** Synchroniser les trajets Traccar */
+    postTrackingSyncTrips(options = {}) {
+      return request("POST", "/tracking/sync-trips", options);
+    },
+
+    /** Liste de toutes les alertes vehicules */
+    getVehicleAlerts(options = {}) {
+      return request("GET", "/vehicle-alerts", options);
+    },
+
+    /** Acquitter une alerte vehicule */
+    postVehicleAlertsByIdAcknowledge(options = {}) {
+      return request("POST", "/vehicle-alerts/{id}/acknowledge", options);
+    },
+
+    /** Liste des maintenances vehicules */
+    getVehicleMaintenance(options = {}) {
+      return request("GET", "/vehicle-maintenance", options);
+    },
+
+    /** Planifier une maintenance */
+    postVehicleMaintenance(options = {}) {
+      return request("POST", "/vehicle-maintenance", options);
+    },
+
+    /** Supprimer une maintenance */
+    deleteVehicleMaintenanceById(options = {}) {
+      return request("DELETE", "/vehicle-maintenance/{id}", options);
+    },
+
+    /** Modifier une maintenance */
+    putVehicleMaintenanceById(options = {}) {
+      return request("PUT", "/vehicle-maintenance/{id}", options);
+    },
+
+    /** Liste de tous les trajets */
+    getVehicleTrips(options = {}) {
+      return request("GET", "/vehicle-trips", options);
+    },
+
+    /** Detail d'un trajet */
+    getVehicleTripsById(options = {}) {
+      return request("GET", "/vehicle-trips/{id}", options);
+    },
+
+    /** Liste des vehicules de l'entreprise */
+    getVehicles(options = {}) {
+      return request("GET", "/vehicles", options);
+    },
+
+    /** Creer un vehicule */
+    postVehicles(options = {}) {
+      return request("POST", "/vehicles", options);
+    },
+
+    /** Supprimer un vehicule */
+    deleteVehiclesById(options = {}) {
+      return request("DELETE", "/vehicles/{id}", options);
+    },
+
+    /** Detail d'un vehicule */
+    getVehiclesById(options = {}) {
+      return request("GET", "/vehicles/{id}", options);
+    },
+
+    /** Modifier un vehicule */
+    putVehiclesById(options = {}) {
+      return request("PUT", "/vehicles/{id}", options);
+    },
+
+    /** Alertes d'un vehicule */
+    getVehiclesByIdAlerts(options = {}) {
+      return request("GET", "/vehicles/{id}/alerts", options);
+    },
+
+    /** Assigner un vehicule a un employe */
+    postVehiclesByIdAssign(options = {}) {
+      return request("POST", "/vehicles/{id}/assign", options);
+    },
+
+    /** Historique des affectations conducteur */
+    getVehiclesByIdAssignments(options = {}) {
+      return request("GET", "/vehicles/{id}/assignments", options);
+    },
+
+    /** Historique maintenance d'un vehicule */
+    getVehiclesByIdMaintenance(options = {}) {
+      return request("GET", "/vehicles/{id}/maintenance", options);
+    },
+
+    /** Position actuelle du vehicule (via Traccar) */
+    getVehiclesByIdPosition(options = {}) {
+      return request("GET", "/vehicles/{id}/position", options);
+    },
+
+    /** Trajets d'un vehicule */
+    getVehiclesByIdTrips(options = {}) {
+      return request("GET", "/vehicles/{id}/trips", options);
+    },
+
+    /** Desassigner un vehicule */
+    postVehiclesByIdUnassign(options = {}) {
+      return request("POST", "/vehicles/{id}/unassign", options);
     },
 
     /** Viewer public par token */

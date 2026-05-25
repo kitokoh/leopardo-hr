@@ -12,6 +12,7 @@ use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckOutRequest;
 use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
+use App\Models\AttendanceCorrectionRequest;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Services\AttendanceAnomalyService;
@@ -19,6 +20,7 @@ use App\Services\AttendanceMonthlyReportService;
 use App\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -232,6 +234,69 @@ class AttendanceController extends Controller
             'pdf' => $reportService->toPdf($report),
             default => new JsonResponse($report),
         };
+    }
+
+    public function requestCorrection(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $validated = $request->validate([
+            'attendance_log_id' => ['nullable', 'integer', 'exists:attendance_logs,id'],
+            'date' => ['required', 'date'],
+            'requested_check_in' => ['required', 'date'],
+            'requested_check_out' => ['nullable', 'date'],
+            'reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $company = currentCompany();
+        $timezone = $company->timezone;
+        $requestedCheckIn = Carbon::parse($validated['requested_check_in'])->setTimezone($timezone);
+        $requestedCheckOut = isset($validated['requested_check_out'])
+            ? Carbon::parse($validated['requested_check_out'])->setTimezone($timezone)
+            : null;
+
+        if ($requestedCheckIn->isFuture() || ($requestedCheckOut !== null && $requestedCheckOut->isFuture())) {
+            throw ValidationException::withMessages([
+                'requested_check_in' => ['Impossible de demander une correction avec une heure future.'],
+            ]);
+        }
+
+        if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
+            throw ValidationException::withMessages([
+                'requested_check_out' => ['L\'heure de depart doit etre posterieure a l\'heure d\'arrivee.'],
+            ]);
+        }
+
+        $log = null;
+        if (! empty($validated['attendance_log_id'])) {
+            $log = AttendanceLog::query()
+                ->where('id', $validated['attendance_log_id'])
+                ->where('employee_id', $actor->id)
+                ->firstOrFail();
+        }
+
+        $correction = AttendanceCorrectionRequest::query()->create([
+            'company_id' => $actor->company_id,
+            'employee_id' => $actor->id,
+            'attendance_log_id' => $log?->id,
+            'date' => $validated['date'],
+            'requested_check_in' => $requestedCheckIn,
+            'requested_check_out' => $requestedCheckOut,
+            'reason' => $validated['reason'],
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'data' => [
+                'id' => $correction->id,
+                'status' => $correction->status,
+                'date' => $correction->date?->format('Y-m-d'),
+                'requested_check_in' => $correction->requested_check_in?->toIso8601String(),
+                'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
+            ],
+            'message' => 'Demande de modification transmise au RH.',
+        ], 201);
     }
 
     public function update(Request $request, AttendanceLog $attendanceLog): JsonResponse
