@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.140] - 2026-05-25
+
+### Added
+
+- Mobile : workflows employe Plan 25.3 enrichis avec annulation des demandes d absence en attente via `DELETE /absences/{id}`.
+- Mobile : annulation des demandes d avance en attente via `DELETE /salary-advances/{id}`.
+- Mobile : tests repository ajoutés pour verrouiller les routes self-service d'annulation absence/avance.
+
 ## [4.16.139] - 2026-05-25
 
 ### Changed

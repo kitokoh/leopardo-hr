@@ -46,6 +46,13 @@ Etat v4.16.139 :
 - Pointage : arrivee, depart, correction employee-side et modification RH/manager.
 - Documents/paie : consultation mobile lisible, erreurs API explicites.
 
+Etat v4.16.140 :
+
+- Livré : annulation employee-side des absences en attente via `DELETE /absences/{id}`.
+- Livré : annulation employee-side des avances en attente via `DELETE /salary-advances/{id}`.
+- Livré : confirmations utilisateur, feedback SnackBar et invalidation des providers apres annulation.
+- Livré : contrats repository mobiles couvrant les routes d'annulation self-service.
+
 ## Lot 25.4 - Workflows manager/RH mobile
 
 - Equipe : liste, ajout, archive, invitations, refresh garanti.
