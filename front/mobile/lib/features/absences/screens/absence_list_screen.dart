@@ -5,9 +5,12 @@ import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
+import 'package:leopardo_rh/core/widgets/mobile_decision_actions.dart';
 import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/absences/providers/absence_provider.dart';
+import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/models/absence.dart';
+import 'package:leopardo_rh/models/employee.dart';
 
 class AbsenceListScreen extends ConsumerWidget {
   const AbsenceListScreen({super.key});
@@ -15,6 +18,7 @@ class AbsenceListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final absencesAsync = ref.watch(absencesProvider);
+    final actor = ref.watch(authProvider).employee;
 
     return Scaffold(
       backgroundColor: MobileSurface.background,
@@ -72,7 +76,7 @@ class AbsenceListScreen extends ConsumerWidget {
                     label: _statusLabel(absence.status),
                     color: color,
                   ),
-                  footer: _absenceFooter(context, ref, absence),
+                  footer: _absenceFooter(context, ref, absence, actor: actor),
                 );
               },
             );
@@ -107,8 +111,22 @@ class AbsenceListScreen extends ConsumerWidget {
     );
   }
 
-  Widget? _absenceFooter(BuildContext context, WidgetRef ref, Absence absence) {
+  Widget? _absenceFooter(
+    BuildContext context,
+    WidgetRef ref,
+    Absence absence, {
+    required Employee? actor,
+  }) {
     if (absence.status == 'pending') {
+      if (_canDecideAbsence(actor, absence)) {
+        return MobileDecisionActions(
+          approveLabel: 'Approuver',
+          rejectLabel: 'Refuser',
+          onApprove: () => _confirmApproveAbsence(context, ref, absence.id),
+          onReject: () => _showRejectAbsenceSheet(context, ref, absence.id),
+        );
+      }
+
       return Align(
         alignment: Alignment.centerLeft,
         child: TextButton.icon(
@@ -127,6 +145,88 @@ class AbsenceListScreen extends ConsumerWidget {
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
+  }
+
+  Future<void> _confirmApproveAbsence(
+    BuildContext context,
+    WidgetRef ref,
+    int absenceId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Approuver cette absence ?'),
+            content: const Text(
+              'La demande passera en statut approuve et l employe sera notifie.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Retour'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Approuver'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(absenceRepositoryProvider).approveAbsence(absenceId);
+      ref.invalidate(absencesProvider);
+      ref.invalidate(leaveBalancesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Absence approuvee.')));
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    }
+  }
+
+  void _showRejectAbsenceSheet(
+    BuildContext context,
+    WidgetRef ref,
+    int absenceId,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder:
+          (_) => MobileDecisionCommentSheet(
+            title: 'Refuser l absence',
+            helper: 'Le motif sera visible par l employe.',
+            submitLabel: 'Refuser',
+            danger: true,
+            onSubmit: (comment) async {
+              await ref
+                  .read(absenceRepositoryProvider)
+                  .rejectAbsence(absenceId: absenceId, reason: comment);
+              ref.invalidate(absencesProvider);
+              ref.invalidate(leaveBalancesProvider);
+            },
+            successMessage: 'Absence refusee.',
+          ),
+    );
+  }
+
+  static bool _canDecideAbsence(Employee? actor, Absence absence) {
+    if (actor == null) return false;
+    if (actor.id == absence.employeeId) return false;
+    return actor.isPrincipal ||
+        actor.isHr ||
+        actor.capabilities.contains('absences.manage') ||
+        actor.capabilities.contains('absences.approve');
   }
 
   Future<void> _confirmCancelAbsence(
