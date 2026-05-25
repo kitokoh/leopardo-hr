@@ -101,7 +101,9 @@ class _EmployeesTab extends ConsumerWidget {
     final async = ref.watch(teamListProvider);
 
     return RefreshIndicator(
-      onRefresh: () async => ref.refresh(teamListProvider),
+      onRefresh: () async {
+        await ref.refresh(teamListProvider.future).then((_) {});
+      },
       child: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Erreur : $err')),
@@ -127,7 +129,13 @@ class _EmployeesTab extends ConsumerWidget {
               return ListTile(
                 leading: CircleAvatar(child: Text(_initials(e))),
                 title: Text(e.fullName),
-                subtitle: Text('${e.email}\nRole : ${_roleLabel(e)}'),
+                subtitle: Text(
+                  [
+                    e.email,
+                    'Role : ${_roleLabel(e)}',
+                    if (_employmentLine(e) != null) _employmentLine(e)!,
+                  ].join('\n'),
+                ),
                 isThreeLine: true,
                 trailing: LeopardoBadge.forStatus(
                   e.status,
@@ -155,6 +163,23 @@ class _EmployeesTab extends ConsumerWidget {
       return 'Manager ${e.managerRole ?? ''}'.trim();
     }
     return 'Employe';
+  }
+
+  String? _employmentLine(Employee e) {
+    final parts = <String>[];
+    if (e.hireDate != null) {
+      final d = e.hireDate!;
+      parts.add(
+        'Debut ${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}',
+      );
+    }
+    final currency = e.currency ?? 'DZD';
+    if (e.salaryType == 'hourly' && e.hourlyRate != null) {
+      parts.add('${e.hourlyRate!.toStringAsFixed(0)} $currency/h');
+    } else if (e.salaryBase != null && e.salaryBase! > 0) {
+      parts.add('${e.salaryBase!.toStringAsFixed(0)} $currency');
+    }
+    return parts.isEmpty ? null : parts.join(' · ');
   }
 
   String _statusLabel(String status) => switch (status) {
@@ -250,7 +275,9 @@ class _InvitationsTab extends ConsumerWidget {
     final async = ref.watch(invitationsListProvider);
 
     return RefreshIndicator(
-      onRefresh: () async => ref.refresh(invitationsListProvider),
+      onRefresh: () async {
+        await ref.refresh(invitationsListProvider.future).then((_) {});
+      },
       child: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Erreur : $err')),
@@ -346,9 +373,23 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   final _lastName = TextEditingController();
   final _email = TextEditingController();
   final _phone = TextEditingController();
+  final _matricule = TextEditingController();
+  final _hireDate = TextEditingController();
+  final _salaryBase = TextEditingController();
+  final _hourlyRate = TextEditingController();
+  final _department = TextEditingController();
+  final _jobTitle = TextEditingController();
+  final _workLocation = TextEditingController();
   String _role = 'employee';
   String? _managerRole;
+  String _salaryType = 'fixed';
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _hireDate.text = _formatDate(DateTime.now());
+  }
 
   @override
   void dispose() {
@@ -356,6 +397,13 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
     _lastName.dispose();
     _email.dispose();
     _phone.dispose();
+    _matricule.dispose();
+    _hireDate.dispose();
+    _salaryBase.dispose();
+    _hourlyRate.dispose();
+    _department.dispose();
+    _jobTitle.dispose();
+    _workLocation.dispose();
     super.dispose();
   }
 
@@ -413,6 +461,26 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 ),
                 keyboardType: TextInputType.phone,
               ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _matricule,
+                decoration: const InputDecoration(
+                  labelText: 'Matricule (optionnel)',
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _hireDate,
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'Date d embauche',
+                  suffixIcon: Icon(Icons.calendar_today_outlined),
+                ),
+                onTap: _pickHireDate,
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+              ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _role,
@@ -454,6 +522,69 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                   onChanged: (v) => setState(() => _managerRole = v),
                 ),
               ],
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _salaryType,
+                decoration: const InputDecoration(labelText: 'Type de paie'),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'fixed',
+                    child: Text('Mensuel / fixe'),
+                  ),
+                  DropdownMenuItem(value: 'hourly', child: Text('Horaire')),
+                  DropdownMenuItem(value: 'daily', child: Text('Journalier')),
+                ],
+                onChanged: (v) => setState(() => _salaryType = v ?? 'fixed'),
+              ),
+              const SizedBox(height: 8),
+              if (_salaryType == 'hourly')
+                TextFormField(
+                  controller: _hourlyRate,
+                  decoration: const InputDecoration(
+                    labelText: 'Taux horaire',
+                    suffixText: 'DZD/h',
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: _positiveNumberValidator,
+                )
+              else
+                TextFormField(
+                  controller: _salaryBase,
+                  decoration: InputDecoration(
+                    labelText:
+                        _salaryType == 'daily'
+                            ? 'Salaire journalier'
+                            : 'Salaire mensuel brut',
+                    suffixText: 'DZD',
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: _positiveNumberValidator,
+                ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _jobTitle,
+                decoration: const InputDecoration(
+                  labelText: 'Poste (optionnel)',
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _department,
+                decoration: const InputDecoration(
+                  labelText: 'Departement (optionnel)',
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _workLocation,
+                decoration: const InputDecoration(
+                  labelText: 'Lieu de travail (optionnel)',
+                ),
+              ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submitting ? null : _submit,
@@ -486,10 +617,21 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
             phone: _phone.text,
             role: _role,
             managerRole: _managerRole,
+            matricule: _matricule.text,
+            contractStart: _hireDate.text,
+            salaryType: _salaryType,
+            salaryBase:
+                _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+            hourlyRate:
+                _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
+            department: _department.text,
+            jobTitle: _jobTitle.text,
+            workLocation: _workLocation.text,
             sendInvitation: true,
           );
       ref.invalidate(teamListProvider);
       ref.invalidate(invitationsListProvider);
+      await ref.refresh(teamListProvider.future).then((_) {});
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(
@@ -504,5 +646,32 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
         ).showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     }
+  }
+
+  Future<void> _pickHireDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.tryParse(_hireDate.text) ?? now,
+      firstDate: DateTime(now.year - 20),
+      lastDate: now.add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() => _hireDate.text = _formatDate(picked));
+    }
+  }
+
+  String? _positiveNumberValidator(String? value) {
+    final parsed = _parseAmount(value ?? '');
+    if (parsed == null || parsed <= 0) return 'Montant obligatoire';
+    return null;
+  }
+
+  double? _parseAmount(String value) {
+    return double.tryParse(value.trim().replaceAll(',', '.'));
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }

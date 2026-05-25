@@ -37,6 +37,14 @@ class EmployeeRepository {
     String role = 'employee',
     String? managerRole,
     String? password,
+    String? matricule,
+    String? contractStart,
+    String? salaryType,
+    double? salaryBase,
+    double? hourlyRate,
+    String? department,
+    String? jobTitle,
+    String? workLocation,
     bool sendInvitation = true,
   }) async {
     final data = <String, dynamic>{
@@ -56,6 +64,29 @@ class EmployeeRepository {
     if (password != null && password.isNotEmpty) {
       data['password'] = password;
     }
+    if (matricule != null && matricule.trim().isNotEmpty) {
+      data['matricule'] = matricule.trim();
+    }
+    if (contractStart != null && contractStart.trim().isNotEmpty) {
+      data['contract_start'] = contractStart.trim();
+    }
+    if (salaryType != null && salaryType.trim().isNotEmpty) {
+      data['salary_type'] = salaryType.trim();
+    }
+    if (salaryBase != null) data['salary_base'] = salaryBase;
+    if (hourlyRate != null) data['hourly_rate'] = hourlyRate;
+
+    final extraData = <String, dynamic>{};
+    if (department != null && department.trim().isNotEmpty) {
+      extraData['department'] = department.trim();
+    }
+    if (jobTitle != null && jobTitle.trim().isNotEmpty) {
+      extraData['job_title'] = jobTitle.trim();
+    }
+    if (workLocation != null && workLocation.trim().isNotEmpty) {
+      extraData['work_location'] = workLocation.trim();
+    }
+    if (extraData.isNotEmpty) data['extra_data'] = extraData;
 
     final response = await apiClient.dio.post('/employees', data: data);
     return Employee.fromJson(
