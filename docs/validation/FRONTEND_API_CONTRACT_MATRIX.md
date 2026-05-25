@@ -1,6 +1,6 @@
 # Frontend API Contract Matrix
 
-Derniere mise a jour : 2026-05-21
+Derniere mise a jour : 2026-05-25
 
 Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend Laravel. Toute nouvelle route critique doit avoir un endpoint backend, un role attendu et un test associe.
 
@@ -19,6 +19,8 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Modification pointage directe | `PUT /api/v1/attendance/{attendanceLog}` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
 | Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
+| Mobile | Liste equipe RH | `GET /api/v1/employees` | manager principal/RH | `ApiListQueryContractTest`, `FrontendApiContractTest`, `repository_contract_test.dart` |
+| Mobile | Creation employe RH | `POST /api/v1/employees` | manager principal/RH | `repository_contract_test.dart` |
 | Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Demande absence | `POST /api/v1/absences` | employe | `Absences\AbsenceStoreTest`, `FrontendApiContractTest` |
 | Mobile | Detail absence | `GET /api/v1/absences/{absence}` | employe/manager | `Absences\AbsenceShowTest`, `FrontendApiContractTest` |
@@ -27,6 +29,8 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
+| Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
+| Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |
 | Mobile / web client | Notifications | `GET /api/v1/notifications` | authentifie | `ApiListQueryContractTest`, `FrontendApiContractTest`, `NotificationControllerTest` |
 | Mobile | Marquer notification lue | `PUT /api/v1/notifications/{notification}/read` | authentifie | `FrontendApiContractTest` |
 | Mobile | Tout marquer lu | `PUT /api/v1/notifications/read-all` | authentifie | `FrontendApiContractTest` |
