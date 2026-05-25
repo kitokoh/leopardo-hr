@@ -28,6 +28,18 @@ void main() {
                     color: AppColors.rh,
                     icon: Icons.check_circle,
                   ),
+                  MobileEmptyLoading(label: 'Chargement test'),
+                  MobileErrorPanel(message: 'Serveur indisponible'),
+                  MobileListCard(
+                    icon: Icons.payments_outlined,
+                    iconColor: AppColors.finance,
+                    title: '12000 DZD',
+                    subtitle: 'Avance en attente',
+                    trailing: MobileStatusPill(
+                      label: 'En attente',
+                      color: AppColors.info,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -40,6 +52,10 @@ void main() {
       expect(find.text('CETTE SEMAINE'), findsOneWidget);
       expect(find.byIcon(Icons.fingerprint), findsOneWidget);
       expect(find.text('Present'), findsOneWidget);
+      expect(find.text('Chargement test'), findsOneWidget);
+      expect(find.text('Connexion indisponible'), findsOneWidget);
+      expect(find.text('12000 DZD'), findsOneWidget);
+      expect(find.text('En attente'), findsOneWidget);
       expect(MobileSurface.muted.computeLuminance(), greaterThan(0.30));
       expect(MobileSurface.disabled.computeLuminance(), greaterThan(0.20));
     },

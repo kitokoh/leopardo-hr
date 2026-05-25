@@ -246,3 +246,194 @@ class MobilePrimaryAction extends StatelessWidget {
     );
   }
 }
+
+class MobileEmptyLoading extends StatelessWidget {
+  const MobileEmptyLoading({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 12),
+          Text(
+            label,
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MobileErrorPanel extends StatelessWidget {
+  const MobileErrorPanel({super.key, required this.message, this.onRetry});
+
+  final String message;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return MobilePanel(
+      color: AppColors.danger.withValues(alpha: 0.08),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const MobileIconBubble(
+            icon: Icons.wifi_off_rounded,
+            color: AppColors.danger,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Connexion indisponible',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            message,
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          if (onRetry != null) ...[
+            const SizedBox(height: 14),
+            OutlinedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Reessayer'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class MobileListCard extends StatelessWidget {
+  const MobileListCard({
+    super.key,
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.footer,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final Widget? footer;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = MobilePanel(
+      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              MobileIconBubble(icon: icon, color: iconColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: MobileSurface.text,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (trailing != null) ...[const SizedBox(width: 10), trailing!],
+            ],
+          ),
+          if (footer != null) ...[const SizedBox(height: 12), footer!],
+        ],
+      ),
+    );
+
+    if (onTap == null) return content;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: content,
+    );
+  }
+}
+
+class MobileMetricTile extends StatelessWidget {
+  const MobileMetricTile({
+    super.key,
+    required this.value,
+    required this.label,
+    required this.color,
+  });
+
+  final String value;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: 0.20), width: 0.7),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: AppTypography.subtitle.copyWith(color: color),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: AppTypography.caption.copyWith(
+                color: MobileSurface.secondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
