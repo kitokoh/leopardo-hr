@@ -121,10 +121,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               const SizedBox(height: 24),
               _buildSectionTitle('CETTE SEMAINE'),
               const SizedBox(height: 10),
-              if (weekAsync.isLoading) _buildInlineSyncNotice(),
               if (weekAsync.hasError)
                 _buildNoticeCard(
-                  'Historique indisponible pour l instant. Les actions du jour restent accessibles.',
+                  'Semaine indisponible pour l instant. Le pointage reste utilisable.',
                   AppColors.warning,
                 ),
               ...week.map(
@@ -413,7 +412,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         const SizedBox(height: 12),
         Text(
           isLoading
-              ? 'Connexion au serveur...'
+              ? 'Enregistrement en cours...'
               : isCheckedIn
               ? 'Appuyez pour enregistrer votre depart'
               : 'Appuyez pour enregistrer votre arrivee',
@@ -538,31 +537,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         fontSize: 12,
         fontWeight: FontWeight.w800,
         letterSpacing: 0.8,
-      ),
-    );
-  }
-
-  Widget _buildInlineSyncNotice() {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 14,
-            height: 14,
-            child: CircularProgressIndicator(
-              color: AppColors.rh,
-              strokeWidth: 1.8,
-            ),
-          ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Synchronisation de la semaine...',
-              style: TextStyle(color: _muted, fontSize: 11),
-            ),
-          ),
-        ],
       ),
     );
   }

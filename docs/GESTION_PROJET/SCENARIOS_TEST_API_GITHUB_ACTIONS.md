@@ -41,6 +41,8 @@ Note 2026-05-15 : l'API expose maintenant des headers de version (`X-API-Version
 
 Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`, `absences`, `attendance`, `me/pay-slips`, `notifications`) doivent conserver pagination, filtres, tri allowliste, payload vide et erreurs de validation couverts par `ApiListQueryContractTest`. Aucun `sort_by` libre ne doit atteindre une requete SQL.
 
+Note 2026-05-25 : le mobile RH consomme maintenant `GET/POST /employees` pour l'equipe et `GET/POST /salary-advances` pour les demandes d'avance. Les scenarios API doivent verifier que la creation employe accepte et retourne les champs RH minimum (`contract_start`, `salary_type`, `salary_base` ou `hourly_rate`, `extra_data.department/job_title/work_location`) et que les avances employee-side restent soumises au workflow RH avec `repayment_months`.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -96,6 +98,7 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - Organigramme retourne uniquement les employes du tenant courant et construit l'arbre sans scans repetes par noeud
 - Chaine manager et subordonnes refusent les IDs hors tenant
 - Creation employee avec validations metier
+- Creation employee depuis mobile/RH avec date d'embauche, matricule, type de paie, salaire/taux horaire et metadonnees poste/departement/lieu
 - Mise a jour employee avec verifications unicite/global email
 - Desactivation / reactivation employee
 - Consultation detail employee selon role
@@ -326,6 +329,13 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - Isolation : `POST /api/v1/contracts` refuse un `employee_id` hors tenant
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
+
+### Module C — Avances salaire mobile
+- `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
+- `POST /api/v1/salary-advances` permet a un employe de demander une avance avec `amount`, `reason` et `repayment_months`.
+- RBAC : un employe ne peut creer une demande que pour lui-meme ; la decision reste reservee au workflow RH/manager.
+- Isolation tenant : la liste et les decisions ne doivent jamais exposer les avances d'un autre tenant.
+- Contrat mobile : apres creation, la reponse expose `status=pending`, `amount`, `reason`, `repayment_months`, `monthly_deduction`, `amount_remaining` et `repayment_plan` si calcule.
 
 ### Module K — Workflows d'approbation
 - `GET /api/v1/approval-workflows` liste les workflows (admin RH)
