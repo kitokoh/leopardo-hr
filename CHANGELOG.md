@@ -2,6 +2,23 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.135] - 2026-05-25
+
+### Changed
+
+- Mobile : contraste du socle sombre releve pour eviter les libelles et etats illisibles sur fond bleu nuit.
+- Mobile : accueil allege avec moins de cartes narratives, actions rapides limitees et modules actifs priorises.
+- Mobile : page pointage rendue non bloquante pendant la synchronisation historique, avec retry API existant sur today/check-in/check-out/history.
+- Mobile : menu pointage renomme en `Modifier`; la soumission affiche `Demander une modification` pour un employe et `Modifier` pour manager principal/RH.
+- Mobile : managers principal/RH appliquent une correction de pointage via le vrai endpoint `PUT /attendance/{id}` au lieu d'une simulation locale.
+- Mobile : bouton deconnexion ajoute en bas de l'espace Compte.
+- API : endpoint tenant `POST /api/v1/attendance/corrections` et table `attendance_correction_requests` pour que les employes soumettent une vraie demande de modification.
+- API : correction directe `PUT /attendance/{id}` restreinte aux managers `principal` et `rh`.
+
+### Tests
+
+- Mobile : tests de contraste `MobileSurface` et propagation `logId` des resumes de pointage ajoutes.
+
 ## [4.16.134] - 2026-05-24
 
 ### Changed

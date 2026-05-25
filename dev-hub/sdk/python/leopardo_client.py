@@ -92,9 +92,45 @@ class LeopardoClient:
                 body=parsed_body,
             ) from exc
 
+    def get_ai_analytics_costs(self, **kwargs):
+        """Couts IA par periode"""
+        return self.request("GET", "/ai/analytics/costs", **kwargs)
+
+    def get_ai_analytics_errors(self, **kwargs):
+        """Erreurs IA recentes"""
+        return self.request("GET", "/ai/analytics/errors", **kwargs)
+
+    def get_ai_analytics_tools(self, **kwargs):
+        """Usage des outils IA"""
+        return self.request("GET", "/ai/analytics/tools", **kwargs)
+
+    def get_ai_analytics_usage(self, **kwargs):
+        """Metriques d'usage IA"""
+        return self.request("GET", "/ai/analytics/usage", **kwargs)
+
+    def post_ai_chat(self, **kwargs):
+        """Envoyer un message au chatbot IA"""
+        return self.request("POST", "/ai/chat", **kwargs)
+
+    def delete_ai_chat_by_conversationid(self, **kwargs):
+        """Supprimer une conversation IA"""
+        return self.request("DELETE", "/ai/chat/{conversationId}", **kwargs)
+
+    def get_ai_chat_history(self, **kwargs):
+        """Historique des conversations IA"""
+        return self.request("GET", "/ai/chat/history", **kwargs)
+
+    def get_ai_tools(self, **kwargs):
+        """Liste des outils IA disponibles"""
+        return self.request("GET", "/ai/tools", **kwargs)
+
     def get_attendance(self, **kwargs):
         """Historique de pointage"""
         return self.request("GET", "/attendance", **kwargs)
+
+    def put_attendance_by_attendancelog(self, **kwargs):
+        """Modifier directement un pointage"""
+        return self.request("PUT", "/attendance/{attendanceLog}", **kwargs)
 
     def post_attendance_check_in(self, **kwargs):
         """Check-in"""
@@ -103,6 +139,10 @@ class LeopardoClient:
     def post_attendance_check_out(self, **kwargs):
         """Check-out"""
         return self.request("POST", "/attendance/check-out", **kwargs)
+
+    def post_attendance_corrections(self, **kwargs):
+        """Demander une correction de pointage"""
+        return self.request("POST", "/attendance/corrections", **kwargs)
 
     def get_attendance_today(self, **kwargs):
         """Etat du jour"""
@@ -208,6 +248,14 @@ class LeopardoClient:
         """Tester une URL RTSP"""
         return self.request("POST", "/cameras/test-rtsp", **kwargs)
 
+    def post_client_events(self, **kwargs):
+        """Persister un evenement UX client tenant-scope"""
+        return self.request("POST", "/client-events", **kwargs)
+
+    def get_communication_analytics(self, **kwargs):
+        """Analytics communication tenant"""
+        return self.request("GET", "/communication/analytics", **kwargs)
+
     def get_employees(self, **kwargs):
         """Lister les employes"""
         return self.request("GET", "/employees", **kwargs)
@@ -276,6 +324,26 @@ class LeopardoClient:
         """Soumettre une evaluation"""
         return self.request("PUT", "/evaluations/{evaluation}/submit", **kwargs)
 
+    def get_fleet_live_map(self, **kwargs):
+        """Carte temps reel des vehicules"""
+        return self.request("GET", "/fleet/live-map", **kwargs)
+
+    def get_fleet_overview(self, **kwargs):
+        """Vue d'ensemble de la flotte"""
+        return self.request("GET", "/fleet/overview", **kwargs)
+
+    def get_fleet_reports_fuel(self, **kwargs):
+        """Rapport consommation carburant"""
+        return self.request("GET", "/fleet/reports/fuel", **kwargs)
+
+    def get_fleet_reports_maintenance_due(self, **kwargs):
+        """Vehicules necessitant une maintenance"""
+        return self.request("GET", "/fleet/reports/maintenance-due", **kwargs)
+
+    def get_fleet_reports_mileage(self, **kwargs):
+        """Rapport kilometrage"""
+        return self.request("GET", "/fleet/reports/mileage", **kwargs)
+
     def get_health(self, **kwargs):
         """Healthcheck live + ready"""
         return self.request("GET", "/health", **kwargs)
@@ -308,6 +376,10 @@ class LeopardoClient:
         """Synchroniser des evenements offline"""
         return self.request("POST", "/kiosks/{deviceCode}/sync", **kwargs)
 
+    def get_launch_readiness(self, **kwargs):
+        """Lire le score de readiness lancement du tenant"""
+        return self.request("GET", "/launch-readiness", **kwargs)
+
     def get_me_daily_summary(self, **kwargs):
         """Resume journalier utilisateur courant"""
         return self.request("GET", "/me/daily-summary", **kwargs)
@@ -319,6 +391,14 @@ class LeopardoClient:
     def get_me_quick_estimate(self, **kwargs):
         """Estimation utilisateur courant"""
         return self.request("GET", "/me/quick-estimate", **kwargs)
+
+    def get_notification_preferences(self, **kwargs):
+        """Lire les preferences de notification de l'utilisateur courant"""
+        return self.request("GET", "/notification-preferences", **kwargs)
+
+    def patch_notification_preferences(self, **kwargs):
+        """Mettre a jour les preferences de notification de l'utilisateur courant"""
+        return self.request("PATCH", "/notification-preferences", **kwargs)
 
     def get_notifications(self, **kwargs):
         """Lister les notifications de l'utilisateur courant"""
@@ -335,6 +415,10 @@ class LeopardoClient:
     def put_notifications_read_all(self, **kwargs):
         """Marquer toutes les notifications comme lues"""
         return self.request("PUT", "/notifications/read-all", **kwargs)
+
+    def get_pay_slips(self, **kwargs):
+        """Lister les bulletins du tenant (manager)"""
+        return self.request("GET", "/pay-slips", **kwargs)
 
     def post_platform_auth_login(self, **kwargs):
         """Connexion super-admin"""
@@ -463,6 +547,98 @@ class LeopardoClient:
     def post_tasks_by_task_comments(self, **kwargs):
         """Ajouter un commentaire sur une tache"""
         return self.request("POST", "/tasks/{task}/comments", **kwargs)
+
+    def post_tracking_sync_devices(self, **kwargs):
+        """Synchroniser les devices Traccar"""
+        return self.request("POST", "/tracking/sync-devices", **kwargs)
+
+    def post_tracking_sync_positions(self, **kwargs):
+        """Synchroniser les positions Traccar"""
+        return self.request("POST", "/tracking/sync-positions", **kwargs)
+
+    def post_tracking_sync_trips(self, **kwargs):
+        """Synchroniser les trajets Traccar"""
+        return self.request("POST", "/tracking/sync-trips", **kwargs)
+
+    def get_vehicle_alerts(self, **kwargs):
+        """Liste de toutes les alertes vehicules"""
+        return self.request("GET", "/vehicle-alerts", **kwargs)
+
+    def post_vehicle_alerts_by_id_acknowledge(self, **kwargs):
+        """Acquitter une alerte vehicule"""
+        return self.request("POST", "/vehicle-alerts/{id}/acknowledge", **kwargs)
+
+    def get_vehicle_maintenance(self, **kwargs):
+        """Liste des maintenances vehicules"""
+        return self.request("GET", "/vehicle-maintenance", **kwargs)
+
+    def post_vehicle_maintenance(self, **kwargs):
+        """Planifier une maintenance"""
+        return self.request("POST", "/vehicle-maintenance", **kwargs)
+
+    def delete_vehicle_maintenance_by_id(self, **kwargs):
+        """Supprimer une maintenance"""
+        return self.request("DELETE", "/vehicle-maintenance/{id}", **kwargs)
+
+    def put_vehicle_maintenance_by_id(self, **kwargs):
+        """Modifier une maintenance"""
+        return self.request("PUT", "/vehicle-maintenance/{id}", **kwargs)
+
+    def get_vehicle_trips(self, **kwargs):
+        """Liste de tous les trajets"""
+        return self.request("GET", "/vehicle-trips", **kwargs)
+
+    def get_vehicle_trips_by_id(self, **kwargs):
+        """Detail d'un trajet"""
+        return self.request("GET", "/vehicle-trips/{id}", **kwargs)
+
+    def get_vehicles(self, **kwargs):
+        """Liste des vehicules de l'entreprise"""
+        return self.request("GET", "/vehicles", **kwargs)
+
+    def post_vehicles(self, **kwargs):
+        """Creer un vehicule"""
+        return self.request("POST", "/vehicles", **kwargs)
+
+    def delete_vehicles_by_id(self, **kwargs):
+        """Supprimer un vehicule"""
+        return self.request("DELETE", "/vehicles/{id}", **kwargs)
+
+    def get_vehicles_by_id(self, **kwargs):
+        """Detail d'un vehicule"""
+        return self.request("GET", "/vehicles/{id}", **kwargs)
+
+    def put_vehicles_by_id(self, **kwargs):
+        """Modifier un vehicule"""
+        return self.request("PUT", "/vehicles/{id}", **kwargs)
+
+    def get_vehicles_by_id_alerts(self, **kwargs):
+        """Alertes d'un vehicule"""
+        return self.request("GET", "/vehicles/{id}/alerts", **kwargs)
+
+    def post_vehicles_by_id_assign(self, **kwargs):
+        """Assigner un vehicule a un employe"""
+        return self.request("POST", "/vehicles/{id}/assign", **kwargs)
+
+    def get_vehicles_by_id_assignments(self, **kwargs):
+        """Historique des affectations conducteur"""
+        return self.request("GET", "/vehicles/{id}/assignments", **kwargs)
+
+    def get_vehicles_by_id_maintenance(self, **kwargs):
+        """Historique maintenance d'un vehicule"""
+        return self.request("GET", "/vehicles/{id}/maintenance", **kwargs)
+
+    def get_vehicles_by_id_position(self, **kwargs):
+        """Position actuelle du vehicule (via Traccar)"""
+        return self.request("GET", "/vehicles/{id}/position", **kwargs)
+
+    def get_vehicles_by_id_trips(self, **kwargs):
+        """Trajets d'un vehicule"""
+        return self.request("GET", "/vehicles/{id}/trips", **kwargs)
+
+    def post_vehicles_by_id_unassign(self, **kwargs):
+        """Desassigner un vehicule"""
+        return self.request("POST", "/vehicles/{id}/unassign", **kwargs)
 
     def get_view_cam(self, **kwargs):
         """Viewer public par token"""

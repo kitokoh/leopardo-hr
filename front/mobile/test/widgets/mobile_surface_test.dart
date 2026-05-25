@@ -40,6 +40,8 @@ void main() {
       expect(find.text('CETTE SEMAINE'), findsOneWidget);
       expect(find.byIcon(Icons.fingerprint), findsOneWidget);
       expect(find.text('Present'), findsOneWidget);
+      expect(MobileSurface.muted.computeLuminance(), greaterThan(0.30));
+      expect(MobileSurface.disabled.computeLuminance(), greaterThan(0.20));
     },
   );
 

@@ -1085,6 +1085,31 @@ paths:
                   - $ref: "#/components/schemas/ErrorResponse"
                   - $ref: "#/components/schemas/ValidationErrorResponse"
 
+  /attendance/corrections:
+    post:
+      tags: ["Attendance"]
+      summary: "Demander une correction de pointage"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceCorrectionRequestInput"
+      responses:
+        "201":
+          description: "Demande de correction creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceCorrectionRequest"
+                  message:
+                    type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /attendance/today:
     get:
       tags: ["Attendance"]
@@ -1103,6 +1128,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AttendanceTodayEnvelope"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /attendance/{attendanceLog}:
+    put:
+      tags: ["Attendance"]
+      summary: "Modifier directement un pointage"
+      parameters:
+        - name: attendanceLog
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                check_in:
+                  type: string
+                  format: date-time
+                  nullable: true
+                check_out:
+                  type: string
+                  format: date-time
+                  nullable: true
+                notes:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Pointage modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceLog"
+        "403":
+          $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
 
@@ -5440,6 +5508,49 @@ components:
           type: string
         late_minutes:
           type: integer
+          nullable: true
+
+    AttendanceCorrectionRequestInput:
+      type: object
+      required:
+        - date
+        - requested_check_in
+        - reason
+      properties:
+        attendance_log_id:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date
+        requested_check_in:
+          type: string
+          format: date-time
+        requested_check_out:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+          maxLength: 500
+
+    AttendanceCorrectionRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected", "applied"]
+        date:
+          type: string
+          format: date
+        requested_check_in:
+          type: string
+          format: date-time
+        requested_check_out:
+          type: string
+          format: date-time
           nullable: true
 
     AttendanceTodayItem:
