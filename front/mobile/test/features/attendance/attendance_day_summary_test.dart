@@ -22,6 +22,7 @@ void main() {
       );
 
       expect(summary.isAbsent, isFalse);
+      expect(summary.logId, 7);
       expect(summary.workedMinutes, 510);
       expect(summary.hoursFormatted, '8h30');
       expect(summary.lateMinutes, 14);
@@ -38,6 +39,7 @@ void main() {
       );
 
       expect(summary.isAbsent, isTrue);
+      expect(summary.logId, isNull);
       expect(summary.workedMinutes, 0);
       expect(summary.hoursFormatted, '0h00');
       expect(summary.lateMinutes, 0);
