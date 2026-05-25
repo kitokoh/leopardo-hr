@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/theme/mobile_experience_icons.dart';
-import 'package:leopardo_rh/core/widgets/alert_banner.dart';
 import 'package:leopardo_rh/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
@@ -26,8 +25,8 @@ class HomeScreen extends ConsumerWidget {
           quickActions: <MobileQuickAction>[],
         );
     final stage = experience.stage;
-    final quickActions = experience.quickActions.take(4).toList();
-    final activeModules = experience.activeModules.take(6).toList();
+    final quickActions = experience.quickActions.take(3).toList();
+    final activeModules = experience.activeModules.take(4).toList();
     final firstName =
         employee?.firstName.isNotEmpty == true
             ? employee!.firstName
@@ -61,15 +60,13 @@ class HomeScreen extends ConsumerWidget {
                       stage: stage,
                       canManageTeam: canManageTeam,
                     ),
-                    const SizedBox(height: 14),
-                    _AlertStack(stage: stage, canManageTeam: canManageTeam),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
                       subtitle:
                           stage == 'new'
-                              ? 'Les premiers gestes utiles, sans surcharge.'
-                              : 'Les raccourcis du jour, prets a l emploi.',
+                              ? 'Les premiers gestes vraiment utiles.'
+                              : 'Vos trois gestes RH du jour.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -208,27 +205,6 @@ class _HeroHeader extends StatelessWidget {
     if (hour < 12) return 'Bonjour';
     if (hour < 18) return 'Bon apres-midi';
     return 'Bonsoir';
-  }
-}
-
-class _AlertStack extends StatelessWidget {
-  const _AlertStack({required this.stage, required this.canManageTeam});
-
-  final String stage;
-  final bool canManageTeam;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertBanner(
-      message:
-          canManageTeam
-              ? 'Pointage, validations et equipe restent accessibles en deux gestes.'
-              : stage == 'new'
-              ? 'Commencez par pointer, puis explorez vos documents et absences.'
-              : 'Votre journee RH tient ici: pointage, absences et documents.',
-      level: canManageTeam ? AlertLevel.success : AlertLevel.info,
-      icon: canManageTeam ? Icons.groups_2_outlined : Icons.phone_iphone,
-    );
   }
 }
 

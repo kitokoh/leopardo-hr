@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.139] - 2026-05-25
+
+### Changed
+
+- Mobile : lot 25.2 demarre la coherence visuelle premium avec composants partages `MobileEmptyLoading`, `MobileErrorPanel`, `MobileListCard` et `MobileMetricTile`.
+- Mobile : accueil allege pour reduire la surcharge, avec trois actions rapides prioritaires et quatre modules actifs visibles.
+- Mobile : ecrans Absences, Avances et Equipe modernises sur les surfaces sombres communes, avec etats de chargement, erreur et retry lisibles.
+- Mobile : demande d absence rendue actionnable depuis l ecran Absences via les soldes/types existants puis `POST /absences`.
+- Mobile : ecran Equipe manager/RH modernise sans perdre les champs metier critiques : date d embauche, role, type de paie, salaire/taux horaire et invitation.
+
 ## [4.16.138] - 2026-05-25
 
 ### Added

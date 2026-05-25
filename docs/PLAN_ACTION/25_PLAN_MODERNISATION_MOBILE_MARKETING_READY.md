@@ -30,6 +30,15 @@ Rendre l'application mobile Leopardo RH moderne, lisible, fiable et demonstrable
 - Revoir les contrastes, les tailles tactiles, les espacements, les etats vides et erreurs.
 - Limiter la surcharge visuelle sur l'accueil : 3 actions prioritaires, modules secondaires plus discrets.
 
+Etat v4.16.139 :
+
+- Livré : composants `MobileEmptyLoading`, `MobileErrorPanel`, `MobileListCard` et `MobileMetricTile`.
+- Livré : accueil allege a trois actions prioritaires et quatre modules actifs pour une premiere page moins surchargee.
+- Livré : ecrans Absences, Avances et Equipe alignes sur les surfaces mobiles sombres, avec erreurs/retry lisibles.
+- Livré : demande d absence mobile branchee sur les soldes/types existants puis `POST /absences`.
+- Livré : demande d avance mobile conservee sur `POST /salary-advances`, avec UI coherente.
+- Livré : equipe manager/RH modernisee, ajout employe garde date d embauche, role, salaire et invitation API.
+
 ## Lot 25.3 - Workflows employe reelement livrables
 
 - Absence : demande, historique, statut, annulation si autorisee.
