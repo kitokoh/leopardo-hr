@@ -502,3 +502,5 @@ Procedure recommandee :
 - Le module mobile Avances doit proposer une vraie demande employee-side via `POST /salary-advances` avec `amount`, `reason` et `repayment_months`, puis rafraichir la liste locale.
 - Depuis v4.16.138, l'ecran pointage doit utiliser `attendanceHistoryMonthKey(_now)` pour `historyProvider` ; ne jamais repasser `_now` complet comme cle provider, sinon l'historique se recharge chaque seconde avec l'horloge live.
 - Les actions pointage doivent rester protegees contre doubles taps et timeout provider : un succes API ou une erreur reseau ne doit jamais laisser `isPunching=true` indefiniment.
+- Depuis v4.16.139, les ecrans RH mobiles a fort impact demo (`Absences`, `Avances`, `Equipe`) doivent utiliser les composants de `front/mobile/lib/core/widgets/mobile_surface.dart` pour les listes, chargements et erreurs. Eviter de revenir a des `ListTile`/`AppBar` Material bruts sur ces parcours marketing-ready.
+- Depuis v4.16.139, la demande d'absence mobile doit resoudre un vrai `absence_type_id` via `leaveBalancesProvider` avant `POST /absences`; ne pas hardcoder de type d'absence cote Flutter.
