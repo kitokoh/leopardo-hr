@@ -26,12 +26,8 @@ class HomeScreen extends ConsumerWidget {
           quickActions: <MobileQuickAction>[],
         );
     final stage = experience.stage;
-    final quickActions =
-        stage == 'new'
-            ? experience.quickActions.take(3).toList()
-            : experience.quickActions;
-    final activeModules = experience.activeModules;
-    final upcomingModules = experience.upcomingModules;
+    final quickActions = experience.quickActions.take(4).toList();
+    final activeModules = experience.activeModules.take(6).toList();
     final firstName =
         employee?.firstName.isNotEmpty == true
             ? employee!.firstName
@@ -66,24 +62,14 @@ class HomeScreen extends ConsumerWidget {
                       canManageTeam: canManageTeam,
                     ),
                     const SizedBox(height: 14),
-                    _LeoCard(
-                      firstName: firstName,
-                      stage: stage,
-                      canManageTeam: canManageTeam,
-                    ),
-                    const SizedBox(height: 14),
-                    _AlertStack(
-                      stage: stage,
-                      canManageTeam: canManageTeam,
-                      upcomingModules: upcomingModules,
-                    ),
+                    _AlertStack(stage: stage, canManageTeam: canManageTeam),
                     const SizedBox(height: 20),
                     _SectionTitle(
                       title: 'Actions rapides',
                       subtitle:
                           stage == 'new'
-                              ? 'Leo vous montre l essentiel pour bien commencer.'
-                              : 'Vos raccourcis les plus utiles sont regroupes ici.',
+                              ? 'Les premiers gestes utiles, sans surcharge.'
+                              : 'Les raccourcis du jour, prets a l emploi.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -91,20 +77,10 @@ class HomeScreen extends ConsumerWidget {
                     _SectionTitle(
                       title: 'Modules actifs',
                       subtitle:
-                          'Votre entreprise et votre role determinent ce que vous voyez.',
+                          'Uniquement les espaces ouverts pour votre profil.',
                     ),
                     const SizedBox(height: 12),
                     _ModulesScroller(modules: activeModules),
-                    if (upcomingModules.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      const _SectionTitle(
-                        title: 'Bientot dans Leopardo',
-                        subtitle:
-                            'La feuille de route reste visible, sans polluer les actions du jour.',
-                      ),
-                      const SizedBox(height: 12),
-                      _UpcomingModules(modules: upcomingModules),
-                    ],
                     if (canManageTeam) ...[
                       const SizedBox(height: 20),
                       const _ManagerDigestCard(),
@@ -112,7 +88,6 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              _ChatInputBar(stage: stage),
             ],
           ),
         ),
@@ -236,137 +211,24 @@ class _HeroHeader extends StatelessWidget {
   }
 }
 
-class _LeoCard extends StatelessWidget {
-  const _LeoCard({
-    required this.firstName,
-    required this.stage,
-    required this.canManageTeam,
-  });
-
-  final String firstName;
-  final String stage;
-  final bool canManageTeam;
-
-  @override
-  Widget build(BuildContext context) {
-    const text = MobileSurface.text;
-    const muted = MobileSurface.secondary;
-    final shortName = firstName.isEmpty ? 'vous' : firstName;
-    final guidance =
-        stage == 'new'
-            ? 'On commence simple: Leo met en avant quelques actions utiles et laisse l interface s ouvrir progressivement.'
-            : 'Leo garde le contexte, puis vous bascule vers la bonne action sans vous perdre dans un dashboard massif.';
-    final focus =
-        canManageTeam
-            ? 'Aujourd hui, gardez l oeil sur le pointage, les validations RH et l activite de votre equipe.'
-            : 'Aujourd hui, tout part du pointage, puis de la consultation de votre mois et de vos documents RH.';
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: MobileSurface.surface,
-        border: Border.all(color: MobileSurface.border, width: 0.7),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.ia.withValues(alpha: 0.18),
-                ),
-                child: const Icon(Icons.auto_awesome, color: AppColors.ia),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Leo vous ouvre la journee',
-                      style: AppTypography.subtitle.copyWith(color: text),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Conversationnelle, mobile-first et guidee.',
-                      style: AppTypography.caption.copyWith(color: muted),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Bonjour $shortName. $focus',
-            style: AppTypography.body.copyWith(color: text),
-          ),
-          const SizedBox(height: 10),
-          Text(guidance, style: AppTypography.bodySmall.copyWith(color: muted)),
-        ],
-      ),
-    );
-  }
-}
-
 class _AlertStack extends StatelessWidget {
-  const _AlertStack({
-    required this.stage,
-    required this.canManageTeam,
-    required this.upcomingModules,
-  });
+  const _AlertStack({required this.stage, required this.canManageTeam});
 
   final String stage;
   final bool canManageTeam;
-  final List<MobileModule> upcomingModules;
 
   @override
   Widget build(BuildContext context) {
-    final alerts = <Widget>[
-      AlertBanner(
-        message:
-            stage == 'new'
-                ? 'Leo garde une home volontairement simple pour vos premiers usages.'
-                : 'Votre mobile reste la surface principale: RH, pointage et suivi personnel vivent ici.',
-        level: AlertLevel.info,
-        icon: Icons.phone_iphone,
-      ),
-    ];
-
-    if (canManageTeam) {
-      alerts.add(
-        const Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: AlertBanner(
-            message:
-                'Les workflows equipe et invitations restent disponibles sans quitter l experience mobile.',
-            level: AlertLevel.success,
-            icon: Icons.groups_2_outlined,
-          ),
-        ),
-      );
-    }
-
-    if (upcomingModules.isNotEmpty) {
-      alerts.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: AlertBanner(
-            message:
-                '${upcomingModules.length} modules restent visibles dans la feuille de route, sans se melanger aux actions critiques du jour.',
-            level: AlertLevel.warning,
-            icon: Icons.upcoming_outlined,
-          ),
-        ),
-      );
-    }
-
-    return Column(children: alerts);
+    return AlertBanner(
+      message:
+          canManageTeam
+              ? 'Pointage, validations et equipe restent accessibles en deux gestes.'
+              : stage == 'new'
+              ? 'Commencez par pointer, puis explorez vos documents et absences.'
+              : 'Votre journee RH tient ici: pointage, absences et documents.',
+      level: canManageTeam ? AlertLevel.success : AlertLevel.info,
+      icon: canManageTeam ? Icons.groups_2_outlined : Icons.phone_iphone,
+    );
   }
 }
 
@@ -576,88 +438,6 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-class _UpcomingModules extends StatelessWidget {
-  const _UpcomingModules({required this.modules});
-
-  final List<MobileModule> modules;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children:
-          modules.map((module) => _UpcomingModulePill(module: module)).toList(),
-    );
-  }
-}
-
-class _UpcomingModulePill extends StatelessWidget {
-  const _UpcomingModulePill({required this.module});
-
-  final MobileModule module;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = AppColors.forDomain(module.domain);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
-
-    return Container(
-      width: 170,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderFor(context)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: AppColors.tint(
-                context,
-                color,
-                lightAlpha: 0.16,
-                darkAlpha: 0.22,
-              ),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              MobileExperienceIcons.forModule(module.key),
-              size: 18,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  module.title,
-                  style: AppTypography.bodySmall.copyWith(
-                    color: text,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  'Bientot disponible',
-                  style: AppTypography.caption.copyWith(color: muted),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ManagerDigestCard extends StatelessWidget {
   const _ManagerDigestCard();
 
@@ -754,83 +534,6 @@ class _DigestTile extends StatelessWidget {
             style: AppTypography.caption.copyWith(color: color),
             textAlign: TextAlign.center,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ChatInputBar extends StatelessWidget {
-  const _ChatInputBar({required this.stage});
-
-  final String stage;
-
-  @override
-  Widget build(BuildContext context) {
-    final muted = AppColors.textSecondaryFor(context);
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        10,
-        16,
-        10 + MediaQuery.of(context).padding.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: MobileSurface.background,
-        border: const Border(
-          top: BorderSide(color: MobileSurface.border, width: 0.7),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.tint(
-                context,
-                AppColors.ia,
-                lightAlpha: 0.14,
-                darkAlpha: 0.24,
-              ),
-            ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: AppColors.ia,
-              size: 18,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Opacity(
-              opacity: 0.82,
-              child: TextField(
-                enabled: false,
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText:
-                      stage == 'new'
-                          ? 'Leo commencera bientot par vous guider pas a pas...'
-                          : 'Leo arrive bientot dans cette conversation...',
-                  hintStyle: AppTypography.bodySmall.copyWith(color: muted),
-                  filled: true,
-                  fillColor: MobileSurface.chip,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(999),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.mic_none, color: muted),
         ],
       ),
     );

@@ -15,6 +15,8 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Deconnexion | `POST /api/v1/auth/logout` | authentifie | `FrontendApiContractTest` |
 | Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `FrontendApiContractTest` |
 | Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` |
+| Mobile | Demande correction pointage | `POST /api/v1/attendance/corrections` | employe | `FrontendApiContractTest` |
+| Mobile | Modification pointage directe | `PUT /api/v1/attendance/{attendanceLog}` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
 | Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |

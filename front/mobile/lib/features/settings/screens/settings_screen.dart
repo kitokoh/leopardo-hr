@@ -149,6 +149,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 20),
             _buildBiometricSection(context),
           ],
+          const SizedBox(height: 28),
+          _buildLogoutSection(context),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
         ],
       ),
     );
@@ -535,6 +538,47 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             'Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.',
             style: AppTypography.caption.copyWith(
               color: MobileSurface.secondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: MobileSurface.cardDecoration(color: MobileSurface.chip),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Session',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Quitter proprement cet espace sur ce telephone.',
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            onPressed: () async {
+              await ref.read(authProvider.notifier).logout();
+              if (!context.mounted) return;
+              context.go('/login');
+            },
+            icon: const Icon(Icons.logout_rounded),
+            label: const Text('Deconnexion'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.danger,
+              side: BorderSide(color: AppColors.danger.withValues(alpha: 0.45)),
+              minimumSize: const Size.fromHeight(46),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ],

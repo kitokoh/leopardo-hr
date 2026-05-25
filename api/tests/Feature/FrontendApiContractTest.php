@@ -21,6 +21,8 @@ class FrontendApiContractTest extends TestCase
             'mobile logout' => ['POST', 'api/v1/auth/logout'],
             'mobile attendance check in' => ['POST', 'api/v1/attendance/check-in'],
             'mobile attendance check out' => ['POST', 'api/v1/attendance/check-out'],
+            'mobile attendance correction request' => ['POST', 'api/v1/attendance/corrections'],
+            'mobile attendance correction update' => ['PUT', 'api/v1/attendance/{attendanceLog}'],
             'mobile attendance today' => ['GET', 'api/v1/attendance/today'],
             'mobile attendance history' => ['GET', 'api/v1/attendance'],
             'mobile absences list' => ['GET', 'api/v1/absences'],
