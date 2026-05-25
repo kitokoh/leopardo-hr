@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.136] - 2026-05-25
+
+### Changed
+
+- Mobile : bouton pointage epure en icone empreinte seule, sans libelle interne redondant.
+- Mobile : pointage separe de la synchronisation ecran via `isPunching`, avec feedback SnackBar au tap, confirmation succes/echec et spinner strictement lie a l'action.
+- Mobile : appels check-in/check-out/corrections limites a un retry court pour eviter les attentes interminables sur reveil Render ou reseau faible.
+- Mobile : base API par defaut alignee sur Render hors configuration explicite `API_BASE_URL` ou `USE_LOCAL_API=true`, afin que les builds mobiles testent le vrai backend.
+- Mobile : parsing attendance plus tolerant des payloads API `data` directs ou `data.item`.
+
+### Tests
+
+- Mobile : tests repository attendance enrichis pour les payloads `data.item`, check-in/check-out, historique et actions de correction.
+
 ## [4.16.135] - 2026-05-25
 
 ### Changed

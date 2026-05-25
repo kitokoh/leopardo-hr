@@ -80,8 +80,11 @@ class _AuthFlowInterceptor extends Interceptor {
 }
 
 void main() {
-  test('uses local debug api as default base url when none is provided', () {
-    expect(ApiClient.resolveBaseUrl(), 'http://10.0.2.2:8000/api/v1');
+  test('uses Render API as default mobile base url when none is provided', () {
+    expect(
+      ApiClient.resolveBaseUrl(),
+      'https://gestionemployerbackend.onrender.com/api/v1',
+    );
   });
 
   test('extracts token from root API payload', () {
@@ -141,32 +144,35 @@ void main() {
     expect(employee.isRtl, isTrue);
   });
 
-  test('hydrates mobile login from /auth/me with tenant role metadata', () async {
-    final storage = FakeSecureStorage();
-    final preferences = _RecordingAppPreferences();
-    final client = ApiClient(storage, preferences);
-    final interceptor = _AuthFlowInterceptor();
-    client.dio.interceptors.add(interceptor);
+  test(
+    'hydrates mobile login from /auth/me with tenant role metadata',
+    () async {
+      final storage = FakeSecureStorage();
+      final preferences = _RecordingAppPreferences();
+      final client = ApiClient(storage, preferences);
+      final interceptor = _AuthFlowInterceptor();
+      client.dio.interceptors.add(interceptor);
 
-    final result = await AuthRepository(
-      client,
-      storage,
-      preferences,
-    ).login('amina@test.dev', 'password123');
+      final result = await AuthRepository(
+        client,
+        storage,
+        preferences,
+      ).login('amina@test.dev', 'password123');
 
-    final employee = result['employee'] as Employee;
+      final employee = result['employee'] as Employee;
 
-    expect(interceptor.requests, ['POST /auth/login', 'GET /auth/me']);
-    expect(interceptor.authMeAuthorization, 'Bearer mobile-token');
-    expect(await storage.getToken(), 'mobile-token');
-    expect(employee.role, 'manager');
-    expect(employee.managerRole, 'rh');
-    expect(employee.canManageTeam, isTrue);
-    expect(employee.capabilities, contains('employees.manage'));
-    expect(employee.hasFinanceModule, isTrue);
-    expect(employee.language, 'ar');
-    expect(employee.isRtl, isTrue);
-    expect(preferences.savedLanguage, 'ar');
-    expect(preferences.savedRtl, isTrue);
-  });
+      expect(interceptor.requests, ['POST /auth/login', 'GET /auth/me']);
+      expect(interceptor.authMeAuthorization, 'Bearer mobile-token');
+      expect(await storage.getToken(), 'mobile-token');
+      expect(employee.role, 'manager');
+      expect(employee.managerRole, 'rh');
+      expect(employee.canManageTeam, isTrue);
+      expect(employee.capabilities, contains('employees.manage'));
+      expect(employee.hasFinanceModule, isTrue);
+      expect(employee.language, 'ar');
+      expect(employee.isRtl, isTrue);
+      expect(preferences.savedLanguage, 'ar');
+      expect(preferences.savedRtl, isTrue);
+    },
+  );
 }

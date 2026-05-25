@@ -68,6 +68,8 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 - Historique journalier/hebdo/mensuel cohérent
 - Retards/absences correctement marqués
 - Cas fuseau horaire (Europe/Istanbul) cohérent entre UI et API
+- Le bouton pointage affiche un état d'envoi strictement lié à l'action (`isPunching`), confirme le succès/échec par message utilisateur et ne dépend pas du chargement historique.
+- Les appels pointage mobile consomment le backend Render par défaut, sauf `API_BASE_URL` explicite ou `USE_LOCAL_API=true`, et acceptent les payloads Laravel `data` ou `data.item`.
 
 ### 5) Congés et absences
 
@@ -104,6 +106,7 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 - Timeout API => message actionnable + retry
 - Erreur 5xx => message générique non bloquant
 - Loading states: skeleton/spinner visibles sans blocage UI
+- Les actions critiques comme check-in/check-out utilisent des retries courts pour éviter un spinner long sans retour, puis exposent un message clair si Render ou le réseau ne répond pas.
 
 ### 10) Sécurité mobile
 
