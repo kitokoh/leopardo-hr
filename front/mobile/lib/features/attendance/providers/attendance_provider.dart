@@ -10,6 +10,7 @@ import 'package:leopardo_rh/core/api/api_exceptions.dart';
 
 class AttendanceState {
   final bool isLoading;
+  final bool isPunching;
   final AttendanceLog? todayLog;
   final Map<String, dynamic>? context;
   final DailySummary? summary;
@@ -18,6 +19,7 @@ class AttendanceState {
 
   AttendanceState({
     this.isLoading = false,
+    this.isPunching = false,
     this.todayLog,
     this.context,
     this.summary,
@@ -27,6 +29,7 @@ class AttendanceState {
 
   AttendanceState copyWith({
     bool? isLoading,
+    bool? isPunching,
     AttendanceLog? todayLog,
     Map<String, dynamic>? context,
     DailySummary? summary,
@@ -37,6 +40,7 @@ class AttendanceState {
   }) {
     return AttendanceState(
       isLoading: isLoading ?? this.isLoading,
+      isPunching: isPunching ?? this.isPunching,
       todayLog: todayLog ?? this.todayLog,
       context: context ?? this.context,
       summary: summary ?? this.summary,
@@ -101,33 +105,53 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
   }
 
-  Future<void> checkIn() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+  Future<bool> checkIn() async {
+    state = state.copyWith(
+      isPunching: true,
+      clearError: true,
+      clearNotice: true,
+    );
     try {
       final log = await _repository.checkIn();
-      state = state.copyWith(todayLog: log, isLoading: false);
+      state = state.copyWith(
+        todayLog: log,
+        isPunching: false,
+        notice: 'Arrivee enregistree a l instant.',
+      );
       _loadSummary();
+      return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
         await _ref.read(authProvider.notifier).logout();
-        return;
+        return false;
       }
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isPunching: false, error: _friendlyActionError(e));
+      return false;
     }
   }
 
-  Future<void> checkOut() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+  Future<bool> checkOut() async {
+    state = state.copyWith(
+      isPunching: true,
+      clearError: true,
+      clearNotice: true,
+    );
     try {
       final log = await _repository.checkOut();
-      state = state.copyWith(todayLog: log, isLoading: false);
+      state = state.copyWith(
+        todayLog: log,
+        isPunching: false,
+        notice: 'Depart enregistre a l instant.',
+      );
       _loadSummary();
+      return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
         await _ref.read(authProvider.notifier).logout();
-        return;
+        return false;
       }
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isPunching: false, error: _friendlyActionError(e));
+      return false;
     }
   }
 
@@ -137,7 +161,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     DateTime? checkOut,
     required String notes,
   }) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isPunching: true, clearError: true);
     try {
       final log = await _repository.updateAttendanceLog(
         logId: logId,
@@ -152,7 +176,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
           log.date.day == now.day;
       state = state.copyWith(
         todayLog: isToday ? log : state.todayLog,
-        isLoading: false,
+        isPunching: false,
       );
       await _loadSummary();
       return true;
@@ -161,7 +185,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         await _ref.read(authProvider.notifier).logout();
         return false;
       }
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isPunching: false, error: _friendlyActionError(e));
       return false;
     }
   }
@@ -173,7 +197,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     DateTime? checkOut,
     required String reason,
   }) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(isPunching: true, clearError: true);
     try {
       await _repository.requestCorrection(
         logId: logId,
@@ -182,14 +206,14 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         checkOut: checkOut,
         reason: reason,
       );
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isPunching: false);
       return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
         await _ref.read(authProvider.notifier).logout();
         return false;
       }
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isPunching: false, error: _friendlyActionError(e));
       return false;
     }
   }
@@ -206,6 +230,19 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         message.contains('temps') ||
         message.contains('connexion indisponible') ||
         message.contains('impossible de se connecter');
+  }
+
+  String _friendlyActionError(Object error) {
+    if (error is ApiException) {
+      if (error.statusCode == 409 || error.statusCode == 422) {
+        return error.message;
+      }
+      if (error.statusCode == 403) {
+        return 'Votre role ne permet pas cette action de pointage.';
+      }
+    }
+
+    return 'Le pointage n a pas pu etre confirme. Verifiez la connexion puis reessayez.';
   }
 }
 
