@@ -84,7 +84,16 @@ class ApiClient {
       return configured;
     }
 
-    if (kReleaseMode) {
+    if (kReleaseMode || (!kIsWeb && !kDebugMode)) {
+      return _defaultRemoteBaseUrl;
+    }
+
+    const useLocalApi = bool.fromEnvironment(
+      'USE_LOCAL_API',
+      defaultValue: false,
+    );
+
+    if (!useLocalApi && !kIsWeb) {
       return _defaultRemoteBaseUrl;
     }
 
@@ -113,10 +122,15 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
     bool isLoginRequest = false,
+    int? maxRetriesOverride,
+    Duration? timeoutOverride,
     RetryCallback? onRetry,
   }) async {
-    final maxRetries = isLoginRequest ? _loginMaxRetries : _defaultMaxRetries;
-    final timeout = isLoginRequest ? _loginTimeout : _defaultTimeout;
+    final maxRetries =
+        maxRetriesOverride ??
+        (isLoginRequest ? _loginMaxRetries : _defaultMaxRetries);
+    final timeout =
+        timeoutOverride ?? (isLoginRequest ? _loginTimeout : _defaultTimeout);
 
     Object? lastError;
 
@@ -135,11 +149,14 @@ class ApiClient {
 
         final statusCode = response.statusCode ?? 0;
         if (_isColdStartStatus(statusCode) && attempt < maxRetries) {
-          onRetry?.call(attempt + 1, ApiException(
-            'Server returned $statusCode',
-            statusCode: statusCode,
-            code: 'COLD_START',
-          ));
+          onRetry?.call(
+            attempt + 1,
+            ApiException(
+              'Server returned $statusCode',
+              statusCode: statusCode,
+              code: 'COLD_START',
+            ),
+          );
           await _backoff(attempt);
           continue;
         }
@@ -149,7 +166,8 @@ class ApiClient {
         lastError = e;
 
         final isColdStart = _isColdStartStatus(e.response?.statusCode ?? 0);
-        final isTimeout = e.type == DioExceptionType.connectionTimeout ||
+        final isTimeout =
+            e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
             e.type == DioExceptionType.sendTimeout;
         final isNetwork = e.type == DioExceptionType.connectionError;
@@ -173,8 +191,9 @@ class ApiClient {
   bool _isColdStartStatus(int statusCode) =>
       statusCode == 502 || statusCode == 503 || statusCode == 504;
 
-  Future<void> _backoff(int attempt) =>
-      Future.delayed(Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)));
+  Future<void> _backoff(int attempt) => Future.delayed(
+    Duration(milliseconds: (3000 * (attempt + 1)).clamp(0, 10000)),
+  );
 
   DioException _handleError(DioException e) {
     String message = "Impossible de se connecter au serveur";
