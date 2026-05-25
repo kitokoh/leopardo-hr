@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.137] - 2026-05-25
+
+### Changed
+
+- Mobile : ecran pointage rendu plus direct, sans spinner visible de synchronisation semaine ; l'historique passe en chargement court non bloquant et les actions pointage echouent vite avec message clair si l'API ne repond pas.
+- Mobile : formulaire Equipe enrichi avec date d'embauche, matricule, type de paie, salaire/taux horaire, poste, departement et lieu de travail.
+- Mobile : apres creation d'un employe depuis Equipe, la liste collaborateurs est rafraichie immediatement pour afficher le nouvel ajout.
+- Mobile : module Avances rendu actionnable avec bottom sheet de demande d'avance, montant, motif et duree de remboursement.
+- API : creation et liste employes exposent maintenant les champs salaire (`salary_type`, `salary_base`, `hourly_rate`, `currency`) attendus par mobile/RH.
+
+### Tests
+
+- Mobile : contrats repository ajoutes pour verifier le payload creation employe RH/salaire et la demande d'avance avec plan de remboursement.
+
 ## [4.16.136] - 2026-05-25
 
 ### Changed

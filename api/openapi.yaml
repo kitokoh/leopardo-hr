@@ -4594,6 +4594,25 @@ components:
           type: string
         status:
           type: string
+        hire_date:
+          type: string
+          format: date
+          nullable: true
+        salary_type:
+          type: string
+          enum: ["fixed", "hourly", "daily"]
+          nullable: true
+        salary_base:
+          type: number
+          format: float
+          nullable: true
+        hourly_rate:
+          type: number
+          format: float
+          nullable: true
+        currency:
+          type: string
+          nullable: true
 
     EmployeeDetail:
       type: object
@@ -4614,6 +4633,25 @@ components:
           nullable: true
         status:
           type: string
+        hire_date:
+          type: string
+          format: date
+          nullable: true
+        salary_type:
+          type: string
+          enum: ["fixed", "hourly", "daily"]
+          nullable: true
+        salary_base:
+          type: number
+          format: float
+          nullable: true
+        hourly_rate:
+          type: number
+          format: float
+          nullable: true
+        currency:
+          type: string
+          nullable: true
         phone:
           type: string
           nullable: true
@@ -5253,6 +5291,17 @@ components:
         contract_start:
           type: string
           format: date
+        salary_type:
+          type: string
+          enum: ["fixed", "hourly", "daily"]
+        salary_base:
+          type: number
+          format: float
+          minimum: 0
+        hourly_rate:
+          type: number
+          format: float
+          minimum: 0
         role:
           type: string
           enum: ["employee", "manager"]
