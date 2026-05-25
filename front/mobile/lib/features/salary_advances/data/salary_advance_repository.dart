@@ -27,4 +27,9 @@ class SalaryAdvanceRepository {
     );
     return SalaryAdvance.fromJson(response.data['data']);
   }
+
+  Future<SalaryAdvance> cancelAdvance(int advanceId) async {
+    final response = await apiClient.dio.delete('/salary-advances/$advanceId');
+    return SalaryAdvance.fromJson(response.data['data']);
+  }
 }

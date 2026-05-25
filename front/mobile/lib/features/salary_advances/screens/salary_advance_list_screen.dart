@@ -84,6 +84,25 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                         label: _getStatusLabel(advance.status),
                         color: color,
                       ),
+                      footer:
+                          advance.status == 'pending'
+                              ? Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton.icon(
+                                  onPressed:
+                                      () => _confirmCancelAdvance(
+                                        context,
+                                        ref,
+                                        advance.id,
+                                      ),
+                                  icon: const Icon(
+                                    Icons.close_rounded,
+                                    size: 16,
+                                  ),
+                                  label: const Text('Annuler la demande'),
+                                ),
+                              )
+                              : null,
                     ),
                   ),
                 );
@@ -118,6 +137,48 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
       ),
       builder: (_) => const _SalaryAdvanceRequestSheet(),
     );
+  }
+
+  Future<void> _confirmCancelAdvance(
+    BuildContext context,
+    WidgetRef ref,
+    int advanceId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Annuler cette avance ?'),
+            content: const Text(
+              'La demande en attente sera retiree avant decision RH.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Garder'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Annuler'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(salaryAdvanceRepositoryProvider).cancelAdvance(advanceId);
+      ref.invalidate(salaryAdvancesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Demande d avance annulee.')),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    }
   }
 
   static String _getStatusLabel(String status) {
