@@ -1,7 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_rh/features/attendance/data/attendance_repository.dart';
+import 'package:leopardo_rh/features/attendance/screens/attendance_screen.dart';
 
 void main() {
+  test('uses stable month key for attendance history refreshes', () {
+    final firstTick = attendanceHistoryMonthKey(DateTime(2026, 5, 25, 8, 0, 1));
+    final nextTick = attendanceHistoryMonthKey(DateTime(2026, 5, 25, 8, 0, 2));
+
+    expect(firstTick, DateTime(2026, 5));
+    expect(nextTick, firstTick);
+  });
+
   test('decodes normalized today payload for a single employee', () {
     final decoded = AttendanceRepository.decodeTodayResponse({
       'data': {
