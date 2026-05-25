@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
+import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
-import 'package:leopardo_rh/core/widgets/leopardo_badge.dart';
+import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/team/data/employee_repository.dart';
 import 'package:leopardo_rh/features/team/providers/team_provider.dart';
@@ -39,10 +40,12 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
     final employee = ref.watch(authProvider).employee;
     if (employee == null || !employee.canManageTeam) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Equipe'),
+        backgroundColor: MobileSurface.background,
+        appBar: MobileTopBar(
+          title: 'Equipe',
+          subtitle: 'Acces manager/RH requis',
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
             tooltip: 'Retour',
             onPressed: () => context.pop(),
           ),
@@ -60,21 +63,39 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Equipe'),
+      backgroundColor: MobileSurface.background,
+      appBar: MobileTopBar(
+        title: 'Equipe',
+        subtitle: 'Collaborateurs et invitations',
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [Tab(text: 'Employes'), Tab(text: 'Invitations')],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [_EmployeesTab(), _InvitationsTab()],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: MobileSurface.cardDecoration(
+                color: MobileSurface.chip,
+                radius: 14,
+              ),
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [Tab(text: 'Employes'), Tab(text: 'Invitations')],
+              ),
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [_EmployeesTab(), _InvitationsTab()],
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openCreateEmployeeSheet(context),
@@ -88,6 +109,10 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => const _CreateEmployeeForm(),
     );
   }
@@ -105,8 +130,18 @@ class _EmployeesTab extends ConsumerWidget {
         await ref.refresh(teamListProvider.future).then((_) {});
       },
       child: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Erreur : $err')),
+        loading:
+            () => const MobileEmptyLoading(label: 'Chargement de l equipe'),
+        error:
+            (err, _) => ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                MobileErrorPanel(
+                  message: err.toString(),
+                  onRetry: () => ref.invalidate(teamListProvider),
+                ),
+              ],
+            ),
         data: (employees) {
           if (employees.isEmpty) {
             return ListView(
@@ -121,25 +156,25 @@ class _EmployeesTab extends ConsumerWidget {
               ],
             );
           }
-          return ListView.separated(
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
             itemCount: employees.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (_, index) {
               final e = employees[index];
-              return ListTile(
-                leading: CircleAvatar(child: Text(_initials(e))),
-                title: Text(e.fullName),
-                subtitle: Text(
-                  [
-                    e.email,
-                    'Role : ${_roleLabel(e)}',
-                    if (_employmentLine(e) != null) _employmentLine(e)!,
-                  ].join('\n'),
-                ),
-                isThreeLine: true,
-                trailing: LeopardoBadge.forStatus(
-                  e.status,
-                  _statusLabel(e.status),
+              final subtitle = [
+                e.email,
+                _roleLabel(e),
+                if (_employmentLine(e) != null) _employmentLine(e)!,
+              ].join(' - ');
+
+              return MobileListCard(
+                icon: Icons.person_outline_rounded,
+                iconColor: _statusColor(e.status),
+                title: '${_initials(e)}  ${e.fullName}',
+                subtitle: subtitle,
+                trailing: MobileStatusPill(
+                  label: _statusLabel(e.status),
+                  color: _statusColor(e.status),
                 ),
                 onTap: () => _showActions(context, ref, e),
               );
@@ -190,9 +225,20 @@ class _EmployeesTab extends ConsumerWidget {
     _ => status,
   };
 
+  Color _statusColor(String status) => switch (status) {
+    'active' => AppColors.rh,
+    'suspended' => AppColors.warning,
+    'blocked' || 'archived' => AppColors.danger,
+    _ => MobileSurface.disabled,
+  };
+
   void _showActions(BuildContext context, WidgetRef ref, Employee employee) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder:
           (_) => Padding(
             padding: const EdgeInsets.all(16),
@@ -201,11 +247,13 @@ class _EmployeesTab extends ConsumerWidget {
               children: [
                 Text(
                   employee.fullName,
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: AppTypography.subtitle.copyWith(
+                    color: MobileSurface.text,
+                  ),
                 ),
                 Text(
                   employee.email,
-                  style: const TextStyle(color: AppColors.textMuted),
+                  style: const TextStyle(color: MobileSurface.secondary),
                 ),
                 const SizedBox(height: 16),
                 if (employee.status != 'archived')
@@ -279,8 +327,18 @@ class _InvitationsTab extends ConsumerWidget {
         await ref.refresh(invitationsListProvider.future).then((_) {});
       },
       child: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Erreur : $err')),
+        loading:
+            () => const MobileEmptyLoading(label: 'Chargement des invitations'),
+        error:
+            (err, _) => ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                MobileErrorPanel(
+                  message: err.toString(),
+                  onRetry: () => ref.invalidate(invitationsListProvider),
+                ),
+              ],
+            ),
         data: (invitations) {
           if (invitations.isEmpty) {
             return ListView(
@@ -295,28 +353,33 @@ class _InvitationsTab extends ConsumerWidget {
               ],
             );
           }
-          return ListView.separated(
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
             itemCount: invitations.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (_, index) {
               final inv = invitations[index];
-              return ListTile(
-                leading: const Icon(Icons.mail_outline, color: AppColors.ia),
-                title: Text(inv.email),
-                subtitle: Row(
-                  children: [
-                    LeopardoBadge.forStatus(
-                      inv.status,
-                      _invitationLabel(inv.status),
-                    ),
-                  ],
+              final color = _invitationColor(inv.status);
+              return MobileListCard(
+                icon: Icons.mail_outline_rounded,
+                iconColor: color,
+                title: inv.email,
+                subtitle:
+                    inv.sentAt == null
+                        ? 'Invitation ${_invitationLabel(inv.status)}'
+                        : 'Dernier envoi ${inv.sentAt!.day.toString().padLeft(2, '0')}/${inv.sentAt!.month.toString().padLeft(2, '0')}',
+                trailing: MobileStatusPill(
+                  label: _invitationLabel(inv.status),
+                  color: color,
                 ),
-                trailing:
+                footer:
                     inv.status == 'pending'
-                        ? IconButton(
-                          icon: const Icon(Icons.send),
-                          tooltip: 'Renvoyer',
-                          onPressed: () async => _resend(context, ref, inv),
+                        ? Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () async => _resend(context, ref, inv),
+                            icon: const Icon(Icons.send_rounded, size: 16),
+                            label: const Text('Renvoyer'),
+                          ),
                         )
                         : null,
               );
@@ -334,6 +397,13 @@ class _InvitationsTab extends ConsumerWidget {
     'expired' => 'Expiree',
     'revoked' => 'Revoquee',
     _ => status,
+  };
+
+  Color _invitationColor(String status) => switch (status) {
+    'accepted' => AppColors.rh,
+    'sent' || 'pending' => AppColors.info,
+    'expired' || 'revoked' => AppColors.danger,
+    _ => MobileSurface.disabled,
   };
 
   Future<void> _resend(
@@ -420,13 +490,34 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Center(
+                child: Container(
+                  width: 38,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: MobileSurface.border,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
               Text(
                 'Nouvel employe',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: AppTypography.subtitle.copyWith(
+                  color: MobileSurface.text,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Invitation, role, date d embauche et base salariale sont envoyes a l API.',
+                style: AppTypography.bodySmall.copyWith(
+                  color: MobileSurface.secondary,
+                ),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _firstName,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(labelText: 'Prenom'),
                 validator:
                     (v) =>
@@ -435,6 +526,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _lastName,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(labelText: 'Nom'),
                 validator:
                     (v) =>
@@ -443,6 +535,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _email,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(
                   labelText: 'Email professionnel',
                 ),
@@ -456,6 +549,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _phone,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(
                   labelText: 'Telephone (optionnel)',
                 ),
@@ -464,6 +558,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _matricule,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(
                   labelText: 'Matricule (optionnel)',
                 ),
@@ -471,6 +566,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _hireDate,
+                style: const TextStyle(color: MobileSurface.text),
                 readOnly: true,
                 decoration: const InputDecoration(
                   labelText: 'Date d embauche',
@@ -484,6 +580,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _role,
+                dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Role'),
                 items: const [
                   DropdownMenuItem(value: 'employee', child: Text('Employe')),
@@ -499,6 +596,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   initialValue: _managerRole,
+                  dropdownColor: MobileSurface.surface,
                   decoration: const InputDecoration(
                     labelText: 'Type de manager',
                   ),
@@ -525,6 +623,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _salaryType,
+                dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Type de paie'),
                 items: const [
                   DropdownMenuItem(
@@ -540,6 +639,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               if (_salaryType == 'hourly')
                 TextFormField(
                   controller: _hourlyRate,
+                  style: const TextStyle(color: MobileSurface.text),
                   decoration: const InputDecoration(
                     labelText: 'Taux horaire',
                     suffixText: 'DZD/h',
@@ -552,6 +652,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               else
                 TextFormField(
                   controller: _salaryBase,
+                  style: const TextStyle(color: MobileSurface.text),
                   decoration: InputDecoration(
                     labelText:
                         _salaryType == 'daily'
@@ -567,6 +668,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _jobTitle,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(
                   labelText: 'Poste (optionnel)',
                 ),
@@ -574,6 +676,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _department,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(
                   labelText: 'Departement (optionnel)',
                 ),
@@ -581,6 +684,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _workLocation,
+                style: const TextStyle(color: MobileSurface.text),
                 decoration: const InputDecoration(
                   labelText: 'Lieu de travail (optionnel)',
                 ),
