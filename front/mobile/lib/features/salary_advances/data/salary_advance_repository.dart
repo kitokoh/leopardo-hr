@@ -15,10 +15,15 @@ class SalaryAdvanceRepository {
   Future<SalaryAdvance> requestAdvance({
     required double amount,
     String? reason,
+    int? repaymentMonths,
   }) async {
     final response = await apiClient.dio.post(
       '/salary-advances',
-      data: {'amount': amount, 'reason': reason},
+      data: {
+        'amount': amount,
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+        if (repaymentMonths != null) 'repayment_months': repaymentMonths,
+      },
     );
     return SalaryAdvance.fromJson(response.data['data']);
   }
