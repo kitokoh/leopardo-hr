@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.143] - 2026-05-26
+
+### Added
+
+- Mobile : creation de `front/mobile_apps/` avec archive `leopardo_mobile_legacy`, package partage `leopardo_core`, app `leopardo_employee` et app `leopardo_manager`.
+- Mobile : `leopardo_core` centralise API client, stockage, theme, widgets de base, modeles et i18n pour les deux futures apps.
+- Mobile : app employe allegee sans routes equipe, approvals, organigramme ni tableaux manager.
+- Mobile : app manager/RH conserve le perimetre complet et prepare les routes placeholders `/manager/dashboard`, `/manager/attendance`, `/manager/anomalies` et `/manager/corrections`.
+- CI : workflow `mobile-apps-ci.yml` ajoute pour analyser `leopardo_core`, `leopardo_employee`, `leopardo_manager` et builder les deux APK debug.
+- Documentation : README `front/mobile_apps/README.md` ajoutant les regles de contribution mobile multi-app.
+
 ## [4.16.142] - 2026-05-26
 
 ### Added
