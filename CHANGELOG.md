@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.141] - 2026-05-25
+
+### Added
+
+- Mobile : lot 25.4 demarre les decisions manager/RH sur absences et avances directement depuis les listes mobiles.
+- Mobile : routes repository ajoutees pour `PUT /absences/{id}/approve`, `PUT /absences/{id}/reject`, `PUT /salary-advances/{id}/approve` et `PUT /salary-advances/{id}/reject`.
+- Mobile : composant partage `MobileDecisionActions` et bottom sheet de commentaire pour les refus manager/RH.
+- Mobile : tests repository ajoutés pour verrouiller les routes de decision manager/RH.
+
 ## [4.16.140] - 2026-05-25
 
 ### Added
