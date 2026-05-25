@@ -106,7 +106,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               const SizedBox(height: 28),
               _buildPunchButton(
                 isCheckedIn: isCheckedIn,
-                isLoading: attState.isLoading && attState.todayLog != null,
+                isLoading: attState.isPunching,
                 onTap: () => _handlePunch(isCheckedIn),
               ),
               const SizedBox(height: 22),
@@ -141,12 +141,52 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
   Future<void> _handlePunch(bool isCheckedIn) async {
     HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context).clearSnackBars();
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          isCheckedIn
+              ? 'Envoi du depart vers le serveur...'
+              : 'Envoi de l arrivee vers le serveur...',
+        ),
+        duration: const Duration(seconds: 2),
+        backgroundColor: AppColors.rhDark,
+      ),
+    );
+
+    final success =
+        isCheckedIn
+            ? await ref.read(attendanceProvider.notifier).checkOut()
+            : await ref.read(attendanceProvider.notifier).checkIn();
+    if (!mounted) return;
+    messenger.clearSnackBars();
     if (isCheckedIn) {
-      await ref.read(attendanceProvider.notifier).checkOut();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? 'Depart confirme.'
+                : ref.read(attendanceProvider).error ??
+                    'Depart non confirme. Reessayez.',
+          ),
+          backgroundColor: success ? AppColors.rh : AppColors.danger,
+        ),
+      );
     } else {
-      await ref.read(attendanceProvider.notifier).checkIn();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? 'Arrivee confirmee.'
+                : ref.read(attendanceProvider).error ??
+                    'Arrivee non confirmee. Reessayez.',
+          ),
+          backgroundColor: success ? AppColors.rh : AppColors.danger,
+        ),
+      );
     }
-    ref.invalidate(historyProvider(_now));
+    if (success) ref.invalidate(historyProvider(_now));
   }
 
   Widget _buildHeader({
@@ -364,28 +404,23 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                               strokeWidth: 2.4,
                             ),
                           )
-                          : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _buildFingerprintIcon(),
-                              const SizedBox(height: 10),
-                              Text(
-                                isCheckedIn ? 'SORTIR' : 'POINTER',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ],
-                          ),
+                          : _buildFingerprintIcon(),
                 ),
               ),
             ),
           ),
         ),
         const SizedBox(height: 12),
+        Text(
+          isLoading
+              ? 'Connexion au serveur...'
+              : isCheckedIn
+              ? 'Appuyez pour enregistrer votre depart'
+              : 'Appuyez pour enregistrer votre arrivee',
+          style: const TextStyle(color: _secondary, fontSize: 12),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
         if (_fingerprintAvailable)
           GestureDetector(
             onTap:

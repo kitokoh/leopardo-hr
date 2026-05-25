@@ -8,6 +8,8 @@ class AttendanceRepository {
 
   AttendanceRepository(this.apiClient);
 
+  static const _actionTimeout = Duration(seconds: 12);
+
   Future<Map<String, dynamic>> getTodayStatus() async {
     final response = await apiClient.requestWithRetry('/attendance/today');
     return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
@@ -18,8 +20,10 @@ class AttendanceRepository {
       '/attendance/check-in',
       method: 'POST',
       data: {},
+      maxRetriesOverride: 1,
+      timeoutOverride: _actionTimeout,
     );
-    return AttendanceLog.fromJson(response.data['data']);
+    return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
   Future<AttendanceLog> checkOut() async {
@@ -27,8 +31,10 @@ class AttendanceRepository {
       '/attendance/check-out',
       method: 'POST',
       data: {},
+      maxRetriesOverride: 1,
+      timeoutOverride: _actionTimeout,
     );
-    return AttendanceLog.fromJson(response.data['data']);
+    return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
   Future<AttendanceLog> updateAttendanceLog({
@@ -49,8 +55,10 @@ class AttendanceRepository {
       '/attendance/$logId',
       method: 'PUT',
       data: payload,
+      maxRetriesOverride: 1,
+      timeoutOverride: _actionTimeout,
     );
-    return AttendanceLog.fromJson(response.data['data']);
+    return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
   Future<void> requestCorrection({
@@ -75,6 +83,8 @@ class AttendanceRepository {
       '/attendance/corrections',
       method: 'POST',
       data: payload,
+      maxRetriesOverride: 1,
+      timeoutOverride: _actionTimeout,
     );
   }
 
@@ -223,5 +233,19 @@ class AttendanceRepository {
     final minute = int.tryParse(parts[1]) ?? 0;
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
+  static Map<String, dynamic> _dataMap(dynamic responseData) {
+    final response =
+        responseData is Map
+            ? responseData.cast<String, dynamic>()
+            : const <String, dynamic>{};
+    final payload = response['data'];
+    if (payload is Map) {
+      final item = payload['item'];
+      if (item is Map) return item.cast<String, dynamic>();
+      return payload.cast<String, dynamic>();
+    }
+    return response;
   }
 }
