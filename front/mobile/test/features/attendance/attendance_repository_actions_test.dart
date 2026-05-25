@@ -107,16 +107,18 @@ void main() {
             statusCode: 200,
             data: {
               'data': {
-                'id': paths.length,
-                'employee_id': 12,
-                'date': '2026-05-25',
-                'check_in': '2026-05-25T08:00:00Z',
-                'check_out':
-                    options.path.endsWith('check-out')
-                        ? '2026-05-25T17:00:00Z'
-                        : null,
-                'hours_worked': 8,
-                'status': 'present',
+                'item': {
+                  'id': paths.length,
+                  'employee_id': 12,
+                  'date': '2026-05-25',
+                  'check_in': '2026-05-25T08:00:00Z',
+                  'check_out':
+                      options.path.endsWith('check-out')
+                          ? '2026-05-25T17:00:00Z'
+                          : null,
+                  'hours_worked': 8,
+                  'status': 'present',
+                },
               },
             },
           ),
