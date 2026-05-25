@@ -75,6 +75,13 @@ Etat v4.16.141 :
 - Guide QA mobile avec comptes demo, URL API, scenarios et resultats attendus.
 - Observabilite UX : evenements de succes/echec sur pointage, demande RH et navigation modules.
 
+Etat v4.16.142 :
+
+- Livré : guide QA mobile marketing-ready dans `docs/validation/MOBILE_MARKETING_READINESS.md`.
+- Livré : smoke Flutter `mobile_marketing_readiness_test.dart` couvrant les decisions manager/RH et l'annulation self-service employe sur absences/avances.
+- Livré : matrice frontend/API enrichie avec les contrats mobiles d'approbation/refus absences et avances.
+- Livré : criteres no-go explicites pour demo commerciale mobile : spinner pointage, route API decoratrice, auto-approbation manager/RH et donnees demo manquantes.
+
 ## Definition of done
 
 - Aucun bouton critique ne tourne indefiniment.
