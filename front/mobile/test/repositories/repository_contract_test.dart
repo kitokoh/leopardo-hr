@@ -67,6 +67,53 @@ class RecordingInterceptor extends Interceptor {
                 'status': 'cancelled',
               },
             }
+            : options.method == 'PUT' && options.path == '/absences/33/approve'
+            ? {
+              'data': {
+                'id': 33,
+                'employee_id': 44,
+                'absence_type_id': 2,
+                'start_date': '2026-05-26',
+                'end_date': '2026-05-26',
+                'days_count': 1,
+                'status': 'approved',
+              },
+            }
+            : options.method == 'PUT' && options.path == '/absences/33/reject'
+            ? {
+              'data': {
+                'id': 33,
+                'employee_id': 44,
+                'absence_type_id': 2,
+                'start_date': '2026-05-26',
+                'end_date': '2026-05-26',
+                'days_count': 1,
+                'status': 'rejected',
+                'rejected_reason': 'Solde insuffisant',
+              },
+            }
+            : options.method == 'PUT' &&
+                options.path == '/salary-advances/12/approve'
+            ? {
+              'data': {
+                'id': 12,
+                'employee_id': 44,
+                'status': 'approved',
+                'amount': 30000,
+                'repayment_months': 3,
+              },
+            }
+            : options.method == 'PUT' &&
+                options.path == '/salary-advances/12/reject'
+            ? {
+              'data': {
+                'id': 12,
+                'employee_id': 44,
+                'status': 'rejected',
+                'amount': 30000,
+                'decision_comment': 'Hors politique interne',
+              },
+            }
             : {'data': <dynamic>[]};
     handler.resolve(
       Response(requestOptions: options, statusCode: 200, data: responseData),
@@ -191,4 +238,38 @@ void main() {
       'DELETE /salary-advances/12',
     ]);
   });
+
+  test(
+    'manager decision routes for absences and advances stay explicit',
+    () async {
+      final recorder = RecordingInterceptor();
+      final client = recordingClient(recorder);
+
+      await AbsenceRepository(client).approveAbsence(33);
+      await AbsenceRepository(
+        client,
+      ).rejectAbsence(absenceId: 33, reason: 'Solde insuffisant');
+      await SalaryAdvanceRepository(
+        client,
+      ).approveAdvance(advanceId: 12, repaymentMonths: 3);
+      await SalaryAdvanceRepository(
+        client,
+      ).rejectAdvance(advanceId: 12, comment: 'Hors politique interne');
+
+      expect(recorder.requests, [
+        'PUT /absences/33/approve',
+        'PUT /absences/33/reject',
+        'PUT /salary-advances/12/approve',
+        'PUT /salary-advances/12/reject',
+      ]);
+
+      expect(recorder.options[1].data, {
+        'rejected_reason': 'Solde insuffisant',
+      });
+      expect(recorder.options[2].data, {'repayment_months': 3});
+      expect(recorder.options[3].data, {
+        'decision_comment': 'Hors politique interne',
+      });
+    },
+  );
 }
