@@ -11,6 +11,10 @@ import 'package:leopardo_rh/features/attendance/providers/attendance_provider.da
 import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/models/attendance_log.dart';
 
+DateTime attendanceHistoryMonthKey(DateTime value) {
+  return DateTime(value.year, value.month);
+}
+
 class AttendanceScreen extends ConsumerStatefulWidget {
   const AttendanceScreen({super.key});
 
@@ -70,7 +74,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final attState = ref.watch(attendanceProvider);
-    final weekAsync = ref.watch(historyProvider(_now));
+    final historyMonth = attendanceHistoryMonthKey(_now);
+    final weekAsync = ref.watch(historyProvider(historyMonth));
     final weekLogs = weekAsync.maybeWhen(
       data: (value) => value,
       orElse: () => const <AttendanceLog>[],
@@ -90,7 +95,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           color: AppColors.rh,
           backgroundColor: _card,
           onRefresh: () async {
-            ref.invalidate(historyProvider(_now));
+            ref.invalidate(historyProvider(historyMonth));
             await ref.read(attendanceProvider.notifier).loadTodayData();
           },
           child: ListView(
@@ -139,6 +144,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 
   Future<void> _handlePunch(bool isCheckedIn) async {
+    if (ref.read(attendanceProvider).isPunching) return;
     HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).clearSnackBars();
     final messenger = ScaffoldMessenger.of(context);
@@ -185,7 +191,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         ),
       );
     }
-    if (success) ref.invalidate(historyProvider(_now));
+    if (success) {
+      ref.invalidate(historyProvider(attendanceHistoryMonthKey(_now)));
+    }
   }
 
   Widget _buildHeader({
