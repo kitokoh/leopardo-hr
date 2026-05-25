@@ -5,8 +5,12 @@ import 'package:leopardo_rh/core/providers/core_providers.dart';
 import 'package:leopardo_rh/core/theme/app_colors.dart';
 import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
+import 'package:leopardo_rh/core/widgets/mobile_decision_actions.dart';
 import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
+import 'package:leopardo_rh/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_rh/features/salary_advances/providers/salary_advance_provider.dart';
+import 'package:leopardo_rh/models/employee.dart';
+import 'package:leopardo_rh/models/salary_advance.dart';
 
 class SalaryAdvanceListScreen extends ConsumerWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -14,6 +18,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final advancesAsync = ref.watch(salaryAdvancesProvider);
+    final actor = ref.watch(authProvider).employee;
 
     return Scaffold(
       backgroundColor: MobileSurface.background,
@@ -84,25 +89,12 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                         label: _getStatusLabel(advance.status),
                         color: color,
                       ),
-                      footer:
-                          advance.status == 'pending'
-                              ? Align(
-                                alignment: Alignment.centerLeft,
-                                child: TextButton.icon(
-                                  onPressed:
-                                      () => _confirmCancelAdvance(
-                                        context,
-                                        ref,
-                                        advance.id,
-                                      ),
-                                  icon: const Icon(
-                                    Icons.close_rounded,
-                                    size: 16,
-                                  ),
-                                  label: const Text('Annuler la demande'),
-                                ),
-                              )
-                              : null,
+                      footer: _advanceFooter(
+                        context,
+                        ref,
+                        advance,
+                        actor: actor,
+                      ),
                     ),
                   ),
                 );
@@ -123,6 +115,33 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                 ],
               ),
         ),
+      ),
+    );
+  }
+
+  Widget? _advanceFooter(
+    BuildContext context,
+    WidgetRef ref,
+    SalaryAdvance advance, {
+    required Employee? actor,
+  }) {
+    if (advance.status != 'pending') return null;
+
+    if (_canDecideAdvance(actor, advance)) {
+      return MobileDecisionActions(
+        approveLabel: 'Approuver',
+        rejectLabel: 'Refuser',
+        onApprove: () => _confirmApproveAdvance(context, ref, advance),
+        onReject: () => _showRejectAdvanceSheet(context, ref, advance.id),
+      );
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        onPressed: () => _confirmCancelAdvance(context, ref, advance.id),
+        icon: const Icon(Icons.close_rounded, size: 16),
+        label: const Text('Annuler la demande'),
       ),
     );
   }
@@ -179,6 +198,91 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
         context,
       ).showSnackBar(SnackBar(content: Text('Echec : $error')));
     }
+  }
+
+  Future<void> _confirmApproveAdvance(
+    BuildContext context,
+    WidgetRef ref,
+    SalaryAdvance advance,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Approuver cette avance ?'),
+            content: Text(
+              'Montant : ${(advance.amount ?? 0).toStringAsFixed(0)} DZD. La decision sera envoyee a l employe.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Retour'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Approuver'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .approveAdvance(
+            advanceId: advance.id,
+            repaymentMonths: advance.repaymentMonths,
+          );
+      ref.invalidate(salaryAdvancesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Avance approuvee.')));
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    }
+  }
+
+  void _showRejectAdvanceSheet(
+    BuildContext context,
+    WidgetRef ref,
+    int advanceId,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder:
+          (_) => MobileDecisionCommentSheet(
+            title: 'Refuser l avance',
+            helper: 'Le commentaire aide l employe a comprendre la decision.',
+            submitLabel: 'Refuser',
+            danger: true,
+            onSubmit: (comment) async {
+              await ref
+                  .read(salaryAdvanceRepositoryProvider)
+                  .rejectAdvance(advanceId: advanceId, comment: comment);
+              ref.invalidate(salaryAdvancesProvider);
+            },
+            successMessage: 'Avance refusee.',
+          ),
+    );
+  }
+
+  static bool _canDecideAdvance(Employee? actor, SalaryAdvance advance) {
+    if (actor == null) return false;
+    if (actor.id == advance.employeeId) return false;
+    return actor.isPrincipal ||
+        actor.isHr ||
+        actor.capabilities.contains('salary_advances.manage') ||
+        actor.capabilities.contains('salary_advances.approve');
   }
 
   static String _getStatusLabel(String status) {
