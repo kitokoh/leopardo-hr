@@ -40,4 +40,20 @@ class AbsenceRepository {
     final response = await apiClient.dio.delete('/absences/$absenceId');
     return Absence.fromJson(response.data['data']);
   }
+
+  Future<Absence> approveAbsence(int absenceId) async {
+    final response = await apiClient.dio.put('/absences/$absenceId/approve');
+    return Absence.fromJson(response.data['data']);
+  }
+
+  Future<Absence> rejectAbsence({
+    required int absenceId,
+    required String reason,
+  }) async {
+    final response = await apiClient.dio.put(
+      '/absences/$absenceId/reject',
+      data: {'rejected_reason': reason.trim()},
+    );
+    return Absence.fromJson(response.data['data']);
+  }
 }

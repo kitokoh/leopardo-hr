@@ -60,6 +60,14 @@ Etat v4.16.140 :
 - Validation : absences, avances et autres demandes avec decision claire.
 - Filtrage par role/capabilities afin qu'un utilisateur ne voie que ses ressources.
 
+Etat v4.16.141 :
+
+- Livré : decisions manager/RH absences en attente via `PUT /absences/{id}/approve` et `PUT /absences/{id}/reject`.
+- Livré : decisions manager/RH avances en attente via `PUT /salary-advances/{id}/approve` et `PUT /salary-advances/{id}/reject`.
+- Livré : actions visibles seulement pour les profils `principal`, `rh` ou capabilities explicites `*.manage` / `*.approve`, hors demandes personnelles qui restent annulables en self-service.
+- Livré : refus avec commentaire obligatoire, confirmation avant approbation, refresh provider et feedback SnackBar.
+- Livré : composant mobile partage pour actions de decision et tests repository sur les routes de decision.
+
 ## Lot 25.5 - Qualite marketing et lancement
 
 - Captures ou parcours demo mobiles stables pour landing page, videos et commerciaux.
