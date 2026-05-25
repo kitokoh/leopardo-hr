@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.138] - 2026-05-25
+
+### Added
+
+- Documentation : Plan 25 de modernisation mobile marketing-ready, couvrant pointage fiable, design system mobile, workflows employe/manager/RH et readiness lancement.
+- Mobile : helper teste `attendanceHistoryMonthKey()` pour garantir que l'historique pointage reste cle par mois et non par tick d'horloge.
+
+### Fixed
+
+- Mobile : l'historique pointage n'est plus reobserve avec un `DateTime` qui change chaque seconde, ce qui evitait des rechargements API continus pendant l'horloge live.
+- Mobile : pointage protege contre les doubles taps et garde timeout provider pour que l'etat `isPunching` retombe toujours, meme si l'API ou le reseau ne repond plus.
+
 ## [4.16.137] - 2026-05-25
 
 ### Changed

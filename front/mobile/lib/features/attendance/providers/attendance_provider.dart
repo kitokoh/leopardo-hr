@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_rh/features/attendance/data/attendance_repository.dart';
@@ -53,6 +55,7 @@ class AttendanceState {
 class AttendanceNotifier extends StateNotifier<AttendanceState> {
   final AttendanceRepository _repository;
   final Ref _ref;
+  static const _punchGuardTimeout = Duration(seconds: 12);
 
   AttendanceNotifier(this._repository, this._ref) : super(AttendanceState()) {
     loadTodayData();
@@ -106,13 +109,14 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }
 
   Future<bool> checkIn() async {
+    if (state.isPunching) return false;
     state = state.copyWith(
       isPunching: true,
       clearError: true,
       clearNotice: true,
     );
     try {
-      final log = await _repository.checkIn();
+      final log = await _repository.checkIn().timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
         isPunching: false,
@@ -122,6 +126,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
+        state = state.copyWith(isPunching: false);
         await _ref.read(authProvider.notifier).logout();
         return false;
       }
@@ -131,13 +136,14 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
   }
 
   Future<bool> checkOut() async {
+    if (state.isPunching) return false;
     state = state.copyWith(
       isPunching: true,
       clearError: true,
       clearNotice: true,
     );
     try {
-      final log = await _repository.checkOut();
+      final log = await _repository.checkOut().timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
         isPunching: false,
@@ -147,6 +153,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
+        state = state.copyWith(isPunching: false);
         await _ref.read(authProvider.notifier).logout();
         return false;
       }
@@ -182,6 +189,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
+        state = state.copyWith(isPunching: false);
         await _ref.read(authProvider.notifier).logout();
         return false;
       }
@@ -210,6 +218,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       return true;
     } catch (e) {
       if (e is ApiException && e.statusCode == 401) {
+        state = state.copyWith(isPunching: false);
         await _ref.read(authProvider.notifier).logout();
         return false;
       }
