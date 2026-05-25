@@ -500,3 +500,5 @@ Procedure recommandee :
 - Les actions check-in/check-out/correction doivent rester bornees et afficher un SnackBar succes/echec clair ; ne pas relancer de retry long cote mobile qui donne l'impression que le bouton tourne sans fin.
 - La creation mobile d'employe doit conserver les champs RH minimum : `contract_start`, `salary_type`, `salary_base` ou `hourly_rate`, `matricule` et `extra_data.department/job_title/work_location`. Le backend `StoreEmployeeRequest`, `EmployeeController@index` et `EmployeeResource` doivent rester alignes avec ce contrat.
 - Le module mobile Avances doit proposer une vraie demande employee-side via `POST /salary-advances` avec `amount`, `reason` et `repayment_months`, puis rafraichir la liste locale.
+- Depuis v4.16.138, l'ecran pointage doit utiliser `attendanceHistoryMonthKey(_now)` pour `historyProvider` ; ne jamais repasser `_now` complet comme cle provider, sinon l'historique se recharge chaque seconde avec l'horloge live.
+- Les actions pointage doivent rester protegees contre doubles taps et timeout provider : un succes API ou une erreur reseau ne doit jamais laisser `isPunching=true` indefiniment.
