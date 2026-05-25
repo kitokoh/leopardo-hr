@@ -11,9 +11,9 @@ class MobileSurface {
   static const Color chip = Color(0xFF0C1525);
   static const Color border = Color(0xFF1A2B44);
   static const Color text = Color(0xFFE2EAF6);
-  static const Color muted = Color(0xFF3D5470);
-  static const Color secondary = Color(0xFF7A9CC0);
-  static const Color disabled = Color(0xFF2A4560);
+  static const Color muted = Color(0xFF8EA9C8);
+  static const Color secondary = Color(0xFFB8C7DA);
+  static const Color disabled = Color(0xFF6F86A5);
 
   static BoxDecoration cardDecoration({
     Color color = surface,

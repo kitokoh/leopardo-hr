@@ -29,6 +29,6 @@ class AttendancePolicy
 
     public function update(Employee $actor, AttendanceLog $log): bool
     {
-        return $actor->isManager();
+        return $actor->hasManagerRole('principal', 'rh');
     }
 }

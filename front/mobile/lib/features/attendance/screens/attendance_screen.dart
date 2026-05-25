@@ -22,10 +22,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   static const Color _bg = Color(0xFF0B1120);
   static const Color _card = Color(0xFF111B2E);
   static const Color _text = Color(0xFFE2EAF6);
-  static const Color _muted = Color(0xFF3D5470);
-  static const Color _secondary = Color(0xFF7A9CC0);
+  static const Color _muted = Color(0xFF7A9CC0);
+  static const Color _secondary = Color(0xFFB8C7DA);
   static const Color _border = Color(0xFF1A2B44);
-  static const Color _soft = Color(0xFF2A4560);
+  static const Color _soft = Color(0xFF6F86A5);
 
   late Timer _clockTimer;
   DateTime _now = DateTime.now();
@@ -80,6 +80,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final isCheckedIn =
         attState.todayLog?.checkIn != null &&
         attState.todayLog?.checkOut == null;
+    final canDirectEdit =
+        employee?.isPrincipal == true || employee?.isHr == true;
 
     return Scaffold(
       backgroundColor: _bg,
@@ -97,13 +99,14 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               _buildHeader(
                 firstName: employee?.firstName ?? 'Leo',
                 roleLabel: _roleLabel(employee?.role, employee?.managerRole),
+                canDirectEdit: canDirectEdit,
               ),
               const SizedBox(height: 22),
               _buildLiveClock(),
               const SizedBox(height: 28),
               _buildPunchButton(
                 isCheckedIn: isCheckedIn,
-                isLoading: attState.isLoading,
+                isLoading: attState.isLoading && attState.todayLog != null,
                 onTap: () => _handlePunch(isCheckedIn),
               ),
               const SizedBox(height: 22),
@@ -118,10 +121,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               const SizedBox(height: 24),
               _buildSectionTitle('CETTE SEMAINE'),
               const SizedBox(height: 10),
-              if (weekAsync.isLoading && week.isEmpty)
-                _buildLoadingWeek()
-              else
-                ...week.map(_buildDayRow),
+              if (weekAsync.isLoading) _buildInlineSyncNotice(),
+              if (weekAsync.hasError)
+                _buildNoticeCard(
+                  'Historique indisponible pour l instant. Les actions du jour restent accessibles.',
+                  AppColors.warning,
+                ),
+              ...week.map(
+                (day) => _buildDayRow(day, canDirectEdit: canDirectEdit),
+              ),
               const SizedBox(height: 10),
               _buildWeekSummary(week),
             ],
@@ -141,7 +149,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     ref.invalidate(historyProvider(_now));
   }
 
-  Widget _buildHeader({required String firstName, required String roleLabel}) {
+  Widget _buildHeader({
+    required String firstName,
+    required String roleLabel,
+    required bool canDirectEdit,
+  }) {
     final initial =
         firstName.trim().isEmpty
             ? 'L'
@@ -216,7 +228,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           onSelected: (value) {
             switch (value) {
               case 'correction':
-                _showCorrectionSheet(context);
+                _showCorrectionSheet(
+                  context,
+                  canDirectEdit: canDirectEdit,
+                  logId: ref.read(attendanceProvider).todayLog?.id,
+                );
                 break;
               case 'monthly':
                 context.push('/me/monthly');
@@ -232,7 +248,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   value: 'correction',
                   child: _MenuItem(
                     icon: Icons.edit_calendar_outlined,
-                    label: 'Demander une correction',
+                    label: 'Modifier',
                   ),
                 ),
                 PopupMenuItem(
@@ -491,20 +507,32 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildLoadingWeek() {
+  Widget _buildInlineSyncNotice() {
     return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 18),
-      child: Center(
-        child: SizedBox(
-          width: 22,
-          height: 22,
-          child: CircularProgressIndicator(color: AppColors.rh, strokeWidth: 2),
-        ),
+      padding: EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(
+              color: AppColors.rh,
+              strokeWidth: 1.8,
+            ),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Synchronisation de la semaine...',
+              style: TextStyle(color: _muted, fontSize: 11),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDayRow(AttendanceDaySummary day) {
+  Widget _buildDayRow(AttendanceDaySummary day, {required bool canDirectEdit}) {
     final barColor =
         day.isAbsent
             ? _soft
@@ -588,7 +616,13 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ),
           ),
           GestureDetector(
-            onTap: () => _showCorrectionSheet(context, forDate: day.date),
+            onTap:
+                () => _showCorrectionSheet(
+                  context,
+                  forDate: day.date,
+                  canDirectEdit: canDirectEdit,
+                  logId: day.logId,
+                ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
               decoration: const BoxDecoration(
@@ -669,7 +703,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  void _showCorrectionSheet(BuildContext context, {DateTime? forDate}) {
+  void _showCorrectionSheet(
+    BuildContext context, {
+    DateTime? forDate,
+    required bool canDirectEdit,
+    int? logId,
+  }) {
     final targetDate = forDate ?? DateTime.now();
     showModalBottomSheet(
       context: context,
@@ -678,7 +717,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => _CorrectionSheet(targetDate: targetDate),
+      builder:
+          (_) => _CorrectionSheet(
+            targetDate: targetDate,
+            canDirectEdit: canDirectEdit,
+            logId: logId,
+          ),
     );
   }
 
@@ -789,7 +833,14 @@ class _FingerprintPainter extends CustomPainter {
 
 class _CorrectionSheet extends ConsumerStatefulWidget {
   final DateTime targetDate;
-  const _CorrectionSheet({required this.targetDate});
+  final bool canDirectEdit;
+  final int? logId;
+
+  const _CorrectionSheet({
+    required this.targetDate,
+    required this.canDirectEdit,
+    this.logId,
+  });
 
   @override
   ConsumerState<_CorrectionSheet> createState() => _CorrectionSheetState();
@@ -862,21 +913,74 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       return;
     }
 
+    if (widget.canDirectEdit && widget.logId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Aucune ligne de pointage existante a modifier pour ce jour.',
+          ),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
     setState(() => _submitting = true);
-    await Future<void>.delayed(const Duration(milliseconds: 700));
+    var success = true;
+    if (widget.canDirectEdit) {
+      success = await ref
+          .read(attendanceProvider.notifier)
+          .updateCorrection(
+            logId: widget.logId!,
+            checkIn: _asDateTime(widget.targetDate, _checkIn!),
+            checkOut:
+                _checkOut == null
+                    ? null
+                    : _asDateTime(widget.targetDate, _checkOut!),
+            notes: _reasonCtrl.text.trim(),
+          );
+    } else {
+      success = await ref
+          .read(attendanceProvider.notifier)
+          .requestCorrection(
+            logId: widget.logId,
+            date: widget.targetDate,
+            checkIn: _asDateTime(widget.targetDate, _checkIn!),
+            checkOut:
+                _checkOut == null
+                    ? null
+                    : _asDateTime(widget.targetDate, _checkOut!),
+            reason: _reasonCtrl.text.trim(),
+          );
+    }
 
     if (!mounted) return;
+    setState(() => _submitting = false);
+    if (!success) {
+      final message =
+          ref.read(attendanceProvider).error ??
+          'Impossible d envoyer la modification pour le moment.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppColors.danger),
+      );
+      return;
+    }
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Demande du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} '
-          'soumise au RH - vous serez notifie de la decision',
+          widget.canDirectEdit
+              ? 'Pointage du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} modifie.'
+              : 'Demande du ${DateFormat('d MMM', 'fr_FR').format(widget.targetDate)} soumise au RH - vous serez notifie de la decision.',
         ),
         backgroundColor: AppColors.rh,
         duration: const Duration(seconds: 4),
       ),
     );
+  }
+
+  DateTime _asDateTime(DateTime date, TimeOfDay time) {
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
   @override
@@ -906,7 +1010,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Correction du ${DateFormat('EEEE d MMMM', 'fr_FR').format(widget.targetDate)}',
+              'Modifier le ${DateFormat('EEEE d MMMM', 'fr_FR').format(widget.targetDate)}',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -914,9 +1018,11 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'La demande sera transmise au RH pour validation.',
-              style: TextStyle(fontSize: 12, color: Color(0xFF3D5470)),
+            Text(
+              widget.canDirectEdit
+                  ? 'La correction sera appliquee au dossier de pointage.'
+                  : 'La demande sera transmise au RH pour validation.',
+              style: const TextStyle(fontSize: 12, color: Color(0xFF7A9CC0)),
             ),
             const SizedBox(height: 18),
             Row(
@@ -948,7 +1054,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 hintText: 'Motif (ex: oubli de pointage a 8h)',
                 hintStyle: const TextStyle(
                   fontSize: 13,
-                  color: Color(0xFF3D5470),
+                  color: Color(0xFF7A9CC0),
                 ),
                 filled: true,
                 fillColor: const Color(0xFF0C1525),
@@ -990,9 +1096,11 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                             color: Colors.white,
                           ),
                         )
-                        : const Text(
-                          'Soumettre au RH',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                        : Text(
+                          widget.canDirectEdit
+                              ? 'Modifier'
+                              : 'Demander une modification',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
               ),
             ),
@@ -1030,7 +1138,7 @@ class _TimeTile extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 10, color: Color(0xFF3D5470)),
+              style: const TextStyle(fontSize: 10, color: Color(0xFF7A9CC0)),
             ),
             const SizedBox(height: 4),
             Text(
@@ -1040,7 +1148,7 @@ class _TimeTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: value != null ? AppColors.rh : const Color(0xFF2A4560),
+                color: value != null ? AppColors.rh : const Color(0xFF6F86A5),
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -1071,7 +1179,7 @@ class _TimeChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 10, color: Color(0xFF3D5470)),
+            style: const TextStyle(fontSize: 10, color: Color(0xFF7A9CC0)),
           ),
           const SizedBox(height: 4),
           Text(
@@ -1164,7 +1272,7 @@ class _WeekStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: Color(0xFF2A4560)),
+          style: const TextStyle(fontSize: 10, color: Color(0xFF6F86A5)),
         ),
       ],
     );
@@ -1174,6 +1282,7 @@ class _WeekStat extends StatelessWidget {
 class AttendanceDaySummary {
   final DateTime date;
   final String dayLabel;
+  final int? logId;
   final bool isAbsent;
   final int workedMinutes;
   final int lateMinutes;
@@ -1184,6 +1293,7 @@ class AttendanceDaySummary {
   const AttendanceDaySummary({
     required this.date,
     required this.dayLabel,
+    this.logId,
     required this.isAbsent,
     required this.workedMinutes,
     required this.lateMinutes,
@@ -1202,6 +1312,7 @@ class AttendanceDaySummary {
     return AttendanceDaySummary(
       date: date,
       dayLabel: dayLabel,
+      logId: log?.id == 0 ? null : log?.id,
       isAbsent: log == null || log.checkIn == null,
       workedMinutes: workedMinutes,
       lateMinutes: log?.lateMinutes ?? 0,

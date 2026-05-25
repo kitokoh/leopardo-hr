@@ -111,6 +111,8 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 - Historique presence supporte filtre statut, intervalle de dates, tri allowliste, pagination et payload vide
 - Resume du jour correct selon fuseau et etat
 - Conflits ou doublons geres sans corruption des donnees
+- `POST /attendance/corrections` permet a un employe de demander une modification de pointage sans ecriture directe sur le log, avec refus des heures futures, du checkout avant check-in et des logs hors utilisateur.
+- `PUT /attendance/{attendanceLog}` reste reserve aux managers `principal` et `rh` pour modifier directement un log du tenant courant, avec refus des employes et des managers non autorises.
 - `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
 - Chaque anomalie attendance expose une action manager recommandee et un flag `requires_manager_action`
 - Les anomalies geofence, heures supplementaires et sequences rapides restent scopees au tenant courant
@@ -182,6 +184,7 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 
 - Les endpoints auth renvoient les champs attendus par Flutter
 - Les endpoints attendance renvoient un shape stable
+- Le mobile distingue la correction employe (`POST /attendance/corrections`) de la modification RH/manager (`PUT /attendance/{attendanceLog}`), et conserve un etat UI lisible meme si l'historique de la semaine echoue.
 - Les listes paginees gardent une structure constante
 - Les enums / statuts attendus par le mobile restent stables
 
