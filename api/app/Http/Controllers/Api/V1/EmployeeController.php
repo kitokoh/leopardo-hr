@@ -80,6 +80,9 @@ class EmployeeController extends Controller
                 'status',
                 'photo_path',
                 'contract_start',
+                'salary_type',
+                'salary_base',
+                'hourly_rate',
                 'preferred_language',
                 'extra_data',
             ]);

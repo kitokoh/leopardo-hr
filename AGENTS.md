@@ -493,3 +493,10 @@ Procedure recommandee :
 - Les items mobile G2-G9 sont deja implementes dans Flutter (absences, contrats, formations, frais, chat IA, voice IA, carte vehicule). Avant d'ajouter un ecran mobile, verifier `front/mobile/lib/features/`.
 - Le plan 15 consolide (`docs/PLAN_ACTION/15_PLAN_EXECUTION_CONSOLIDE.md`) est le document de reference pour l'avancement. Les iterations 1-11 sont documentees avec PRs, contenus et statuts.
 - Backlog restant apres iteration 11 : C14 (optimisation planning), H (kiosk), J (GTM non-code), L5 (ZKTeco), L6 (calendrier sync), G8 (push Firebase), G10 (organigramme mobile).
+
+### 2026-05-25 - Mobile pointage, equipe et avances
+
+- L'ecran pointage mobile ne doit plus afficher un spinner de synchronisation semaine bloquant. `AttendanceRepository` limite les lectures `today/history` a des delais courts et l'historique indisponible doit rester un avertissement non bloquant.
+- Les actions check-in/check-out/correction doivent rester bornees et afficher un SnackBar succes/echec clair ; ne pas relancer de retry long cote mobile qui donne l'impression que le bouton tourne sans fin.
+- La creation mobile d'employe doit conserver les champs RH minimum : `contract_start`, `salary_type`, `salary_base` ou `hourly_rate`, `matricule` et `extra_data.department/job_title/work_location`. Le backend `StoreEmployeeRequest`, `EmployeeController@index` et `EmployeeResource` doivent rester alignes avec ce contrat.
+- Le module mobile Avances doit proposer une vraie demande employee-side via `POST /salary-advances` avec `amount`, `reason` et `repayment_months`, puis rafraichir la liste locale.

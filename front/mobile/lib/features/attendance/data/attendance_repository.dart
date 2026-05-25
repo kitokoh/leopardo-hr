@@ -8,10 +8,15 @@ class AttendanceRepository {
 
   AttendanceRepository(this.apiClient);
 
-  static const _actionTimeout = Duration(seconds: 12);
+  static const _actionTimeout = Duration(seconds: 8);
+  static const _readTimeout = Duration(seconds: 6);
 
   Future<Map<String, dynamic>> getTodayStatus() async {
-    final response = await apiClient.requestWithRetry('/attendance/today');
+    final response = await apiClient.requestWithRetry(
+      '/attendance/today',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
     return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
@@ -20,7 +25,7 @@ class AttendanceRepository {
       '/attendance/check-in',
       method: 'POST',
       data: {},
-      maxRetriesOverride: 1,
+      maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
     return AttendanceLog.fromJson(_dataMap(response.data));
@@ -31,7 +36,7 @@ class AttendanceRepository {
       '/attendance/check-out',
       method: 'POST',
       data: {},
-      maxRetriesOverride: 1,
+      maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
     return AttendanceLog.fromJson(_dataMap(response.data));
@@ -55,7 +60,7 @@ class AttendanceRepository {
       '/attendance/$logId',
       method: 'PUT',
       data: payload,
-      maxRetriesOverride: 1,
+      maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
     return AttendanceLog.fromJson(_dataMap(response.data));
@@ -83,7 +88,7 @@ class AttendanceRepository {
       '/attendance/corrections',
       method: 'POST',
       data: payload,
-      maxRetriesOverride: 1,
+      maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
   }
@@ -142,6 +147,8 @@ class AttendanceRepository {
 
     final response = await apiClient.requestWithRetry(
       '/attendance',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: {
         'date_from':
             '${from.year.toString().padLeft(4, '0')}-${from.month.toString().padLeft(2, '0')}-${from.day.toString().padLeft(2, '0')}',
