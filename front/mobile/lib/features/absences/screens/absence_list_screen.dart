@@ -7,6 +7,7 @@ import 'package:leopardo_rh/core/theme/app_typography.dart';
 import 'package:leopardo_rh/core/widgets/empty_state.dart';
 import 'package:leopardo_rh/core/widgets/mobile_surface.dart';
 import 'package:leopardo_rh/features/absences/providers/absence_provider.dart';
+import 'package:leopardo_rh/models/absence.dart';
 
 class AbsenceListScreen extends ConsumerWidget {
   const AbsenceListScreen({super.key});
@@ -71,17 +72,7 @@ class AbsenceListScreen extends ConsumerWidget {
                     label: _statusLabel(absence.status),
                     color: color,
                   ),
-                  footer:
-                      absence.reason == null || absence.reason!.trim().isEmpty
-                          ? null
-                          : Text(
-                            absence.reason!,
-                            style: AppTypography.caption.copyWith(
-                              color: MobileSurface.secondary,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                  footer: _absenceFooter(context, ref, absence),
                 );
               },
             );
@@ -114,6 +105,71 @@ class AbsenceListScreen extends ConsumerWidget {
       ),
       builder: (_) => const _AbsenceRequestSheet(),
     );
+  }
+
+  Widget? _absenceFooter(BuildContext context, WidgetRef ref, Absence absence) {
+    if (absence.status == 'pending') {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton.icon(
+          onPressed: () => _confirmCancelAbsence(context, ref, absence.id),
+          icon: const Icon(Icons.close_rounded, size: 16),
+          label: const Text('Annuler la demande'),
+        ),
+      );
+    }
+
+    if (absence.reason == null || absence.reason!.trim().isEmpty) return null;
+
+    return Text(
+      absence.reason!,
+      style: AppTypography.caption.copyWith(color: MobileSurface.secondary),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Future<void> _confirmCancelAbsence(
+    BuildContext context,
+    WidgetRef ref,
+    int absenceId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Annuler cette demande ?'),
+            content: const Text(
+              'La demande en attente sera retiree et le RH verra le statut annule.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Garder'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Annuler'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(absenceRepositoryProvider).cancelAbsence(absenceId);
+      ref.invalidate(absencesProvider);
+      ref.invalidate(leaveBalancesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Demande d absence annulee.')),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    }
   }
 
   static String _formatDate(DateTime date) {
