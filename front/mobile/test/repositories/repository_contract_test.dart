@@ -45,6 +45,28 @@ class RecordingInterceptor extends Interceptor {
                 'repayment_months': 3,
               },
             }
+            : options.method == 'DELETE' &&
+                options.path == '/salary-advances/12'
+            ? {
+              'data': {
+                'id': 12,
+                'employee_id': 44,
+                'status': 'cancelled',
+                'amount': 30000,
+              },
+            }
+            : options.method == 'DELETE' && options.path == '/absences/33'
+            ? {
+              'data': {
+                'id': 33,
+                'employee_id': 44,
+                'absence_type_id': 2,
+                'start_date': '2026-05-26',
+                'end_date': '2026-05-26',
+                'days_count': 1,
+                'status': 'cancelled',
+              },
+            }
             : {'data': <dynamic>[]};
     handler.resolve(
       Response(requestOptions: options, statusCode: 200, data: responseData),
@@ -155,5 +177,18 @@ void main() {
     expect(data['amount'], 30000);
     expect(data['repayment_months'], 3);
     expect(data['reason'], 'Besoin familial');
+  });
+
+  test('employee self-service cancellation routes stay explicit', () async {
+    final recorder = RecordingInterceptor();
+    final client = recordingClient(recorder);
+
+    await AbsenceRepository(client).cancelAbsence(33);
+    await SalaryAdvanceRepository(client).cancelAdvance(12);
+
+    expect(recorder.requests, [
+      'DELETE /absences/33',
+      'DELETE /salary-advances/12',
+    ]);
   });
 }

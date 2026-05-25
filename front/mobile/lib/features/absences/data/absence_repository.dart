@@ -35,4 +35,9 @@ class AbsenceRepository {
     );
     return Absence.fromJson(response.data['data']);
   }
+
+  Future<Absence> cancelAbsence(int absenceId) async {
+    final response = await apiClient.dio.delete('/absences/$absenceId');
+    return Absence.fromJson(response.data['data']);
+  }
 }
