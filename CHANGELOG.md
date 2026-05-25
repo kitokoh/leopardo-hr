@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.142] - 2026-05-26
+
+### Added
+
+- Mobile : lot 25.5 documente la readiness demo commerciale dans `docs/validation/MOBILE_MARKETING_READINESS.md`.
+- Mobile : smoke Flutter marketing-readiness couvrant decisions manager/RH et annulation self-service employe sur absences/avances.
+- Documentation : matrice frontend/API enrichie avec les routes mobiles d'approbation/refus absences et avances.
+
 ## [4.16.141] - 2026-05-25
 
 ### Added
