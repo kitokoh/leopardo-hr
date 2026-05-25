@@ -33,6 +33,45 @@ class MockInterceptor extends Interceptor {
           statusCode: 200,
         ),
       );
+    } else if (options.method.toUpperCase() == 'PUT' &&
+        RegExp(r'/attendance/\d+$').hasMatch(options.path)) {
+      return handler.resolve(
+        Response(
+          requestOptions: options,
+          data: {
+            "data": {
+              "id": int.tryParse(options.path.split('/').last) ?? 5432,
+              "date": "2026-04-15",
+              "check_in":
+                  options.data is Map
+                      ? options.data["check_in"]
+                      : "2026-04-15T08:00:00Z",
+              "check_out":
+                  options.data is Map ? options.data["check_out"] : null,
+              "hours_worked": 8,
+              "late_minutes": 0,
+              "status": "manual",
+            },
+          },
+          statusCode: 200,
+        ),
+      );
+    } else if (options.method.toUpperCase() == 'POST' &&
+        options.path.contains('/attendance/corrections')) {
+      return handler.resolve(
+        Response(
+          requestOptions: options,
+          data: {
+            "data": {
+              "id": 9001,
+              "status": "pending",
+              "date": options.data is Map ? options.data["date"] : "2026-04-15",
+            },
+            "message": "Demande de modification transmise au RH.",
+          },
+          statusCode: 201,
+        ),
+      );
     } else if (options.path.contains('/attendance/today')) {
       // Toggle logic or just return checked in for demonstration
       mockFile = 'mock_attendance_today_A_not_checked.json';

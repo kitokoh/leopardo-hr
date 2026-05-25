@@ -9,21 +9,73 @@ class AttendanceRepository {
   AttendanceRepository(this.apiClient);
 
   Future<Map<String, dynamic>> getTodayStatus() async {
-    final response = await apiClient.dio.get('/attendance/today');
+    final response = await apiClient.requestWithRetry('/attendance/today');
     return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
   Future<AttendanceLog> checkIn() async {
-    final response = await apiClient.dio.post('/attendance/check-in', data: {});
+    final response = await apiClient.requestWithRetry(
+      '/attendance/check-in',
+      method: 'POST',
+      data: {},
+    );
     return AttendanceLog.fromJson(response.data['data']);
   }
 
   Future<AttendanceLog> checkOut() async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/attendance/check-out',
+      method: 'POST',
       data: {},
     );
     return AttendanceLog.fromJson(response.data['data']);
+  }
+
+  Future<AttendanceLog> updateAttendanceLog({
+    required int logId,
+    required DateTime checkIn,
+    DateTime? checkOut,
+    required String notes,
+  }) async {
+    final payload = <String, dynamic>{
+      'check_in': checkIn.toIso8601String(),
+      'notes': notes,
+    };
+    if (checkOut != null) {
+      payload['check_out'] = checkOut.toIso8601String();
+    }
+
+    final response = await apiClient.requestWithRetry(
+      '/attendance/$logId',
+      method: 'PUT',
+      data: payload,
+    );
+    return AttendanceLog.fromJson(response.data['data']);
+  }
+
+  Future<void> requestCorrection({
+    int? logId,
+    required DateTime date,
+    required DateTime checkIn,
+    DateTime? checkOut,
+    required String reason,
+  }) async {
+    final payload = <String, dynamic>{
+      'date':
+          '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+      'requested_check_in': checkIn.toIso8601String(),
+      'reason': reason,
+    };
+    if (logId != null) payload['attendance_log_id'] = logId;
+    if (checkOut != null) {
+      payload['requested_check_out'] = checkOut.toIso8601String();
+    }
+
+    await apiClient.requestWithRetry(
+      '/attendance/corrections',
+      method: 'POST',
+      data: payload,
+    );
   }
 
   Future<DailySummary> getDailySummary(int employeeId) async {
@@ -78,7 +130,7 @@ class AttendanceRepository {
     final from = DateTime(year, month, 1);
     final to = DateTime(year, month + 1, 0);
 
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/attendance',
       queryParameters: {
         'date_from':
@@ -123,9 +175,10 @@ class AttendanceRepository {
     }
 
     final itemPayload = data['item'];
-    final todayPayload = itemPayload is Map
-        ? itemPayload.cast<String, dynamic>()
-        : (data.containsKey('item') ? null : data);
+    final todayPayload =
+        itemPayload is Map
+            ? itemPayload.cast<String, dynamic>()
+            : (data.containsKey('item') ? null : data);
 
     if (todayPayload == null) {
       return {'log': null, 'context': context};
@@ -142,17 +195,21 @@ class AttendanceRepository {
         checkIn: _parseLocalTime(today['check_in_time'] as String?),
         checkOut: _parseLocalTime(today['check_out_time'] as String?),
         status: (today['status'] ?? 'absent') as String,
-        workedHours: today['hours_worked'] != null
-            ? double.tryParse(today['hours_worked'].toString())
-            : 0.0,
-        overtimeHours: today['overtime_hours'] != null
-            ? double.tryParse(today['overtime_hours'].toString())
-            : 0.0,
-        lateMinutes: today['late_minutes'] != null
-            ? int.tryParse(today['late_minutes'].toString())
-            : null,
+        workedHours:
+            today['hours_worked'] != null
+                ? double.tryParse(today['hours_worked'].toString())
+                : 0.0,
+        overtimeHours:
+            today['overtime_hours'] != null
+                ? double.tryParse(today['overtime_hours'].toString())
+                : 0.0,
+        lateMinutes:
+            today['late_minutes'] != null
+                ? int.tryParse(today['late_minutes'].toString())
+                : null,
         employeeName: today['name']?.toString(),
-        employeePhotoUrl: (today['photo_url'] ?? today['photo_path'])?.toString(),
+        employeePhotoUrl:
+            (today['photo_url'] ?? today['photo_path'])?.toString(),
       ),
       'context': context,
     };

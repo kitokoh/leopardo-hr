@@ -131,6 +131,69 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
   }
 
+  Future<bool> updateCorrection({
+    required int logId,
+    required DateTime checkIn,
+    DateTime? checkOut,
+    required String notes,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final log = await _repository.updateAttendanceLog(
+        logId: logId,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        notes: notes,
+      );
+      final now = DateTime.now();
+      final isToday =
+          log.date.year == now.year &&
+          log.date.month == now.month &&
+          log.date.day == now.day;
+      state = state.copyWith(
+        todayLog: isToday ? log : state.todayLog,
+        isLoading: false,
+      );
+      await _loadSummary();
+      return true;
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) {
+        await _ref.read(authProvider.notifier).logout();
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> requestCorrection({
+    int? logId,
+    required DateTime date,
+    required DateTime checkIn,
+    DateTime? checkOut,
+    required String reason,
+  }) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _repository.requestCorrection(
+        logId: logId,
+        date: date,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        reason: reason,
+      );
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      if (e is ApiException && e.statusCode == 401) {
+        await _ref.read(authProvider.notifier).logout();
+        return false;
+      }
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
   bool _isRecoverableLoadError(Object error) {
     if (error is! ApiException) {
       return false;
