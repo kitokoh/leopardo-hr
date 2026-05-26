@@ -20,14 +20,31 @@ class PlatformCompanyRequestController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'status' => ['nullable', 'string', Rule::in(['pending', 'approved', 'rejected'])],
+            'search' => ['nullable', 'string', 'max:100'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
         $query = CompanyRequest::with('user:id,first_name,last_name,email')
             ->latest();
 
-        if ($request->has('status')) {
-            $query->where('status', $request->input('status'));
+        if (isset($validated['status'])) {
+            $query->where('status', $validated['status']);
         }
 
-        $requests = $query->paginate(20);
+        if (isset($validated['search']) && trim($validated['search']) !== '') {
+            $search = trim($validated['search']);
+            $query->where(function ($inner) use ($search): void {
+                $inner
+                    ->where('company_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('country', 'like', "%{$search}%");
+            });
+        }
+
+        $requests = $query->paginate((int) ($validated['per_page'] ?? 20));
 
         return new JsonResponse([
             'data' => $requests->map(fn (CompanyRequest $r) => [
