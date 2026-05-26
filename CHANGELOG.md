@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.147] - 2026-05-26
+
+### Added
+
+- Mobile : documentation `docs/validation/MOBILE_FIREBASE_DISTRIBUTION.md` pour la distribution Firebase employee/manager.
+- Mobile : script `dev-hub/tools/install-mobile-firebase-configs.ps1` pour installer uniquement les fichiers Firebase correspondant aux IDs natifs stabilises.
+
+### Changed
+
+- CI/CD : `deploy-main.yml` prepare la distribution Firebase staging des deux apps mobiles avec secrets separes `FIREBASE_EMPLOYEE_ANDROID_APP_ID` et `FIREBASE_MANAGER_ANDROID_APP_ID`.
+- CI/CD : `mobile-distribute.yml` devient multi-app et permet de distribuer `employee`, `manager` ou `both`.
+- Documentation : Plan 27 enrichi avec le lot Firebase App Distribution multi-app et les mismatches detectes dans les fichiers recus.
+
 ## [4.16.146] - 2026-05-26
 
 ### Added
