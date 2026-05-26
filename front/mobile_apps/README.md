@@ -19,11 +19,39 @@ Ce dossier prepare la separation mobile en deux applications sans casser `front/
 - `front/mobile/` reste le mobile historique fonctionnel tant que la bascule produit n'est pas terminee.
 - `leopardo_mobile_legacy/` est un filet de securite : ne pas le modifier.
 
+## Garde-fous Plan 26
+
+Le script canonique de validation de structure est :
+
+```bash
+pwsh ./dev-hub/tools/validate-mobile-apps-split.ps1
+```
+
+Sur Windows sans PowerShell 7 :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-apps-split.ps1
+```
+
+Il verifie notamment :
+
+- aucun dossier manager (`team`, `approvals`, `organigramme`, `modules`) dans `leopardo_employee` ;
+- aucun marqueur `isManager`, `canManageTeam`, `managerRole`, `isPrincipal` ou `isHr` dans l'app employe ;
+- aucun import `package:leopardo_rh` dans les nouvelles apps ;
+- aucun import `leopardo_employee` ou `leopardo_manager` depuis `leopardo_core` ;
+- dependance `leopardo_core` presente dans les deux apps ;
+- routes manager preparees dans `leopardo_manager` ;
+- en pull request, aucune modification de `leopardo_mobile_legacy`.
+
+Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis consommer cette API depuis les deux apps. Si une evolution ne concerne qu'un persona, la placer uniquement dans `leopardo_employee` ou `leopardo_manager`.
+
 ## Validation attendue
 
 Depuis un SDK Flutter compatible Dart 3.8+ :
 
 ```bash
+pwsh ./dev-hub/tools/validate-mobile-apps-split.ps1
+
 cd front/mobile_apps/leopardo_core
 flutter pub get
 flutter analyze

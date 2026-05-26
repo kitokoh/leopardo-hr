@@ -6,11 +6,13 @@ on:
     branches: [main, develop]
     paths:
       - 'front/mobile_apps/**'
+      - 'dev-hub/tools/validate-mobile-apps-split.ps1'
       - '.github/workflows/mobile-apps-ci.yml'
   push:
     branches: [main, develop]
     paths:
       - 'front/mobile_apps/**'
+      - 'dev-hub/tools/validate-mobile-apps-split.ps1'
       - '.github/workflows/mobile-apps-ci.yml'
 
 permissions:
@@ -25,9 +27,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  mobile-apps-guard:
+    name: Mobile apps split guard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validate mobile apps boundaries
+        shell: pwsh
+        run: '& ./dev-hub/tools/validate-mobile-apps-split.ps1'
+
   flutter-analyze:
     name: Analyze ${{ matrix.project.name }}
     runs-on: ubuntu-latest
+    needs: mobile-apps-guard
     strategy:
       fail-fast: false
       matrix:
