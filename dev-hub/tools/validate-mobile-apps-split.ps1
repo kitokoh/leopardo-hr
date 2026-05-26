@@ -11,6 +11,7 @@ $appsRoot = Join-Path $repoRoot "front/mobile_apps"
 $coreRoot = Join-Path $appsRoot "leopardo_core"
 $employeeRoot = Join-Path $appsRoot "leopardo_employee"
 $managerRoot = Join-Path $appsRoot "leopardo_manager"
+$platformAdminRoot = Join-Path $appsRoot "leopardo_platform_admin"
 $legacyRoot = Join-Path $appsRoot "leopardo_mobile_legacy"
 
 $failures = New-Object System.Collections.Generic.List[string]
@@ -28,6 +29,7 @@ function Assert-Path([string]$path, [string]$label) {
 Assert-Path $coreRoot "leopardo_core"
 Assert-Path $employeeRoot "leopardo_employee"
 Assert-Path $managerRoot "leopardo_manager"
+Assert-Path $platformAdminRoot "leopardo_platform_admin"
 Assert-Path $legacyRoot "leopardo_mobile_legacy"
 
 if ($failures.Count -eq 0) {
@@ -68,7 +70,7 @@ if ($failures.Count -eq 0) {
         }
     }
 
-    $sharedRoots = @($coreRoot, $employeeRoot, $managerRoot)
+    $sharedRoots = @($coreRoot, $employeeRoot, $managerRoot, $platformAdminRoot)
     foreach ($root in $sharedRoots) {
         $dartFiles = Get-ChildItem -LiteralPath (Join-Path $root "lib") -Recurse -File -Filter *.dart
         foreach ($file in $dartFiles) {
@@ -83,13 +85,13 @@ if ($failures.Count -eq 0) {
     $coreFiles = Get-ChildItem -LiteralPath (Join-Path $coreRoot "lib") -Recurse -File -Filter *.dart
     foreach ($file in $coreFiles) {
         $content = Get-Content -LiteralPath $file.FullName -Raw
-        if ($content.Contains("package:leopardo_employee/") -or $content.Contains("package:leopardo_manager/")) {
+        if ($content.Contains("package:leopardo_employee/") -or $content.Contains("package:leopardo_manager/") -or $content.Contains("package:leopardo_platform_admin/")) {
             $relative = Resolve-Path -LiteralPath $file.FullName -Relative
             Add-Failure "Core package must not import app-specific package in $relative"
         }
     }
 
-    foreach ($app in @("leopardo_employee", "leopardo_manager")) {
+    foreach ($app in @("leopardo_employee", "leopardo_manager", "leopardo_platform_admin")) {
         $pubspec = Join-Path $appsRoot "$app/pubspec.yaml"
         $content = Get-Content -LiteralPath $pubspec -Raw
         if (-not $content.Contains("leopardo_core:")) {

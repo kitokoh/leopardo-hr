@@ -21,6 +21,13 @@ $expected = @(
         IosBundle = "com.leopardo.manager"
         AndroidTarget = "front/mobile_apps/leopardo_manager/android/app/google-services.json"
         IosTarget = "front/mobile_apps/leopardo_manager/ios/Runner/GoogleService-Info.plist"
+    },
+    @{
+        App = "platform_admin"
+        AndroidPackage = "com.leopardo.platformadmin"
+        IosBundle = "com.leopardo.platformadmin"
+        AndroidTarget = "front/mobile_apps/leopardo_platform_admin/android/app/google-services.json"
+        IosTarget = "front/mobile_apps/leopardo_platform_admin/ios/Runner/GoogleService-Info.plist"
     }
 )
 
