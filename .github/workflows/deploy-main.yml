@@ -260,6 +260,10 @@ jobs:
             project_path: front/mobile_apps/leopardo_manager
             artifact_name: leopardo-manager-main
             firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
+          - name: platform_admin
+            project_path: front/mobile_apps/leopardo_platform_admin
+            artifact_name: leopardo-platform-admin-main
+            firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
 
     steps:
       - name: Checkout code
