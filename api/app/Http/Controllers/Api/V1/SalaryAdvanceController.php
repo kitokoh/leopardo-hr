@@ -108,4 +108,5 @@ class SalaryAdvanceController extends Controller
         $advance = $this->salaryAdvanceService->cancel($salaryAdvance);
 
         return (new SalaryAdvanceResource($advance))->response();
+    }
 }
