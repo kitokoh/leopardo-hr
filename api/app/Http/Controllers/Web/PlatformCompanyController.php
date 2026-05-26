@@ -25,13 +25,56 @@ class PlatformCompanyController extends Controller
     {
         DB::statement('SET search_path TO public');
 
-        $companies = Company::query()->latest()->limit(50)->get();
+        $query = Company::query()->latest();
 
         if ($request->expectsJson()) {
+            $validated = $request->validate([
+                'status' => ['nullable', Rule::in(['active', 'trial', 'suspended', 'expired'])],
+                'search' => ['nullable', 'string', 'max:100'],
+                'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            ]);
+
+            if (isset($validated['status'])) {
+                $query->where('status', $validated['status']);
+            }
+
+            if (isset($validated['search']) && trim($validated['search']) !== '') {
+                $search = trim($validated['search']);
+                $query->where(function ($inner) use ($search): void {
+                    $inner
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('country', 'like', "%{$search}%")
+                        ->orWhere('city', 'like', "%{$search}%");
+                });
+            }
+
+            $companies = $query->paginate((int) ($validated['per_page'] ?? 20));
+
             return new JsonResponse([
-                'data' => $companies,
+                'data' => $companies->map(fn (Company $company): array => [
+                    'id' => $company->id,
+                    'name' => $company->name,
+                    'slug' => $company->slug,
+                    'email' => $company->email,
+                    'status' => $company->status,
+                    'country' => $company->country,
+                    'city' => $company->city,
+                    'currency' => $company->currency,
+                    'language' => $company->language,
+                    'plan_id' => $company->plan_id,
+                    'features' => $company->features ?? [],
+                    'created_at' => $company->created_at?->toIso8601String(),
+                ]),
+                'meta' => [
+                    'current_page' => $companies->currentPage(),
+                    'last_page' => $companies->lastPage(),
+                    'total' => $companies->total(),
+                ],
             ]);
         }
+
+        $companies = $query->limit(50)->get();
 
         return view('platform.companies.index', [
             'companies' => $companies,
@@ -54,13 +97,13 @@ class PlatformCompanyController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'slug' => ['nullable', 'string', 'max:100', Rule::unique('companies', 'slug')],
-            'sector' => ['required', 'string', 'max:100'],
+            'sector' => ['nullable', 'string', 'max:100'],
             'country' => ['required', 'string', 'size:2'],
             'city' => ['required', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:150', Rule::unique('companies', 'email')],
             'phone' => ['nullable', 'string', 'max:30'],
-            'plan_id' => ['required', 'integer', Rule::exists('plans', 'id')],
+            'plan_id' => ['nullable', 'integer', Rule::exists('plans', 'id')],
             'language' => ['nullable', 'string', 'size:2'],
             'timezone' => ['nullable', 'string', 'max:50'],
             'currency' => ['nullable', 'string', 'size:3'],
@@ -71,7 +114,40 @@ class PlatformCompanyController extends Controller
             'manager_phone' => ['nullable', 'string', 'max:30'],
         ]);
 
+        $validated['sector'] = trim((string) ($validated['sector'] ?? '')) ?: 'Non precise';
+        $validated['country'] = strtoupper($validated['country']);
+        $validated['language'] = strtolower($validated['language'] ?? 'fr');
+        $validated['currency'] = strtoupper($validated['currency'] ?? 'DZD');
+        $validated['timezone'] = $validated['timezone'] ?? 'Africa/Algiers';
+        $validated['plan_id'] = $validated['plan_id']
+            ?? DB::table('plans')->where('is_active', true)->orderBy('id')->value('id')
+            ?? DB::table('plans')->orderBy('id')->value('id');
+
+        if (! $validated['plan_id']) {
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => 'Aucun plan actif disponible pour creer cette societe.',
+                    'errors' => [
+                        'plan_id' => ['Aucun plan actif disponible pour creer cette societe.'],
+                    ],
+                ], 422);
+            }
+
+            return back()
+                ->withInput()
+                ->withErrors(['plan_id' => 'Aucun plan actif disponible pour creer cette societe.']);
+        }
+
         if (DB::getDriverName() === 'pgsql' && DB::table('public.user_lookups')->where('email', $validated['manager_email'])->exists()) {
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => 'Cet email est deja utilise par un utilisateur existant.',
+                    'errors' => [
+                        'manager_email' => ['Cet email est deja utilise par un utilisateur existant.'],
+                    ],
+                ], 422);
+            }
+
             return back()
                 ->withInput()
                 ->withErrors(['manager_email' => 'Cet email est deja utilise par un utilisateur existant.']);
