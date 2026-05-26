@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.154] - 2026-05-26
+
+### Added
+
+- API : ajout du Plan 30 `docs/PLAN_ACTION/30_PLAN_API_WORKFLOW_HARDENING.md` pour verrouiller les workflows frontends/API.
+- Tests : extension de `FrontendApiContractTest` aux routes employee/manager mobile et Platform Admin mobile.
+- Documentation : matrice `FRONTEND_API_CONTRACT_MATRIX.md` enrichie avec les workflows mobiles equipe, avances, approvals et plateforme.
+
+### Changed
+
+- API Platform Admin : `POST /api/v1/platform/companies` accepte maintenant le payload minimal de l'app mobile et applique des defaults serveur controles.
+- API Platform Admin : `GET /api/v1/platform/companies` et `GET /api/v1/platform/company-requests` supportent des filtres allowlistes et une pagination avec `meta`.
+
 ## [4.16.153] - 2026-05-26
 
 ### Added
