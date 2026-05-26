@@ -87,6 +87,19 @@ Assert-Contains `
     "leopardo_platform_admin" `
     "Mobile Apps CI"
 
+$deployMain = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/deploy-main.yml") -Raw
+$mobileDistribute = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-distribute.yml") -Raw
+
+Assert-Contains $deployMain "leopardo_platform_admin" "Deploy main mobile distribution"
+Assert-Contains $deployMain "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Deploy main mobile distribution"
+Assert-Contains $deployMain "leopardo-platform-admin-main" "Deploy main mobile distribution"
+
+Assert-Contains $mobileDistribute "branches:" "Mobile distribute auto trigger"
+Assert-Contains $mobileDistribute "front/mobile_apps/**" "Mobile distribute auto trigger"
+Assert-Contains $mobileDistribute "platform_admin" "Mobile distribute app selector"
+Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute matrix"
+Assert-Contains $mobileDistribute "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Mobile distribute matrix"
+
 Assert-Contains `
     (Get-Content -LiteralPath (Join-Path $repoRoot "dev-hub/tools/install-mobile-firebase-configs.ps1") -Raw) `
     "com.leopardo.platformadmin" `
