@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.153] - 2026-05-26
+
+### Added
+
+- Mobile Firebase : installation des fichiers natifs Android/iOS `leopardo_platform_admin` (`com.leopardo.platformadmin`).
+- CI/CD mobile : distribution Firebase automatique des trois apps `leopardo_employee`, `leopardo_manager` et `leopardo_platform_admin` lors des changements `front/mobile_apps/**` sur `main`.
+- CI/CD mobile : ajout de `platform_admin` au workflow manuel `Mobile - Build and Firebase Distribution`.
+- Documentation : procedure complete pour configurer le secret GitHub `FIREBASE_SERVICE_ACCOUNT_JSON`.
+
 ## [4.16.152] - 2026-05-26
 
 ### Added
