@@ -67,6 +67,8 @@ Sur le deploy `main`, la distribution d'une app est sautee proprement tant que s
 
 Le workflow manuel `Mobile - Build and Firebase Distribution` est plus strict : il echoue si l'app demandee n'a pas son secret Firebase ou son fichier Android natif. Cette difference est volontaire pour eviter les faux verts lors d'une release mobile explicite.
 
+Depuis v4.16.155, tous les inputs `workflow_dispatch` ont un type explicite. GitHub Actions renvoyait une erreur de schema lors du dispatch du workflow multi-app quand `release_notes` n'avait pas de type declare.
+
 Depuis v4.16.149, les deux workflows relisent Firebase apres l'upload avec :
 
 ```bash
@@ -81,6 +83,8 @@ Derniere verification connue :
 - Manager Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.manager`.
 
 Important : Firebase App Distribution affiche les releases par app. Dans la console, selectionner le projet `leopardo-rh`, puis App Distribution, puis l'app Android `com.leopardo.employee`, `com.leopardo.manager` ou `com.leopardo.platformadmin`. Les fichiers iOS sont installes dans le depot, mais la distribution iOS necessitera un workflow macOS signe produisant un `.ipa`.
+
+Les apps iOS ne peuvent pas recevoir de release App Distribution tant qu'un `.ipa` signe n'est pas produit. Il faudra ajouter les secrets Apple (`APP_STORE_CONNECT_API_KEY`, `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, certificat/profil ou match equivalent) avant de rendre la distribution iOS automatique.
 
 ## Secret `FIREBASE_SERVICE_ACCOUNT_JSON`
 

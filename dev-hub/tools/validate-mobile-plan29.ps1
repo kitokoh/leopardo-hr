@@ -96,6 +96,7 @@ Assert-Contains $deployMain "leopardo-platform-admin-main" "Deploy main mobile d
 
 Assert-Contains $mobileDistribute "branches:" "Mobile distribute auto trigger"
 Assert-Contains $mobileDistribute "front/mobile_apps/**" "Mobile distribute auto trigger"
+Assert-Contains $mobileDistribute "type: string" "Mobile distribute dispatch schema"
 Assert-Contains $mobileDistribute "platform_admin" "Mobile distribute app selector"
 Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute matrix"
 Assert-Contains $mobileDistribute "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Mobile distribute matrix"
