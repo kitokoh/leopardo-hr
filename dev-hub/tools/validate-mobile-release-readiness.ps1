@@ -27,6 +27,17 @@ $apps = @(
         IosDisplayName = "Leopardo Manager"
         MustHaveRoutes = @("/attendance", "/absences", "/salary-advances", "/team", "/approvals", "/manager/dashboard", "/manager/attendance", "/manager/anomalies", "/manager/corrections", "/settings")
         MustHaveEndpoints = @("/auth/login", "/auth/me", "/attendance/check-in", "/attendance/check-out", "/absences", "/salary-advances", "/employees", "/approvals/pending", "/notifications")
+    },
+    @{
+        Name = "platform_admin"
+        Root = "front/mobile_apps/leopardo_platform_admin"
+        AndroidId = "com.leopardo.platformadmin"
+        AndroidLabel = "Leopardo Platform Admin"
+        IosBundleId = "com.leopardo.platformadmin"
+        IosDisplayName = "Leopardo Platform Admin"
+        RouterFile = "lib/src/platform_admin_app.dart"
+        MustHaveRoutes = @("/platform/login", "/platform", "/platform/companies", "/platform/companies/new", "/platform/company-requests")
+        MustHaveEndpoints = @("/platform/auth/login", "/platform/auth/me", "/platform/auth/logout", "/platform/metrics/overview", "/platform/companies", "/platform/company-requests")
     }
 )
 
@@ -48,7 +59,8 @@ foreach ($app in $apps) {
     $androidManifestPath = Join-Path $root "android/app/src/main/AndroidManifest.xml"
     $iosProjectPath = Join-Path $root "ios/Runner.xcodeproj/project.pbxproj"
     $iosInfoPath = Join-Path $root "ios/Runner/Info.plist"
-    $appDartPath = Join-Path $root "lib/app.dart"
+    $routerFile = if ($app.ContainsKey("RouterFile")) { $app.RouterFile } else { "lib/app.dart" }
+    $appDartPath = Join-Path $root $routerFile
 
     foreach ($path in @($androidGradlePath, $androidManifestPath, $iosProjectPath, $iosInfoPath, $appDartPath)) {
         if (-not (Test-Path -LiteralPath $path)) {
@@ -98,12 +110,14 @@ foreach ($app in $apps) {
     }
 }
 
-if ($apps[0].AndroidId -eq $apps[1].AndroidId) {
-    Add-Failure "Android application IDs must be distinct between employee and manager."
+$androidIds = @($apps | ForEach-Object { $_.AndroidId })
+if (($androidIds | Select-Object -Unique).Count -ne $androidIds.Count) {
+    Add-Failure "Android application IDs must be distinct across all mobile apps."
 }
 
-if ($apps[0].IosBundleId -eq $apps[1].IosBundleId) {
-    Add-Failure "iOS bundle identifiers must be distinct between employee and manager."
+$iosBundleIds = @($apps | ForEach-Object { $_.IosBundleId })
+if (($iosBundleIds | Select-Object -Unique).Count -ne $iosBundleIds.Count) {
+    Add-Failure "iOS bundle identifiers must be distinct across all mobile apps."
 }
 
 if ($failures.Count -gt 0) {

@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.152] - 2026-05-26
+
+### Added
+
+- Mobile : ajout du Plan 29 pour une troisieme app `leopardo_platform_admin` dediee aux super-admins plateforme.
+- Mobile : premier socle Platform Admin avec login `/platform/auth/login`, cockpit metriques, liste entreprises, creation client et demandes clients.
+- CI mobile : ajout du validateur `validate-mobile-plan29.ps1` et du build debug `leopardo_platform_admin`.
+- CI/CD mobile : le readback Firebase App Distribution devient strict via `FIREBASE_SERVICE_ACCOUNT_JSON` quand le secret est configure.
+
 ## [4.16.151] - 2026-05-26
 
 ### Changed
