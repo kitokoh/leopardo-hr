@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.146] - 2026-05-26
+
+### Added
+
+- Mobile : contrat automatisable `dev-hub/tools/mobile-workflow-contracts.json` pour verrouiller les workflows critiques Plan 27.
+- Mobile : garde `dev-hub/tools/validate-mobile-workflow-contracts.ps1` pour verifier routes, endpoints, navigations statiques et tokens d'action des apps employee/manager.
+
+### Changed
+
+- CI : `mobile-apps-ci.yml` execute maintenant le garde workflow mobile apres le garde release readiness.
+- Mobile : correction du lien espace personnel employee/manager vers la route declaree `/company-request`.
+
 ## [4.16.145] - 2026-05-26
 
 ### Added
