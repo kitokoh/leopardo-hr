@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.149] - 2026-05-26
+
+### Changed
+
+- CI/CD mobile : les workflows Firebase App Distribution verifient maintenant la visibilite de la release apres upload avec `firebase appdistribution:releases:list`.
+- CI/CD mobile : le deploy `main` et le workflow manuel echouent si Firebase accepte l'upload mais que la release attendue n'est pas relue dans App Distribution.
+
 ## [4.16.148] - 2026-05-26
 
 ### Added
