@@ -9,6 +9,8 @@
 - Queue : sync
 - Web : Blade + Alpine.js
 
+Note operations : les livraisons mobiles employee/manager sont distribuees par les workflows GitHub vers Firebase App Distribution apres validation des contrats API et des garde-fous multi-app.
+
 ## Surface API actuelle
 
 La branche `main` expose surtout :
