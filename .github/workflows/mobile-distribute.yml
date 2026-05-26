@@ -25,6 +25,7 @@ on:
       release_notes:
         description: "Notes de version (optionnel)"
         required: false
+        type: string
         default: "Build manuel Leopardo RH"
       app:
         description: "Application mobile a distribuer"

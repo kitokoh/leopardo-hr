@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.155] - 2026-05-26
+
+### Fixed
+
+- CI/CD mobile : correction du schema `workflow_dispatch` de `mobile-distribute.yml` en typant explicitement `release_notes` pour eviter l'erreur GitHub Actions `links/0/schema nil is not an object`.
+
+### Security
+
+- Documentation : rappel que toute cle `FIREBASE_SERVICE_ACCOUNT_JSON` exposee hors GitHub Secrets doit etre revoquee et regeneree.
+
 ## [4.16.154] - 2026-05-26
 
 ### Added
