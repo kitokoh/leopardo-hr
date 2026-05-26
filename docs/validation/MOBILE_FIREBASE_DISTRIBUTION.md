@@ -56,6 +56,21 @@ Sur le deploy `main`, la distribution d'une app est sautee proprement tant que s
 
 Le workflow manuel `Mobile - Build and Firebase Distribution` accepte aussi le choix `employee`, `manager` ou `both`.
 
+Depuis v4.16.149, les deux workflows relisent Firebase apres l'upload avec :
+
+```bash
+firebase appdistribution:releases:list --app <firebase-app-id> --limit 10 --json
+```
+
+Le job echoue si le `buildVersion` du build courant n'apparait pas dans App Distribution. Cela evite les faux positifs ou un upload semble vert cote GitHub mais reste invisible cote Firebase.
+
+Derniere verification connue :
+
+- Employee Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.employee`.
+- Manager Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.manager`.
+
+Important : Firebase App Distribution affiche les releases par app. Dans la console, selectionner le projet `leopardo-rh`, puis App Distribution, puis l'app Android `com.leopardo.employee` ou `com.leopardo.manager`. Les fichiers iOS sont installes dans le depot, mais la distribution iOS necessitera un workflow macOS signe produisant un `.ipa`.
+
 ## Securite
 
 Les fichiers Firebase mobile ne sont pas des secrets forts, mais leurs API keys doivent etre restreintes dans Google Cloud/Firebase :
