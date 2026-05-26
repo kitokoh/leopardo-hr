@@ -8,6 +8,7 @@ Ce dossier prepare la separation mobile en deux applications sans casser `front/
 - `leopardo_core/` : package Flutter partage. Il contient uniquement les briques communes : API client, stockage, i18n, theme, couleurs, typographie, widgets de base, modeles et providers core.
 - `leopardo_employee/` : app mobile employe. Elle expose les parcours personnels : connexion, accueil employe, pointage, absences, avances, paie, notifications, documents et compte.
 - `leopardo_manager/` : app mobile manager/RH. Elle conserve le perimetre complet du mobile actuel et prepare les routes des futurs ecrans manager.
+- `leopardo_platform_admin/` : app mobile super-admin plateforme. Elle consomme uniquement les API `/platform/*` pour piloter les tenants, creer une entreprise cliente, traiter les demandes clients et suivre les metriques globales.
 
 ## Regles de contribution
 
@@ -15,6 +16,7 @@ Ce dossier prepare la separation mobile en deux applications sans casser `front/
 - Toute modification d'ecran specifique va dans l'app concernee.
 - L'app employe ne doit pas contenir de gestion d'equipe, validations manager, organigramme, approvals ou dashboard manager.
 - L'app manager/RH conserve les ecrans complets et gere les differences internes via `employee.managerRole`.
+- L'app platform admin ne contient aucun workflow tenant employe/manager : pas de pointage, absences, avances, equipe ou approvals RH.
 - La differenciation par sous-role manager se fait dans les ecrans concernes, pas dans le router.
 - `front/mobile/` reste le mobile historique fonctionnel tant que la bascule produit n'est pas terminee.
 - `leopardo_mobile_legacy/` est un filet de securite : ne pas le modifier.
@@ -55,6 +57,7 @@ Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis c
 |---|---|---|---|
 | `leopardo_employee` | `com.leopardo.employee` | `com.leopardo.employee` | Leopardo Employee |
 | `leopardo_manager` | `com.leopardo.manager` | `com.leopardo.manager` | Leopardo Manager |
+| `leopardo_platform_admin` | `com.leopardo.platformadmin` | `com.leopardo.platformadmin` | Leopardo Platform Admin |
 
 Avant un upload public, le mode strict doit passer apres configuration des signatures release :
 
@@ -80,6 +83,11 @@ flutter analyze
 flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
 cd ../leopardo_manager
+flutter pub get
+flutter analyze
+flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
+
+cd ../leopardo_platform_admin
 flutter pub get
 flutter analyze
 flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1

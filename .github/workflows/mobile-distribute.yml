@@ -214,23 +214,38 @@ jobs:
         env:
           FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           APP_NAME: ${{ matrix.app.name }}
           BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
         run: |
           set -euo pipefail
+          FIREBASE_READBACK_STRICT=false
+          FIREBASE_AUTH_ARGS=(--token "${FIREBASE_TOKEN}")
+          if [[ -n "${FIREBASE_SERVICE_ACCOUNT_JSON:-}" ]]; then
+            printf '%s' "${FIREBASE_SERVICE_ACCOUNT_JSON}" > "${RUNNER_TEMP}/firebase-service-account.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="${RUNNER_TEMP}/firebase-service-account.json"
+            FIREBASE_AUTH_ARGS=()
+            FIREBASE_READBACK_STRICT=true
+            echo "Using Firebase service account readback for ${APP_NAME}."
+          fi
           echo "Verifying Firebase App Distribution read-after-write for ${APP_NAME} build ${BUILD_NUMBER}."
           for attempt in 1 2 3 4 5 6; do
             echo "Firebase visibility attempt ${attempt}/6..."
             set +e
             npx --yes firebase-tools appdistribution:releases:list \
               --app "${FIREBASE_APP_ID}" \
-              --token "${FIREBASE_TOKEN}" \
+              "${FIREBASE_AUTH_ARGS[@]}" \
               --limit 10 \
               --json > firebase-releases.json 2> firebase-releases.err
             firebase_status=$?
             set -e
 
             if [[ ${firebase_status} -ne 0 ]]; then
+              if [[ "${FIREBASE_READBACK_STRICT}" == "true" ]]; then
+                echo "::error::Firebase service-account readback failed for ${APP_NAME}."
+                cat firebase-releases.err || true
+                exit ${firebase_status}
+              fi
               echo "::warning::Firebase upload succeeded, but firebase-tools could not list App Distribution releases for ${APP_NAME}."
               echo "::warning::Keeping deploy green because the upload action is the distribution source of truth; configure a service-account based readback to make this check strictly blocking."
               cat firebase-releases.err || true

@@ -10,6 +10,7 @@ on:
       - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
       - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
       - 'dev-hub/tools/validate-mobile-plan28.ps1'
+      - 'dev-hub/tools/validate-mobile-plan29.ps1'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - '.github/workflows/mobile-apps-ci.yml'
   push:
@@ -20,6 +21,7 @@ on:
       - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
       - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
       - 'dev-hub/tools/validate-mobile-plan28.ps1'
+      - 'dev-hub/tools/validate-mobile-plan29.ps1'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - '.github/workflows/mobile-apps-ci.yml'
 
@@ -61,6 +63,10 @@ jobs:
         shell: pwsh
         run: '& ./dev-hub/tools/validate-mobile-plan28.ps1'
 
+      - name: Validate Plan 29 platform admin app
+        shell: pwsh
+        run: '& ./dev-hub/tools/validate-mobile-plan29.ps1'
+
   flutter-analyze:
     name: Analyze ${{ matrix.project.name }}
     runs-on: ubuntu-latest
@@ -75,6 +81,8 @@ jobs:
             path: front/mobile_apps/leopardo_employee
           - name: leopardo_manager
             path: front/mobile_apps/leopardo_manager
+          - name: leopardo_platform_admin
+            path: front/mobile_apps/leopardo_platform_admin
 
     steps:
       - name: Checkout code
@@ -118,6 +126,9 @@ jobs:
           - name: leopardo_manager
             path: front/mobile_apps/leopardo_manager
             artifact: leopardo-manager-debug-apk
+          - name: leopardo_platform_admin
+            path: front/mobile_apps/leopardo_platform_admin
+            artifact: leopardo-platform-admin-debug-apk
 
     steps:
       - name: Checkout code
