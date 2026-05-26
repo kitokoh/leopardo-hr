@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.145] - 2026-05-26
+
+### Added
+
+- Documentation : Plan 27 `docs/PLAN_ACTION/27_PLAN_MOBILE_RELEASE_READINESS.md` pour readiness App Store / Play Store.
+- Documentation : checklist `docs/validation/MOBILE_STORE_READINESS.md` couvrant boutons, workflows et criteres no-go mobile.
+- Mobile : script `dev-hub/tools/validate-mobile-release-readiness.ps1` pour verifier identites store, routes critiques, endpoints et handlers vides.
+
+### Changed
+
+- Mobile : identites natives distinctes pour `leopardo_employee` (`com.leopardo.employee`) et `leopardo_manager` (`com.leopardo.manager`) sur Android et iOS.
+- CI : `mobile-apps-ci.yml` execute aussi le garde release readiness avant analyze/build.
+
 ## [4.16.144] - 2026-05-26
 
 ### Added

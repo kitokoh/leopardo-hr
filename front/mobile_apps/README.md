@@ -31,6 +31,7 @@ Sur Windows sans PowerShell 7 :
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-apps-split.ps1
+powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-release-readiness.ps1
 ```
 
 Il verifie notamment :
@@ -42,8 +43,24 @@ Il verifie notamment :
 - dependance `leopardo_core` presente dans les deux apps ;
 - routes manager preparees dans `leopardo_manager` ;
 - en pull request, aucune modification de `leopardo_mobile_legacy`.
+- identites App Store / Play Store distinctes pour `leopardo_employee` et `leopardo_manager` ;
+- endpoints et routes critiques presents pour les workflows mobiles principaux ;
+- absence de handlers UI vides sur les apps mobiles.
 
 Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis consommer cette API depuis les deux apps. Si une evolution ne concerne qu'un persona, la placer uniquement dans `leopardo_employee` ou `leopardo_manager`.
+
+## Identites store
+
+| App | Android applicationId | iOS bundle id | Nom visible |
+|---|---|---|---|
+| `leopardo_employee` | `com.leopardo.employee` | `com.leopardo.employee` | Leopardo Employee |
+| `leopardo_manager` | `com.leopardo.manager` | `com.leopardo.manager` | Leopardo Manager |
+
+Avant un upload public, le mode strict doit passer apres configuration des signatures release :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-release-readiness.ps1 -StrictStores
+```
 
 ## Validation attendue
 
@@ -51,6 +68,7 @@ Depuis un SDK Flutter compatible Dart 3.8+ :
 
 ```bash
 pwsh ./dev-hub/tools/validate-mobile-apps-split.ps1
+pwsh ./dev-hub/tools/validate-mobile-release-readiness.ps1
 
 cd front/mobile_apps/leopardo_core
 flutter pub get
