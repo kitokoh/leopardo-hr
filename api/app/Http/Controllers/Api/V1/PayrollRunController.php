@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Models\Employee;
 use App\Models\PayrollRun;
@@ -35,15 +36,7 @@ class PayrollRunController extends Controller
 
         $runs = $query->orderByDesc('period_start')->paginate($request->integer('per_page', 15));
 
-        return response()->json([
-            'data' => $runs->items(),
-            'meta' => [
-                'current_page' => $runs->currentPage(),
-                'last_page' => $runs->lastPage(),
-                'per_page' => $runs->perPage(),
-                'total' => $runs->total(),
-            ],
-        ]);
+        return PayrollRunResource::collection($runs)->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -70,7 +63,9 @@ class PayrollRunController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        return response()->json(['data' => $run], 201);
+        return (new PayrollRunResource($run))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, PayrollRun $payrollRun): JsonResponse
@@ -86,7 +81,7 @@ class PayrollRunController extends Controller
 
         $payrollRun->loadCount('paySlips');
 
-        return response()->json(['data' => $payrollRun]);
+        return (new PayrollRunResource($payrollRun))->response();
     }
 
     public function calculate(Request $request, PayrollRun $payrollRun): JsonResponse
@@ -107,7 +102,7 @@ class PayrollRunController extends Controller
         $payrollRun->update(['status' => 'calculating']);
         $run = $this->calculator->calculateRun($payrollRun);
 
-        return response()->json(['data' => $run->loadCount('paySlips')]);
+        return (new PayrollRunResource($run->loadCount('paySlips')))->response();
     }
 
     public function validateRun(Request $request, PayrollRun $payrollRun): JsonResponse
@@ -139,7 +134,7 @@ class PayrollRunController extends Controller
             WarmPaySlipPdfPathsForPayrollRunJob::dispatch($payrollRun->id);
         }
 
-        return response()->json(['data' => $payrollRun->refresh()->loadCount('paySlips')]);
+        return (new PayrollRunResource($payrollRun->refresh()->loadCount('paySlips')))->response();
     }
 
     public function cancel(Request $request, PayrollRun $payrollRun): JsonResponse
@@ -159,7 +154,7 @@ class PayrollRunController extends Controller
 
         $payrollRun->update(['status' => 'cancelled']);
 
-        return response()->json(['data' => $payrollRun->refresh()]);
+        return (new PayrollRunResource($payrollRun->refresh()))->response();
     }
 
     public function summary(Request $request, PayrollRun $payrollRun): JsonResponse

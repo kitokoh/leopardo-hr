@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Models\Employee;
 use App\Models\OnboardingStep;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,7 +25,7 @@ class OnboardingStepController extends Controller
             $steps = $this->seedDefaultSteps($user->company_id);
         }
 
-        return response()->json(['data' => $steps]);
+        return OnboardingStepResource::collection($steps)->response();
     }
 
     public function progress(Request $request): JsonResponse
@@ -65,7 +66,7 @@ class OnboardingStepController extends Controller
             'completed_by' => $user->id,
         ]);
 
-        return response()->json(['data' => $step->fresh()]);
+        return (new OnboardingStepResource($step->fresh()))->response();
     }
 
     public function skip(Request $request, string $stepKey): JsonResponse
@@ -83,7 +84,7 @@ class OnboardingStepController extends Controller
 
         $step->update(['status' => 'skipped']);
 
-        return response()->json(['data' => $step->fresh()]);
+        return (new OnboardingStepResource($step->fresh()))->response();
     }
 
     /**

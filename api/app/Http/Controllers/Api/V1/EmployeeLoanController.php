@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\LoanResource;
 use App\Models\Employee;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
@@ -34,7 +35,8 @@ class EmployeeLoanController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        return response()->json($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)));
+        return LoanResource::collection($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)))
+            ->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -96,7 +98,9 @@ class EmployeeLoanController extends Controller
             return $loan;
         });
 
-        return response()->json(['data' => $loan->load('repayments')], 201);
+        return (new LoanResource($loan->load('repayments')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, EmployeeLoan $employeeLoan): JsonResponse
@@ -110,7 +114,7 @@ class EmployeeLoanController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $employeeLoan->load(['employee:id,first_name,last_name', 'repayments'])]);
+        return (new LoanResource($employeeLoan->load(['employee:id,first_name,last_name', 'repayments'])))->response();
     }
 
     public function approve(Request $request, EmployeeLoan $employeeLoan): JsonResponse
@@ -132,7 +136,7 @@ class EmployeeLoanController extends Controller
             'approved_by' => $actor->id,
         ]);
 
-        return response()->json(['data' => $employeeLoan->fresh()]);
+        return (new LoanResource($employeeLoan->fresh()))->response();
     }
 
     public function disburse(Request $request, EmployeeLoan $employeeLoan): JsonResponse
@@ -154,6 +158,6 @@ class EmployeeLoanController extends Controller
             'disbursed_at' => now(),
         ]);
 
-        return response()->json(['data' => $employeeLoan->fresh()]);
+        return (new LoanResource($employeeLoan->fresh()))->response();
     }
 }
