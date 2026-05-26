@@ -26,6 +26,8 @@ $expected = @(
 
 $failures = New-Object System.Collections.Generic.List[string]
 $installed = New-Object System.Collections.Generic.List[string]
+$androidCandidates = @{}
+$iosCandidates = @{}
 
 function Add-Failure([string]$message) {
     $failures.Add($message) | Out-Null
@@ -47,6 +49,24 @@ function Ensure-Parent([string]$target) {
     }
 }
 
+function Add-AndroidCandidate($app, $file, $clientCount) {
+    $key = $app.App
+    if (-not $androidCandidates.ContainsKey($key) -or $clientCount -lt $androidCandidates[$key].ClientCount) {
+        $androidCandidates[$key] = @{
+            App = $app
+            File = $file
+            ClientCount = $clientCount
+        }
+    }
+}
+
+function Add-IosCandidate($app, $file) {
+    $iosCandidates[$app.App] = @{
+        App = $app
+        File = $file
+    }
+}
+
 if (-not (Test-Path -LiteralPath $DownloadsDir)) {
     Add-Failure "Downloads directory not found: $DownloadsDir"
 } else {
@@ -56,14 +76,12 @@ if (-not (Test-Path -LiteralPath $DownloadsDir)) {
     foreach ($file in $androidFiles) {
         try {
             $json = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
-            foreach ($client in @($json.client)) {
+            $clients = @($json.client)
+            foreach ($client in $clients) {
                 $package = $client.client_info.android_client_info.package_name
                 $match = $expected | Where-Object { $_.AndroidPackage -eq $package } | Select-Object -First 1
                 if ($match) {
-                    $target = Join-Path $repoRoot $match.AndroidTarget
-                    Ensure-Parent $target
-                    Copy-Item -LiteralPath $file.FullName -Destination $target -Force
-                    $installed.Add("$($match.App) Android <- $($file.FullName)") | Out-Null
+                    Add-AndroidCandidate $match $file $clients.Count
                 }
             }
         } catch {
@@ -76,12 +94,23 @@ if (-not (Test-Path -LiteralPath $DownloadsDir)) {
         $bundleId = Get-PlistString $content "BUNDLE_ID"
         $match = $expected | Where-Object { $_.IosBundle -eq $bundleId } | Select-Object -First 1
         if ($match) {
-            $target = Join-Path $repoRoot $match.IosTarget
-            Ensure-Parent $target
-            Copy-Item -LiteralPath $file.FullName -Destination $target -Force
-            $installed.Add("$($match.App) iOS <- $($file.FullName)") | Out-Null
+            Add-IosCandidate $match $file
         }
     }
+}
+
+foreach ($candidate in $androidCandidates.Values) {
+    $target = Join-Path $repoRoot $candidate.App.AndroidTarget
+    Ensure-Parent $target
+    Copy-Item -LiteralPath $candidate.File.FullName -Destination $target -Force
+    $installed.Add("$($candidate.App.App) Android <- $($candidate.File.FullName)") | Out-Null
+}
+
+foreach ($candidate in $iosCandidates.Values) {
+    $target = Join-Path $repoRoot $candidate.App.IosTarget
+    Ensure-Parent $target
+    Copy-Item -LiteralPath $candidate.File.FullName -Destination $target -Force
+    $installed.Add("$($candidate.App.App) iOS <- $($candidate.File.FullName)") | Out-Null
 }
 
 foreach ($app in $expected) {
