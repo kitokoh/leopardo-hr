@@ -9,6 +9,7 @@ on:
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
       - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
       - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
+      - 'dev-hub/tools/validate-mobile-plan28.ps1'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - '.github/workflows/mobile-apps-ci.yml'
   push:
@@ -18,6 +19,7 @@ on:
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
       - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
       - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
+      - 'dev-hub/tools/validate-mobile-plan28.ps1'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - '.github/workflows/mobile-apps-ci.yml'
 
@@ -54,6 +56,10 @@ jobs:
       - name: Validate mobile workflow contracts
         shell: pwsh
         run: '& ./dev-hub/tools/validate-mobile-workflow-contracts.ps1'
+
+      - name: Validate Plan 28 multi-app excellence
+        shell: pwsh
+        run: '& ./dev-hub/tools/validate-mobile-plan28.ps1'
 
   flutter-analyze:
     name: Analyze ${{ matrix.project.name }}

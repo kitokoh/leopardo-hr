@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.150] - 2026-05-26
+
+### Added
+
+- Mobile : ajout du Plan 28 `docs/PLAN_ACTION/28_PLAN_MOBILE_MULTI_APP_EXCELLENCE.md` pour verrouiller l'architecture mobile employee/manager.
+- Mobile : nouveau validateur `dev-hub/tools/validate-mobile-plan28.ps1` execute par `mobile-apps-ci.yml`.
+
+### Changed
+
+- Mobile employee : suppression des methodes repository d'approbation/refus heritees pour absences et avances.
+- CI mobile : le garde Plan 28 verifie la separation employee/manager, les configs Firebase Android/iOS, le read-after-write App Distribution et les preconditions iOS.
+
 ## [4.16.149] - 2026-05-26
 
 ### Changed
