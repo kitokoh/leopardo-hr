@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\SalaryStructureResource;
 use App\Models\Employee;
 use App\Models\SalaryStructure;
 use Illuminate\Http\JsonResponse;
@@ -29,9 +30,7 @@ class SalaryStructureController extends Controller
             $query->active();
         }
 
-        return response()->json([
-            'data' => $query->orderBy('name')->get(),
-        ]);
+        return SalaryStructureResource::collection($query->orderBy('name')->get())->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -60,7 +59,9 @@ class SalaryStructureController extends Controller
             'active' => true,
         ]);
 
-        return response()->json(['data' => $structure], 201);
+        return (new SalaryStructureResource($structure))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, SalaryStructure $salaryStructure): JsonResponse
@@ -76,7 +77,7 @@ class SalaryStructureController extends Controller
 
         $salaryStructure->load('components');
 
-        return response()->json(['data' => $salaryStructure]);
+        return (new SalaryStructureResource($salaryStructure))->response();
     }
 
     public function update(Request $request, SalaryStructure $salaryStructure): JsonResponse
@@ -101,7 +102,7 @@ class SalaryStructureController extends Controller
 
         $salaryStructure->update($validated);
 
-        return response()->json(['data' => $salaryStructure->refresh()]);
+        return (new SalaryStructureResource($salaryStructure->refresh()))->response();
     }
 
     public function destroy(Request $request, SalaryStructure $salaryStructure): JsonResponse

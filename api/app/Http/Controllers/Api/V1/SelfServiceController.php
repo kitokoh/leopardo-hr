@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\LoanResource;
+use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Models\Employee;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
@@ -23,15 +25,7 @@ class SelfServiceController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $enrollments->items(),
-            'meta' => [
-                'current_page' => $enrollments->currentPage(),
-                'last_page' => $enrollments->lastPage(),
-                'per_page' => $enrollments->perPage(),
-                'total' => $enrollments->total(),
-            ],
-        ]);
+        return TrainingEnrollmentResource::collection($enrollments)->response();
     }
 
     public function selfEnroll(Request $request, int $sessionId): JsonResponse
@@ -54,7 +48,9 @@ class SelfServiceController extends Controller
             'status' => 'enrolled',
         ]);
 
-        return response()->json(['data' => $enrollment], 201);
+        return (new TrainingEnrollmentResource($enrollment))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function myLoans(Request $request): JsonResponse
@@ -68,15 +64,7 @@ class SelfServiceController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $loans->items(),
-            'meta' => [
-                'current_page' => $loans->currentPage(),
-                'last_page' => $loans->lastPage(),
-                'per_page' => $loans->perPage(),
-                'total' => $loans->total(),
-            ],
-        ]);
+        return LoanResource::collection($loans)->response();
     }
 
     public function myLoanRepayments(Request $request, int $loanId): JsonResponse
@@ -93,6 +81,6 @@ class SelfServiceController extends Controller
             ->orderBy('due_date')
             ->get();
 
-        return response()->json(['data' => $repayments]);
+        return response()->json(['data' => $repayments]); // LoanRepayment — no dedicated Resource yet
     }
 }

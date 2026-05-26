@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\InvoiceResource;
+use App\Http\Resources\Api\V1\SubscriptionResource;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Invoice;
@@ -26,7 +28,7 @@ class BillingController extends Controller
             return response()->json(['data' => null, 'message' => 'No active subscription.'], 404);
         }
 
-        return response()->json(['data' => $subscription]);
+        return (new SubscriptionResource($subscription))->response();
     }
 
     public function upgrade(Request $request): JsonResponse
@@ -64,7 +66,7 @@ class BillingController extends Controller
             ]);
         }
 
-        return response()->json(['data' => $subscription->fresh()]);
+        return (new SubscriptionResource($subscription->fresh()))->response();
     }
 
     public function cancel(Request $request): JsonResponse
@@ -89,7 +91,7 @@ class BillingController extends Controller
             'cancel_reason' => $validated['reason'] ?? null,
         ]);
 
-        return response()->json(['data' => $subscription->fresh()]);
+        return (new SubscriptionResource($subscription->fresh()))->response();
     }
 
     public function renew(Request $request): JsonResponse
@@ -112,7 +114,7 @@ class BillingController extends Controller
             'current_period_end' => now()->addMonth(),
         ]);
 
-        return response()->json(['data' => $subscription->fresh()]);
+        return (new SubscriptionResource($subscription->fresh()))->response();
     }
 
     public function invoices(Request $request): JsonResponse
@@ -124,15 +126,7 @@ class BillingController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $invoices->items(),
-            'meta' => [
-                'current_page' => $invoices->currentPage(),
-                'last_page' => $invoices->lastPage(),
-                'per_page' => $invoices->perPage(),
-                'total' => $invoices->total(),
-            ],
-        ]);
+        return InvoiceResource::collection($invoices)->response();
     }
 
     public function showInvoice(Request $request, int $id): JsonResponse
@@ -143,7 +137,7 @@ class BillingController extends Controller
             ->with('payments')
             ->findOrFail($id);
 
-        return response()->json(['data' => $invoice]);
+        return (new InvoiceResource($invoice))->response();
     }
 
     public function invoicePdf(Request $request, int $id): Response

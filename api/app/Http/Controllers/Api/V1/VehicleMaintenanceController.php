@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
 use App\Models\Employee;
 use App\Models\VehicleMaintenance;
 use Illuminate\Http\JsonResponse;
@@ -26,15 +27,7 @@ class VehicleMaintenanceController extends Controller
         $records = $query->orderByDesc('service_date')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $records->items(),
-            'meta' => [
-                'current_page' => $records->currentPage(),
-                'last_page' => $records->lastPage(),
-                'per_page' => $records->perPage(),
-                'total' => $records->total(),
-            ],
-        ]);
+        return VehicleMaintenanceResource::collection($records)->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -58,7 +51,9 @@ class VehicleMaintenanceController extends Controller
 
         $record = VehicleMaintenance::create($validated);
 
-        return response()->json(['data' => $record], 201);
+        return (new VehicleMaintenanceResource($record))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function update(Request $request, int $id): JsonResponse
@@ -81,7 +76,7 @@ class VehicleMaintenanceController extends Controller
 
         $record->update($validated);
 
-        return response()->json(['data' => $record->fresh()]);
+        return (new VehicleMaintenanceResource($record->fresh()))->response();
     }
 
     public function destroy(Request $request, int $id): JsonResponse

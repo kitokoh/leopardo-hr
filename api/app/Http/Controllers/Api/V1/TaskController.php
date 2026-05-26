@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\TaskCommentResource;
+use App\Http\Resources\Api\V1\TaskResource;
 use App\Models\Employee;
 use App\Models\Task;
 use App\Models\TaskComment;
@@ -36,12 +38,9 @@ class TaskController extends Controller
         }
 
         $perPage = $request->integer('per_page', 15);
-        $paginated = $query->orderBy('due_date')->orderByDesc('created_at')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn ($t) => $this->serialize($t)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
-        ]);
+        return TaskResource::collection($query->orderBy('due_date')->orderByDesc('created_at')->paginate($perPage))
+            ->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -52,7 +51,9 @@ class TaskController extends Controller
 
         $task = Task::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'assigned_to' => $data['assigned_to'] ?? [], 'status' => 'todo', 'priority' => $data['priority'] ?? 'normal', 'visibility' => $data['visibility'] ?? 'visible', ...$data]);
 
-        return response()->json(['data' => $this->serialize($task)], 201);
+        return (new TaskResource($task))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Task $task): JsonResponse
@@ -66,7 +67,7 @@ class TaskController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($task->load('comments.author'))]);
+        return (new TaskResource($task->load('comments.author')))->response();
     }
 
     public function update(Request $request, Task $task): JsonResponse
@@ -85,7 +86,7 @@ class TaskController extends Controller
         $data = $request->validate(['title' => ['sometimes', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['sometimes', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['sometimes', 'date'], 'priority' => ['sometimes', 'in:low,normal,high,urgent'], 'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['sometimes', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
         $task->update($data);
 
-        return response()->json(['data' => $this->serialize($task->fresh())]);
+        return (new TaskResource($task->fresh()))->response();
     }
 
     public function destroy(Request $request, Task $task): JsonResponse
@@ -115,17 +116,9 @@ class TaskController extends Controller
         $data = $request->validate(['content' => ['required', 'string', 'max:5000']]);
         $comment = TaskComment::create(['company_id' => $actor->company_id, 'task_id' => $task->id, 'author_id' => $actor->id, 'content' => $data['content']]);
 
-        return response()->json(['data' => ['id' => $comment->id, 'task_id' => $comment->task_id, 'author_id' => $comment->author_id, 'content' => $comment->content, 'created_at' => $comment->created_at?->toIso8601String()]], 201);
+        return (new TaskCommentResource($comment))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    private function serialize(Task $task): array
-    {
-        $data = ['id' => $task->id, 'title' => $task->title, 'description' => $task->description, 'created_by' => $task->created_by, 'assigned_to' => $task->assigned_to, 'project_id' => $task->project_id, 'due_date' => $task->due_date?->toIso8601String(), 'priority' => $task->priority, 'status' => $task->status, 'category' => $task->category, 'visibility' => $task->visibility, 'checklist' => $task->checklist, 'created_at' => $task->created_at?->toIso8601String(), 'updated_at' => $task->updated_at?->toIso8601String()];
-
-        if ($task->relationLoaded('comments')) {
-            $data['comments'] = $task->comments->map(fn ($c) => ['id' => $c->id, 'author_id' => $c->author_id, 'author' => $c->relationLoaded('author') ? ['id' => $c->author->id, 'first_name' => $c->author->first_name, 'last_name' => $c->author->last_name] : null, 'content' => $c->content, 'created_at' => $c->created_at?->toIso8601String()]);
-        }
-
-        return $data;
-    }
 }

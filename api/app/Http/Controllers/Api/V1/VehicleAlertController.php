@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\VehicleAlertResource;
 use App\Models\Employee;
 use App\Models\VehicleAlert;
 use Illuminate\Http\JsonResponse;
@@ -29,15 +30,7 @@ class VehicleAlertController extends Controller
         $alerts = $query->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $alerts->items(),
-            'meta' => [
-                'current_page' => $alerts->currentPage(),
-                'last_page' => $alerts->lastPage(),
-                'per_page' => $alerts->perPage(),
-                'total' => $alerts->total(),
-            ],
-        ]);
+        return VehicleAlertResource::collection($alerts)->response();
     }
 
     public function acknowledge(Request $request, int $id): JsonResponse
@@ -51,6 +44,6 @@ class VehicleAlertController extends Controller
             'acknowledged_by' => $user->id,
         ]);
 
-        return response()->json(['data' => $alert->fresh()]);
+        return (new VehicleAlertResource($alert->fresh()))->response();
     }
 }
