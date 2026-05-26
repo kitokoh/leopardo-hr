@@ -358,19 +358,20 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_READBACK_REQUIRED: ${{ secrets.FIREBASE_READBACK_REQUIRED }}
           APP_NAME: ${{ matrix.app.name }}
           BUILD_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
           EXPECTED_BUILD="${BUILD_NUMBER}"
-          FIREBASE_READBACK_STRICT=false
+          FIREBASE_READBACK_STRICT="${FIREBASE_READBACK_REQUIRED:-false}"
           FIREBASE_AUTH_ARGS=(--token "${FIREBASE_TOKEN}")
           if [[ -n "${FIREBASE_SERVICE_ACCOUNT_JSON:-}" ]]; then
             printf '%s' "${FIREBASE_SERVICE_ACCOUNT_JSON}" > "${RUNNER_TEMP}/firebase-service-account.json"
             export GOOGLE_APPLICATION_CREDENTIALS="${RUNNER_TEMP}/firebase-service-account.json"
             FIREBASE_AUTH_ARGS=()
-            FIREBASE_READBACK_STRICT=true
             echo "Using Firebase service account readback for ${APP_NAME}."
+            echo "Firebase readback strict mode: ${FIREBASE_READBACK_STRICT}."
           fi
           echo "Verifying Firebase App Distribution read-after-write for ${APP_NAME} build ${EXPECTED_BUILD}."
           for attempt in 1 2 3 4 5 6; do
@@ -391,7 +392,7 @@ jobs:
                 exit ${firebase_status}
               fi
               echo "::warning::Firebase upload succeeded, but firebase-tools could not list App Distribution releases for ${APP_NAME}."
-              echo "::warning::Keeping deploy green because the upload action is the distribution source of truth; configure a service-account based readback to make this check strictly blocking."
+              echo "::warning::Keeping deploy green because the upload action is the distribution source of truth; set FIREBASE_READBACK_REQUIRED=true after the service account is rotated and granted App Distribution access."
               cat firebase-releases.err || true
               exit 0
             fi
