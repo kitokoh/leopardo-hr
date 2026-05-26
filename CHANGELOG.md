@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.156] - 2026-05-26
+
+### Changed
+
+- CI/CD mobile : `FIREBASE_SERVICE_ACCOUNT_JSON` active le readback Firebase via service account, mais ne rend plus ce readback bloquant par defaut apres un upload App Distribution reussi.
+- CI/CD mobile : ajout du secret optionnel `FIREBASE_READBACK_REQUIRED=true` pour rendre la verification readback strictement bloquante une fois le compte de service rote et correctement permissionne.
+
 ## [4.16.155] - 2026-05-26
 
 ### Fixed

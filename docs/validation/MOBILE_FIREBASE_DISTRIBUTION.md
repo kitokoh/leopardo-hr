@@ -88,7 +88,7 @@ Les apps iOS ne peuvent pas recevoir de release App Distribution tant qu'un `.ip
 
 ## Secret `FIREBASE_SERVICE_ACCOUNT_JSON`
 
-`FIREBASE_SERVICE_ACCOUNT_JSON` est un secret GitHub optionnel qui contient le JSON complet d'une cle de compte de service Google/Firebase. Il ne remplace pas encore `FIREBASE_TOKEN` pour l'upload, mais il rend la verification readback stricte et fiable apres l'upload.
+`FIREBASE_SERVICE_ACCOUNT_JSON` est un secret GitHub optionnel qui contient le JSON complet d'une cle de compte de service Google/Firebase. Il ne remplace pas encore `FIREBASE_TOKEN` pour l'upload, mais il permet d'executer la verification readback avec une authentification service account apres l'upload.
 
 Configuration recommandee :
 
@@ -102,7 +102,11 @@ Configuration recommandee :
 8. Nom du secret : `FIREBASE_SERVICE_ACCOUNT_JSON`.
 9. Valeur : coller le JSON complet sur une seule valeur de secret, sans le transformer.
 
-Quand ce secret existe, les workflows ecrivent temporairement ce JSON dans `RUNNER_TEMP`, exportent `GOOGLE_APPLICATION_CREDENTIALS`, puis executent `firebase appdistribution:releases:list`. Si la lecture echoue, le workflow echoue. Sans ce secret, le workflow garde le fallback `FIREBASE_TOKEN` et transforme seulement l'echec de listing en warning apres upload reussi.
+Quand ce secret existe, les workflows ecrivent temporairement ce JSON dans `RUNNER_TEMP`, exportent `GOOGLE_APPLICATION_CREDENTIALS`, puis executent `firebase appdistribution:releases:list`. Par defaut, si l'upload Firebase App Distribution a deja reussi mais que la lecture echoue, le workflow reste vert avec un warning : l'upload est la source de verite operationnelle pour ne pas bloquer les testeurs a cause d'un compte de service mal permissionne.
+
+Pour rendre cette verification strictement bloquante, ajouter aussi le secret GitHub `FIREBASE_READBACK_REQUIRED` avec la valeur `true`. Ne l'activer qu'apres avoir confirme que le compte de service a ete regenere, non expose publiquement et autorise a lister les releases App Distribution du projet `leopardo-rh`.
+
+Important : toute cle `FIREBASE_SERVICE_ACCOUNT_JSON` exposee dans un chat, ticket, log ou document public doit etre consideree compromise. La revoquer dans Google Cloud, creer une nouvelle cle JSON, puis remplacer le secret GitHub.
 
 ## Securite
 
