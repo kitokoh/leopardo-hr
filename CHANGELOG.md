@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.144] - 2026-05-26
+
+### Added
+
+- Documentation : Plan 26 `docs/PLAN_ACTION/26_PLAN_MOBILE_MULTI_APP_PRODUCTION.md` pour durcir la separation mobile employee/manager.
+- Mobile : script `dev-hub/tools/validate-mobile-apps-split.ps1` ajoutant des garde-fous de structure multi-app.
+- CI : `mobile-apps-ci.yml` execute maintenant le garde de separation avant les analyses Flutter.
+
+### Changed
+
+- Documentation : README `front/mobile_apps/README.md` enrichi avec les controles Plan 26 et la procedure de validation.
+
 ## [4.16.143] - 2026-05-26
 
 ### Added
