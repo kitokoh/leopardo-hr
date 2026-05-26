@@ -46,20 +46,26 @@ Second lot installe :
 - Employee iOS : `GoogleService-Info (3).plist`, bundle `com.leopardo.employee` detecte.
 - Manager iOS : `GoogleService-Info (2).plist`, bundle `com.leopardo.manager` detecte.
 
+Troisieme lot installe :
+
+- Platform Admin Android : `google-services (5).json`, package `com.leopardo.platformadmin` detecte.
+- Platform Admin iOS : `GoogleService-Info (4).plist`, bundle `com.leopardo.platformadmin` detecte.
+
 Note Android : les exports Firebase peuvent contenir plusieurs clients dans un meme `google-services.json`. Le script choisit le fichier le plus specifique disponible pour chaque app, mais Gradle selectionne le client correspondant a `applicationId`. Toute cle API associee a un client historique doit rester restreinte cote Google Cloud/Firebase.
 
 ## Distribution CI
 
-`Deploy - Leopardo RH` distribue maintenant les deux APK staging :
+`Deploy - Leopardo RH` distribue maintenant les trois APK staging :
 
 - `leopardo_employee` vers `FIREBASE_EMPLOYEE_ANDROID_APP_ID`
 - `leopardo_manager` vers `FIREBASE_MANAGER_ANDROID_APP_ID`
+- `leopardo_platform_admin` vers `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID`
 
-`leopardo_platform_admin` est preparee cote code et CI debug. Sa distribution Firebase sera activee quand les apps Firebase `com.leopardo.platformadmin` Android/iOS et les secrets dedies seront fournis.
+Le workflow `Mobile - Build and Firebase Distribution` est declenche automatiquement sur `main` quand `front/mobile_apps/**` change. Il peut aussi etre lance manuellement pour `employee`, `manager`, `platform_admin` ou `both`.
 
 Sur le deploy `main`, la distribution d'une app est sautee proprement tant que son secret ou son `google-services.json` manque. Cela evite de bloquer le deploy API/web pendant la preparation Firebase.
 
-Le workflow manuel `Mobile - Build and Firebase Distribution` accepte aussi le choix `employee`, `manager` ou `both`.
+Le workflow manuel `Mobile - Build and Firebase Distribution` est plus strict : il echoue si l'app demandee n'a pas son secret Firebase ou son fichier Android natif. Cette difference est volontaire pour eviter les faux verts lors d'une release mobile explicite.
 
 Depuis v4.16.149, les deux workflows relisent Firebase apres l'upload avec :
 
@@ -74,7 +80,25 @@ Derniere verification connue :
 - Employee Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.employee`.
 - Manager Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.manager`.
 
-Important : Firebase App Distribution affiche les releases par app. Dans la console, selectionner le projet `leopardo-rh`, puis App Distribution, puis l'app Android `com.leopardo.employee` ou `com.leopardo.manager`. Les fichiers iOS sont installes dans le depot, mais la distribution iOS necessitera un workflow macOS signe produisant un `.ipa`.
+Important : Firebase App Distribution affiche les releases par app. Dans la console, selectionner le projet `leopardo-rh`, puis App Distribution, puis l'app Android `com.leopardo.employee`, `com.leopardo.manager` ou `com.leopardo.platformadmin`. Les fichiers iOS sont installes dans le depot, mais la distribution iOS necessitera un workflow macOS signe produisant un `.ipa`.
+
+## Secret `FIREBASE_SERVICE_ACCOUNT_JSON`
+
+`FIREBASE_SERVICE_ACCOUNT_JSON` est un secret GitHub optionnel qui contient le JSON complet d'une cle de compte de service Google/Firebase. Il ne remplace pas encore `FIREBASE_TOKEN` pour l'upload, mais il rend la verification readback stricte et fiable apres l'upload.
+
+Configuration recommandee :
+
+1. Ouvrir Google Cloud Console pour le projet Firebase `leopardo-rh`.
+2. Aller dans IAM & Admin > Service Accounts.
+3. Creer un compte de service dedie, par exemple `github-mobile-appdistribution-readback`.
+4. Lui attribuer le role minimal disponible pour App Distribution. En pratique, utiliser `Firebase App Distribution Admin` si le role viewer/listing seul ne suffit pas dans la console.
+5. Creer une cle JSON pour ce compte de service.
+6. Copier tout le contenu du fichier JSON.
+7. Dans GitHub : repository `kitokoh/gestionemployerBackend` > Settings > Secrets and variables > Actions > New repository secret.
+8. Nom du secret : `FIREBASE_SERVICE_ACCOUNT_JSON`.
+9. Valeur : coller le JSON complet sur une seule valeur de secret, sans le transformer.
+
+Quand ce secret existe, les workflows ecrivent temporairement ce JSON dans `RUNNER_TEMP`, exportent `GOOGLE_APPLICATION_CREDENTIALS`, puis executent `firebase appdistribution:releases:list`. Si la lecture echoue, le workflow echoue. Sans ce secret, le workflow garde le fallback `FIREBASE_TOKEN` et transforme seulement l'echec de listing en warning apres upload reussi.
 
 ## Securite
 
