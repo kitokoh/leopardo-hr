@@ -96,6 +96,56 @@ class PlatformCompanyProvisioningTest extends TestCase
         });
     }
 
+    public function test_platform_mobile_can_create_company_with_minimal_payload(): void
+    {
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 7,
+            'name' => 'Business',
+            'price_monthly' => 149,
+            'price_yearly' => 1490,
+            'trial_days' => 30,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = SuperAdmin::query()->create([
+            'name' => 'Platform Admin',
+            'email' => 'admin-mobile@leopardo-rh.com',
+            'password_hash' => Hash::make('admin'),
+        ]);
+
+        $response = $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Mobile Client',
+                'country' => 'dz',
+                'city' => 'Alger',
+                'email' => 'contact@mobile-client.dz',
+                'manager_first_name' => 'Amina',
+                'manager_last_name' => 'Rahmani',
+                'manager_email' => 'amina.rahmani@mobile-client.dz',
+            ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('data.company.name', 'Mobile Client')
+            ->assertJsonPath('data.company.sector', 'Non precise')
+            ->assertJsonPath('data.company.country', 'DZ')
+            ->assertJsonPath('data.company.plan_id', 7)
+            ->assertJsonPath('data.company.currency', 'DZD')
+            ->assertJsonPath('data.company.timezone', 'Africa/Algiers')
+            ->assertJsonPath('data.manager.email', 'amina.rahmani@mobile-client.dz');
+
+        DB::statement('SET search_path TO public');
+
+        $this->assertDatabaseHas('companies', [
+            'name' => 'Mobile Client',
+            'sector' => 'Non precise',
+            'country' => 'DZ',
+            'plan_id' => 7,
+        ]);
+    }
+
     public function test_super_admin_api_login_returns_token(): void
     {
         $superAdmin = SuperAdmin::query()->create([

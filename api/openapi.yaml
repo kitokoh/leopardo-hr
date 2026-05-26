@@ -393,6 +393,24 @@ paths:
       summary: "Lister les societes"
       security:
         - SuperAdminBearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["active", "trial", "suspended", "expired"]
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         "200":
           description: "Liste des societes"
@@ -405,6 +423,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/PlatformCompany"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
     post:
       tags: ["Platform"]
       summary: "Creer une societe shared"
@@ -604,6 +624,18 @@ paths:
           schema:
             type: string
             enum: ["pending", "approved", "rejected"]
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         "200":
           description: "Demandes paginees"
@@ -4508,11 +4540,9 @@ components:
       type: object
       required:
         - name
-        - sector
         - country
         - city
         - email
-        - plan_id
         - manager_first_name
         - manager_last_name
         - manager_email

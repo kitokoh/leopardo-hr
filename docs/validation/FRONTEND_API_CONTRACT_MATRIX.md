@@ -1,6 +1,6 @@
 # Frontend API Contract Matrix
 
-Derniere mise a jour : 2026-05-25
+Derniere mise a jour : 2026-05-26
 
 Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend Laravel. Toute nouvelle route critique doit avoir un endpoint backend, un role attendu et un test associe.
 
@@ -19,8 +19,14 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Modification pointage directe | `PUT /api/v1/attendance/{attendanceLog}` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
 | Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
+| Mobile | Resume mensuel | `GET /api/v1/me/monthly-summary` | employe/manager | `FrontendApiContractTest` |
 | Mobile | Liste equipe RH | `GET /api/v1/employees` | manager principal/RH | `ApiListQueryContractTest`, `FrontendApiContractTest`, `repository_contract_test.dart` |
 | Mobile | Creation employe RH | `POST /api/v1/employees` | manager principal/RH | `repository_contract_test.dart` |
+| Mobile | Detail employe RH | `GET /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile | Mise a jour employe RH | `PUT /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile | Archivage employe RH | `POST /api/v1/employees/{employee}/archive` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile | Invitations equipe | `GET /api/v1/invitations` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile | Relance invitation | `POST /api/v1/invitations/{invitation}/resend` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Demande absence | `POST /api/v1/absences` | employe | `Absences\AbsenceStoreTest`, `FrontendApiContractTest` |
 | Mobile | Detail absence | `GET /api/v1/absences/{absence}` | employe/manager | `Absences\AbsenceShowTest`, `FrontendApiContractTest` |
@@ -33,8 +39,14 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
 | Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |
+| Mobile | Detail avance salaire | `GET /api/v1/salary-advances/{salaryAdvance}` | employe/manager | `FrontendApiContractTest` |
 | Mobile | Approbation avance salaire | `PUT /api/v1/salary-advances/{salaryAdvance}/approve` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
 | Mobile | Refus avance salaire | `PUT /api/v1/salary-advances/{salaryAdvance}/reject` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
+| Mobile | Annulation avance salaire | `DELETE /api/v1/salary-advances/{salaryAdvance}` | employe/manager | `FrontendApiContractTest` |
+| Mobile manager | Validations en attente | `GET /api/v1/approvals/pending` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile manager | Approuver demande generique | `POST /api/v1/approvals/{approvalRequest}/approve` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile manager | Rejeter demande generique | `POST /api/v1/approvals/{approvalRequest}/reject` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile manager | Historique validations | `GET /api/v1/approvals/history` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile / web client | Notifications | `GET /api/v1/notifications` | authentifie | `ApiListQueryContractTest`, `FrontendApiContractTest`, `NotificationControllerTest` |
 | Mobile | Marquer notification lue | `PUT /api/v1/notifications/{notification}/read` | authentifie | `FrontendApiContractTest` |
 | Mobile | Tout marquer lu | `PUT /api/v1/notifications/read-all` | authentifie | `FrontendApiContractTest` |
@@ -59,6 +71,20 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Kiosk | Infos employe | `POST /api/v1/kiosks/{deviceCode}/employee-info` | device | `FrontendJsonContractTest`, `FrontendApiContractTest` |
 | Kiosk | Solde conges employe | `POST /api/v1/kiosks/{deviceCode}/leave-balance` | device | `FrontendJsonContractTest`, `FrontendApiContractTest` |
 | Kiosk | Annonces | `GET /api/v1/kiosks/{deviceCode}/announcements` | device | `FrontendApiContractTest` |
+| Platform admin mobile | Connexion | `POST /api/v1/platform/auth/login` | super-admin public auth | `PlatformAuthTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Session courante | `GET /api/v1/platform/auth/me` | super-admin | `PlatformAuthTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Deconnexion | `POST /api/v1/platform/auth/logout` | super-admin | `FrontendApiContractTest` |
+| Platform admin mobile | Plans | `GET /api/v1/platform/plans` | super-admin | `PlatformPlanApiTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Liste entreprises | `GET /api/v1/platform/companies` | super-admin | `FrontendApiContractTest` |
+| Platform admin mobile | Creation entreprise | `POST /api/v1/platform/companies` | super-admin | `PlatformCompanyProvisioningTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Sante entreprises | `GET /api/v1/platform/companies/health` | super-admin | `PlatformCompanyHealthApiTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Sante entreprise | `GET /api/v1/platform/companies/{company}/health` | super-admin | `PlatformCompanyHealthApiTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Abonnement entreprise | `GET/PATCH /api/v1/platform/companies/{company}/subscription` | super-admin | `PlatformCompanySubscriptionApiTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Features entreprise | `GET/PATCH /api/v1/platform/companies/{company}/features` | super-admin | `PlatformCompanyFeatureApiTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Metriques plateforme | `GET /api/v1/platform/metrics/overview` | super-admin | `PlatformMetricsOverviewApiTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Demandes clients | `GET /api/v1/platform/company-requests` | super-admin | `PlatformCompanyRequestProvisioningTest`, `FrontendApiContractTest` |
+| Platform admin mobile | Detail demande client | `GET /api/v1/platform/company-requests/{id}` | super-admin | `FrontendApiContractTest` |
+| Platform admin mobile | Validation demande client | `PATCH /api/v1/platform/company-requests/{id}` | super-admin | `PlatformCompanyRequestProvisioningTest`, `FrontendApiContractTest` |
 
 ## Regles
 
