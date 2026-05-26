@@ -30,13 +30,20 @@ powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\install-mobile-firebase
 
 ## Etat des fichiers recus le 2026-05-26
 
-Les fichiers telecharges ne doivent pas etre poses dans le depot en l'etat :
+Premier lot refuse :
 
 - Android : `com.leopardo.emplyer` detecte, attendu `com.leopardo.employee` ou `com.leopardo.manager`.
 - iOS employee : `com.leopardo.employer` detecte, attendu `com.leopardo.employee`.
 - iOS manager : `com.leopardo.manage` detecte, attendu `com.leopardo.manager`.
 
-Il faut recreer ou renommer les apps Firebase avec les IDs exacts avant d'installer les fichiers.
+Second lot installe :
+
+- Employee Android : `google-services (3).json`, package `com.leopardo.employee` detecte.
+- Manager Android : `google-services (4).json`, package `com.leopardo.manager` detecte.
+- Employee iOS : `GoogleService-Info (3).plist`, bundle `com.leopardo.employee` detecte.
+- Manager iOS : `GoogleService-Info (2).plist`, bundle `com.leopardo.manager` detecte.
+
+Note Android : les exports Firebase peuvent contenir plusieurs clients dans un meme `google-services.json`. Le script choisit le fichier le plus specifique disponible pour chaque app, mais Gradle selectionne le client correspondant a `applicationId`. Toute cle API associee a un client historique doit rester restreinte cote Google Cloud/Firebase.
 
 ## Distribution CI
 

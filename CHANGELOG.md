@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.148] - 2026-05-26
+
+### Added
+
+- Mobile : installation des configurations Firebase natives pour `leopardo_employee` et `leopardo_manager` sur Android et iOS.
+
+### Changed
+
+- Mobile : `install-mobile-firebase-configs.ps1` choisit maintenant le fichier Android le plus specifique disponible pour eviter qu'un export multi-client ecrase une app avec un fichier moins cible.
+- Documentation : etat Firebase mis a jour avec le second lot de fichiers valide et le rappel de restriction des cles API Google/Firebase.
+
 ## [4.16.147] - 2026-05-26
 
 ### Added
