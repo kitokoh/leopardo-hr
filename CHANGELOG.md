@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.151] - 2026-05-26
+
+### Changed
+
+- CI/CD mobile : la verification Firebase App Distribution retente la lecture des releases pour absorber la latence read-after-write.
+- CI/CD mobile : si `firebase-tools` ne peut pas lister les releases apres un upload deja accepte, le deploy reste vert avec un warning explicite au lieu de masquer la distribution reussie.
+
 ## [4.16.150] - 2026-05-26
 
 ### Added
