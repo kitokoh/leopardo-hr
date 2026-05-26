@@ -61,6 +61,8 @@ Note Android : les exports Firebase peuvent contenir plusieurs clients dans un m
 - `leopardo_manager` vers `FIREBASE_MANAGER_ANDROID_APP_ID`
 - `leopardo_platform_admin` vers `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID`
 
+Avant chaque upload, la CI compare le secret Firebase App ID avec le `mobilesdk_app_id` du `google-services.json` correspondant au package Android attendu. Si `FIREBASE_EMPLOYEE_ANDROID_APP_ID`, `FIREBASE_MANAGER_ANDROID_APP_ID` ou `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID` pointe vers une autre app Firebase que le fichier natif, le workflow echoue avant distribution. Ce garde evite le cas dangereux ou un APK est envoye vers l'ancienne app ou vers un mauvais projet.
+
 Le workflow `Mobile - Build and Firebase Distribution` est declenche automatiquement sur `main` quand `front/mobile_apps/**` change. Il peut aussi etre lance manuellement pour `employee`, `manager`, `platform_admin` ou `both`.
 
 Sur le deploy `main`, la distribution d'une app est sautee proprement tant que son secret ou son `google-services.json` manque. Cela evite de bloquer le deploy API/web pendant la preparation Firebase.
@@ -79,8 +81,9 @@ Le job echoue si le `buildVersion` du build courant n'apparait pas dans App Dist
 
 Derniere verification connue :
 
-- Employee Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.employee`.
-- Manager Android : release `main-1568 (1568)` visible dans `leopardo-rh` sous `android:com.leopardo.manager`.
+- Employee Android : release `manual-20260526 (7)` envoyee dans `leopardo-rh` sous `android:com.leopardo.employee`.
+- Manager Android : release `manual-20260526 (7)` envoyee dans `leopardo-rh` sous `android:com.leopardo.manager`.
+- Platform Admin Android : release `manual-20260526 (7)` envoyee dans `leopardo-rh` sous `android:com.leopardo.platformadmin`.
 
 Important : Firebase App Distribution affiche les releases par app. Dans la console, selectionner le projet `leopardo-rh`, puis App Distribution, puis l'app Android `com.leopardo.employee`, `com.leopardo.manager` ou `com.leopardo.platformadmin`. Les fichiers iOS sont installes dans le depot, mais la distribution iOS necessitera un workflow macOS signe produisant un `.ipa`.
 

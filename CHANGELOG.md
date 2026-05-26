@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.157] - 2026-05-26
+
+### Changed
+
+- CI/CD mobile : verification bloquante que chaque secret Firebase Android App ID correspond au `mobilesdk_app_id` du `google-services.json` et au package natif attendu avant tout upload.
+- CI/CD mobile : si le readback via service account echoue en mode non strict, le workflow retente maintenant la lecture Firebase App Distribution avec `FIREBASE_TOKEN` avant de passer en warning.
+- Documentation : etat App Distribution mis a jour avec les releases Android `employee`, `manager` et `platform_admin` publiees le 2026-05-26.
+
 ## [4.16.156] - 2026-05-26
 
 ### Changed
