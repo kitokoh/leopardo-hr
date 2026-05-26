@@ -2,9 +2,16 @@ name: Mobile - Build and Firebase Distribution
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*-staging"
       - "v*-prod"
+    paths:
+      - "front/mobile_apps/**"
+      - "dev-hub/tools/install-mobile-firebase-configs.ps1"
+      - ".github/workflows/mobile-distribute.yml"
+      - "docs/validation/MOBILE_FIREBASE_DISTRIBUTION.md"
   workflow_dispatch:
     inputs:
       environment:
@@ -28,6 +35,7 @@ on:
           - both
           - employee
           - manager
+          - platform_admin
 
 permissions:
   contents: read
@@ -55,6 +63,10 @@ jobs:
             project_path: front/mobile_apps/leopardo_manager
             artifact_name: leopardo-manager
             firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
+          - name: platform_admin
+            project_path: front/mobile_apps/leopardo_platform_admin
+            artifact_name: leopardo-platform-admin
+            firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
 
     steps:
       - name: Checkout code
