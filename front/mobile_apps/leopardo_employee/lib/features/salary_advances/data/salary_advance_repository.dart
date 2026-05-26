@@ -32,31 +32,4 @@ class SalaryAdvanceRepository {
     final response = await apiClient.dio.delete('/salary-advances/$advanceId');
     return SalaryAdvance.fromJson(response.data['data']);
   }
-
-  Future<SalaryAdvance> approveAdvance({
-    required int advanceId,
-    String? comment,
-    int? repaymentMonths,
-  }) async {
-    final response = await apiClient.dio.put(
-      '/salary-advances/$advanceId/approve',
-      data: {
-        if (comment != null && comment.trim().isNotEmpty)
-          'decision_comment': comment.trim(),
-        if (repaymentMonths != null) 'repayment_months': repaymentMonths,
-      },
-    );
-    return SalaryAdvance.fromJson(response.data['data']);
-  }
-
-  Future<SalaryAdvance> rejectAdvance({
-    required int advanceId,
-    required String comment,
-  }) async {
-    final response = await apiClient.dio.put(
-      '/salary-advances/$advanceId/reject',
-      data: {'decision_comment': comment.trim()},
-    );
-    return SalaryAdvance.fromJson(response.data['data']);
-  }
 }
