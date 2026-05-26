@@ -7,12 +7,14 @@ on:
     paths:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
+      - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
       - '.github/workflows/mobile-apps-ci.yml'
   push:
     branches: [main, develop]
     paths:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
+      - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
       - '.github/workflows/mobile-apps-ci.yml'
 
 permissions:
@@ -40,6 +42,10 @@ jobs:
       - name: Validate mobile apps boundaries
         shell: pwsh
         run: '& ./dev-hub/tools/validate-mobile-apps-split.ps1'
+
+      - name: Validate mobile release readiness
+        shell: pwsh
+        run: '& ./dev-hub/tools/validate-mobile-release-readiness.ps1'
 
   flutter-analyze:
     name: Analyze ${{ matrix.project.name }}

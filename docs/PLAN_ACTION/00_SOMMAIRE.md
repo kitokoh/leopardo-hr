@@ -40,6 +40,7 @@
 | 24 | `24_PLAN_MULTILINGUE_JULES_TRANSLATION.md` | **NOUVEAU 2026-05-24** - Plan multilingue centralise pour traduction Jules |
 | 25 | `25_PLAN_MODERNISATION_MOBILE_MARKETING_READY.md` | **NOUVEAU 2026-05-25** - Modernisation mobile marketing-ready |
 | 26 | `26_PLAN_MOBILE_MULTI_APP_PRODUCTION.md` | **NOUVEAU 2026-05-26** - Durcissement production de la structure mobile employee/manager |
+| 27 | `27_PLAN_MOBILE_RELEASE_READINESS.md` | **NOUVEAU 2026-05-26** - Readiness App Store / Play Store et verification workflows mobiles |
 
 ---
 
