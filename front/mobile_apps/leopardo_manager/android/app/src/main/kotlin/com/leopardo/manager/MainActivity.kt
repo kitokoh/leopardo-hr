@@ -1,4 +1,4 @@
-package com.leopardo.rh
+package com.leopardo.manager
 
 import io.flutter.embedding.android.FlutterActivity
 
