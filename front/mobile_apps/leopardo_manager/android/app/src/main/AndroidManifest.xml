@@ -2,11 +2,11 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
-        android:label="Leopardo RH"
+        android:label="Leopardo Manager"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.leopardo.rh.MainActivity"
+            android:name="com.leopardo.manager.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
