@@ -61,6 +61,15 @@ Chaque workflow visible doit etre classe :
 | Manager | Approbations | liste pending, decision | `/approvals/pending`, `/approvals/*` |
 | Manager | Dashboard manager | routes preparees | `/manager/dashboard`, `/manager/attendance`, `/manager/anomalies`, `/manager/corrections` |
 
+Livrables techniques ajoutes :
+
+- contrat canonique `dev-hub/tools/mobile-workflow-contracts.json` ;
+- garde `dev-hub/tools/validate-mobile-workflow-contracts.ps1` ;
+- execution du garde dans `Mobile Apps CI - Flutter` ;
+- verification que les routes servies par `MobileExperienceService` existent dans chaque app ;
+- verification des navigations statiques `context.push/go(...)` vers des routes declarees ;
+- correction du lien espace personnel vers la route reelle `/company-request`.
+
 ## Lot 27.3 - QA appareil avant stores
 
 Avant soumission :
@@ -97,6 +106,7 @@ doit passer avant un upload public store. Tant que la signature release n'est pa
 ## Definition of done
 
 - Garde release passe en mode non strict.
+- Garde workflow mobile passe en CI.
 - CI Mobile Apps verte.
 - Deux identites stores distinctes.
 - Matrice workflows documentee.
