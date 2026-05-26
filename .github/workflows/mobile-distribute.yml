@@ -60,14 +60,17 @@ jobs:
             project_path: front/mobile_apps/leopardo_employee
             artifact_name: leopardo-employee
             firebase_secret: FIREBASE_EMPLOYEE_ANDROID_APP_ID
+            android_package: com.leopardo.employee
           - name: manager
             project_path: front/mobile_apps/leopardo_manager
             artifact_name: leopardo-manager
             firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
+            android_package: com.leopardo.manager
           - name: platform_admin
             project_path: front/mobile_apps/leopardo_platform_admin
             artifact_name: leopardo-platform-admin
             firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
+            android_package: com.leopardo.platformadmin
 
     steps:
       - name: Checkout code
@@ -150,6 +153,10 @@ jobs:
         shell: bash
         env:
           PROJECT_PATH: ${{ matrix.app.project_path }}
+          APP_NAME: ${{ matrix.app.name }}
+          ANDROID_PACKAGE: ${{ matrix.app.android_package }}
+          FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
+          FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
           set -euo pipefail
           CONFIG_FILE="${PROJECT_PATH}/android/app/google-services.json"
@@ -158,6 +165,37 @@ jobs:
             echo "Run dev-hub/tools/install-mobile-firebase-configs.ps1 with matching Firebase app IDs."
             exit 1
           fi
+          node <<'NODE'
+          const fs = require('fs');
+          const configFile = `${process.env.PROJECT_PATH}/android/app/google-services.json`;
+          const expectedPackage = process.env.ANDROID_PACKAGE;
+          const expectedAppId = process.env.FIREBASE_APP_ID;
+          const secretName = process.env.FIREBASE_APP_ID_SECRET_NAME;
+          const payload = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+          const clients = Array.isArray(payload.client) ? payload.client : [];
+          const match = clients.find((client) => client?.client_info?.android_client_info?.package_name === expectedPackage);
+          if (!match) {
+            console.error(`No Firebase Android client found for ${expectedPackage} in ${configFile}.`);
+            process.exit(1);
+          }
+          const nativeAppId = match?.client_info?.mobilesdk_app_id;
+          if (!nativeAppId) {
+            console.error(`Firebase Android client for ${expectedPackage} does not expose mobilesdk_app_id.`);
+            process.exit(1);
+          }
+          if (nativeAppId !== expectedAppId) {
+            console.error(`${secretName} does not match ${configFile} for ${expectedPackage}.`);
+            console.error(`Expected the secret to equal the google-services.json mobilesdk_app_id for this app.`);
+            process.exit(1);
+          }
+          console.log(`Firebase target verified for ${process.env.APP_NAME}: ${expectedPackage}.`);
+          NODE
+          {
+            echo "### Firebase target - ${APP_NAME}"
+            echo "- Android package: \`${ANDROID_PACKAGE}\`"
+            echo "- Native config: \`${CONFIG_FILE}\`"
+            echo "- Console: https://console.firebase.google.com/project/leopardo-rh/appdistribution/app/android:${ANDROID_PACKAGE}/releases"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Flutter pub get
         if: env.SHOULD_BUILD == 'true'
@@ -234,11 +272,13 @@ jobs:
         run: |
           set -euo pipefail
           FIREBASE_READBACK_STRICT="${FIREBASE_READBACK_REQUIRED:-false}"
+          USED_SERVICE_ACCOUNT=false
           FIREBASE_AUTH_ARGS=(--token "${FIREBASE_TOKEN}")
           if [[ -n "${FIREBASE_SERVICE_ACCOUNT_JSON:-}" ]]; then
             printf '%s' "${FIREBASE_SERVICE_ACCOUNT_JSON}" > "${RUNNER_TEMP}/firebase-service-account.json"
             export GOOGLE_APPLICATION_CREDENTIALS="${RUNNER_TEMP}/firebase-service-account.json"
             FIREBASE_AUTH_ARGS=()
+            USED_SERVICE_ACCOUNT=true
             echo "Using Firebase service account readback for ${APP_NAME}."
             echo "Firebase readback strict mode: ${FIREBASE_READBACK_STRICT}."
           fi
@@ -253,6 +293,21 @@ jobs:
               --json > firebase-releases.json 2> firebase-releases.err
             firebase_status=$?
             set -e
+
+            if [[ ${firebase_status} -ne 0 ]]; then
+              if [[ "${USED_SERVICE_ACCOUNT}" == "true" && "${FIREBASE_READBACK_STRICT}" != "true" ]]; then
+                echo "::warning::Firebase service-account readback failed for ${APP_NAME}; retrying readback with FIREBASE_TOKEN."
+                cat firebase-releases.err || true
+                set +e
+                npx --yes firebase-tools appdistribution:releases:list \
+                  --app "${FIREBASE_APP_ID}" \
+                  --token "${FIREBASE_TOKEN}" \
+                  --limit 10 \
+                  --json > firebase-releases.json 2> firebase-releases.err
+                firebase_status=$?
+                set -e
+              fi
+            fi
 
             if [[ ${firebase_status} -ne 0 ]]; then
               if [[ "${FIREBASE_READBACK_STRICT}" == "true" ]]; then
