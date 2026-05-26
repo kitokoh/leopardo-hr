@@ -63,3 +63,4 @@ Le mode strict doit rester bloquant tant que les signatures release Android/iOS 
 - Une route employee ouvre une page inexistante.
 - Une action store utilise une signature debug en release.
 - Une app Firebase utilise un package/bundle different de l'identite store stabilisee.
+- Une app Firebase Android contient un client historique non restreint cote Google Cloud/Firebase.
