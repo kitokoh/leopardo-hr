@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\TaxSlabResource;
 use App\Models\Employee;
 use App\Models\TaxSlab;
 use Illuminate\Http\JsonResponse;
@@ -24,9 +25,7 @@ class TaxSlabController extends Controller
             $query->forCountry($request->input('country_code'));
         }
 
-        return response()->json([
-            'data' => $query->orderBy('country_code')->orderBy('min_amount')->get(),
-        ]);
+        return TaxSlabResource::collection($query->orderBy('country_code')->orderBy('min_amount')->get())->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -60,7 +59,9 @@ class TaxSlabController extends Controller
             'effective_to' => $validated['effective_to'] ?? null,
         ]);
 
-        return response()->json(['data' => $slab], 201);
+        return (new TaxSlabResource($slab))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse
@@ -83,7 +84,7 @@ class TaxSlabController extends Controller
 
         $taxSlab->update($validated);
 
-        return response()->json(['data' => $taxSlab->refresh()]);
+        return (new TaxSlabResource($taxSlab->refresh()))->response();
     }
 
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse

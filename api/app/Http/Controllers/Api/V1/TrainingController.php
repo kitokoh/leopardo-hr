@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\TrainingCourseResource;
+use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
+use App\Http\Resources\Api\V1\TrainingSessionResource;
 use App\Models\Employee;
 use App\Models\TrainingCourse;
 use App\Models\TrainingEnrollment;
@@ -27,7 +30,8 @@ class TrainingController extends Controller
             $query->where('category', $request->input('category'));
         }
 
-        return response()->json($query->orderBy('title')->paginate($request->integer('per_page', 15)));
+        return TrainingCourseResource::collection($query->orderBy('title')->paginate($request->integer('per_page', 15)))
+            ->response();
     }
 
     public function storeCourse(Request $request): JsonResponse
@@ -55,7 +59,9 @@ class TrainingController extends Controller
             'company_id' => $actor->company_id,
         ]);
 
-        return response()->json(['data' => $course], 201);
+        return (new TrainingCourseResource($course))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function showCourse(Request $request, TrainingCourse $trainingCourse): JsonResponse
@@ -66,7 +72,7 @@ class TrainingController extends Controller
             abort(404);
         }
 
-        return response()->json(['data' => $trainingCourse->load('sessions')]);
+        return (new TrainingCourseResource($trainingCourse->load('sessions')))->response();
     }
 
     public function updateCourse(Request $request, TrainingCourse $trainingCourse): JsonResponse
@@ -94,7 +100,7 @@ class TrainingController extends Controller
 
         $trainingCourse->update($validated);
 
-        return response()->json(['data' => $trainingCourse->fresh()]);
+        return (new TrainingCourseResource($trainingCourse->fresh()))->response();
     }
 
     // ── Sessions ────────────────────────────────────────────────────────────
@@ -107,7 +113,8 @@ class TrainingController extends Controller
             abort(404);
         }
 
-        return response()->json(['data' => $trainingCourse->sessions()->with('trainer:id,first_name,last_name')->orderByDesc('start_date')->get()]);
+        return TrainingSessionResource::collection($trainingCourse->sessions()->with('trainer:id,first_name,last_name')->orderByDesc('start_date')->get())
+            ->response();
     }
 
     public function storeSession(Request $request, TrainingCourse $trainingCourse): JsonResponse
@@ -140,7 +147,9 @@ class TrainingController extends Controller
             'training_course_id' => $trainingCourse->id,
         ]);
 
-        return response()->json(['data' => $session], 201);
+        return (new TrainingSessionResource($session))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function updateSession(Request $request, TrainingSession $trainingSession): JsonResponse
@@ -170,7 +179,7 @@ class TrainingController extends Controller
 
         $trainingSession->update($validated);
 
-        return response()->json(['data' => $trainingSession->fresh()]);
+        return (new TrainingSessionResource($trainingSession->fresh()))->response();
     }
 
     // ── Enrollments ─────────────────────────────────────────────────────────
@@ -202,7 +211,9 @@ class TrainingController extends Controller
             'status' => 'enrolled',
         ]);
 
-        return response()->json(['data' => $enrollment->load('employee:id,first_name,last_name')], 201);
+        return (new TrainingEnrollmentResource($enrollment->load('employee:id,first_name,last_name')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function updateEnrollment(Request $request, TrainingEnrollment $trainingEnrollment): JsonResponse
@@ -228,6 +239,6 @@ class TrainingController extends Controller
 
         $trainingEnrollment->update($validated);
 
-        return response()->json(['data' => $trainingEnrollment->fresh()]);
+        return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
     }
 }

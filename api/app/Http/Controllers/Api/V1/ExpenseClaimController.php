@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ExpenseClaimResource;
 use App\Models\Employee;
 use App\Models\ExpenseClaim;
 use App\Models\ExpenseItem;
@@ -31,7 +32,8 @@ class ExpenseClaimController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        return response()->json($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)));
+        return ExpenseClaimResource::collection($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)))
+            ->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -69,7 +71,9 @@ class ExpenseClaimController extends Controller
 
         $claim->update(['total_amount' => $total]);
 
-        return response()->json(['data' => $claim->load('items')], 201);
+        return (new ExpenseClaimResource($claim->load('items')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, ExpenseClaim $expenseClaim): JsonResponse
@@ -83,7 +87,7 @@ class ExpenseClaimController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $expenseClaim->load(['employee:id,first_name,last_name', 'items'])]);
+        return (new ExpenseClaimResource($expenseClaim->load(['employee:id,first_name,last_name', 'items'])))->response();
     }
 
     public function submit(Request $request, ExpenseClaim $expenseClaim): JsonResponse
@@ -105,7 +109,7 @@ class ExpenseClaimController extends Controller
             'submitted_at' => now(),
         ]);
 
-        return response()->json(['data' => $expenseClaim->fresh()]);
+        return (new ExpenseClaimResource($expenseClaim->fresh()))->response();
     }
 
     public function approve(Request $request, ExpenseClaim $expenseClaim): JsonResponse
@@ -128,7 +132,7 @@ class ExpenseClaimController extends Controller
             'approved_at' => now(),
         ]);
 
-        return response()->json(['data' => $expenseClaim->fresh()]);
+        return (new ExpenseClaimResource($expenseClaim->fresh()))->response();
     }
 
     public function reject(Request $request, ExpenseClaim $expenseClaim): JsonResponse
@@ -147,6 +151,6 @@ class ExpenseClaimController extends Controller
 
         $expenseClaim->update(['status' => 'rejected']);
 
-        return response()->json(['data' => $expenseClaim->fresh()]);
+        return (new ExpenseClaimResource($expenseClaim->fresh()))->response();
     }
 }

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\LeaveAccrualResource;
+use App\Http\Resources\Api\V1\LeaveBalanceResource;
+use App\Http\Resources\Api\V1\LeavePolicyResource;
 use App\Models\AbsenceType;
 use App\Models\Employee;
 use App\Models\LeaveAccrual;
@@ -28,7 +31,7 @@ class LeavePolicyController extends Controller
             ->orderBy('name')
             ->get();
 
-        return response()->json(['data' => $policies]);
+        return LeavePolicyResource::collection($policies)->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -71,7 +74,9 @@ class LeavePolicyController extends Controller
             'company_id' => $actor->company_id,
         ]);
 
-        return response()->json(['data' => $policy->load('absenceType:id,name,code')], 201);
+        return (new LeavePolicyResource($policy->load('absenceType:id,name,code')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, LeavePolicy $leavePolicy): JsonResponse
@@ -82,7 +87,7 @@ class LeavePolicyController extends Controller
             abort(404);
         }
 
-        return response()->json(['data' => $leavePolicy->load('absenceType:id,name,code')]);
+        return (new LeavePolicyResource($leavePolicy->load('absenceType:id,name,code')))->response();
     }
 
     public function update(Request $request, LeavePolicy $leavePolicy): JsonResponse
@@ -117,7 +122,7 @@ class LeavePolicyController extends Controller
         /** @var LeavePolicy $leavePolicyFresh */
         $leavePolicyFresh = $leavePolicy->fresh();
 
-        return response()->json(['data' => $leavePolicyFresh->load('absenceType:id,name,code')]);
+        return (new LeavePolicyResource($leavePolicyFresh->load('absenceType:id,name,code')))->response();
     }
 
     public function balances(Request $request): JsonResponse
@@ -137,7 +142,7 @@ class LeavePolicyController extends Controller
             $query->where('employee_id', $request->integer('employee_id'));
         }
 
-        return response()->json(['data' => $query->get()]);
+        return LeaveBalanceResource::collection($query->get())->response();
     }
 
     public function destroy(Request $request, LeavePolicy $leavePolicy): JsonResponse
@@ -169,7 +174,7 @@ class LeavePolicyController extends Controller
             ->forYear($year)
             ->get();
 
-        return response()->json(['data' => $balances]);
+        return LeaveBalanceResource::collection($balances)->response();
     }
 
     public function accruals(Request $request): JsonResponse
@@ -190,7 +195,7 @@ class LeavePolicyController extends Controller
 
         $perPage = $request->integer('per_page', 25);
 
-        return response()->json($query->paginate($perPage));
+        return LeaveAccrualResource::collection($query->paginate($perPage))->response();
     }
 
     public function storeAccrual(Request $request): JsonResponse
@@ -249,6 +254,8 @@ class LeavePolicyController extends Controller
 
         $balance->increment('balance', (float) $validated['amount']);
 
-        return response()->json(['data' => $accrual->load(['employee:id,first_name,last_name', 'leavePolicy:id,name'])], 201);
+        return (new LeaveAccrualResource($accrual->load(['employee:id,first_name,last_name', 'leavePolicy:id,name'])))
+            ->response()
+            ->setStatusCode(201);
     }
 }
