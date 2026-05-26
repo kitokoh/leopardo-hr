@@ -1,0 +1,180 @@
+{
+  "backendExperienceService": "api/app/Services/MobileExperienceService.php",
+  "apps": [
+    {
+      "name": "employee",
+      "root": "front/mobile_apps/leopardo_employee",
+      "requiredBackendExperienceRoutes": [
+        "/attendance",
+        "/absences",
+        "/salary-advances",
+        "/payrolls",
+        "/evaluations",
+        "/notifications",
+        "/cabinet",
+        "/me/monthly",
+        "/history",
+        "/modules",
+        "/settings"
+      ],
+      "forbiddenRoutes": [
+        "/team",
+        "/approvals",
+        "/organigramme",
+        "/manager/dashboard",
+        "/manager/attendance",
+        "/manager/anomalies",
+        "/manager/corrections"
+      ],
+      "workflows": [
+        {
+          "name": "auth_session",
+          "routes": ["/welcome", "/login", "/register", "/settings"],
+          "endpoints": ["/auth/login", "/auth/me", "/auth/logout", "/auth/google/token", "/auth/change-password", "/auth/language"],
+          "screenFiles": [
+            "lib/features/auth/screens/login_screen.dart",
+            "lib/features/settings/screens/settings_screen.dart"
+          ],
+          "sourceTokens": ["loginWithGoogle", ".login(", ".logout()", "changePassword", "_saveLanguage"]
+        },
+        {
+          "name": "attendance",
+          "routes": ["/attendance", "/history", "/me/monthly", "/settings"],
+          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance", "/me/monthly-summary"],
+          "screenFiles": [
+            "lib/features/attendance/screens/attendance_screen.dart",
+            "lib/features/attendance/screens/history_screen.dart",
+            "lib/features/attendance/screens/monthly_summary_screen.dart"
+          ],
+          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn()", ".checkOut()", "requestCorrection", "_showCorrectionSheet"]
+        },
+        {
+          "name": "absences",
+          "routes": ["/absences"],
+          "endpoints": ["/absences", "/leave-balances"],
+          "screenFiles": [
+            "lib/features/absences/screens/absence_list_screen.dart"
+          ],
+          "sourceTokens": ["_showAbsenceRequestSheet", "requestAbsence", "cancelAbsence", "RefreshIndicator"]
+        },
+        {
+          "name": "salary_advances",
+          "routes": ["/salary-advances"],
+          "endpoints": ["/salary-advances"],
+          "screenFiles": [
+            "lib/features/salary_advances/screens/salary_advance_list_screen.dart"
+          ],
+          "sourceTokens": ["_showRequestSheet", "requestAdvance", "cancelAdvance", "RefreshIndicator"]
+        },
+        {
+          "name": "payrolls",
+          "routes": ["/payrolls"],
+          "endpoints": ["/me/pay-slips", "/pay-slips/$payslipId/pdf"],
+          "screenFiles": [
+            "lib/features/payrolls/screens/payroll_list_screen.dart"
+          ],
+          "sourceTokens": ["_downloadPdf", "downloadPayslipPdf", "launchUrl", "RefreshIndicator"]
+        },
+        {
+          "name": "notifications",
+          "routes": ["/notifications"],
+          "endpoints": ["/notifications", "/notifications/read-all", "/device-tokens"],
+          "screenFiles": [
+            "lib/features/notifications/screens/notification_list_screen.dart"
+          ],
+          "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
+        },
+        {
+          "name": "personal_space",
+          "routes": ["/company-request", "/cabinet"],
+          "endpoints": ["/user/company-requests", "/company-requests", "/cabinet/folders"],
+          "screenFiles": [
+            "lib/features/user_auth/screens/user_home_screen.dart",
+            "lib/features/user_auth/screens/company_request_screen.dart",
+            "lib/features/personal_space/screens/personal_space_screen.dart"
+          ],
+          "sourceTokens": ["context.push('/company-request')", "_submit", "context.push('/cabinet')"]
+        }
+      ]
+    },
+    {
+      "name": "manager",
+      "root": "front/mobile_apps/leopardo_manager",
+      "requiredBackendExperienceRoutes": [
+        "/attendance",
+        "/absences",
+        "/salary-advances",
+        "/payrolls",
+        "/evaluations",
+        "/notifications",
+        "/cabinet",
+        "/team",
+        "/me/monthly",
+        "/history",
+        "/modules",
+        "/settings"
+      ],
+      "workflows": [
+        {
+          "name": "auth_session",
+          "routes": ["/welcome", "/login", "/register", "/settings"],
+          "endpoints": ["/auth/login", "/auth/me", "/auth/logout", "/auth/google/token", "/auth/change-password", "/auth/language"],
+          "screenFiles": [
+            "lib/features/auth/screens/login_screen.dart",
+            "lib/features/settings/screens/settings_screen.dart"
+          ],
+          "sourceTokens": ["loginWithGoogle", ".login(", ".logout()", "changePassword", "_saveLanguage"]
+        },
+        {
+          "name": "team_management",
+          "routes": ["/team"],
+          "endpoints": ["/employees", "/invitations"],
+          "screenFiles": [
+            "lib/features/team/screens/team_screen.dart"
+          ],
+          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate"]
+        },
+        {
+          "name": "manager_decisions",
+          "routes": ["/absences", "/salary-advances", "/approvals"],
+          "endpoints": ["/absences", "/salary-advances", "/approvals/pending", "/approvals/$id/approve", "/approvals/$id/reject"],
+          "screenFiles": [
+            "lib/features/absences/screens/absence_list_screen.dart",
+            "lib/features/salary_advances/screens/salary_advance_list_screen.dart",
+            "lib/features/approvals/screens/approval_screen.dart"
+          ],
+          "sourceTokens": ["approveAbsence", "rejectAbsence", "approveAdvance", "rejectAdvance", "_approve(", "_reject("]
+        },
+        {
+          "name": "attendance",
+          "routes": ["/attendance", "/history", "/me/monthly", "/settings"],
+          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance", "/me/monthly-summary"],
+          "screenFiles": [
+            "lib/features/attendance/screens/attendance_screen.dart",
+            "lib/features/attendance/screens/history_screen.dart",
+            "lib/features/attendance/screens/monthly_summary_screen.dart"
+          ],
+          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn()", ".checkOut()", "requestCorrection", "updateCorrection"]
+        },
+        {
+          "name": "notifications",
+          "routes": ["/notifications"],
+          "endpoints": ["/notifications", "/notifications/read-all", "/device-tokens"],
+          "screenFiles": [
+            "lib/features/notifications/screens/notification_list_screen.dart"
+          ],
+          "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
+        },
+        {
+          "name": "manager_placeholders",
+          "routes": ["/manager/dashboard", "/manager/attendance", "/manager/anomalies", "/manager/corrections"],
+          "endpoints": [],
+          "screenFiles": [
+            "lib/features/manager/screens/manager_placeholder_screen.dart"
+          ],
+          "sourceTokens": ["ManagerPlaceholderScreen"]
+        }
+      ]
+    }
+  ]
+}
