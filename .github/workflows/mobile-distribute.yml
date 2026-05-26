@@ -19,6 +19,15 @@ on:
         description: "Notes de version (optionnel)"
         required: false
         default: "Build manuel Leopardo RH"
+      app:
+        description: "Application mobile a distribuer"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - both
+          - employee
+          - manager
 
 permissions:
   contents: read
@@ -32,26 +41,53 @@ concurrency:
 
 jobs:
   build-and-distribute:
-    name: Mobile Android Build + Distribution
+    name: Mobile Android Build + Distribution (${{ matrix.app.name }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: employee
+            project_path: front/mobile_apps/leopardo_employee
+            artifact_name: leopardo-employee
+            firebase_secret: FIREBASE_EMPLOYEE_ANDROID_APP_ID
+          - name: manager
+            project_path: front/mobile_apps/leopardo_manager
+            artifact_name: leopardo-manager
+            firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Resolve selected app
+        shell: bash
+        run: |
+          set -euo pipefail
+          SELECTED="${{ github.event.inputs.app || 'both' }}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && "${SELECTED}" != "both" && "${SELECTED}" != "${{ matrix.app.name }}" ]]; then
+            echo "SHOULD_BUILD=false" >> "$GITHUB_ENV"
+            echo "Skipping ${{ matrix.app.name }} because input app=${SELECTED}"
+          else
+            echo "SHOULD_BUILD=true" >> "$GITHUB_ENV"
+          fi
+
       - name: Setup Java 17
+        if: env.SHOULD_BUILD == 'true'
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Flutter
+        if: env.SHOULD_BUILD == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Resolve target environment
+        if: env.SHOULD_BUILD == 'true'
         id: env_detect
         shell: bash
         run: |
@@ -79,15 +115,16 @@ jobs:
           echo "target=$TARGET" >> "$GITHUB_OUTPUT"
 
       - name: Validate required secrets for staging distribution
-        if: env.TARGET == 'staging'
+        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
         shell: bash
         env:
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
           set -euo pipefail
           if [[ -z "${FIREBASE_APP_ID}" ]]; then
-            echo "Missing GitHub secret: FIREBASE_APP_ID"
+            echo "Missing GitHub secret: ${FIREBASE_APP_ID_SECRET_NAME}"
             exit 1
           fi
           if [[ -z "${FIREBASE_TOKEN}" ]]; then
@@ -95,31 +132,33 @@ jobs:
             exit 1
           fi
 
-      - name: Place google-services.json if provided in repo
+      - name: Validate app Firebase config presence
+        if: env.SHOULD_BUILD == 'true'
         shell: bash
+        env:
+          PROJECT_PATH: ${{ matrix.app.project_path }}
         run: |
           set -euo pipefail
-          ROOT_FILE="google-services.json"
-          API_FILE="api/google-services.json"
-          APP_FILE="front/mobile/android/app/google-services.json"
-          if [[ -f "$ROOT_FILE" && ! -f "$APP_FILE" ]]; then
-            cp "$ROOT_FILE" "$APP_FILE"
-            echo "google-services.json copied from repo root to front/mobile/android/app/"
-          elif [[ -f "$API_FILE" && ! -f "$APP_FILE" ]]; then
-            cp "$API_FILE" "$APP_FILE"
-            echo "google-services.json copied from api/ to front/mobile/android/app/"
+          CONFIG_FILE="${PROJECT_PATH}/android/app/google-services.json"
+          if [[ ! -f "${CONFIG_FILE}" ]]; then
+            echo "Missing Firebase config: ${CONFIG_FILE}"
+            echo "Run dev-hub/tools/install-mobile-firebase-configs.ps1 with matching Firebase app IDs."
+            exit 1
           fi
 
       - name: Flutter pub get
-        working-directory: front/mobile
+        if: env.SHOULD_BUILD == 'true'
+        working-directory: ${{ matrix.app.project_path }}
         run: flutter pub get
 
       - name: Flutter analyze
-        working-directory: front/mobile
+        if: env.SHOULD_BUILD == 'true'
+        working-directory: ${{ matrix.app.project_path }}
         run: flutter analyze --no-fatal-infos
 
       - name: Build release binary
-        working-directory: front/mobile
+        if: env.SHOULD_BUILD == 'true'
+        working-directory: ${{ matrix.app.project_path }}
         shell: bash
         run: |
           set -euo pipefail
@@ -129,40 +168,42 @@ jobs:
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
               --build-number="${BUILD_NUMBER}"
-            echo "BUILD_FILE=front/mobile/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
+            echo "BUILD_FILE=${{ matrix.app.project_path }}/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
           else
             echo "API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1" > .env.build
             flutter build apk --release \
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
               --build-number="${BUILD_NUMBER}"
-            echo "BUILD_FILE=front/mobile/build/app/outputs/flutter-apk/app-release.apk" >> "$GITHUB_ENV"
+            echo "BUILD_FILE=${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk" >> "$GITHUB_ENV"
           fi
 
       - name: Verify build output exists
+        if: env.SHOULD_BUILD == 'true'
         shell: bash
         run: |
           set -euo pipefail
           test -f "${BUILD_FILE}"
 
       - name: Upload mobile artifact
+        if: env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@v5
         with:
-          name: leopardo-rh-${{ env.TARGET }}-${{ env.BUILD_NAME }}
+          name: ${{ matrix.app.artifact_name }}-${{ env.TARGET }}-${{ env.BUILD_NAME }}
           path: ${{ env.BUILD_FILE }}
           if-no-files-found: error
           retention-days: 30
 
       - name: Firebase App Distribution (staging)
-        if: env.TARGET == 'staging'
+        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
+          appId: ${{ secrets[matrix.app.firebase_secret] }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testeurs-internes
           file: ${{ env.BUILD_FILE }}
           releaseNotes: |
-            Leopardo RH ${{ env.BUILD_NAME }}
+            Leopardo ${{ matrix.app.name }} ${{ env.BUILD_NAME }}
             Ref: ${{ github.ref_name }}
             Notes: ${{ github.event.inputs.release_notes || 'Tag build' }}
             Backend: https://gestionemployerbackend.onrender.com

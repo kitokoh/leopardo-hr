@@ -103,10 +103,30 @@ powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-release
 
 doit passer avant un upload public store. Tant que la signature release n'est pas configuree, ce mode strict doit rester rouge.
 
+## Lot 27.5 - Firebase App Distribution multi-app
+
+La distribution Firebase historique ciblait l'ancienne app mobile unique. Elle doit maintenant cibler les deux apps separees :
+
+- `leopardo_employee` distribuee vers `FIREBASE_EMPLOYEE_ANDROID_APP_ID` ;
+- `leopardo_manager` distribuee vers `FIREBASE_MANAGER_ANDROID_APP_ID` ;
+- `FIREBASE_TOKEN` reste le token commun de distribution ;
+- `Deploy - Leopardo RH` saute proprement la distribution d'une app tant que son secret ou son `google-services.json` est absent, afin de ne pas bloquer le deploy API/web ;
+- `Mobile - Build and Firebase Distribution` reste strict en manuel et echoue si les secrets/configs de l'app demandee manquent.
+
+Le script `dev-hub/tools/install-mobile-firebase-configs.ps1` installe les fichiers telecharges uniquement si leurs IDs correspondent exactement a `com.leopardo.employee` et `com.leopardo.manager`.
+
+Les fichiers recus le 2026-05-26 ne correspondent pas encore aux IDs stabilises :
+
+- Android : `com.leopardo.emplyer` ;
+- iOS : `com.leopardo.employer` et `com.leopardo.manage`.
+
+Ils doivent etre recrees dans Firebase avant d'etre poses dans les apps.
+
 ## Definition of done
 
 - Garde release passe en mode non strict.
 - Garde workflow mobile passe en CI.
+- Distribution Firebase employee/manager configuree avec secrets separes.
 - CI Mobile Apps verte.
 - Deux identites stores distinctes.
 - Matrice workflows documentee.
