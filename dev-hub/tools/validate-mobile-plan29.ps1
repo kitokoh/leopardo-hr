@@ -100,6 +100,8 @@ Assert-Contains $mobileDistribute "type: string" "Mobile distribute dispatch sch
 Assert-Contains $mobileDistribute "platform_admin" "Mobile distribute app selector"
 Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute matrix"
 Assert-Contains $mobileDistribute "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Mobile distribute matrix"
+Assert-Contains $mobileDistribute "FIREBASE_READBACK_REQUIRED" "Mobile distribute Firebase readback strict toggle"
+Assert-Contains $deployMain "FIREBASE_READBACK_REQUIRED" "Deploy main Firebase readback strict toggle"
 
 Assert-Contains `
     (Get-Content -LiteralPath (Join-Path $repoRoot "dev-hub/tools/install-mobile-firebase-configs.ps1") -Raw) `
