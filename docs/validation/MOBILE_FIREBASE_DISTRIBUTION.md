@@ -4,14 +4,15 @@ Date : 2026-05-26
 
 ## Decision
 
-Les deux apps mobiles sont maintenant distribuees comme deux produits distincts :
+Les apps mobiles sont maintenant separees comme des produits distincts :
 
 | App | Android package | iOS bundle | Firebase Android secret attendu |
 |---|---|---|---|
 | Employee | `com.leopardo.employee` | `com.leopardo.employee` | `FIREBASE_EMPLOYEE_ANDROID_APP_ID` |
 | Manager | `com.leopardo.manager` | `com.leopardo.manager` | `FIREBASE_MANAGER_ANDROID_APP_ID` |
+| Platform Admin | `com.leopardo.platformadmin` | `com.leopardo.platformadmin` | `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID` |
 
-Le secret commun `FIREBASE_TOKEN` reste requis pour Firebase App Distribution.
+Le secret commun `FIREBASE_TOKEN` reste requis pour l'upload Firebase App Distribution. Le secret `FIREBASE_SERVICE_ACCOUNT_JSON` est recommande pour rendre le readback strict via service account.
 
 ## Fichiers Firebase attendus
 
@@ -21,6 +22,8 @@ Les fichiers natifs doivent correspondre exactement aux IDs ci-dessus :
 - `front/mobile_apps/leopardo_employee/ios/Runner/GoogleService-Info.plist`
 - `front/mobile_apps/leopardo_manager/android/app/google-services.json`
 - `front/mobile_apps/leopardo_manager/ios/Runner/GoogleService-Info.plist`
+- `front/mobile_apps/leopardo_platform_admin/android/app/google-services.json`
+- `front/mobile_apps/leopardo_platform_admin/ios/Runner/GoogleService-Info.plist`
 
 Le script d'installation refuse les fichiers qui ne correspondent pas :
 
@@ -51,6 +54,8 @@ Note Android : les exports Firebase peuvent contenir plusieurs clients dans un m
 
 - `leopardo_employee` vers `FIREBASE_EMPLOYEE_ANDROID_APP_ID`
 - `leopardo_manager` vers `FIREBASE_MANAGER_ANDROID_APP_ID`
+
+`leopardo_platform_admin` est preparee cote code et CI debug. Sa distribution Firebase sera activee quand les apps Firebase `com.leopardo.platformadmin` Android/iOS et les secrets dedies seront fournis.
 
 Sur le deploy `main`, la distribution d'une app est sautee proprement tant que son secret ou son `google-services.json` manque. Cela evite de bloquer le deploy API/web pendant la preparation Firebase.
 
