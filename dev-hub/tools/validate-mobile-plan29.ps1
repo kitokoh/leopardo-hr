@@ -102,6 +102,10 @@ Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute m
 Assert-Contains $mobileDistribute "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Mobile distribute matrix"
 Assert-Contains $mobileDistribute "FIREBASE_READBACK_REQUIRED" "Mobile distribute Firebase readback strict toggle"
 Assert-Contains $deployMain "FIREBASE_READBACK_REQUIRED" "Deploy main Firebase readback strict toggle"
+Assert-Contains $mobileDistribute "mobilesdk_app_id" "Mobile distribute Firebase app id/native config guard"
+Assert-Contains $mobileDistribute "retrying readback with FIREBASE_TOKEN" "Mobile distribute Firebase token readback fallback"
+Assert-Contains $deployMain "mobilesdk_app_id" "Deploy main Firebase app id/native config guard"
+Assert-Contains $deployMain "retrying readback with FIREBASE_TOKEN" "Deploy main Firebase token readback fallback"
 
 Assert-Contains `
     (Get-Content -LiteralPath (Join-Path $repoRoot "dev-hub/tools/install-mobile-firebase-configs.ps1") -Raw) `
