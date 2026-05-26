@@ -48,7 +48,7 @@ class PersonalSpaceScreen extends ConsumerWidget {
                   'Envoyez une demande pour enregistrer votre entreprise sur Leopardo RH.',
               icon: Icons.business_center_outlined,
               color: AppColors.rh,
-              onTap: () => context.push('/request-company'),
+              onTap: () => context.push('/company-request'),
             ),
             const SizedBox(height: 16),
             _ActionCard(

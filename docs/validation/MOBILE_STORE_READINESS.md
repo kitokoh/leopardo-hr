@@ -14,6 +14,7 @@ Date : 2026-05-26
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-apps-split.ps1
 powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-release-readiness.ps1
+powershell -ExecutionPolicy Bypass -File .\dev-hub\tools\validate-mobile-workflow-contracts.ps1
 ```
 
 Mode strict avant upload public :
@@ -54,6 +55,8 @@ Le mode strict doit rester bloquant tant que les signatures release Android/iOS 
 - Deux apps ne peuvent pas coexister sur le meme appareil.
 - Un bouton critique ne fait rien.
 - Un bouton critique affiche seulement un toast decoratif alors qu'une API existe.
+- Une navigation statique pointe vers une route absente de `app.dart`.
+- `MobileExperienceService` expose une route que l'app concernee ne sait pas ouvrir.
 - Un spinner reste actif apres timeout reseau.
 - Une action manager apparait dans `Leopardo Employee`.
 - Une route employee ouvre une page inexistante.
