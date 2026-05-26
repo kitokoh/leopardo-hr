@@ -207,3 +207,39 @@ jobs:
             Ref: ${{ github.ref_name }}
             Notes: ${{ github.event.inputs.release_notes || 'Tag build' }}
             Backend: https://gestionemployerbackend.onrender.com
+
+      - name: Verify Firebase App Distribution release is visible
+        if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
+        shell: bash
+        env:
+          FIREBASE_APP_ID: ${{ secrets[matrix.app.firebase_secret] }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          APP_NAME: ${{ matrix.app.name }}
+          BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
+        run: |
+          set -euo pipefail
+          echo "Verifying Firebase App Distribution read-after-write for ${APP_NAME} build ${BUILD_NUMBER}."
+          npx --yes firebase-tools appdistribution:releases:list \
+            --app "${FIREBASE_APP_ID}" \
+            --token "${FIREBASE_TOKEN}" \
+            --limit 10 \
+            --json > firebase-releases.json
+
+          node <<'NODE'
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('firebase-releases.json', 'utf8'));
+          const expectedBuild = process.env.BUILD_NUMBER;
+          const appName = process.env.APP_NAME;
+          const releases = Array.isArray(payload.result)
+            ? payload.result
+            : Array.isArray(payload.result?.releases)
+              ? payload.result.releases
+              : [];
+          const match = releases.find((release) => String(release.buildVersion) === String(expectedBuild));
+          if (!match) {
+            console.error(`Firebase App Distribution release not visible for ${appName} build ${expectedBuild}.`);
+            console.error(`Visible build versions: ${releases.map((release) => release.buildVersion).join(', ') || 'none'}`);
+            process.exit(1);
+          }
+          console.log(`Firebase App Distribution release visible for ${appName}: ${match.name || match.displayVersion || match.buildVersion}`);
+          NODE
