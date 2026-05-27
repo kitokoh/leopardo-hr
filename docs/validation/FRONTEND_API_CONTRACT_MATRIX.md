@@ -24,7 +24,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Liste equipe RH | `GET /api/v1/employees` | manager principal/RH | `ApiListQueryContractTest`, `FrontendApiContractTest`, `repository_contract_test.dart` |
 | Mobile | Creation employe RH + horaire | `POST /api/v1/employees` | manager principal/RH | `ScheduleControllerTest`, `repository_contract_test.dart` |
 | Mobile | Detail employe RH | `GET /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
-| Mobile | Mise a jour employe RH | `PUT /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile | Mise a jour fiche employe RH | `PUT/PATCH /api/v1/employees/{employee}` | manager principal/RH | `ScheduleControllerTest`, `FrontendApiContractTest` |
 | Mobile | Archivage employe RH | `POST /api/v1/employees/{employee}/archive` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile manager | Gestion horaires | `GET/POST/PUT/DELETE /api/v1/schedules` | manager | `ScheduleControllerTest`, `FrontendApiContractTest` |
 | Mobile employee | QR profil employe | `GET /api/v1/me/qr-profile` | employe | `OnboardingQrControllerTest`, `FrontendApiContractTest` |

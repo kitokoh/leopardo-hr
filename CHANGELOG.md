@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.164] - 2026-05-27
+
+### Added
+
+- API employees : `PATCH /api/v1/employees/{employee}` accepte maintenant `contract_start`, `salary_type`, `salary_base` et `hourly_rate` pour les corrections RH terrain.
+- Mobile manager : ajout d'une fiche collaborateur lisible depuis l'equipe avec telephone, poste, departement, lieu, salaire et horaire.
+- Mobile manager : ajout d'un formulaire de modification collaborateur connecte au PATCH API, avec rafraichissement de la liste equipe.
+- Tests : couverture de mise a jour collaborateur avec horaire, salaire, date d'embauche et poste.
+- Documentation : ajout du Plan 37 fiche collaborateur manager mobile.
+
 ## [4.16.163] - 2026-05-27
 
 ### Added
