@@ -51,6 +51,27 @@ class SettingsRepository {
     );
   }
 
+  Future<EmployeeQrPayload> loadEmployeeQrPayload() async {
+    final response = await _apiClient.dio.get('/me/qr-profile');
+    return EmployeeQrPayload.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
+  }
+
+  Future<String> submitCompanyQr(String token, {String? message}) async {
+    final response = await _apiClient.dio.post(
+      '/me/company-qr/scan',
+      data: {
+        'qr_token': token.trim(),
+        if (message != null && message.trim().isNotEmpty)
+          'message': message.trim(),
+      },
+    );
+    final data = (response.data['data'] as Map).cast<String, dynamic>();
+    return (response.data['message'] ?? data['status'] ?? 'Demande envoyee')
+        .toString();
+  }
+
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
@@ -237,5 +258,22 @@ class CabinetStats {
     if (value is num) return value.toInt();
     if (value is String) return int.tryParse(value) ?? 0;
     return 0;
+  }
+}
+
+class EmployeeQrPayload {
+  const EmployeeQrPayload({
+    required this.token,
+    required this.expiresAt,
+  });
+
+  final String token;
+  final String? expiresAt;
+
+  factory EmployeeQrPayload.fromJson(Map<String, dynamic> json) {
+    return EmployeeQrPayload(
+      token: (json['token'] ?? '').toString(),
+      expiresAt: json['expires_at']?.toString(),
+    );
   }
 }

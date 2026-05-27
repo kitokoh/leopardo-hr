@@ -917,6 +917,157 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/qr-profile:
+    get:
+      tags: ["Employees"]
+      summary: "Generer le QR profil employe"
+      responses:
+        "200":
+          description: "QR profil employe signe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      type:
+                        type: string
+                        example: "employee_profile"
+                      expires_at:
+                        type: string
+                        format: date-time
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /company/qr-onboarding:
+    get:
+      tags: ["Employees"]
+      summary: "Generer le QR onboarding entreprise"
+      responses:
+        "200":
+          description: "QR entreprise signe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      type:
+                        type: string
+                        example: "company_onboarding"
+                      expires_at:
+                        type: string
+                        format: date-time
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /company/qr-onboarding/scan-employee:
+    post:
+      tags: ["Employees"]
+      summary: "Lire un QR employe pour pre-remplir l'ajout manager"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["qr_token"]
+              properties:
+                qr_token:
+                  type: string
+      responses:
+        "200":
+          description: "Profil pre-rempli"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      prefill:
+                        type: object
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /company/qr-onboarding/create-employee:
+    post:
+      tags: ["Employees"]
+      summary: "Creer un employe depuis QR"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["qr_token", "email"]
+              properties:
+                qr_token:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                contract_start:
+                  type: string
+                  format: date
+                salary_type:
+                  type: string
+                  enum: ["fixed", "hourly", "daily"]
+                salary_base:
+                  type: number
+                hourly_rate:
+                  type: number
+      responses:
+        "201":
+          description: "Employe cree depuis QR"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeDetail"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /me/company-qr/scan:
+    post:
+      tags: ["Employees"]
+      summary: "Soumettre une demande d'integration via QR entreprise"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["qr_token"]
+              properties:
+                qr_token:
+                  type: string
+                message:
+                  type: string
+                  maxLength: 500
+      responses:
+        "201":
+          description: "Demande creee"
+        "200":
+          description: "Demande deja en attente"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /employees/{employee}/daily-summary:
     get:
       tags: ["Estimations"]
