@@ -63,6 +63,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
+    Route::get('/attendance/corrections', [AttendanceController::class, 'corrections']);
+    Route::put('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction');
+    Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction');
     Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog');
 
     // ── Invitations ───────────────────────────────────────────────────────────

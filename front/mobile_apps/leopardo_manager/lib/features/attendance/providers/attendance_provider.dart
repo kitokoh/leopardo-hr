@@ -275,3 +275,21 @@ final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getMyMonthlySummary(year: date.year, month: date.month);
 });
+
+final managerAttendanceTodayProvider =
+    FutureProvider.autoDispose<List<AttendanceLog>>((ref) async {
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getManagerAttendanceToday();
+    });
+
+final managerAnomaliesProvider =
+    FutureProvider.autoDispose<ManagerAnomalyReport>((ref) async {
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getManagerAnomalies();
+    });
+
+final managerCorrectionsProvider =
+    FutureProvider.autoDispose<List<AttendanceCorrection>>((ref) async {
+      final repo = ref.watch(attendanceRepositoryProvider);
+      return repo.getPendingCorrections();
+    });

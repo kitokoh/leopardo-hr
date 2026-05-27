@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.167] - 2026-05-27
+
+### Added
+
+- API attendance : ajout de la file manager `GET /api/v1/attendance/corrections` et des decisions `PUT /api/v1/attendance/corrections/{id}/approve|reject`.
+- API attendance : l'approbation d'une correction applique ou cree le pointage manuel, recalcule les champs derives et reste tenant-scope.
+- Mobile manager : remplacement des placeholders `/manager/attendance`, `/manager/anomalies` et `/manager/corrections` par des ecrans connectes aux APIs reelles.
+- Mobile manager : le digest accueil ouvre maintenant la file de corrections de pointage quand une decision RH est attendue.
+- Tests/OpenAPI : couverture de la file corrections, decisions manager, isolation tenant et interdiction employee.
+- Documentation : ajout du Plan 40 monitoring presence manager mobile.
+
 ## [4.16.166] - 2026-05-27
 
 ### Added

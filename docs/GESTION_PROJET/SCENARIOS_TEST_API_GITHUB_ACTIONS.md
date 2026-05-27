@@ -49,6 +49,8 @@ Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /co
 
 Note 2026-05-27 : le mobile employee consomme `GET /me/monthly-summary` pour l'ecran "Mon mois complet". Les scenarios API doivent verifier le mois vide avec `breakdown=[]`, totaux a zero, `period.from/to` stables et `year`/`month` retournes comme entiers meme quand ils viennent de query params.
 
+Note 2026-05-27 : le cockpit manager mobile consomme `GET /attendance`, `GET /attendance/anomalies`, `GET /attendance/corrections`, `PUT /attendance/corrections/{id}/approve` et `PUT /attendance/corrections/{id}/reject`. Les scenarios API doivent verifier l'isolation tenant, l'interdiction employee, la file `pending` paginee et l'application d'une correction employee en pointage manuel recalcule.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -270,6 +272,7 @@ Note 2026-05-27 : le mobile employee consomme `GET /me/monthly-summary` pour l'e
 - Attendance anomalies business impact / recommended actions
 - Attendance monthly report JSON / CSV / PDF payroll estimates
 - Self-service `GET /api/v1/me/monthly-summary` : mois vide, totaux zero, breakdown vide, periode stable et types JSON compatibles mobile
+- Manager mobile `GET/PUT /api/v1/attendance/corrections*` : file pending, approve applique le pointage, reject cloture la demande, isolation tenant stricte
 - Onboarding checklist go-live readiness
 - Estimation daily summary / quick estimate / PDF
 - Contrats JSON critiques pour le mobile

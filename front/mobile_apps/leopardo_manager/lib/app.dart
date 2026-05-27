@@ -36,6 +36,7 @@ import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_s
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_manager/features/organigramme/screens/organigramme_screen.dart';
+import 'package:leopardo_manager/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_placeholder_screen.dart';
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
@@ -214,30 +215,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/manager/attendance',
-        builder:
-            (context, state) => const ManagerPlaceholderScreen(
-              title: 'Suivi global des presences',
-              description:
-                  'Emplacement reserve a la supervision temps reel des presences equipe.',
-            ),
+        builder: (context, state) => const ManagerAttendanceMonitoringScreen(),
       ),
       GoRoute(
         path: '/manager/anomalies',
-        builder:
-            (context, state) => const ManagerPlaceholderScreen(
-              title: 'Anomalies de pointage',
-              description:
-                  'Emplacement reserve au triage des retards, oublis et incoherences.',
-            ),
+        builder: (context, state) => const ManagerAnomaliesScreen(),
       ),
       GoRoute(
         path: '/manager/corrections',
-        builder:
-            (context, state) => const ManagerPlaceholderScreen(
-              title: 'Demandes de correction',
-              description:
-                  'Emplacement reserve au traitement RH des corrections de pointage.',
-            ),
+        builder: (context, state) => const ManagerCorrectionsScreen(),
       ),
     ],
   );
