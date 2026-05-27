@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Http\Requests\Api\V1\Employee\ImportEmployeeImportRequest;
 
 class EmployeeImportController extends Controller
 {
-    public function import(Request $request): JsonResponse
+    public function import(ImportEmployeeImportRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -21,9 +22,7 @@ class EmployeeImportController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'file' => 'required|file|mimes:csv,txt|max:5120',
-        ]);
+        $validated = $request->validated();
 
         $file = $request->file('file');
         $content = file_get_contents($file->getRealPath());

@@ -25,6 +25,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Api\V1\Attendance\RequestCorrectionAttendanceRequest;
+use App\Http\Requests\Api\V1\Attendance\UpdateAttendanceRequest;
 
 class AttendanceController extends Controller
 {
@@ -254,18 +256,12 @@ class AttendanceController extends Controller
         };
     }
 
-    public function requestCorrection(Request $request): JsonResponse
+    public function requestCorrection(RequestCorrectionAttendanceRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $validated = $request->validate([
-            'attendance_log_id' => ['nullable', 'integer', 'exists:attendance_logs,id'],
-            'date' => ['required', 'date'],
-            'requested_check_in' => ['required', 'date'],
-            'requested_check_out' => ['nullable', 'date'],
-            'reason' => ['required', 'string', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         $company = currentCompany();
         $timezone = $company->timezone;
@@ -442,16 +438,11 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function update(Request $request, AttendanceLog $attendanceLog): JsonResponse
+public function update(UpdateAttendanceRequest $request, AttendanceLog $attendanceLog): JsonResponse
     {
         $this->authorize('update', $attendanceLog);
 
-        $validated = $request->validate([
-            'check_in' => ['nullable', 'date'],
-            'check_out' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string', 'max:500'],
-            'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
-        ]);
+        $validated = $request->validated();
 
         $effectiveCheckIn = array_key_exists('check_in', $validated)
             ? $validated['check_in']

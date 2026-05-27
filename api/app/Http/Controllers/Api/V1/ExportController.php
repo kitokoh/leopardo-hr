@@ -9,10 +9,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Http\Requests\Api\V1\Export\AttendanceExportRequest;
+use App\Http\Requests\Api\V1\Export\EmployeesExportRequest;
+use App\Http\Requests\Api\V1\Export\HistoryExportRequest;
 
 class ExportController extends Controller
 {
-    public function employees(Request $request): JsonResponse
+    public function employees(EmployeesExportRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -20,10 +23,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'format' => 'nullable|in:json,csv',
-            'status' => 'nullable|in:active,archived',
-        ]);
+        $validated = $request->validated();
 
         $query = DB::table('employees')
             ->where('company_id', $user->company_id)
@@ -69,7 +69,7 @@ class ExportController extends Controller
         ]);
     }
 
-    public function attendance(Request $request): JsonResponse
+    public function attendance(AttendanceExportRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -77,11 +77,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'from' => 'nullable|date',
-            'to' => 'nullable|date|after_or_equal:from',
-            'format' => 'nullable|in:json,csv',
-        ]);
+        $validated = $request->validated();
 
         $from = $validated['from'] ?? now()->startOfMonth()->toDateString();
         $to = $validated['to'] ?? now()->toDateString();
@@ -227,7 +223,7 @@ class ExportController extends Controller
         return $this->exportResponse($request, $records, 'vehicles_export');
     }
 
-    public function history(Request $request): JsonResponse
+    public function history(HistoryExportRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -304,9 +300,7 @@ class ExportController extends Controller
      */
     private function exportResponse(Request $request, Collection $records, string $filenamePrefix): JsonResponse
     {
-        $validated = $request->validate([
-            'format' => 'nullable|in:json,csv,xlsx',
-        ]);
+        $validated = $request->validated();
 
         $format = $validated['format'] ?? 'json';
         if ($format === 'csv' || $format === 'xlsx') {

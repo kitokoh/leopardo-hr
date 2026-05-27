@@ -12,6 +12,8 @@ use App\Models\Interview;
 use App\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Recruitment\InterviewFeedbackJobPostingActionRequest;
+use App\Http\Requests\Api\V1\Recruitment\UpdateApplicantStatusJobPostingActionRequest;
 
 class JobPostingActionController extends Controller
 {
@@ -90,7 +92,7 @@ class JobPostingActionController extends Controller
         return (new ApplicantResource($applicant))->response();
     }
 
-    public function updateApplicantStatus(Request $request, int $id): JsonResponse
+    public function updateApplicantStatus(UpdateApplicantStatusJobPostingActionRequest $request, int $id): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -98,9 +100,7 @@ class JobPostingActionController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'status' => 'required|in:new,screening,interview,offer,hired,rejected,withdrawn',
-        ]);
+        $validated = $request->validated();
 
         $applicant = Applicant::where('company_id', $user->company_id)->findOrFail($id);
         $applicant->update($validated);
@@ -122,17 +122,14 @@ class JobPostingActionController extends Controller
         return response()->json(['message' => 'Applicant deleted.']);
     }
 
-    public function interviewFeedback(Request $request, int $id): JsonResponse
+    public function interviewFeedback(InterviewFeedbackJobPostingActionRequest $request, int $id): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
 
         $interview = Interview::where('company_id', $user->company_id)->findOrFail($id);
 
-        $validated = $request->validate([
-            'feedback' => 'required|string|max:5000',
-            'rating' => 'nullable|integer|min:1|max:5',
-        ]);
+        $validated = $request->validated();
 
         $interview->update(array_merge($validated, ['status' => 'completed']));
 

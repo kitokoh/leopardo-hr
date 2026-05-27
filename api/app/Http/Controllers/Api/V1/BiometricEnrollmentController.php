@@ -8,6 +8,9 @@ use App\Models\Employee;
 use App\Services\BiometricEnrollmentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Biometric\ApproveBiometricEnrollmentRequest;
+use App\Http\Requests\Api\V1\Biometric\RejectBiometricEnrollmentRequest;
+use App\Http\Requests\Api\V1\Biometric\StoreBiometricEnrollmentRequest;
 
 class BiometricEnrollmentController extends Controller
 {
@@ -49,19 +52,12 @@ class BiometricEnrollmentController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBiometricEnrollmentRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $validated = $request->validate([
-            'requested_face_enabled' => ['nullable', 'boolean'],
-            'requested_fingerprint_enabled' => ['nullable', 'boolean'],
-            'requested_fingerprint_reference_path' => ['nullable', 'string', 'max:255'],
-            'requested_fingerprint_device_id' => ['nullable', 'string', 'max:100'],
-            'employee_note' => ['nullable', 'string', 'max:1000'],
-            'face_image' => ['nullable', 'file', 'image', 'max:5120'],
-        ]);
+        $validated = $request->validated();
 
         $item = $this->biometricEnrollmentService->submit(
             employee: $actor,
@@ -77,15 +73,13 @@ class BiometricEnrollmentController extends Controller
         ], 201);
     }
 
-    public function approve(Request $request, int $id): JsonResponse
+    public function approve(ApproveBiometricEnrollmentRequest $request, int $id): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
-        $validated = $request->validate([
-            'manager_note' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         $item = BiometricEnrollmentRequest::query()
             ->where('company_id', $actor->company_id)
@@ -98,15 +92,13 @@ class BiometricEnrollmentController extends Controller
         ]);
     }
 
-    public function reject(Request $request, int $id): JsonResponse
+    public function reject(RejectBiometricEnrollmentRequest $request, int $id): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
-        $validated = $request->validate([
-            'manager_note' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         $item = BiometricEnrollmentRequest::query()
             ->where('company_id', $actor->company_id)

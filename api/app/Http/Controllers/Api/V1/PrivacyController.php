@@ -15,6 +15,8 @@ use App\Services\DataAccessAuditLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Privacy\StoreDeletionRequestPrivacyRequest;
+use App\Http\Requests\Api\V1\Privacy\UpdateBiometricConsentPrivacyRequest;
 
 class PrivacyController extends Controller
 {
@@ -50,14 +52,12 @@ class PrivacyController extends Controller
         ]);
     }
 
-    public function storeDeletionRequest(Request $request): JsonResponse
+    public function storeDeletionRequest(StoreDeletionRequestPrivacyRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $validated = $request->validate([
-            'reason' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         $privacyRequest = PrivacyRequest::query()->create([
             'company_id' => $employee->company_id,
@@ -83,14 +83,12 @@ class PrivacyController extends Controller
         ], 202);
     }
 
-    public function updateBiometricConsent(Request $request): JsonResponse
+    public function updateBiometricConsent(UpdateBiometricConsentPrivacyRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $validated = $request->validate([
-            'consented' => ['required', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $consented = (bool) $validated['consented'];
         $employee->forceFill([

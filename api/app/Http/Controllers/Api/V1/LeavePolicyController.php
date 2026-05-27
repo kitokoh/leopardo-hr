@@ -16,6 +16,9 @@ use App\Models\LeavePolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Api\V1\LeavePolicy\StoreAccrualLeavePolicyRequest;
+use App\Http\Requests\Api\V1\LeavePolicy\StoreLeavePolicyRequest;
+use App\Http\Requests\Api\V1\LeavePolicy\UpdateLeavePolicyRequest;
 
 class LeavePolicyController extends Controller
 {
@@ -34,7 +37,7 @@ class LeavePolicyController extends Controller
         return LeavePolicyResource::collection($policies)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreLeavePolicyRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -42,21 +45,7 @@ class LeavePolicyController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'absence_type_id' => 'required|integer|exists:absence_types,id',
-            'name' => 'required|string|max:150',
-            'accrual_type' => 'required|in:monthly,yearly,manual',
-            'accrual_amount' => 'required|numeric|min:0',
-            'max_balance' => 'nullable|numeric|min:0',
-            'carry_forward' => 'boolean',
-            'carry_forward_max' => 'nullable|numeric|min:0',
-            'carry_forward_expiry_days' => 'nullable|integer|min:0',
-            'requires_approval' => 'boolean',
-            'approval_levels' => 'nullable|integer|min:1|max:5',
-            'min_notice_days' => 'nullable|integer|min:0',
-            'max_consecutive_days' => 'nullable|integer|min:1',
-            'applicable_roles' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         $absenceTypeBelongsToCompany = AbsenceType::query()
             ->where('company_id', $actor->company_id)
@@ -90,7 +79,7 @@ class LeavePolicyController extends Controller
         return (new LeavePolicyResource($leavePolicy->load('absenceType:id,name,code')))->response();
     }
 
-    public function update(Request $request, LeavePolicy $leavePolicy): JsonResponse
+    public function update(UpdateLeavePolicyRequest $request, LeavePolicy $leavePolicy): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -101,21 +90,7 @@ class LeavePolicyController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:150',
-            'accrual_type' => 'sometimes|in:monthly,yearly,manual',
-            'accrual_amount' => 'sometimes|numeric|min:0',
-            'max_balance' => 'nullable|numeric|min:0',
-            'carry_forward' => 'boolean',
-            'carry_forward_max' => 'nullable|numeric|min:0',
-            'carry_forward_expiry_days' => 'nullable|integer|min:0',
-            'requires_approval' => 'boolean',
-            'approval_levels' => 'nullable|integer|min:1|max:5',
-            'min_notice_days' => 'nullable|integer|min:0',
-            'max_consecutive_days' => 'nullable|integer|min:1',
-            'applicable_roles' => 'nullable|array',
-            'active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $leavePolicy->update($validated);
 
@@ -198,7 +173,7 @@ class LeavePolicyController extends Controller
         return LeaveAccrualResource::collection($query->paginate($perPage))->response();
     }
 
-    public function storeAccrual(Request $request): JsonResponse
+    public function storeAccrual(StoreAccrualLeavePolicyRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -206,14 +181,7 @@ class LeavePolicyController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'employee_id' => 'required|integer|exists:employees,id',
-            'leave_policy_id' => 'required|integer|exists:leave_policies,id',
-            'amount' => 'required|numeric',
-            'type' => 'required|in:accrual,adjustment,carry_forward',
-            'description' => 'nullable|string|max:255',
-            'effective_date' => 'required|date',
-        ]);
+        $validated = $request->validated();
 
         $employeeBelongsToCompany = Employee::query()
             ->where('company_id', $actor->company_id)

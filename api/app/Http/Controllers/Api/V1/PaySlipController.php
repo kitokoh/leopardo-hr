@@ -12,6 +12,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Api\V1\Payroll\MyPaySlipsPaySlipRequest;
+use App\Http\Requests\Api\V1\Payroll\PaySlipIndexRequest;
 
 class PaySlipController extends Controller
 {
@@ -19,7 +21,7 @@ class PaySlipController extends Controller
      * Liste paginee des bulletins du tenant courant (manager).
      * Evite le pattern N+1 "un GET pay-slips par run" cote SPA.
      */
-    public function index(Request $request): JsonResponse
+    public function index(PaySlipIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -27,14 +29,7 @@ class PaySlipController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'payroll_run_id' => 'sometimes|nullable|integer',
-            'status' => 'sometimes|nullable|string|in:calculated,validated,sent',
-            'per_page' => 'sometimes|integer|min:1|max:100',
-            'page' => 'sometimes|integer|min:1',
-            'sort_by' => 'sometimes|nullable|string|in:period_start,period_end,net_salary,status,id',
-            'sort_dir' => 'sometimes|nullable|string|in:asc,desc',
-        ]);
+        $validated = $request->validated();
 
         $query = PaySlip::query()
             ->where('company_id', $actor->company_id)
@@ -102,18 +97,12 @@ class PaySlipController extends Controller
         return (new PaySlipResource($paySlip))->response();
     }
 
-    public function myPaySlips(Request $request): JsonResponse
+    public function myPaySlips(MyPaySlipsPaySlipRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $validated = $request->validate([
-            'status' => 'sometimes|nullable|string|in:validated,sent',
-            'per_page' => 'sometimes|integer|min:1|max:100',
-            'page' => 'sometimes|integer|min:1',
-            'sort_by' => 'sometimes|nullable|string|in:period_start,period_end,net_salary,status,id',
-            'sort_dir' => 'sometimes|nullable|string|in:asc,desc',
-        ]);
+        $validated = $request->validated();
 
         $statuses = ! empty($validated['status'])
             ? [(string) $validated['status']]

@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Models\SalaryStructure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Payroll\StoreSalaryStructureRequest;
+use App\Http\Requests\Api\V1\Payroll\UpdateSalaryStructureRequest;
 
 class SalaryStructureController extends Controller
 {
@@ -33,7 +35,7 @@ class SalaryStructureController extends Controller
         return SalaryStructureResource::collection($query->orderBy('name')->get())->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreSalaryStructureRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -41,13 +43,7 @@ class SalaryStructureController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'base_salary' => 'required|numeric|min:0',
-            'currency' => 'required|string|size:3',
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN',
-            'frequency' => 'nullable|in:monthly,bi_weekly,weekly',
-        ]);
+        $validated = $request->validated();
 
         $structure = SalaryStructure::create([
             'company_id' => $actor->company_id,
@@ -80,7 +76,7 @@ class SalaryStructureController extends Controller
         return (new SalaryStructureResource($salaryStructure))->response();
     }
 
-    public function update(Request $request, SalaryStructure $salaryStructure): JsonResponse
+    public function update(UpdateSalaryStructureRequest $request, SalaryStructure $salaryStructure): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -91,14 +87,7 @@ class SalaryStructureController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:150',
-            'base_salary' => 'sometimes|numeric|min:0',
-            'currency' => 'sometimes|string|size:3',
-            'country_code' => 'sometimes|string|size:2|in:DZ,MA,TN,FR,TR,SN',
-            'frequency' => 'sometimes|in:monthly,bi_weekly,weekly',
-            'active' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $salaryStructure->update($validated);
 

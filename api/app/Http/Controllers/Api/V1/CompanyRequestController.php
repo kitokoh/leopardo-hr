@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use App\Http\Requests\Api\V1\Company\StoreCompanyRequestRequest;
 
 class CompanyRequestController extends Controller
 {
@@ -36,17 +37,9 @@ class CompanyRequestController extends Controller
         return new JsonResponse(['data' => $requests]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreCompanyRequestRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'company_name' => ['required', 'string', 'max:200'],
-            'sector' => ['nullable', 'string', 'max:100'],
-            'country' => ['nullable', 'string', 'max:100'],
-            'city' => ['nullable', 'string', 'max:100'],
-            'email' => ['required', 'email'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'description' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $user = $this->resolveRequestUser($request);
 

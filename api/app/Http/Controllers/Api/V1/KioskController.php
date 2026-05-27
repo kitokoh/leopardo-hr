@@ -15,6 +15,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Http\Requests\Api\V1\Kiosk\EmployeeInfoKioskRequest;
+use App\Http\Requests\Api\V1\Kiosk\LeaveBalanceKioskRequest;
+use App\Http\Requests\Api\V1\Kiosk\PunchKioskRequest;
+use App\Http\Requests\Api\V1\Kiosk\QrPunchKioskRequest;
+use App\Http\Requests\Api\V1\Kiosk\RegisterKioskRequest;
+use App\Http\Requests\Api\V1\Kiosk\SyncKioskRequest;
 
 class KioskController extends Controller
 {
@@ -22,7 +28,7 @@ class KioskController extends Controller
         private readonly KioskAttendanceService $kioskAttendanceService,
     ) {}
 
-    public function register(Request $request): JsonResponse
+    public function register(RegisterKioskRequest $request): JsonResponse
     {
         $company = currentCompany();
         /** @var Employee $actor */
@@ -31,12 +37,7 @@ class KioskController extends Controller
         abort_unless($actor?->isManager(), 403, 'FORBIDDEN');
         $this->setTenantSearchPath($company);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'location_label' => ['nullable', 'string', 'max:120'],
-            'biometric_mode' => ['nullable', 'in:fingerprint,face,mixed'],
-            'trusted_device_label' => ['nullable', 'string', 'max:120'],
-        ]);
+        $validated = $request->validated();
 
         $kiosk = AttendanceKiosk::query()->create([
             'company_id' => $company->id,
@@ -56,12 +57,9 @@ class KioskController extends Controller
         ], 201);
     }
 
-    public function punch(Request $request, string $deviceCode): JsonResponse
+    public function punch(PunchKioskRequest $request, string $deviceCode): JsonResponse
     {
-        $validated = $request->validate([
-            'identifier' => ['required', 'string', 'max:150'],
-            'action' => ['nullable', 'in:check_in,check_out'],
-        ]);
+        $validated = $request->validated();
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
 
@@ -128,16 +126,9 @@ class KioskController extends Controller
         ]);
     }
 
-    public function sync(Request $request, string $deviceCode): JsonResponse
+    public function sync(SyncKioskRequest $request, string $deviceCode): JsonResponse
     {
-        $validated = $request->validate([
-            'events' => ['required', 'array'],
-            'events.*.identifier' => ['required', 'string', 'max:150'],
-            'events.*.action' => ['nullable', 'in:check_in,check_out'],
-            'events.*.occurred_at' => ['nullable', 'date'],
-            'events.*.external_event_id' => ['nullable', 'string', 'max:100'],
-            'events.*.biometric_type' => ['nullable', 'in:fingerprint,face,mixed'],
-        ]);
+        $validated = $request->validated();
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
         app()->instance('current_company', $kiosk->company);
@@ -154,11 +145,9 @@ class KioskController extends Controller
         ]);
     }
 
-    public function employeeInfo(Request $request, string $deviceCode): JsonResponse
+    public function employeeInfo(EmployeeInfoKioskRequest $request, string $deviceCode): JsonResponse
     {
-        $validated = $request->validate([
-            'identifier' => ['required', 'string', 'max:150'],
-        ]);
+        $validated = $request->validated();
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
         $company = $kiosk->company;
@@ -233,11 +222,9 @@ class KioskController extends Controller
         return new JsonResponse(['data' => $announcements]);
     }
 
-    public function leaveBalance(Request $request, string $deviceCode): JsonResponse
+    public function leaveBalance(LeaveBalanceKioskRequest $request, string $deviceCode): JsonResponse
     {
-        $validated = $request->validate([
-            'identifier' => ['required', 'string', 'max:150'],
-        ]);
+        $validated = $request->validated();
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
         $company = $kiosk->company;
@@ -268,12 +255,9 @@ class KioskController extends Controller
         ]);
     }
 
-    public function qrPunch(Request $request, string $deviceCode): JsonResponse
+    public function qrPunch(QrPunchKioskRequest $request, string $deviceCode): JsonResponse
     {
-        $validated = $request->validate([
-            'qr_data' => ['required', 'string', 'max:500'],
-            'action' => ['nullable', 'in:check_in,check_out'],
-        ]);
+        $validated = $request->validated();
 
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
         $company = $kiosk->company;

@@ -339,6 +339,13 @@
   pour aligner le comportement avec les apps Employee/Manager.
 - CI : `predis/predis ^2.3` restaure dans `api/composer.json` (perdu lors du merge #638).
   `composer.lock` regenere automatiquement via workflow `fix-composer-lock.yml`.
+## [4.16.160] - 2026-05-31
+
+### Added
+
+- Backend : extraction de 108 classes FormRequest typées pour 48 controllers API (Plan 33 iter 5).
+  Toutes les validations inline `$request->validate([...])` remplacées par `$request->validated()`.
+  Organisation par module sous `app/Http/Requests/Api/V1/`.
 
 ## [4.16.157] - 2026-05-26
 

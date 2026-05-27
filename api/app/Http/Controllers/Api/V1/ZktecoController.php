@@ -8,6 +8,9 @@ use App\Models\ZktecoDevice;
 use App\Services\ZktecoIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Kiosk\StoreZktecoRequest;
+use App\Http\Requests\Api\V1\Kiosk\SyncAttendanceZktecoRequest;
+use App\Http\Requests\Api\V1\Kiosk\UpdateZktecoRequest;
 
 class ZktecoController extends Controller
 {
@@ -31,22 +34,13 @@ class ZktecoController extends Controller
         return new JsonResponse(['data' => $devices]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreZktecoRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
-        $validated = $request->validate([
-            'serial_number' => ['required', 'string', 'max:100', 'unique:zkteco_devices,serial_number'],
-            'name' => ['required', 'string', 'max:120'],
-            'ip_address' => ['nullable', 'ip'],
-            'port' => ['nullable', 'integer', 'min:1', 'max:65535'],
-            'protocol' => ['nullable', 'in:tcp,udp,cloud_api'],
-            'location_label' => ['nullable', 'string', 'max:120'],
-            'model' => ['nullable', 'string', 'max:60'],
-            'firmware_version' => ['nullable', 'string', 'max:60'],
-        ]);
+        $validated = $request->validated();
 
         $company = currentCompany();
         $device = $this->zktecoService->registerDevice($company->id, $validated);
@@ -73,7 +67,7 @@ class ZktecoController extends Controller
         ]);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateZktecoRequest $request, int $id): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -84,14 +78,7 @@ class ZktecoController extends Controller
             ->where('company_id', $company->id)
             ->findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => ['sometimes', 'string', 'max:120'],
-            'ip_address' => ['nullable', 'ip'],
-            'port' => ['nullable', 'integer', 'min:1', 'max:65535'],
-            'protocol' => ['nullable', 'in:tcp,udp,cloud_api'],
-            'location_label' => ['nullable', 'string', 'max:120'],
-            'status' => ['nullable', 'in:online,offline,maintenance'],
-        ]);
+        $validated = $request->validated();
 
         $device->update($validated);
 
@@ -131,15 +118,9 @@ class ZktecoController extends Controller
         ]);
     }
 
-    public function syncAttendance(Request $request, string $serialNumber): JsonResponse
+    public function syncAttendance(SyncAttendanceZktecoRequest $request, string $serialNumber): JsonResponse
     {
-        $validated = $request->validate([
-            'records' => ['required', 'array'],
-            'records.*.user_id' => ['required', 'string'],
-            'records.*.timestamp' => ['required', 'date'],
-            'records.*.punch_type' => ['nullable', 'integer', 'min:0', 'max:5'],
-            'records.*.badge_number' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $device = ZktecoDevice::query()
             ->where('serial_number', $serialNumber)

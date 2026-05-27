@@ -8,15 +8,13 @@ use App\Models\User;
 use App\Models\UserEmployeeLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Auth\LinkByEmailUserEmployeeLinkRequest;
 
 class UserEmployeeLinkController extends Controller
 {
-    public function linkByEmail(Request $request): JsonResponse
+    public function linkByEmail(LinkByEmailUserEmployeeLinkRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'employee_id' => ['required', 'integer'],
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $manager */
         $manager = $request->user();

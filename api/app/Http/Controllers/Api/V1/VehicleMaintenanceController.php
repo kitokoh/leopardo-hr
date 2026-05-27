@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Models\VehicleMaintenance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Fleet\StoreVehicleMaintenanceRequest;
+use App\Http\Requests\Api\V1\Fleet\UpdateVehicleMaintenanceRequest;
 
 class VehicleMaintenanceController extends Controller
 {
@@ -30,20 +32,9 @@ class VehicleMaintenanceController extends Controller
         return VehicleMaintenanceResource::collection($records)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreVehicleMaintenanceRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'vehicle_id' => 'required|integer',
-            'type' => 'required|in:oil_change,tire,brake,battery,inspection,repair,other',
-            'description' => 'nullable|string',
-            'cost' => 'nullable|numeric|min:0',
-            'currency' => 'nullable|string|max:3',
-            'mileage_at_service' => 'nullable|integer|min:0',
-            'service_date' => 'required|date',
-            'next_service_date' => 'nullable|date',
-            'next_service_mileage' => 'nullable|integer|min:0',
-            'provider' => 'nullable|string|max:200',
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $user */
         $user = $request->user();
@@ -56,23 +47,13 @@ class VehicleMaintenanceController extends Controller
             ->setStatusCode(201);
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateVehicleMaintenanceRequest $request, int $id): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
         $record = VehicleMaintenance::where('company_id', $user->company_id)->findOrFail($id);
 
-        $validated = $request->validate([
-            'type' => 'sometimes|in:oil_change,tire,brake,battery,inspection,repair,other',
-            'description' => 'nullable|string',
-            'cost' => 'nullable|numeric|min:0',
-            'currency' => 'nullable|string|max:3',
-            'mileage_at_service' => 'nullable|integer|min:0',
-            'service_date' => 'sometimes|date',
-            'next_service_date' => 'nullable|date',
-            'next_service_mileage' => 'nullable|integer|min:0',
-            'provider' => 'nullable|string|max:200',
-        ]);
+        $validated = $request->validated();
 
         $record->update($validated);
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Social\SimulateCotisationSimulationRequest;
 
 class CotisationSimulationController extends Controller
 {
@@ -81,7 +82,7 @@ class CotisationSimulationController extends Controller
         ],
     ];
 
-    public function simulate(Request $request): JsonResponse
+    public function simulate(SimulateCotisationSimulationRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -90,10 +91,7 @@ class CotisationSimulationController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'gross_salary' => 'required|numeric|min:0',
-            'country_code' => 'required|string|in:DZ,MA,FR,TN,TR,SN',
-        ]);
+        $validated = $request->validated();
 
         $gross = (float) $validated['gross_salary'];
         $countryCode = $validated['country_code'];

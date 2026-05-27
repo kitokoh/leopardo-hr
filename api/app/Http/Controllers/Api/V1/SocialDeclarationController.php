@@ -10,10 +10,13 @@ use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Api\V1\Social\GenerateCnasDzSocialDeclarationRequest;
+use App\Http\Requests\Api\V1\Social\GenerateCnssMaSocialDeclarationRequest;
+use App\Http\Requests\Api\V1\Social\GenerateDsnFrSocialDeclarationRequest;
 
 class SocialDeclarationController extends Controller
 {
-    public function generateCnasDz(Request $request): JsonResponse
+    public function generateCnasDz(GenerateCnasDzSocialDeclarationRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -21,10 +24,7 @@ class SocialDeclarationController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'quarter' => 'required|in:Q1,Q2,Q3,Q4',
-            'year' => 'required|integer|min:2020|max:2099',
-        ]);
+        $validated = $request->validated();
 
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -93,7 +93,7 @@ class SocialDeclarationController extends Controller
         ]);
     }
 
-    public function generateCnssMa(Request $request): JsonResponse
+    public function generateCnssMa(GenerateCnssMaSocialDeclarationRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -101,10 +101,7 @@ class SocialDeclarationController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'quarter' => 'required|in:Q1,Q2,Q3,Q4',
-            'year' => 'required|integer|min:2020|max:2099',
-        ]);
+        $validated = $request->validated();
 
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -185,7 +182,7 @@ class SocialDeclarationController extends Controller
         ]);
     }
 
-    public function generateDsnFr(Request $request): JsonResponse
+    public function generateDsnFr(GenerateDsnFrSocialDeclarationRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -193,10 +190,7 @@ class SocialDeclarationController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'month' => 'required|integer|min:1|max:12',
-            'year' => 'required|integer|min:2020|max:2099',
-        ]);
+        $validated = $request->validated();
 
         $employees = Employee::query()
             ->where('company_id', $actor->company_id)

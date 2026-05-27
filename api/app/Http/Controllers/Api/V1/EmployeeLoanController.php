@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\Api\V1\Loan\StoreEmployeeLoanRequest;
 
 class EmployeeLoanController extends Controller
 {
@@ -39,26 +40,12 @@ class EmployeeLoanController extends Controller
             ->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreEmployeeLoanRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $validated = $request->validate([
-            'employee_id' => $actor->isManager()
-                ? [
-                    'required',
-                    'integer',
-                    Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
-                ]
-                : 'prohibited',
-            'loan_type' => 'required|in:personal,housing,vehicle,education,emergency',
-            'amount' => 'required|numeric|min:1',
-            'interest_rate' => 'nullable|numeric|min:0|max:100',
-            'installments' => 'required|integer|min:1|max:120',
-            'start_date' => 'required|date',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $employeeId = $validated['employee_id'] ?? $actor->id;
         $interestRate = $validated['interest_rate'] ?? 0;

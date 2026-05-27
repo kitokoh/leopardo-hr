@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Services\SSO\SSOService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\SSO\ConfigureSSORequest;
 
 class SSOController extends Controller
 {
@@ -41,7 +42,7 @@ class SSOController extends Controller
         ]);
     }
 
-    public function configure(Request $request): JsonResponse
+    public function configure(ConfigureSSORequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -49,15 +50,7 @@ class SSOController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'provider' => 'required|string|in:saml,oidc',
-            'entity_id' => 'required|string|url',
-            'sso_url' => 'required|string|url',
-            'slo_url' => 'nullable|string|url',
-            'certificate' => 'nullable|string',
-            'client_id' => 'nullable|string',
-            'client_secret' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $config = $this->ssoService->configureSSO(
             $actor->company_id,

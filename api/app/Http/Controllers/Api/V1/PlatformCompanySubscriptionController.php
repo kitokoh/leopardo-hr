@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\Api\V1\Platform\UpdatePlatformCompanySubscriptionRequest;
 
 class PlatformCompanySubscriptionController extends Controller
 {
@@ -20,17 +21,11 @@ class PlatformCompanySubscriptionController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $companyId): JsonResponse
+    public function update(UpdatePlatformCompanySubscriptionRequest $request, string $companyId): JsonResponse
     {
         $company = Company::query()->findOrFail($companyId);
 
-        $validated = $request->validate([
-            'plan_id' => ['required', 'integer', Rule::exists('plans', 'id')],
-            'status' => ['required', Rule::in(['active', 'trial', 'suspended', 'expired'])],
-            'subscription_start' => ['nullable', 'date'],
-            'subscription_end' => ['nullable', 'date', 'after_or_equal:subscription_start'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         $company->fill([
             'plan_id' => $validated['plan_id'],

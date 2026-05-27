@@ -9,6 +9,9 @@ use App\Services\Communication\CommunicationService;
 use App\Services\PushNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Device\RegisterDeviceTokenRequest;
+use App\Http\Requests\Api\V1\Device\SendTestDeviceTokenRequest;
+use App\Http\Requests\Api\V1\Device\UnregisterDeviceTokenRequest;
 
 class DeviceTokenController extends Controller
 {
@@ -17,13 +20,9 @@ class DeviceTokenController extends Controller
         private readonly CommunicationService $communicationService,
     ) {}
 
-    public function register(Request $request): JsonResponse
+    public function register(RegisterDeviceTokenRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'token' => ['required', 'string', 'max:512'],
-            'platform' => ['required', 'in:ios,android,web'],
-            'device_name' => ['nullable', 'string', 'max:120'],
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $user */
         $user = $request->user();
@@ -38,11 +37,9 @@ class DeviceTokenController extends Controller
         return new JsonResponse(['data' => $deviceToken], 201);
     }
 
-    public function unregister(Request $request): JsonResponse
+    public function unregister(UnregisterDeviceTokenRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'token' => ['required', 'string', 'max:512'],
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $user */
         $user = $request->user();
@@ -66,18 +63,14 @@ class DeviceTokenController extends Controller
         return new JsonResponse(['data' => $tokens]);
     }
 
-    public function sendTest(Request $request): JsonResponse
+    public function sendTest(SendTestDeviceTokenRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
 
         abort_unless($user->isManager(), 403, 'FORBIDDEN');
 
-        $validated = $request->validate([
-            'employee_id' => ['required', 'integer'],
-            'title' => ['required', 'string', 'max:200'],
-            'body' => ['required', 'string', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         $company = currentCompany();
         $target = Employee::query()

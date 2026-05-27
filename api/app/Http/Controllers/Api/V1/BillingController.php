@@ -13,6 +13,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Requests\Api\V1\Billing\CancelBillingRequest;
+use App\Http\Requests\Api\V1\Billing\UpgradeBillingRequest;
 
 class BillingController extends Controller
 {
@@ -31,7 +33,7 @@ class BillingController extends Controller
         return (new SubscriptionResource($subscription))->response();
     }
 
-    public function upgrade(Request $request): JsonResponse
+    public function upgrade(UpgradeBillingRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -39,10 +41,7 @@ class BillingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'plan' => 'required|in:starter,business,enterprise',
-            'payment_method' => 'nullable|in:stripe,chargily,bank_transfer,manual',
-        ]);
+        $validated = $request->validated();
 
         $subscription = Subscription::where('company_id', $user->company_id)
             ->latest()
@@ -69,7 +68,7 @@ class BillingController extends Controller
         return (new SubscriptionResource($subscription->fresh()))->response();
     }
 
-    public function cancel(Request $request): JsonResponse
+    public function cancel(CancelBillingRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -77,9 +76,7 @@ class BillingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'reason' => 'nullable|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
         $subscription = Subscription::where('company_id', $user->company_id)
             ->latest()

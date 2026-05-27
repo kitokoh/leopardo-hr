@@ -14,6 +14,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Api\V1\Contract\RenewContractRequest;
+use App\Http\Requests\Api\V1\Contract\StoreAmendmentContractRequest;
+use App\Http\Requests\Api\V1\Contract\StoreContractRequest;
+use App\Http\Requests\Api\V1\Contract\TerminateContractRequest;
+use App\Http\Requests\Api\V1\Contract\UpdateContractRequest;
 
 class ContractController extends Controller
 {
@@ -41,7 +46,7 @@ class ContractController extends Controller
             ->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreContractRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -49,23 +54,7 @@ class ContractController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'employee_id' => 'required|integer|exists:employees,id',
-            'contract_type' => 'required|in:cdi,cdd,stage,freelance,interim',
-            'reference' => 'nullable|string|max:50',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'job_title' => 'nullable|string|max:150',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position_id' => 'nullable|integer|exists:positions,id',
-            'base_salary' => 'required|numeric|min:0',
-            'currency' => 'nullable|string|max:3',
-            'salary_frequency' => 'nullable|in:monthly,hourly,daily',
-            'work_hours_per_week' => 'nullable|numeric|min:0|max:168',
-            'probation_end_date' => 'nullable|date|after:start_date',
-            'benefits' => 'nullable|array',
-            'clauses' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         $employeeBelongsToCompany = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -105,7 +94,7 @@ class ContractController extends Controller
             ->response();
     }
 
-    public function update(Request $request, Contract $contract): JsonResponse
+    public function update(UpdateContractRequest $request, Contract $contract): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -116,23 +105,7 @@ class ContractController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'contract_type' => 'sometimes|in:cdi,cdd,stage,freelance,interim',
-            'reference' => 'nullable|string|max:50',
-            'end_date' => 'nullable|date',
-            'job_title' => 'nullable|string|max:150',
-            'department_id' => 'nullable|integer|exists:departments,id',
-            'position_id' => 'nullable|integer|exists:positions,id',
-            'base_salary' => 'sometimes|numeric|min:0',
-            'currency' => 'nullable|string|max:3',
-            'salary_frequency' => 'nullable|in:monthly,hourly,daily',
-            'work_hours_per_week' => 'nullable|numeric|min:0|max:168',
-            'probation_end_date' => 'nullable|date',
-            'benefits' => 'nullable|array',
-            'clauses' => 'nullable|array',
-            'status' => 'sometimes|in:draft,active,suspended,terminated',
-            'termination_reason' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['status']) && $validated['status'] === 'terminated') {
             $validated['terminated_at'] = now();
@@ -165,7 +138,7 @@ class ContractController extends Controller
             ->response();
     }
 
-    public function storeAmendment(Request $request, Contract $contract): JsonResponse
+    public function storeAmendment(StoreAmendmentContractRequest $request, Contract $contract): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -176,12 +149,7 @@ class ContractController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'amendment_type' => 'required|in:salary_change,position_change,hours_change,renewal,other',
-            'changes' => 'required|array',
-            'effective_date' => 'required|date',
-            'reason' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $amendment = ContractAmendment::create([
             'contract_id' => $contract->id,
@@ -256,7 +224,7 @@ class ContractController extends Controller
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
 
-    public function terminate(Request $request, Contract $contract): JsonResponse
+    public function terminate(TerminateContractRequest $request, Contract $contract): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -270,9 +238,7 @@ class ContractController extends Controller
             return response()->json(['message' => 'Contract must be active or suspended to terminate.'], 422);
         }
 
-        $validated = $request->validate([
-            'termination_reason' => 'required|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $contract->update([
             'status' => 'terminated',
@@ -286,7 +252,7 @@ class ContractController extends Controller
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
 
-    public function renew(Request $request, Contract $contract): JsonResponse
+    public function renew(RenewContractRequest $request, Contract $contract): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -297,11 +263,7 @@ class ContractController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'base_salary' => 'nullable|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $newContract = DB::transaction(function () use ($contract, $validated, $actor) {
             $newContract = Contract::create([

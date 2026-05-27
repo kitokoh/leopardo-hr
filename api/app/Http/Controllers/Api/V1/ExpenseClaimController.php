@@ -11,6 +11,7 @@ use App\Models\ExpenseClaim;
 use App\Models\ExpenseItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Expense\StoreExpenseClaimRequest;
 
 class ExpenseClaimController extends Controller
 {
@@ -36,20 +37,12 @@ class ExpenseClaimController extends Controller
             ->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreExpenseClaimRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:200',
-            'description' => 'nullable|string',
-            'items' => 'required|array|min:1',
-            'items.*.category' => 'required|in:transport,meals,accommodation,office,communication,other',
-            'items.*.description' => 'required|string|max:255',
-            'items.*.amount' => 'required|numeric|min:0.01',
-            'items.*.date' => 'required|date',
-        ]);
+        $validated = $request->validated();
 
         $claim = ExpenseClaim::create([
             'company_id' => $actor->company_id,

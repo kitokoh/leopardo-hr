@@ -7,6 +7,7 @@ use App\Models\UserInvitation;
 use App\Services\UserInvitationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Onboarding\ActivateOnboardingRequest;
 
 /**
  * Module 6 — Public Onboarding API
@@ -77,11 +78,9 @@ class OnboardingController extends Controller
      * Active le compte de l'employé en définissant son mot de passe.
      * Retourne un token Sanctum pour connexion immédiate après activation.
      */
-    public function activate(Request $request, string $token): JsonResponse
+    public function activate(ActivateOnboardingRequest $request, string $token): JsonResponse
     {
-        $validated = $request->validate([
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        $validated = $request->validated();
 
         // Check token validity before calling service
         $invitation = UserInvitation::query()

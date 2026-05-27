@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Models\TaxSlab;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Payroll\StoreTaxSlabRequest;
+use App\Http\Requests\Api\V1\Payroll\UpdateTaxSlabRequest;
 
 class TaxSlabController extends Controller
 {
@@ -28,7 +30,7 @@ class TaxSlabController extends Controller
         return TaxSlabResource::collection($query->orderBy('country_code')->orderBy('min_amount')->get())->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaxSlabRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -36,16 +38,7 @@ class TaxSlabController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN',
-            'name' => 'required|string|max:150',
-            'min_amount' => 'required|numeric|min:0',
-            'max_amount' => 'nullable|numeric|min:0',
-            'rate' => 'required|numeric|min:0|max:100',
-            'fixed_deduction' => 'nullable|numeric|min:0',
-            'effective_from' => 'required|date',
-            'effective_to' => 'nullable|date|after:effective_from',
-        ]);
+        $validated = $request->validated();
 
         $slab = TaxSlab::create([
             'company_id' => $actor->company_id,
@@ -64,7 +57,7 @@ class TaxSlabController extends Controller
             ->setStatusCode(201);
     }
 
-    public function update(Request $request, TaxSlab $taxSlab): JsonResponse
+    public function update(UpdateTaxSlabRequest $request, TaxSlab $taxSlab): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -72,15 +65,7 @@ class TaxSlabController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:150',
-            'min_amount' => 'sometimes|numeric|min:0',
-            'max_amount' => 'nullable|numeric|min:0',
-            'rate' => 'sometimes|numeric|min:0|max:100',
-            'fixed_deduction' => 'sometimes|numeric|min:0',
-            'effective_from' => 'sometimes|date',
-            'effective_to' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $taxSlab->update($validated);
 

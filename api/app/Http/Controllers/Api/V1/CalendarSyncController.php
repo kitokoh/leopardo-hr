@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Services\CalendarSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Calendar\ConnectCalendarSyncRequest;
+use App\Http\Requests\Api\V1\Calendar\EventsCalendarSyncRequest;
 
 class CalendarSyncController extends Controller
 {
@@ -37,17 +39,9 @@ class CalendarSyncController extends Controller
         return new JsonResponse(['data' => $connections]);
     }
 
-    public function connect(Request $request): JsonResponse
+    public function connect(ConnectCalendarSyncRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'provider' => ['required', 'in:google,outlook,caldav'],
-            'access_token' => ['required', 'string'],
-            'refresh_token' => ['nullable', 'string'],
-            'calendar_id' => ['nullable', 'string', 'max:255'],
-            'expires_in' => ['nullable', 'integer'],
-            'sync_leaves' => ['nullable', 'boolean'],
-            'sync_training' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $user */
         $user = $request->user();
@@ -107,12 +101,9 @@ class CalendarSyncController extends Controller
         ]);
     }
 
-    public function events(Request $request): JsonResponse
+    public function events(EventsCalendarSyncRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'from' => ['required', 'date'],
-            'to' => ['required', 'date', 'after_or_equal:from'],
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $user */
         $user = $request->user();

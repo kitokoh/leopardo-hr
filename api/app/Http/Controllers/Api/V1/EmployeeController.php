@@ -19,6 +19,7 @@ use App\Services\EmployeeService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Employee\EmployeeIndexRequest;
 use Illuminate\Support\Collection;
 
 class EmployeeController extends Controller
@@ -48,22 +49,14 @@ class EmployeeController extends Controller
         mobile_compatible: true
     )]
     #[RequiresPermission('employees.view')]
-    public function index(Request $request): JsonResponse
+    public function index(EmployeeIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $this->authorize('viewAny', Employee::class);
 
-        $validated = $request->validate([
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'status' => ['nullable', 'in:active,archived,suspended'],
-            'role' => ['nullable', 'in:employee,manager,admin,super_admin'],
-            'search' => ['nullable', 'string', 'max:100'],
-            'sort_by' => ['nullable', 'in:id,first_name,last_name,email,role,status'],
-            'sort_dir' => ['nullable', 'in:asc,desc'],
-        ]);
+        $validated = $request->validated();
 
         $perPage = (int) ($validated['per_page'] ?? 20);
         $sortBy = (string) ($validated['sort_by'] ?? 'id');

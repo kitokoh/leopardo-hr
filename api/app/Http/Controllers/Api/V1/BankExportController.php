@@ -12,10 +12,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Http\Requests\Api\V1\Payroll\GenerateBankExportRequest;
 
 class BankExportController extends Controller
 {
-    public function generate(Request $request, PayrollRun $payrollRun): JsonResponse
+    public function generate(GenerateBankExportRequest $request, PayrollRun $payrollRun): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -30,9 +31,7 @@ class BankExportController extends Controller
             return response()->json(['message' => 'Payroll run must be validated before generating bank export.'], 422);
         }
 
-        $validated = $request->validate([
-            'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
-        ]);
+        $validated = $request->validated();
 
         $generator = new BankExportGenerator;
         $format = $validated['format'];

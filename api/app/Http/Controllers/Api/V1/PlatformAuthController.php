@@ -9,6 +9,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\Api\V1\Platform\Disable2faPlatformAuthRequest;
+use App\Http\Requests\Api\V1\Platform\Enable2faPlatformAuthRequest;
+use App\Http\Requests\Api\V1\Platform\LoginPlatformAuthRequest;
 
 class PlatformAuthController extends Controller
 {
@@ -16,14 +19,9 @@ class PlatformAuthController extends Controller
         private readonly SuperAdminService $superAdminService,
     ) {}
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginPlatformAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-            'device_name' => ['nullable', 'string', 'max:255'],
-            'two_fa_code' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         /** @var SuperAdmin|null $superAdmin */
         $superAdmin = SuperAdmin::query()->where('email', $validated['email'])->first();
@@ -116,11 +114,9 @@ class PlatformAuthController extends Controller
         ]);
     }
 
-    public function enable2fa(Request $request): JsonResponse
+    public function enable2fa(Enable2faPlatformAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'code' => ['required', 'string'],
-        ]);
+        $validated = $request->validated();
 
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_api');
@@ -159,11 +155,9 @@ class PlatformAuthController extends Controller
         return new JsonResponse(['status' => 'ok']);
     }
 
-    public function disable2fa(Request $request): JsonResponse
+    public function disable2fa(Disable2faPlatformAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'password' => ['required', 'string'],
-        ]);
+        $validated = $request->validated();
 
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_api');

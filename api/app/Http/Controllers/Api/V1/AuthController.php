@@ -18,6 +18,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
+use App\Http\Requests\Api\V1\Auth\HandleGoogleTokenAuthRequest;
+use App\Http\Requests\Api\V1\Auth\UpdateLanguageAuthRequest;
 
 class AuthController extends Controller
 {
@@ -94,20 +96,9 @@ class AuthController extends Controller
         return (new EmployeeResource($fresh))->response();
     }
 
-    public function updateLanguage(Request $request): JsonResponse
+    public function updateLanguage(UpdateLanguageAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'language' => [
-                'required',
-                'string',
-                'size:2',
-                function (string $attribute, mixed $value, \Closure $fail): void {
-                    if (! is_string($value) || ! Language::isSupported($value)) {
-                        $fail(__('validation.in', ['attribute' => $attribute]));
-                    }
-                },
-            ],
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $employee */
         $employee = $request->user();
@@ -213,12 +204,9 @@ class AuthController extends Controller
             ->setStatusCode(201);
     }
 
-    public function handleGoogleToken(Request $request): JsonResponse
+    public function handleGoogleToken(HandleGoogleTokenAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'token' => 'required|string',
-            'device_name' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         try {
             $googleUser = Socialite::driver('google')->stateless()->userFromToken($validated['token']);

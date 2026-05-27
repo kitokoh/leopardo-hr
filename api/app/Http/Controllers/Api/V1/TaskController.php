@@ -12,12 +12,17 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use App\Http\Requests\Api\V1\Task\AddCommentTaskRequest;
+use App\Http\Requests\Api\V1\Task\StoreTaskRequest;
+use App\Http\Requests\Api\V1\Task\TaskIndexRequest;
+use App\Http\Requests\Api\V1\Task\UpdateTaskRequest;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
+
 class TaskController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(TaskIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -47,25 +52,11 @@ class TaskController extends Controller
             ->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:200'],
-            'description' => ['nullable', 'string'],
-            'assigned_to' => ['nullable', 'array'],
-            'assigned_to.*' => ['integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $actor->company_id))],
-            'project_id' => ['nullable', 'integer', 'min:1'],
-            'due_date' => ['required', 'date'],
-            'priority' => ['nullable', 'in:low,normal,high,urgent'],
-            'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
-            'recurrence_rule' => ['nullable', 'string', 'max:120'],
-            'template_key' => ['nullable', 'string', 'max:100'],
-            'category' => ['nullable', 'string', 'max:100'],
-            'visibility' => ['nullable', 'in:private,visible'],
-            'checklist' => ['nullable', 'array'],
-        ]);
+        $data = $request->validated();
 
         if (! $actor->isManager()) {
             $assignedTo = $data['assigned_to'] ?? [$actor->id];
@@ -104,7 +95,7 @@ class TaskController extends Controller
         return (new TaskResource($task->load('comments.author')))->response();
     }
 
-    public function update(Request $request, Task $task): JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -117,24 +108,7 @@ class TaskController extends Controller
             abort(403);
         }
 
-        $data = $request->validate([
-            'title' => ['sometimes', 'string', 'max:200'],
-            'description' => ['nullable', 'string'],
-            'assigned_to' => ['sometimes', 'array'],
-            'assigned_to.*' => ['integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $actor->company_id))],
-            'project_id' => ['nullable', 'integer', 'min:1'],
-            'due_date' => ['sometimes', 'date'],
-            'priority' => ['sometimes', 'in:low,normal,high,urgent'],
-            'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
-            'completed_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
-            'completion_note' => ['nullable', 'string', 'max:1000'],
-            'recurrence_rule' => ['nullable', 'string', 'max:120'],
-            'template_key' => ['nullable', 'string', 'max:100'],
-            'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'],
-            'category' => ['nullable', 'string', 'max:100'],
-            'visibility' => ['sometimes', 'in:private,visible'],
-            'checklist' => ['nullable', 'array'],
-        ]);
+        $data = $request->validated();
         if (! $actor->isManager()) {
             $data = Arr::only($data, ['status', 'completed_minutes', 'completion_note']);
         }
@@ -145,23 +119,7 @@ class TaskController extends Controller
         return (new TaskResource($task->fresh()))->response();
     }
 
-    public function destroy(Request $request, Task $task): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($task->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager() && $task->created_by !== $actor->id) {
-            abort(403);
-        }
-
-        $task->delete();
-
-        return response()->json(['message' => 'Task deleted successfully']);
-    }
-
-    public function addComment(Request $request, Task $task): JsonResponse
+    public function addComment(AddCommentTaskRequest $request, Task $task): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -169,8 +127,7 @@ class TaskController extends Controller
             abort(404);
         }
 
-        $data = $request->validate(['content' => ['required', 'string', 'max:5000']]);
-        $comment = TaskComment::create(['company_id' => $actor->company_id, 'task_id' => $task->id, 'author_id' => $actor->id, 'content' => $data['content']]);
+        $data = $request->validated();
 
         return (new TaskCommentResource($comment))
             ->response()

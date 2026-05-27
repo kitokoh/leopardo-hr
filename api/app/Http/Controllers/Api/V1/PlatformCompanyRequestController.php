@@ -11,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\Api\V1\Platform\PlatformCompanyRequestIndexRequest;
+use App\Http\Requests\Api\V1\Platform\UpdateStatusPlatformCompanyRequestRequest;
 
 class PlatformCompanyRequestController extends Controller
 {
@@ -18,13 +20,9 @@ class PlatformCompanyRequestController extends Controller
         private readonly CompanyProvisioningService $companyProvisioningService,
     ) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(PlatformCompanyRequestIndexRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => ['nullable', 'string', Rule::in(['pending', 'approved', 'rejected'])],
-            'search' => ['nullable', 'string', 'max:100'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
         $query = CompanyRequest::with('user:id,first_name,last_name,email')
             ->latest();
@@ -102,17 +100,13 @@ class PlatformCompanyRequestController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, int $id): JsonResponse
+    public function updateStatus(UpdateStatusPlatformCompanyRequestRequest $request, int $id): JsonResponse
     {
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('SET search_path TO public');
         }
 
-        $validated = $request->validate([
-            'status' => ['required', 'in:approved,rejected'],
-            'admin_notes' => ['nullable', 'string', 'max:2000'],
-            'plan_id' => ['nullable', 'integer', Rule::exists('plans', 'id')],
-        ]);
+        $validated = $request->validated();
 
         $companyRequest = CompanyRequest::with('user:id,first_name,last_name,email,phone')->findOrFail($id);
 

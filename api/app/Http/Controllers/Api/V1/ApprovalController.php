@@ -14,6 +14,10 @@ use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Api\V1\Approval\ApproveApprovalRequest;
+use App\Http\Requests\Api\V1\Approval\RejectApprovalRequest;
+use App\Http\Requests\Api\V1\Approval\StoreWorkflowApprovalRequest;
+use App\Http\Requests\Api\V1\Approval\UpdateWorkflowApprovalRequest;
 
 class ApprovalController extends Controller
 {
@@ -34,7 +38,7 @@ class ApprovalController extends Controller
         return ApprovalWorkflowResource::collection($workflows)->response();
     }
 
-    public function storeWorkflow(Request $request): JsonResponse
+    public function storeWorkflow(StoreWorkflowApprovalRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -42,16 +46,7 @@ class ApprovalController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'model_type' => 'required|string|max:100',
-            'levels' => 'required|array|min:1',
-            'levels.*.level' => 'required|integer|min:1',
-            'levels.*.approver_type' => 'required|string',
-            'auto_approve_below' => 'nullable|numeric|min:0',
-            'escalation_hours' => 'nullable|integer|min:1',
-            'active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $workflow = ApprovalWorkflow::create([
             ...$validated,
@@ -63,7 +58,7 @@ class ApprovalController extends Controller
             ->setStatusCode(201);
     }
 
-    public function updateWorkflow(Request $request, ApprovalWorkflow $approvalWorkflow): JsonResponse
+    public function updateWorkflow(UpdateWorkflowApprovalRequest $request, ApprovalWorkflow $approvalWorkflow): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -74,13 +69,7 @@ class ApprovalController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:150',
-            'levels' => 'sometimes|array|min:1',
-            'auto_approve_below' => 'nullable|numeric|min:0',
-            'escalation_hours' => 'nullable|integer|min:1',
-            'active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $approvalWorkflow->update($validated);
 
@@ -118,7 +107,7 @@ class ApprovalController extends Controller
         return ApprovalRequestResource::collection($requests)->response();
     }
 
-    public function approve(Request $request, ApprovalRequest $approvalRequest): ApprovalRequestResource
+    public function approve(ApproveApprovalRequest $request, ApprovalRequest $approvalRequest): ApprovalRequestResource
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -129,9 +118,7 @@ class ApprovalController extends Controller
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
 
-        $validated = $request->validate([
-            'comment' => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $result = DB::transaction(function () use ($approvalRequest, $actor, $validated) {
             ApprovalDecision::create([
@@ -159,7 +146,7 @@ class ApprovalController extends Controller
         return new ApprovalRequestResource($result->load('decisions'));
     }
 
-    public function reject(Request $request, ApprovalRequest $approvalRequest): ApprovalRequestResource
+    public function reject(RejectApprovalRequest $request, ApprovalRequest $approvalRequest): ApprovalRequestResource
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -170,9 +157,7 @@ class ApprovalController extends Controller
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
 
-        $validated = $request->validate([
-            'comment' => 'required|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $result = DB::transaction(function () use ($approvalRequest, $actor, $validated) {
             ApprovalDecision::create([

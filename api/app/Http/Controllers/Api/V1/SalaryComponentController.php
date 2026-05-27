@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Models\SalaryComponent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Payroll\StoreSalaryComponentRequest;
+use App\Http\Requests\Api\V1\Payroll\UpdateSalaryComponentRequest;
 
 class SalaryComponentController extends Controller
 {
@@ -36,7 +38,7 @@ class SalaryComponentController extends Controller
         return SalaryComponentResource::collection($query->orderBy('order')->get())->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreSalaryComponentRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -44,19 +46,7 @@ class SalaryComponentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'salary_structure_id' => 'nullable|integer|exists:salary_structures,id',
-            'name' => 'required|string|max:150',
-            'code' => 'required|string|max:50',
-            'type' => 'required|in:earning,deduction,employer_contribution',
-            'calculation_type' => 'required|in:fixed,percentage_of_base,percentage_of_gross,formula',
-            'amount' => 'nullable|numeric|min:0',
-            'percentage' => 'nullable|numeric|min:0|max:100',
-            'formula' => 'nullable|string|max:500',
-            'is_taxable' => 'nullable|boolean',
-            'is_recurring' => 'nullable|boolean',
-            'order' => 'nullable|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         $component = SalaryComponent::create([
             'company_id' => $actor->company_id,
@@ -93,7 +83,7 @@ class SalaryComponentController extends Controller
         return (new SalaryComponentResource($salaryComponent))->response();
     }
 
-    public function update(Request $request, SalaryComponent $salaryComponent): JsonResponse
+    public function update(UpdateSalaryComponentRequest $request, SalaryComponent $salaryComponent): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -104,19 +94,7 @@ class SalaryComponentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:150',
-            'code' => 'sometimes|string|max:50',
-            'type' => 'sometimes|in:earning,deduction,employer_contribution',
-            'calculation_type' => 'sometimes|in:fixed,percentage_of_base,percentage_of_gross,formula',
-            'amount' => 'nullable|numeric|min:0',
-            'percentage' => 'nullable|numeric|min:0|max:100',
-            'formula' => 'nullable|string|max:500',
-            'is_taxable' => 'sometimes|boolean',
-            'is_recurring' => 'sometimes|boolean',
-            'order' => 'sometimes|integer|min:0',
-            'active' => 'sometimes|boolean',
-        ]);
+        $validated = $request->validated();
 
         $salaryComponent->update($validated);
 

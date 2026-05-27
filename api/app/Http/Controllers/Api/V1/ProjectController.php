@@ -8,10 +8,13 @@ use App\Models\Employee;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Project\ProjectIndexRequest;
+use App\Http\Requests\Api\V1\Project\StoreProjectRequest;
+use App\Http\Requests\Api\V1\Project\UpdateProjectRequest;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ProjectIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -31,7 +34,7 @@ class ProjectController extends Controller
             ->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProjectRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -39,8 +42,7 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d', 'gte:start_date'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
-        $project = Project::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'members' => $data['members'] ?? [], 'status' => $data['status'] ?? 'active', ...$data]);
+        $data = $request->validated();
 
         return (new ProjectResource($project))
             ->response()
@@ -61,7 +63,7 @@ class ProjectController extends Controller
         return (new ProjectResource($project))->response();
     }
 
-    public function update(Request $request, Project $project): JsonResponse
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -72,25 +74,6 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['name' => ['sometimes', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
-        $project->update($data);
-
-        return (new ProjectResource($project->fresh()))->response();
-    }
-
-    public function destroy(Request $request, Project $project): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ($project->company_id !== $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-
-        $project->delete();
-
-        return response()->json(['message' => 'Project deleted successfully']);
+        $data = $request->validated();
     }
 }

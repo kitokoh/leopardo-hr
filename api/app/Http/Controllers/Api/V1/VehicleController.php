@@ -13,6 +13,9 @@ use App\Models\Vehicle;
 use App\Services\Tracking\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Fleet\AssignVehicleRequest;
+use App\Http\Requests\Api\V1\Fleet\StoreVehicleRequest;
+use App\Http\Requests\Api\V1\Fleet\UpdateVehicleRequest;
 
 class VehicleController extends Controller
 {
@@ -35,24 +38,9 @@ class VehicleController extends Controller
         return VehicleResource::collection($vehicles)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreVehicleRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'plate_number' => 'required|string|max:20',
-            'brand' => 'nullable|string|max:100',
-            'model' => 'nullable|string|max:100',
-            'year' => 'nullable|integer|min:1900|max:2100',
-            'type' => 'nullable|in:car,van,truck,motorcycle,bus',
-            'vin' => 'nullable|string|max:17',
-            'fuel_type' => 'nullable|in:diesel,gasoline,electric,hybrid,lpg',
-            'status' => 'nullable|in:active,maintenance,decommissioned',
-            'mileage' => 'nullable|integer|min:0',
-            'insurance_expiry' => 'nullable|date',
-            'technical_control_expiry' => 'nullable|date',
-            'traccar_unique_id' => 'nullable|string|max:50',
-            'assigned_driver_id' => 'nullable|integer',
-            'metadata' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         /** @var Employee $user */
         $user = $request->user();
@@ -74,28 +62,13 @@ class VehicleController extends Controller
         return (new VehicleResource($vehicle))->response();
     }
 
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateVehicleRequest $request, int $id): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
-        $validated = $request->validate([
-            'plate_number' => 'sometimes|string|max:20',
-            'brand' => 'nullable|string|max:100',
-            'model' => 'nullable|string|max:100',
-            'year' => 'nullable|integer|min:1900|max:2100',
-            'type' => 'nullable|in:car,van,truck,motorcycle,bus',
-            'vin' => 'nullable|string|max:17',
-            'fuel_type' => 'nullable|in:diesel,gasoline,electric,hybrid,lpg',
-            'status' => 'nullable|in:active,maintenance,decommissioned',
-            'mileage' => 'nullable|integer|min:0',
-            'insurance_expiry' => 'nullable|date',
-            'technical_control_expiry' => 'nullable|date',
-            'traccar_unique_id' => 'nullable|string|max:50',
-            'assigned_driver_id' => 'nullable|integer',
-            'metadata' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
         $vehicle->update($validated);
 
@@ -166,17 +139,13 @@ class VehicleController extends Controller
         return VehicleMaintenanceResource::collection($records)->response();
     }
 
-    public function assign(Request $request, int $id): JsonResponse
+    public function assign(AssignVehicleRequest $request, int $id): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
-        $validated = $request->validate([
-            'employee_id' => 'required|integer',
-            'start_date' => 'required|date',
-            'reason' => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $vehicle->assignments()->create([
             'employee_id' => $validated['employee_id'],

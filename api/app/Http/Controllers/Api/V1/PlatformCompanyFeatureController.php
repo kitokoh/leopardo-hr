@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Services\FeatureFlag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Platform\UpdatePlatformCompanyFeatureRequest;
 
 class PlatformCompanyFeatureController extends Controller
 {
@@ -23,14 +24,11 @@ class PlatformCompanyFeatureController extends Controller
         ]);
     }
 
-    public function update(Request $request, string $companyId): JsonResponse
+    public function update(UpdatePlatformCompanyFeatureRequest $request, string $companyId): JsonResponse
     {
         $company = Company::query()->findOrFail($companyId);
 
-        $validated = $request->validate([
-            'features' => ['required', 'array'],
-            'features.*' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         $features = [];
         foreach (Company::KNOWN_MODULES as $module) {

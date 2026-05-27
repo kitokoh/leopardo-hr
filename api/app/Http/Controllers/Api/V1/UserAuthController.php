@@ -9,6 +9,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Http\Requests\Api\V1\Auth\ChangePasswordUserAuthRequest;
+use App\Http\Requests\Api\V1\Auth\GoogleSignInUserAuthRequest;
+use App\Http\Requests\Api\V1\Auth\LoginUserAuthRequest;
+use App\Http\Requests\Api\V1\Auth\RegisterUserAuthRequest;
+use App\Http\Requests\Api\V1\Auth\UpdateProfileUserAuthRequest;
 
 class UserAuthController extends Controller
 {
@@ -16,15 +21,9 @@ class UserAuthController extends Controller
         private readonly UserAuthService $userAuthService,
     ) {}
 
-    public function register(Request $request): JsonResponse
+    public function register(RegisterUserAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', Password::min(8)],
-            'phone' => ['nullable', 'string', 'max:20'],
-        ]);
+        $validated = $request->validated();
 
         $result = $this->userAuthService->register(
             firstName: $validated['first_name'],
@@ -41,13 +40,9 @@ class UserAuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginUserAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-            'device_name' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         $result = $this->userAuthService->login(
             email: $validated['email'],
@@ -62,15 +57,9 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function googleSignIn(Request $request): JsonResponse
+    public function googleSignIn(GoogleSignInUserAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'google_id' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'avatar_url' => ['nullable', 'url', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         $result = $this->userAuthService->googleSignIn(
             googleId: $validated['google_id'],
@@ -98,14 +87,9 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function updateProfile(Request $request): JsonResponse
+    public function updateProfile(UpdateProfileUserAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['sometimes', 'string', 'max:100'],
-            'last_name' => ['sometimes', 'string', 'max:100'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'preferred_language' => ['sometimes', 'string', 'size:2'],
-        ]);
+        $validated = $request->validated();
 
         /** @var User $user */
         $user = $request->user('user_api');
@@ -119,12 +103,9 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function changePassword(Request $request): JsonResponse
+    public function changePassword(ChangePasswordUserAuthRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', Password::min(8), 'confirmed'],
-        ]);
+        $validated = $request->validated();
 
         /** @var User $user */
         $user = $request->user('user_api');

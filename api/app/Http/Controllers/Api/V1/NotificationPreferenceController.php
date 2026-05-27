@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\NotificationPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Notification\UpdateNotificationPreferenceRequest;
 
 class NotificationPreferenceController extends Controller
 {
@@ -22,26 +23,12 @@ class NotificationPreferenceController extends Controller
             ->setStatusCode(200);
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(UpdateNotificationPreferenceRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $validated = $request->validate([
-            'app_enabled' => ['sometimes', 'boolean'],
-            'email_enabled' => ['sometimes', 'boolean'],
-            'push_enabled' => ['sometimes', 'boolean'],
-            'sms_enabled' => ['sometimes', 'boolean'],
-            'whatsapp_enabled' => ['sometimes', 'boolean'],
-            'locale' => ['sometimes', 'nullable', 'in:fr,ar,en,tr'],
-            'timezone' => ['sometimes', 'nullable', 'string', 'max:64'],
-            'categories' => ['sometimes', 'array'],
-            'categories.*' => ['boolean'],
-            'quiet_hours' => ['sometimes', 'array'],
-            'quiet_hours.enabled' => ['sometimes', 'boolean'],
-            'quiet_hours.start' => ['sometimes', 'nullable', 'date_format:H:i'],
-            'quiet_hours.end' => ['sometimes', 'nullable', 'date_format:H:i'],
-        ]);
+        $validated = $request->validated();
 
         $preferences = $this->preferencesFor($employee);
         $preferences->fill($validated);

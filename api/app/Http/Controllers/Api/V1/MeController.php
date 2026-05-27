@@ -10,6 +10,9 @@ use App\Services\EstimationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Http\Requests\Api\V1\Me\DailySummaryMeRequest;
+use App\Http\Requests\Api\V1\Me\MonthlySummaryMeRequest;
+use App\Http\Requests\Api\V1\Me\QuickEstimateMeRequest;
 
 /**
  * MeController — endpoints self-service pour l'employe connecte.
@@ -25,14 +28,12 @@ class MeController extends Controller
 {
     public function __construct(private readonly EstimationService $estimationService) {}
 
-    public function dailySummary(Request $request): JsonResponse
+    public function dailySummary(DailySummaryMeRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        $request->validate([
-            'date' => ['nullable', 'date_format:Y-m-d'],
-        ]);
+        $validated = $request->validated();
 
         $company = currentCompany();
         $date = $request->input('date');
@@ -54,7 +55,7 @@ class MeController extends Controller
         return (new AttendanceTodayResource($employee, $log, $company->timezone, $summary))->response();
     }
 
-    public function quickEstimate(Request $request): JsonResponse
+    public function quickEstimate(QuickEstimateMeRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
@@ -64,10 +65,7 @@ class MeController extends Controller
         $defaultFrom = $today->copy()->startOfMonth()->toDateString();
         $defaultTo = $today->toDateString();
 
-        $validated = $request->validate([
-            'from' => ['nullable', 'date_format:Y-m-d'],
-            'to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
-        ]);
+        $validated = $request->validated();
 
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,
@@ -78,7 +76,7 @@ class MeController extends Controller
         return new JsonResponse(['data' => $estimate]);
     }
 
-    public function monthlySummary(Request $request): JsonResponse
+    public function monthlySummary(MonthlySummaryMeRequest $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
@@ -86,10 +84,7 @@ class MeController extends Controller
         $company = currentCompany();
         $today = now('UTC')->setTimezone($company->timezone)->startOfDay();
 
-        $validated = $request->validate([
-            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
-            'month' => ['nullable', 'integer', 'min:1', 'max:12'],
-        ]);
+        $validated = $request->validated();
 
         $year = (int) ($validated['year'] ?? $today->format('Y'));
         $month = (int) ($validated['month'] ?? $today->format('m'));

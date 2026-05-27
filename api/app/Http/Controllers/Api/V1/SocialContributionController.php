@@ -8,6 +8,8 @@ use App\Models\Employee;
 use App\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\Social\StoreSocialContributionRequest;
+use App\Http\Requests\Api\V1\Social\UpdateSocialContributionRequest;
 
 class SocialContributionController extends Controller
 {
@@ -32,7 +34,7 @@ class SocialContributionController extends Controller
         return SocialContributionResource::collection($query->orderBy('country_code')->orderBy('type')->orderBy('name')->get())->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreSocialContributionRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -40,16 +42,7 @@ class SocialContributionController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN',
-            'name' => 'required|string|max:150',
-            'code' => 'required|string|max:50|unique:social_contributions,code',
-            'type' => 'required|in:employee,employer',
-            'rate' => 'required|numeric|min:0|max:100',
-            'cap' => 'nullable|numeric|min:0',
-            'effective_from' => 'required|date',
-            'effective_to' => 'nullable|date|after:effective_from',
-        ]);
+        $validated = $request->validated();
 
         $contribution = SocialContribution::create([
             'company_id' => $actor->company_id,
@@ -68,7 +61,7 @@ class SocialContributionController extends Controller
             ->setStatusCode(201);
     }
 
-    public function update(Request $request, SocialContribution $socialContribution): JsonResponse
+    public function update(UpdateSocialContributionRequest $request, SocialContribution $socialContribution): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -76,14 +69,7 @@ class SocialContributionController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:150',
-            'type' => 'sometimes|in:employee,employer',
-            'rate' => 'sometimes|numeric|min:0|max:100',
-            'cap' => 'nullable|numeric|min:0',
-            'effective_from' => 'sometimes|date',
-            'effective_to' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $socialContribution->update($validated);
 

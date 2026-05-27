@@ -9,22 +9,16 @@ use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Api\V1\Notification\NotificationIndexRequest;
 
 class NotificationController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(NotificationIndexRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
 
-        $validated = $request->validate([
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'type' => ['nullable', 'string', 'max:80'],
-            'unread' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
-            'unread_only' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
-            'sort_dir' => ['nullable', 'in:asc,desc'],
-        ]);
+        $data = $request->validated();
 
         $query = $user->notifications();
 

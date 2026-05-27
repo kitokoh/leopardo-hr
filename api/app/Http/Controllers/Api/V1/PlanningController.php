@@ -9,16 +9,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Http\Requests\Api\V1\Planning\WeeklyOptimizationPlanningRequest;
 
 class PlanningController extends Controller
 {
     public function __construct(private readonly PlanningOptimizer $optimizer) {}
 
-    public function weeklyOptimization(Request $request): JsonResponse
+    public function weeklyOptimization(WeeklyOptimizationPlanningRequest $request): JsonResponse
     {
-        $request->validate([
-            'week_start' => 'sometimes|date',
-        ]);
+        $validated = $request->validated();
 
         $actor = $request->user();
         $companyId = $actor->company_id;
