@@ -982,13 +982,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final message = await ref
           .read(settingsRepositoryProvider)
           .submitCompanyQr(token);
-      if (!mounted) return;
+      if (!context.mounted) return;
       _companyQrController.clear();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
     } catch (e) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('QR refuse : $e')));
