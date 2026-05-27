@@ -24,28 +24,30 @@ class DashboardController extends Controller
             ->get();
 
         $logsByEmployeeAll = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'status', 'check_in', 'check_out', 'hours_worked', 'overtime_hours'])
+            ->select(['id', 'employee_id', 'date', 'session_number', 'status', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'work_type', 'late_minutes'])
             ->where('date', $today)
-            ->where('session_number', 1)
             ->get()
-            ->keyBy('employee_id');
+            ->groupBy('employee_id');
 
         $present = 0;
         $late = 0;
         $totalEstimated = 0.0;
 
         foreach ($allEmployees as $employee) {
-            $log = $logsByEmployeeAll->get($employee->id);
+            $logs = $logsByEmployeeAll->get($employee->id, collect());
+            $log = $logs
+                ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
+                ->first();
             $attendanceStatus = $log?->status ?? 'absent';
 
-            if ($attendanceStatus !== 'absent') {
+            if ($logs->isNotEmpty()) {
                 $present++;
             }
-            if ($attendanceStatus === 'late') {
+            if ($logs->contains(fn (AttendanceLog $log) => $log->status === 'late')) {
                 $late++;
             }
 
-            $summary = $this->estimationService->dailySummaryFromLog($employee, $log, $today);
+            $summary = $this->estimationService->dailySummaryFromLogs($employee, $logs, $today);
             $totalEstimated += (float) $summary['total_estimated'];
         }
 
@@ -60,9 +62,12 @@ class DashboardController extends Controller
 
         $rows = [];
         foreach ($paginator->items() as $employee) {
-            $log = $logsByEmployeeAll->get($employee->id);
+            $logs = $logsByEmployeeAll->get($employee->id, collect());
+            $log = $logs
+                ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
+                ->first();
             $attendanceStatus = $log?->status ?? 'absent';
-            $summary = $this->estimationService->dailySummaryFromLog($employee, $log, $today);
+            $summary = $this->estimationService->dailySummaryFromLogs($employee, $logs, $today);
 
             $rows[] = [
                 'employee' => $employee,

@@ -51,6 +51,8 @@ Note 2026-05-27 : le mobile employee consomme `GET /me/monthly-summary` pour l'e
 
 Note 2026-05-27 : le cockpit manager mobile consomme `GET /attendance`, `GET /attendance/anomalies`, `GET /attendance/corrections`, `PUT /attendance/corrections/{id}/approve` et `PUT /attendance/corrections/{id}/reject`. Les scenarios API doivent verifier l'isolation tenant, l'interdiction employee, la file `pending` paginee et l'application d'une correction employee en pointage manuel recalcule.
 
+Note 2026-05-27 : les estimations attendance doivent rester compatibles avec le pointage multi-session. Les scenarios API doivent verifier que `GET /me/daily-summary`, `GET /me/monthly-summary`, `GET /employees/{id}/daily-summary` et `GET /employees/{id}/quick-estimate` agregent toutes les sessions d'une journee, exposent `sessions_count`, et ne retombent jamais sur un filtre dur `session_number = 1`.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -120,6 +122,7 @@ Note 2026-05-27 : le cockpit manager mobile consomme `GET /attendance`, `GET /at
 - Check-out succes
 - Pointage multi-session : apres un check-out, un employe peut recreer une session le meme jour avec `work_type` (`resume`, `overtime`, `mission`, `travel`) et un `session_number` incremente.
 - `GET /attendance/today` expose `sessions` et `summary` pour afficher details de journee, pauses, heures supp et session ouverte sur mobile.
+- Les resumes et estimations `me` / `employees/{id}` additionnent toutes les sessions de la journee et retournent `sessions_count`, heures travaillees, heures supplementaires et gains sans ignorer les sessions 2+.
 - Double check-in interdit
 - Check-out sans check-in interdit
 - Historique presence retourne des donnees coherentes

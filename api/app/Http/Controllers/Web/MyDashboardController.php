@@ -29,7 +29,8 @@ class MyDashboardController extends Controller
         $todayLog = AttendanceLog::query()
             ->where('employee_id', $employee->id)
             ->where('date', $today)
-            ->where('session_number', 1)
+            ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
+            ->orderByDesc('session_number')
             ->first();
 
         $monthLogs = AttendanceLog::query()
