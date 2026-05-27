@@ -105,6 +105,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               _buildHeader(
                 firstName: employee?.firstName ?? 'Leo',
                 roleLabel: 'Employe',
+                tasksAsync: tasksAsync,
               ),
               const SizedBox(height: 22),
               _buildLiveClock(),
@@ -313,7 +314,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildHeader({required String firstName, required String roleLabel}) {
+  Widget _buildHeader({
+    required String firstName,
+    required String roleLabel,
+    required AsyncValue<List<Map<String, dynamic>>> tasksAsync,
+  }) {
     final initial =
         firstName.trim().isEmpty
             ? 'L'
@@ -388,19 +393,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           onSelected: (value) {
             switch (value) {
               case 'tasks':
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Les taches du jour arrivent dans le prochain lot.',
-                    ),
-                  ),
-                );
+                _showTasksSheet(context, tasksAsync);
                 break;
-              case 'monthly':
-                context.push('/me/monthly');
+              case 'history':
+                context.push('/history');
                 break;
               case 'preferences':
-              case 'profile':
+                context.push('/settings');
+                break;
+              case 'settings':
                 context.push('/settings');
                 break;
             }
@@ -415,9 +416,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   ),
                 ),
                 PopupMenuItem(
-                  value: 'monthly',
+                  value: 'history',
                   child: _MenuItem(
-                    icon: Icons.calendar_month_outlined,
+                    icon: Icons.history_outlined,
                     label: 'Historique',
                   ),
                 ),
@@ -429,15 +430,78 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   ),
                 ),
                 PopupMenuItem(
-                  value: 'profile',
+                  value: 'settings',
                   child: _MenuItem(
-                    icon: Icons.person_outline,
-                    label: 'Mon profil',
+                    icon: Icons.settings_outlined,
+                    label: 'Parametres',
                   ),
                 ),
               ],
         ),
       ],
+    );
+  }
+
+  void _showTasksSheet(
+    BuildContext context,
+    AsyncValue<List<Map<String, dynamic>>> tasksAsync,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+              child: tasksAsync.when(
+                loading:
+                    () => const _TasksSheetFrame(
+                      child: _SheetMessage(
+                        icon: Icons.sync,
+                        title: 'Synchronisation',
+                        body: 'Chargement des taches du jour...',
+                      ),
+                    ),
+                error:
+                    (_, __) => const _TasksSheetFrame(
+                      child: _SheetMessage(
+                        icon: Icons.wifi_off_outlined,
+                        title: 'Taches indisponibles',
+                        body:
+                            'Le pointage reste utilisable. Reessayez apres synchronisation.',
+                      ),
+                    ),
+                data:
+                    (tasks) => _TasksSheetFrame(
+                      child:
+                          tasks.isEmpty
+                              ? const _SheetMessage(
+                                icon: Icons.task_alt_outlined,
+                                title: 'Aucune tache aujourd hui',
+                                body:
+                                    'Vous pourrez pointer normalement. Les taches assignees apparaitront ici.',
+                              )
+                              : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const _SheetHeader(
+                                    title: 'Taches du jour',
+                                    subtitle:
+                                        'Cloturez ce qui est realise avant votre depart.',
+                                  ),
+                                  const SizedBox(height: 14),
+                                  ...tasks.map((task) => _TaskLine(task: task)),
+                                ],
+                              ),
+                    ),
+              ),
+            ),
+          ),
     );
   }
 
@@ -1044,6 +1108,107 @@ class _PunchChoice {
     required this.successLabel,
     required this.failureLabel,
   });
+}
+
+class _TasksSheetFrame extends StatelessWidget {
+  final Widget child;
+
+  const _TasksSheetFrame({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFF2A3C5A),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        child,
+      ],
+    );
+  }
+}
+
+class _SheetHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _SheetHeader({required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: _AttendanceScreenState._text,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            color: _AttendanceScreenState._muted,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SheetMessage extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String body;
+
+  const _SheetMessage({
+    required this.icon,
+    required this.title,
+    required this.body,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: AppColors.rh, size: 30),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: _AttendanceScreenState._text,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          body,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: _AttendanceScreenState._muted,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _TaskLine extends ConsumerWidget {
