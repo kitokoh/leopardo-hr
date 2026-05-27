@@ -589,7 +589,8 @@ Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /co
 - `GET /api/v1/dashboard/summary` resume (employes, departements, pointage today, absences pending)
 - `GET /api/v1/dashboard/recent-activity` activite recente depuis audit_logs
 - `GET /api/v1/dashboard/kpi` KPI mensuel (turnover, new hires, absence rate)
-- Couverture Feature requise : isolation tenant, limite recent activity, KPI compatible SQLite/PostgreSQL
+- `GET /api/v1/dashboard/manager-digest` signaux mobile manager du jour (presence, retards, sessions ouvertes, actions RH pending)
+- Couverture Feature requise : isolation tenant, scope equipe directe pour manager departement, limite recent activity, KPI compatible SQLite/PostgreSQL
 
 ### Notifications
 - `GET /api/v1/notifications` liste paginee avec unread_count

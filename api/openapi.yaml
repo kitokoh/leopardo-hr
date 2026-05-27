@@ -35,6 +35,7 @@ tags:
   - name: "HR Referentials"
   - name: "Notifications"
   - name: "Readiness"
+  - name: "Dashboard"
   - name: "Projects"
   - name: "Tasks"
   - name: "Evaluations"
@@ -148,6 +149,81 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LaunchReadinessResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /dashboard/manager-digest:
+    get:
+      tags: ["Dashboard"]
+      summary: "Lire les signaux manager du jour"
+      description: "Contrat mobile manager tenant-scope pour les presences, retards, sessions ouvertes et actions RH en attente."
+      responses:
+        "200":
+          description: "Digest manager du jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - date
+                      - team_scope
+                      - team_size
+                      - present
+                      - late
+                      - open_sessions
+                      - pending_actions
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      team_scope:
+                        type: string
+                        enum: ["company", "managed_team"]
+                      team_size:
+                        type: integer
+                        minimum: 0
+                      present:
+                        type: integer
+                        minimum: 0
+                      late:
+                        type: integer
+                        minimum: 0
+                      open_sessions:
+                        type: integer
+                        minimum: 0
+                      pending_actions:
+                        type: integer
+                        minimum: 0
+                      pending_absences:
+                        type: integer
+                        minimum: 0
+                      pending_salary_advances:
+                        type: integer
+                        minimum: 0
+                      pending_corrections:
+                        type: integer
+                        minimum: 0
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                            label:
+                              type: string
+                            count:
+                              type: integer
+                            severity:
+                              type: string
+                            route:
+                              type: string
         "401":
           $ref: "#/components/responses/Error401"
         "403":
