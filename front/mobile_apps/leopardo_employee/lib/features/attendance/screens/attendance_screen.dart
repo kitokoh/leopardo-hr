@@ -76,6 +76,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final attState = ref.watch(attendanceProvider);
     final historyMonth = attendanceHistoryMonthKey(_now);
     final weekAsync = ref.watch(historyProvider(historyMonth));
+    final tasksAsync = ref.watch(todayTasksProvider);
     final weekLogs = weekAsync.maybeWhen(
       data: (value) => value,
       orElse: () => const <AttendanceLog>[],
@@ -103,7 +104,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               _buildHeader(
                 firstName: employee?.firstName ?? 'Leo',
                 roleLabel: 'Employe',
-                canDirectEdit: canDirectEdit,
               ),
               const SizedBox(height: 22),
               _buildLiveClock(),
@@ -115,6 +115,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               ),
               const SizedBox(height: 22),
               _buildTodayCard(attState),
+              const SizedBox(height: 14),
+              _buildTodayTasks(tasksAsync),
               if (attState.error != null) ...[
                 const SizedBox(height: 12),
                 _buildNoticeCard(attState.error!, AppColors.danger),
@@ -145,15 +147,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   Future<void> _handlePunch(bool isCheckedIn) async {
     if (ref.read(attendanceProvider).isPunching) return;
     HapticFeedback.mediumImpact();
+    final state = ref.read(attendanceProvider);
+    final choice = await _choosePunchType(isCheckedIn, state.todaySessions);
+    if (choice == null) return;
+
     ScaffoldMessenger.of(context).clearSnackBars();
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       SnackBar(
-        content: Text(
-          isCheckedIn
-              ? 'Envoi du depart vers le serveur...'
-              : 'Envoi de l arrivee vers le serveur...',
-        ),
+        content: Text('${choice.loadingLabel} vers le serveur...'),
         duration: const Duration(seconds: 2),
         backgroundColor: AppColors.rhDark,
       ),
@@ -161,45 +163,155 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
     final success =
         isCheckedIn
-            ? await ref.read(attendanceProvider.notifier).checkOut()
-            : await ref.read(attendanceProvider.notifier).checkIn();
+            ? await ref
+                .read(attendanceProvider.notifier)
+                .checkOut(workType: choice.workType)
+            : await ref
+                .read(attendanceProvider.notifier)
+                .checkIn(workType: choice.workType);
     if (!mounted) return;
     messenger.clearSnackBars();
-    if (isCheckedIn) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            success
-                ? 'Depart confirme.'
-                : ref.read(attendanceProvider).error ??
-                    'Depart non confirme. Reessayez.',
-          ),
-          backgroundColor: success ? AppColors.rh : AppColors.danger,
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? choice.successLabel
+              : ref.read(attendanceProvider).error ??
+                  '${choice.failureLabel}. Reessayez.',
         ),
-      );
-    } else {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            success
-                ? 'Arrivee confirmee.'
-                : ref.read(attendanceProvider).error ??
-                    'Arrivee non confirmee. Reessayez.',
-          ),
-          backgroundColor: success ? AppColors.rh : AppColors.danger,
-        ),
-      );
-    }
+        backgroundColor: success ? AppColors.rh : AppColors.danger,
+      ),
+    );
     if (success) {
       ref.invalidate(historyProvider(attendanceHistoryMonthKey(_now)));
+      ref.invalidate(todayTasksProvider);
     }
   }
 
-  Widget _buildHeader({
-    required String firstName,
-    required String roleLabel,
-    required bool canDirectEdit,
-  }) {
+  Future<_PunchChoice?> _choosePunchType(
+    bool isCheckedIn,
+    List<AttendanceLog> sessions,
+  ) {
+    final choices =
+        isCheckedIn
+            ? const [
+              _PunchChoice(
+                workType: 'normal',
+                title: 'Terminer le travail',
+                subtitle: 'Enregistrer le depart de cette session',
+                loadingLabel: 'Envoi du depart',
+                successLabel: 'Depart confirme.',
+                failureLabel: 'Depart non confirme',
+              ),
+              _PunchChoice(
+                workType: 'break',
+                title: 'Partir en pause',
+                subtitle: 'Ferme la session et marque une pause',
+                loadingLabel: 'Envoi de la pause',
+                successLabel: 'Pause confirmee.',
+                failureLabel: 'Pause non confirmee',
+              ),
+            ]
+            : [
+              _PunchChoice(
+                workType: sessions.isEmpty ? 'normal' : 'resume',
+                title: sessions.isEmpty ? 'Arrivee normale' : 'Reprise',
+                subtitle:
+                    sessions.isEmpty
+                        ? 'Demarrer la journee'
+                        : 'Reprendre apres une pause',
+                loadingLabel:
+                    sessions.isEmpty ? 'Envoi de l arrivee' : 'Envoi reprise',
+                successLabel:
+                    sessions.isEmpty
+                        ? 'Arrivee confirmee.'
+                        : 'Reprise confirmee.',
+                failureLabel:
+                    sessions.isEmpty
+                        ? 'Arrivee non confirmee'
+                        : 'Reprise non confirmee',
+              ),
+              const _PunchChoice(
+                workType: 'overtime',
+                title: 'Heures supplementaires',
+                subtitle: 'Demarrer une session d heures supp',
+                loadingLabel: 'Envoi heures supplementaires',
+                successLabel: 'Heures supplementaires demarrees.',
+                failureLabel: 'Heures supplementaires non confirmees',
+              ),
+              const _PunchChoice(
+                workType: 'mission',
+                title: 'Mission',
+                subtitle: 'Temps de travail hors site habituel',
+                loadingLabel: 'Envoi mission',
+                successLabel: 'Mission demarree.',
+                failureLabel: 'Mission non confirmee',
+              ),
+              const _PunchChoice(
+                workType: 'travel',
+                title: 'Deplacement',
+                subtitle: 'Temps de deplacement professionnel',
+                loadingLabel: 'Envoi deplacement',
+                successLabel: 'Deplacement demarre.',
+                failureLabel: 'Deplacement non confirme',
+              ),
+            ];
+
+    return showModalBottomSheet<_PunchChoice>(
+      context: context,
+      backgroundColor: _card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (ctx) => Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2A3C5A),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Type de pointage',
+                    style: TextStyle(
+                      color: _text,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ...choices.map(
+                  (choice) => ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      choice.title,
+                      style: const TextStyle(color: _text),
+                    ),
+                    subtitle: Text(
+                      choice.subtitle,
+                      style: const TextStyle(color: _muted, fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right, color: _muted),
+                    onTap: () => Navigator.pop(ctx, choice),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  Widget _buildHeader({required String firstName, required String roleLabel}) {
     final initial =
         firstName.trim().isEmpty
             ? 'L'
@@ -273,16 +385,19 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ),
           onSelected: (value) {
             switch (value) {
-              case 'correction':
-                _showCorrectionSheet(
-                  context,
-                  canDirectEdit: canDirectEdit,
-                  logId: ref.read(attendanceProvider).todayLog?.id,
+              case 'tasks':
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Les taches du jour arrivent dans le prochain lot.',
+                    ),
+                  ),
                 );
                 break;
               case 'monthly':
                 context.push('/me/monthly');
                 break;
+              case 'preferences':
               case 'profile':
                 context.push('/settings');
                 break;
@@ -291,17 +406,24 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           itemBuilder:
               (_) => const [
                 PopupMenuItem(
-                  value: 'correction',
+                  value: 'tasks',
                   child: _MenuItem(
-                    icon: Icons.edit_calendar_outlined,
-                    label: 'Modifier',
+                    icon: Icons.task_alt_outlined,
+                    label: 'Taches du jour',
                   ),
                 ),
                 PopupMenuItem(
                   value: 'monthly',
                   child: _MenuItem(
                     icon: Icons.calendar_month_outlined,
-                    label: 'Mon mois complet',
+                    label: 'Historique',
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'preferences',
+                  child: _MenuItem(
+                    icon: Icons.tune_outlined,
+                    label: 'Preferences',
                   ),
                 ),
                 PopupMenuItem(
@@ -476,6 +598,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
     final currency = state.summary?.currency ?? 'DZD';
+    final sessionsCount =
+        int.tryParse(state.daySummary?['sessions_count']?.toString() ?? '') ??
+        state.todaySessions.length;
+    final breakMinutes =
+        int.tryParse(state.daySummary?['break_minutes']?.toString() ?? '') ?? 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -510,6 +637,26 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               Expanded(child: _TimeChip(label: 'Depart', value: checkOut)),
             ],
           ),
+          if (sessionsCount > 1 || breakMinutes > 0) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _TimeChip(
+                    label: 'Sessions',
+                    value: sessionsCount.toString(),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _TimeChip(
+                    label: 'Pauses',
+                    value: '${breakMinutes} min',
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 14),
           const Divider(color: _border, height: 1),
           const SizedBox(height: 14),
@@ -545,6 +692,53 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         fontWeight: FontWeight.w800,
         letterSpacing: 0.8,
       ),
+    );
+  }
+
+  Widget _buildTodayTasks(AsyncValue<List<Map<String, dynamic>>> tasksAsync) {
+    return tasksAsync.when(
+      loading:
+          () => _buildNoticeCard(
+            'Synchronisation des taches du jour...',
+            AppColors.warning,
+          ),
+      error:
+          (_, __) => _buildNoticeCard(
+            'Taches du jour indisponibles pour l instant.',
+            AppColors.warning,
+          ),
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return _buildNoticeCard(
+            'Aucune tache assignee pour aujourd hui.',
+            AppColors.rh,
+          );
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: _card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: _border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'TACHES DU JOUR',
+                style: TextStyle(
+                  color: _secondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ...tasks.take(3).map((task) => _TaskLine(task: task)),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -744,15 +938,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
   List<AttendanceDaySummary> _buildWeekSummaries(List<AttendanceLog> logs) {
     final today = DateTime(_now.year, _now.month, _now.day);
-    final byDay = <String, AttendanceLog>{};
+    final byDay = <String, List<AttendanceLog>>{};
     for (final log in logs) {
       final key = _dateKey(log.date);
-      byDay[key] = log;
+      byDay.putIfAbsent(key, () => <AttendanceLog>[]).add(log);
     }
 
     return List.generate(5, (index) {
       final date = today.subtract(Duration(days: index));
-      final log = byDay[_dateKey(date)];
+      final sessions = byDay[_dateKey(date)] ?? const <AttendanceLog>[];
       final labelPrefix =
           index == 0
               ? 'Aujourd hui'
@@ -761,10 +955,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               : _capitalize(DateFormat('EEE', 'fr_FR').format(date));
       final label =
           '$labelPrefix - ${DateFormat('d MMM', 'fr_FR').format(date)}';
-      return AttendanceDaySummary.fromLog(
+      return AttendanceDaySummary.fromLogs(
         date: date,
         dayLabel: label,
-        log: log,
+        logs: sessions,
       );
     });
   }
@@ -833,6 +1027,78 @@ class _FingerprintPainter extends CustomPainter {
   @override
   bool shouldRepaint(_FingerprintPainter oldDelegate) =>
       oldDelegate.color != color;
+}
+
+class _PunchChoice {
+  final String workType;
+  final String title;
+  final String subtitle;
+  final String loadingLabel;
+  final String successLabel;
+  final String failureLabel;
+
+  const _PunchChoice({
+    required this.workType,
+    required this.title,
+    required this.subtitle,
+    required this.loadingLabel,
+    required this.successLabel,
+    required this.failureLabel,
+  });
+}
+
+class _TaskLine extends StatelessWidget {
+  final Map<String, dynamic> task;
+
+  const _TaskLine({required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    final title = task['title']?.toString() ?? 'Tache';
+    final priority = task['priority']?.toString() ?? 'normal';
+    final minutes = int.tryParse(task['estimated_minutes']?.toString() ?? '');
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C1525),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _AttendanceScreenState._border),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            priority == 'urgent' || priority == 'high'
+                ? Icons.priority_high
+                : Icons.task_alt,
+            color:
+                priority == 'urgent' || priority == 'high'
+                    ? AppColors.warning
+                    : AppColors.rh,
+            size: 18,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: _AttendanceScreenState._text),
+            ),
+          ),
+          if (minutes != null)
+            Text(
+              '${minutes} min',
+              style: const TextStyle(
+                color: _AttendanceScreenState._muted,
+                fontSize: 11,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 class _CorrectionSheet extends ConsumerStatefulWidget {
@@ -1290,6 +1556,7 @@ class AttendanceDaySummary {
   final bool isAbsent;
   final int workedMinutes;
   final int lateMinutes;
+  final int sessionsCount;
   final double estimatedEarnings;
   final String checkInFormatted;
   final String checkOutFormatted;
@@ -1301,28 +1568,40 @@ class AttendanceDaySummary {
     required this.isAbsent,
     required this.workedMinutes,
     required this.lateMinutes,
+    required this.sessionsCount,
     required this.estimatedEarnings,
     required this.checkInFormatted,
     required this.checkOutFormatted,
   });
 
-  factory AttendanceDaySummary.fromLog({
+  factory AttendanceDaySummary.fromLogs({
     required DateTime date,
     required String dayLabel,
-    required AttendanceLog? log,
+    required List<AttendanceLog> logs,
   }) {
-    final hours = log?.workedHours ?? 0;
+    final sorted = [...logs]
+      ..sort((a, b) => a.sessionNumber.compareTo(b.sessionNumber));
+    final first = sorted.isEmpty ? null : sorted.first;
+    final last = sorted.isEmpty ? null : sorted.last;
+    final hours = sorted.fold<double>(
+      0,
+      (sum, log) => sum + (log.workedHours ?? 0),
+    );
     final workedMinutes = (hours * 60).round();
     return AttendanceDaySummary(
       date: date,
       dayLabel: dayLabel,
-      logId: log?.id == 0 ? null : log?.id,
-      isAbsent: log == null || log.checkIn == null,
+      logId: last?.id == 0 ? null : last?.id,
+      isAbsent: sorted.isEmpty || first?.checkIn == null,
       workedMinutes: workedMinutes,
-      lateMinutes: log?.lateMinutes ?? 0,
+      lateMinutes: sorted.fold<int>(
+        0,
+        (sum, log) => sum + (log.lateMinutes ?? 0),
+      ),
+      sessionsCount: sorted.length,
       estimatedEarnings: hours * 550,
-      checkInFormatted: _AttendanceScreenState._formatTime(log?.checkIn),
-      checkOutFormatted: _AttendanceScreenState._formatTime(log?.checkOut),
+      checkInFormatted: _AttendanceScreenState._formatTime(first?.checkIn),
+      checkOutFormatted: _AttendanceScreenState._formatTime(last?.checkOut),
     );
   }
 

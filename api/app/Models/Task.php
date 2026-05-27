@@ -21,6 +21,13 @@ use Illuminate\Support\Carbon;
  * @property int|null $project_id
  * @property Carbon $due_date
  * @property string|null $priority
+ * @property int|null $estimated_minutes
+ * @property int|null $completed_minutes
+ * @property Carbon|null $completed_at
+ * @property string|null $completion_note
+ * @property string|null $performance_score
+ * @property string|null $recurrence_rule
+ * @property string|null $template_key
  * @property string $status
  * @property string|null $category
  * @property array<mixed> $checklist
@@ -36,9 +43,9 @@ class Task extends Model
 
     protected $table = 'tasks';
 
-    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'status', 'category', 'checklist', 'visibility'];
+    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'performance_score', 'recurrence_rule', 'template_key', 'status', 'category', 'checklist', 'visibility'];
 
-    protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'completed_at' => 'datetime', 'performance_score' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     /** @return BelongsTo<Employee, $this> */
     public function creator(): BelongsTo

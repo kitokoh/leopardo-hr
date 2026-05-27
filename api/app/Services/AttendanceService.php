@@ -14,6 +14,9 @@ use Illuminate\Support\Carbon;
 
 class AttendanceService
 {
+    /** @var array<int, string> */
+    private const NON_WORK_TYPES = ['break'];
+
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
         $dto = $this->normalizeDto($dto, $gpsLng, $method);
@@ -25,13 +28,15 @@ class AttendanceService
         $open = AttendanceLog::query()
             ->where('employee_id', $employee->id)
             ->where('date', $today)
-            ->where('session_number', 1)
             ->whereNull('check_out')
+            ->orderByDesc('session_number')
             ->first();
 
         if ($open) {
             throw new AlreadyCheckedInException;
         }
+
+        $sessionNumber = $this->nextSessionNumber($employee, $today);
 
         $schedule = $this->resolveSchedule($employee);
 
@@ -48,12 +53,15 @@ class AttendanceService
         }
 
         $log = AttendanceLog::query()->create([
+            'company_id' => $employee->company_id,
             'employee_id' => $employee->id,
             'schedule_id' => $schedule?->id,
             'date' => $today,
-            'session_number' => 1,
+            'session_number' => $sessionNumber,
             'check_in' => $nowUtc,
             'method' => $dto->method,
+            'work_type' => $dto->work_type,
+            'punch_note' => $dto->punch_note,
             'status' => $status,
             'late_minutes' => $lateMinutes,
             'gps_lat' => $dto->gps_lat,
@@ -76,8 +84,8 @@ class AttendanceService
         $log = AttendanceLog::query()
             ->where('employee_id', $employee->id)
             ->where('date', $today)
-            ->where('session_number', 1)
             ->whereNull('check_out')
+            ->orderByDesc('session_number')
             ->first();
 
         if (! $log) {
@@ -89,12 +97,19 @@ class AttendanceService
             : $this->resolveSchedule($employee);
 
         $seconds = $log->check_in?->diffInSeconds($nowUtc) ?? 0;
-        $breakMinutes = (int) ($schedule?->break_minutes ?? 0);
+        $breakMinutes = $this->breakMinutesForLog($log, $dto, $schedule);
         $grossHours = $seconds / 3600;
         $hours = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
 
         $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
-        $overtime = max(0.0, round($hours - $threshold, 2));
+        $overtime = $log->work_type === 'overtime'
+            ? $hours
+            : max(0.0, round($hours - $threshold, 2));
+
+        if (in_array($log->work_type, self::NON_WORK_TYPES, true)) {
+            $hours = 0.0;
+            $overtime = 0.0;
+        }
 
         $log->check_out = $nowUtc;
         $log->hours_worked = $hours;
@@ -102,6 +117,12 @@ class AttendanceService
         $log->gps_lat = $dto->gps_lat ?? $log->gps_lat;
         $log->gps_lng = $dto->gps_lng ?? $log->gps_lng;
         $log->method = $dto->method;
+        $log->punch_note = $dto->punch_note ?? $log->punch_note;
+        if ($dto->work_type !== 'normal') {
+            $log->punch_meta = array_merge($log->punch_meta ?? [], [
+                'closed_with' => $dto->work_type,
+            ]);
+        }
 
         if ($log->status === 'incomplete' && $schedule) {
             $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
@@ -140,8 +161,8 @@ class AttendanceService
             $log = AttendanceLog::query()
                 ->where('employee_id', $employee->id)
                 ->where('date', $today)
-                ->where('session_number', 1)
                 ->whereNull('check_out')
+                ->orderByDesc('session_number')
                 ->first();
 
             if (! $log) {
@@ -153,11 +174,18 @@ class AttendanceService
                 : $this->resolveSchedule($employee);
 
             $seconds = $log->check_in?->diffInSeconds($occurredAt) ?? 0;
-            $breakMinutes = (int) ($schedule?->break_minutes ?? 0);
+            $breakMinutes = $this->breakMinutesForLog($log, $dto, $schedule);
             $grossHours = $seconds / 3600;
             $hours = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
             $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
-            $overtime = max(0.0, round($hours - $threshold, 2));
+            $overtime = $log->work_type === 'overtime'
+                ? $hours
+                : max(0.0, round($hours - $threshold, 2));
+
+            if (in_array($log->work_type, self::NON_WORK_TYPES, true)) {
+                $hours = 0.0;
+                $overtime = 0.0;
+            }
 
             $log->forceFill([
                 'check_out' => $occurredAt,
@@ -168,6 +196,10 @@ class AttendanceService
                 'external_event_id' => $externalEventId,
                 'biometric_type' => $dto->biometric_type,
                 'synced_from_offline' => $dto->synced_from_offline,
+                'punch_note' => $dto->punch_note ?? $log->punch_note,
+                'punch_meta' => array_merge($log->punch_meta ?? [], [
+                    'closed_with' => $dto->work_type,
+                ]),
             ])->save();
 
             return $log;
@@ -176,8 +208,8 @@ class AttendanceService
         $open = AttendanceLog::query()
             ->where('employee_id', $employee->id)
             ->where('date', $today)
-            ->where('session_number', 1)
             ->whereNull('check_out')
+            ->orderByDesc('session_number')
             ->first();
 
         if ($open) {
@@ -202,9 +234,11 @@ class AttendanceService
             'employee_id' => $employee->id,
             'schedule_id' => $schedule?->id,
             'date' => $today,
-            'session_number' => 1,
+            'session_number' => $this->nextSessionNumber($employee, $today),
             'check_in' => $occurredAt,
             'method' => $dto->method,
+            'work_type' => $dto->work_type,
+            'punch_note' => $dto->punch_note,
             'source_device_code' => $dto->source_device_code ?? null,
             'external_event_id' => $externalEventId,
             'biometric_type' => $dto->biometric_type,
@@ -242,12 +276,19 @@ class AttendanceService
 
         if ($log->check_in && $log->check_out) {
             $seconds = $log->check_in->diffInSeconds($log->check_out);
-            $breakMinutes = (int) ($schedule?->break_minutes ?? 0);
+            $breakMinutes = $this->breakMinutesForLog($log, null, $schedule);
             $grossHours = $seconds / 3600;
             $log->hours_worked = round(max(0.0, $grossHours - ($breakMinutes / 60)), 2);
 
             $threshold = (float) ($schedule?->overtime_threshold_daily ?? 8.0);
-            $log->overtime_hours = max(0.0, round(((float) $log->hours_worked) - $threshold, 2));
+            $log->overtime_hours = $log->work_type === 'overtime'
+                ? (float) $log->hours_worked
+                : max(0.0, round(((float) $log->hours_worked) - $threshold, 2));
+
+            if (in_array($log->work_type, self::NON_WORK_TYPES, true)) {
+                $log->hours_worked = 0;
+                $log->overtime_hours = 0;
+            }
         }
 
         $log->save();
@@ -258,6 +299,29 @@ class AttendanceService
     private function resolveSchedule(Employee $employee): ?Schedule
     {
         return $employee->schedule;
+    }
+
+    private function nextSessionNumber(Employee $employee, string $date): int
+    {
+        $lastSession = AttendanceLog::query()
+            ->where('employee_id', $employee->id)
+            ->where('date', $date)
+            ->max('session_number');
+
+        return ((int) $lastSession) + 1;
+    }
+
+    private function breakMinutesForLog(AttendanceLog $log, ?CheckInDTO $dto, ?Schedule $schedule): int
+    {
+        if ($log->session_number > 1 || $log->work_type !== 'normal') {
+            return 0;
+        }
+
+        if ($dto?->work_type === 'break') {
+            return 0;
+        }
+
+        return (int) ($schedule?->break_minutes ?? 0);
     }
 
     private function normalizeDto(CheckInDTO|float|null $dto, ?float $gpsLng, string $method): CheckInDTO

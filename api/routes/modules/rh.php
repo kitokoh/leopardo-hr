@@ -140,6 +140,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::post('/tasks', [TaskController::class, 'store']);
+    Route::get('/tasks/today', [TaskController::class, 'today']);
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->whereNumber('task');
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');
     Route::patch('/tasks/{task}', [TaskController::class, 'update'])->whereNumber('task');

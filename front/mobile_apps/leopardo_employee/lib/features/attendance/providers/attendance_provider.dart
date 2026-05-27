@@ -14,6 +14,8 @@ class AttendanceState {
   final bool isLoading;
   final bool isPunching;
   final AttendanceLog? todayLog;
+  final List<AttendanceLog> todaySessions;
+  final Map<String, dynamic>? daySummary;
   final Map<String, dynamic>? context;
   final DailySummary? summary;
   final String? error;
@@ -23,6 +25,8 @@ class AttendanceState {
     this.isLoading = false,
     this.isPunching = false,
     this.todayLog,
+    this.todaySessions = const [],
+    this.daySummary,
     this.context,
     this.summary,
     this.error,
@@ -33,6 +37,8 @@ class AttendanceState {
     bool? isLoading,
     bool? isPunching,
     AttendanceLog? todayLog,
+    List<AttendanceLog>? todaySessions,
+    Map<String, dynamic>? daySummary,
     Map<String, dynamic>? context,
     DailySummary? summary,
     String? error,
@@ -44,6 +50,8 @@ class AttendanceState {
       isLoading: isLoading ?? this.isLoading,
       isPunching: isPunching ?? this.isPunching,
       todayLog: todayLog ?? this.todayLog,
+      todaySessions: todaySessions ?? this.todaySessions,
+      daySummary: daySummary ?? this.daySummary,
       context: context ?? this.context,
       summary: summary ?? this.summary,
       error: clearError ? null : (error ?? this.error),
@@ -71,6 +79,14 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       final data = await _repository.getTodayStatus();
       state = state.copyWith(
         todayLog: data['log'],
+        todaySessions:
+            data['sessions'] is List<AttendanceLog>
+                ? data['sessions'] as List<AttendanceLog>
+                : const <AttendanceLog>[],
+        daySummary:
+            data['summary'] is Map
+                ? (data['summary'] as Map).cast<String, dynamic>()
+                : null,
         context: data['context'],
         isLoading: false,
       );
@@ -105,7 +121,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
   }
 
-  Future<bool> checkIn() async {
+  Future<bool> checkIn({String workType = 'normal', String? punchNote}) async {
     if (state.isPunching) return false;
     state = state.copyWith(
       isPunching: true,
@@ -113,11 +129,17 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       clearNotice: true,
     );
     try {
-      final log = await _repository.checkIn().timeout(_punchGuardTimeout);
+      final log = await _repository
+          .checkIn(workType: workType, punchNote: punchNote)
+          .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
+        todaySessions: _upsertTodaySession(state.todaySessions, log),
         isPunching: false,
-        notice: 'Arrivee enregistree a l instant.',
+        notice:
+            workType == 'overtime'
+                ? 'Heures supplementaires demarrees.'
+                : 'Arrivee enregistree a l instant.',
       );
       _loadSummary();
       return true;
@@ -132,7 +154,7 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
   }
 
-  Future<bool> checkOut() async {
+  Future<bool> checkOut({String workType = 'normal', String? punchNote}) async {
     if (state.isPunching) return false;
     state = state.copyWith(
       isPunching: true,
@@ -140,11 +162,17 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       clearNotice: true,
     );
     try {
-      final log = await _repository.checkOut().timeout(_punchGuardTimeout);
+      final log = await _repository
+          .checkOut(workType: workType, punchNote: punchNote)
+          .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
+        todaySessions: _upsertTodaySession(state.todaySessions, log),
         isPunching: false,
-        notice: 'Depart enregistre a l instant.',
+        notice:
+            workType == 'break'
+                ? 'Pause enregistree.'
+                : 'Depart enregistre a l instant.',
       );
       _loadSummary();
       return true;
@@ -250,6 +278,21 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
 
     return 'Le pointage n a pas pu etre confirme. Verifiez la connexion puis reessayez.';
   }
+
+  List<AttendanceLog> _upsertTodaySession(
+    List<AttendanceLog> sessions,
+    AttendanceLog log,
+  ) {
+    final next = [...sessions];
+    final index = next.indexWhere((item) => item.id == log.id);
+    if (index >= 0) {
+      next[index] = log;
+    } else {
+      next.add(log);
+    }
+    next.sort((a, b) => a.sessionNumber.compareTo(b.sessionNumber));
+    return next;
+  }
 }
 
 final attendanceProvider =
@@ -271,4 +314,11 @@ final monthlySummaryProvider = FutureProvider.family<MonthlySummary, DateTime>((
 ) async {
   final repo = ref.watch(attendanceRepositoryProvider);
   return await repo.getMyMonthlySummary(year: date.year, month: date.month);
+});
+
+final todayTasksProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
+  final repo = ref.watch(attendanceRepositoryProvider);
+  return await repo.getTodayTasks();
 });
