@@ -18,6 +18,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon $check_in
  * @property Carbon $check_out
  * @property string $method
+ * @property string $work_type
+ * @property string|null $punch_note
+ * @property array<string, mixed>|null $punch_meta
  * @property string|null $source_device_code
  * @property string|null $external_event_id
  * @property string $biometric_type
@@ -51,6 +54,9 @@ class AttendanceLog extends Model
         'check_in',
         'check_out',
         'method',
+        'work_type',
+        'punch_note',
+        'punch_meta',
         'source_device_code',
         'external_event_id',
         'biometric_type',
@@ -75,6 +81,7 @@ class AttendanceLog extends Model
         'late_minutes' => 'integer',
         'gps_lat' => 'decimal:8',
         'gps_lng' => 'decimal:8',
+        'punch_meta' => 'array',
     ];
 
     /** @return BelongsTo<Employee, $this> */

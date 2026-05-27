@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ContractAmendmentResource;
+use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\Employee;
@@ -35,7 +37,8 @@ class ContractController extends Controller
 
         $perPage = $request->integer('per_page', 15);
 
-        return response()->json($query->orderByDesc('start_date')->paginate($perPage));
+        return ContractResource::collection($query->orderByDesc('start_date')->paginate($perPage))
+            ->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -82,7 +85,9 @@ class ContractController extends Controller
             'status' => 'draft',
         ]);
 
-        return response()->json(['data' => $contract->load(['employee:id,first_name,last_name', 'department:id,name'])], 201);
+        return (new ContractResource($contract->load(['employee:id,first_name,last_name', 'department:id,name'])))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Contract $contract): JsonResponse
@@ -96,7 +101,8 @@ class ContractController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $contract->load(['employee:id,first_name,last_name', 'department:id,name', 'position:id,name', 'amendments'])]);
+        return (new ContractResource($contract->load(['employee:id,first_name,last_name', 'department:id,name', 'position:id,name', 'amendments'])))
+            ->response();
     }
 
     public function update(Request $request, Contract $contract): JsonResponse
@@ -140,7 +146,8 @@ class ContractController extends Controller
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
 
-        return response()->json(['data' => $contractFresh->load(['employee:id,first_name,last_name', 'department:id,name'])]);
+        return (new ContractResource($contractFresh->load(['employee:id,first_name,last_name', 'department:id,name'])))
+            ->response();
     }
 
     public function amendments(Request $request, Contract $contract): JsonResponse
@@ -154,7 +161,8 @@ class ContractController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $contract->amendments()->orderByDesc('effective_date')->get()]);
+        return ContractAmendmentResource::collection($contract->amendments()->orderByDesc('effective_date')->get())
+            ->response();
     }
 
     public function storeAmendment(Request $request, Contract $contract): JsonResponse
@@ -182,7 +190,9 @@ class ContractController extends Controller
             ...$validated,
         ]);
 
-        return response()->json(['data' => $amendment], 201);
+        return (new ContractAmendmentResource($amendment))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function expiring(Request $request): JsonResponse
@@ -199,7 +209,7 @@ class ContractController extends Controller
             ->with('employee:id,first_name,last_name')
             ->get();
 
-        return response()->json(['data' => $contracts]);
+        return ContractResource::collection($contracts)->response();
     }
 
     public function activate(Request $request, Contract $contract): JsonResponse
@@ -221,7 +231,7 @@ class ContractController extends Controller
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
 
-        return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
+        return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
 
     public function suspend(Request $request, Contract $contract): JsonResponse
@@ -243,7 +253,7 @@ class ContractController extends Controller
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
 
-        return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
+        return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
 
     public function terminate(Request $request, Contract $contract): JsonResponse
@@ -273,7 +283,7 @@ class ContractController extends Controller
         /** @var Contract $contractFresh */
         $contractFresh = $contract->fresh();
 
-        return response()->json(['data' => $contractFresh->load('employee:id,first_name,last_name')]);
+        return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
 
     public function renew(Request $request, Contract $contract): JsonResponse
@@ -321,7 +331,9 @@ class ContractController extends Controller
             return $newContract;
         });
 
-        return response()->json(['data' => $newContract->load('employee:id,first_name,last_name')], 201);
+        return (new ContractResource($newContract->load('employee:id,first_name,last_name')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function myContracts(Request $request): JsonResponse
@@ -336,7 +348,7 @@ class ContractController extends Controller
             ->orderByDesc('start_date')
             ->get();
 
-        return response()->json(['data' => $contracts]);
+        return ContractResource::collection($contracts)->response();
     }
 
     public function generatePdf(Request $request, Contract $contract): JsonResponse

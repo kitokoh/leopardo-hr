@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\BankExportResource;
 use App\Models\BankExport;
 use App\Models\Employee;
 use App\Models\PayrollRun;
@@ -60,7 +61,9 @@ class BankExportController extends Controller
             'generated_at' => now(),
         ]);
 
-        return response()->json(['data' => $export], 201);
+        return (new BankExportResource($export))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, BankExport $bankExport): JsonResponse
@@ -76,7 +79,7 @@ class BankExportController extends Controller
 
         $bankExport->load('payrollRun:id,period_start,period_end,status');
 
-        return response()->json(['data' => $bankExport]);
+        return (new BankExportResource($bankExport))->response();
     }
 
     public function download(Request $request, BankExport $bankExport): StreamedResponse|JsonResponse

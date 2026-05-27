@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\SalaryComponentResource;
 use App\Models\Employee;
 use App\Models\SalaryComponent;
 use Illuminate\Http\JsonResponse;
@@ -32,9 +33,7 @@ class SalaryComponentController extends Controller
             $query->active();
         }
 
-        return response()->json([
-            'data' => $query->orderBy('order')->get(),
-        ]);
+        return SalaryComponentResource::collection($query->orderBy('order')->get())->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -75,7 +74,9 @@ class SalaryComponentController extends Controller
             'active' => true,
         ]);
 
-        return response()->json(['data' => $component], 201);
+        return (new SalaryComponentResource($component))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, SalaryComponent $salaryComponent): JsonResponse
@@ -89,7 +90,7 @@ class SalaryComponentController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $salaryComponent]);
+        return (new SalaryComponentResource($salaryComponent))->response();
     }
 
     public function update(Request $request, SalaryComponent $salaryComponent): JsonResponse
@@ -119,7 +120,7 @@ class SalaryComponentController extends Controller
 
         $salaryComponent->update($validated);
 
-        return response()->json(['data' => $salaryComponent->refresh()]);
+        return (new SalaryComponentResource($salaryComponent->refresh()))->response();
     }
 
     public function destroy(Request $request, SalaryComponent $salaryComponent): JsonResponse

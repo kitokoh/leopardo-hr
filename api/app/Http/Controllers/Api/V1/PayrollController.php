@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Payroll\PayrollIndexRequest;
 use App\Http\Requests\Api\V1\Payroll\StorePayrollRequest;
 use App\Http\Requests\Api\V1\Payroll\UpdatePayrollRequest;
+use App\Http\Resources\Api\V1\PayrollResource;
 use App\Models\Employee;
 use App\Models\Payroll;
 use App\Services\PayrollService;
@@ -63,10 +64,7 @@ class PayrollController extends Controller
         $perPage = $request->integer('per_page', 15);
         $paginated = $query->orderByDesc('period_year')->orderByDesc('period_month')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn ($p) => $this->serialize($p)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
-        ]);
+        return PayrollResource::collection($paginated)->response();
     }
 
     public function store(StorePayrollRequest $request): JsonResponse
@@ -79,7 +77,9 @@ class PayrollController extends Controller
 
         $payroll = $this->payrollService->create($actor, $request->validated());
 
-        return response()->json(['data' => $this->serialize($payroll->load('employee'))], 201);
+        return (new PayrollResource($payroll->load('employee')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Payroll $payroll): JsonResponse
@@ -93,7 +93,7 @@ class PayrollController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($payroll->load('employee'))]);
+        return (new PayrollResource($payroll->load('employee')))->response();
     }
 
     public function update(UpdatePayrollRequest $request, Payroll $payroll): JsonResponse
@@ -109,7 +109,7 @@ class PayrollController extends Controller
 
         $payroll = $this->payrollService->update($payroll, $request->validated());
 
-        return response()->json(['data' => $this->serialize($payroll->load('employee'))]);
+        return (new PayrollResource($payroll->load('employee')))->response();
     }
 
     public function validatePayroll(Request $request, Payroll $payroll): JsonResponse
@@ -125,7 +125,7 @@ class PayrollController extends Controller
 
         $payroll = $this->payrollService->validate($payroll, $actor);
 
-        return response()->json(['data' => $this->serialize($payroll->load('employee'))]);
+        return (new PayrollResource($payroll->load('employee')))->response();
     }
 
     public function destroy(Request $request, Payroll $payroll): JsonResponse
@@ -142,21 +142,5 @@ class PayrollController extends Controller
         $this->payrollService->delete($payroll);
 
         return response()->json(['message' => 'Payroll deleted successfully']);
-    }
-
-    private function serialize(Payroll $p): array
-    {
-        return [
-            'id' => $p->id, 'employee_id' => $p->employee_id,
-            'employee' => $p->relationLoaded('employee') ? ['id' => $p->employee->id, 'first_name' => $p->employee->first_name, 'last_name' => $p->employee->last_name, 'email' => $p->employee->email] : null,
-            'period_month' => $p->period_month, 'period_year' => $p->period_year,
-            'gross_salary' => $p->gross_salary, 'overtime_amount' => $p->overtime_amount,
-            'bonuses' => $p->bonuses, 'deductions' => $p->deductions, 'cotisations' => $p->cotisations,
-            'ir_amount' => $p->ir_amount, 'advance_deduction' => $p->advance_deduction,
-            'absence_deduction' => $p->absence_deduction, 'penalty_deduction' => $p->penalty_deduction,
-            'net_salary' => $p->net_salary, 'pdf_path' => $p->pdf_path, 'status' => $p->status,
-            'validated_by' => $p->validated_by, 'validated_at' => $p->validated_at?->toIso8601String(),
-            'created_at' => $p->created_at?->toIso8601String(), 'updated_at' => $p->updated_at?->toIso8601String(),
-        ];
     }
 }

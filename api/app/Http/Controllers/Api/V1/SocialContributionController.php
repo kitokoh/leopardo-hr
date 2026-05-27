@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\SocialContributionResource;
 use App\Models\Employee;
 use App\Models\SocialContribution;
 use Illuminate\Http\JsonResponse;
@@ -28,9 +29,7 @@ class SocialContributionController extends Controller
             $query->where('type', $request->input('type'));
         }
 
-        return response()->json([
-            'data' => $query->orderBy('country_code')->orderBy('type')->orderBy('name')->get(),
-        ]);
+        return SocialContributionResource::collection($query->orderBy('country_code')->orderBy('type')->orderBy('name')->get())->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -64,7 +63,9 @@ class SocialContributionController extends Controller
             'effective_to' => $validated['effective_to'] ?? null,
         ]);
 
-        return response()->json(['data' => $contribution], 201);
+        return (new SocialContributionResource($contribution))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function update(Request $request, SocialContribution $socialContribution): JsonResponse
@@ -86,7 +87,7 @@ class SocialContributionController extends Controller
 
         $socialContribution->update($validated);
 
-        return response()->json(['data' => $socialContribution->refresh()]);
+        return (new SocialContributionResource($socialContribution->refresh()))->response();
     }
 
     public function destroy(Request $request, SocialContribution $socialContribution): JsonResponse

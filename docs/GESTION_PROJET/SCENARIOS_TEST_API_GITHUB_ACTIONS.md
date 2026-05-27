@@ -108,6 +108,8 @@ Note 2026-05-25 : le mobile RH consomme maintenant `GET/POST /employees` pour l'
 
 - Check-in succes
 - Check-out succes
+- Pointage multi-session : apres un check-out, un employe peut recreer une session le meme jour avec `work_type` (`resume`, `overtime`, `mission`, `travel`) et un `session_number` incremente.
+- `GET /attendance/today` expose `sessions` et `summary` pour afficher details de journee, pauses, heures supp et session ouverte sur mobile.
 - Double check-in interdit
 - Check-out sans check-in interdit
 - Historique presence retourne des donnees coherentes
@@ -118,6 +120,13 @@ Note 2026-05-25 : le mobile RH consomme maintenant `GET/POST /employees` pour l'
 - `PUT /attendance/{attendanceLog}` reste reserve aux managers `principal` et `rh` pour modifier directement un log du tenant courant, avec refus des employes et des managers non autorises.
 - `GET /attendance/anomalies` retourne un resume d'impact business (`late_minutes`, sorties manquantes, corrections, actions critiques)
 - Chaque anomalie attendance expose une action manager recommandee et un flag `requires_manager_action`
+
+### 6.b Taches terrain apres pointage
+
+- `GET /tasks/today` retourne uniquement les taches assignees a l'employe courant et dues aujourd'hui.
+- Un manager peut creer une tache avec duree prevue, priorite, categorie, recurrence et cle de template.
+- Un employe assigne peut passer une tache a `done` avec duree realisee et note de realisation.
+- Le score de performance d'une tache terminee est calcule sans exposer les taches d'un autre tenant.
 - Les anomalies geofence, heures supplementaires et sequences rapides restent scopees au tenant courant
 
 ### 7. Conges / absences

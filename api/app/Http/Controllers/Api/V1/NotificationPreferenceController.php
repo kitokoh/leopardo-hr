@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\NotificationPreferenceResource;
 use App\Models\CommunicationEvent;
 use App\Models\Employee;
 use App\Models\NotificationPreference;
@@ -16,7 +17,9 @@ class NotificationPreferenceController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        return response()->json(['data' => $this->preferencesFor($employee)]);
+        return (new NotificationPreferenceResource($this->preferencesFor($employee)))
+            ->response()
+            ->setStatusCode(200);
     }
 
     public function update(Request $request): JsonResponse
@@ -62,7 +65,7 @@ class NotificationPreferenceController extends Controller
             'occurred_at' => now(),
         ]);
 
-        return response()->json(['data' => $preferences->fresh()]);
+        return (new NotificationPreferenceResource($preferences->fresh()))->response();
     }
 
     private function preferencesFor(Employee $employee): NotificationPreference

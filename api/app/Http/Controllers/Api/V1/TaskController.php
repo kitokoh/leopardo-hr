@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\TaskCommentResource;
+use App\Http\Resources\Api\V1\TaskResource;
 use App\Models\Employee;
 use App\Models\Task;
 use App\Models\TaskComment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TaskController extends Controller
 {
@@ -17,7 +20,7 @@ class TaskController extends Controller
         $actor = $request->user();
         $request->validate(['project_id' => ['nullable', 'integer', 'min:1'], 'status' => ['nullable', 'in:todo,inprogress,review,done,rejected,cancelled'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'assigned_to' => ['nullable', 'integer', 'min:1'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
 
-        $query = Task::query();
+        $query = Task::query()->where('company_id', $actor->company_id);
 
         if (! $actor->isManager()) {
             $query->where(fn ($q) => $q->whereJsonContains('assigned_to', $actor->id)->orWhere('created_by', $actor->id));
@@ -36,23 +39,22 @@ class TaskController extends Controller
         }
 
         $perPage = $request->integer('per_page', 15);
-        $paginated = $query->orderBy('due_date')->orderByDesc('created_at')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn ($t) => $this->serialize($t)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
-        ]);
+        return TaskResource::collection($query->orderBy('due_date')->orderByDesc('created_at')->paginate($perPage))
+            ->response();
     }
 
     public function store(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $data = $request->validate(['title' => ['required', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['nullable', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['required', 'date'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['nullable', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $data = $request->validate(['title' => ['required', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['nullable', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['required', 'date'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'], 'recurrence_rule' => ['nullable', 'string', 'max:120'], 'template_key' => ['nullable', 'string', 'max:100'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['nullable', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
 
         $task = Task::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'assigned_to' => $data['assigned_to'] ?? [], 'status' => 'todo', 'priority' => $data['priority'] ?? 'normal', 'visibility' => $data['visibility'] ?? 'visible', ...$data]);
 
-        return response()->json(['data' => $this->serialize($task)], 201);
+        return (new TaskResource($task))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Task $task): JsonResponse
@@ -66,7 +68,7 @@ class TaskController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($task->load('comments.author'))]);
+        return (new TaskResource($task->load('comments.author')))->response();
     }
 
     public function update(Request $request, Task $task): JsonResponse
@@ -82,10 +84,11 @@ class TaskController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['title' => ['sometimes', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['sometimes', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['sometimes', 'date'], 'priority' => ['sometimes', 'in:low,normal,high,urgent'], 'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['sometimes', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $data = $request->validate(['title' => ['sometimes', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['sometimes', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['sometimes', 'date'], 'priority' => ['sometimes', 'in:low,normal,high,urgent'], 'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'], 'completed_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'], 'completion_note' => ['nullable', 'string', 'max:1000'], 'recurrence_rule' => ['nullable', 'string', 'max:120'], 'template_key' => ['nullable', 'string', 'max:100'], 'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['sometimes', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $this->applyCompletionMetrics($task, $data);
         $task->update($data);
 
-        return response()->json(['data' => $this->serialize($task->fresh())]);
+        return (new TaskResource($task->fresh()))->response();
     }
 
     public function destroy(Request $request, Task $task): JsonResponse
@@ -115,17 +118,51 @@ class TaskController extends Controller
         $data = $request->validate(['content' => ['required', 'string', 'max:5000']]);
         $comment = TaskComment::create(['company_id' => $actor->company_id, 'task_id' => $task->id, 'author_id' => $actor->id, 'content' => $data['content']]);
 
-        return response()->json(['data' => ['id' => $comment->id, 'task_id' => $comment->task_id, 'author_id' => $comment->author_id, 'content' => $comment->content, 'created_at' => $comment->created_at?->toIso8601String()]], 201);
+        return (new TaskCommentResource($comment))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    private function serialize(Task $task): array
+    public function today(Request $request): JsonResponse
     {
-        $data = ['id' => $task->id, 'title' => $task->title, 'description' => $task->description, 'created_by' => $task->created_by, 'assigned_to' => $task->assigned_to, 'project_id' => $task->project_id, 'due_date' => $task->due_date?->toIso8601String(), 'priority' => $task->priority, 'status' => $task->status, 'category' => $task->category, 'visibility' => $task->visibility, 'checklist' => $task->checklist, 'created_at' => $task->created_at?->toIso8601String(), 'updated_at' => $task->updated_at?->toIso8601String()];
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $timezone = currentCompany()->timezone;
+        $today = Carbon::now($timezone)->toDateString();
 
-        if ($task->relationLoaded('comments')) {
-            $data['comments'] = $task->comments->map(fn ($c) => ['id' => $c->id, 'author_id' => $c->author_id, 'author' => $c->relationLoaded('author') ? ['id' => $c->author->id, 'first_name' => $c->author->first_name, 'last_name' => $c->author->last_name] : null, 'content' => $c->content, 'created_at' => $c->created_at?->toIso8601String()]);
+        $query = Task::query()
+            ->where('company_id', $actor->company_id)
+            ->whereDate('due_date', $today);
+
+        if (! $actor->isManager()) {
+            $query->whereJsonContains('assigned_to', $actor->id);
+        } elseif ($request->filled('assigned_to')) {
+            $query->whereJsonContains('assigned_to', $request->integer('assigned_to'));
         }
 
-        return $data;
+        return TaskResource::collection(
+            $query->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'normal' THEN 3 ELSE 4 END")
+                ->orderBy('due_date')
+                ->get()
+        )->response();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function applyCompletionMetrics(Task $task, array &$data): void
+    {
+        if (($data['status'] ?? null) !== 'done') {
+            return;
+        }
+
+        $data['completed_at'] = $task->completed_at ?? now('UTC');
+
+        $estimated = (int) ($data['estimated_minutes'] ?? $task->estimated_minutes ?? 0);
+        $completed = (int) ($data['completed_minutes'] ?? $task->completed_minutes ?? 0);
+        if ($estimated > 0 && $completed > 0) {
+            $ratio = max(0.0, min(2.0, $estimated / $completed));
+            $data['performance_score'] = round($ratio * 50, 2);
+        }
     }
 }

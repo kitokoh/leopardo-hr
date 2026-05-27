@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Cabinet\MoveDocumentRequest;
 use App\Http\Requests\Api\V1\Cabinet\StoreDocumentRequest;
 use App\Http\Requests\Api\V1\Cabinet\UpdateDocumentRequest;
+use App\Http\Resources\Api\V1\CabinetDocumentResource;
 use App\Models\CabinetDocument;
 use App\Models\Employee;
 use App\Services\CabinetService;
@@ -56,15 +57,7 @@ class CabinetDocumentController extends Controller
         $perPage = $request->integer('per_page', 20);
         $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn (CabinetDocument $d) => $this->serialize($d)),
-            'meta' => [
-                'current_page' => $paginated->currentPage(),
-                'last_page' => $paginated->lastPage(),
-                'per_page' => $paginated->perPage(),
-                'total' => $paginated->total(),
-            ],
-        ]);
+        return CabinetDocumentResource::collection($paginated)->response();
     }
 
     public function store(StoreDocumentRequest $request): JsonResponse
@@ -75,18 +68,16 @@ class CabinetDocumentController extends Controller
 
         $document = $this->cabinetService->uploadDocument($actor, $file, $request->validated());
 
-        return response()->json([
-            'data' => $this->serialize($document),
-        ], 201);
+        return (new CabinetDocumentResource($document))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, CabinetDocument $cabinetDocument): JsonResponse
     {
         $this->authorizeOwnership($request, $cabinetDocument);
 
-        return response()->json([
-            'data' => $this->serialize($cabinetDocument),
-        ]);
+        return (new CabinetDocumentResource($cabinetDocument))->response();
     }
 
     public function update(UpdateDocumentRequest $request, CabinetDocument $cabinetDocument): JsonResponse
@@ -95,9 +86,7 @@ class CabinetDocumentController extends Controller
 
         $document = $this->cabinetService->updateDocument($cabinetDocument, $request->validated());
 
-        return response()->json([
-            'data' => $this->serialize($document),
-        ]);
+        return (new CabinetDocumentResource($document))->response();
     }
 
     public function destroy(Request $request, CabinetDocument $cabinetDocument): JsonResponse
@@ -131,9 +120,7 @@ class CabinetDocumentController extends Controller
 
         $document = $this->cabinetService->moveDocument($cabinetDocument, $folderId);
 
-        return response()->json([
-            'data' => $this->serialize($document),
-        ]);
+        return (new CabinetDocumentResource($document))->response();
     }
 
     private function employee(Request $request): Employee
@@ -156,23 +143,5 @@ class CabinetDocumentController extends Controller
         if ($document->employee_id !== $actor->id) {
             abort(403);
         }
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function serialize(CabinetDocument $doc): array
-    {
-        return [
-            'id' => $doc->id,
-            'folder_id' => $doc->folder_id,
-            'name' => $doc->name,
-            'original_name' => $doc->original_name,
-            'mime_type' => $doc->mime_type,
-            'size' => $doc->size,
-            'notes' => $doc->notes,
-            'created_at' => $doc->created_at?->toIso8601String(),
-            'updated_at' => $doc->updated_at?->toIso8601String(),
-        ];
     }
 }
