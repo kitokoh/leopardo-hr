@@ -172,5 +172,4 @@ class EvaluationController extends Controller
 
         return response()->json(['message' => 'Evaluation deleted successfully']);
     }
-
 }

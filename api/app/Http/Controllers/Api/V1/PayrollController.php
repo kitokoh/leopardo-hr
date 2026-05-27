@@ -143,5 +143,4 @@ class PayrollController extends Controller
 
         return response()->json(['message' => 'Payroll deleted successfully']);
     }
-
 }
