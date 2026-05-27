@@ -151,14 +151,15 @@
         },
         {
           "name": "attendance",
-          "routes": ["/attendance", "/history", "/me/monthly", "/settings"],
-          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance", "/me/monthly-summary"],
+          "routes": ["/attendance", "/history", "/me/monthly", "/settings", "/manager/attendance", "/manager/anomalies", "/manager/corrections"],
+          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance/corrections/$correctionId/approve", "/attendance/corrections/$correctionId/reject", "/attendance/anomalies", "/attendance", "/me/monthly-summary"],
           "screenFiles": [
             "lib/features/attendance/screens/attendance_screen.dart",
             "lib/features/attendance/screens/history_screen.dart",
-            "lib/features/attendance/screens/monthly_summary_screen.dart"
+            "lib/features/attendance/screens/monthly_summary_screen.dart",
+            "lib/features/manager/screens/manager_attendance_monitoring_screen.dart"
           ],
-          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "updateCorrection"]
+          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "updateCorrection", "ManagerAttendanceMonitoringScreen", "ManagerAnomaliesScreen", "ManagerCorrectionsScreen", "approveCorrection", "rejectCorrection"]
         },
         {
           "name": "notifications",
@@ -170,8 +171,8 @@
           "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
         },
         {
-          "name": "manager_placeholders",
-          "routes": ["/manager/dashboard", "/manager/attendance", "/manager/anomalies", "/manager/corrections"],
+          "name": "manager_dashboard_placeholder",
+          "routes": ["/manager/dashboard"],
           "endpoints": [],
           "screenFiles": [
             "lib/features/manager/screens/manager_placeholder_screen.dart"

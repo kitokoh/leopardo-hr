@@ -606,8 +606,8 @@ class _ManagerDigestContent extends StatelessWidget {
             Expanded(
               child: _DigestActionButton(
                 icon: Icons.fact_check_outlined,
-                label: 'Actions',
-                onTap: () => context.push('/approvals'),
+                label: 'Corrections',
+                onTap: () => context.push('/manager/corrections'),
               ),
             ),
           ],
@@ -659,6 +659,34 @@ class _ManagerDigestContent extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+        if (data.pendingCorrections > 0) ...[
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: () => context.push('/manager/corrections'),
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.edit_calendar_outlined,
+                    size: 15,
+                    color: AppColors.warning,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '${data.pendingCorrections} correction(s) de pointage attendent une decision.',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ],

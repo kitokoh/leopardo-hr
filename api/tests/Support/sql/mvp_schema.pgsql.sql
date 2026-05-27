@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS shared_tenants.camera_access_tokens CASCADE;
 DROP TABLE IF EXISTS shared_tenants.cameras CASCADE;
 DROP TABLE IF EXISTS shared_tenants.attendance_kiosks CASCADE;
 DROP TABLE IF EXISTS shared_tenants.biometric_enrollment_requests CASCADE;
+DROP TABLE IF EXISTS shared_tenants.attendance_correction_requests CASCADE;
 DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE;
 DROP TABLE IF EXISTS shared_tenants.employees CASCADE;
 DROP TABLE IF EXISTS shared_tenants.schedules CASCADE;
@@ -199,6 +200,31 @@ CREATE INDEX attendance_logs_employee_id_date_index
     ON shared_tenants.attendance_logs (employee_id, date);
 CREATE INDEX attendance_logs_company_id_index
     ON shared_tenants.attendance_logs (company_id);
+
+CREATE TABLE shared_tenants.attendance_correction_requests (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    employee_id integer NOT NULL,
+    attendance_log_id bigint NULL,
+    date date NOT NULL,
+    requested_check_in timestamptz NOT NULL,
+    requested_check_out timestamptz NULL,
+    reason text NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'pending',
+    reviewed_by integer NULL,
+    reviewed_at timestamptz NULL,
+    created_at timestamp NULL,
+    updated_at timestamp NULL
+);
+
+CREATE INDEX attendance_correction_requests_company_id_index
+    ON shared_tenants.attendance_correction_requests (company_id);
+CREATE INDEX attendance_correction_requests_employee_id_index
+    ON shared_tenants.attendance_correction_requests (employee_id);
+CREATE INDEX attendance_correction_requests_status_index
+    ON shared_tenants.attendance_correction_requests (status);
+CREATE INDEX attendance_correction_requests_date_index
+    ON shared_tenants.attendance_correction_requests (date);
 
 CREATE TABLE shared_tenants.biometric_enrollment_requests (
     id serial PRIMARY KEY,

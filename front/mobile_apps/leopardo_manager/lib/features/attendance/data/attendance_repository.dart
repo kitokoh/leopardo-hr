@@ -161,6 +161,77 @@ class AttendanceRepository {
     return items.map((e) => AttendanceLog.fromJson(e)).toList();
   }
 
+  Future<List<AttendanceLog>> getManagerAttendanceToday() async {
+    final now = DateTime.now();
+    final date =
+        '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final response = await apiClient.requestWithRetry(
+      '/attendance',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+      queryParameters: {'date_from': date, 'date_to': date, 'per_page': 50},
+    );
+    final items = response.data['data'] as List? ?? const [];
+    return items
+        .whereType<Map>()
+        .map((e) => AttendanceLog.fromJson(e.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<ManagerAnomalyReport> getManagerAnomalies() async {
+    final now = DateTime.now();
+    final from = now.subtract(const Duration(days: 7));
+    String fmt(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+    final response = await apiClient.requestWithRetry(
+      '/attendance/anomalies',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+      queryParameters: {
+        'date_from': fmt(from),
+        'date_to': fmt(now),
+        'per_page': 50,
+      },
+    );
+    final data = _dataMap(response.data);
+    return ManagerAnomalyReport.fromJson(data);
+  }
+
+  Future<List<AttendanceCorrection>> getPendingCorrections() async {
+    final response = await apiClient.requestWithRetry(
+      '/attendance/corrections',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+      queryParameters: {'status': 'pending', 'per_page': 50},
+    );
+    final items = response.data['data'] as List? ?? const [];
+    return items
+        .whereType<Map>()
+        .map((e) => AttendanceCorrection.fromJson(e.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<void> approveCorrection(int correctionId) async {
+    await apiClient.requestWithRetry(
+      '/attendance/corrections/$correctionId/approve',
+      method: 'PUT',
+      data: const {},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+  }
+
+  Future<void> rejectCorrection(int correctionId) async {
+    await apiClient.requestWithRetry(
+      '/attendance/corrections/$correctionId/reject',
+      method: 'PUT',
+      data: const {},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+  }
+
   static Map<String, dynamic> decodeTodayResponse(
     Map<String, dynamic> responseData,
   ) {
@@ -255,4 +326,133 @@ class AttendanceRepository {
     }
     return response;
   }
+}
+
+class ManagerAnomalyReport {
+  const ManagerAnomalyReport({
+    required this.total,
+    required this.critical,
+    required this.warning,
+    required this.info,
+    required this.lateMinutes,
+    required this.missingCheckOuts,
+    required this.manualCorrections,
+    required this.items,
+  });
+
+  final int total;
+  final int critical;
+  final int warning;
+  final int info;
+  final int lateMinutes;
+  final int missingCheckOuts;
+  final int manualCorrections;
+  final List<ManagerAnomaly> items;
+
+  factory ManagerAnomalyReport.fromJson(Map<String, dynamic> json) {
+    final summary =
+        json['summary'] is Map
+            ? (json['summary'] as Map).cast<String, dynamic>()
+            : const <String, dynamic>{};
+    final impact =
+        summary['business_impact'] is Map
+            ? (summary['business_impact'] as Map).cast<String, dynamic>()
+            : const <String, dynamic>{};
+    final rawItems = json['items'] as List? ?? const [];
+
+    return ManagerAnomalyReport(
+      total: _asInt(summary['total']),
+      critical: _asInt(summary['critical']),
+      warning: _asInt(summary['warning']),
+      info: _asInt(summary['info']),
+      lateMinutes: _asInt(impact['late_minutes']),
+      missingCheckOuts: _asInt(impact['missing_check_outs']),
+      manualCorrections: _asInt(impact['manual_corrections']),
+      items:
+          rawItems
+              .whereType<Map>()
+              .map((e) => ManagerAnomaly.fromJson(e.cast<String, dynamic>()))
+              .toList(),
+    );
+  }
+}
+
+class ManagerAnomaly {
+  const ManagerAnomaly({
+    required this.type,
+    required this.severity,
+    required this.title,
+    required this.employeeName,
+    required this.date,
+    required this.recommendedAction,
+  });
+
+  final String type;
+  final String severity;
+  final String title;
+  final String employeeName;
+  final String date;
+  final String recommendedAction;
+
+  factory ManagerAnomaly.fromJson(Map<String, dynamic> json) {
+    final employee =
+        json['employee'] is Map
+            ? (json['employee'] as Map).cast<String, dynamic>()
+            : const <String, dynamic>{};
+
+    return ManagerAnomaly(
+      type: json['type']?.toString() ?? 'unknown',
+      severity: json['severity']?.toString() ?? 'info',
+      title: json['title']?.toString() ?? 'Anomalie',
+      employeeName: employee['name']?.toString() ?? 'Employe',
+      date: json['date']?.toString() ?? '',
+      recommendedAction: json['recommended_action']?.toString() ?? '',
+    );
+  }
+}
+
+class AttendanceCorrection {
+  const AttendanceCorrection({
+    required this.id,
+    required this.employeeName,
+    required this.date,
+    required this.requestedCheckIn,
+    this.requestedCheckOut,
+    required this.reason,
+    required this.status,
+  });
+
+  final int id;
+  final String employeeName;
+  final String date;
+  final DateTime requestedCheckIn;
+  final DateTime? requestedCheckOut;
+  final String reason;
+  final String status;
+
+  factory AttendanceCorrection.fromJson(Map<String, dynamic> json) {
+    final employee =
+        json['employee'] is Map
+            ? (json['employee'] as Map).cast<String, dynamic>()
+            : const <String, dynamic>{};
+
+    return AttendanceCorrection(
+      id: _asInt(json['id']),
+      employeeName: employee['name']?.toString() ?? 'Employe',
+      date: json['date']?.toString() ?? '',
+      requestedCheckIn: DateTime.parse(json['requested_check_in'].toString()),
+      requestedCheckOut:
+          json['requested_check_out'] != null
+              ? DateTime.parse(json['requested_check_out'].toString())
+              : null,
+      reason: json['reason']?.toString() ?? '',
+      status: json['status']?.toString() ?? 'pending',
+    );
+  }
+}
+
+int _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
 }
