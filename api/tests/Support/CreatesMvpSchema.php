@@ -173,6 +173,13 @@ trait CreatesMvpSchema
             $table->timestampTz('check_in')->nullable();
             $table->timestampTz('check_out')->nullable();
             $table->string('method', 20)->default('mobile');
+            $table->string('work_type', 30)->default('normal');
+            $table->text('punch_note')->nullable();
+            if (DB::getDriverName() === 'pgsql') {
+                $table->jsonb('punch_meta')->nullable();
+            } else {
+                $table->json('punch_meta')->nullable();
+            }
             $table->string('source_device_code', 40)->nullable();
             $table->string('external_event_id', 100)->nullable()->unique();
             $table->string('biometric_type', 20)->nullable();
@@ -447,8 +454,23 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('title', 200);
+            $table->text('description')->nullable();
             $table->unsignedInteger('created_by');
+            $table->json('assigned_to')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
             $table->timestampTz('due_date');
+            $table->string('priority', 20)->nullable();
+            $table->unsignedSmallInteger('estimated_minutes')->nullable();
+            $table->unsignedSmallInteger('completed_minutes')->nullable();
+            $table->timestampTz('completed_at')->nullable();
+            $table->text('completion_note')->nullable();
+            $table->decimal('performance_score', 5, 2)->nullable();
+            $table->string('recurrence_rule', 120)->nullable();
+            $table->string('template_key', 100)->nullable();
+            $table->string('status', 20)->default('todo');
+            $table->string('category', 100)->nullable();
+            $table->json('checklist')->nullable();
+            $table->string('visibility', 20)->default('visible');
             $table->timestamps();
         });
 
