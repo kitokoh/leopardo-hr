@@ -69,10 +69,6 @@ class CabinetShareController extends Controller
     {
         $actor = $this->employee($request);
 
-        if ($cabinetShare->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
         if ($cabinetShare->employee_id !== $actor->id) {
             abort(403);
         }

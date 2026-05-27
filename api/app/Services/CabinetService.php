@@ -22,7 +22,7 @@ class CabinetService
     public function createFolder(Employee $owner, array $data): CabinetFolder
     {
         return CabinetFolder::create([
-            'company_id' => $owner->company_id,
+            'company_id' => $this->legacyCompanyKey($owner),
             'employee_id' => $owner->id,
             'parent_id' => $data['parent_id'] ?? null,
             'name' => $data['name'],
@@ -70,11 +70,11 @@ class CabinetService
      */
     public function uploadDocument(Employee $owner, UploadedFile $file, array $data): CabinetDocument
     {
-        $storagePath = sprintf('cabinet/%d/%d', $owner->company_id, $owner->id);
+        $storagePath = sprintf('cabinet/%s/%d', $owner->company_id ?? 'personal', $owner->id);
         $path = $file->store($storagePath, 'local');
 
         return CabinetDocument::create([
-            'company_id' => $owner->company_id,
+            'company_id' => $this->legacyCompanyKey($owner),
             'employee_id' => $owner->id,
             'folder_id' => $data['folder_id'] ?? null,
             'name' => $data['name'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
@@ -132,7 +132,7 @@ class CabinetService
     public function share(Employee $owner, string $shareableType, int $shareableId, array $data): CabinetShare
     {
         $share = CabinetShare::create([
-            'company_id' => $owner->company_id,
+            'company_id' => $this->legacyCompanyKey($owner),
             'employee_id' => $owner->id,
             'shareable_type' => $shareableType,
             'shareable_id' => $shareableId,
@@ -171,6 +171,17 @@ class CabinetService
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private function legacyCompanyKey(Employee $owner): int
+    {
+        $companyId = $owner->company_id;
+
+        if (is_numeric($companyId)) {
+            return (int) $companyId;
+        }
+
+        return 0;
+    }
 
     private function deleteFolderDocumentFiles(CabinetFolder $folder): void
     {

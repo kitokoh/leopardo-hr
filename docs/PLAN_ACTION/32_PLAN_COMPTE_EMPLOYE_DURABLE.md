@@ -14,6 +14,7 @@ Renforcer l'app employee pour qu'un utilisateur reste un vrai compte plateforme,
 - Ajout de `GET /api/v1/me/career` pour exposer la disponibilite pour une nouvelle entreprise, l'entreprise courante et la timeline professionnelle.
 - Fallback propre depuis la fiche employe si aucun contrat formel n'existe encore.
 - Conservation de `GET /api/v1/cabinet/stats` comme source mobile pour le placard numerique.
+- Correction du scope cabinet : le placard numerique est un espace personnel resolu par `employee_id`, afin de rester durable meme si l'entreprise change.
 
 ### Mobile employee
 
@@ -33,6 +34,7 @@ Renforcer l'app employee pour qu'un utilisateur reste un vrai compte plateforme,
 - Les informations personnelles sont facultatives : elles ne doivent pas bloquer l'utilisation RH quotidienne.
 - Le parcours doit rester tenant-safe : une app employee ne doit voir que son propre rattachement.
 - Le placard numerique est un espace personnel : les partages publics ou externes devront rester explicites dans un lot dedie.
+- Les tables cabinet historiques gardent un `company_id` numerique ; les nouveaux workflows ne doivent pas s'appuyer dessus pour isoler l'espace personnel.
 
 ## Suite logique
 
