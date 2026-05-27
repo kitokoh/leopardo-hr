@@ -21,6 +21,7 @@ import 'package:leopardo_manager/features/ai_voice/data/ai_voice_repository.dart
 import 'package:leopardo_manager/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_manager/features/approvals/data/approval_repository.dart';
 import 'package:leopardo_manager/features/onboarding/data/onboarding_repository.dart';
+import 'package:leopardo_manager/features/schedules/data/schedule_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();
@@ -137,4 +138,9 @@ final approvalRepositoryProvider = Provider<ApprovalRepository>((ref) {
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return OnboardingRepository(apiClient);
+});
+
+final scheduleRepositoryProvider = Provider<ScheduleRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return ScheduleRepository(apiClient);
 });

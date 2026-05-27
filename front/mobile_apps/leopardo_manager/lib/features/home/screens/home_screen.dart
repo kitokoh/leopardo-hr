@@ -612,6 +612,26 @@ class _ManagerDigestContent extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _DigestActionButton(
+                icon: Icons.schedule_outlined,
+                label: 'Horaires',
+                onTap: () => context.push('/schedules'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DigestActionButton(
+                icon: Icons.people_alt_outlined,
+                label: 'Equipe',
+                onTap: () => context.push('/team'),
+              ),
+            ),
+          ],
+        ),
         if (data.openSessions > 0) ...[
           const SizedBox(height: 10),
           Row(
