@@ -213,14 +213,15 @@
         },
         {
           "name": "platform_companies",
-          "routes": ["/platform", "/platform/companies", "/platform/companies/new"],
-          "endpoints": ["/platform/metrics/overview", "/platform/companies"],
+          "routes": ["/platform", "/platform/companies", "/platform/companies/new", "/platform/companies/:companyId"],
+          "endpoints": ["/platform/metrics/overview", "/platform/companies", "/platform/companies/$companyId/health", "/platform/companies/$companyId/subscription", "/platform/companies/$companyId/features"],
           "screenFiles": [
             "lib/src/features/dashboard/platform_dashboard_screen.dart",
             "lib/src/features/companies/company_screen.dart",
-            "lib/src/features/companies/company_create_screen.dart"
+            "lib/src/features/companies/company_create_screen.dart",
+            "lib/src/features/companies/company_detail_screen.dart"
           ],
-          "sourceTokens": ["context.push('/platform/companies')", "context.push('/platform/companies/new')", "createCompany", "Creer le client"]
+          "sourceTokens": ["context.push('/platform/companies')", "context.push('/platform/companies/new')", "Uri.encodeComponent(company.id)", "createCompany", "Creer le client", "companyHealth", "companySubscription", "companyFeatures"]
         },
         {
           "name": "platform_company_requests",
