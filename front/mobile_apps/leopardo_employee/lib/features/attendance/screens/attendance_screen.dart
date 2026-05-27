@@ -150,6 +150,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final state = ref.read(attendanceProvider);
     final choice = await _choosePunchType(isCheckedIn, state.todaySessions);
     if (choice == null) return;
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).clearSnackBars();
     final messenger = ScaffoldMessenger.of(context);
@@ -649,10 +650,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _TimeChip(
-                    label: 'Pauses',
-                    value: '${breakMinutes} min',
-                  ),
+                  child: _TimeChip(label: 'Pauses', value: '$breakMinutes min'),
                 ),
               ],
             ),
@@ -1089,7 +1087,7 @@ class _TaskLine extends StatelessWidget {
           ),
           if (minutes != null)
             Text(
-              '${minutes} min',
+              '$minutes min',
               style: const TextStyle(
                 color: _AttendanceScreenState._muted,
                 fontSize: 11,
