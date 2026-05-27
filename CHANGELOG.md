@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.165] - 2026-05-27
+
+### Added
+
+- API tasks : validation tenant-scope des `assigned_to.*` sur creation/mise a jour pour eviter toute assignation cross-company.
+- Mobile manager : ajout de l'ecran `/tasks` pour lister les taches du jour et assigner une tache a un collaborateur avec templates metier.
+- Mobile employee : les taches du jour visibles sur l'ecran pointage peuvent maintenant etre marquees terminees avec temps reel et note.
+- OpenAPI/contracts : documentation de `/tasks/today` et des champs execution/performance des taches.
+- Tests : couverture anti assignation cross-tenant et completion employee avec score performance.
+- Migrations/tests : rattrapage des anciennes tables `tasks` sans `category`, `checklist` ou `visibility` et alignement du fixture PostgreSQL sur `assigned_to` JSONB pour eviter les crashs sur tenants deja existants.
+- Documentation : ajout du Plan 38 taches du jour et pointage mobile.
+
 ## [4.16.164] - 2026-05-27
 
 ### Added

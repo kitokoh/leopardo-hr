@@ -2399,6 +2399,33 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /tasks/today:
+    get:
+      tags: ["Tasks"]
+      summary: "Lister les taches du jour"
+      parameters:
+        - name: assigned_to
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: "Taches du jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /tasks/{task}:
     get:
       tags: ["Tasks"]
@@ -5365,6 +5392,28 @@ components:
         priority:
           type: string
           enum: ["low", "normal", "high", "urgent"]
+        estimated_minutes:
+          type: integer
+          nullable: true
+        completed_minutes:
+          type: integer
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        completion_note:
+          type: string
+          nullable: true
+        performance_score:
+          type: string
+          nullable: true
+        recurrence_rule:
+          type: string
+          nullable: true
+        template_key:
+          type: string
+          nullable: true
         status:
           type: string
           enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
@@ -5429,6 +5478,19 @@ components:
           type: string
           nullable: true
           enum: ["low", "normal", "high", "urgent"]
+        estimated_minutes:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 1440
+        recurrence_rule:
+          type: string
+          nullable: true
+          maxLength: 120
+        template_key:
+          type: string
+          nullable: true
+          maxLength: 100
         category:
           type: string
           nullable: true
@@ -5469,6 +5531,28 @@ components:
         status:
           type: string
           enum: ["todo", "inprogress", "review", "done", "rejected", "cancelled"]
+        estimated_minutes:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 1440
+        completed_minutes:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 1440
+        completion_note:
+          type: string
+          nullable: true
+          maxLength: 1000
+        recurrence_rule:
+          type: string
+          nullable: true
+          maxLength: 120
+        template_key:
+          type: string
+          nullable: true
+          maxLength: 100
         category:
           type: string
           nullable: true
