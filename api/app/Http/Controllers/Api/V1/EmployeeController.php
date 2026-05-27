@@ -79,6 +79,7 @@ class EmployeeController extends Controller
                 'first_name',
                 'last_name',
                 'email',
+                'phone',
                 'role',
                 'manager_role',
                 'status',

@@ -598,6 +598,7 @@ Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /co
 - `PUT /api/v1/schedules/{schedule}` modifie les regles horaires existantes
 - `DELETE /api/v1/schedules/{schedule}` supprime un horaire non defaut
 - `POST /api/v1/employees` peut recevoir `schedule_id` pour affecter l'horaire des la creation employe
+- `PATCH /api/v1/employees/{employee}` peut corriger horaire, date d'embauche, salaire/taux horaire et metadonnees poste/departement/lieu depuis la fiche mobile manager
 - Couverture Feature requise : manager autorise, employe refuse, isolation tenant des horaires, refus d'un `schedule_id` hors entreprise
 
 ### Notifications

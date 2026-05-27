@@ -7,6 +7,7 @@ class Employee {
   final String firstName;
   final String lastName;
   final String email;
+  final String? phone;
   final String? personalEmail;
   final String? recoveryEmail;
   final String? personalPhone;
@@ -25,6 +26,9 @@ class Employee {
   final double? hourlyRate;
   final double? salaryBase;
   final String? currency;
+  final String? department;
+  final String? jobTitle;
+  final String? workLocation;
   final String language;
   final bool isRtl;
   final Map<String, bool> features;
@@ -37,6 +41,7 @@ class Employee {
     required this.firstName,
     required this.lastName,
     required this.email,
+    this.phone,
     this.personalEmail,
     this.recoveryEmail,
     this.personalPhone,
@@ -55,6 +60,9 @@ class Employee {
     this.hourlyRate,
     this.salaryBase,
     this.currency,
+    this.department,
+    this.jobTitle,
+    this.workLocation,
     this.language = 'fr',
     this.isRtl = false,
     this.features = const <String, bool>{},
@@ -89,6 +97,10 @@ class Employee {
     }
 
     final hireDateRaw = json['hire_date'];
+    final extraData =
+        json['extra_data'] is Map
+            ? (json['extra_data'] as Map).cast<String, dynamic>()
+            : const <String, dynamic>{};
 
     return Employee(
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
@@ -97,6 +109,7 @@ class Employee {
       firstName: (json['first_name'] ?? '') as String,
       lastName: (json['last_name'] ?? '') as String,
       email: (json['email'] ?? '') as String,
+      phone: json['phone']?.toString(),
       personalEmail: json['personal_email']?.toString(),
       recoveryEmail: json['recovery_email']?.toString(),
       personalPhone: json['personal_phone']?.toString(),
@@ -122,6 +135,9 @@ class Employee {
       hourlyRate: _parseDouble(json['hourly_rate']),
       salaryBase: _parseDouble(json['salary_base']),
       currency: json['currency'] as String?,
+      department: extraData['department']?.toString(),
+      jobTitle: extraData['job_title']?.toString(),
+      workLocation: extraData['work_location']?.toString(),
       language: (json['language'] ?? 'fr') as String,
       isRtl: json['is_rtl'] == true,
       features: features,
