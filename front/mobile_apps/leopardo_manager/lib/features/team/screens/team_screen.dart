@@ -7,6 +7,8 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_manager/features/schedules/data/schedule_repository.dart';
+import 'package:leopardo_manager/features/schedules/providers/schedule_provider.dart';
 import 'package:leopardo_manager/features/team/data/employee_repository.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
@@ -186,10 +188,8 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       builder:
           (_) => _EmployeeQrImportSheet(
             onPrefillReady:
-                (prefill) => _openCreateEmployeeSheet(
-                  context,
-                  prefill: prefill,
-                ),
+                (prefill) =>
+                    _openCreateEmployeeSheet(context, prefill: prefill),
           ),
     );
   }
@@ -302,6 +302,9 @@ class _EmployeesTab extends ConsumerWidget {
       parts.add('${e.hourlyRate!.toStringAsFixed(0)} $currency/h');
     } else if (e.salaryBase != null && e.salaryBase! > 0) {
       parts.add('${e.salaryBase!.toStringAsFixed(0)} $currency');
+    }
+    if (e.scheduleName?.trim().isNotEmpty == true) {
+      parts.add('Horaire ${e.scheduleName}');
     }
     return parts.isEmpty ? null : parts.join(' · ');
   }
@@ -599,7 +602,8 @@ class _EmployeeQrImportSheet extends ConsumerStatefulWidget {
       _EmployeeQrImportSheetState();
 }
 
-class _EmployeeQrImportSheetState extends ConsumerState<_EmployeeQrImportSheet> {
+class _EmployeeQrImportSheetState
+    extends ConsumerState<_EmployeeQrImportSheet> {
   final _tokenCtrl = TextEditingController();
   bool _loading = false;
 
@@ -673,9 +677,9 @@ class _EmployeeQrImportSheetState extends ConsumerState<_EmployeeQrImportSheet> 
 
     setState(() => _loading = true);
     try {
-      final prefill = await ref.read(employeeRepositoryProvider).scanEmployeeQr(
-        token,
-      );
+      final prefill = await ref
+          .read(employeeRepositoryProvider)
+          .scanEmployeeQr(token);
       if (!mounted) return;
       Navigator.of(context).pop();
       widget.onPrefillReady(prefill);
@@ -694,6 +698,70 @@ final _companyQrProvider = FutureProvider.autoDispose<CompanyQrPayload>((
 ) async {
   return ref.watch(employeeRepositoryProvider).getCompanyQrPayload();
 });
+
+class _ScheduleSelector extends StatelessWidget {
+  const _ScheduleSelector({
+    required this.schedules,
+    required this.selectedId,
+    required this.onChanged,
+  });
+
+  final List<WorkSchedule> schedules;
+  final int? selectedId;
+  final ValueChanged<int?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (schedules.isEmpty) {
+      return MobilePanel(
+        color: AppColors.warning.withValues(alpha: 0.08),
+        child: Row(
+          children: [
+            const Icon(Icons.schedule_outlined, color: AppColors.warning),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Aucun horaire cree. Vous pourrez en definir dans le module Horaires.',
+                style: AppTypography.caption.copyWith(
+                  color: MobileSurface.secondary,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push('/schedules'),
+              child: const Text('Ouvrir'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return DropdownButtonFormField<int?>(
+      initialValue: selectedId,
+      dropdownColor: MobileSurface.surface,
+      decoration: const InputDecoration(
+        labelText: 'Horaire de travail',
+        prefixIcon: Icon(Icons.schedule_outlined),
+      ),
+      items: [
+        const DropdownMenuItem<int?>(
+          value: null,
+          child: Text('Horaire par defaut'),
+        ),
+        ...schedules.map(
+          (schedule) => DropdownMenuItem<int?>(
+            value: schedule.id,
+            child: Text(
+              '${schedule.name} · ${schedule.startTime}-${schedule.endTime}',
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+      onChanged: onChanged,
+    );
+  }
+}
 
 class _CreateEmployeeForm extends ConsumerStatefulWidget {
   const _CreateEmployeeForm({this.prefill});
@@ -721,6 +789,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   String _role = 'employee';
   String? _managerRole;
   String _salaryType = 'fixed';
+  int? _scheduleId;
   bool _submitting = false;
 
   @override
@@ -754,6 +823,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final schedulesAsync = ref.watch(schedulesProvider);
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: SingleChildScrollView(
@@ -854,6 +924,26 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 validator:
                     (v) =>
                         (v == null || v.trim().isEmpty) ? 'Obligatoire' : null,
+              ),
+              const SizedBox(height: 16),
+              schedulesAsync.when(
+                data:
+                    (schedules) => _ScheduleSelector(
+                      schedules: schedules,
+                      selectedId: _scheduleId,
+                      onChanged: (value) => setState(() => _scheduleId = value),
+                    ),
+                loading:
+                    () => const LinearProgressIndicator(
+                      minHeight: 3,
+                      color: AppColors.rh,
+                    ),
+                error:
+                    (error, stackTrace) => TextButton.icon(
+                      onPressed: () => ref.invalidate(schedulesProvider),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Recharger les horaires'),
+                    ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -1003,6 +1093,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
           email: _email.text,
           matricule: _matricule.text,
           contractStart: _hireDate.text,
+          scheduleId: _scheduleId,
           salaryType: _salaryType,
           salaryBase:
               _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
@@ -1015,23 +1106,24 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
         );
       } else {
         await repo.create(
-            firstName: _firstName.text,
-            lastName: _lastName.text,
-            email: _email.text,
-            phone: _phone.text,
-            role: _role,
-            managerRole: _managerRole,
-            matricule: _matricule.text,
-            contractStart: _hireDate.text,
-            salaryType: _salaryType,
-            salaryBase:
-                _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
-            hourlyRate:
-                _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
-            department: _department.text,
-            jobTitle: _jobTitle.text,
-            workLocation: _workLocation.text,
-            sendInvitation: true,
+          firstName: _firstName.text,
+          lastName: _lastName.text,
+          email: _email.text,
+          phone: _phone.text,
+          role: _role,
+          managerRole: _managerRole,
+          matricule: _matricule.text,
+          contractStart: _hireDate.text,
+          scheduleId: _scheduleId,
+          salaryType: _salaryType,
+          salaryBase:
+              _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+          hourlyRate:
+              _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
+          department: _department.text,
+          jobTitle: _jobTitle.text,
+          workLocation: _workLocation.text,
+          sendInvitation: true,
         );
       }
       ref.invalidate(teamListProvider);

@@ -67,11 +67,15 @@ class EmployeeController extends Controller
         $sortDir = (string) ($validated['sort_dir'] ?? 'asc');
 
         $query = Employee::query()
-            ->with(['company:id,name,language,timezone,currency,features'])
+            ->with([
+                'company:id,name,language,timezone,currency,features',
+                'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
+            ])
             ->select([
                 'id',
                 'matricule',
                 'company_id',
+                'schedule_id',
                 'first_name',
                 'last_name',
                 'email',
@@ -149,6 +153,7 @@ class EmployeeController extends Controller
         $actor = $request->user();
 
         $employee = $this->employeeService->create(CreateEmployeeDTO::fromRequest($request), $actor);
+        $employee->loadMissing('schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes');
 
         return (new EmployeeResource($employee))
             ->response()
@@ -178,7 +183,10 @@ class EmployeeController extends Controller
     public function show(string $employeeId, Request $request): JsonResponse
     {
         $employee = Employee::query()
-            ->with(['company:id,name,language,timezone,currency,features'])
+            ->with([
+                'company:id,name,language,timezone,currency,features',
+                'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
+            ])
             ->findOrFail($employeeId);
 
         $this->authorize('view', $employee);
@@ -203,6 +211,7 @@ class EmployeeController extends Controller
         $this->authorize('update', $employee);
 
         $employee = $this->employeeService->update($actor, $employee, UpdateEmployeeDTO::fromRequest($request));
+        $employee->loadMissing('schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes');
 
         return (new EmployeeResource($employee))->response();
     }
