@@ -98,10 +98,6 @@ class CabinetFolderController extends Controller
     {
         $actor = $this->employee($request);
 
-        if ($folder->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
         if ($folder->employee_id !== $actor->id) {
             abort(403);
         }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
+use App\Models\Contract;
 use App\Models\Employee;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
@@ -14,6 +15,51 @@ use Illuminate\Http\Request;
 
 class SelfServiceController extends Controller
 {
+    public function myCareer(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $contracts = Contract::query()
+            ->where('employee_id', $user->id)
+            ->where('company_id', $user->company_id)
+            ->orderByDesc('start_date')
+            ->get()
+            ->map(fn (Contract $contract): array => [
+                'company_id' => $contract->company_id,
+                'company_name' => $user->company?->name,
+                'start_date' => $contract->start_date?->toDateString(),
+                'end_date' => $contract->end_date?->toDateString(),
+                'job_title' => $contract->job_title,
+                'contract_type' => $contract->contract_type,
+                'status' => $contract->status,
+                'current' => $contract->status === 'active' && $contract->end_date === null,
+            ])
+            ->values();
+
+        if ($contracts->isEmpty()) {
+            $contracts->push([
+                'company_id' => $user->company_id,
+                'company_name' => $user->company?->name,
+                'start_date' => $user->contract_start?->toDateString(),
+                'end_date' => $user->contract_end?->toDateString(),
+                'job_title' => data_get($user->extra_data, 'job_title'),
+                'contract_type' => $user->contract_type,
+                'status' => $user->status,
+                'current' => $user->status === 'active' && $user->contract_end === null,
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'available_for_new_company' => $user->status !== 'active' || $user->company_id === null,
+                'current_company_id' => $user->company_id,
+                'current_company_name' => $user->company?->name,
+                'timeline' => $contracts,
+            ],
+        ]);
+    }
+
     public function myTrainings(Request $request): JsonResponse
     {
         /** @var Employee $user */
