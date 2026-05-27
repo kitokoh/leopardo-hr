@@ -82,4 +82,68 @@ class ScheduleControllerTest extends TestCase
             'end_time' => '17:00',
         ])->assertForbidden();
     }
+
+    public function test_manager_can_assign_company_schedule_when_creating_employee(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $schedule = Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Equipe terrain',
+            'start_time' => '06:00',
+            'end_time' => '14:00',
+            'break_minutes' => 20,
+            'work_days' => [1, 2, 3, 4, 5],
+            'late_tolerance_minutes' => 5,
+            'overtime_threshold_daily' => 8,
+            'overtime_threshold_weekly' => 40,
+            'is_default' => false,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/employees', [
+            'first_name' => 'Karim',
+            'last_name' => 'Terrain',
+            'email' => 'karim.terrain@example.test',
+            'password' => 'password123',
+            'schedule_id' => $schedule->id,
+            'role' => 'employee',
+        ])
+            ->assertCreated()
+            ->assertJsonPath('data.schedule_id', $schedule->id)
+            ->assertJsonPath('data.schedule.name', 'Equipe terrain');
+    }
+
+    public function test_manager_cannot_assign_schedule_from_another_company(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $foreignSchedule = Schedule::query()->create([
+            'company_id' => $otherCompany->id,
+            'name' => 'Autre tenant',
+            'start_time' => '09:00',
+            'end_time' => '18:00',
+            'break_minutes' => 60,
+            'work_days' => [1, 2, 3, 4, 5],
+            'late_tolerance_minutes' => 10,
+            'overtime_threshold_daily' => 8,
+            'overtime_threshold_weekly' => 40,
+            'is_default' => false,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/employees', [
+            'first_name' => 'Ahmet',
+            'last_name' => 'Wrong',
+            'email' => 'ahmet.wrong@example.test',
+            'password' => 'password123',
+            'schedule_id' => $foreignSchedule->id,
+            'role' => 'employee',
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['schedule_id']);
+    }
 }

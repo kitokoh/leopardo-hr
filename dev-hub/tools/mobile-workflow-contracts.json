@@ -134,7 +134,7 @@
             "lib/features/team/screens/team_screen.dart",
             "lib/features/schedules/screens/schedule_list_screen.dart"
           ],
-          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "_showScheduleSheet", "Creer horaire"]
+          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer horaire"]
         },
         {
           "name": "manager_decisions",
