@@ -592,6 +592,13 @@ Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /co
 - `GET /api/v1/dashboard/manager-digest` signaux mobile manager du jour (presence, retards, sessions ouvertes, actions RH pending)
 - Couverture Feature requise : isolation tenant, scope equipe directe pour manager departement, limite recent activity, KPI compatible SQLite/PostgreSQL
 
+### Horaires manager
+- `GET /api/v1/schedules` liste les horaires tenant-scope visibles mobile manager
+- `POST /api/v1/schedules` cree un horaire avec pause, tolerance retard, jours travailles et seuils heures supp
+- `PUT /api/v1/schedules/{schedule}` modifie les regles horaires existantes
+- `DELETE /api/v1/schedules/{schedule}` supprime un horaire non defaut
+- Couverture Feature requise : manager autorise, employe refuse, isolation tenant des horaires
+
 ### Notifications
 - `GET /api/v1/notifications` liste paginee avec unread_count
 - `GET /api/v1/notifications/unread` non-lues uniquement

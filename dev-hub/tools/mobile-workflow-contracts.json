@@ -109,6 +109,7 @@
         "/notifications",
         "/cabinet",
         "/team",
+        "/schedules",
         "/me/monthly",
         "/history",
         "/modules",
@@ -127,12 +128,13 @@
         },
         {
           "name": "team_management",
-          "routes": ["/team"],
-          "endpoints": ["/employees", "/invitations"],
+          "routes": ["/team", "/schedules"],
+          "endpoints": ["/employees", "/invitations", "/schedules"],
           "screenFiles": [
-            "lib/features/team/screens/team_screen.dart"
+            "lib/features/team/screens/team_screen.dart",
+            "lib/features/schedules/screens/schedule_list_screen.dart"
           ],
-          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate"]
+          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "_showScheduleSheet", "Creer horaire"]
         },
         {
           "name": "manager_decisions",

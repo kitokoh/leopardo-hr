@@ -127,6 +127,14 @@ class MobileExperienceService
                 route: '/team',
                 status: 'active',
             );
+            $modules[] = $this->module(
+                key: 'schedules',
+                title: 'Horaires',
+                description: 'Definir pauses, tolerances et heures supplementaires.',
+                domain: 'rh',
+                route: '/schedules',
+                status: 'active',
+            );
         }
 
         $modules[] = $this->module(
@@ -215,6 +223,14 @@ class MobileExperienceService
                     domain: 'rh',
                     icon: 'group',
                     route: '/team',
+                ),
+                $this->quickAction(
+                    key: 'schedules',
+                    title: 'Horaires',
+                    description: 'Ajuster les regles de temps.',
+                    domain: 'rh',
+                    icon: 'schedule',
+                    route: '/schedules',
                 ),
             ]);
         }

@@ -37,6 +37,7 @@ import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart
 import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_manager/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_placeholder_screen.dart';
+import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -192,6 +193,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/organigramme',
         builder: (context, state) => const OrganigrammeScreen(),
+      ),
+      GoRoute(
+        path: '/schedules',
+        builder: (context, state) => const ScheduleListScreen(),
       ),
       GoRoute(
         path: '/manager/dashboard',

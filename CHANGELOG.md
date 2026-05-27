@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.162] - 2026-05-27
+
+### Added
+
+- Mobile manager : ajout de l'ecran `/schedules` pour gerer horaires, pauses, jours travailles, tolerances retard et seuils d'heures supplementaires.
+- Mobile manager : ajout d'un CTA `Horaires` depuis la home manager.
+- API/contracts : documentation OpenAPI et matrice frontend/API pour `GET/POST/PUT/DELETE /api/v1/schedules`.
+- Tests : ajout de `ScheduleControllerTest` pour verifier autorisation manager, refus employe et isolation tenant.
+- Documentation : ajout du Plan 35 horaires manager mobile.
+
 ## [4.16.161] - 2026-05-27
 
 ### Added
