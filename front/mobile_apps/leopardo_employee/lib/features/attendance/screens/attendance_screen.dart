@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
@@ -1045,16 +1046,19 @@ class _PunchChoice {
   });
 }
 
-class _TaskLine extends StatelessWidget {
+class _TaskLine extends ConsumerWidget {
   final Map<String, dynamic> task;
 
   const _TaskLine({required this.task});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = int.tryParse(task['id']?.toString() ?? '');
     final title = task['title']?.toString() ?? 'Tache';
     final priority = task['priority']?.toString() ?? 'normal';
+    final status = task['status']?.toString() ?? 'todo';
     final minutes = int.tryParse(task['estimated_minutes']?.toString() ?? '');
+    final done = status == 'done';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1067,11 +1071,15 @@ class _TaskLine extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            priority == 'urgent' || priority == 'high'
+            done
+                ? Icons.task_alt
+                : priority == 'urgent' || priority == 'high'
                 ? Icons.priority_high
                 : Icons.task_alt,
             color:
-                priority == 'urgent' || priority == 'high'
+                done
+                    ? AppColors.rh
+                    : priority == 'urgent' || priority == 'high'
                     ? AppColors.warning
                     : AppColors.rh,
             size: 18,
@@ -1093,9 +1101,170 @@ class _TaskLine extends StatelessWidget {
                 fontSize: 11,
               ),
             ),
+          if (!done && id != null) ...[
+            const SizedBox(width: 8),
+            TextButton(
+              onPressed: () => _openCompleteSheet(context, ref, id, minutes),
+              child: const Text('Terminer'),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  void _openCompleteSheet(
+    BuildContext context,
+    WidgetRef ref,
+    int taskId,
+    int? estimatedMinutes,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _AttendanceScreenState._card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (_) => _TaskCompletionSheet(
+            taskId: taskId,
+            estimatedMinutes: estimatedMinutes,
+          ),
+    );
+  }
+}
+
+class _TaskCompletionSheet extends ConsumerStatefulWidget {
+  const _TaskCompletionSheet({required this.taskId, this.estimatedMinutes});
+
+  final int taskId;
+  final int? estimatedMinutes;
+
+  @override
+  ConsumerState<_TaskCompletionSheet> createState() =>
+      _TaskCompletionSheetState();
+}
+
+class _TaskCompletionSheetState extends ConsumerState<_TaskCompletionSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _minutesCtrl;
+  final _noteCtrl = TextEditingController();
+  bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _minutesCtrl = TextEditingController(
+      text: (widget.estimatedMinutes ?? 30).toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _minutesCtrl.dispose();
+    _noteCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 20, 20, bottom + 24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Cloturer la tache',
+              style: TextStyle(
+                color: _AttendanceScreenState._text,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Indiquez le temps reel et une note courte avant le depart.',
+              style: TextStyle(
+                color: _AttendanceScreenState._muted,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _minutesCtrl,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(color: _AttendanceScreenState._text),
+              decoration: const InputDecoration(
+                labelText: 'Temps reel',
+                suffixText: 'min',
+              ),
+              validator: (value) {
+                final parsed = int.tryParse(value?.trim() ?? '');
+                if (parsed == null || parsed <= 0) return 'Duree invalide';
+                return null;
+              },
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: _noteCtrl,
+              minLines: 2,
+              maxLines: 3,
+              maxLength: 300,
+              style: const TextStyle(color: _AttendanceScreenState._text),
+              decoration: const InputDecoration(
+                labelText: 'Note de realisation',
+              ),
+            ),
+            const SizedBox(height: 14),
+            ElevatedButton.icon(
+              onPressed: _submitting ? null : _submit,
+              icon:
+                  _submitting
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Icon(Icons.task_alt),
+              label: const Text('Marquer terminee'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _submitting = true);
+    try {
+      await ref
+          .read(attendanceRepositoryProvider)
+          .completeTask(
+            taskId: widget.taskId,
+            completedMinutes: int.parse(_minutesCtrl.text.trim()),
+            note: _noteCtrl.text,
+          );
+      ref.invalidate(todayTasksProvider);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Tache terminee.')));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 }
 

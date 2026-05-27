@@ -135,6 +135,14 @@ class MobileExperienceService
                 route: '/schedules',
                 status: 'active',
             );
+            $modules[] = $this->module(
+                key: 'tasks',
+                title: 'Taches',
+                description: 'Assigner les missions du jour et suivre la performance terrain.',
+                domain: 'rh',
+                route: '/tasks',
+                status: 'active',
+            );
         }
 
         $modules[] = $this->module(
@@ -231,6 +239,14 @@ class MobileExperienceService
                     domain: 'rh',
                     icon: 'schedule',
                     route: '/schedules',
+                ),
+                $this->quickAction(
+                    key: 'tasks',
+                    title: 'Taches',
+                    description: 'Assigner le travail du jour.',
+                    domain: 'rh',
+                    icon: 'task_alt',
+                    route: '/tasks',
                 ),
             ]);
         }

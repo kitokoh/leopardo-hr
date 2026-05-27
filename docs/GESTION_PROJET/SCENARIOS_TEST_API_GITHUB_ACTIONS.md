@@ -601,6 +601,13 @@ Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /co
 - `PATCH /api/v1/employees/{employee}` peut corriger horaire, date d'embauche, salaire/taux horaire et metadonnees poste/departement/lieu depuis la fiche mobile manager
 - Couverture Feature requise : manager autorise, employe refuse, isolation tenant des horaires, refus d'un `schedule_id` hors entreprise
 
+### Taches du jour et pointage
+
+- `POST /api/v1/tasks` permet au manager d'assigner une tache du jour a un employe du meme tenant avec duree estimee, priorite, categorie et `template_key`
+- `GET /api/v1/tasks/today` alimente le pointage employe et la vue manager du jour
+- `PATCH /api/v1/tasks/{task}` permet a l'employe assigne de declarer `status=done`, `completed_minutes` et `completion_note`
+- Couverture Feature requise : refus d'un `assigned_to` hors entreprise et calcul du `performance_score` a la completion
+
 ### Notifications
 - `GET /api/v1/notifications` liste paginee avec unread_count
 - `GET /api/v1/notifications/unread` non-lues uniquement

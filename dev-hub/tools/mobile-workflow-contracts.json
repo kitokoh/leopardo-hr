@@ -110,6 +110,7 @@
         "/cabinet",
         "/team",
         "/schedules",
+        "/tasks",
         "/me/monthly",
         "/history",
         "/modules",
@@ -128,13 +129,14 @@
         },
         {
           "name": "team_management",
-          "routes": ["/team", "/schedules"],
-          "endpoints": ["/employees", "/invitations", "/schedules"],
+          "routes": ["/team", "/schedules", "/tasks"],
+          "endpoints": ["/employees", "/invitations", "/schedules", "/tasks", "/tasks/today"],
           "screenFiles": [
             "lib/features/team/screens/team_screen.dart",
-            "lib/features/schedules/screens/schedule_list_screen.dart"
+            "lib/features/schedules/screens/schedule_list_screen.dart",
+            "lib/features/tasks/screens/task_list_screen.dart"
           ],
-          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer horaire"]
+          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer horaire", "Assigner une tache", "templateKey"]
         },
         {
           "name": "manager_decisions",
