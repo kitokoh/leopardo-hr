@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="leopardo_splash_background">#08101F</color>
+    <color name="leopardo_icon_background">#08101F</color>
+    <color name="leopardo_icon_accent">#0EA5E9</color>
+</resources>
