@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AttendanceLog;
 use App\Models\Employee;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -26,15 +27,14 @@ class EstimationService
 
         $dateKey = $dateLocal->toDateString();
 
-        $log = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
+        $logs = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
             ->where('employee_id', $employee->id)
             ->where('date', $dateKey)
-            ->where('session_number', 1)
-            ->orderByDesc('id')
-            ->first();
+            ->orderBy('session_number')
+            ->get();
 
-        return $this->dailySummaryFromLog($employee, $log, $dateKey);
+        return $this->dailySummaryFromLogs($employee, $logs, $dateKey);
     }
 
     public function quickEstimate(Employee $employee, string $from, string $to): array
@@ -44,14 +44,15 @@ class EstimationService
         $fromLocal = Carbon::createFromFormat('Y-m-d', $from, $company->timezone)->startOfDay();
         $toLocal = Carbon::createFromFormat('Y-m-d', $to, $company->timezone)->startOfDay();
 
-        $logs = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
+        $logsByDate = AttendanceLog::query()
+            ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
             ->where('employee_id', $employee->id)
             ->where('date', '>=', $fromLocal->toDateString())
             ->where('date', '<=', $toLocal->toDateString())
-            ->where('session_number', 1)
             ->orderBy('date')
-            ->get();
+            ->orderBy('session_number')
+            ->get()
+            ->groupBy(fn (AttendanceLog $log) => $log->date->format('Y-m-d'));
 
         $workingDays = $this->countWorkingDaysInclusive($employee, $fromLocal, $toLocal);
 
@@ -61,12 +62,13 @@ class EstimationService
         $gross = 0.0;
         $breakdown = [];
 
-        foreach ($logs as $log) {
-            if (! $log->check_in || ! $log->check_out) {
+        foreach ($logsByDate as $dateKey => $logs) {
+            $daySummary = $this->dailySummaryFromLogs($employee, $logs, (string) $dateKey);
+
+            if ((int) $daySummary['sessions_count'] === 0) {
                 continue;
             }
 
-            $daySummary = $this->dailySummaryFromLog($employee, $log, $log->date->format('Y-m-d'));
             $daysPresent++;
             $totalHours += (float) $daySummary['hours_worked'];
             $totalOvertime += (float) $daySummary['overtime_hours'];
@@ -111,10 +113,32 @@ class EstimationService
 
     public function dailySummaryFromLog(Employee $employee, ?AttendanceLog $log, ?string $date = null): array
     {
+        return $this->dailySummaryFromLogs(
+            employee: $employee,
+            logs: $log ? collect([$log]) : collect(),
+            date: $date,
+        );
+    }
+
+    /**
+     * @param  iterable<int, AttendanceLog>  $logs
+     * @return array<string, mixed>
+     */
+    public function dailySummaryFromLogs(Employee $employee, iterable $logs, ?string $date = null): array
+    {
         $company = currentCompany();
         $dateKey = $date ?: now('UTC')->setTimezone($company->timezone)->toDateString();
 
-        if (! $log || ! $log->check_in) {
+        $sessions = $logs instanceof Collection
+            ? $logs->values()
+            : collect($logs)->values();
+
+        $sessions = $sessions
+            ->filter(fn (AttendanceLog $log) => $log->check_in !== null)
+            ->sortBy(fn (AttendanceLog $log) => (int) ($log->session_number ?? 1))
+            ->values();
+
+        if ($sessions->isEmpty()) {
             return [
                 'employee_id' => $employee->id,
                 'matricule' => $employee->matricule,
@@ -122,8 +146,10 @@ class EstimationService
                 'date' => $dateKey,
                 'check_in' => null,
                 'check_out' => null,
+                'sessions_count' => 0,
                 'hours_worked' => 0.0,
                 'overtime_hours' => 0.0,
+                'late_minutes' => 0,
                 'base_gain' => 0.0,
                 'overtime_gain' => 0.0,
                 'total_estimated' => 0.0,
@@ -133,22 +159,39 @@ class EstimationService
         }
 
         $nowUtc = now('UTC');
-        $checkInUtc = $log->check_in;
-        $checkOutUtc = $log->check_out;
+        /** @var AttendanceLog $firstSession */
+        $firstSession = $sessions->first();
+        /** @var AttendanceLog $lastSession */
+        $lastSession = $sessions->last();
+        $openSession = $sessions->first(fn (AttendanceLog $log) => $log->check_out === null);
 
-        $status = $checkOutUtc ? 'complete' : 'incomplete';
+        $checkInUtc = $firstSession->check_in;
+        $checkOutUtc = $lastSession->check_out;
 
-        $hoursWorked = $log->hours_worked !== null
-            ? (float) $log->hours_worked
-            : round(($checkOutUtc ?? $nowUtc)->diffInMinutes($checkInUtc) / 60, 2);
+        $status = $openSession
+            ? 'incomplete'
+            : ($sessions->contains(fn (AttendanceLog $log) => $log->status === 'late') ? 'late' : 'complete');
 
-        $overtimeHours = $log->overtime_hours !== null
-            ? (float) $log->overtime_hours
-            : max(0.0, round($hoursWorked - self::EXPECTED_HOURS_PER_DAY, 2));
+        $hoursWorked = round($sessions->sum(function (AttendanceLog $log) use ($nowUtc): float {
+            if ($log->hours_worked !== null) {
+                return (float) $log->hours_worked;
+            }
+
+            if (! $log->check_in) {
+                return 0.0;
+            }
+
+            return round(($log->check_out ?? $nowUtc)->diffInMinutes($log->check_in) / 60, 2);
+        }), 2);
+
+        $recordedOvertime = round($sessions->sum(fn (AttendanceLog $log): float => (float) ($log->overtime_hours ?? 0)), 2);
+        $thresholdOvertime = max(0.0, round($hoursWorked - self::EXPECTED_HOURS_PER_DAY, 2));
+        $overtimeHours = max($recordedOvertime, $thresholdOvertime);
+        $lateMinutes = (int) $sessions->sum(fn (AttendanceLog $log): int => (int) ($log->late_minutes ?? 0));
 
         [$baseHourlyRate, $overtimeRate] = $this->resolveRates($employee);
 
-        $baseHours = min(self::EXPECTED_HOURS_PER_DAY, $hoursWorked);
+        $baseHours = max(0.0, round($hoursWorked - $overtimeHours, 2));
         $baseGain = round($baseHours * $baseHourlyRate, 2);
         $overtimeGain = round($overtimeHours * $baseHourlyRate * $overtimeRate, 2);
         $total = round($baseGain + $overtimeGain, 2);
@@ -160,8 +203,10 @@ class EstimationService
             'date' => $dateKey,
             'check_in' => $checkInUtc->copy()->setTimezone($company->timezone)->format('H:i'),
             'check_out' => $checkOutUtc?->copy()->setTimezone($company->timezone)->format('H:i'),
+            'sessions_count' => $sessions->count(),
             'hours_worked' => $hoursWorked,
             'overtime_hours' => $overtimeHours,
+            'late_minutes' => $lateMinutes,
             'base_gain' => $baseGain,
             'overtime_gain' => $overtimeGain,
             'total_estimated' => $total,

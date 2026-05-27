@@ -25,29 +25,37 @@ class WebEmployeeController extends Controller
 
         $historyLogs = AttendanceLog::query()
             ->where('employee_id', $employee->id)
-            ->where('session_number', 1)
             ->orderByDesc('date')
+            ->orderBy('session_number')
             ->orderByDesc('id')
-            ->limit(30)
+            ->limit(120)
             ->get();
 
-        $history = $historyLogs->map(function (AttendanceLog $log) use ($employee) {
-            $summary = $this->estimationService->dailySummaryFromLog(
-                employee: $employee,
-                log: $log,
-                date: $log->date?->format('Y-m-d'),
-            );
+        $history = $historyLogs
+            ->groupBy(fn (AttendanceLog $log) => $log->date?->format('Y-m-d') ?? '')
+            ->take(30)
+            ->map(function ($logs, string $date) use ($employee) {
+                $summary = $this->estimationService->dailySummaryFromLogs(
+                    employee: $employee,
+                    logs: $logs,
+                    date: $date,
+                );
+                /** @var AttendanceLog|null $firstLog */
+                $firstLog = $logs->sortBy('session_number')->first();
+                /** @var AttendanceLog|null $lastLog */
+                $lastLog = $logs->sortByDesc('session_number')->first();
 
-            return [
-                'date' => $log->date?->format('Y-m-d'),
-                'check_in' => $log->check_in?->setTimezone(currentCompany()->timezone)->format('H:i'),
-                'check_out' => $log->check_out?->setTimezone(currentCompany()->timezone)->format('H:i'),
-                'hours_worked' => $summary['hours_worked'] ?? 0.0,
-                'total_estimated' => $summary['total_estimated'] ?? 0.0,
-                'currency' => $summary['currency'] ?? currentCompany()->currency,
-                'status' => $log->status ?? 'absent',
-            ];
-        })->values();
+                return [
+                    'date' => $date,
+                    'check_in' => $firstLog?->check_in?->setTimezone(currentCompany()->timezone)->format('H:i'),
+                    'check_out' => $lastLog?->check_out?->setTimezone(currentCompany()->timezone)->format('H:i'),
+                    'sessions_count' => $summary['sessions_count'] ?? $logs->count(),
+                    'hours_worked' => $summary['hours_worked'] ?? 0.0,
+                    'total_estimated' => $summary['total_estimated'] ?? 0.0,
+                    'currency' => $summary['currency'] ?? currentCompany()->currency,
+                    'status' => $summary['status'] ?? 'absent',
+                ];
+            })->values();
 
         $defaultTo = now('UTC')->setTimezone($company->timezone)->toDateString();
         $defaultFrom = now('UTC')->setTimezone($company->timezone)->subDays(7)->toDateString();
