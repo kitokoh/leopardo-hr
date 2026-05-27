@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.166] - 2026-05-27
+
+### Added
+
+- Mobile employee : refonte de l'ecran `Mon mois complet` avec socle visuel mobile, etat de chargement explicite, etat vide exploitable et lien vers l'historique.
+- Backend : couverture du contrat `GET /api/v1/me/monthly-summary` pour un mois sans pointage, qui doit retourner un payload zero au lieu de laisser le mobile sans issue.
+- Backend : `year` et `month` du resume mensuel sont renvoyes comme entiers meme quand ils viennent de la query string.
+- Garde mobile : verification des libelles de secours du parcours attendance mensuel.
+- Documentation : ajout du Plan 39 mois complet mobile readiness.
+
 ## [4.16.165] - 2026-05-27
 
 ### Added

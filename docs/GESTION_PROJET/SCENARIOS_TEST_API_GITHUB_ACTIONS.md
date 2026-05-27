@@ -47,6 +47,8 @@ Note 2026-05-27 : le compte employee durable consomme `PATCH /auth/profile`, `GE
 
 Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /company/qr-onboarding`, `POST /company/qr-onboarding/scan-employee`, `POST /company/qr-onboarding/create-employee` et `POST /me/company-qr/scan`. Les scenarios API doivent verifier les jetons signes/expires, le rejet des jetons modifies, le pre-remplissage manager, la creation depuis QR avec email professionnel unique et la demande d'integration employe via QR entreprise.
 
+Note 2026-05-27 : le mobile employee consomme `GET /me/monthly-summary` pour l'ecran "Mon mois complet". Les scenarios API doivent verifier le mois vide avec `breakdown=[]`, totaux a zero, `period.from/to` stables et `year`/`month` retournes comme entiers meme quand ils viennent de query params.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -267,6 +269,7 @@ Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /co
 - Attendance check-in / check-out / history
 - Attendance anomalies business impact / recommended actions
 - Attendance monthly report JSON / CSV / PDF payroll estimates
+- Self-service `GET /api/v1/me/monthly-summary` : mois vide, totaux zero, breakdown vide, periode stable et types JSON compatibles mobile
 - Onboarding checklist go-live readiness
 - Estimation daily summary / quick estimate / PDF
 - Contrats JSON critiques pour le mobile
