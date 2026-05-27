@@ -59,6 +59,12 @@ class CompanyScreen extends ConsumerWidget {
                                       label: company.status,
                                       color: _statusColor(company.status),
                                     ),
+                                    onTap:
+                                        company.id.isEmpty
+                                            ? null
+                                            : () => context.push(
+                                              '/platform/companies/${Uri.encodeComponent(company.id)}',
+                                            ),
                                   ),
                                 )
                                 .toList(),
