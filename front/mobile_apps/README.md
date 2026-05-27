@@ -59,6 +59,19 @@ Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis c
 | `leopardo_manager` | `com.leopardo.manager` | `com.leopardo.manager` | Leopardo Manager |
 | `leopardo_platform_admin` | `com.leopardo.platformadmin` | `com.leopardo.platformadmin` | Leopardo Platform Admin |
 
+## Branding natif
+
+Les assets canoniques du branding mobile sont generes directement dans chaque app :
+
+- Android launcher : `android/app/src/main/res/mipmap-*/ic_launcher.png`
+- Android adaptive icon : `android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml`
+- Android splash : `android/app/src/main/res/mipmap-*/launch_image.png` et `drawable/launch_background.xml`
+- Android notification : `android/app/src/main/res/drawable/ic_notification.xml`
+- iOS App Store : `ios/Runner/Assets.xcassets/AppIcon.appiconset/`
+- iOS splash : `ios/Runner/Assets.xcassets/LaunchImage.imageset/`
+
+Ne pas remettre les icones Flutter par defaut. Pour changer l'identite visuelle, regenerer les trois familles d'assets employee, manager et platform admin dans le meme lot afin de garder une coherence store.
+
 Avant un upload public, le mode strict doit passer apres configuration des signatures release :
 
 ```powershell
