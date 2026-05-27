@@ -28,6 +28,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _emailController;
+  late final TextEditingController _personalEmailController;
+  late final TextEditingController _recoveryEmailController;
+  late final TextEditingController _personalPhoneController;
   final TextEditingController _currentPasswordController =
       TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
@@ -68,6 +71,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     _lastNameController = TextEditingController(text: employee?.lastName ?? '');
     _emailController = TextEditingController(text: employee?.email ?? '');
+    _personalEmailController = TextEditingController(
+      text: employee?.personalEmail ?? '',
+    );
+    _recoveryEmailController = TextEditingController(
+      text: employee?.recoveryEmail ?? '',
+    );
+    _personalPhoneController = TextEditingController(
+      text: employee?.personalPhone ?? '',
+    );
     _selectedLanguage =
         _languageLabels.containsKey(employee?.language)
             ? employee!.language
@@ -110,6 +122,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
+    _personalEmailController.dispose();
+    _recoveryEmailController.dispose();
+    _personalPhoneController.dispose();
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
@@ -139,6 +154,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildIdentityCard(context),
           const SizedBox(height: 20),
           _buildProfileSection(context, authState),
+          const SizedBox(height: 20),
+          _buildCareerSection(),
+          const SizedBox(height: 20),
+          _buildCabinetSection(),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
           const SizedBox(height: 20),
@@ -223,6 +242,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 return null;
               },
             ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _personalEmailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email personnel',
+                helperText: 'Optionnel, conserve votre compte hors entreprise',
+              ),
+              validator: _optionalEmailValidator,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _recoveryEmailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email de recuperation',
+                helperText: 'Optionnel pour recuperer l acces',
+              ),
+              validator: _optionalEmailValidator,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _personalPhoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Telephone personnel',
+                helperText: 'Optionnel, visible selon vos choix futurs',
+              ),
+            ),
             const SizedBox(height: 16),
             if (authState.error != null)
               Padding(
@@ -242,6 +290,236 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildCareerSection() {
+    return FutureBuilder<EmployeeCareer>(
+      future: ref.read(settingsRepositoryProvider).loadCareer(),
+      builder: (context, snapshot) {
+        final career = snapshot.data;
+        final timeline = career?.timeline ?? const <EmployeeCareerEntry>[];
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: MobileSurface.cardDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const MobileIconBubble(
+                    icon: Icons.work_history_rounded,
+                    color: AppColors.rh,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Parcours professionnel',
+                          style: AppTypography.subtitle.copyWith(
+                            color: MobileSurface.text,
+                          ),
+                        ),
+                        Text(
+                          career?.availableForNewCompany == true
+                              ? 'Disponible pour une nouvelle entreprise'
+                              : 'Rattache a ${career?.currentCompanyName ?? 'votre entreprise'}',
+                          style: AppTypography.caption.copyWith(
+                            color: MobileSurface.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const LinearProgressIndicator(minHeight: 2)
+              else if (timeline.isEmpty)
+                Text(
+                  'Aucun parcours enregistre pour le moment.',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                )
+              else
+                ...timeline.take(3).map(_buildCareerRow),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCareerRow(EmployeeCareerEntry entry) {
+    final period =
+        '${entry.startDate ?? 'Date inconnue'} - ${entry.endDate ?? (entry.current ? 'Aujourd hui' : 'En cours')}';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: MobileSurface.chip,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: MobileSurface.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: entry.current ? AppColors.rh : MobileSurface.muted,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.jobTitle ?? 'Poste non renseigne',
+                  style: AppTypography.body.copyWith(
+                    color: MobileSurface.text,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${entry.companyName ?? 'Entreprise'} - $period',
+                  style: AppTypography.caption.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCabinetSection() {
+    return FutureBuilder<CabinetStats>(
+      future: ref.read(settingsRepositoryProvider).loadCabinetStats(),
+      builder: (context, snapshot) {
+        final stats = snapshot.data;
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: MobileSurface.cardDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const MobileIconBubble(
+                    icon: Icons.inventory_2_rounded,
+                    color: AppColors.cabinet,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Placard numerique',
+                          style: AppTypography.subtitle.copyWith(
+                            color: MobileSurface.text,
+                          ),
+                        ),
+                        Text(
+                          'CV, contrats, diplomes et documents administratifs.',
+                          style: AppTypography.caption.copyWith(
+                            color: MobileSurface.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const LinearProgressIndicator(minHeight: 2)
+              else
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildCabinetMetric(
+                        '${stats?.documents ?? 0}',
+                        'documents',
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildCabinetMetric(
+                        '${stats?.shared ?? 0}',
+                        'partages',
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildCabinetMetric(
+                        '${stats?.publicDocuments ?? 0}',
+                        'publics',
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/cabinet'),
+                icon: const Icon(Icons.folder_open_rounded),
+                label: const Text('Ouvrir mon placard'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(44),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCabinetMetric(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: MobileSurface.chip,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: MobileSurface.border),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: AppTypography.subtitle.copyWith(color: AppColors.cabinet),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: AppTypography.caption.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? _optionalEmailValidator(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return null;
+    if (!trimmed.contains('@') || !trimmed.contains('.')) {
+      return 'Email invalide';
+    }
+    return null;
   }
 
   Widget _buildLanguageSection(BuildContext context, AuthState authState) {
@@ -590,6 +868,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
           email: _emailController.text,
+          personalEmail: _personalEmailController.text,
+          recoveryEmail: _recoveryEmailController.text,
+          personalPhone: _personalPhoneController.text,
         );
 
     if (!mounted) return;

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,8 +26,6 @@ use Illuminate\Support\Carbon;
  */
 class CabinetFolder extends Model
 {
-    use BelongsToCompany;
-
     protected $table = 'cabinet_folders';
 
     protected $fillable = [

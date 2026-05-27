@@ -12,6 +12,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Session courante | `GET /api/v1/auth/me` | authentifie | `FrontendApiContractTest` |
 | Mobile | Langue utilisateur | `PATCH /api/v1/auth/language` | authentifie | `FrontendApiContractTest` |
 | Mobile | Changement mot de passe | `POST /api/v1/auth/change-password` | authentifie | `FrontendApiContractTest` |
+| Mobile | Mise a jour profil durable | `PATCH /api/v1/auth/profile` | authentifie | `AuthProfileSettingsTest` |
 | Mobile | Deconnexion | `POST /api/v1/auth/logout` | authentifie | `FrontendApiContractTest` |
 | Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `FrontendApiContractTest` |
 | Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` |
@@ -34,9 +35,11 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Approbation absence | `PUT /api/v1/absences/{absence}/approve` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
 | Mobile | Refus absence | `PUT /api/v1/absences/{absence}/reject` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
 | Mobile | Soldes conges | `GET /api/v1/me/leave-balances` | employe | `FrontendApiContractTest` |
+| Mobile | Parcours professionnel durable | `GET /api/v1/me/career` | employe | `AuthProfileSettingsTest` |
 | Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
+| Mobile | Statistiques placard numerique | `GET /api/v1/cabinet/stats` | employe | `AuthProfileSettingsTest` |
 | Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |
 | Mobile | Detail avance salaire | `GET /api/v1/salary-advances/{salaryAdvance}` | employe/manager | `FrontendApiContractTest` |

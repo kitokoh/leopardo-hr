@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -25,8 +24,6 @@ use Illuminate\Support\Carbon;
  */
 class CabinetDocument extends Model
 {
-    use BelongsToCompany;
-
     protected $table = 'cabinet_documents';
 
     protected $fillable = [

@@ -111,7 +111,9 @@ trait CreatesMvpSchema
             $table->string('preferred_name', 100)->nullable();
             $table->string('email', 150);
             $table->string('personal_email', 150)->nullable();
+            $table->string('recovery_email', 150)->nullable();
             $table->string('phone', 30)->nullable();
+            $table->string('personal_phone', 30)->nullable();
             $table->string('password_hash', 255);
             $table->date('date_of_birth')->nullable();
             $table->string('place_of_birth', 120)->nullable();

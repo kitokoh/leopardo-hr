@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\CabinetDocument;
+use App\Models\CabinetFolder;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Language;
@@ -56,11 +58,117 @@ class AuthProfileSettingsTest extends TestCase
                 'first_name' => 'Karim Updated',
                 'last_name' => 'Aouad Updated',
                 'email' => 'karim.updated@company.test',
+                'personal_email' => 'karim.personal@example.test',
+                'recovery_email' => 'karim.recovery@example.test',
+                'personal_phone' => '+213555000111',
             ]);
 
         $response->assertOk();
         $response->assertJsonPath('data.first_name', 'Karim Updated');
         $response->assertJsonPath('data.email', 'karim.updated@company.test');
+        $response->assertJsonPath('data.personal_email', 'karim.personal@example.test');
+        $response->assertJsonPath('data.recovery_email', 'karim.recovery@example.test');
+        $response->assertJsonPath('data.personal_phone', '+213555000111');
+
+        $this->assertDatabaseHas('employees', [
+            'id' => $employee->id,
+            'personal_email' => 'karim.personal@example.test',
+            'recovery_email' => 'karim.recovery@example.test',
+            'personal_phone' => '+213555000111',
+        ]);
+    }
+
+    public function test_employee_can_view_durable_career_summary(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a-career',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'career@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Karim',
+            'last_name' => 'Aouad',
+            'email' => 'career.employee@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+            'contract_start' => '2026-01-15',
+            'contract_type' => 'cdi',
+            'extra_data' => ['job_title' => 'Technicien terrain'],
+        ]);
+
+        $token = $employee->createToken('tests')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/v1/me/career');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.available_for_new_company', false);
+        $response->assertJsonPath('data.current_company_id', $company->id);
+        $response->assertJsonPath('data.timeline.0.company_name', 'Company A');
+        $response->assertJsonPath('data.timeline.0.start_date', '2026-01-15');
+        $response->assertJsonPath('data.timeline.0.job_title', 'Technicien terrain');
+        $response->assertJsonPath('data.timeline.0.current', true);
+    }
+
+    public function test_employee_can_view_personal_cabinet_stats(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a-cabinet',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'cabinet@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Karim',
+            'last_name' => 'Aouad',
+            'email' => 'cabinet.employee@company.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        CabinetFolder::query()->create([
+            'company_id' => 1,
+            'employee_id' => $employee->id,
+            'name' => 'Contrats',
+        ]);
+
+        CabinetDocument::query()->create([
+            'company_id' => 1,
+            'employee_id' => $employee->id,
+            'name' => 'Contrat CDI',
+            'original_name' => 'contrat.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 2048,
+            'disk' => 'local',
+            'path' => 'cabinet/contrat.pdf',
+        ]);
+
+        $token = $employee->createToken('tests')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/v1/cabinet/stats');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.total_documents', 1);
+        $response->assertJsonPath('data.total_folders', 1);
+        $response->assertJsonPath('data.total_size', 2048);
     }
 
     public function test_employee_can_change_password_with_current_password(): void

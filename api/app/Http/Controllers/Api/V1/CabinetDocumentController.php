@@ -136,10 +136,6 @@ class CabinetDocumentController extends Controller
     {
         $actor = $this->employee($request);
 
-        if ($document->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
         if ($document->employee_id !== $actor->id) {
             abort(403);
         }
