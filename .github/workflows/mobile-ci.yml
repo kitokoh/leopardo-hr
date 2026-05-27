@@ -1,4 +1,8 @@
-name: Mobile CI - Flutter
+name: Legacy Mobile CI - Flutter
+
+# This workflow intentionally validates the historical single Flutter app in
+# front/mobile. The launch/store applications live in front/mobile_apps and are
+# covered by mobile-apps-ci.yml and mobile-distribute.yml.
 
 on:
   workflow_dispatch:
@@ -24,8 +28,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  flutter-analyze:
-    name: Flutter Analyze
+  legacy-flutter-analyze:
+    name: Legacy Flutter Analyze
     runs-on: ubuntu-latest
 
     steps:
@@ -52,8 +56,8 @@ jobs:
         working-directory: front/mobile
         run: flutter analyze --no-fatal-infos
 
-  flutter-test:
-    name: Flutter Test + Coverage
+  legacy-flutter-test:
+    name: Legacy Flutter Test + Coverage
     runs-on: ubuntu-latest
 
     steps:
@@ -125,10 +129,10 @@ jobs:
           echo "Flutter tests failed."
           exit 1
 
-  flutter-build-apk:
-    name: Build Debug APK
+  legacy-flutter-build-apk:
+    name: Build Legacy Debug APK
     runs-on: ubuntu-latest
-    needs: [flutter-analyze, flutter-test]
+    needs: [legacy-flutter-analyze, legacy-flutter-test]
 
     steps:
       - name: Checkout code
@@ -172,7 +176,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: leopardo-rh-debug-apk
+          name: leopardo-rh-legacy-debug-apk
           path: front/mobile/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: warn
           retention-days: 7

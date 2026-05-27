@@ -64,6 +64,8 @@ jobs:
             api_changed=true
           fi
 
+          # Legacy single-app mobile only. The production split apps under
+          # front/mobile_apps are validated by mobile-apps-ci.yml.
           if printf '%s\n' "${changed_files}" | grep -Eq '^front/mobile/'; then
             mobile_changed=true
           fi
@@ -729,6 +731,8 @@ jobs:
           exit 1
 
   mobile-tests:
+    # Branch protection still expects this exact check name. The job validates
+    # only the historical front/mobile app; new apps are covered separately.
     name: Mobile Flutter (Stable Channel)
     runs-on: ubuntu-latest
     needs: detect-changes
@@ -843,7 +847,7 @@ jobs:
 
           awk -v percent="${percent}" -v threshold="${threshold}" 'BEGIN { exit ((percent + 0) < (threshold + 0)) ? 1 : 0 }'
 
-      - name: Build Android smoke artifact
+      - name: Build legacy Android smoke artifact
         id: mobile_smoke_build
         working-directory: front/mobile
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
@@ -860,7 +864,7 @@ jobs:
           summary_file="quality-summary.md"
           {
             echo "- Workspace detected: true"
-            echo "- Mobile changes detected: true"
+            echo "- Legacy mobile changes detected: true"
             echo "- Format: ${{ steps.mobile_format.outcome }}"
             echo "- Analyze: ${{ steps.mobile_analyze.outcome }}"
             echo "- Tests: ${{ steps.mobile_tests.outcome }}"
@@ -878,7 +882,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mobile-quality-summary
+          name: legacy-mobile-quality-summary
           path: front/mobile/quality-summary.md
           if-no-files-found: error
 
@@ -886,7 +890,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mobile-test-reports
+          name: legacy-mobile-test-reports
           path: |
             front/mobile/coverage/lcov.info
             front/mobile/coverage/summary.txt

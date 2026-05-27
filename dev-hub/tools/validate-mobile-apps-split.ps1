@@ -33,6 +33,19 @@ Assert-Path $platformAdminRoot "leopardo_platform_admin"
 Assert-Path $legacyRoot "leopardo_mobile_legacy"
 
 if ($failures.Count -eq 0) {
+    $legacyWorkflow = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-ci.yml") -Raw
+    if (-not $legacyWorkflow.Contains("name: Legacy Mobile CI - Flutter")) {
+        Add-Failure "front/mobile workflow must stay explicitly named Legacy Mobile CI - Flutter"
+    }
+    if (-not $legacyWorkflow.Contains("leopardo-rh-legacy-debug-apk")) {
+        Add-Failure "front/mobile debug artifact must stay legacy-named"
+    }
+
+    $releaseWorkflow = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/release.yml") -Raw
+    if (-not $releaseWorkflow.Contains("leopardo-rh-legacy-`${tag}.apk")) {
+        Add-Failure "Legacy release artifact must stay named leopardo-rh-legacy-{tag}.apk"
+    }
+
     $employeeForbiddenPaths = @(
         "lib/features/team",
         "lib/features/approvals",
