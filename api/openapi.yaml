@@ -6139,10 +6139,15 @@ components:
         check_out:
           type: string
           nullable: true
+        sessions_count:
+          type: integer
+          description: "Nombre de sessions de pointage agregees sur la journee."
         hours_worked:
           type: number
         overtime_hours:
           type: number
+        late_minutes:
+          type: integer
         base_gain:
           type: number
         overtime_gain:

@@ -43,14 +43,15 @@ class MeController extends Controller
         $dateKey = $dateLocal->toDateString();
 
         $log = AttendanceLog::query()
-            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status'])
+            ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'work_type', 'late_minutes'])
             ->where('employee_id', $employee->id)
             ->where('date', $dateKey)
-            ->where('session_number', 1)
-            ->orderByDesc('id')
+            ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
+            ->orderByDesc('session_number')
             ->first();
+        $summary = $this->estimationService->dailySummary($employee, $dateKey);
 
-        return (new AttendanceTodayResource($employee, $log, $company->timezone))->response();
+        return (new AttendanceTodayResource($employee, $log, $company->timezone, $summary))->response();
     }
 
     public function quickEstimate(Request $request): JsonResponse

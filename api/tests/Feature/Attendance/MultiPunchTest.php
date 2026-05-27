@@ -65,6 +65,20 @@ class MultiPunchTest extends TestCase
         $this->assertSame([1, 2], $logs->pluck('session_number')->all());
         $this->assertSame('overtime', $logs->last()->work_type);
         $this->assertSame('Support client exceptionnel', $logs->last()->punch_note);
+
+        $summary = $this->getJson('/api/v1/me/daily-summary?date=2026-04-04');
+        $summary->assertOk()
+            ->assertJsonPath('data.sessions_count', 2);
+        $this->assertSame(6.0, (float) $summary->json('data.hours_worked'));
+        $this->assertSame(2.0, (float) $summary->json('data.overtime_hours'));
+        $this->assertSame(650.0, (float) $summary->json('data.total_estimated'));
+
+        $monthly = $this->getJson('/api/v1/me/monthly-summary?year=2026&month=4');
+        $monthly->assertOk()
+            ->assertJsonPath('data.period.days_present', 1);
+        $this->assertSame(6.0, (float) $monthly->json('data.totals.hours'));
+        $this->assertSame(2.0, (float) $monthly->json('data.totals.overtime_hours'));
+        $this->assertSame(650.0, (float) $monthly->json('data.totals.gross'));
     }
 
     public function test_today_returns_sessions_and_daily_summary(): void
@@ -125,6 +139,8 @@ class MultiPunchTest extends TestCase
             'password_hash' => Hash::make('password123'),
             'role' => 'employee',
             'status' => 'active',
+            'salary_type' => 'hourly',
+            'hourly_rate' => 100,
         ]);
 
         return [$employee, $company];
