@@ -158,6 +158,35 @@ class PlatformCompanySubscription {
   }
 }
 
+class PlatformPlan {
+  const PlatformPlan({
+    required this.id,
+    required this.name,
+    required this.monthlyPrice,
+    required this.yearlyPrice,
+    required this.maxEmployees,
+    required this.isActive,
+  });
+
+  final int id;
+  final String name;
+  final num monthlyPrice;
+  final num yearlyPrice;
+  final int? maxEmployees;
+  final bool isActive;
+
+  factory PlatformPlan.fromJson(Map<String, dynamic> json) {
+    return PlatformPlan(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      name: json['name']?.toString() ?? 'Plan',
+      monthlyPrice: json['price_monthly'] as num? ?? 0,
+      yearlyPrice: json['price_yearly'] as num? ?? 0,
+      maxEmployees: (json['max_employees'] as num?)?.toInt(),
+      isActive: json['is_active'] == true,
+    );
+  }
+}
+
 class PlatformCompanyFeatures {
   const PlatformCompanyFeatures({
     required this.active,
