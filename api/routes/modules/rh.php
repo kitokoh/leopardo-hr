@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\KioskController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\NotificationStreamController;
+use App\Http\Controllers\Api\V1\OnboardingQrController;
 use App\Http\Controllers\Api\V1\PayrollController;
 use App\Http\Controllers\Api\V1\PositionController;
 use App\Http\Controllers\Api\V1\ProjectController;
@@ -38,6 +39,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/employees/{employee}/archive', [EmployeeController::class, 'archive'])->whereNumber('employee');
     Route::post('/employees/import', [EmployeeImportController::class, 'import']);
     Route::get('/employees/import-template', [EmployeeImportController::class, 'template']);
+    Route::get('/me/qr-profile', [OnboardingQrController::class, 'employeeProfile']);
+    Route::get('/company/qr-onboarding', [OnboardingQrController::class, 'companyOnboarding']);
+    Route::post('/company/qr-onboarding/scan-employee', [OnboardingQrController::class, 'scanEmployee']);
+    Route::post('/company/qr-onboarding/create-employee', [OnboardingQrController::class, 'createEmployeeFromQr']);
+    Route::post('/me/company-qr/scan', [OnboardingQrController::class, 'scanCompany']);
 
     // ── Estimations ───────────────────────────────────────────────────────────
     Route::get('/employees/{employee}/daily-summary', [EstimationController::class, 'dailySummary'])->whereNumber('employee');
