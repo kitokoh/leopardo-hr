@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.176] - 2026-05-27
+
+### Added
+
+- Mobile employee : les trois points d'une ligne de semaine ouvrent maintenant un choix entre `Details de la journee` et correction.
+- Mobile employee : ajout d'une bottom sheet de details journaliers avec sessions multiples, pauses estimees, heures supp, duree travaillee et gain estime.
+- Documentation : ajout du Plan 49 details pointage employee.
+
 ## [4.16.175] - 2026-05-27
 
 ### Changed
