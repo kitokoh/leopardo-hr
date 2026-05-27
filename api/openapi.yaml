@@ -36,6 +36,7 @@ tags:
   - name: "Notifications"
   - name: "Readiness"
   - name: "Dashboard"
+  - name: "Schedules"
   - name: "Projects"
   - name: "Tasks"
   - name: "Evaluations"
@@ -228,6 +229,97 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+
+  /schedules:
+    get:
+      tags: ["Schedules"]
+      summary: "Lister les horaires de l'entreprise"
+      responses:
+        "200":
+          description: "Horaires tenant-scope"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Schedules"]
+      summary: "Creer un horaire de travail"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleRequest"
+      responses:
+        "201":
+          description: "Horaire cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /schedules/{schedule}:
+    parameters:
+      - name: schedule
+        in: path
+        required: true
+        schema:
+          type: integer
+    put:
+      tags: ["Schedules"]
+      summary: "Modifier un horaire"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleRequest"
+      responses:
+        "200":
+          description: "Horaire modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Schedules"]
+      summary: "Supprimer un horaire non defaut"
+      responses:
+        "200":
+          description: "Horaire supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   /auth/profile:
     patch:
@@ -3661,6 +3753,75 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        start_time:
+          type: string
+          example: "08:00"
+        end_time:
+          type: string
+          example: "17:00"
+        break_minutes:
+          type: integer
+          minimum: 0
+        work_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        late_tolerance_minutes:
+          type: integer
+          minimum: 0
+        overtime_threshold_daily:
+          type: number
+        overtime_threshold_weekly:
+          type: number
+        is_default:
+          type: boolean
+    ScheduleRequest:
+      type: object
+      required: ["name", "start_time", "end_time"]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        start_time:
+          type: string
+          pattern: "^\\d{2}:\\d{2}$"
+        end_time:
+          type: string
+          pattern: "^\\d{2}:\\d{2}$"
+        break_minutes:
+          type: integer
+          minimum: 0
+          maximum: 480
+        work_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        late_tolerance_minutes:
+          type: integer
+          minimum: 0
+          maximum: 120
+        overtime_threshold_daily:
+          type: number
+          minimum: 0
+        overtime_threshold_weekly:
+          type: number
+          minimum: 0
+        is_default:
+          type: boolean
     ClientEventRequest:
       type: object
       required: ["name"]
