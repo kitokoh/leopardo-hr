@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.168] - 2026-05-27
+
+### Added
+
+- Mobile multi-app : remplacement des icones Flutter par defaut par des icones Android/iOS distinctes pour employee, manager et platform admin.
+- Mobile Android : ajout des adaptive icons, splash screens sombres avec logo et icones de notification monochromes par app.
+- Mobile iOS : generation des AppIcon complets et des LaunchImage personnalisees pour les trois apps.
+- Documentation : ajout du Plan 41 branding mobile natif et des previews visuels dans `docs/assets/mobile-branding/`.
+
 ## [4.16.167] - 2026-05-27
 
 ### Added
