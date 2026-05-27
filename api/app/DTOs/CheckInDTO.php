@@ -17,6 +17,8 @@ final readonly class CheckInDTO
         public bool $synced_from_offline = false,
         public ?string $action = 'check_in',
         public ?string $source_device_code = null,
+        public string $work_type = 'normal',
+        public ?string $punch_note = null,
     ) {}
 
     public static function fromRequest(CheckInRequest|CheckOutRequest $request): self
@@ -26,7 +28,9 @@ final readonly class CheckInDTO
         return new self(
             gps_lat: $validated['gps_lat'] ?? null,
             gps_lng: $validated['gps_lng'] ?? null,
-            method: 'mobile'
+            method: 'mobile',
+            work_type: $validated['work_type'] ?? 'normal',
+            punch_note: $validated['punch_note'] ?? null,
         );
     }
 }

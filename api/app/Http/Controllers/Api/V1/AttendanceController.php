@@ -18,6 +18,7 @@ use App\Models\Employee;
 use App\Services\AttendanceAnomalyService;
 use App\Services\AttendanceMonthlyReportService;
 use App\Services\AttendanceService;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -77,14 +78,17 @@ class AttendanceController extends Controller
             $log = AttendanceLog::query()
                 ->where('employee_id', $target->id)
                 ->where('date', $today)
-                ->where('session_number', 1)
-                ->orderByDesc('id')
+                ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
+                ->orderByDesc('session_number')
                 ->first();
+            $sessions = $this->dailySessions($target, $today);
 
             return new JsonResponse([
                 'data' => [
                     'mode' => 'single',
                     'item' => new AttendanceTodayResource($target, $log, $company->timezone),
+                    'sessions' => AttendanceLogResource::collection($sessions)->resolve($request),
+                    'summary' => $this->dailySessionSummary($sessions),
                 ],
             ]);
         }
@@ -94,7 +98,8 @@ class AttendanceController extends Controller
             $perPage = $request->integer('per_page', 50);
 
             $paginator = Employee::query()
-                ->select(['id', 'first_name', 'last_name', 'email', 'role', 'status'])
+                ->select(['id', 'company_id', 'first_name', 'last_name', 'email', 'role', 'status'])
+                ->where('company_id', $actor->company_id)
                 ->where('status', 'active')
                 ->orderBy('id')
                 ->paginate(max(1, min(100, $perPage)));
@@ -103,12 +108,14 @@ class AttendanceController extends Controller
             $employeeIds = $employees->pluck('id')->all();
 
             $logsByEmployee = AttendanceLog::query()
-                ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'status'])
+                ->select(['id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'work_type', 'punch_note', 'punch_meta', 'late_minutes'])
                 ->where('date', $today)
-                ->where('session_number', 1)
                 ->whereIn('employee_id', $employeeIds)
                 ->get()
-                ->keyBy('employee_id');
+                ->groupBy('employee_id')
+                ->map(fn ($logs) => $logs
+                    ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
+                    ->first());
 
             $timezone = $company->timezone;
 
@@ -134,14 +141,17 @@ class AttendanceController extends Controller
         $log = AttendanceLog::query()
             ->where('employee_id', $actor->id)
             ->where('date', $today)
-            ->where('session_number', 1)
-            ->orderByDesc('id')
+            ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
+            ->orderByDesc('session_number')
             ->first();
+        $sessions = $this->dailySessions($actor, $today);
 
         return new JsonResponse([
             'data' => [
                 'mode' => 'single',
                 'item' => new AttendanceTodayResource($actor, $log, $company->timezone),
+                'sessions' => AttendanceLogResource::collection($sessions)->resolve($request),
+                'summary' => $this->dailySessionSummary($sessions),
             ],
         ]);
     }
@@ -169,7 +179,7 @@ class AttendanceController extends Controller
 
         $query = AttendanceLog::query()
             ->with(['employee:id,first_name,last_name,matricule,photo_path'])
-            ->select(['id', 'employee_id', 'date', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'source_device_code', 'late_minutes']);
+            ->select(['id', 'company_id', 'employee_id', 'date', 'session_number', 'check_in', 'check_out', 'hours_worked', 'overtime_hours', 'status', 'method', 'work_type', 'punch_note', 'punch_meta', 'source_device_code', 'late_minutes']);
 
         if ($target) {
             $query->where('employee_id', $target->id);
@@ -307,6 +317,7 @@ class AttendanceController extends Controller
             'check_in' => ['nullable', 'date'],
             'check_out' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
+            'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
         ]);
 
         $effectiveCheckIn = array_key_exists('check_in', $validated)
@@ -335,6 +346,7 @@ class AttendanceController extends Controller
             'check_in' => $effectiveCheckIn,
             'check_out' => $effectiveCheckOut,
             'method' => 'manual',
+            'work_type' => $validated['work_type'] ?? $attendanceLog->work_type ?? 'normal',
             'corrected_by' => $user->id,
             'correction_note' => $validated['notes'] ?? $attendanceLog->correction_note,
         ]);
@@ -342,5 +354,60 @@ class AttendanceController extends Controller
         $attendanceLog = $this->attendanceService->recalculateLog($attendanceLog);
 
         return (new AttendanceLogResource($attendanceLog))->response();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, AttendanceLog>
+     */
+    private function dailySessions(Employee $employee, string $date): EloquentCollection
+    {
+        return AttendanceLog::query()
+            ->where('employee_id', $employee->id)
+            ->where('date', $date)
+            ->orderBy('session_number')
+            ->get();
+    }
+
+    /**
+     * @param  iterable<int, AttendanceLog>  $sessions
+     * @return array<string, mixed>
+     */
+    private function dailySessionSummary(iterable $sessions): array
+    {
+        $totalHours = 0.0;
+        $overtimeHours = 0.0;
+        $lateMinutes = 0;
+        $breakMinutes = 0;
+        $previousCheckout = null;
+        $openSession = null;
+        $count = 0;
+
+        foreach ($sessions as $session) {
+            $count++;
+            $totalHours += (float) ($session->hours_worked ?? 0);
+            $overtimeHours += (float) ($session->overtime_hours ?? 0);
+            $lateMinutes += (int) ($session->late_minutes ?? 0);
+
+            if ($previousCheckout !== null && $session->check_in !== null) {
+                $breakMinutes += max(0, $previousCheckout->diffInMinutes($session->check_in, false));
+            }
+
+            if ($session->check_out !== null) {
+                $previousCheckout = $session->check_out;
+            } else {
+                $openSession = $session;
+            }
+        }
+
+        return [
+            'sessions_count' => $count,
+            'is_working' => $openSession !== null,
+            'current_session_id' => $openSession?->id,
+            'current_work_type' => $openSession?->work_type,
+            'total_hours_worked' => round($totalHours, 2),
+            'total_overtime_hours' => round($overtimeHours, 2),
+            'break_minutes' => $breakMinutes,
+            'late_minutes' => $lateMinutes,
+        ];
     }
 }

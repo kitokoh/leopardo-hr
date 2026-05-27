@@ -20,22 +20,36 @@ class AttendanceRepository {
     return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
-  Future<AttendanceLog> checkIn() async {
+  Future<AttendanceLog> checkIn({
+    String workType = 'normal',
+    String? punchNote,
+  }) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-in',
       method: 'POST',
-      data: {},
+      data: {
+        'work_type': workType,
+        if (punchNote != null && punchNote.trim().isNotEmpty)
+          'punch_note': punchNote.trim(),
+      },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
     return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
-  Future<AttendanceLog> checkOut() async {
+  Future<AttendanceLog> checkOut({
+    String workType = 'normal',
+    String? punchNote,
+  }) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-out',
       method: 'POST',
-      data: {},
+      data: {
+        'work_type': workType,
+        if (punchNote != null && punchNote.trim().isNotEmpty)
+          'punch_note': punchNote.trim(),
+      },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
@@ -117,8 +131,10 @@ class AttendanceRepository {
     final qp = <String, dynamic>{};
     if (year != null) qp['year'] = year;
     if (month != null) qp['month'] = month;
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/me/monthly-summary',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: qp,
     );
     return MonthlySummary.fromJson(
@@ -161,13 +177,51 @@ class AttendanceRepository {
     return items.map((e) => AttendanceLog.fromJson(e)).toList();
   }
 
+  Future<List<Map<String, dynamic>>> getTodayTasks() async {
+    final response = await apiClient.requestWithRetry(
+      '/tasks/today',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    final items = response.data['data'];
+    if (items is! List) return const [];
+    return items
+        .whereType<Map>()
+        .map((entry) => entry.cast<String, dynamic>())
+        .toList();
+  }
+
+  Future<void> completeTask({
+    required int taskId,
+    required int completedMinutes,
+    String? note,
+  }) async {
+    await apiClient.requestWithRetry(
+      '/tasks/$taskId',
+      method: 'PATCH',
+      data: {
+        'status': 'done',
+        'completed_minutes': completedMinutes,
+        if (note != null && note.trim().isNotEmpty)
+          'completion_note': note.trim(),
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+  }
+
   static Map<String, dynamic> decodeTodayResponse(
     Map<String, dynamic> responseData,
   ) {
     final payload = responseData['data'];
 
     if (payload == null) {
-      return {'log': null, 'context': responseData['context']};
+      return {
+        'log': null,
+        'sessions': const <AttendanceLog>[],
+        'summary': responseData['summary'],
+        'context': responseData['context'],
+      };
     }
 
     if (payload is! Map) {
@@ -198,11 +252,27 @@ class AttendanceRepository {
             : (data.containsKey('item') ? null : data);
 
     if (todayPayload == null) {
-      return {'log': null, 'context': context};
+      return {
+        'log': null,
+        'sessions': const <AttendanceLog>[],
+        'summary': data['summary'],
+        'context': context,
+      };
     }
 
     final now = DateTime.now();
     final today = todayPayload.cast<String, dynamic>();
+    final rawSessions = data['sessions'];
+    final sessions =
+        rawSessions is List
+            ? rawSessions
+                .whereType<Map>()
+                .map(
+                  (entry) =>
+                      AttendanceLog.fromJson(entry.cast<String, dynamic>()),
+                )
+                .toList()
+            : const <AttendanceLog>[];
 
     return {
       'log': AttendanceLog(
@@ -227,7 +297,12 @@ class AttendanceRepository {
         employeeName: today['name']?.toString(),
         employeePhotoUrl:
             (today['photo_url'] ?? today['photo_path'])?.toString(),
+        sessionNumber:
+            int.tryParse(today['session_number']?.toString() ?? '') ?? 1,
+        workType: (today['work_type'] ?? 'normal').toString(),
       ),
+      'sessions': sessions,
+      'summary': data['summary'],
       'context': context,
     };
   }

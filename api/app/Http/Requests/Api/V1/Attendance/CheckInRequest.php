@@ -16,6 +16,8 @@ class CheckInRequest extends FormRequest
         return [
             'gps_lat' => ['nullable', 'numeric', 'between:-90,90'],
             'gps_lng' => ['nullable', 'numeric', 'between:-180,180'],
+            'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
+            'punch_note' => ['nullable', 'string', 'max:500'],
         ];
     }
 }
