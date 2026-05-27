@@ -890,11 +890,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ),
           GestureDetector(
             onTap:
-                () => _showCorrectionSheet(
+                () => _showDayActionsSheet(
                   context,
-                  forDate: day.date,
+                  day: day,
                   canDirectEdit: canDirectEdit,
-                  logId: day.logId,
                 ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
@@ -995,6 +994,170 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             targetDate: targetDate,
             canDirectEdit: canDirectEdit,
             logId: logId,
+          ),
+    );
+  }
+
+  void _showDayActionsSheet(
+    BuildContext context, {
+    required AttendanceDaySummary day,
+    required bool canDirectEdit,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: _card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (ctx) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _SheetHandle(),
+                  const SizedBox(height: 16),
+                  _SheetHeader(
+                    title: day.dayLabel,
+                    subtitle:
+                        day.isAbsent
+                            ? 'Aucun pointage enregistre pour cette journee.'
+                            : '${day.sessionsCount} session(s) - ${day.hoursFormatted} travaillees.',
+                  ),
+                  const SizedBox(height: 14),
+                  _ActionTile(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'Details de la journee',
+                    subtitle:
+                        'Voir les pointages, pauses, heures supp et temps reel.',
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _showDayDetailsSheet(context, day);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _ActionTile(
+                    icon: Icons.edit_calendar_outlined,
+                    title:
+                        canDirectEdit
+                            ? 'Modifier'
+                            : 'Demander une modification',
+                    subtitle:
+                        canDirectEdit
+                            ? 'Corriger directement cette ligne de pointage.'
+                            : 'Soumettre une correction au RH pour validation.',
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _showCorrectionSheet(
+                        context,
+                        forDate: day.date,
+                        canDirectEdit: canDirectEdit,
+                        logId: day.logId,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+  void _showDayDetailsSheet(BuildContext context, AttendanceDaySummary day) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (_) => DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.72,
+            minChildSize: 0.42,
+            maxChildSize: 0.92,
+            builder:
+                (context, controller) => SafeArea(
+                  child: ListView(
+                    controller: controller,
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+                    children: [
+                      const _SheetHandle(),
+                      const SizedBox(height: 16),
+                      _SheetHeader(
+                        title: 'Details de la journee',
+                        subtitle: DateFormat(
+                          'EEEE d MMMM yyyy',
+                          'fr_FR',
+                        ).format(day.date),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _DetailMetric(
+                              label: 'Temps travaille',
+                              value: day.hoursFormatted,
+                              color: const Color(0xFFC8D8F0),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _DetailMetric(
+                              label: 'Heures supp',
+                              value: day.overtimeFormatted,
+                              color: AppColors.rh,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _DetailMetric(
+                              label: 'Pauses',
+                              value: '${day.breakMinutes} min',
+                              color: AppColors.warning,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _DetailMetric(
+                              label: 'Gain estime',
+                              value:
+                                  '${day.estimatedEarnings.toStringAsFixed(0)} DZD',
+                              color: AppColors.rh,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      const Text(
+                        'Pointages',
+                        style: TextStyle(
+                          color: _secondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (day.sessions.isEmpty)
+                        const _SheetMessage(
+                          icon: Icons.event_busy_outlined,
+                          title: 'Aucune session',
+                          body:
+                              'Cette journee ne contient pas encore de pointage.',
+                        )
+                      else
+                        ...day.sessions.map(_SessionDetailTile.new),
+                    ],
+                  ),
+                ),
           ),
     );
   }
@@ -1208,6 +1371,265 @@ class _SheetMessage extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _SheetHandle extends StatelessWidget {
+  const _SheetHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 36,
+        height: 4,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2A3C5A),
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _ActionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0C1525),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: _AttendanceScreenState._border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: AppColors.rh.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: AppColors.rh, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: _AttendanceScreenState._text,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: _AttendanceScreenState._muted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: _AttendanceScreenState._muted,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailMetric extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _DetailMetric({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C1525),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _AttendanceScreenState._border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: _AttendanceScreenState._muted,
+              fontSize: 10,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SessionDetailTile extends StatelessWidget {
+  final AttendanceLog session;
+
+  const _SessionDetailTile(this.session);
+
+  @override
+  Widget build(BuildContext context) {
+    final start = _AttendanceScreenState._formatTime(session.checkIn);
+    final end = _AttendanceScreenState._formatTime(session.checkOut);
+    final minutes = ((session.workedHours ?? 0) * 60).round();
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    final duration = '${hours}h${mins.toString().padLeft(2, '0')}';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C1525),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _AttendanceScreenState._border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 46,
+            decoration: BoxDecoration(
+              color: _workTypeColor(session.workType),
+              borderRadius: BorderRadius.circular(999),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Session ${session.sessionNumber} - ${_workTypeLabel(session.workType)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: _AttendanceScreenState._text,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '$start -> $end',
+                  style: const TextStyle(
+                    color: _AttendanceScreenState._muted,
+                    fontSize: 11,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                  ),
+                ),
+                if ((session.punchNote ?? '').trim().isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    session.punchNote!.trim(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: _AttendanceScreenState._muted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            duration,
+            style: const TextStyle(
+              color: AppColors.rh,
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _workTypeLabel(String raw) {
+    switch (raw) {
+      case 'overtime':
+        return 'Heure supp';
+      case 'break':
+        return 'Pause';
+      case 'resume':
+        return 'Reprise';
+      case 'mission':
+        return 'Mission';
+      case 'travel':
+        return 'Deplacement';
+      case 'training':
+        return 'Formation';
+      case 'other':
+        return 'Autre';
+      default:
+        return 'Normal';
+    }
+  }
+
+  static Color _workTypeColor(String raw) {
+    switch (raw) {
+      case 'overtime':
+        return AppColors.warning;
+      case 'break':
+        return const Color(0xFF6F86A5);
+      case 'mission':
+      case 'travel':
+        return const Color(0xFF38BDF8);
+      default:
+        return AppColors.rh;
+    }
   }
 }
 
@@ -1889,9 +2311,12 @@ class AttendanceDaySummary {
   final int workedMinutes;
   final int lateMinutes;
   final int sessionsCount;
+  final int breakMinutes;
+  final int overtimeMinutes;
   final double estimatedEarnings;
   final String checkInFormatted;
   final String checkOutFormatted;
+  final List<AttendanceLog> sessions;
 
   const AttendanceDaySummary({
     required this.date,
@@ -1901,9 +2326,12 @@ class AttendanceDaySummary {
     required this.workedMinutes,
     required this.lateMinutes,
     required this.sessionsCount,
+    required this.breakMinutes,
+    required this.overtimeMinutes,
     required this.estimatedEarnings,
     required this.checkInFormatted,
     required this.checkOutFormatted,
+    required this.sessions,
   });
 
   factory AttendanceDaySummary.fromLogs({
@@ -1920,6 +2348,11 @@ class AttendanceDaySummary {
       (sum, log) => sum + (log.workedHours ?? 0),
     );
     final workedMinutes = (hours * 60).round();
+    final overtimeMinutes = sorted.fold<int>(
+      0,
+      (sum, log) => sum + (((log.overtimeHours ?? 0) * 60).round()),
+    );
+    final breakMinutes = _estimateBreakMinutes(sorted);
     return AttendanceDaySummary(
       date: date,
       dayLabel: dayLabel,
@@ -1931,9 +2364,12 @@ class AttendanceDaySummary {
         (sum, log) => sum + (log.lateMinutes ?? 0),
       ),
       sessionsCount: sorted.length,
+      breakMinutes: breakMinutes,
+      overtimeMinutes: overtimeMinutes,
       estimatedEarnings: hours * 550,
       checkInFormatted: _AttendanceScreenState._formatTime(first?.checkIn),
       checkOutFormatted: _AttendanceScreenState._formatTime(last?.checkOut),
+      sessions: sorted,
     );
   }
 
@@ -1941,5 +2377,26 @@ class AttendanceDaySummary {
     final hours = workedMinutes ~/ 60;
     final mins = workedMinutes % 60;
     return '${hours}h${mins.toString().padLeft(2, '0')}';
+  }
+
+  String get overtimeFormatted {
+    final hours = overtimeMinutes ~/ 60;
+    final mins = overtimeMinutes % 60;
+    return overtimeMinutes <= 0
+        ? '0h00'
+        : '${hours}h${mins.toString().padLeft(2, '0')}';
+  }
+
+  static int _estimateBreakMinutes(List<AttendanceLog> sessions) {
+    if (sessions.length < 2) return 0;
+    var total = 0;
+    for (var i = 0; i < sessions.length - 1; i++) {
+      final currentOut = sessions[i].checkOut;
+      final nextIn = sessions[i + 1].checkIn;
+      if (currentOut == null || nextIn == null) continue;
+      final gap = nextIn.difference(currentOut).inMinutes;
+      if (gap > 0 && gap < 12 * 60) total += gap;
+    }
+    return total;
   }
 }
