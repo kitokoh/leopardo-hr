@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\DTOs\CreateEmployeeDTO;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Company;
 use App\Models\CompanyRequest;
@@ -184,21 +184,24 @@ class OnboardingQrController extends Controller
             ['email' => ['required', 'email', 'max:150', Rule::unique('employees', 'email'), new GlobalEmailUnique]]
         )->validate();
 
-        $employee = $this->employeeService->create(new CreateEmployeeDTO(
-            first_name: (string) ($profile['first_name'] ?? ''),
-            last_name: (string) ($profile['last_name'] ?? ''),
-            email: $email,
-            phone: $this->stringOrNull($profile['phone'] ?? $profile['personal_phone'] ?? null),
-            personal_email: $this->stringOrNull($profile['personal_email'] ?? null),
-            role: 'employee',
-            send_invitation: (bool) ($validated['send_invitation'] ?? true),
-            matricule: $this->stringOrNull($validated['matricule'] ?? null),
-            contract_start: $this->stringOrNull($validated['contract_start'] ?? null),
-            salary_type: (string) ($validated['salary_type'] ?? 'fixed'),
-            salary_base: (float) ($validated['salary_base'] ?? 0.0),
-            hourly_rate: isset($validated['hourly_rate']) ? (float) $validated['hourly_rate'] : null,
-            extra_data: is_array($validated['extra_data'] ?? null) ? $validated['extra_data'] : [],
-        ), $actor);
+        $employee = $this->employeeService->create(
+            new CreateEmployeeDTO(
+                first_name: (string) ($profile['first_name'] ?? ''),
+                last_name: (string) ($profile['last_name'] ?? ''),
+                email: $email,
+                phone: $this->stringOrNull($profile['phone'] ?? $profile['personal_phone'] ?? null),
+                personal_email: $this->stringOrNull($profile['personal_email'] ?? null),
+                role: 'employee',
+                send_invitation: (bool) ($validated['send_invitation'] ?? true),
+                matricule: $this->stringOrNull($validated['matricule'] ?? null),
+                contract_start: $this->stringOrNull($validated['contract_start'] ?? null),
+                salary_type: (string) ($validated['salary_type'] ?? 'fixed'),
+                salary_base: (float) ($validated['salary_base'] ?? 0.0),
+                hourly_rate: isset($validated['hourly_rate']) ? (float) $validated['hourly_rate'] : null,
+                extra_data: is_array($validated['extra_data'] ?? null) ? $validated['extra_data'] : [],
+            ),
+            $actor
+        );
 
         return (new EmployeeResource($employee))
             ->response()

@@ -15,6 +15,7 @@
 ### Fixed
 
 - Mobile manager : le formulaire d'ajout employe ne bloque plus la fermeture de la feuille sur un refresh reseau complet apres creation ; la liste est invalidee puis rechargee naturellement.
+- Securite dependances : mise a jour du lock backend vers `symfony/http-foundation` 7.4.13 et `symfony/routing` 7.4.13 pour corriger les advisories Composer Audit CVE-2026-48736 et CVE-2026-48784.
 
 ## [4.16.159] - 2026-05-27
 

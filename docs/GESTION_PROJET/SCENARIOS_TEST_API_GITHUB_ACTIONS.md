@@ -45,6 +45,8 @@ Note 2026-05-25 : le mobile RH consomme maintenant `GET/POST /employees` pour l'
 
 Note 2026-05-27 : le compte employee durable consomme `PATCH /auth/profile`, `GET /me/career` et `GET /cabinet/stats`. Les scenarios API doivent verifier que les contacts personnels facultatifs (`personal_email`, `recovery_email`, `personal_phone`) sont sauvegardes, que la timeline carriere reste scopee a l'utilisateur courant et que les statistiques du placard numerique restent propres a l'employe authentifie.
 
+Note 2026-05-27 : l'onboarding QR mobile consomme `GET /me/qr-profile`, `GET /company/qr-onboarding`, `POST /company/qr-onboarding/scan-employee`, `POST /company/qr-onboarding/create-employee` et `POST /me/company-qr/scan`. Les scenarios API doivent verifier les jetons signes/expires, le rejet des jetons modifies, le pre-remplissage manager, la creation depuis QR avec email professionnel unique et la demande d'integration employe via QR entreprise.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -101,6 +103,8 @@ Note 2026-05-27 : le compte employee durable consomme `PATCH /auth/profile`, `GE
 - Chaine manager et subordonnes refusent les IDs hors tenant
 - Creation employee avec validations metier
 - Creation employee depuis mobile/RH avec date d'embauche, matricule, type de paie, salaire/taux horaire et metadonnees poste/departement/lieu
+- Creation employee depuis QR employe : le QR pre-remplit le profil, le manager renseigne un email professionnel unique et les donnees contractuelles, puis l'API cree l'employe dans le tenant du manager.
+- Demande d'integration via QR entreprise : un employe authentifie soumet une demande rattachee a l'entreprise cible sans valider automatiquement l'embauche.
 - Mise a jour employee avec verifications unicite/global email
 - Desactivation / reactivation employee
 - Consultation detail employee selon role
