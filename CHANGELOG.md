@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.169] - 2026-05-27
+
+### Changed
+
+- API pointage : les resumes journaliers et estimations mensuelles agregent maintenant toutes les sessions d'une journee, pas seulement `session_number = 1`.
+- API mobile : `AttendanceTodayResource` expose `sessions_count` et renvoie heures/gains agregees pour les pointages multi-evenements.
+- Web manager/employe : dashboards et historiques utilisent des resumes multi-sessions pour eviter les sous-estimations.
+- Tests : ajout d'une regression multi-pointage normal + heure supplementaire + resume mensuel.
+- Documentation : ajout du Plan 42 estimations multi-sessions.
+
 ## [4.16.168] - 2026-05-27
 
 ### Added
