@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Evaluation\EvaluationIndexRequest;
 use App\Http\Requests\Api\V1\Evaluation\StoreEvaluationRequest;
 use App\Http\Requests\Api\V1\Evaluation\UpdateEvaluationRequest;
+use App\Http\Resources\Api\V1\EvaluationResource;
 use App\Models\Employee;
 use App\Models\Evaluation;
 use Illuminate\Http\JsonResponse;
@@ -69,12 +70,9 @@ class EvaluationController extends Controller
         }
 
         $perPage = $request->integer('per_page', 15);
-        $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn ($e) => $this->serialize($e)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
-        ]);
+        return EvaluationResource::collection($query->orderByDesc('created_at')->paginate($perPage))
+            ->response();
     }
 
     public function store(StoreEvaluationRequest $request): JsonResponse
@@ -100,14 +98,16 @@ class EvaluationController extends Controller
             'status' => 'draft',
         ]);
 
-        return response()->json(['data' => $this->serialize($evaluation->load('employee', 'evaluator'))], 201);
+        return (new EvaluationResource($evaluation->load('employee', 'evaluator')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Evaluation $evaluation): JsonResponse
     {
         $this->authorize('view', $evaluation);
 
-        return response()->json(['data' => $this->serialize($evaluation->load('employee', 'evaluator'))]);
+        return (new EvaluationResource($evaluation->load('employee', 'evaluator')))->response();
     }
 
     public function update(UpdateEvaluationRequest $request, Evaluation $evaluation): JsonResponse
@@ -125,7 +125,7 @@ class EvaluationController extends Controller
         /** @var Evaluation $fresh */
         $fresh = $evaluation->fresh();
 
-        return response()->json(['data' => $this->serialize($fresh->load('employee', 'evaluator'))]);
+        return (new EvaluationResource($fresh->load('employee', 'evaluator')))->response();
     }
 
     public function submit(Request $request, Evaluation $evaluation): JsonResponse
@@ -141,7 +141,7 @@ class EvaluationController extends Controller
         /** @var Evaluation $fresh */
         $fresh = $evaluation->fresh();
 
-        return response()->json(['data' => $this->serialize($fresh->load('employee', 'evaluator'))]);
+        return (new EvaluationResource($fresh->load('employee', 'evaluator')))->response();
     }
 
     public function acknowledge(Request $request, Evaluation $evaluation): JsonResponse
@@ -157,7 +157,7 @@ class EvaluationController extends Controller
         /** @var Evaluation $fresh */
         $fresh = $evaluation->fresh();
 
-        return response()->json(['data' => $this->serialize($fresh->load('employee', 'evaluator'))]);
+        return (new EvaluationResource($fresh->load('employee', 'evaluator')))->response();
     }
 
     public function destroy(Request $request, Evaluation $evaluation): JsonResponse
@@ -171,26 +171,5 @@ class EvaluationController extends Controller
         $evaluation->delete();
 
         return response()->json(['message' => 'Evaluation deleted successfully']);
-    }
-
-    private function serialize(Evaluation $e): array
-    {
-        return [
-            'id' => $e->id,
-            'employee_id' => $e->employee_id,
-            'employee' => $e->relationLoaded('employee') && $e->employee ? ['id' => $e->employee->id, 'first_name' => $e->employee->first_name, 'last_name' => $e->employee->last_name, 'email' => $e->employee->email] : null,
-            'evaluator_id' => $e->evaluator_id,
-            'evaluator' => $e->relationLoaded('evaluator') && $e->evaluator ? ['id' => $e->evaluator->id, 'first_name' => $e->evaluator->first_name, 'last_name' => $e->evaluator->last_name] : null,
-            'period' => $e->period,
-            'score' => $e->score,
-            'criteria' => $e->criteria,
-            'strengths' => $e->strengths,
-            'improvements' => $e->improvements,
-            'overall_comment' => $e->overall_comment,
-            'status' => $e->status,
-            'acknowledged_at' => $e->acknowledged_at?->toIso8601String(),
-            'created_at' => $e->created_at?->toIso8601String(),
-            'updated_at' => $e->updated_at?->toIso8601String(),
-        ];
     }
 }

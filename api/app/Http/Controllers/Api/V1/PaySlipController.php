@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PaySlipResource;
 use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
@@ -64,15 +65,7 @@ class PaySlipController extends Controller
             ->orderByDesc('id')
             ->paginate($perPage);
 
-        return response()->json([
-            'data' => $slips->items(),
-            'meta' => [
-                'current_page' => $slips->currentPage(),
-                'last_page' => $slips->lastPage(),
-                'per_page' => $slips->perPage(),
-                'total' => $slips->total(),
-            ],
-        ]);
+        return PaySlipResource::collection($slips)->response();
     }
 
     public function indexForRun(Request $request, PayrollRun $payrollRun): JsonResponse
@@ -90,15 +83,7 @@ class PaySlipController extends Controller
             ->with(['employee:id,first_name,last_name,email', 'lines'])
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $slips->items(),
-            'meta' => [
-                'current_page' => $slips->currentPage(),
-                'last_page' => $slips->lastPage(),
-                'per_page' => $slips->perPage(),
-                'total' => $slips->total(),
-            ],
-        ]);
+        return PaySlipResource::collection($slips)->response();
     }
 
     public function show(Request $request, PaySlip $paySlip): JsonResponse
@@ -114,7 +99,7 @@ class PaySlipController extends Controller
 
         $paySlip->load(['employee:id,first_name,last_name,email', 'lines', 'payrollRun']);
 
-        return response()->json(['data' => $paySlip]);
+        return (new PaySlipResource($paySlip))->response();
     }
 
     public function myPaySlips(Request $request): JsonResponse
@@ -144,15 +129,7 @@ class PaySlipController extends Controller
             ->orderByDesc('id')
             ->paginate((int) ($validated['per_page'] ?? 12));
 
-        return response()->json([
-            'data' => $slips->items(),
-            'meta' => [
-                'current_page' => $slips->currentPage(),
-                'last_page' => $slips->lastPage(),
-                'per_page' => $slips->perPage(),
-                'total' => $slips->total(),
-            ],
-        ]);
+        return PaySlipResource::collection($slips)->response();
     }
 
     public function myPaySlipDetail(Request $request, PaySlip $paySlip): JsonResponse
@@ -169,7 +146,7 @@ class PaySlipController extends Controller
 
         $paySlip->load('lines');
 
-        return response()->json(['data' => $paySlip]);
+        return (new PaySlipResource($paySlip))->response();
     }
 
     public function downloadPdf(Request $request, PaySlip $paySlip, PaySlipPdfGenerator $generator): Response

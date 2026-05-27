@@ -2,9 +2,13 @@ class AttendanceLog {
   final int id;
   final int employeeId;
   final DateTime date;
+  final int sessionNumber;
   final DateTime? checkIn;
   final DateTime? checkOut;
   final String status;
+  final String workType;
+  final String? punchNote;
+  final Map<String, dynamic>? punchMeta;
   final double? workedHours;
   final double? overtimeHours;
   final int? lateMinutes;
@@ -15,9 +19,13 @@ class AttendanceLog {
     required this.id,
     required this.employeeId,
     required this.date,
+    this.sessionNumber = 1,
     this.checkIn,
     this.checkOut,
     required this.status,
+    this.workType = 'normal',
+    this.punchNote,
+    this.punchMeta,
     this.workedHours,
     this.overtimeHours,
     this.lateMinutes,
@@ -52,11 +60,22 @@ class AttendanceLog {
       date: DateTime.parse(
         (json['date'] ?? DateTime.now().toIso8601String()) as String,
       ),
+      sessionNumber:
+          int.tryParse(
+            (json['session_number'] ?? json['sessionNumber'])?.toString() ?? '',
+          ) ??
+          1,
       checkIn:
           json['check_in'] != null ? DateTime.parse(json['check_in']) : null,
       checkOut:
           json['check_out'] != null ? DateTime.parse(json['check_out']) : null,
       status: (json['status'] ?? 'incomplete') as String,
+      workType: (json['work_type'] ?? json['workType'] ?? 'normal').toString(),
+      punchNote: json['punch_note']?.toString(),
+      punchMeta:
+          json['punch_meta'] is Map
+              ? (json['punch_meta'] as Map).cast<String, dynamic>()
+              : null,
       workedHours:
           hoursRaw != null ? double.tryParse(hoursRaw.toString()) : null,
       overtimeHours:

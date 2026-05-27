@@ -2,6 +2,21 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.158] - 2026-05-27
+
+### Added
+
+- API attendance : support des pointages multi-sessions par jour via `session_number` dynamique et contexte `work_type` (`normal`, `overtime`, `break`, `resume`, `mission`, `travel`, `training`, `other`).
+- API attendance : `GET /api/v1/attendance/today` expose maintenant `sessions` et `summary` pour les details de journee mobile.
+- API tasks : ajout des champs execution (`estimated_minutes`, `completed_minutes`, `completed_at`, `completion_note`, `performance_score`, `recurrence_rule`, `template_key`) et de `GET /api/v1/tasks/today`.
+- Mobile employee : le bouton de pointage propose pause/reprise/heures supp/mission/deplacement et affiche les taches du jour.
+- Documentation : ajout du Plan 31 `docs/PLAN_ACTION/31_PLAN_POINTAGE_TACHES_MOBILE.md`.
+
+### Fixed
+
+- Mobile employee : `Mon mois complet` utilise le client API avec timeout/retry controle pour eviter le spinner infini.
+- API attendance : la vue manager du pointage du jour filtre explicitement les employes par `company_id` pour renforcer l'isolation tenant.
+
 ## [4.16.157] - 2026-05-26
 
 ### Changed

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ApplicantResource;
+use App\Http\Resources\Api\V1\InterviewResource;
+use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Models\Applicant;
 use App\Models\Employee;
 use App\Models\Interview;
@@ -31,7 +34,7 @@ class JobPostingActionController extends Controller
             'published_at' => now(),
         ]);
 
-        return response()->json(['data' => $job->fresh()]);
+        return (new JobPostingResource($job->fresh()))->response();
     }
 
     public function close(Request $request, int $id): JsonResponse
@@ -50,7 +53,7 @@ class JobPostingActionController extends Controller
 
         $job->update(['status' => 'closed']);
 
-        return response()->json(['data' => $job->fresh()]);
+        return (new JobPostingResource($job->fresh()))->response();
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -84,7 +87,7 @@ class JobPostingActionController extends Controller
             ->with(['jobPosting:id,title', 'interviews'])
             ->findOrFail($id);
 
-        return response()->json(['data' => $applicant]);
+        return (new ApplicantResource($applicant))->response();
     }
 
     public function updateApplicantStatus(Request $request, int $id): JsonResponse
@@ -102,7 +105,7 @@ class JobPostingActionController extends Controller
         $applicant = Applicant::where('company_id', $user->company_id)->findOrFail($id);
         $applicant->update($validated);
 
-        return response()->json(['data' => $applicant->fresh()]);
+        return (new ApplicantResource($applicant->fresh()))->response();
     }
 
     public function destroyApplicant(Request $request, int $id): JsonResponse
@@ -133,7 +136,7 @@ class JobPostingActionController extends Controller
 
         $interview->update(array_merge($validated, ['status' => 'completed']));
 
-        return response()->json(['data' => $interview->fresh()]);
+        return (new InterviewResource($interview->fresh()))->response();
     }
 
     public function destroyInterview(Request $request, int $id): JsonResponse

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\AuditLogResource;
 use App\Models\AuditLog;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
@@ -49,9 +50,9 @@ class AuditLogController extends Controller
             $query->where('created_at', '<=', $request->input('to'));
         }
 
-        return response()->json(
+        return AuditLogResource::collection(
             $query->orderByDesc('created_at')->paginate($request->integer('per_page', 25))
-        );
+        )->response();
     }
 
     public function show(Request $request, AuditLog $auditLog): JsonResponse
@@ -65,7 +66,7 @@ class AuditLogController extends Controller
             abort(404);
         }
 
-        return response()->json(['data' => $auditLog->load('user:id,first_name,last_name')]);
+        return (new AuditLogResource($auditLog->load('user:id,first_name,last_name')))->response();
     }
 
     public function exportCsv(Request $request): StreamedResponse

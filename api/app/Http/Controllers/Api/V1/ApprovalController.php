@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApprovalRequestResource;
+use App\Http\Resources\Api\V1\ApprovalWorkflowResource;
 use App\Models\ApprovalDecision;
 use App\Models\ApprovalRequest;
 use App\Models\ApprovalWorkflow;
@@ -30,7 +31,7 @@ class ApprovalController extends Controller
             ->orderBy('name')
             ->get();
 
-        return response()->json(['data' => $workflows]);
+        return ApprovalWorkflowResource::collection($workflows)->response();
     }
 
     public function storeWorkflow(Request $request): JsonResponse
@@ -57,7 +58,9 @@ class ApprovalController extends Controller
             'company_id' => $actor->company_id,
         ]);
 
-        return response()->json(['data' => $workflow], 201);
+        return (new ApprovalWorkflowResource($workflow))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function updateWorkflow(Request $request, ApprovalWorkflow $approvalWorkflow): JsonResponse
@@ -81,7 +84,7 @@ class ApprovalController extends Controller
 
         $approvalWorkflow->update($validated);
 
-        return response()->json(['data' => $approvalWorkflow->fresh()]);
+        return (new ApprovalWorkflowResource($approvalWorkflow->fresh()))->response();
     }
 
     public function destroyWorkflow(Request $request, ApprovalWorkflow $approvalWorkflow): JsonResponse
@@ -112,7 +115,7 @@ class ApprovalController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 15));
 
-        return response()->json($requests);
+        return ApprovalRequestResource::collection($requests)->response();
     }
 
     public function approve(Request $request, ApprovalRequest $approvalRequest): ApprovalRequestResource

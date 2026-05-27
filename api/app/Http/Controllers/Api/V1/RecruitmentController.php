@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ApplicantResource;
+use App\Http\Resources\Api\V1\InterviewResource;
+use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Models\Applicant;
 use App\Models\Employee;
 use App\Models\Interview;
@@ -33,7 +36,8 @@ class RecruitmentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        return response()->json($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)));
+        return JobPostingResource::collection($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)))
+            ->response();
     }
 
     public function storeJob(Request $request): JsonResponse
@@ -74,7 +78,9 @@ class RecruitmentController extends Controller
             'status' => 'draft',
         ]);
 
-        return response()->json(['data' => $job], 201);
+        return (new JobPostingResource($job))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function showJob(Request $request, JobPosting $jobPosting): JsonResponse
@@ -85,7 +91,7 @@ class RecruitmentController extends Controller
             abort(404);
         }
 
-        return response()->json(['data' => $jobPosting->load(['department:id,name', 'applicants'])]);
+        return (new JobPostingResource($jobPosting->load(['department:id,name', 'applicants'])))->response();
     }
 
     public function updateJob(Request $request, JobPosting $jobPosting): JsonResponse
@@ -128,7 +134,7 @@ class RecruitmentController extends Controller
 
         $jobPosting->update($validated);
 
-        return response()->json(['data' => $jobPosting->fresh()]);
+        return (new JobPostingResource($jobPosting->fresh()))->response();
     }
 
     // ── Applicants ──────────────────────────────────────────────────────────
@@ -150,7 +156,8 @@ class RecruitmentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        return response()->json($query->orderByDesc('applied_at')->paginate($request->integer('per_page', 15)));
+        return ApplicantResource::collection($query->orderByDesc('applied_at')->paginate($request->integer('per_page', 15)))
+            ->response();
     }
 
     public function storeApplicant(Request $request, JobPosting $jobPosting): JsonResponse
@@ -180,7 +187,9 @@ class RecruitmentController extends Controller
             'job_posting_id' => $jobPosting->id,
         ]);
 
-        return response()->json(['data' => $applicant], 201);
+        return (new ApplicantResource($applicant))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function updateApplicant(Request $request, Applicant $applicant): JsonResponse
@@ -202,7 +211,7 @@ class RecruitmentController extends Controller
 
         $applicant->update($validated);
 
-        return response()->json(['data' => $applicant->fresh()]);
+        return (new ApplicantResource($applicant->fresh()))->response();
     }
 
     // ── Interviews ──────────────────────────────────────────────────────────
@@ -235,7 +244,9 @@ class RecruitmentController extends Controller
             'applicant_id' => $applicant->id,
         ]);
 
-        return response()->json(['data' => $interview], 201);
+        return (new InterviewResource($interview))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function updateInterview(Request $request, Interview $interview): JsonResponse
@@ -257,6 +268,6 @@ class RecruitmentController extends Controller
 
         $interview->update($validated);
 
-        return response()->json(['data' => $interview->fresh()]);
+        return (new InterviewResource($interview->fresh()))->response();
     }
 }
