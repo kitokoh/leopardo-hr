@@ -24,7 +24,7 @@ function Get-DartContent([string]$root) {
 }
 
 function Get-AppRoutes([string]$appDart) {
-    $matches = [regex]::Matches($appDart, "path:\s*'([^']+)'")
+    $matches = [regex]::Matches($appDart, "path:\s*['""]([^'""]+)['""]")
     $routes = New-Object System.Collections.Generic.HashSet[string]
     foreach ($match in $matches) {
         [void]$routes.Add($match.Groups[1].Value)
@@ -62,7 +62,12 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
 
     foreach ($app in $contract.apps) {
         $root = Join-Path $repoRoot $app.root
-        $appDartPath = Join-Path $root "lib/app.dart"
+        $routerFile = if ($null -ne $app.routerFile -and -not [string]::IsNullOrWhiteSpace($app.routerFile)) {
+            [string]$app.routerFile
+        } else {
+            "lib/app.dart"
+        }
+        $appDartPath = Join-Path $root $routerFile
 
         if (-not (Test-Path -LiteralPath $root)) {
             Add-Failure "$($app.name) app root missing: $root"
@@ -77,12 +82,17 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
         $routes = Get-AppRoutes $appDart
         $libContent = Get-DartContent $root
 
-        foreach ($route in @($app.requiredBackendExperienceRoutes)) {
-            if (-not $backendContent.Contains("route: '$route'")) {
-                Add-Failure "$($app.name) backend mobile experience must expose route $route"
-            }
-            if (-not $routes.Contains($route)) {
-                Add-Failure "$($app.name) app must declare backend mobile experience route $route"
+        if ($null -ne $app.requiredBackendExperienceRoutes) {
+            foreach ($route in @($app.requiredBackendExperienceRoutes)) {
+                if ([string]::IsNullOrWhiteSpace($route)) {
+                    continue
+                }
+                if (-not $backendContent.Contains("route: '$route'")) {
+                    Add-Failure "$($app.name) backend mobile experience must expose route $route"
+                }
+                if (-not $routes.Contains($route)) {
+                    Add-Failure "$($app.name) app must declare backend mobile experience route $route"
+                }
             }
         }
 
