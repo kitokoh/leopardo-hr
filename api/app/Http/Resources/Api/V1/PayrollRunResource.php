@@ -27,6 +27,7 @@ class PayrollRunResource extends JsonResource
             'total_net' => $this->total_net,
             'total_employer_cost' => $this->total_employer_cost,
             'employee_count' => $this->employee_count,
+            'pay_slips_count' => $this->resource->getAttribute('pay_slips_count'),
             'calculated_at' => $this->calculated_at?->toIso8601String(),
             'validated_at' => $this->validated_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
