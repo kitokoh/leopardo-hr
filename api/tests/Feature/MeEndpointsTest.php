@@ -127,6 +127,26 @@ class MeEndpointsTest extends TestCase
         ]);
     }
 
+    public function test_employee_monthly_summary_empty_month_returns_zero_payload(): void
+    {
+        [, $employee] = $this->seedCompanyAndEmployee();
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/monthly-summary?year=2026&month=2');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.employee_id', $employee->id);
+        $response->assertJsonPath('data.year', 2026);
+        $response->assertJsonPath('data.month', 2);
+        $response->assertJsonPath('data.period.from', '2026-02-01');
+        $response->assertJsonPath('data.period.to', '2026-02-28');
+        $response->assertJsonPath('data.period.days_present', 0);
+        $response->assertJsonPath('data.totals.hours', 0);
+        $response->assertJsonPath('data.totals.net', 0);
+        $this->assertSame([], $response->json('data.breakdown'));
+    }
+
     public function test_manager_can_also_use_me_endpoints_for_self(): void
     {
         $company = Company::query()->create([
