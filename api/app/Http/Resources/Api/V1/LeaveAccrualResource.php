@@ -17,6 +17,7 @@ class LeaveAccrualResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'company_id' => $this->company_id,
             'employee_id' => $this->employee_id,
             'leave_policy_id' => $this->leave_policy_id,
             'amount' => $this->amount,
