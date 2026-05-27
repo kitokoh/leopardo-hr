@@ -1,6 +1,8 @@
 # Leopardo Mobile Apps
 
-Ce dossier prepare la separation mobile en deux applications sans casser `front/mobile/`.
+Ce dossier est la source canonique des applications mobiles de lancement. Il
+prepare la separation mobile sans casser `front/mobile/`, qui reste uniquement
+un mobile historique de maintenance.
 
 ## Structure
 
@@ -18,8 +20,14 @@ Ce dossier prepare la separation mobile en deux applications sans casser `front/
 - L'app manager/RH conserve les ecrans complets et gere les differences internes via `employee.managerRole`.
 - L'app platform admin ne contient aucun workflow tenant employe/manager : pas de pointage, absences, avances, equipe ou approvals RH.
 - La differenciation par sous-role manager se fait dans les ecrans concernes, pas dans le router.
-- `front/mobile/` reste le mobile historique fonctionnel tant que la bascule produit n'est pas terminee.
+- `front/mobile/` reste le mobile historique fonctionnel tant que la bascule produit n'est pas terminee. Ne pas y ajouter de nouvelle fonctionnalite produit : les evolutions employee, manager/RH et platform admin vont dans `front/mobile_apps/*`.
 - `leopardo_mobile_legacy/` est un filet de securite : ne pas le modifier.
+
+## CI et distribution
+
+- `Mobile Apps CI - Flutter` valide `leopardo_core`, `leopardo_employee`, `leopardo_manager` et `leopardo_platform_admin`.
+- `Mobile - Build and Firebase Distribution` compile et distribue les trois APK Android de lancement vers Firebase App Distribution.
+- `Legacy Mobile CI - Flutter` et les jobs `Legacy Mobile Flutter` ne concernent que `front/mobile/`. Ils servent a maintenir l'historique, pas a valider les nouvelles apps store.
 
 ## Garde-fous Plan 26
 

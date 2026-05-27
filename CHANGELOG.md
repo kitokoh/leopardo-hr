@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.175] - 2026-05-27
+
+### Changed
+
+- CI mobile : renommage explicite des workflows/jobs/artifacts historiques en `Legacy Mobile` pour eviter toute confusion avec les apps store.
+- Release : l'APK de l'ancienne app unique est publie comme `leopardo-rh-legacy-*`; les apps employee, manager et platform admin restent distribuees par `mobile-distribute.yml`.
+- Documentation : clarification que `front/mobile_apps/` est la source canonique des apps mobiles de lancement et que `front/mobile/` reste seulement en maintenance.
+
 ## [4.16.174] - 2026-05-27
 
 ### Changed
