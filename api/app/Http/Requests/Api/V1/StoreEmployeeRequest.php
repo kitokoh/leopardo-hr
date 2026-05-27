@@ -39,6 +39,11 @@ class StoreEmployeeRequest extends FormRequest
                 new GlobalEmailUnique,
             ],
             'password' => ['nullable', 'string', 'min:8', 'max:255'],
+            'schedule_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('schedules', 'id')->where(fn ($query) => $query->where('company_id', $companyId)),
+            ],
             'contract_start' => ['nullable', 'date_format:Y-m-d'],
             'salary_type' => ['nullable', 'in:fixed,hourly,daily'],
             'salary_base' => ['nullable', 'numeric', 'min:0'],

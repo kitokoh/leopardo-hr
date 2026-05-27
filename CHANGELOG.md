@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.163] - 2026-05-27
+
+### Added
+
+- API employees : `schedule_id` est maintenant accepte et expose sur la creation/mise a jour employe avec validation tenant-scope.
+- API onboarding QR : la creation employee depuis QR accepte `schedule_id` pour affecter directement l'horaire.
+- Mobile manager : le formulaire ajout employe charge les horaires disponibles, permet d'en choisir un et affiche l'horaire dans la liste equipe.
+- Tests : garde de creation employe avec horaire tenant et refus d'un horaire d'une autre entreprise.
+- Documentation : ajout du Plan 36 assignation horaires employes.
+
 ## [4.16.162] - 2026-05-27
 
 ### Added

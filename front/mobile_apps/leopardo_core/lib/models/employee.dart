@@ -10,6 +10,8 @@ class Employee {
   final String? personalEmail;
   final String? recoveryEmail;
   final String? personalPhone;
+  final int? scheduleId;
+  final String? scheduleName;
   final String? role;
   final String? managerRole;
   final String status;
@@ -38,6 +40,8 @@ class Employee {
     this.personalEmail,
     this.recoveryEmail,
     this.personalPhone,
+    this.scheduleId,
+    this.scheduleName,
     this.role,
     this.managerRole,
     required this.status,
@@ -96,6 +100,11 @@ class Employee {
       personalEmail: json['personal_email']?.toString(),
       recoveryEmail: json['recovery_email']?.toString(),
       personalPhone: json['personal_phone']?.toString(),
+      scheduleId: int.tryParse(json['schedule_id']?.toString() ?? ''),
+      scheduleName:
+          json['schedule'] is Map
+              ? (json['schedule'] as Map)['name']?.toString()
+              : null,
       role: json['role'] as String?,
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,
