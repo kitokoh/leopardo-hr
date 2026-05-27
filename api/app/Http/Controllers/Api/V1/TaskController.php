@@ -10,7 +10,10 @@ use App\Models\Task;
 use App\Models\TaskComment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -48,9 +51,39 @@ class TaskController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $data = $request->validate(['title' => ['required', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['nullable', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['required', 'date'], 'priority' => ['nullable', 'in:low,normal,high,urgent'], 'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'], 'recurrence_rule' => ['nullable', 'string', 'max:120'], 'template_key' => ['nullable', 'string', 'max:100'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['nullable', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:200'],
+            'description' => ['nullable', 'string'],
+            'assigned_to' => ['nullable', 'array'],
+            'assigned_to.*' => ['integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $actor->company_id))],
+            'project_id' => ['nullable', 'integer', 'min:1'],
+            'due_date' => ['required', 'date'],
+            'priority' => ['nullable', 'in:low,normal,high,urgent'],
+            'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
+            'recurrence_rule' => ['nullable', 'string', 'max:120'],
+            'template_key' => ['nullable', 'string', 'max:100'],
+            'category' => ['nullable', 'string', 'max:100'],
+            'visibility' => ['nullable', 'in:private,visible'],
+            'checklist' => ['nullable', 'array'],
+        ]);
 
-        $task = Task::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'assigned_to' => $data['assigned_to'] ?? [], 'status' => 'todo', 'priority' => $data['priority'] ?? 'normal', 'visibility' => $data['visibility'] ?? 'visible', ...$data]);
+        if (! $actor->isManager()) {
+            $assignedTo = $data['assigned_to'] ?? [$actor->id];
+            if ($assignedTo !== [$actor->id]) {
+                abort(403);
+            }
+            $data['assigned_to'] = [$actor->id];
+        }
+
+        $task = Task::create($this->filterWritableTaskColumns([
+            'company_id' => $actor->company_id,
+            'created_by' => $actor->id,
+            'assigned_to' => $data['assigned_to'] ?? [],
+            'status' => 'todo',
+            'priority' => $data['priority'] ?? 'normal',
+            'visibility' => $data['visibility'] ?? 'visible',
+            ...$data,
+        ]));
 
         return (new TaskResource($task))
             ->response()
@@ -84,7 +117,28 @@ class TaskController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['title' => ['sometimes', 'string', 'max:200'], 'description' => ['nullable', 'string'], 'assigned_to' => ['sometimes', 'array'], 'assigned_to.*' => ['integer', 'min:1'], 'project_id' => ['nullable', 'integer', 'min:1'], 'due_date' => ['sometimes', 'date'], 'priority' => ['sometimes', 'in:low,normal,high,urgent'], 'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'], 'completed_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'], 'completion_note' => ['nullable', 'string', 'max:1000'], 'recurrence_rule' => ['nullable', 'string', 'max:120'], 'template_key' => ['nullable', 'string', 'max:100'], 'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'], 'category' => ['nullable', 'string', 'max:100'], 'visibility' => ['sometimes', 'in:private,visible'], 'checklist' => ['nullable', 'array']]);
+        $data = $request->validate([
+            'title' => ['sometimes', 'string', 'max:200'],
+            'description' => ['nullable', 'string'],
+            'assigned_to' => ['sometimes', 'array'],
+            'assigned_to.*' => ['integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $actor->company_id))],
+            'project_id' => ['nullable', 'integer', 'min:1'],
+            'due_date' => ['sometimes', 'date'],
+            'priority' => ['sometimes', 'in:low,normal,high,urgent'],
+            'estimated_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
+            'completed_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
+            'completion_note' => ['nullable', 'string', 'max:1000'],
+            'recurrence_rule' => ['nullable', 'string', 'max:120'],
+            'template_key' => ['nullable', 'string', 'max:100'],
+            'status' => ['sometimes', 'in:todo,inprogress,review,done,rejected,cancelled'],
+            'category' => ['nullable', 'string', 'max:100'],
+            'visibility' => ['sometimes', 'in:private,visible'],
+            'checklist' => ['nullable', 'array'],
+        ]);
+        if (! $actor->isManager()) {
+            $data = Arr::only($data, ['status', 'completed_minutes', 'completion_note']);
+        }
+        $data = $this->filterWritableTaskColumns($data);
         $this->applyCompletionMetrics($task, $data);
         $task->update($data);
 
@@ -164,5 +218,20 @@ class TaskController extends Controller
             $ratio = max(0.0, min(2.0, $estimated / $completed));
             $data['performance_score'] = round($ratio * 50, 2);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function filterWritableTaskColumns(array $data): array
+    {
+        foreach (['category', 'checklist', 'visibility'] as $column) {
+            if (array_key_exists($column, $data) && ! Schema::hasColumn('tasks', $column)) {
+                unset($data[$column]);
+            }
+        }
+
+        return $data;
     }
 }

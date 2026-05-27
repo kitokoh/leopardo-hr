@@ -19,6 +19,10 @@ class MobileExperienceIcons {
         return Icons.notifications_active_outlined;
       case 'team':
         return Icons.groups_2_outlined;
+      case 'schedules':
+        return Icons.schedule_outlined;
+      case 'tasks':
+        return Icons.add_task_outlined;
       case 'finance':
         return Icons.account_balance_wallet_outlined;
       case 'cameras':
@@ -44,6 +48,10 @@ class MobileExperienceIcons {
         return Icons.dashboard_customize_outlined;
       case 'group':
         return Icons.groups_2_outlined;
+      case 'schedule':
+        return Icons.schedule_outlined;
+      case 'task_alt':
+        return Icons.add_task_outlined;
       case 'settings':
         return Icons.settings_outlined;
       default:

@@ -38,6 +38,7 @@ import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.d
 import 'package:leopardo_manager/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_placeholder_screen.dart';
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
+import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -122,6 +123,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MonthlySummaryScreen(),
       ),
       GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
+      GoRoute(
+        path: '/tasks',
+        builder: (context, state) => const TaskListScreen(),
+      ),
       GoRoute(
         path: '/modules/rh',
         builder: (context, state) => const ModulesScreen(),
