@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.170] - 2026-05-27
+
+### Changed
+
+- Mobile employee : le menu haut du pointage ouvre maintenant les taches du jour dans une bottom sheet reelle au lieu d'un placeholder.
+- Mobile employee : l'entree `Historique` du menu haut pointe vers `/history`; `Preferences` et `Parametres` restent dedies aux reglages.
+- Documentation : ajout du Plan 43 menu pointage employee.
+
 ## [4.16.169] - 2026-05-27
 
 ### Changed

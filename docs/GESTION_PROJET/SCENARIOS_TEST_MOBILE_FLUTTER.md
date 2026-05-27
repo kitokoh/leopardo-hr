@@ -70,6 +70,7 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 - Cas fuseau horaire (Europe/Istanbul) cohérent entre UI et API
 - Le bouton pointage affiche un état d'envoi strictement lié à l'action (`isPunching`), confirme le succès/échec par message utilisateur et ne dépend pas du chargement historique.
 - Les appels pointage mobile consomment le backend Render par défaut, sauf `API_BASE_URL` explicite ou `USE_LOCAL_API=true`, et acceptent les payloads Laravel `data` ou `data.item`.
+- Le menu haut de la page pointage employee ne doit pas proposer `Modifier` ; il ouvre les taches du jour, l'historique, les preferences et les parametres. Les demandes de modification restent accessibles par les menus des lignes de jour.
 
 ### 5) Congés et absences
 
