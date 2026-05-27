@@ -84,6 +84,29 @@ class PlatformRepository {
     return const [];
   }
 
+  Future<PlatformCompanyHealth> companyHealth(String companyId) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/companies/$companyId/health',
+    );
+    return PlatformCompanyHealth.fromJson(response.data ?? {});
+  }
+
+  Future<PlatformCompanySubscription> companySubscription(
+    String companyId,
+  ) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/companies/$companyId/subscription',
+    );
+    return PlatformCompanySubscription.fromJson(response.data ?? {});
+  }
+
+  Future<PlatformCompanyFeatures> companyFeatures(String companyId) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/companies/$companyId/features',
+    );
+    return PlatformCompanyFeatures.fromJson(response.data ?? {});
+  }
+
   Future<void> createCompany({
     required String name,
     required String email,
