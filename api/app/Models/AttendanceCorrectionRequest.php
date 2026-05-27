@@ -19,6 +19,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $requested_check_out
  * @property string $reason
  * @property string $status
+ * @property int|null $reviewed_by
+ * @property Carbon|null $reviewed_at
  */
 class AttendanceCorrectionRequest extends Model
 {

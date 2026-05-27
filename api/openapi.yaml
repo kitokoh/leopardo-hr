@@ -1457,6 +1457,31 @@ paths:
                   - $ref: "#/components/schemas/ValidationErrorResponse"
 
   /attendance/corrections:
+    get:
+      tags: ["Attendance"]
+      summary: "Lister les demandes de correction de pointage"
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "approved", "rejected", "applied"]
+        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: "File de corrections"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AttendanceCorrectionRequest"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
     post:
       tags: ["Attendance"]
       summary: "Demander une correction de pointage"
@@ -1469,6 +1494,58 @@ paths:
       responses:
         "201":
           description: "Demande de correction creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceCorrectionRequest"
+                  message:
+                    type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /attendance/corrections/{correction}/approve:
+    put:
+      tags: ["Attendance"]
+      summary: "Appliquer une demande de correction de pointage"
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Correction appliquee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AttendanceCorrectionRequest"
+                  attendance_log:
+                    $ref: "#/components/schemas/AttendanceLog"
+                  message:
+                    type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /attendance/corrections/{correction}/reject:
+    put:
+      tags: ["Attendance"]
+      summary: "Refuser une demande de correction de pointage"
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Correction refusee"
           content:
             application/json:
               schema:
@@ -6207,6 +6284,25 @@ components:
       properties:
         id:
           type: integer
+        company_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: integer
+        attendance_log_id:
+          type: integer
+          nullable: true
+        employee:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            matricule:
+              type: string
+              nullable: true
         status:
           type: string
           enum: ["pending", "approved", "rejected", "applied"]
@@ -6217,6 +6313,15 @@ components:
           type: string
           format: date-time
         requested_check_out:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+        reviewed_by:
+          type: integer
+          nullable: true
+        reviewed_at:
           type: string
           format: date-time
           nullable: true
