@@ -40,13 +40,13 @@
         {
           "name": "attendance",
           "routes": ["/attendance", "/history", "/me/monthly", "/settings"],
-          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance", "/me/monthly-summary"],
+          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance", "/me/monthly-summary", "/tasks/today"],
           "screenFiles": [
             "lib/features/attendance/screens/attendance_screen.dart",
             "lib/features/attendance/screens/history_screen.dart",
             "lib/features/attendance/screens/monthly_summary_screen.dart"
           ],
-          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn()", ".checkOut()", "requestCorrection", "_showCorrectionSheet"]
+          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "_showCorrectionSheet"]
         },
         {
           "name": "absences",
@@ -154,7 +154,7 @@
             "lib/features/attendance/screens/history_screen.dart",
             "lib/features/attendance/screens/monthly_summary_screen.dart"
           ],
-          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn()", ".checkOut()", "requestCorrection", "updateCorrection"]
+          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "updateCorrection"]
         },
         {
           "name": "notifications",
