@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -72,6 +73,13 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
           tooltip: 'Retour',
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_2_rounded),
+            tooltip: 'QR entreprise',
+            onPressed: () => _openCompanyQrSheet(context),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -98,14 +106,64 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openCreateEmployeeSheet(context),
+        onPressed: () => _openAddEmployeeActions(context),
         icon: const Icon(Icons.person_add),
         label: const Text('Ajouter'),
       ),
     );
   }
 
-  void _openCreateEmployeeSheet(BuildContext context) {
+  void _openAddEmployeeActions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder:
+          (_) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Ajouter un collaborateur',
+                    style: AppTypography.subtitle.copyWith(
+                      color: MobileSurface.text,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ListTile(
+                    leading: const Icon(Icons.edit_note_rounded),
+                    title: const Text('Formulaire classique'),
+                    subtitle: const Text('Saisie manuelle complete'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _openCreateEmployeeSheet(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.qr_code_scanner_rounded),
+                    title: const Text('Depuis QR employe'),
+                    subtitle: const Text('Coller le code fourni'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _openEmployeeQrSheet(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+  void _openCreateEmployeeSheet(
+    BuildContext context, {
+    EmployeeQrPrefill? prefill,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -113,7 +171,38 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => const _CreateEmployeeForm(),
+      builder: (_) => _CreateEmployeeForm(prefill: prefill),
+    );
+  }
+
+  void _openEmployeeQrSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder:
+          (_) => _EmployeeQrImportSheet(
+            onPrefillReady:
+                (prefill) => _openCreateEmployeeSheet(
+                  context,
+                  prefill: prefill,
+                ),
+          ),
+    );
+  }
+
+  void _openCompanyQrSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => const _CompanyQrSheet(),
     );
   }
 }
@@ -429,8 +518,187 @@ class _InvitationsTab extends ConsumerWidget {
   }
 }
 
+class _CompanyQrSheet extends ConsumerWidget {
+  const _CompanyQrSheet();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(_companyQrProvider);
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: async.when(
+          loading:
+              () => const Center(
+                heightFactor: 4,
+                child: CircularProgressIndicator(),
+              ),
+          error:
+              (err, _) => MobileErrorPanel(
+                message: err.toString(),
+                onRetry: () => ref.invalidate(_companyQrProvider),
+              ),
+          data:
+              (payload) => Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'QR entreprise',
+                    style: AppTypography.subtitle.copyWith(
+                      color: MobileSurface.text,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'A partager a un employe pour demander son integration chez ${payload.companyName}.',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: MobileSurface.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  MobilePanel(
+                    color: MobileSurface.chip,
+                    child: SelectableText(
+                      payload.token,
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.text,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: payload.token),
+                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('QR copie.')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.copy_rounded),
+                    label: const Text('Copier le QR'),
+                  ),
+                ],
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmployeeQrImportSheet extends ConsumerStatefulWidget {
+  const _EmployeeQrImportSheet({required this.onPrefillReady});
+
+  final ValueChanged<EmployeeQrPrefill> onPrefillReady;
+
+  @override
+  ConsumerState<_EmployeeQrImportSheet> createState() =>
+      _EmployeeQrImportSheetState();
+}
+
+class _EmployeeQrImportSheetState extends ConsumerState<_EmployeeQrImportSheet> {
+  final _tokenCtrl = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _tokenCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Importer depuis QR',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Collez le code QR employe. Le formulaire restera modifiable avant invitation.',
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _tokenCtrl,
+            minLines: 3,
+            maxLines: 5,
+            style: const TextStyle(color: MobileSurface.text),
+            decoration: const InputDecoration(
+              labelText: 'Code QR employe',
+              alignLabelWithHint: true,
+            ),
+          ),
+          const SizedBox(height: 14),
+          ElevatedButton.icon(
+            onPressed: _loading ? null : _scan,
+            icon:
+                _loading
+                    ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Icon(Icons.qr_code_scanner_rounded),
+            label: const Text('Lire et pre-remplir'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _scan() async {
+    final token = _tokenCtrl.text.trim();
+    if (token.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Collez le code QR.')));
+      return;
+    }
+
+    setState(() => _loading = true);
+    try {
+      final prefill = await ref.read(employeeRepositoryProvider).scanEmployeeQr(
+        token,
+      );
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      widget.onPrefillReady(prefill);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('QR invalide : $e')));
+    }
+  }
+}
+
+final _companyQrProvider = FutureProvider.autoDispose<CompanyQrPayload>((
+  ref,
+) async {
+  return ref.watch(employeeRepositoryProvider).getCompanyQrPayload();
+});
+
 class _CreateEmployeeForm extends ConsumerStatefulWidget {
-  const _CreateEmployeeForm();
+  const _CreateEmployeeForm({this.prefill});
+
+  final EmployeeQrPrefill? prefill;
 
   @override
   ConsumerState<_CreateEmployeeForm> createState() =>
@@ -459,6 +727,12 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   void initState() {
     super.initState();
     _hireDate.text = _formatDate(DateTime.now());
+    final prefill = widget.prefill;
+    if (prefill != null) {
+      _firstName.text = prefill.firstName;
+      _lastName.text = prefill.lastName;
+      _phone.text = prefill.phone ?? '';
+    }
   }
 
   @override
@@ -502,14 +776,18 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
               ),
               const SizedBox(height: 18),
               Text(
-                'Nouvel employe',
+                widget.prefill == null
+                    ? 'Nouvel employe'
+                    : 'Nouvel employe via QR',
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Invitation, role, date d embauche et base salariale sont envoyes a l API.',
+                widget.prefill == null
+                    ? 'Invitation, role, date d embauche et base salariale sont envoyes a l API.'
+                    : 'Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.',
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -699,7 +977,11 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                        : const Text('Envoyer l invitation'),
+                        : Text(
+                          widget.prefill == null
+                              ? 'Envoyer l invitation'
+                              : 'Creer depuis QR et inviter',
+                        ),
               ),
             ],
           ),
@@ -712,9 +994,27 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(employeeRepositoryProvider)
-          .create(
+      final repo = ref.read(employeeRepositoryProvider);
+      final prefill = widget.prefill;
+
+      if (prefill != null) {
+        await repo.createFromQr(
+          qrToken: prefill.token,
+          email: _email.text,
+          matricule: _matricule.text,
+          contractStart: _hireDate.text,
+          salaryType: _salaryType,
+          salaryBase:
+              _salaryType == 'hourly' ? null : _parseAmount(_salaryBase.text),
+          hourlyRate:
+              _salaryType == 'hourly' ? _parseAmount(_hourlyRate.text) : null,
+          department: _department.text,
+          jobTitle: _jobTitle.text,
+          workLocation: _workLocation.text,
+          sendInvitation: true,
+        );
+      } else {
+        await repo.create(
             firstName: _firstName.text,
             lastName: _lastName.text,
             email: _email.text,
@@ -732,15 +1032,15 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
             jobTitle: _jobTitle.text,
             workLocation: _workLocation.text,
             sendInvitation: true,
-          );
+        );
+      }
       ref.invalidate(teamListProvider);
       ref.invalidate(invitationsListProvider);
-      await ref.refresh(teamListProvider.future).then((_) {});
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Invitation envoyee.')));
+        ).showSnackBar(const SnackBar(content: Text('Employe ajoute.')));
       }
     } catch (e) {
       if (mounted) {

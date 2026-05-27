@@ -94,6 +94,76 @@ class EmployeeRepository {
     );
   }
 
+  Future<CompanyQrPayload> getCompanyQrPayload() async {
+    final response = await apiClient.dio.get('/company/qr-onboarding');
+    return CompanyQrPayload.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
+  }
+
+  Future<EmployeeQrPrefill> scanEmployeeQr(String token) async {
+    final response = await apiClient.dio.post(
+      '/company/qr-onboarding/scan-employee',
+      data: {'qr_token': token.trim()},
+    );
+    final data = (response.data['data'] as Map).cast<String, dynamic>();
+    return EmployeeQrPrefill.fromJson(
+      (data['prefill'] as Map).cast<String, dynamic>(),
+      token.trim(),
+    );
+  }
+
+  Future<Employee> createFromQr({
+    required String qrToken,
+    required String email,
+    String? matricule,
+    String? contractStart,
+    String? salaryType,
+    double? salaryBase,
+    double? hourlyRate,
+    String? department,
+    String? jobTitle,
+    String? workLocation,
+    bool sendInvitation = true,
+  }) async {
+    final data = <String, dynamic>{
+      'qr_token': qrToken.trim(),
+      'email': email.trim(),
+      'send_invitation': sendInvitation,
+    };
+    if (matricule != null && matricule.trim().isNotEmpty) {
+      data['matricule'] = matricule.trim();
+    }
+    if (contractStart != null && contractStart.trim().isNotEmpty) {
+      data['contract_start'] = contractStart.trim();
+    }
+    if (salaryType != null && salaryType.trim().isNotEmpty) {
+      data['salary_type'] = salaryType.trim();
+    }
+    if (salaryBase != null) data['salary_base'] = salaryBase;
+    if (hourlyRate != null) data['hourly_rate'] = hourlyRate;
+
+    final extraData = <String, dynamic>{};
+    if (department != null && department.trim().isNotEmpty) {
+      extraData['department'] = department.trim();
+    }
+    if (jobTitle != null && jobTitle.trim().isNotEmpty) {
+      extraData['job_title'] = jobTitle.trim();
+    }
+    if (workLocation != null && workLocation.trim().isNotEmpty) {
+      extraData['work_location'] = workLocation.trim();
+    }
+    if (extraData.isNotEmpty) data['extra_data'] = extraData;
+
+    final response = await apiClient.dio.post(
+      '/company/qr-onboarding/create-employee',
+      data: data,
+    );
+    return Employee.fromJson(
+      (response.data['data'] as Map).cast<String, dynamic>(),
+    );
+  }
+
   Future<Employee> update(int employeeId, Map<String, dynamic> patch) async {
     final response = await apiClient.dio.patch(
       '/employees/$employeeId',
@@ -123,6 +193,56 @@ class EmployeeRepository {
 
   Future<void> resendInvitation(String invitationId) async {
     await apiClient.dio.post('/invitations/$invitationId/resend');
+  }
+}
+
+class EmployeeQrPrefill {
+  final String token;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String? phone;
+  final String? personalEmail;
+
+  EmployeeQrPrefill({
+    required this.token,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    this.phone,
+    this.personalEmail,
+  });
+
+  factory EmployeeQrPrefill.fromJson(Map<String, dynamic> json, String token) {
+    return EmployeeQrPrefill(
+      token: token,
+      firstName: (json['first_name'] ?? '').toString(),
+      lastName: (json['last_name'] ?? '').toString(),
+      email: (json['email'] ?? '').toString(),
+      phone: json['phone']?.toString(),
+      personalEmail: json['personal_email']?.toString(),
+    );
+  }
+}
+
+class CompanyQrPayload {
+  final String token;
+  final String companyName;
+  final String? expiresAt;
+
+  CompanyQrPayload({
+    required this.token,
+    required this.companyName,
+    this.expiresAt,
+  });
+
+  factory CompanyQrPayload.fromJson(Map<String, dynamic> json) {
+    final company = (json['company'] as Map?)?.cast<String, dynamic>() ?? {};
+    return CompanyQrPayload(
+      token: (json['token'] ?? '').toString(),
+      companyName: (company['name'] ?? 'Entreprise').toString(),
+      expiresAt: json['expires_at']?.toString(),
+    );
   }
 }
 

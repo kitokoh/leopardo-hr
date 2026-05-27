@@ -26,6 +26,11 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Detail employe RH | `GET /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Mise a jour employe RH | `PUT /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Archivage employe RH | `POST /api/v1/employees/{employee}/archive` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile employee | QR profil employe | `GET /api/v1/me/qr-profile` | employe | `OnboardingQrControllerTest`, `FrontendApiContractTest` |
+| Mobile manager | QR entreprise | `GET /api/v1/company/qr-onboarding` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile manager | Lecture QR employe | `POST /api/v1/company/qr-onboarding/scan-employee` | manager principal/RH | `OnboardingQrControllerTest`, `FrontendApiContractTest` |
+| Mobile manager | Creation employe depuis QR | `POST /api/v1/company/qr-onboarding/create-employee` | manager principal/RH | `OnboardingQrControllerTest`, `FrontendApiContractTest` |
+| Mobile employee | Demande integration via QR entreprise | `POST /api/v1/me/company-qr/scan` | employe | `FrontendApiContractTest` |
 | Mobile | Invitations equipe | `GET /api/v1/invitations` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Relance invitation | `POST /api/v1/invitations/{invitation}/resend` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
