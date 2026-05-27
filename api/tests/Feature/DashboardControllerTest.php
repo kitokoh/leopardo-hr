@@ -134,6 +134,102 @@ class DashboardControllerTest extends TestCase
             ->assertJsonPath('data.absence_rate', 33.3);
     }
 
+    public function test_manager_digest_uses_real_today_data_and_is_company_scoped(): void
+    {
+        [$company, $manager] = $this->tenantFixture();
+        $otherCompany = Company::factory()->create();
+        $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $foreignEmployee = Employee::factory()->create(['company_id' => $otherCompany->id, 'status' => 'active']);
+
+        DB::table('attendance_logs')->insert([
+            [
+                'company_id' => $company->id,
+                'employee_id' => $employee->id,
+                'date' => now()->toDateString(),
+                'check_in' => now()->subHours(2),
+                'check_out' => null,
+                'status' => 'late',
+                'late_minutes' => 17,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'company_id' => $otherCompany->id,
+                'employee_id' => $foreignEmployee->id,
+                'date' => now()->toDateString(),
+                'check_in' => now()->subHours(2),
+                'check_out' => null,
+                'status' => 'late',
+                'late_minutes' => 40,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+        $this->insertAbsence($company->id, $employee->id, 'pending');
+        $this->insertSalaryAdvance($company->id, $employee->id, 'pending');
+        $this->insertSalaryAdvance($otherCompany->id, $foreignEmployee->id, 'pending');
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/dashboard/manager-digest')
+            ->assertOk()
+            ->assertJsonPath('data.team_scope', 'company')
+            ->assertJsonPath('data.present', 1)
+            ->assertJsonPath('data.late', 1)
+            ->assertJsonPath('data.open_sessions', 1)
+            ->assertJsonPath('data.pending_absences', 1)
+            ->assertJsonPath('data.pending_salary_advances', 1)
+            ->assertJsonPath('data.pending_actions', 2)
+            ->assertJsonPath('data.items.0.route', '/manager/attendance');
+    }
+
+    public function test_department_manager_digest_is_limited_to_their_direct_team(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->managerDept()->create(['company_id' => $company->id]);
+        $managed = Employee::factory()->create([
+            'company_id' => $company->id,
+            'manager_id' => $manager->id,
+            'status' => 'active',
+        ]);
+        $otherEmployee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+
+        DB::table('attendance_logs')->insert([
+            [
+                'company_id' => $company->id,
+                'employee_id' => $managed->id,
+                'date' => now()->toDateString(),
+                'check_in' => now()->subHours(2),
+                'check_out' => null,
+                'status' => 'present',
+                'late_minutes' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'company_id' => $company->id,
+                'employee_id' => $otherEmployee->id,
+                'date' => now()->toDateString(),
+                'check_in' => now()->subHours(2),
+                'check_out' => null,
+                'status' => 'late',
+                'late_minutes' => 33,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/dashboard/manager-digest')
+            ->assertOk()
+            ->assertJsonPath('data.team_scope', 'managed_team')
+            ->assertJsonPath('data.team_size', 2)
+            ->assertJsonPath('data.present', 1)
+            ->assertJsonPath('data.late', 0)
+            ->assertJsonPath('data.open_sessions', 1);
+    }
+
     /**
      * @return array{0: Company, 1: Employee}
      */
@@ -161,6 +257,18 @@ class DashboardControllerTest extends TestCase
             'start_date' => now()->toDateString(),
             'end_date' => now()->toDateString(),
             'days_count' => 1,
+            'status' => $status,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function insertSalaryAdvance(string $companyId, int $employeeId, string $status): void
+    {
+        DB::table('salary_advances')->insert([
+            'company_id' => $companyId,
+            'employee_id' => $employeeId,
+            'amount' => 5000,
             'status' => $status,
             'created_at' => now(),
             'updated_at' => now(),

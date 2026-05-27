@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.161] - 2026-05-27
+
+### Added
+
+- API dashboard : ajout de `GET /api/v1/dashboard/manager-digest` pour exposer les signaux manager du jour avec scope tenant/equipe.
+- Mobile manager : la carte "A surveiller aujourd hui" consomme maintenant les donnees reelles de l'API, avec refresh, etats reseau et CTA vers presences/anomalies/actions.
+- Tests : couverture de l'isolation company et du scope manager direct pour eviter les fuites de donnees entre managers.
+- Documentation : ajout du Plan 34, de la matrice frontend/API et du contrat OpenAPI du digest manager.
+
 ## [4.16.160] - 2026-05-27
 
 ### Added
