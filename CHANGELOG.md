@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.160] - 2026-05-27
+
+### Added
+
+- API onboarding QR : ajout de `GET /api/v1/me/qr-profile`, `GET /api/v1/company/qr-onboarding`, `POST /api/v1/company/qr-onboarding/scan-employee`, `POST /api/v1/company/qr-onboarding/create-employee` et `POST /api/v1/me/company-qr/scan`.
+- Mobile manager : ajout du flux "Ajouter depuis QR employe" avec pre-remplissage controle, creation employee via API et conservation du formulaire classique.
+- Mobile employee : ajout du bloc "QR professionnel" dans `Compte` pour copier son QR et soumettre une demande d'integration via QR entreprise.
+- Tests : garde Feature onboarding QR et extension du contrat routes frontend/API.
+- Documentation : ajout du Plan 33 et mise a jour de la matrice frontend/API.
+
+### Fixed
+
+- Mobile manager : le formulaire d'ajout employe ne bloque plus la fermeture de la feuille sur un refresh reseau complet apres creation ; la liste est invalidee puis rechargee naturellement.
+
 ## [4.16.159] - 2026-05-27
 
 ### Added

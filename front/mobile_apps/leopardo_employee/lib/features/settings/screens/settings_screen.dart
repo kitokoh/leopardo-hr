@@ -3,6 +3,7 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
@@ -40,6 +41,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       TextEditingController();
   final TextEditingController _fingerprintDeviceController =
       TextEditingController();
+  final TextEditingController _companyQrController = TextEditingController();
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
     'ar': 'العربية',
@@ -130,6 +132,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _confirmPasswordController.dispose();
     _biometricNoteController.dispose();
     _fingerprintDeviceController.dispose();
+    _companyQrController.dispose();
     super.dispose();
   }
 
@@ -154,6 +157,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildIdentityCard(context),
           const SizedBox(height: 20),
           _buildProfileSection(context, authState),
+          const SizedBox(height: 20),
+          _buildQrOnboardingSection(context),
           const SizedBox(height: 20),
           _buildCareerSection(),
           const SizedBox(height: 20),
@@ -351,6 +356,112 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildQrOnboardingSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const MobileIconBubble(
+                icon: Icons.qr_code_2_rounded,
+                color: AppColors.rh,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'QR professionnel',
+                      style: AppTypography.subtitle.copyWith(
+                        color: MobileSurface.text,
+                      ),
+                    ),
+                    Text(
+                      'Partagez votre profil ou scannez le QR d une entreprise.',
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          FutureBuilder<EmployeeQrPayload>(
+            future: ref.read(settingsRepositoryProvider).loadEmployeeQrPayload(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const LinearProgressIndicator(minHeight: 2);
+              }
+              if (snapshot.hasError || snapshot.data == null) {
+                return Text(
+                  'QR indisponible pour le moment.',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                );
+              }
+
+              final qr = snapshot.data!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  MobilePanel(
+                    color: MobileSurface.chip,
+                    padding: const EdgeInsets.all(12),
+                    child: SelectableText(
+                      qr.token,
+                      maxLines: 4,
+                      style: AppTypography.caption.copyWith(
+                        color: MobileSurface.text,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: qr.token));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('QR employe copie.')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.copy_rounded),
+                    label: const Text('Copier mon QR'),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 18),
+          TextField(
+            controller: _companyQrController,
+            minLines: 2,
+            maxLines: 4,
+            style: const TextStyle(color: MobileSurface.text),
+            decoration: const InputDecoration(
+              labelText: 'QR entreprise',
+              hintText: 'Coller le QR fourni par le manager',
+              alignLabelWithHint: true,
+            ),
+          ),
+          const SizedBox(height: 10),
+          FilledButton.icon(
+            onPressed: () => _submitCompanyQr(context),
+            icon: const Icon(Icons.domain_add_rounded),
+            label: const Text('Demander l integration'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -856,6 +967,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _submitCompanyQr(BuildContext context) async {
+    final token = _companyQrController.text.trim();
+    if (token.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Collez le QR entreprise.')),
+      );
+      return;
+    }
+
+    try {
+      final message = await ref
+          .read(settingsRepositoryProvider)
+          .submitCompanyQr(token);
+      if (!mounted) return;
+      _companyQrController.clear();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('QR refuse : $e')));
+    }
   }
 
   Future<void> _saveProfile() async {
