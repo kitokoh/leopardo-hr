@@ -5444,37 +5444,6 @@ paths:
           $ref: "#/components/responses/Error401"
 
   # --- Pay Slips ---
-  /pay-slips:
-    get:
-      tags: ["Payroll"]
-      summary: "Lister les bulletins de paie"
-      parameters:
-        - name: employee_id
-          in: query
-          schema: { type: integer }
-        - name: payroll_run_id
-          in: query
-          schema: { type: integer }
-        - name: per_page
-          in: query
-          schema: { type: integer, default: 15 }
-      responses:
-        "200":
-          description: "Liste paginee des bulletins"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PaySlip"
-                  meta:
-                    $ref: "#/components/schemas/PaginationMeta"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /pay-slips/{paySlip}:
     get:
       tags: ["Payroll"]
@@ -7137,46 +7106,6 @@ paths:
           $ref: "#/components/responses/Error401"
 
   # --- Notification Preferences ---
-  /notification-preferences:
-    get:
-      tags: ["Notifications"]
-      summary: "Mes preferences de notification"
-      responses:
-        "200":
-          description: "Preferences"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/NotificationPreference"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["Notifications"]
-      summary: "Modifier mes preferences"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email_enabled:
-                  type: boolean
-                push_enabled:
-                  type: boolean
-                sms_enabled:
-                  type: boolean
-                categories:
-                  type: object
-      responses:
-        "200":
-          description: "Preferences mises a jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   # --- Audit Log ---
   /audit-logs:
     get:
