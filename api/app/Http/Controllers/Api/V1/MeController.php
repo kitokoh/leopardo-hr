@@ -90,8 +90,8 @@ class MeController extends Controller
             'month' => ['nullable', 'integer', 'min:1', 'max:12'],
         ]);
 
-        $year = $validated['year'] ?? (int) $today->format('Y');
-        $month = $validated['month'] ?? (int) $today->format('m');
+        $year = (int) ($validated['year'] ?? $today->format('Y'));
+        $month = (int) ($validated['month'] ?? $today->format('m'));
 
         $from = Carbon::create($year, $month, 1, 0, 0, 0, $company->timezone)->startOfMonth();
         $to = $from->copy()->endOfMonth();
