@@ -146,4 +146,52 @@ class ScheduleControllerTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['schedule_id']);
     }
+
+    public function test_manager_can_update_employee_schedule_salary_and_position(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Sara',
+            'last_name' => 'Ops',
+            'salary_type' => 'fixed',
+            'salary_base' => 45000,
+        ]);
+        $schedule = Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Equipe soir',
+            'start_time' => '14:00',
+            'end_time' => '22:00',
+            'break_minutes' => 30,
+            'work_days' => [1, 2, 3, 4, 5],
+            'late_tolerance_minutes' => 5,
+            'overtime_threshold_daily' => 8,
+            'overtime_threshold_weekly' => 40,
+            'is_default' => false,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->patchJson("/api/v1/employees/{$employee->id}", [
+            'schedule_id' => $schedule->id,
+            'salary_type' => 'hourly',
+            'hourly_rate' => 650,
+            'contract_start' => '2026-05-01',
+            'extra_data' => [
+                'department' => 'Operations',
+                'job_title' => 'Cheffe equipe',
+                'work_location' => 'Site Est',
+            ],
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.schedule_id', $schedule->id)
+            ->assertJsonPath('data.schedule.name', 'Equipe soir')
+            ->assertJsonPath('data.salary_type', 'hourly')
+            ->assertJsonPath('data.hourly_rate', 650)
+            ->assertJsonPath('data.hire_date', '2026-05-01')
+            ->assertJsonPath('data.extra_data.department', 'Operations')
+            ->assertJsonPath('data.extra_data.job_title', 'Cheffe equipe')
+            ->assertJsonPath('data.extra_data.work_location', 'Site Est');
+    }
 }

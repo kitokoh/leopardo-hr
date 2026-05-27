@@ -5889,9 +5889,23 @@ components:
           format: email
         password:
           type: string
+        contract_start:
+          type: string
+          format: date
         schedule_id:
           type: integer
           nullable: true
+        salary_type:
+          type: string
+          enum: ["fixed", "hourly", "daily"]
+        salary_base:
+          type: number
+          format: float
+          minimum: 0
+        hourly_rate:
+          type: number
+          format: float
+          minimum: 0
         role:
           type: string
           enum: ["employee", "manager"]

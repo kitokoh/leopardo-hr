@@ -348,6 +348,26 @@ class _EmployeesTab extends ConsumerWidget {
                   style: const TextStyle(color: MobileSurface.secondary),
                 ),
                 const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.badge_outlined),
+                  title: const Text('Voir la fiche'),
+                  subtitle: const Text('Coordonnees, poste, salaire, horaire'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _openProfileSheet(context, employee);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.edit_note_rounded),
+                  title: const Text('Modifier la fiche'),
+                  subtitle: const Text(
+                    'Mettre a jour les champs RH essentiels',
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _openEditEmployeeSheet(context, employee);
+                  },
+                ),
                 if (employee.status != 'archived')
                   ListTile(
                     leading: const Icon(Icons.archive_outlined),
@@ -360,6 +380,29 @@ class _EmployeesTab extends ConsumerWidget {
               ],
             ),
           ),
+    );
+  }
+
+  void _openProfileSheet(BuildContext context, Employee employee) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _EmployeeProfileSheet(employee: employee),
+    );
+  }
+
+  void _openEditEmployeeSheet(BuildContext context, Employee employee) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _EditEmployeeForm(employee: employee),
     );
   }
 
@@ -518,6 +561,141 @@ class _InvitationsTab extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     }
+  }
+}
+
+class _EmployeeProfileSheet extends StatelessWidget {
+  const _EmployeeProfileSheet({required this.employee});
+
+  final Employee employee;
+
+  @override
+  Widget build(BuildContext context) {
+    final currency = employee.currency ?? 'DZD';
+    final salary =
+        employee.salaryType == 'hourly'
+            ? '${employee.hourlyRate?.toStringAsFixed(0) ?? '0'} $currency/h'
+            : '${employee.salaryBase?.toStringAsFixed(0) ?? '0'} $currency';
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                MobileIconBubble(
+                  icon: Icons.person_outline_rounded,
+                  color: AppColors.rh,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        employee.fullName,
+                        style: AppTypography.subtitle.copyWith(
+                          color: MobileSurface.text,
+                        ),
+                      ),
+                      Text(
+                        employee.email,
+                        style: AppTypography.caption.copyWith(
+                          color: MobileSurface.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            MobilePanel(
+              child: Column(
+                children: [
+                  _ProfileLine(
+                    icon: Icons.phone_outlined,
+                    label: 'Telephone',
+                    value: employee.phone ?? 'Non renseigne',
+                  ),
+                  _ProfileLine(
+                    icon: Icons.work_outline_rounded,
+                    label: 'Poste',
+                    value: employee.jobTitle ?? 'Non renseigne',
+                  ),
+                  _ProfileLine(
+                    icon: Icons.apartment_rounded,
+                    label: 'Departement',
+                    value: employee.department ?? 'Non renseigne',
+                  ),
+                  _ProfileLine(
+                    icon: Icons.place_outlined,
+                    label: 'Lieu',
+                    value: employee.workLocation ?? 'Non renseigne',
+                  ),
+                  _ProfileLine(
+                    icon: Icons.schedule_outlined,
+                    label: 'Horaire',
+                    value: employee.scheduleName ?? 'Horaire par defaut',
+                  ),
+                  _ProfileLine(
+                    icon: Icons.payments_outlined,
+                    label: 'Salaire',
+                    value: salary,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileLine extends StatelessWidget {
+  const _ProfileLine({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: MobileSurface.secondary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: AppTypography.caption.copyWith(
+                color: MobileSurface.secondary,
+              ),
+            ),
+          ),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: AppTypography.bodySmall.copyWith(
+                color: MobileSurface.text,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -760,6 +938,298 @@ class _ScheduleSelector extends StatelessWidget {
       ],
       onChanged: onChanged,
     );
+  }
+}
+
+class _EditEmployeeForm extends ConsumerStatefulWidget {
+  const _EditEmployeeForm({required this.employee});
+
+  final Employee employee;
+
+  @override
+  ConsumerState<_EditEmployeeForm> createState() => _EditEmployeeFormState();
+}
+
+class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _firstName;
+  late final TextEditingController _lastName;
+  late final TextEditingController _email;
+  late final TextEditingController _phone;
+  late final TextEditingController _hireDate;
+  late final TextEditingController _salaryBase;
+  late final TextEditingController _hourlyRate;
+  late final TextEditingController _department;
+  late final TextEditingController _jobTitle;
+  late final TextEditingController _workLocation;
+  late String _salaryType;
+  late int? _scheduleId;
+  bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.employee;
+    _firstName = TextEditingController(text: e.firstName);
+    _lastName = TextEditingController(text: e.lastName);
+    _email = TextEditingController(text: e.email);
+    _phone = TextEditingController(text: e.phone ?? '');
+    _hireDate = TextEditingController(
+      text: e.hireDate == null ? '' : _formatDate(e.hireDate!),
+    );
+    _salaryBase = TextEditingController(
+      text: e.salaryBase == null ? '' : e.salaryBase!.toStringAsFixed(0),
+    );
+    _hourlyRate = TextEditingController(
+      text: e.hourlyRate == null ? '' : e.hourlyRate!.toStringAsFixed(0),
+    );
+    _department = TextEditingController(text: e.department ?? '');
+    _jobTitle = TextEditingController(text: e.jobTitle ?? '');
+    _workLocation = TextEditingController(text: e.workLocation ?? '');
+    _salaryType = e.salaryType ?? 'fixed';
+    _scheduleId = e.scheduleId;
+  }
+
+  @override
+  void dispose() {
+    _firstName.dispose();
+    _lastName.dispose();
+    _email.dispose();
+    _phone.dispose();
+    _hireDate.dispose();
+    _salaryBase.dispose();
+    _hourlyRate.dispose();
+    _department.dispose();
+    _jobTitle.dispose();
+    _workLocation.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final schedulesAsync = ref.watch(schedulesProvider);
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottom),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Modifier la fiche',
+                style: AppTypography.subtitle.copyWith(
+                  color: MobileSurface.text,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.employee.fullName,
+                style: AppTypography.caption.copyWith(
+                  color: MobileSurface.secondary,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _firstName,
+                      decoration: const InputDecoration(labelText: 'Prenom'),
+                      validator:
+                          (value) =>
+                              value == null || value.trim().isEmpty
+                                  ? 'Obligatoire'
+                                  : null,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _lastName,
+                      decoration: const InputDecoration(labelText: 'Nom'),
+                      validator:
+                          (value) =>
+                              value == null || value.trim().isEmpty
+                                  ? 'Obligatoire'
+                                  : null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator:
+                    (value) =>
+                        value == null || !value.contains('@')
+                            ? 'Email invalide'
+                            : null,
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _phone,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(labelText: 'Telephone'),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _hireDate,
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'Date d embauche',
+                  suffixIcon: Icon(Icons.calendar_today_outlined),
+                ),
+                onTap: _pickHireDate,
+              ),
+              const SizedBox(height: 14),
+              schedulesAsync.when(
+                data:
+                    (schedules) => _ScheduleSelector(
+                      schedules: schedules,
+                      selectedId: _scheduleId,
+                      onChanged: (value) => setState(() => _scheduleId = value),
+                    ),
+                loading:
+                    () => const LinearProgressIndicator(
+                      minHeight: 3,
+                      color: AppColors.rh,
+                    ),
+                error:
+                    (error, stackTrace) => TextButton.icon(
+                      onPressed: () => ref.invalidate(schedulesProvider),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Recharger les horaires'),
+                    ),
+              ),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                initialValue: _salaryType,
+                dropdownColor: MobileSurface.surface,
+                decoration: const InputDecoration(labelText: 'Mode salaire'),
+                items: const [
+                  DropdownMenuItem(value: 'fixed', child: Text('Mensuel')),
+                  DropdownMenuItem(value: 'hourly', child: Text('Horaire')),
+                  DropdownMenuItem(value: 'daily', child: Text('Journalier')),
+                ],
+                onChanged:
+                    (value) => setState(() => _salaryType = value ?? 'fixed'),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _salaryType == 'hourly' ? _hourlyRate : _salaryBase,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText:
+                      _salaryType == 'hourly'
+                          ? 'Taux horaire'
+                          : 'Salaire de base',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _department,
+                decoration: const InputDecoration(labelText: 'Departement'),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _jobTitle,
+                decoration: const InputDecoration(labelText: 'Poste'),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _workLocation,
+                decoration: const InputDecoration(labelText: 'Lieu de travail'),
+              ),
+              const SizedBox(height: 18),
+              ElevatedButton.icon(
+                onPressed: _submitting ? null : _submit,
+                icon:
+                    _submitting
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Icon(Icons.save_outlined),
+                label: const Text('Enregistrer'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickHireDate() async {
+    final initial = widget.employee.hireDate ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: DateTime(1970),
+      lastDate: DateTime.now().add(const Duration(days: 1)),
+    );
+    if (picked == null) return;
+    setState(() => _hireDate.text = _formatDate(picked));
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _submitting = true);
+    try {
+      final patch = <String, dynamic>{
+        'first_name': _firstName.text.trim(),
+        'last_name': _lastName.text.trim(),
+        'email': _email.text.trim(),
+        'phone': _phone.text.trim(),
+        if (_hireDate.text.trim().isNotEmpty)
+          'contract_start': _hireDate.text.trim(),
+        if (_scheduleId != null) 'schedule_id': _scheduleId,
+        'salary_type': _salaryType,
+        if (_salaryType == 'hourly')
+          'hourly_rate': _parseAmount(_hourlyRate.text)
+        else
+          'salary_base': _parseAmount(_salaryBase.text),
+        'extra_data': {
+          'department': _department.text.trim(),
+          'job_title': _jobTitle.text.trim(),
+          'work_location': _workLocation.text.trim(),
+        },
+      };
+
+      await ref
+          .read(employeeRepositoryProvider)
+          .update(widget.employee.id, patch);
+      ref.invalidate(teamListProvider);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Fiche collaborateur mise a jour.')),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  static String _formatDate(DateTime date) =>
+      '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+  static double? _parseAmount(String raw) {
+    final normalized = raw.trim().replaceAll(',', '.');
+    if (normalized.isEmpty) return null;
+    return double.tryParse(normalized);
   }
 }
 
