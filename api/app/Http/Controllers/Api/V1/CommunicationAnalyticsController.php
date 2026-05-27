@@ -10,11 +10,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\Api\V1\Analytics\__invokeCommunicationAnalyticsRequest;
+use App\Http\Requests\Api\V1\Analytics\CommunicationAnalyticsRequest;
 
 class CommunicationAnalyticsController extends Controller
 {
-    public function __invoke(__invokeCommunicationAnalyticsRequest $request): JsonResponse
+    public function __invoke(CommunicationAnalyticsRequest $request): JsonResponse
     {
         $actor = $request->user();
 

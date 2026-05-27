@@ -20,7 +20,7 @@ class StoreSessionTrainingRequest extends FormRequest
             'trainer_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+                Rule::exists('employees', 'id')->where('company_id', $this->user()->company_id),
             ],
             'external_trainer' => 'nullable|string|max:200',
             'start_date' => 'required|date',

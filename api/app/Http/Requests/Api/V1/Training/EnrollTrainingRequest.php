@@ -20,7 +20,7 @@ class EnrollTrainingRequest extends FormRequest
             'employee_id' => [
                 'required',
                 'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+                Rule::exists('employees', 'id')->where('company_id', $this->user()->company_id),
             ],
         ];
     }

@@ -21,7 +21,7 @@ class StoreEmployeeLoanRequest extends FormRequest
                 ? [
                     'required',
                     'integer',
-                    Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+                    Rule::exists('employees', 'id')->where('company_id', $this->user()->company_id),
                 ]
                 : 'prohibited',
             'loan_type' => 'required|in:personal,housing,vehicle,education,emergency',

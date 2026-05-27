@@ -20,7 +20,7 @@ class StoreInterviewRecruitmentRequest extends FormRequest
             'interviewer_id' => [
                 'nullable',
                 'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
+                Rule::exists('employees', 'id')->where('company_id', $this->user()->company_id),
             ],
             'type' => 'required|in:phone,video,onsite,technical',
             'scheduled_at' => 'required|date',

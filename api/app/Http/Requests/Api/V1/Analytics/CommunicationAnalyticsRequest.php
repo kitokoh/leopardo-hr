@@ -6,7 +6,7 @@ namespace App\Http\Requests\Api\V1\Analytics;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class __invokeCommunicationAnalyticsRequest extends FormRequest
+class CommunicationAnalyticsRequest extends FormRequest
 {
     public function authorize(): bool
     {
