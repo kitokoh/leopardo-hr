@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.177] - 2026-05-27
+
+### Added
+
+- Mobile manager : creation de taches enrichie avec categorie, frequence ponctuelle/journaliere/hebdomadaire et templates metier.
+- Mobile manager : ajout de templates agriculture, elevage, maintenance, commerce, logistique et RH, branches sur les champs API existants `category`, `template_key`, `recurrence_rule` et `estimated_minutes`.
+- Documentation : ajout du Plan 50 templates taches manager.
+
 ## [4.16.176] - 2026-05-27
 
 ### Added
