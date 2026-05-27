@@ -70,6 +70,20 @@ class PlatformRepository {
     );
   }
 
+  Future<List<PlatformPlan>> plans() async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/plans',
+    );
+    final items = (((response.data ?? {})['data'] as Map?)?['items']);
+    if (items is List) {
+      return items
+          .whereType<Map>()
+          .map((item) => PlatformPlan.fromJson(item.cast<String, dynamic>()))
+          .toList();
+    }
+    return const [];
+  }
+
   Future<List<PlatformCompany>> companies() async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies',
@@ -100,9 +114,39 @@ class PlatformRepository {
     return PlatformCompanySubscription.fromJson(response.data ?? {});
   }
 
+  Future<PlatformCompanySubscription> updateCompanySubscription({
+    required String companyId,
+    required int planId,
+    required String status,
+    String? notes,
+  }) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/companies/$companyId/subscription',
+      method: 'PATCH',
+      data: {
+        'plan_id': planId,
+        'status': status,
+        if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+      },
+    );
+    return PlatformCompanySubscription.fromJson(response.data ?? {});
+  }
+
   Future<PlatformCompanyFeatures> companyFeatures(String companyId) async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies/$companyId/features',
+    );
+    return PlatformCompanyFeatures.fromJson(response.data ?? {});
+  }
+
+  Future<PlatformCompanyFeatures> updateCompanyFeatures({
+    required String companyId,
+    required Map<String, bool> features,
+  }) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/companies/$companyId/features',
+      method: 'PATCH',
+      data: {'features': features},
     );
     return PlatformCompanyFeatures.fromJson(response.data ?? {});
   }

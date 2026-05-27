@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.173] - 2026-05-27
+
+### Added
+
+- Mobile platform admin : la fiche client permet maintenant de modifier l'abonnement via `PATCH /platform/companies/{company}/subscription`.
+- Mobile platform admin : la fiche client permet d'activer/desactiver les modules via `PATCH /platform/companies/{company}/features`, avec `rh` verrouille actif.
+- Mobile platform admin : ajout de la lecture du catalogue `GET /platform/plans` pour les formulaires d'abonnement.
+- Contrats mobile : le garde workflow couvre les actions d'edition abonnement/modules platform admin.
+- Documentation : ajout du Plan 46 controles tenant platform admin.
+
 ## [4.16.172] - 2026-05-27
 
 ### Added

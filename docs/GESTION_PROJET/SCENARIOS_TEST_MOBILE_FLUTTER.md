@@ -126,6 +126,7 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 4. Logout
 5. Garde CI `validate-mobile-workflow-contracts.ps1` : toute action `leopardo_platform_admin` doit rester limitee aux routes/endpoints `/platform/*`, sans route tenant employee/manager.
 6. Depuis la liste tenants, ouvrir une fiche client et verifier sante, abonnement, modules actifs et prochaines actions sans cast d'UUID en entier.
+7. Depuis la fiche client, modifier statut/plan et activer/desactiver un module non socle ; `rh` reste toujours actif.
 
 ### Owner / Company Admin
 
