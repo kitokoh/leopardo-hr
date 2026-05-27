@@ -18,6 +18,7 @@ use App\Models\Employee;
 use App\Services\AttendanceAnomalyService;
 use App\Services\AttendanceMonthlyReportService;
 use App\Services\AttendanceService;
+use App\Services\EstimationService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -82,11 +83,12 @@ class AttendanceController extends Controller
                 ->orderByDesc('session_number')
                 ->first();
             $sessions = $this->dailySessions($target, $today);
+            $estimatedSummary = app(EstimationService::class)->dailySummaryFromLogs($target, $sessions, $today);
 
             return new JsonResponse([
                 'data' => [
                     'mode' => 'single',
-                    'item' => new AttendanceTodayResource($target, $log, $company->timezone),
+                    'item' => new AttendanceTodayResource($target, $log, $company->timezone, $estimatedSummary),
                     'sessions' => AttendanceLogResource::collection($sessions)->resolve($request),
                     'summary' => $this->dailySessionSummary($sessions),
                 ],
@@ -112,15 +114,20 @@ class AttendanceController extends Controller
                 ->where('date', $today)
                 ->whereIn('employee_id', $employeeIds)
                 ->get()
-                ->groupBy('employee_id')
-                ->map(fn ($logs) => $logs
-                    ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
-                    ->first());
+                ->groupBy('employee_id');
 
             $timezone = $company->timezone;
 
-            $data = $employees->map(function (Employee $employee) use ($logsByEmployee, $timezone) {
-                return new AttendanceTodayResource($employee, $logsByEmployee->get($employee->id), $timezone);
+            $estimationService = app(EstimationService::class);
+
+            $data = $employees->map(function (Employee $employee) use ($logsByEmployee, $timezone, $today, $estimationService) {
+                $logs = $logsByEmployee->get($employee->id, collect());
+                $log = $logs
+                    ->sortByDesc(fn (AttendanceLog $log) => ($log->check_out === null ? 100000 : 0) + (int) $log->session_number)
+                    ->first();
+                $summary = $estimationService->dailySummaryFromLogs($employee, $logs, $today);
+
+                return new AttendanceTodayResource($employee, $log, $timezone, $summary);
             })->values();
 
             return new JsonResponse([
@@ -145,11 +152,12 @@ class AttendanceController extends Controller
             ->orderByDesc('session_number')
             ->first();
         $sessions = $this->dailySessions($actor, $today);
+        $estimatedSummary = app(EstimationService::class)->dailySummaryFromLogs($actor, $sessions, $today);
 
         return new JsonResponse([
             'data' => [
                 'mode' => 'single',
-                'item' => new AttendanceTodayResource($actor, $log, $company->timezone),
+                'item' => new AttendanceTodayResource($actor, $log, $company->timezone, $estimatedSummary),
                 'sessions' => AttendanceLogResource::collection($sessions)->resolve($request),
                 'summary' => $this->dailySessionSummary($sessions),
             ],
