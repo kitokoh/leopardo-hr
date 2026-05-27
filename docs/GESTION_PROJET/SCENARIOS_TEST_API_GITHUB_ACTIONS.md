@@ -43,6 +43,8 @@ Note 2026-05-21 : les listes critiques consommees par mobile/admin (`employees`,
 
 Note 2026-05-25 : le mobile RH consomme maintenant `GET/POST /employees` pour l'equipe et `GET/POST /salary-advances` pour les demandes d'avance. Les scenarios API doivent verifier que la creation employe accepte et retourne les champs RH minimum (`contract_start`, `salary_type`, `salary_base` ou `hourly_rate`, `extra_data.department/job_title/work_location`) et que les avances employee-side restent soumises au workflow RH avec `repayment_months`.
 
+Note 2026-05-27 : le compte employee durable consomme `PATCH /auth/profile`, `GET /me/career` et `GET /cabinet/stats`. Les scenarios API doivent verifier que les contacts personnels facultatifs (`personal_email`, `recovery_email`, `personal_phone`) sont sauvegardes, que la timeline carriere reste scopee a l'utilisateur courant et que les statistiques du placard numerique restent propres a l'employe authentifie.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap

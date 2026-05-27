@@ -7,6 +7,9 @@ class Employee {
   final String firstName;
   final String lastName;
   final String email;
+  final String? personalEmail;
+  final String? recoveryEmail;
+  final String? personalPhone;
   final String? role;
   final String? managerRole;
   final String status;
@@ -32,6 +35,9 @@ class Employee {
     required this.firstName,
     required this.lastName,
     required this.email,
+    this.personalEmail,
+    this.recoveryEmail,
+    this.personalPhone,
     this.role,
     this.managerRole,
     required this.status,
@@ -87,6 +93,9 @@ class Employee {
       firstName: (json['first_name'] ?? '') as String,
       lastName: (json['last_name'] ?? '') as String,
       email: (json['email'] ?? '') as String,
+      personalEmail: json['personal_email']?.toString(),
+      recoveryEmail: json['recovery_email']?.toString(),
+      personalPhone: json['personal_phone']?.toString(),
       role: json['role'] as String?,
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,

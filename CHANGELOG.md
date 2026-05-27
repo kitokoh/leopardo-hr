@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.159] - 2026-05-27
+
+### Added
+
+- API profil : ajout des champs personnels durables `personal_email`, `recovery_email` et `personal_phone` pour que l'utilisateur conserve son compte au-dela d'une entreprise.
+- API self-service : ajout de `GET /api/v1/me/career` pour exposer le parcours professionnel mobile et la disponibilite pour une nouvelle entreprise.
+- Mobile employee : enrichissement de la page `Compte` avec parcours professionnel, placard numerique et contacts personnels facultatifs.
+- Tests : garde Feature sur mise a jour profil durable, parcours professionnel et stats du placard numerique.
+- Documentation : ajout du Plan 32 et mise a jour de la matrice frontend/API et de la spec OpenAPI.
+
 ## [4.16.158] - 2026-05-27
 
 ### Added

@@ -139,6 +139,9 @@ class AuthRepository {
     required String firstName,
     required String lastName,
     required String email,
+    String? personalEmail,
+    String? recoveryEmail,
+    String? personalPhone,
   }) async {
     final response = await apiClient.dio.patch(
       '/auth/profile',
@@ -146,6 +149,9 @@ class AuthRepository {
         'first_name': firstName.trim(),
         'last_name': lastName.trim(),
         'email': email.trim(),
+        'personal_email': personalEmail?.trim(),
+        'recovery_email': recoveryEmail?.trim(),
+        'personal_phone': personalPhone?.trim(),
       },
     );
 

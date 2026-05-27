@@ -34,6 +34,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // ── Self-Service (all employees) ─────────────────────────────────────
     Route::get('/me/leave-balances', [LeavePolicyController::class, 'myBalances']);
     Route::get('/me/contracts', [ContractController::class, 'myContracts']);
+    Route::get('/me/career', [SelfServiceController::class, 'myCareer']);
     Route::get('/me/trainings', [SelfServiceController::class, 'myTrainings']);
     Route::post('/me/trainings/{sessionId}/enroll', [SelfServiceController::class, 'selfEnroll'])->whereNumber('sessionId');
     Route::get('/me/loans', [SelfServiceController::class, 'myLoans']);

@@ -262,6 +262,24 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /me/career:
+    get:
+      tags: ["Me"]
+      summary: "Lire le parcours professionnel durable de l'employe courant"
+      description: "Retourne le rattachement courant et la timeline professionnelle visible par l'utilisateur mobile."
+      responses:
+        "200":
+          description: "Parcours professionnel"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EmployeeCareerResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /privacy/export:
     get:
       tags: ["Privacy"]
@@ -3778,7 +3796,14 @@ components:
           type: string
           format: email
           nullable: true
+        recovery_email:
+          type: string
+          format: email
+          nullable: true
         phone:
+          type: string
+          nullable: true
+        personal_phone:
           type: string
           nullable: true
         role:
@@ -3963,6 +3988,61 @@ components:
         email:
           type: string
           format: email
+        personal_email:
+          type: string
+          format: email
+          nullable: true
+        recovery_email:
+          type: string
+          format: email
+          nullable: true
+        personal_phone:
+          type: string
+          nullable: true
+
+    EmployeeCareerResponse:
+      type: object
+      properties:
+        available_for_new_company:
+          type: boolean
+        current_company_id:
+          type: string
+          format: uuid
+          nullable: true
+        current_company_name:
+          type: string
+          nullable: true
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              company_id:
+                type: string
+                format: uuid
+                nullable: true
+              company_name:
+                type: string
+                nullable: true
+              start_date:
+                type: string
+                format: date
+                nullable: true
+              end_date:
+                type: string
+                format: date
+                nullable: true
+              job_title:
+                type: string
+                nullable: true
+              contract_type:
+                type: string
+                nullable: true
+              status:
+                type: string
+                nullable: true
+              current:
+                type: boolean
 
     ChangePasswordRequest:
       type: object

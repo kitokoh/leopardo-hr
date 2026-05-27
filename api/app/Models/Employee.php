@@ -24,6 +24,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $preferred_name
  * @property string $email
  * @property string|null $personal_email
+ * @property string|null $recovery_email
+ * @property string|null $personal_phone
  * @property string|null $phone
  * @property string|null $address_line
  * @property string|null $postal_code
@@ -88,6 +90,8 @@ class Employee extends Authenticatable
         'preferred_name',
         'email',
         'personal_email',
+        'recovery_email',
+        'personal_phone',
         'phone',
         'address_line',
         'postal_code',
