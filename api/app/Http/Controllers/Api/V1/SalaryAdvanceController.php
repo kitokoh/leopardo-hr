@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\SalaryAdvance\DecideSalaryAdvanceRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\SalaryAdvanceIndexRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\StoreSalaryAdvanceRequest;
+use App\Http\Resources\Api\V1\SalaryAdvanceResource;
 use App\Models\Employee;
 use App\Models\SalaryAdvance;
 use App\Services\SalaryAdvanceService;
@@ -33,19 +34,18 @@ class SalaryAdvanceController extends Controller
         }
 
         $perPage = $request->integer('per_page', 15);
-        $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn ($a) => $this->serialize($a)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
-        ]);
+        return SalaryAdvanceResource::collection($query->orderByDesc('created_at')->paginate($perPage))
+            ->response();
     }
 
     public function store(StoreSalaryAdvanceRequest $request): JsonResponse
     {
         $advance = $this->salaryAdvanceService->create($request->user(), $request->validated());
 
-        return response()->json(['data' => $this->serialize($advance)], 201);
+        return (new SalaryAdvanceResource($advance))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -59,7 +59,7 @@ class SalaryAdvanceController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($salaryAdvance)]);
+        return (new SalaryAdvanceResource($salaryAdvance))->response();
     }
 
     public function approve(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -75,7 +75,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->approve($salaryAdvance, $actor, $request->validated());
 
-        return response()->json(['data' => $this->serialize($advance)]);
+        return (new SalaryAdvanceResource($advance))->response();
     }
 
     public function reject(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -91,7 +91,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->reject($salaryAdvance, $actor, $request->validated('decision_comment'));
 
-        return response()->json(['data' => $this->serialize($advance)]);
+        return (new SalaryAdvanceResource($advance))->response();
     }
 
     public function destroy(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -107,11 +107,6 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->cancel($salaryAdvance);
 
-        return response()->json(['data' => $this->serialize($advance)]);
-    }
-
-    private function serialize(SalaryAdvance $a): array
-    {
-        return ['id' => $a->id, 'employee_id' => $a->employee_id, 'amount' => $a->amount, 'reason' => $a->reason, 'status' => $a->status, 'approved_by' => $a->approved_by, 'decision_comment' => $a->decision_comment, 'repayment_months' => $a->repayment_months, 'monthly_deduction' => $a->monthly_deduction, 'amount_remaining' => $a->amount_remaining, 'repayment_plan' => $a->repayment_plan, 'created_at' => $a->created_at?->toIso8601String(), 'updated_at' => $a->updated_at?->toIso8601String()];
+        return (new SalaryAdvanceResource($advance))->response();
     }
 }

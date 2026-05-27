@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ProjectResource;
 use App\Models\Employee;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
@@ -25,12 +26,9 @@ class ProjectController extends Controller
         }
 
         $perPage = $request->integer('per_page', 15);
-        $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
-        return response()->json([
-            'data' => $paginated->map(fn ($p) => $this->serialize($p)),
-            'meta' => ['current_page' => $paginated->currentPage(), 'last_page' => $paginated->lastPage(), 'per_page' => $paginated->perPage(), 'total' => $paginated->total()],
-        ]);
+        return ProjectResource::collection($query->orderByDesc('created_at')->paginate($perPage))
+            ->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -44,7 +42,9 @@ class ProjectController extends Controller
         $data = $request->validate(['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d', 'gte:start_date'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
         $project = Project::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'members' => $data['members'] ?? [], 'status' => $data['status'] ?? 'active', ...$data]);
 
-        return response()->json(['data' => $this->serialize($project)], 201);
+        return (new ProjectResource($project))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, Project $project): JsonResponse
@@ -58,7 +58,7 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $this->serialize($project)]);
+        return (new ProjectResource($project))->response();
     }
 
     public function update(Request $request, Project $project): JsonResponse
@@ -75,7 +75,7 @@ class ProjectController extends Controller
         $data = $request->validate(['name' => ['sometimes', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
         $project->update($data);
 
-        return response()->json(['data' => $this->serialize($project->fresh())]);
+        return (new ProjectResource($project->fresh()))->response();
     }
 
     public function destroy(Request $request, Project $project): JsonResponse
@@ -92,10 +92,5 @@ class ProjectController extends Controller
         $project->delete();
 
         return response()->json(['message' => 'Project deleted successfully']);
-    }
-
-    private function serialize(Project $p): array
-    {
-        return ['id' => $p->id, 'name' => $p->name, 'description' => $p->description, 'start_date' => $p->start_date?->toDateString(), 'end_date' => $p->end_date?->toDateString(), 'members' => $p->members, 'status' => $p->status, 'created_by' => $p->created_by, 'created_at' => $p->created_at?->toIso8601String()];
     }
 }

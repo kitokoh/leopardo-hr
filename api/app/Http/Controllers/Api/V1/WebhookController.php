@@ -62,15 +62,9 @@ class WebhookController extends Controller
             'active' => true,
         ]);
 
-        return response()->json([
-            'data' => [
-                'id' => $webhook->id,
-                'url' => $webhook->url,
-                'events' => $webhook->events,
-                'secret' => $webhook->secret,
-                'active' => $webhook->active,
-            ],
-        ], 201);
+        return (new WebhookEndpointResource($webhook))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
@@ -84,20 +78,9 @@ class WebhookController extends Controller
             abort(404);
         }
 
-        return response()->json([
-            'data' => [
-                'id' => $webhookEndpoint->id,
-                'url' => $webhookEndpoint->url,
-                'events' => $webhookEndpoint->events,
-                'active' => $webhookEndpoint->active,
-                'failure_count' => $webhookEndpoint->failure_count,
-                'last_triggered_at' => $webhookEndpoint->last_triggered_at?->toIso8601String(),
-                'recent_deliveries' => $webhookEndpoint->deliveries()
-                    ->orderByDesc('delivered_at')
-                    ->limit(20)
-                    ->get(['id', 'event', 'response_code', 'duration_ms', 'delivered_at']),
-            ],
-        ]);
+        return (new WebhookEndpointResource(
+            $webhookEndpoint->load(['deliveries' => fn ($q) => $q->orderByDesc('delivered_at')->limit(20)])
+        ))->response();
     }
 
     public function update(UpdateWebhookEndpointRequest $request, WebhookEndpoint $webhookEndpoint): WebhookEndpointResource

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\VehicleTripResource;
 use App\Models\Employee;
 use App\Models\VehicleTrip;
 use Illuminate\Http\JsonResponse;
@@ -32,15 +33,7 @@ class VehicleTripController extends Controller
         $trips = $query->orderByDesc('start_time')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $trips->items(),
-            'meta' => [
-                'current_page' => $trips->currentPage(),
-                'last_page' => $trips->lastPage(),
-                'per_page' => $trips->perPage(),
-                'total' => $trips->total(),
-            ],
-        ]);
+        return VehicleTripResource::collection($trips)->response();
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -49,6 +42,6 @@ class VehicleTripController extends Controller
         $user = $request->user();
         $trip = VehicleTrip::where('company_id', $user->company_id)->findOrFail($id);
 
-        return response()->json(['data' => $trip]);
+        return (new VehicleTripResource($trip))->response();
     }
 }

@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\VehicleAlertResource;
+use App\Http\Resources\Api\V1\VehicleAssignmentResource;
+use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
+use App\Http\Resources\Api\V1\VehicleResource;
+use App\Http\Resources\Api\V1\VehicleTripResource;
 use App\Models\Employee;
 use App\Models\Vehicle;
 use App\Services\Tracking\TraccarService;
@@ -27,15 +32,7 @@ class VehicleController extends Controller
         $vehicles = $query->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $vehicles->items(),
-            'meta' => [
-                'current_page' => $vehicles->currentPage(),
-                'last_page' => $vehicles->lastPage(),
-                'per_page' => $vehicles->perPage(),
-                'total' => $vehicles->total(),
-            ],
-        ]);
+        return VehicleResource::collection($vehicles)->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -63,7 +60,9 @@ class VehicleController extends Controller
 
         $vehicle = Vehicle::create($validated);
 
-        return response()->json(['data' => $vehicle], 201);
+        return (new VehicleResource($vehicle))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -72,7 +71,7 @@ class VehicleController extends Controller
         $user = $request->user();
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
-        return response()->json(['data' => $vehicle]);
+        return (new VehicleResource($vehicle))->response();
     }
 
     public function update(Request $request, int $id): JsonResponse
@@ -100,7 +99,7 @@ class VehicleController extends Controller
 
         $vehicle->update($validated);
 
-        return response()->json(['data' => $vehicle->fresh()]);
+        return (new VehicleResource($vehicle->fresh()))->response();
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -138,15 +137,7 @@ class VehicleController extends Controller
             ->orderByDesc('start_time')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $trips->items(),
-            'meta' => [
-                'current_page' => $trips->currentPage(),
-                'last_page' => $trips->lastPage(),
-                'per_page' => $trips->perPage(),
-                'total' => $trips->total(),
-            ],
-        ]);
+        return VehicleTripResource::collection($trips)->response();
     }
 
     public function vehicleAlerts(Request $request, int $id): JsonResponse
@@ -159,15 +150,7 @@ class VehicleController extends Controller
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $alerts->items(),
-            'meta' => [
-                'current_page' => $alerts->currentPage(),
-                'last_page' => $alerts->lastPage(),
-                'per_page' => $alerts->perPage(),
-                'total' => $alerts->total(),
-            ],
-        ]);
+        return VehicleAlertResource::collection($alerts)->response();
     }
 
     public function maintenance(Request $request, int $id): JsonResponse
@@ -180,15 +163,7 @@ class VehicleController extends Controller
             ->orderByDesc('service_date')
             ->paginate($request->integer('per_page', 20));
 
-        return response()->json([
-            'data' => $records->items(),
-            'meta' => [
-                'current_page' => $records->currentPage(),
-                'last_page' => $records->lastPage(),
-                'per_page' => $records->perPage(),
-                'total' => $records->total(),
-            ],
-        ]);
+        return VehicleMaintenanceResource::collection($records)->response();
     }
 
     public function assign(Request $request, int $id): JsonResponse
@@ -248,6 +223,6 @@ class VehicleController extends Controller
             ->orderByDesc('start_date')
             ->get();
 
-        return response()->json(['data' => $assignments]);
+        return VehicleAssignmentResource::collection($assignments)->response();
     }
 }
