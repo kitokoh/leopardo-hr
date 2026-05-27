@@ -39,6 +39,8 @@ class EmployeeResource extends JsonResource
             'preferred_name' => $this->preferred_name,
             'email' => $this->email,
             'personal_email' => $this->personal_email,
+            'recovery_email' => $this->recovery_email,
+            'personal_phone' => $this->personal_phone,
             'phone' => $this->phone,
             'role' => $this->role,
             'manager_role' => $this->manager_role,

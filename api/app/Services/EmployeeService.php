@@ -78,7 +78,15 @@ class EmployeeService
 
         if (! $isManager) {
             /** @var array<string, mixed> $payload */
-            $payload = Arr::only($payload, ['first_name', 'last_name', 'email', 'password']);
+            $payload = Arr::only($payload, [
+                'first_name',
+                'last_name',
+                'email',
+                'personal_email',
+                'recovery_email',
+                'personal_phone',
+                'password',
+            ]);
         }
 
         $password = $this->stringValue($payload, 'password');
