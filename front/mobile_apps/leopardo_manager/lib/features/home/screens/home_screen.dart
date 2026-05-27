@@ -8,8 +8,25 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
+
+final managerDigestProvider = FutureProvider.autoDispose<ManagerDigest>((
+  ref,
+) async {
+  final apiClient = ref.watch(apiClientProvider);
+  final response = await apiClient.dio.get('/dashboard/manager-digest');
+  final raw = response.data;
+
+  if (raw is Map && raw['data'] is Map) {
+    return ManagerDigest.fromJson(
+      Map<String, dynamic>.from(raw['data'] as Map),
+    );
+  }
+
+  return const ManagerDigest.empty();
+});
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -414,13 +431,70 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-class _ManagerDigestCard extends StatelessWidget {
+class ManagerDigest {
+  const ManagerDigest({
+    required this.teamScope,
+    required this.teamSize,
+    required this.present,
+    required this.late,
+    required this.openSessions,
+    required this.pendingActions,
+    required this.pendingAbsences,
+    required this.pendingSalaryAdvances,
+    required this.pendingCorrections,
+  });
+
+  const ManagerDigest.empty()
+    : teamScope = 'company',
+      teamSize = 0,
+      present = 0,
+      late = 0,
+      openSessions = 0,
+      pendingActions = 0,
+      pendingAbsences = 0,
+      pendingSalaryAdvances = 0,
+      pendingCorrections = 0;
+
+  final String teamScope;
+  final int teamSize;
+  final int present;
+  final int late;
+  final int openSessions;
+  final int pendingActions;
+  final int pendingAbsences;
+  final int pendingSalaryAdvances;
+  final int pendingCorrections;
+
+  factory ManagerDigest.fromJson(Map<String, dynamic> json) {
+    return ManagerDigest(
+      teamScope: json['team_scope']?.toString() ?? 'company',
+      teamSize: _asInt(json['team_size']),
+      present: _asInt(json['present']),
+      late: _asInt(json['late']),
+      openSessions: _asInt(json['open_sessions']),
+      pendingActions: _asInt(json['pending_actions']),
+      pendingAbsences: _asInt(json['pending_absences']),
+      pendingSalaryAdvances: _asInt(json['pending_salary_advances']),
+      pendingCorrections: _asInt(json['pending_corrections']),
+    );
+  }
+
+  static int _asInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+}
+
+class _ManagerDigestCard extends ConsumerWidget {
   const _ManagerDigestCard();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
+    final digest = ref.watch(managerDigestProvider);
+    final resolvedDigest = digest.asData?.value;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -432,44 +506,219 @@ class _ManagerDigestCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'A surveiller aujourd hui',
-            style: AppTypography.subtitle.copyWith(color: text),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'A surveiller aujourd hui',
+                  style: AppTypography.subtitle.copyWith(color: text),
+                ),
+              ),
+              IconButton(
+                onPressed: () => ref.invalidate(managerDigestProvider),
+                icon: const Icon(
+                  Icons.refresh,
+                  size: 18,
+                  color: MobileSurface.secondary,
+                ),
+                tooltip: 'Actualiser',
+              ),
+            ],
+          ),
+          digest.when(
+            loading: () => const _ManagerDigestLoading(),
+            error:
+                (error, _) => _ManagerDigestError(
+                  onRetry: () => ref.invalidate(managerDigestProvider),
+                ),
+            data: (data) => _ManagerDigestContent(data: data),
           ),
           const SizedBox(height: 14),
+          Text(
+            'Scope ${resolvedDigest?.teamScope == 'managed_team' ? 'equipe directe' : 'entreprise'} - ${resolvedDigest?.teamSize ?? 0} profils actifs.',
+            style: AppTypography.bodySmall.copyWith(color: muted),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ManagerDigestContent extends StatelessWidget {
+  const _ManagerDigestContent({required this.data});
+
+  final ManagerDigest data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(
+              child: _DigestTile(
+                color: AppColors.success,
+                value: data.present.toString(),
+                label: 'presents',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _DigestTile(
+                color: data.late > 0 ? AppColors.warning : AppColors.success,
+                value: data.late.toString(),
+                label: 'retards',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _DigestTile(
+                color:
+                    data.pendingActions > 0
+                        ? AppColors.info
+                        : AppColors.success,
+                value: data.pendingActions.toString(),
+                label: 'actions RH',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _DigestActionButton(
+                icon: Icons.group_outlined,
+                label: 'Presences',
+                onTap: () => context.push('/manager/attendance'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DigestActionButton(
+                icon: Icons.warning_amber_rounded,
+                label: 'Anomalies',
+                onTap: () => context.push('/manager/anomalies'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DigestActionButton(
+                icon: Icons.fact_check_outlined,
+                label: 'Actions',
+                onTap: () => context.push('/approvals'),
+              ),
+            ),
+          ],
+        ),
+        if (data.openSessions > 0) ...[
+          const SizedBox(height: 10),
           Row(
-            children: const [
-              Expanded(
-                child: _DigestTile(
-                  color: AppColors.success,
-                  value: '18',
-                  label: 'presents',
-                ),
+            children: [
+              const Icon(
+                Icons.access_time_filled,
+                size: 15,
+                color: AppColors.warning,
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 6),
               Expanded(
-                child: _DigestTile(
-                  color: AppColors.warning,
-                  value: '3',
-                  label: 'retards',
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: _DigestTile(
-                  color: AppColors.info,
-                  value: '2',
-                  label: 'actions RH',
+                child: Text(
+                  '${data.openSessions} session(s) encore ouvertes aujourd hui.',
+                  style: AppTypography.caption.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            'La home reste legere: elle montre les signaux utiles, puis renvoie vers les modules pour agir.',
-            style: AppTypography.bodySmall.copyWith(color: muted),
-          ),
         ],
+      ],
+    );
+  }
+}
+
+class _ManagerDigestLoading extends StatelessWidget {
+  const _ManagerDigestLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(999),
+        child: LinearProgressIndicator(
+          minHeight: 4,
+          backgroundColor: MobileSurface.chip,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            AppColors.rh.withValues(alpha: 0.9),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ManagerDigestError extends StatelessWidget {
+  const _ManagerDigestError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Row(
+        children: [
+          const Icon(Icons.cloud_off, size: 16, color: AppColors.warning),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Signal equipe indisponible. Reessayez dans un instant.',
+              style: AppTypography.caption.copyWith(color: MobileSurface.muted),
+            ),
+          ),
+          TextButton(onPressed: onRetry, child: const Text('Reessayer')),
+        ],
+      ),
+    );
+  }
+}
+
+class _DigestActionButton extends StatelessWidget {
+  const _DigestActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Ink(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: MobileSurface.chip,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: MobileSurface.border),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 16, color: AppColors.rh),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: AppTypography.caption.copyWith(color: MobileSurface.text),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

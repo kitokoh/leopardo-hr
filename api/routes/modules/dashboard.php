@@ -19,6 +19,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
         Route::get('/dashboard/recent-activity', [DashboardController::class, 'recentActivity']);
         Route::get('/dashboard/kpi', [DashboardController::class, 'kpi']);
+        Route::get('/dashboard/manager-digest', [DashboardController::class, 'managerDigest']);
     });
 
     // Notifications — all authenticated employees
