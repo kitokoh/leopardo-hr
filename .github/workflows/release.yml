@@ -131,7 +131,7 @@ jobs:
             }
 
   build-artifacts:
-    name: Build release artifacts
+    name: Build legacy release artifacts
     runs-on: ubuntu-latest
     needs: create-release
 
@@ -161,9 +161,11 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Place google-services.json if available
+      - name: Place legacy google-services.json if available
         shell: bash
         run: |
+          # Historical single mobile app only. Store-ready multi-app Android
+          # builds are distributed by mobile-distribute.yml.
           for SRC in "google-services.json" "api/google-services.json"; do
             if [[ -f "${SRC}" ]]; then
               mkdir -p front/mobile/android/app
@@ -172,7 +174,7 @@ jobs:
             fi
           done
 
-      - name: Build release APK
+      - name: Build legacy release APK
         working-directory: front/mobile
         run: |
           flutter pub get
@@ -196,7 +198,7 @@ jobs:
                 owner,
                 repo,
                 release_id: release.data.id,
-                name: `leopardo-rh-${tag}.apk`,
+                name: `leopardo-rh-legacy-${tag}.apk`,
                 data,
                 headers: { 'content-type': 'application/vnd.android.package-archive' },
               });
