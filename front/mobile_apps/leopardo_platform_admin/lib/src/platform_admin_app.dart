@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'features/auth/platform_auth_controller.dart';
+import 'features/companies/company_detail_screen.dart';
 import 'features/auth/platform_login_screen.dart';
 import 'features/companies/company_create_screen.dart';
 import 'features/companies/company_requests_screen.dart';
@@ -52,6 +53,13 @@ final platformRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/platform/companies/new',
         builder: (context, state) => const CompanyCreateScreen(),
+      ),
+      GoRoute(
+        path: '/platform/companies/:companyId',
+        builder: (context, state) {
+          final companyId = state.pathParameters['companyId']!;
+          return CompanyDetailScreen(companyId: companyId);
+        },
       ),
       GoRoute(
         path: '/platform/company-requests',

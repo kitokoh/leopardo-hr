@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.172] - 2026-05-27
+
+### Added
+
+- Mobile platform admin : ajout d'une fiche client accessible depuis la liste des entreprises.
+- Mobile platform admin : la fiche client consomme les APIs `health`, `subscription` et `features` pour afficher sante, adoption pointage, abonnement, modules actifs et prochaines actions.
+- Mobile platform admin : correction de `PlatformCompany.id` en string afin de supporter les UUID plateforme au lieu de retomber sur `0`.
+- Contrats mobile : ajout de la route `/platform/companies/:companyId` et de ses endpoints au garde `validate-mobile-workflow-contracts.ps1`.
+- Documentation : ajout du Plan 45 fiche client platform admin.
+
 ## [4.16.171] - 2026-05-27
 
 ### Changed
