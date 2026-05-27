@@ -144,5 +144,4 @@ class CabinetDocumentController extends Controller
             abort(403);
         }
     }
-
 }

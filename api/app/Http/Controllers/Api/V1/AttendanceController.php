@@ -357,7 +357,7 @@ class AttendanceController extends Controller
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, AttendanceLog>
+     * @return EloquentCollection<int, AttendanceLog>
      */
     private function dailySessions(Employee $employee, string $date): EloquentCollection
     {
