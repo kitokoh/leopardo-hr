@@ -42,6 +42,18 @@ return new class extends Migration
             if (! Schema::hasColumn('tasks', 'template_key')) {
                 $table->string('template_key', 100)->nullable()->after('recurrence_rule')->index();
             }
+
+            if (! Schema::hasColumn('tasks', 'category')) {
+                $table->string('category', 100)->nullable()->after('status');
+            }
+
+            if (! Schema::hasColumn('tasks', 'checklist')) {
+                $table->jsonb('checklist')->nullable()->after('category');
+            }
+
+            if (! Schema::hasColumn('tasks', 'visibility')) {
+                $table->string('visibility', 20)->default('visible')->after('checklist');
+            }
         });
     }
 
@@ -52,7 +64,7 @@ return new class extends Migration
         }
 
         Schema::table('tasks', function (Blueprint $table): void {
-            foreach (['template_key', 'recurrence_rule', 'performance_score', 'completion_note', 'completed_at', 'completed_minutes', 'estimated_minutes'] as $column) {
+            foreach (['visibility', 'checklist', 'category', 'template_key', 'recurrence_rule', 'performance_score', 'completion_note', 'completed_at', 'completed_minutes', 'estimated_minutes'] as $column) {
                 if (Schema::hasColumn('tasks', $column)) {
                     $table->dropColumn($column);
                 }

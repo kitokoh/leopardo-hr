@@ -625,6 +625,14 @@ class _ManagerDigestContent extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: _DigestActionButton(
+                icon: Icons.add_task_rounded,
+                label: 'Taches',
+                onTap: () => context.push('/tasks'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DigestActionButton(
                 icon: Icons.people_alt_outlined,
                 label: 'Equipe',
                 onTap: () => context.push('/team'),
