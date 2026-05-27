@@ -17,7 +17,10 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `FrontendApiContractTest` |
 | Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` |
 | Mobile | Demande correction pointage | `POST /api/v1/attendance/corrections` | employe | `FrontendApiContractTest` |
+| Mobile manager | File corrections pointage | `GET /api/v1/attendance/corrections` | manager principal/RH | `CorrectionWorkflowTest`, `FrontendApiContractTest` |
+| Mobile manager | Appliquer/refuser correction | `PUT /api/v1/attendance/corrections/{correction}/approve`, `PUT /api/v1/attendance/corrections/{correction}/reject` | manager principal/RH | `CorrectionWorkflowTest`, `FrontendApiContractTest` |
 | Mobile | Modification pointage directe | `PUT /api/v1/attendance/{attendanceLog}` | manager principal/RH | `FrontendApiContractTest` |
+| Mobile manager | Anomalies pointage | `GET /api/v1/attendance/anomalies` | manager | `AttendanceAnomaliesTest`, `FrontendApiContractTest` |
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
 | Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Resume mensuel | `GET /api/v1/me/monthly-summary` | employe/manager | `FrontendApiContractTest` |

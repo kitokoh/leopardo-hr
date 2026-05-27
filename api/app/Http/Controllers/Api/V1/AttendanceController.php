@@ -309,6 +309,131 @@ class AttendanceController extends Controller
         ], 201);
     }
 
+    public function corrections(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('update', new AttendanceLog(['company_id' => $actor->company_id]));
+
+        $validated = $request->validate([
+            'status' => ['nullable', 'string', 'in:pending,approved,rejected,applied'],
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
+        ]);
+
+        $query = AttendanceCorrectionRequest::query()
+            ->with(['employee:id,company_id,first_name,last_name,matricule', 'attendanceLog:id,employee_id,date,session_number,status'])
+            ->where('company_id', $actor->company_id)
+            ->when($validated['status'] ?? 'pending', fn ($builder, string $status) => $builder->where('status', $status))
+            ->when($validated['date_from'] ?? null, fn ($builder, string $date) => $builder->whereDate('date', '>=', $date))
+            ->when($validated['date_to'] ?? null, fn ($builder, string $date) => $builder->whereDate('date', '<=', $date))
+            ->orderByDesc('date')
+            ->orderByDesc('id');
+
+        $paginator = $query->paginate((int) ($validated['per_page'] ?? 20));
+
+        return response()->json([
+            'data' => $paginator->getCollection()->map(fn (AttendanceCorrectionRequest $correction): array => $this->correctionPayload($correction))->values(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+        ]);
+    }
+
+    public function approveCorrection(Request $request, AttendanceCorrectionRequest $correction): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('update', new AttendanceLog(['company_id' => $correction->company_id]));
+        $this->ensureCorrectionBelongsToActorCompany($correction, $actor);
+
+        if ($correction->status !== 'pending') {
+            throw ValidationException::withMessages([
+                'status' => ['Cette demande de correction a deja ete traitee.'],
+            ]);
+        }
+
+        $employee = Employee::query()
+            ->where('company_id', $actor->company_id)
+            ->findOrFail($correction->employee_id);
+
+        $log = $correction->attendanceLog;
+        if (! $log) {
+            $sessionNumber = ((int) AttendanceLog::query()
+                ->where('employee_id', $employee->id)
+                ->whereDate('date', $correction->date)
+                ->max('session_number')) + 1;
+
+            $log = new AttendanceLog([
+                'company_id' => $actor->company_id,
+                'employee_id' => $employee->id,
+                'schedule_id' => $employee->schedule_id,
+                'date' => $correction->date,
+                'session_number' => $sessionNumber,
+                'method' => 'manual',
+                'work_type' => 'normal',
+            ]);
+        }
+
+        $log->fill([
+            'check_in' => $correction->requested_check_in,
+            'check_out' => $correction->requested_check_out,
+            'method' => 'manual',
+            'corrected_by' => $actor->id,
+            'correction_note' => $correction->reason,
+        ]);
+
+        $log = $this->attendanceService->recalculateLog($log);
+
+        $correction->forceFill([
+            'attendance_log_id' => $log->id,
+            'status' => 'applied',
+            'reviewed_by' => $actor->id,
+            'reviewed_at' => now(),
+        ])->save();
+
+        $correction->load(['employee', 'attendanceLog']);
+
+        return response()->json([
+            'data' => $this->correctionPayload($correction),
+            'attendance_log' => (new AttendanceLogResource($log))->resolve($request),
+            'message' => 'Correction appliquee au pointage.',
+        ]);
+    }
+
+    public function rejectCorrection(Request $request, AttendanceCorrectionRequest $correction): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('update', new AttendanceLog(['company_id' => $correction->company_id]));
+        $this->ensureCorrectionBelongsToActorCompany($correction, $actor);
+
+        if ($correction->status !== 'pending') {
+            throw ValidationException::withMessages([
+                'status' => ['Cette demande de correction a deja ete traitee.'],
+            ]);
+        }
+
+        $correction->forceFill([
+            'status' => 'rejected',
+            'reviewed_by' => $actor->id,
+            'reviewed_at' => now(),
+        ])->save();
+
+        $correction->load(['employee', 'attendanceLog']);
+
+        return response()->json([
+            'data' => $this->correctionPayload($correction),
+            'message' => 'Correction refusee.',
+        ]);
+    }
+
     public function update(Request $request, AttendanceLog $attendanceLog): JsonResponse
     {
         $this->authorize('update', $attendanceLog);
@@ -354,6 +479,38 @@ class AttendanceController extends Controller
         $attendanceLog = $this->attendanceService->recalculateLog($attendanceLog);
 
         return (new AttendanceLogResource($attendanceLog))->response();
+    }
+
+    private function ensureCorrectionBelongsToActorCompany(AttendanceCorrectionRequest $correction, Employee $actor): void
+    {
+        if ($correction->company_id !== $actor->company_id) {
+            abort(404);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function correctionPayload(AttendanceCorrectionRequest $correction): array
+    {
+        return [
+            'id' => $correction->id,
+            'company_id' => $correction->company_id,
+            'employee_id' => $correction->employee_id,
+            'attendance_log_id' => $correction->attendance_log_id,
+            'employee' => $correction->relationLoaded('employee') && $correction->employee ? [
+                'id' => $correction->employee->id,
+                'name' => trim(($correction->employee->first_name ?? '').' '.($correction->employee->last_name ?? '')),
+                'matricule' => $correction->employee->matricule,
+            ] : null,
+            'date' => $correction->date?->format('Y-m-d'),
+            'requested_check_in' => $correction->requested_check_in?->toIso8601String(),
+            'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
+            'reason' => $correction->reason,
+            'status' => $correction->status,
+            'reviewed_by' => $correction->reviewed_by,
+            'reviewed_at' => $correction->reviewed_at?->toIso8601String(),
+        ];
     }
 
     /**
