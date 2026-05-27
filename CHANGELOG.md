@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.174] - 2026-05-27
+
+### Changed
+
+- I18N mobile : `sync-mobile.js` synchronise maintenant les ARB vers `front/mobile/lib/l10n` et `front/mobile_apps/leopardo_core/lib/l10n`.
+- CI i18n : le workflow enterprise surveille aussi les catalogues du core mobile multi-app.
+- Documentation : le Plan 24 et AGENTS incluent le chemin `front/mobile_apps/leopardo_core/lib/l10n` pour Jules.
+- Documentation : ajout du Plan 47 alignement i18n mobile multi-app.
+
 ## [4.16.173] - 2026-05-27
 
 ### Added

@@ -5,6 +5,7 @@ on:
     paths:
       - 'shared/i18n/**'
       - 'front/mobile/lib/l10n/**'
+      - 'front/mobile_apps/leopardo_core/lib/l10n/**'
       - 'front/admin-dashboard/src/i18n/**'
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'
@@ -14,6 +15,7 @@ on:
     paths:
       - 'shared/i18n/**'
       - 'front/mobile/lib/l10n/**'
+      - 'front/mobile_apps/leopardo_core/lib/l10n/**'
       - 'front/admin-dashboard/src/i18n/**'
       - 'api/lang/**'
       - '.github/workflows/i18n-enterprise.yml'

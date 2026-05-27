@@ -1,7 +1,10 @@
 const path = require('path');
 const { localeCatalogs, repoRoot, updateVersions, writeJson } = require('./utils');
 
-const outputDir = path.join(repoRoot, 'mobile', 'lib', 'l10n');
+const outputDirs = [
+  path.join(repoRoot, 'front', 'mobile', 'lib', 'l10n'),
+  path.join(repoRoot, 'front', 'mobile_apps', 'leopardo_core', 'lib', 'l10n'),
+];
 const keyAliases = {
   'app.title': 'appTitle',
   'welcome.brand.subtitle': 'welcomeBrandSubtitle',
@@ -72,7 +75,9 @@ for (const { locale, data } of localeCatalogs()) {
     '@@locale': locale,
     ...flatten(data),
   };
-  writeJson(path.join(outputDir, `app_${locale}.arb`), arb);
+  for (const outputDir of outputDirs) {
+    writeJson(path.join(outputDir, `app_${locale}.arb`), arb);
+  }
 }
 
 console.log('I18N_SYNC_MOBILE_OK');
