@@ -148,6 +148,8 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
   final _estimated = TextEditingController(text: '60');
   String _priority = 'normal';
   String _templateKey = 'custom';
+  String _category = 'terrain';
+  String _recurrenceRule = 'none';
   int? _employeeId;
   bool _submitting = false;
 
@@ -206,25 +208,15 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
               DropdownButtonFormField<String>(
                 initialValue: _templateKey,
                 decoration: const InputDecoration(labelText: 'Modele metier'),
-                items: const [
-                  DropdownMenuItem(value: 'custom', child: Text('Libre')),
-                  DropdownMenuItem(
-                    value: 'agriculture_daily',
-                    child: Text('Agriculture - tour quotidien'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'maintenance_check',
-                    child: Text('Maintenance - controle'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'commerce_opening',
-                    child: Text('Commerce - ouverture'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'logistics_round',
-                    child: Text('Logistique - tournee'),
-                  ),
-                ],
+                items:
+                    _taskTemplates
+                        .map(
+                          (template) => DropdownMenuItem(
+                            value: template.key,
+                            child: Text(template.label),
+                          ),
+                        )
+                        .toList(),
                 onChanged: _applyTemplate,
               ),
               const SizedBox(height: 12),
@@ -281,6 +273,71 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _category,
+                      decoration: const InputDecoration(labelText: 'Categorie'),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'terrain',
+                          child: Text('Terrain'),
+                        ),
+                        DropdownMenuItem(value: 'rh', child: Text('RH')),
+                        DropdownMenuItem(
+                          value: 'maintenance',
+                          child: Text('Maintenance'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'commerce',
+                          child: Text('Commerce'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'logistique',
+                          child: Text('Logistique'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'agriculture',
+                          child: Text('Agriculture'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'elevage',
+                          child: Text('Elevage'),
+                        ),
+                      ],
+                      onChanged:
+                          (value) =>
+                              setState(() => _category = value ?? 'terrain'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _recurrenceRule,
+                      decoration: const InputDecoration(labelText: 'Frequence'),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'none',
+                          child: Text('Ponctuelle'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'FREQ=DAILY',
+                          child: Text('Tous les jours'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'FREQ=WEEKLY',
+                          child: Text('Chaque semaine'),
+                        ),
+                      ],
+                      onChanged:
+                          (value) =>
+                              setState(() => _recurrenceRule = value ?? 'none'),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 18),
               ElevatedButton.icon(
                 onPressed: _submitting ? null : _submit,
@@ -323,33 +380,18 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
 
   void _applyTemplate(String? value) {
     final key = value ?? 'custom';
+    final template = _taskTemplates.firstWhere(
+      (item) => item.key == key,
+      orElse: () => _taskTemplates.first,
+    );
     setState(() {
       _templateKey = key;
-      switch (key) {
-        case 'agriculture_daily':
-          _title.text = 'Tour de parcelle et verification arrosage';
-          _description.text =
-              'Verifier l etat des zones, signaler les anomalies et confirmer le passage.';
-          _estimated.text = '90';
-          break;
-        case 'maintenance_check':
-          _title.text = 'Controle maintenance preventif';
-          _description.text =
-              'Inspecter les equipements critiques et noter toute intervention necessaire.';
-          _estimated.text = '60';
-          break;
-        case 'commerce_opening':
-          _title.text = 'Preparation ouverture magasin';
-          _description.text =
-              'Verifier caisse, rayon prioritaire et proprete avant ouverture.';
-          _estimated.text = '45';
-          break;
-        case 'logistics_round':
-          _title.text = 'Tournee logistique planifiee';
-          _description.text =
-              'Confirmer chargement, livraison et retour des documents.';
-          _estimated.text = '120';
-          break;
+      _category = template.category;
+      _priority = template.priority;
+      _estimated.text = template.estimatedMinutes.toString();
+      if (key != 'custom') {
+        _title.text = template.title;
+        _description.text = template.description;
       }
     });
   }
@@ -367,8 +409,9 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
             dueDate: DateTime.now(),
             priority: _priority,
             estimatedMinutes: int.tryParse(_estimated.text.trim()),
-            category: _templateKey == 'custom' ? null : _templateKey,
+            category: _category,
             templateKey: _templateKey == 'custom' ? null : _templateKey,
+            recurrenceRule: _recurrenceRule == 'none' ? null : _recurrenceRule,
           );
       ref.invalidate(todayManagerTasksProvider);
       if (!mounted) return;
@@ -386,4 +429,95 @@ class _CreateTaskSheetState extends ConsumerState<_CreateTaskSheet> {
       if (mounted) setState(() => _submitting = false);
     }
   }
+}
+
+const List<_TaskTemplate> _taskTemplates = [
+  _TaskTemplate(
+    key: 'custom',
+    label: 'Libre',
+    title: '',
+    description: '',
+    category: 'terrain',
+    priority: 'normal',
+    estimatedMinutes: 60,
+  ),
+  _TaskTemplate(
+    key: 'agriculture_daily',
+    label: 'Agriculture - tour quotidien',
+    title: 'Tour de parcelle et verification arrosage',
+    description:
+        'Verifier l etat des zones, signaler les anomalies et confirmer le passage.',
+    category: 'agriculture',
+    priority: 'normal',
+    estimatedMinutes: 90,
+  ),
+  _TaskTemplate(
+    key: 'livestock_round',
+    label: 'Elevage - soin et controle',
+    title: 'Tour d elevage et controle alimentation',
+    description:
+        'Verifier eau, nourriture, etat sanitaire visible et signaler les urgences.',
+    category: 'elevage',
+    priority: 'high',
+    estimatedMinutes: 75,
+  ),
+  _TaskTemplate(
+    key: 'maintenance_check',
+    label: 'Maintenance - controle',
+    title: 'Controle maintenance preventif',
+    description:
+        'Inspecter les equipements critiques et noter toute intervention necessaire.',
+    category: 'maintenance',
+    priority: 'high',
+    estimatedMinutes: 60,
+  ),
+  _TaskTemplate(
+    key: 'commerce_opening',
+    label: 'Commerce - ouverture',
+    title: 'Preparation ouverture magasin',
+    description:
+        'Verifier caisse, rayon prioritaire et proprete avant ouverture.',
+    category: 'commerce',
+    priority: 'normal',
+    estimatedMinutes: 45,
+  ),
+  _TaskTemplate(
+    key: 'logistics_round',
+    label: 'Logistique - tournee',
+    title: 'Tournee logistique planifiee',
+    description: 'Confirmer chargement, livraison et retour des documents.',
+    category: 'logistique',
+    priority: 'normal',
+    estimatedMinutes: 120,
+  ),
+  _TaskTemplate(
+    key: 'hr_onboarding',
+    label: 'RH - onboarding',
+    title: 'Controle onboarding collaborateur',
+    description:
+        'Verifier documents, acces, planning, contrat et prochaine action RH.',
+    category: 'rh',
+    priority: 'high',
+    estimatedMinutes: 50,
+  ),
+];
+
+class _TaskTemplate {
+  const _TaskTemplate({
+    required this.key,
+    required this.label,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.priority,
+    required this.estimatedMinutes,
+  });
+
+  final String key;
+  final String label;
+  final String title;
+  final String description;
+  final String category;
+  final String priority;
+  final int estimatedMinutes;
 }
