@@ -20,6 +20,7 @@ Les sorties derivees restent synchronisees vers :
 - `api/lang/{en,ar,tr}/`
 - `front/admin-dashboard/src/i18n/locales/{en,ar,tr}.json`
 - `front/mobile/lib/l10n/app_{en,ar,tr}.arb`
+- `front/mobile_apps/leopardo_core/lib/l10n/app_{en,ar,tr}.arb` pour les apps employee, manager et platform admin.
 - `front/web/src/modules/vitrine/**` uniquement quand le texte marketing n est pas encore externalise.
 
 ## Regles pour Jules
@@ -57,6 +58,7 @@ Travaille uniquement sur les fichiers de traduction autorises:
 - api/lang/en/
 - front/admin-dashboard/src/i18n/locales/en.json
 - front/mobile/lib/l10n/app_en.arb
+- front/mobile_apps/leopardo_core/lib/l10n/app_en.arb
 - front/web/src/modules/vitrine/** seulement si le texte marketing n est pas encore centralise.
 
 Objectifs:
@@ -82,6 +84,7 @@ Travaille uniquement sur les fichiers de traduction autorises:
 - api/lang/ar/
 - front/admin-dashboard/src/i18n/locales/ar.json
 - front/mobile/lib/l10n/app_ar.arb
+- front/mobile_apps/leopardo_core/lib/l10n/app_ar.arb
 - front/web/src/modules/vitrine/** seulement si le texte marketing n est pas encore centralise.
 
 Objectifs:
@@ -108,6 +111,7 @@ Travaille uniquement sur les fichiers de traduction autorises:
 - api/lang/tr/
 - front/admin-dashboard/src/i18n/locales/tr.json
 - front/mobile/lib/l10n/app_tr.arb
+- front/mobile_apps/leopardo_core/lib/l10n/app_tr.arb
 - front/web/src/modules/vitrine/** seulement si le texte marketing n est pas encore centralise.
 
 Objectifs:
@@ -123,7 +127,7 @@ Ne modifie pas le code metier. Ne change pas les prix, routes, validations ou co
 ## Backlog i18n technique
 
 - Externaliser progressivement les textes restants de `front/web/src/modules/vitrine/**` vers `shared/i18n`.
-- Remplacer les textes hardcodes restants dans `front/mobile/lib/features/**` par les ARB.
+- Remplacer les textes hardcodes restants dans `front/mobile/lib/features/**` et `front/mobile_apps/*/lib/**` par les ARB du core.
 - Ajouter un rapport CI qui liste les nouvelles chaines hardcodees detectees dans les fronts.
 - Ajouter un controle mojibake sur les locales arabes et turques.
 - Garder `fr` comme reference produit, puis synchroniser `en`, `ar`, `tr` a chaque lot marketing ou mobile.
