@@ -17,7 +17,9 @@ class NotificationPreferenceController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        return (new NotificationPreferenceResource($this->preferencesFor($employee)))->response();
+        return (new NotificationPreferenceResource($this->preferencesFor($employee)))
+            ->response()
+            ->setStatusCode(200);
     }
 
     public function update(Request $request): JsonResponse
