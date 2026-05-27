@@ -6,7 +6,7 @@
 
 ### Changed
 
-- CI mobile : renommage explicite des workflows/jobs/artifacts historiques en `Legacy Mobile` pour eviter toute confusion avec les apps store.
+- CI mobile : renommage explicite des workflows/artifacts historiques en `Legacy Mobile` pour eviter toute confusion avec les apps store, tout en conservant le nom de check protege `Mobile Flutter (Stable Channel)`.
 - Release : l'APK de l'ancienne app unique est publie comme `leopardo-rh-legacy-*`; les apps employee, manager et platform admin restent distribuees par `mobile-distribute.yml`.
 - Documentation : clarification que `front/mobile_apps/` est la source canonique des apps mobiles de lancement et que `front/mobile/` reste seulement en maintenance.
 

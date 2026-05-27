@@ -22,7 +22,9 @@ Flutter unique alors que les apps de lancement sont maintenant :
 ## Livrables realises
 
 - Workflow `Mobile CI - Flutter` renomme en `Legacy Mobile CI - Flutter`.
-- Jobs et artefacts de l'ancienne app renommes en `legacy`.
+- Jobs/artifacts de l'ancienne app clarifies en `legacy` quand la protection
+  de branche le permet. Le check `Mobile Flutter (Stable Channel)` garde son
+  nom exact car il est encore requis par la regle GitHub.
 - Release GitHub : l'APK historique est publie sous
   `leopardo-rh-legacy-{tag}.apk`.
 - README `front/mobile_apps` enrichi avec la regle de contribution et les

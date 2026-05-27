@@ -731,7 +731,9 @@ jobs:
           exit 1
 
   mobile-tests:
-    name: Legacy Mobile Flutter (Stable Channel)
+    # Branch protection still expects this exact check name. The job validates
+    # only the historical front/mobile app; new apps are covered separately.
+    name: Mobile Flutter (Stable Channel)
     runs-on: ubuntu-latest
     needs: detect-changes
     if: needs.detect-changes.outputs.mobile_changed == 'true'
