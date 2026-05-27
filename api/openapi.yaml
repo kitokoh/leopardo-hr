@@ -1189,6 +1189,8 @@ paths:
                 contract_start:
                   type: string
                   format: date
+                schedule_id:
+                  type: integer
                 salary_type:
                   type: string
                   enum: ["fixed", "hourly", "daily"]
@@ -5104,6 +5106,14 @@ components:
           type: number
           format: float
           nullable: true
+        schedule_id:
+          type: integer
+          nullable: true
+        schedule:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/Schedule"
         hourly_rate:
           type: number
           format: float
@@ -5143,6 +5153,14 @@ components:
           type: number
           format: float
           nullable: true
+        schedule_id:
+          type: integer
+          nullable: true
+        schedule:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/Schedule"
         hourly_rate:
           type: number
           format: float
@@ -5789,6 +5807,8 @@ components:
         contract_start:
           type: string
           format: date
+        schedule_id:
+          type: integer
         salary_type:
           type: string
           enum: ["fixed", "hourly", "daily"]
@@ -5869,6 +5889,9 @@ components:
           format: email
         password:
           type: string
+        schedule_id:
+          type: integer
+          nullable: true
         role:
           type: string
           enum: ["employee", "manager"]

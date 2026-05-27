@@ -42,6 +42,12 @@ class UpdateEmployeeRequest extends FormRequest
                 new GlobalEmailUnique((int) $employeeId),
             ],
             'password' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
+            'schedule_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                Rule::exists('schedules', 'id')->where(fn ($query) => $query->where('company_id', $companyId)),
+            ],
             'role' => ['sometimes', 'nullable', 'in:employee,manager'],
             'manager_role' => ['sometimes', 'nullable', 'in:principal,rh,dept,comptable,superviseur'],
             'status' => ['sometimes', 'nullable', 'in:active,suspended'],

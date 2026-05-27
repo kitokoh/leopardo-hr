@@ -39,6 +39,7 @@ class EmployeeRepository {
     String? password,
     String? matricule,
     String? contractStart,
+    int? scheduleId,
     String? salaryType,
     double? salaryBase,
     double? hourlyRate,
@@ -70,6 +71,7 @@ class EmployeeRepository {
     if (contractStart != null && contractStart.trim().isNotEmpty) {
       data['contract_start'] = contractStart.trim();
     }
+    if (scheduleId != null) data['schedule_id'] = scheduleId;
     if (salaryType != null && salaryType.trim().isNotEmpty) {
       data['salary_type'] = salaryType.trim();
     }
@@ -118,6 +120,7 @@ class EmployeeRepository {
     required String email,
     String? matricule,
     String? contractStart,
+    int? scheduleId,
     String? salaryType,
     double? salaryBase,
     double? hourlyRate,
@@ -137,6 +140,7 @@ class EmployeeRepository {
     if (contractStart != null && contractStart.trim().isNotEmpty) {
       data['contract_start'] = contractStart.trim();
     }
+    if (scheduleId != null) data['schedule_id'] = scheduleId;
     if (salaryType != null && salaryType.trim().isNotEmpty) {
       data['salary_type'] = salaryType.trim();
     }
