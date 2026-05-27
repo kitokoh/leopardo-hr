@@ -180,6 +180,59 @@
           "sourceTokens": ["ManagerPlaceholderScreen"]
         }
       ]
+    },
+    {
+      "name": "platform_admin",
+      "root": "front/mobile_apps/leopardo_platform_admin",
+      "routerFile": "lib/src/platform_admin_app.dart",
+      "forbiddenRoutes": [
+        "/attendance",
+        "/history",
+        "/me/monthly",
+        "/absences",
+        "/salary-advances",
+        "/team",
+        "/tasks",
+        "/schedules",
+        "/approvals",
+        "/manager/dashboard",
+        "/manager/attendance",
+        "/manager/anomalies",
+        "/manager/corrections"
+      ],
+      "workflows": [
+        {
+          "name": "platform_auth_session",
+          "routes": ["/platform/login", "/platform"],
+          "endpoints": ["/platform/auth/login", "/platform/auth/me", "/platform/auth/logout"],
+          "screenFiles": [
+            "lib/src/features/auth/platform_login_screen.dart",
+            "lib/src/features/dashboard/platform_dashboard_screen.dart"
+          ],
+          "sourceTokens": ["platformAuthControllerProvider", ".login(", ".logout()", "Se connecter"]
+        },
+        {
+          "name": "platform_companies",
+          "routes": ["/platform", "/platform/companies", "/platform/companies/new"],
+          "endpoints": ["/platform/metrics/overview", "/platform/companies"],
+          "screenFiles": [
+            "lib/src/features/dashboard/platform_dashboard_screen.dart",
+            "lib/src/features/companies/company_screen.dart",
+            "lib/src/features/companies/company_create_screen.dart"
+          ],
+          "sourceTokens": ["context.push('/platform/companies')", "context.push('/platform/companies/new')", "createCompany", "Creer le client"]
+        },
+        {
+          "name": "platform_company_requests",
+          "routes": ["/platform/company-requests"],
+          "endpoints": ["/platform/company-requests"],
+          "screenFiles": [
+            "lib/src/features/dashboard/platform_dashboard_screen.dart",
+            "lib/src/features/companies/company_requests_screen.dart"
+          ],
+          "sourceTokens": ["context.push('/platform/company-requests')", "reviewCompanyRequest", "Approuver", "Refuser"]
+        }
+      ]
     }
   ]
 }
