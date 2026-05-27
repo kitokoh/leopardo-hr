@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.171] - 2026-05-27
+
+### Changed
+
+- Mobile multi-app : le garde `validate-mobile-workflow-contracts.ps1` couvre maintenant aussi `leopardo_platform_admin`.
+- Mobile platform admin : les routes `/platform/*`, les endpoints `/platform/auth/*`, `/platform/metrics/overview`, `/platform/companies` et `/platform/company-requests` sont declares dans le contrat bouton/route.
+- CI mobile : le validateur supporte les fichiers router non standards et les routes declarees avec guillemets simples ou doubles.
+- Documentation : ajout du Plan 44 contrats actions/routes mobile.
+
 ## [4.16.170] - 2026-05-27
 
 ### Changed
