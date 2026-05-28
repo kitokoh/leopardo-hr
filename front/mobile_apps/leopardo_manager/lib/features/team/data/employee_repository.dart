@@ -10,10 +10,15 @@ class EmployeeRepository {
 
   EmployeeRepository(this.apiClient);
 
+  static const _readTimeout = Duration(seconds: 8);
+  static const _actionTimeout = Duration(seconds: 12);
+
   Future<List<Employee>> list({int page = 1, int perPage = 50}) async {
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/employees',
       queryParameters: {'page': page, 'per_page': perPage},
+      maxRetriesOverride: 1,
+      timeoutOverride: _readTimeout,
     );
     final items = response.data['data'] as List;
     return items
@@ -22,7 +27,11 @@ class EmployeeRepository {
   }
 
   Future<Employee> show(int employeeId) async {
-    final response = await apiClient.dio.get('/employees/$employeeId');
+    final response = await apiClient.requestWithRetry(
+      '/employees/$employeeId',
+      maxRetriesOverride: 1,
+      timeoutOverride: _readTimeout,
+    );
     return Employee.fromJson(
       (response.data['data'] as Map).cast<String, dynamic>(),
     );
@@ -90,23 +99,36 @@ class EmployeeRepository {
     }
     if (extraData.isNotEmpty) data['extra_data'] = extraData;
 
-    final response = await apiClient.dio.post('/employees', data: data);
+    final response = await apiClient.requestWithRetry(
+      '/employees',
+      method: 'POST',
+      data: data,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
     return Employee.fromJson(
       (response.data['data'] as Map).cast<String, dynamic>(),
     );
   }
 
   Future<CompanyQrPayload> getCompanyQrPayload() async {
-    final response = await apiClient.dio.get('/company/qr-onboarding');
+    final response = await apiClient.requestWithRetry(
+      '/company/qr-onboarding',
+      maxRetriesOverride: 1,
+      timeoutOverride: _readTimeout,
+    );
     return CompanyQrPayload.fromJson(
       (response.data['data'] as Map).cast<String, dynamic>(),
     );
   }
 
   Future<EmployeeQrPrefill> scanEmployeeQr(String token) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/company/qr-onboarding/scan-employee',
+      method: 'POST',
       data: {'qr_token': token.trim()},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
     final data = (response.data['data'] as Map).cast<String, dynamic>();
     return EmployeeQrPrefill.fromJson(
@@ -159,9 +181,12 @@ class EmployeeRepository {
     }
     if (extraData.isNotEmpty) data['extra_data'] = extraData;
 
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/company/qr-onboarding/create-employee',
+      method: 'POST',
       data: data,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
     return Employee.fromJson(
       (response.data['data'] as Map).cast<String, dynamic>(),
@@ -169,9 +194,12 @@ class EmployeeRepository {
   }
 
   Future<Employee> update(int employeeId, Map<String, dynamic> patch) async {
-    final response = await apiClient.dio.patch(
+    final response = await apiClient.requestWithRetry(
       '/employees/$employeeId',
+      method: 'PATCH',
       data: patch,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
     return Employee.fromJson(
       (response.data['data'] as Map).cast<String, dynamic>(),
@@ -179,16 +207,23 @@ class EmployeeRepository {
   }
 
   Future<void> archive(int employeeId, {String? reason}) async {
-    await apiClient.dio.post(
+    await apiClient.requestWithRetry(
       '/employees/$employeeId/archive',
+      method: 'POST',
       data: {
         if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
   }
 
   Future<List<Invitation>> listInvitations() async {
-    final response = await apiClient.dio.get('/invitations');
+    final response = await apiClient.requestWithRetry(
+      '/invitations',
+      maxRetriesOverride: 1,
+      timeoutOverride: _readTimeout,
+    );
     final items = response.data['data'] as List;
     return items
         .map((e) => Invitation.fromJson((e as Map).cast<String, dynamic>()))
@@ -196,7 +231,12 @@ class EmployeeRepository {
   }
 
   Future<void> resendInvitation(String invitationId) async {
-    await apiClient.dio.post('/invitations/$invitationId/resend');
+    await apiClient.requestWithRetry(
+      '/invitations/$invitationId/resend',
+      method: 'POST',
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
   }
 }
 
