@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.181] - 2026-05-28
+
+### Fixed
+
+- CI mobile : correction des here-doc Node dans `deploy-main.yml` et `mobile-distribute.yml` pour que la verification Firebase App Distribution ne casse plus le workflow Bash post-merge.
+
 ## [4.16.180] - 2026-05-28
 
 ### Changed
