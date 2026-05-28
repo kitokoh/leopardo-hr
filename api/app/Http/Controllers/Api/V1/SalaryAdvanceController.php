@@ -21,7 +21,10 @@ class SalaryAdvanceController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $query = SalaryAdvance::query();
+        $query = SalaryAdvance::query()
+            ->with([
+                'employee:id,first_name,last_name,email,company_id',
+            ]);
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
@@ -43,7 +46,7 @@ class SalaryAdvanceController extends Controller
     {
         $advance = $this->salaryAdvanceService->create($request->user(), $request->validated());
 
-        return (new SalaryAdvanceResource($advance))
+        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))
             ->response()
             ->setStatusCode(201);
     }
@@ -59,7 +62,7 @@ class SalaryAdvanceController extends Controller
             abort(403);
         }
 
-        return (new SalaryAdvanceResource($salaryAdvance))->response();
+        return (new SalaryAdvanceResource($salaryAdvance->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
 
     public function approve(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -75,7 +78,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->approve($salaryAdvance, $actor, $request->validated());
 
-        return (new SalaryAdvanceResource($advance))->response();
+        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
 
     public function reject(DecideSalaryAdvanceRequest $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -91,7 +94,7 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->reject($salaryAdvance, $actor, $request->validated('decision_comment'));
 
-        return (new SalaryAdvanceResource($advance))->response();
+        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
 
     public function destroy(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
@@ -107,6 +110,6 @@ class SalaryAdvanceController extends Controller
 
         $advance = $this->salaryAdvanceService->cancel($salaryAdvance);
 
-        return (new SalaryAdvanceResource($advance))->response();
+        return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
 }

@@ -85,7 +85,10 @@ class AbsenceController extends Controller
         $actor = $request->user();
         $absence = $this->absenceService->create($actor, $request->validated());
 
-        return (new AbsenceResource($absence->load('absenceType')))
+        return (new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name',
+        ])))
             ->response()
             ->setStatusCode(201);
     }
@@ -103,7 +106,10 @@ class AbsenceController extends Controller
             abort(403);
         }
 
-        return new AbsenceResource($absence->load('absenceType'));
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name',
+        ]));
     }
 
     public function approve(Request $request, Absence $absence): AbsenceResource
@@ -121,7 +127,10 @@ class AbsenceController extends Controller
 
         $absence = $this->absenceService->approve($absence, $actor);
 
-        return new AbsenceResource($absence->load('absenceType'));
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name',
+        ]));
     }
 
     public function reject(RejectAbsenceRequest $request, Absence $absence): AbsenceResource
@@ -139,7 +148,10 @@ class AbsenceController extends Controller
 
         $absence = $this->absenceService->reject($absence, $request->validated('rejected_reason'));
 
-        return new AbsenceResource($absence->load('absenceType'));
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name',
+        ]));
     }
 
     public function destroy(Request $request, Absence $absence): AbsenceResource
@@ -157,6 +169,9 @@ class AbsenceController extends Controller
 
         $absence = $this->absenceService->cancel($absence);
 
-        return new AbsenceResource($absence->load('absenceType'));
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name',
+        ]));
     }
 }
