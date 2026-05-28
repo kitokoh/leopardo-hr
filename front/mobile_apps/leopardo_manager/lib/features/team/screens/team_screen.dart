@@ -213,6 +213,7 @@ class _EmployeesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(teamListProvider);
+    final actor = ref.watch(authProvider).employee;
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -247,25 +248,31 @@ class _EmployeesTab extends ConsumerWidget {
           }
           return ListView.builder(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
-            itemCount: employees.length,
+            itemCount: employees.length + 1,
             itemBuilder: (_, index) {
-              final e = employees[index];
+              if (index == 0) {
+                return _TeamOperationalSummary(employees: employees);
+              }
+
+              final employeeIndex = index - 1;
+              final e = employees[employeeIndex];
               final subtitle = [
                 e.email,
                 _roleLabel(e),
+                e.workStateLabel,
                 if (_employmentLine(e) != null) _employmentLine(e)!,
               ].join(' - ');
 
               return MobileListCard(
                 icon: Icons.person_outline_rounded,
-                iconColor: _statusColor(e.status),
+                iconColor: _workStateColor(e.workState),
                 title: '${_initials(e)}  ${e.fullName}',
                 subtitle: subtitle,
                 trailing: MobileStatusPill(
-                  label: _statusLabel(e.status),
-                  color: _statusColor(e.status),
+                  label: e.workStateLabel,
+                  color: _workStateColor(e.workState),
                 ),
-                onTap: () => _showActions(context, ref, e),
+                onTap: () => _showActions(context, ref, e, actor: actor),
               );
             },
           );
@@ -309,22 +316,22 @@ class _EmployeesTab extends ConsumerWidget {
     return parts.isEmpty ? null : parts.join(' · ');
   }
 
-  String _statusLabel(String status) => switch (status) {
-    'active' => 'Actif',
-    'archived' => 'Archive',
-    'blocked' => 'Bloque',
-    'suspended' => 'Suspendu',
-    _ => status,
-  };
-
-  Color _statusColor(String status) => switch (status) {
-    'active' => AppColors.rh,
-    'suspended' => AppColors.warning,
-    'blocked' || 'archived' => AppColors.danger,
+  Color _workStateColor(String state) => switch (state) {
+    'present' => AppColors.rh,
+    'break' => AppColors.warning,
+    'leave' => AppColors.info,
+    'mission' => AppColors.ia,
+    'absent' => AppColors.danger,
     _ => MobileSurface.disabled,
   };
 
-  void _showActions(BuildContext context, WidgetRef ref, Employee employee) {
+  void _showActions(
+    BuildContext context,
+    WidgetRef ref,
+    Employee employee, {
+    required Employee? actor,
+  }) {
+    final canManageRh = actor?.isPrincipal == true && actor?.id != employee.id;
     showModalBottomSheet(
       context: context,
       backgroundColor: MobileSurface.surface,
@@ -348,6 +355,24 @@ class _EmployeesTab extends ConsumerWidget {
                   style: const TextStyle(color: MobileSurface.secondary),
                 ),
                 const SizedBox(height: 16),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    MobileStatusPill(
+                      label: employee.workStateLabel,
+                      color: _workStateColor(employee.workState),
+                    ),
+                    MobileStatusPill(
+                      label: _roleLabel(employee),
+                      color:
+                          employee.isHr || employee.isPrincipal
+                              ? AppColors.info
+                              : MobileSurface.disabled,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 ListTile(
                   leading: const Icon(Icons.badge_outlined),
                   title: const Text('Voir la fiche'),
@@ -368,6 +393,42 @@ class _EmployeesTab extends ConsumerWidget {
                     _openEditEmployeeSheet(context, employee);
                   },
                 ),
+                ListTile(
+                  leading: const Icon(Icons.query_stats_rounded),
+                  title: const Text('Statistiques et pointages'),
+                  subtitle: const Text('Presence, anomalies, historique'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    context.push('/manager/attendance');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.task_alt_rounded),
+                  title: const Text('Taches'),
+                  subtitle: const Text('Voir ou assigner des taches terrain'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    context.push('/tasks');
+                  },
+                ),
+                if (canManageRh && !employee.isPrincipal)
+                  ListTile(
+                    leading: Icon(
+                      employee.isHr
+                          ? Icons.person_remove_alt_1_outlined
+                          : Icons.admin_panel_settings_outlined,
+                    ),
+                    title: Text(employee.isHr ? 'Revoquer RH' : 'Nommer RH'),
+                    subtitle: Text(
+                      employee.isHr
+                          ? 'Retirer les permissions RH de ce compte'
+                          : 'Donner les permissions RH a ce collaborateur',
+                    ),
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                      await _toggleHrRole(context, ref, employee);
+                    },
+                  ),
                 if (employee.status != 'archived')
                   ListTile(
                     leading: const Icon(Icons.archive_outlined),
@@ -381,6 +442,56 @@ class _EmployeesTab extends ConsumerWidget {
             ),
           ),
     );
+  }
+
+  Future<void> _toggleHrRole(
+    BuildContext context,
+    WidgetRef ref,
+    Employee employee,
+  ) async {
+    final makeHr = !employee.isHr;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: Text(makeHr ? 'Nommer RH ?' : 'Revoquer RH ?'),
+            content: Text(
+              makeHr
+                  ? '${employee.fullName} pourra gerer les demandes RH et les collaborateurs.'
+                  : '${employee.fullName} redeviendra employe sans permissions RH.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Annuler'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(makeHr ? 'Nommer RH' : 'Revoquer'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(employeeRepositoryProvider).update(employee.id, {
+        'role': makeHr ? 'manager' : 'employee',
+        if (makeHr) 'manager_role': 'rh',
+      });
+      ref.invalidate(teamListProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(makeHr ? 'RH nomme.' : 'Permissions RH retirees.'),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+    }
   }
 
   void _openProfileSheet(BuildContext context, Employee employee) {
@@ -447,6 +558,118 @@ class _EmployeesTab extends ConsumerWidget {
         ).showSnackBar(SnackBar(content: Text('Echec : $e')));
       }
     }
+  }
+}
+
+class _TeamOperationalSummary extends StatelessWidget {
+  const _TeamOperationalSummary({required this.employees});
+
+  final List<Employee> employees;
+
+  @override
+  Widget build(BuildContext context) {
+    final counts = <String, int>{
+      'present': 0,
+      'break': 0,
+      'leave': 0,
+      'mission': 0,
+      'absent': 0,
+      'offline': 0,
+    };
+
+    for (final employee in employees) {
+      counts[employee.workState] = (counts[employee.workState] ?? 0) + 1;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: MobileSurface.cardDecoration(radius: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Vue operationnelle',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${employees.length} collaborateurs suivis aujourd hui',
+            style: AppTypography.caption.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _TeamStateChip(
+                label: 'Presents',
+                value: counts['present'] ?? 0,
+                color: AppColors.rh,
+              ),
+              _TeamStateChip(
+                label: 'Pause',
+                value: counts['break'] ?? 0,
+                color: AppColors.warning,
+              ),
+              _TeamStateChip(
+                label: 'Conges',
+                value: counts['leave'] ?? 0,
+                color: AppColors.info,
+              ),
+              _TeamStateChip(
+                label: 'Mission',
+                value: counts['mission'] ?? 0,
+                color: AppColors.ia,
+              ),
+              _TeamStateChip(
+                label: 'Absents',
+                value: counts['absent'] ?? 0,
+                color: AppColors.danger,
+              ),
+              _TeamStateChip(
+                label: 'Hors ligne',
+                value: counts['offline'] ?? 0,
+                color: MobileSurface.disabled,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TeamStateChip extends StatelessWidget {
+  const _TeamStateChip({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final int value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
+      ),
+      child: Text(
+        '$label $value',
+        style: AppTypography.caption.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }
 

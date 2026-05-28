@@ -54,6 +54,8 @@ class EmployeeResource extends JsonResource
             'role' => $this->role,
             'manager_role' => $this->manager_role,
             'status' => $this->status,
+            'work_state' => $this->work_state,
+            'work_state_label' => $this->work_state_label,
             'photo_path' => $photoPath,
             'photo_url' => $photoPath,
             'hire_date' => $contractStart instanceof DateTimeInterface ? $contractStart->format('Y-m-d') : null,

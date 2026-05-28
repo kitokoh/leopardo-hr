@@ -89,10 +89,21 @@ class UpdateEmployeeRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
+            $user = auth('sanctum')->user() ?? $this->user();
+
+            if (($this->has('role') || $this->has('manager_role')) &&
+                $user?->isManager() &&
+                ! $user->hasManagerRole('principal')) {
+                $validator->errors()->add(
+                    'role',
+                    'Seul le manager principal peut modifier les roles RH.'
+                );
+            }
+
             // Seul le super admin peut promouvoir un employe en manager principal :
             // meme un RH ne doit pas pouvoir PATCH un employe en manager_role=principal
             // (idem que la regle deja appliquee cote StoreEmployeeRequest).
-            if ($this->input('manager_role') === 'principal' && $this->user()?->isManager()) {
+            if ($this->input('manager_role') === 'principal' && $user?->isManager()) {
                 $validator->errors()->add(
                     'manager_role',
                     'Seul le super admin peut promouvoir un manager en principal.'
