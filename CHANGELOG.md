@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.178] - 2026-05-28
+
+### Changed
+
+- Mobile employee : pointage rendu plus naturel. Le premier pointage de la journee passe directement en arrivee normale, et le premier depart passe directement sans bottom sheet.
+- Mobile employee : les choix avances de pointage (`pause`, `reprise`, `heures supplementaires`, `mission`, `deplacement`) restent disponibles uniquement lorsque la journee est deja segmentee.
+- Documentation : ajout du Plan 51 pointage intelligent employee.
+
 ## [4.16.177] - 2026-05-27
 
 ### Added
