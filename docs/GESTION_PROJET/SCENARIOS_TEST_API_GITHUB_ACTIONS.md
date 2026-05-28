@@ -53,6 +53,8 @@ Note 2026-05-27 : le cockpit manager mobile consomme `GET /attendance`, `GET /at
 
 Note 2026-05-27 : les estimations attendance doivent rester compatibles avec le pointage multi-session. Les scenarios API doivent verifier que `GET /me/daily-summary`, `GET /me/monthly-summary`, `GET /employees/{id}/daily-summary` et `GET /employees/{id}/quick-estimate` agregent toutes les sessions d'une journee, exposent `sessions_count`, et ne retombent jamais sur un filtre dur `session_number = 1`.
 
+Note 2026-05-28 : les demandes RH visibles par mobile manager doivent etre decisionnables sans ambiguite. Les scenarios API doivent verifier que `GET /salary-advances` expose `employee`, `employee_name`, `company_id`, `requested_at`, `reason`, `amount`, `repayment_months` et que `GET /absences` expose `employee_name`, `absence_type`, periode, duree et motif. Les actions approve/reject doivent recharger le meme contexte dans la reponse.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
