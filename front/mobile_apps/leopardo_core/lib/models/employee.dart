@@ -16,6 +16,8 @@ class Employee {
   final String? role;
   final String? managerRole;
   final String status;
+  final String workState;
+  final String workStateLabel;
   final String? photoUrl;
   final DateTime? hireDate;
   final bool biometricFaceEnabled;
@@ -50,6 +52,8 @@ class Employee {
     this.role,
     this.managerRole,
     required this.status,
+    this.workState = 'offline',
+    this.workStateLabel = 'Hors ligne',
     this.photoUrl,
     this.hireDate,
     this.biometricFaceEnabled = false,
@@ -121,6 +125,8 @@ class Employee {
       role: json['role'] as String?,
       managerRole: json['manager_role'] as String?,
       status: (json['status'] ?? 'active') as String,
+      workState: (json['work_state'] ?? 'offline') as String,
+      workStateLabel: (json['work_state_label'] ?? 'Hors ligne') as String,
       photoUrl: json['photo_url']?.toString(),
       hireDate:
           hireDateRaw != null

@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.180] - 2026-05-28
+
+### Changed
+
+- API employees : la liste expose maintenant `work_state` / `work_state_label` pour la vue operationnelle manager mobile (present, pause, conge, mission, absent, hors ligne).
+- API employees : la modification des roles RH est reservee au manager principal ; un RH ne peut plus nommer/revoquer un autre RH depuis un PATCH employe.
+- Mobile manager : la liste equipe affiche une synthese operationnelle, le statut terrain de chaque collaborateur et des raccourcis fiche/statistiques/pointages/taches.
+- Mobile manager : le manager principal peut nommer ou revoquer un RH directement depuis la fiche action collaborateur.
+- Documentation : ajout du Plan 53 equipe manager, statuts operationnels et roles RH.
+
 ## [4.16.179] - 2026-05-28
 
 ### Changed
