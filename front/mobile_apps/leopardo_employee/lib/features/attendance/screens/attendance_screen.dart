@@ -150,7 +150,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     if (ref.read(attendanceProvider).isPunching) return;
     HapticFeedback.mediumImpact();
     final state = ref.read(attendanceProvider);
-    final choice = await _choosePunchType(isCheckedIn, state.todaySessions);
+    final choice = await _resolvePunchChoice(isCheckedIn, state.todaySessions);
     if (choice == null) return;
     if (!mounted) return;
 
@@ -191,21 +191,33 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     }
   }
 
-  Future<_PunchChoice?> _choosePunchType(
+  Future<_PunchChoice?> _resolvePunchChoice(
+    bool isCheckedIn,
+    List<AttendanceLog> sessions,
+  ) {
+    final sorted = [...sessions]
+      ..sort((a, b) => a.sessionNumber.compareTo(b.sessionNumber));
+    final openSessions = sorted.where((session) => session.checkOut == null);
+
+    if (!isCheckedIn && sorted.isEmpty) {
+      return Future.value(_PunchChoice.firstArrival);
+    }
+
+    if (isCheckedIn && sorted.length == 1 && openSessions.length == 1) {
+      return Future.value(_PunchChoice.firstDeparture);
+    }
+
+    return _chooseAdvancedPunchType(isCheckedIn, sorted);
+  }
+
+  Future<_PunchChoice?> _chooseAdvancedPunchType(
     bool isCheckedIn,
     List<AttendanceLog> sessions,
   ) {
     final choices =
         isCheckedIn
             ? const [
-              _PunchChoice(
-                workType: 'normal',
-                title: 'Terminer le travail',
-                subtitle: 'Enregistrer le depart de cette session',
-                loadingLabel: 'Envoi du depart',
-                successLabel: 'Depart confirme.',
-                failureLabel: 'Depart non confirme',
-              ),
+              _PunchChoice.firstDeparture,
               _PunchChoice(
                 workType: 'break',
                 title: 'Partir en pause',
@@ -217,22 +229,12 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             ]
             : [
               _PunchChoice(
-                workType: sessions.isEmpty ? 'normal' : 'resume',
-                title: sessions.isEmpty ? 'Arrivee normale' : 'Reprise',
-                subtitle:
-                    sessions.isEmpty
-                        ? 'Demarrer la journee'
-                        : 'Reprendre apres une pause',
-                loadingLabel:
-                    sessions.isEmpty ? 'Envoi de l arrivee' : 'Envoi reprise',
-                successLabel:
-                    sessions.isEmpty
-                        ? 'Arrivee confirmee.'
-                        : 'Reprise confirmee.',
-                failureLabel:
-                    sessions.isEmpty
-                        ? 'Arrivee non confirmee'
-                        : 'Reprise non confirmee',
+                workType: 'resume',
+                title: 'Reprise',
+                subtitle: 'Reprendre apres une pause ou une sortie',
+                loadingLabel: 'Envoi reprise',
+                successLabel: 'Reprise confirmee.',
+                failureLabel: 'Reprise non confirmee',
               ),
               const _PunchChoice(
                 workType: 'overtime',
@@ -1262,6 +1264,24 @@ class _PunchChoice {
   final String loadingLabel;
   final String successLabel;
   final String failureLabel;
+
+  static const firstArrival = _PunchChoice(
+    workType: 'normal',
+    title: 'Arrivee normale',
+    subtitle: 'Demarrer la journee',
+    loadingLabel: 'Envoi de l arrivee',
+    successLabel: 'Arrivee confirmee.',
+    failureLabel: 'Arrivee non confirmee',
+  );
+
+  static const firstDeparture = _PunchChoice(
+    workType: 'normal',
+    title: 'Terminer le travail',
+    subtitle: 'Enregistrer le depart de cette session',
+    loadingLabel: 'Envoi du depart',
+    successLabel: 'Depart confirme.',
+    failureLabel: 'Depart non confirme',
+  );
 
   const _PunchChoice({
     required this.workType,
