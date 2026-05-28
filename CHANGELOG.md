@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.182] - 2026-05-28
+
+### Added
+
+- Mobile core : ajout du composant partage `LeopardoQrCard` avec rendu QR visuel scannable via `qr_flutter`.
+- Mobile employee : l'espace compte affiche maintenant un vrai QR employe et un collage explicite du QR entreprise.
+- Mobile manager : le QR entreprise est rendu comme vrai QR scannable, l'import QR employe facilite le collage et les erreurs d'ajout employe affichent le message API lisible.
+- Documentation : ajout du Plan 54 QR onboarding reel et ajout employe fiable.
+
 ## [4.16.181] - 2026-05-28
 
 ### Fixed
