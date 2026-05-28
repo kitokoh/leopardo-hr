@@ -24,6 +24,7 @@ dependencies:
   firebase_messaging: ^15.2.5
   flutter_local_notifications: ^19.2.1
   json_annotation: ^4.11.0
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
