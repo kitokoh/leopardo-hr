@@ -284,9 +284,9 @@ class CommunicationService
      */
     private function sendPush(Employee $employee, string $title, string $body, array $metadata): string
     {
-        $sent = $this->pushNotifications->sendToEmployee($employee, $title, $body, $metadata);
+        \App\Jobs\SendPushNotificationJob::dispatch($employee->id, $title, $body, $metadata);
 
-        return $sent > 0 ? 'sent' : 'skipped';
+        return 'queued';
     }
 
     private function sendEmail(Employee $employee, string $title, string $body): string
