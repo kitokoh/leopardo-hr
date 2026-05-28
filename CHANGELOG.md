@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.179] - 2026-05-28
+
+### Changed
+
+- API RH : les avances sur salaire exposent maintenant le contexte manager utile (`company_id`, demandeur, email, montant, motif, date, remboursement, decision).
+- Mobile manager : les listes absences et avances affichent clairement le demandeur, le motif, la date, le montant/duree et le contexte avant decision.
+- Mobile manager : les repositories absences, avances et equipe utilisent des timeouts/retry explicites via `requestWithRetry` pour eviter les chargements infinis sur reseau lent ou reveil Render.
+- Documentation : ajout du Plan 52 contexte demandes manager.
+
 ## [4.16.178] - 2026-05-28
 
 ### Changed

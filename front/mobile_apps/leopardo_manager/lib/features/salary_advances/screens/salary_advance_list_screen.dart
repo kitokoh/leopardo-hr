@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
@@ -73,18 +74,24 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                         ? advance.reason!
                         : 'Aucun motif';
                 final months = advance.repaymentMonths;
+                final requester =
+                    advance.employeeName?.trim().isNotEmpty == true
+                        ? advance.employeeName!
+                        : 'Employe #${advance.employeeId}';
 
                 return Semantics(
                   label:
-                      'Avance de $amount, motif : $reason, statut ${_getStatusLabel(advance.status)}.',
+                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance.status)}.',
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListCard(
                       icon: Icons.payments_outlined,
                       iconColor: color,
-                      title: amount,
+                      title: requester,
                       subtitle:
-                          months == null ? reason : '$reason - $months mois',
+                          months == null
+                              ? '$amount - $reason'
+                              : '$amount - $reason - $months mois',
                       trailing: MobileStatusPill(
                         label: _getStatusLabel(advance.status),
                         color: color,
@@ -125,23 +132,64 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     SalaryAdvance advance, {
     required Employee? actor,
   }) {
-    if (advance.status != 'pending') return null;
+    final details = _advanceContext(advance);
+
+    if (advance.status != 'pending') return details;
 
     if (_canDecideAdvance(actor, advance)) {
-      return MobileDecisionActions(
-        approveLabel: 'Approuver',
-        rejectLabel: 'Refuser',
-        onApprove: () => _confirmApproveAdvance(context, ref, advance),
-        onReject: () => _showRejectAdvanceSheet(context, ref, advance.id),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          details,
+          const SizedBox(height: 12),
+          MobileDecisionActions(
+            approveLabel: 'Approuver',
+            rejectLabel: 'Refuser',
+            onApprove: () => _confirmApproveAdvance(context, ref, advance),
+            onReject: () => _showRejectAdvanceSheet(context, ref, advance.id),
+          ),
+        ],
       );
     }
 
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: TextButton.icon(
-        onPressed: () => _confirmCancelAdvance(context, ref, advance.id),
-        icon: const Icon(Icons.close_rounded, size: 16),
-        label: const Text('Annuler la demande'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        details,
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () => _confirmCancelAdvance(context, ref, advance.id),
+            icon: const Icon(Icons.close_rounded, size: 16),
+            label: const Text('Annuler la demande'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _advanceContext(SalaryAdvance advance) {
+    final amount = '${(advance.amount ?? 0).toStringAsFixed(0)} DZD';
+    final reason =
+        advance.reason?.trim().isNotEmpty == true
+            ? advance.reason!.trim()
+            : 'Motif non renseigne';
+    final requestedAt = advance.requestedAt ?? advance.createdAt;
+    final date =
+        requestedAt == null
+            ? 'Date non renseignee'
+            : DateFormat('d MMM yyyy', 'fr_FR').format(requestedAt);
+    final repayment =
+        advance.repaymentMonths == null
+            ? 'Remboursement a definir'
+            : '${advance.repaymentMonths} mois';
+
+    return Text(
+      'Montant : $amount\nDate : $date\nMotif : $reason\nRemboursement : $repayment',
+      style: AppTypography.caption.copyWith(
+        color: MobileSurface.secondary,
+        height: 1.35,
       ),
     );
   }
@@ -211,7 +259,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
           (_) => AlertDialog(
             title: const Text('Approuver cette avance ?'),
             content: Text(
-              'Montant : ${(advance.amount ?? 0).toStringAsFixed(0)} DZD. La decision sera envoyee a l employe.',
+              '${advance.employeeName ?? 'Employe #${advance.employeeId}'} demande ${(advance.amount ?? 0).toStringAsFixed(0)} DZD.\n\nMotif : ${advance.reason?.trim().isNotEmpty == true ? advance.reason!.trim() : 'non renseigne'}\n\nLa decision sera envoyee a l employe.',
             ),
             actions: [
               TextButton(

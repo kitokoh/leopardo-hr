@@ -65,13 +65,17 @@ class AbsenceListScreen extends ConsumerWidget {
                 final color = _getStatusColor(absence.status);
                 final dateLabel =
                     '${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)}';
+                final requester =
+                    absence.employeeName?.trim().isNotEmpty == true
+                        ? absence.employeeName!
+                        : 'Employe #${absence.employeeId}';
 
                 return MobileListCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
-                  title: absence.absenceTypeName ?? 'Absence',
+                  title: requester,
                   subtitle:
-                      '$dateLabel - ${absence.daysCount.toStringAsFixed(1)} j',
+                      '${absence.absenceTypeName ?? 'Absence'} - $dateLabel - ${absence.daysCount.toStringAsFixed(1)} j',
                   trailing: MobileStatusPill(
                     label: _statusLabel(absence.status),
                     color: color,
@@ -117,48 +121,76 @@ class AbsenceListScreen extends ConsumerWidget {
     Absence absence, {
     required Employee? actor,
   }) {
+    final details = _absenceContext(absence);
+
     if (absence.status == 'pending') {
       if (_canDecideAbsence(actor, absence)) {
-        return MobileDecisionActions(
-          approveLabel: 'Approuver',
-          rejectLabel: 'Refuser',
-          onApprove: () => _confirmApproveAbsence(context, ref, absence.id),
-          onReject: () => _showRejectAbsenceSheet(context, ref, absence.id),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            details,
+            const SizedBox(height: 12),
+            MobileDecisionActions(
+              approveLabel: 'Approuver',
+              rejectLabel: 'Refuser',
+              onApprove: () => _confirmApproveAbsence(context, ref, absence),
+              onReject: () => _showRejectAbsenceSheet(context, ref, absence.id),
+            ),
+          ],
         );
       }
 
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton.icon(
-          onPressed: () => _confirmCancelAbsence(context, ref, absence.id),
-          icon: const Icon(Icons.close_rounded, size: 16),
-          label: const Text('Annuler la demande'),
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          details,
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => _confirmCancelAbsence(context, ref, absence.id),
+              icon: const Icon(Icons.close_rounded, size: 16),
+              label: const Text('Annuler la demande'),
+            ),
+          ),
+        ],
       );
     }
 
-    if (absence.reason == null || absence.reason!.trim().isEmpty) return null;
+    return details;
+  }
 
+  Widget _absenceContext(Absence absence) {
+    final reason =
+        absence.reason?.trim().isNotEmpty == true
+            ? absence.reason!.trim()
+            : 'Motif non renseigne';
+    final submittedAt = absence.createdAt;
+    final submittedLabel =
+        submittedAt == null
+            ? 'Date de demande non renseignee'
+            : DateFormat('d MMM yyyy', 'fr_FR').format(submittedAt);
     return Text(
-      absence.reason!,
-      style: AppTypography.caption.copyWith(color: MobileSurface.secondary),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
+      'Demande : $submittedLabel\nMotif : $reason',
+      style: AppTypography.caption.copyWith(
+        color: MobileSurface.secondary,
+        height: 1.35,
+      ),
     );
   }
 
   Future<void> _confirmApproveAbsence(
     BuildContext context,
     WidgetRef ref,
-    int absenceId,
+    Absence absence,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
           (_) => AlertDialog(
             title: const Text('Approuver cette absence ?'),
-            content: const Text(
-              'La demande passera en statut approuve et l employe sera notifie.',
+            content: Text(
+              '${absence.employeeName ?? 'Employe #${absence.employeeId}'} - ${absence.absenceTypeName ?? 'Absence'}\n${_formatDate(absence.startDate)} - ${_formatDate(absence.endDate)} (${absence.daysCount.toStringAsFixed(1)} j)\n\nMotif : ${absence.reason?.trim().isNotEmpty == true ? absence.reason!.trim() : 'non renseigne'}\n\nLa demande passera en statut approuve et l employe sera notifie.',
             ),
             actions: [
               TextButton(
@@ -175,7 +207,7 @@ class AbsenceListScreen extends ConsumerWidget {
     if (confirmed != true) return;
 
     try {
-      await ref.read(absenceRepositoryProvider).approveAbsence(absenceId);
+      await ref.read(absenceRepositoryProvider).approveAbsence(absence.id);
       ref.invalidate(absencesProvider);
       ref.invalidate(leaveBalancesProvider);
       if (!context.mounted) return;
