@@ -38,7 +38,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 
 | Module / route family | P | RH | DEPT | FIN | SUP | EMP | Enforcement notes |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|---|
-| Employees `/employees*` | RW | RW | R limited | R limited | R limited | self R | Employee policies and tenant filters must protect sensitive fields and cross-tenant reads. |
+| Employees `/employees*` | RW role/RH admin | RW except role/RH changes | R limited | R limited | R limited | self R | Employee policies and tenant filters must protect sensitive fields and cross-tenant reads. `role` / `manager_role` changes are principal-only and manager promotion to `principal` remains platform-owned. |
 | Attendance `/attendance*` | RW | RW | R department | - | R team | self RW check-in/out | `Attendance*Test` covers self access, manager access, and 403 cases. |
 | Attendance manager reports `/attendance/anomalies`, `/attendance/monthly-report` | R | R | R scoped | R finance | R team | - | Existing tests assert employee 403 for anomalies/monthly report. |
 | Attendance corrections `/attendance/corrections*` | RW approve/reject | RW approve/reject | - | - | - | create only | `CorrectionWorkflowTest` covers manager decision, employee 403 on queue and tenant isolation. |

@@ -55,6 +55,8 @@ Note 2026-05-27 : les estimations attendance doivent rester compatibles avec le 
 
 Note 2026-05-28 : les demandes RH visibles par mobile manager doivent etre decisionnables sans ambiguite. Les scenarios API doivent verifier que `GET /salary-advances` expose `employee`, `employee_name`, `company_id`, `requested_at`, `reason`, `amount`, `repayment_months` et que `GET /absences` expose `employee_name`, `absence_type`, periode, duree et motif. Les actions approve/reject doivent recharger le meme contexte dans la reponse.
 
+Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `work_state` / `work_state_label` pour les etats `present`, `break`, `leave`, `mission`, `absent`, `offline`. Les scenarios API doivent verifier que ces etats restent scopes au tenant et que seul un manager principal peut modifier `role` / `manager_role` via `PATCH /employees/{employee}`.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
@@ -271,6 +273,7 @@ Note 2026-05-28 : les demandes RH visibles par mobile manager doivent etre decis
 - Auth login / me / logout
 - Auth guardrails: employee archive, company suspended
 - RBAC employees
+- Employees mobile manager : payload `work_state`, principal-only pour nomination/revocation RH, refus RH non principal
 - Isolation tenant
 - Isolation tenant par chaine FK : `WebhookDelivery`, `PaySlipLine`, `ApprovalDecision`, `ExpenseItem` doivent etre filtres via leur parent portant `company_id`
 - Attendance check-in / check-out / history

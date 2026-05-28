@@ -11,12 +11,15 @@ use App\Http\Requests\Api\V1\ArchiveEmployeeRequest;
 use App\Http\Requests\Api\V1\StoreEmployeeRequest;
 use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
+use App\Models\Absence;
+use App\Models\AttendanceLog;
 use App\Models\Employee;
 use App\Services\DataAccessAuditLogger;
 use App\Services\EmployeeService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class EmployeeController extends Controller
 {
@@ -116,6 +119,8 @@ class EmployeeController extends Controller
             ->orderBy('id')
             ->paginate($perPage);
 
+        $this->attachOperationalState($paginator->getCollection());
+
         $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.employee_list_viewed', null, [
             'resource' => 'employees',
             'result_count' => $paginator->count(),
@@ -124,6 +129,89 @@ class EmployeeController extends Controller
         ]);
 
         return EmployeeResource::collection($paginator)->response();
+    }
+
+    /**
+     * @param  Collection<int, Employee>  $employees
+     */
+    private function attachOperationalState(Collection $employees): void
+    {
+        if ($employees->isEmpty()) {
+            return;
+        }
+
+        $employeeIds = $employees->pluck('id')->all();
+        $today = now()->toDateString();
+
+        $approvedAbsenceIds = Absence::query()
+            ->whereIn('employee_id', $employeeIds)
+            ->where('status', 'approved')
+            ->where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->pluck('employee_id')
+            ->map(fn ($id) => (int) $id)
+            ->flip();
+
+        $latestLogs = AttendanceLog::query()
+            ->whereIn('employee_id', $employeeIds)
+            ->whereDate('date', $today)
+            ->orderByDesc('session_number')
+            ->orderByDesc('check_in')
+            ->get()
+            ->groupBy('employee_id')
+            ->map(fn ($logs) => $logs->first());
+
+        $employees->each(function (Employee $employee) use ($approvedAbsenceIds, $latestLogs): void {
+            if ($employee->status !== 'active') {
+                $employee->setAttribute('work_state', 'offline');
+                $employee->setAttribute('work_state_label', 'Hors ligne');
+
+                return;
+            }
+
+            if ($approvedAbsenceIds->has($employee->id)) {
+                $employee->setAttribute('work_state', 'leave');
+                $employee->setAttribute('work_state_label', 'En conge');
+
+                return;
+            }
+
+            /** @var AttendanceLog|null $log */
+            $log = $latestLogs->get($employee->id);
+
+            if (! $log) {
+                $employee->setAttribute('work_state', 'offline');
+                $employee->setAttribute('work_state_label', 'Hors ligne');
+
+                return;
+            }
+
+            if ($log->status === 'absent') {
+                $employee->setAttribute('work_state', 'absent');
+                $employee->setAttribute('work_state_label', 'Absent');
+
+                return;
+            }
+
+            if ($log->check_out === null) {
+                $state = match (true) {
+                    $log->work_type === 'break' => 'break',
+                    in_array($log->work_type, ['mission', 'travel'], true) => 'mission',
+                    default => 'present',
+                };
+                $employee->setAttribute('work_state', $state);
+                $employee->setAttribute('work_state_label', match ($state) {
+                    'break' => 'En pause',
+                    'mission' => 'En mission',
+                    default => 'Present',
+                });
+
+                return;
+            }
+
+            $employee->setAttribute('work_state', 'offline');
+            $employee->setAttribute('work_state_label', 'Hors ligne');
+        });
     }
 
     /**

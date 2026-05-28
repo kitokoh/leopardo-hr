@@ -24,7 +24,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
 | Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Resume mensuel | `GET /api/v1/me/monthly-summary` | employe/manager | `FrontendApiContractTest` |
-| Mobile | Liste equipe RH | `GET /api/v1/employees` | manager principal/RH | `ApiListQueryContractTest`, `FrontendApiContractTest`, `repository_contract_test.dart` |
+| Mobile | Liste equipe RH + statuts operationnels | `GET /api/v1/employees` | manager principal/RH | `ApiListQueryContractTest`, `FrontendApiContractTest`, `EmployeesRbacTest`, `repository_contract_test.dart` |
 | Mobile | Creation employe RH + horaire | `POST /api/v1/employees` | manager principal/RH | `ScheduleControllerTest`, `repository_contract_test.dart` |
 | Mobile | Detail employe RH | `GET /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Mise a jour fiche employe RH | `PUT/PATCH /api/v1/employees/{employee}` | manager principal/RH | `ScheduleControllerTest`, `FrontendApiContractTest` |
