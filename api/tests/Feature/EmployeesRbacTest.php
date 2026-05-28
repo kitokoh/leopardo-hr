@@ -620,7 +620,48 @@ class EmployeesRbacTest extends TestCase
         $response->assertJsonValidationErrors(['matricule']);
     }
 
-    public function test_only_principal_manager_can_change_rh_role_from_employee_update(): void
+    public function test_rh_manager_cannot_change_rh_role_from_employee_update(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $rh = Employee::query()->create([
+            'company_id' => $company->id,
+            'email' => 'rh@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ]);
+        $targetRh = Employee::query()->create([
+            'company_id' => $company->id,
+            'email' => 'target-rh@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ]);
+
+        $rhToken = $rh->createToken('tests')->plainTextToken;
+
+        $this->withHeader('Authorization', "Bearer {$rhToken}")
+            ->patchJson("/api/v1/employees/{$targetRh->id}", [
+                'role' => 'employee',
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['role']);
+    }
+
+    public function test_principal_manager_can_revoke_rh_role_from_employee_update(): void
     {
         $company = Company::query()->create([
             'name' => 'Company A',
@@ -642,14 +683,6 @@ class EmployeesRbacTest extends TestCase
             'manager_role' => 'principal',
             'status' => 'active',
         ]);
-        $rh = Employee::query()->create([
-            'company_id' => $company->id,
-            'email' => 'rh@a.test',
-            'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'rh',
-            'status' => 'active',
-        ]);
         $targetRh = Employee::query()->create([
             'company_id' => $company->id,
             'email' => 'target-rh@a.test',
@@ -659,15 +692,7 @@ class EmployeesRbacTest extends TestCase
             'status' => 'active',
         ]);
 
-        $rhToken = $rh->createToken('tests')->plainTextToken;
         $principalToken = $principal->createToken('tests')->plainTextToken;
-
-        $this->withHeader('Authorization', "Bearer {$rhToken}")
-            ->patchJson("/api/v1/employees/{$targetRh->id}", [
-                'role' => 'employee',
-            ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['role']);
 
         $this->withHeader('Authorization', "Bearer {$principalToken}")
             ->patchJson("/api/v1/employees/{$targetRh->id}", [

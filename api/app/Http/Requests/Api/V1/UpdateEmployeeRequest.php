@@ -89,7 +89,7 @@ class UpdateEmployeeRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {
-            $user = $this->user();
+            $user = auth('sanctum')->user() ?? $this->user();
 
             if (($this->has('role') || $this->has('manager_role')) &&
                 $user?->isManager() &&
