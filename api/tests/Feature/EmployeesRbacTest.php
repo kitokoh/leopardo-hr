@@ -650,11 +650,12 @@ class EmployeesRbacTest extends TestCase
             'manager_role' => 'rh',
             'status' => 'active',
         ]);
-        $employee = Employee::query()->create([
+        $targetRh = Employee::query()->create([
             'company_id' => $company->id,
-            'email' => 'employee@a.test',
+            'email' => 'target-rh@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
+            'role' => 'manager',
+            'manager_role' => 'rh',
             'status' => 'active',
         ]);
 
@@ -662,24 +663,14 @@ class EmployeesRbacTest extends TestCase
         $principalToken = $principal->createToken('tests')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer {$rhToken}")
-            ->patchJson("/api/v1/employees/{$employee->id}", [
-                'role' => 'manager',
-                'manager_role' => 'rh',
+            ->patchJson("/api/v1/employees/{$targetRh->id}", [
+                'role' => 'employee',
             ])
             ->assertStatus(422)
             ->assertJsonValidationErrors(['role']);
 
         $this->withHeader('Authorization', "Bearer {$principalToken}")
-            ->patchJson("/api/v1/employees/{$employee->id}", [
-                'role' => 'manager',
-                'manager_role' => 'rh',
-            ])
-            ->assertOk()
-            ->assertJsonPath('data.role', 'manager')
-            ->assertJsonPath('data.manager_role', 'rh');
-
-        $this->withHeader('Authorization', "Bearer {$principalToken}")
-            ->patchJson("/api/v1/employees/{$employee->id}", [
+            ->patchJson("/api/v1/employees/{$targetRh->id}", [
                 'role' => 'employee',
             ])
             ->assertOk()

@@ -179,7 +179,7 @@ class EmployeeController extends Controller
             /** @var AttendanceLog|null $log */
             $log = $latestLogs->get($employee->id);
 
-            if (! $log) {
+            if (!$log) {
                 $employee->setAttribute('work_state', 'offline');
                 $employee->setAttribute('work_state_label', 'Hors ligne');
 
