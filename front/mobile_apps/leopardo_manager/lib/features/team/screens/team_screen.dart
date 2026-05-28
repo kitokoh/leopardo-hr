@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
+import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_manager/features/schedules/data/schedule_repository.dart';
@@ -961,29 +963,13 @@ class _CompanyQrSheet extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  MobilePanel(
-                    color: MobileSurface.chip,
-                    child: SelectableText(
-                      payload.token,
-                      style: AppTypography.caption.copyWith(
-                        color: MobileSurface.text,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      await Clipboard.setData(
-                        ClipboardData(text: payload.token),
-                      );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('QR copie.')),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.copy_rounded),
-                    label: const Text('Copier le QR'),
+                  LeopardoQrCard(
+                    data: payload.token,
+                    title: 'QR entreprise scannable',
+                    subtitle:
+                        'L employe le scanne depuis son espace compte pour demander son integration.',
+                    expiresAt: payload.expiresAt,
+                    copyLabel: 'Copier aussi le jeton',
                   ),
                 ],
               ),
@@ -1039,6 +1025,18 @@ class _EmployeeQrImportSheetState
             ),
           ),
           const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _pasteFromClipboard,
+                  icon: const Icon(Icons.content_paste_rounded),
+                  label: const Text('Coller le QR scanne'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
           TextField(
             controller: _tokenCtrl,
             minLines: 3,
@@ -1065,6 +1063,19 @@ class _EmployeeQrImportSheetState
         ],
       ),
     );
+  }
+
+  Future<void> _pasteFromClipboard() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim();
+    if (text == null || text.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aucun code QR dans le presse-papiers.')),
+      );
+      return;
+    }
+    setState(() => _tokenCtrl.text = text);
   }
 
   Future<void> _scan() async {
@@ -1832,7 +1843,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
         setState(() => _submitting = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ).showSnackBar(SnackBar(content: Text('Echec : ${_errorMessage(e)}')));
       }
     }
   }
@@ -1858,6 +1869,11 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
 
   double? _parseAmount(String value) {
     return double.tryParse(value.trim().replaceAll(',', '.'));
+  }
+
+  String _errorMessage(Object error) {
+    if (error is ApiException) return error.message;
+    return error.toString();
   }
 
   String _formatDate(DateTime date) {
