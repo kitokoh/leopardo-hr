@@ -302,30 +302,30 @@ jobs:
           fi
           if [[ "${READY}" == "true" ]]; then
             node <<'NODE'
-            const fs = require('fs');
-            const configFile = `${process.env.PROJECT_PATH}/android/app/google-services.json`;
-            const expectedPackage = process.env.ANDROID_PACKAGE;
-            const expectedAppId = process.env.FIREBASE_APP_ID;
-            const secretName = process.env.FIREBASE_APP_ID_SECRET_NAME;
-            const payload = JSON.parse(fs.readFileSync(configFile, 'utf8'));
-            const clients = Array.isArray(payload.client) ? payload.client : [];
-            const match = clients.find((client) => client?.client_info?.android_client_info?.package_name === expectedPackage);
-            if (!match) {
-              console.error(`No Firebase Android client found for ${expectedPackage} in ${configFile}.`);
-              process.exit(1);
-            }
-            const nativeAppId = match?.client_info?.mobilesdk_app_id;
-            if (!nativeAppId) {
-              console.error(`Firebase Android client for ${expectedPackage} does not expose mobilesdk_app_id.`);
-              process.exit(1);
-            }
-            if (nativeAppId !== expectedAppId) {
-              console.error(`${secretName} does not match ${configFile} for ${expectedPackage}.`);
-              console.error(`Expected the secret to equal the google-services.json mobilesdk_app_id for this app.`);
-              process.exit(1);
-            }
-            console.log(`Firebase target verified for ${process.env.APP_NAME}: ${expectedPackage}.`);
-            NODE
+          const fs = require('fs');
+          const configFile = `${process.env.PROJECT_PATH}/android/app/google-services.json`;
+          const expectedPackage = process.env.ANDROID_PACKAGE;
+          const expectedAppId = process.env.FIREBASE_APP_ID;
+          const secretName = process.env.FIREBASE_APP_ID_SECRET_NAME;
+          const payload = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+          const clients = Array.isArray(payload.client) ? payload.client : [];
+          const match = clients.find((client) => client?.client_info?.android_client_info?.package_name === expectedPackage);
+          if (!match) {
+            console.error(`No Firebase Android client found for ${expectedPackage} in ${configFile}.`);
+            process.exit(1);
+          }
+          const nativeAppId = match?.client_info?.mobilesdk_app_id;
+          if (!nativeAppId) {
+            console.error(`Firebase Android client for ${expectedPackage} does not expose mobilesdk_app_id.`);
+            process.exit(1);
+          }
+          if (nativeAppId !== expectedAppId) {
+            console.error(`${secretName} does not match ${configFile} for ${expectedPackage}.`);
+            console.error(`Expected the secret to equal the google-services.json mobilesdk_app_id for this app.`);
+            process.exit(1);
+          }
+          console.log(`Firebase target verified for ${process.env.APP_NAME}: ${expectedPackage}.`);
+          NODE
             {
               echo "### Firebase target - ${APP_NAME}"
               echo "- Android package: \`${ANDROID_PACKAGE}\`"
