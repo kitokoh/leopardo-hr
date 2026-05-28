@@ -107,6 +107,10 @@ class EmployeeService
             unset($payload['status']);
         }
 
+        if (($payload['role'] ?? null) === 'employee') {
+            $payload['manager_role'] = null;
+        }
+
         if (array_key_exists('extra_data', $payload)) {
             $payload['extra_data'] = $this->normalizeExtraData($this->arrayValue($payload, 'extra_data'));
         }
