@@ -6,14 +6,25 @@ class AbsenceRepository {
 
   AbsenceRepository(this.apiClient);
 
+  static const _readTimeout = Duration(seconds: 8);
+  static const _actionTimeout = Duration(seconds: 10);
+
   Future<List<Absence>> getMyAbsences() async {
-    final response = await apiClient.dio.get('/absences');
+    final response = await apiClient.requestWithRetry(
+      '/absences',
+      maxRetriesOverride: 1,
+      timeoutOverride: _readTimeout,
+    );
     final items = response.data['data'] as List;
     return items.map((e) => Absence.fromJson(e)).toList();
   }
 
   Future<List<Map<String, dynamic>>> getLeaveBalances() async {
-    final response = await apiClient.dio.get('/leave-balances');
+    final response = await apiClient.requestWithRetry(
+      '/leave-balances',
+      maxRetriesOverride: 1,
+      timeoutOverride: _readTimeout,
+    );
     final items = response.data['data'] as List;
     return items.cast<Map<String, dynamic>>();
   }
@@ -24,25 +35,38 @@ class AbsenceRepository {
     required DateTime endDate,
     String? reason,
   }) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/absences',
+      method: 'POST',
       data: {
         'absence_type_id': absenceTypeId,
         'start_date': startDate.toIso8601String().split('T')[0],
         'end_date': endDate.toIso8601String().split('T')[0],
         'reason': reason,
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
     return Absence.fromJson(response.data['data']);
   }
 
   Future<Absence> cancelAbsence(int absenceId) async {
-    final response = await apiClient.dio.delete('/absences/$absenceId');
+    final response = await apiClient.requestWithRetry(
+      '/absences/$absenceId',
+      method: 'DELETE',
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
     return Absence.fromJson(response.data['data']);
   }
 
   Future<Absence> approveAbsence(int absenceId) async {
-    final response = await apiClient.dio.put('/absences/$absenceId/approve');
+    final response = await apiClient.requestWithRetry(
+      '/absences/$absenceId/approve',
+      method: 'PUT',
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
     return Absence.fromJson(response.data['data']);
   }
 
@@ -50,9 +74,12 @@ class AbsenceRepository {
     required int absenceId,
     required String reason,
   }) async {
-    final response = await apiClient.dio.put(
+    final response = await apiClient.requestWithRetry(
       '/absences/$absenceId/reject',
+      method: 'PUT',
       data: {'rejected_reason': reason.trim()},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
     return Absence.fromJson(response.data['data']);
   }
