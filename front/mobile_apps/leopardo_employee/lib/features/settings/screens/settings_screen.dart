@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/settings/data/biometric_enrollment.dart';
@@ -396,7 +397,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 16),
           FutureBuilder<EmployeeQrPayload>(
-            future: ref.read(settingsRepositoryProvider).loadEmployeeQrPayload(),
+            future:
+                ref.read(settingsRepositoryProvider).loadEmployeeQrPayload(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const LinearProgressIndicator(minHeight: 2);
@@ -414,35 +416,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  MobilePanel(
-                    color: MobileSurface.chip,
-                    padding: const EdgeInsets.all(12),
-                    child: SelectableText(
-                      qr.token,
-                      maxLines: 4,
-                      style: AppTypography.caption.copyWith(
-                        color: MobileSurface.text,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: qr.token));
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('QR employe copie.')),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.copy_rounded),
-                    label: const Text('Copier mon QR'),
+                  LeopardoQrCard(
+                    data: qr.token,
+                    title: 'Mon QR employe',
+                    subtitle:
+                        'Le manager le scanne pour pre-remplir une invitation.',
+                    expiresAt: qr.expiresAt,
+                    copyLabel: 'Copier aussi le jeton',
                   ),
                 ],
               );
             },
           ),
           const SizedBox(height: 18),
+          OutlinedButton.icon(
+            onPressed: () async {
+              final data = await Clipboard.getData(Clipboard.kTextPlain);
+              final text = data?.text?.trim();
+              if (text == null || text.isEmpty) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Aucun QR entreprise dans le presse-papiers.',
+                    ),
+                  ),
+                );
+                return;
+              }
+              _companyQrController.text = text;
+            },
+            icon: const Icon(Icons.content_paste_rounded),
+            label: const Text('Coller le QR entreprise'),
+          ),
+          const SizedBox(height: 10),
           TextField(
             controller: _companyQrController,
             minLines: 2,
@@ -972,9 +979,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _submitCompanyQr(BuildContext context) async {
     final token = _companyQrController.text.trim();
     if (token.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Collez le QR entreprise.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Collez le QR entreprise.')));
       return;
     }
 
