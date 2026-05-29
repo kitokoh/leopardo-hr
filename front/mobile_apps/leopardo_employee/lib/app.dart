@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -205,6 +206,19 @@ class LeopardoApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      final previousEmployeeId = previous?.employee?.id;
+      final currentEmployeeId = next.employee?.id;
+
+      if (currentEmployeeId != null && currentEmployeeId != previousEmployeeId) {
+        unawaited(
+          ref
+              .read(pushNotificationServiceProvider)
+              .initialize(apiClient: ref.read(apiClientProvider)),
+        );
+      }
+    });
+
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
