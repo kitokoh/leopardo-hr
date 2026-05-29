@@ -25,6 +25,24 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   final _managerEmail = TextEditingController();
   bool _submitting = false;
 
+  String? _required(String? value) =>
+      value == null || value.trim().isEmpty ? 'Champ requis' : null;
+
+  String? _emailValidator(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return 'Champ requis';
+    if (!trimmed.contains('@') || !trimmed.contains('.')) {
+      return 'Email invalide';
+    }
+    return null;
+  }
+
+  String? _countryValidator(String? value) {
+    final trimmed = value?.trim().toUpperCase() ?? '';
+    if (trimmed.length != 2) return 'Code pays ISO sur 2 lettres';
+    return null;
+  }
+
   @override
   void dispose() {
     for (final controller in [
@@ -89,14 +107,37 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           child: MobilePanel(
             child: Column(
               children: [
-                _field(_name, 'Nom entreprise', Icons.business_rounded),
-                _field(_email, 'Email entreprise', Icons.mail_rounded),
+                _field(
+                  _name,
+                  'Nom entreprise',
+                  Icons.business_rounded,
+                  validator: _required,
+                ),
+                _field(
+                  _email,
+                  'Email entreprise',
+                  Icons.mail_rounded,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: _emailValidator,
+                ),
                 Row(
                   children: [
-                    Expanded(child: _field(_country, 'Pays', Icons.flag)),
+                    Expanded(
+                      child: _field(
+                        _country,
+                        'Pays',
+                        Icons.flag,
+                        validator: _countryValidator,
+                      ),
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: _field(_city, 'Ville', Icons.location_city),
+                      child: _field(
+                        _city,
+                        'Ville',
+                        Icons.location_city,
+                        validator: _required,
+                      ),
                     ),
                   ],
                 ),
@@ -104,16 +145,20 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
                   _managerFirstName,
                   'Prenom manager principal',
                   Icons.person_rounded,
+                  validator: _required,
                 ),
                 _field(
                   _managerLastName,
                   'Nom manager principal',
                   Icons.person_rounded,
+                  validator: _required,
                 ),
                 _field(
                   _managerEmail,
                   'Email manager principal',
                   Icons.alternate_email_rounded,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: _emailValidator,
                 ),
                 const SizedBox(height: 14),
                 MobilePrimaryAction(
@@ -129,11 +174,18 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label, IconData icon) {
+  Widget _field(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         style: const TextStyle(color: MobileSurface.text),
         decoration: InputDecoration(
           labelText: label,
@@ -142,9 +194,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           fillColor: MobileSurface.chip,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        validator:
-            (value) =>
-                value == null || value.trim().isEmpty ? 'Champ requis' : null,
+        validator: validator,
       ),
     );
   }
