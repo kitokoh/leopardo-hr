@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_manager/app.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
@@ -96,7 +97,12 @@ class StaticAuthRepository extends AuthRepository {
 }
 
 class StaticAuthNotifier extends AuthNotifier {
-  StaticAuthNotifier(AuthState initialState) : super(StaticAuthRepository()) {
+  StaticAuthNotifier(AuthState initialState)
+    : super(
+        StaticAuthRepository(),
+        PushNotificationService(),
+        ApiClient(FakeSecureStorage(), FakeAppPreferences()),
+      ) {
     state = initialState;
   }
 
