@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 
 import '../../core/platform_providers.dart';
 import '../platform/platform_models.dart';
@@ -9,12 +10,14 @@ class PlatformAuthState {
     this.isBootstrapping = true,
     this.isSubmitting = false,
     this.error,
+    this.requiresTwoFactor = false,
   });
 
   final PlatformAdminUser? user;
   final bool isBootstrapping;
   final bool isSubmitting;
   final String? error;
+  final bool requiresTwoFactor;
 
   bool get isAuthenticated => user != null;
 
@@ -23,6 +26,7 @@ class PlatformAuthState {
     bool? isBootstrapping,
     bool? isSubmitting,
     String? error,
+    bool? requiresTwoFactor,
     bool clearUser = false,
     bool clearError = false,
   }) {
@@ -31,6 +35,7 @@ class PlatformAuthState {
       isBootstrapping: isBootstrapping ?? this.isBootstrapping,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       error: clearError ? null : error ?? this.error,
+      requiresTwoFactor: requiresTwoFactor ?? this.requiresTwoFactor,
     );
   }
 }
@@ -56,6 +61,7 @@ class PlatformAuthController extends Notifier<PlatformAuthState> {
         clearUser: true,
         isBootstrapping: false,
         clearError: true,
+        requiresTwoFactor: false,
       );
     }
   }
@@ -74,8 +80,21 @@ class PlatformAuthController extends Notifier<PlatformAuthState> {
             password: password,
             twoFactorCode: twoFactorCode,
           );
-      state = state.copyWith(user: user, isSubmitting: false);
+      state = state.copyWith(
+        user: user,
+        isSubmitting: false,
+        requiresTwoFactor: false,
+      );
     } catch (error) {
+      if (error is ApiException && error.code == 'TWO_FA_REQUIRED') {
+        state = state.copyWith(
+          isSubmitting: false,
+          requiresTwoFactor: true,
+          error: error.message,
+        );
+        return;
+      }
+
       state = state.copyWith(
         isSubmitting: false,
         error: error.toString().replaceFirst('Exception: ', ''),
@@ -85,6 +104,10 @@ class PlatformAuthController extends Notifier<PlatformAuthState> {
 
   Future<void> logout() async {
     await ref.read(platformRepositoryProvider).logout();
-    state = state.copyWith(clearUser: true, clearError: true);
+    state = state.copyWith(
+      clearUser: true,
+      clearError: true,
+      requiresTwoFactor: false,
+    );
   }
 }
