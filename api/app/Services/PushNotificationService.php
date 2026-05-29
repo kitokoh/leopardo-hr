@@ -93,7 +93,7 @@ class PushNotificationService
                 ];
 
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Authorization' => 'Bearer '.$accessToken,
                     'Content-Type' => 'application/json',
                 ])->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
 
@@ -114,7 +114,7 @@ class PushNotificationService
             }
         }
 
-        if (!empty($failedTokens)) {
+        if (! empty($failedTokens)) {
             $this->handleFailedTokens($failedTokens);
         }
 
@@ -139,7 +139,7 @@ class PushNotificationService
         }
 
         $credentials = json_decode($credentialsJson, true);
-        if (!$credentials || !isset($credentials['client_email'], $credentials['private_key'])) {
+        if (! $credentials || ! isset($credentials['client_email'], $credentials['private_key'])) {
             return null;
         }
 
@@ -157,10 +157,10 @@ class PushNotificationService
         $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
 
         $signature = '';
-        openssl_sign($base64UrlHeader . '.' . $base64UrlPayload, $signature, $credentials['private_key'], 'sha256WithRSAEncryption');
+        openssl_sign($base64UrlHeader.'.'.$base64UrlPayload, $signature, $credentials['private_key'], 'sha256WithRSAEncryption');
         $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
 
-        $jwt = $base64UrlHeader . '.' . $base64UrlPayload . '.' . $base64UrlSignature;
+        $jwt = $base64UrlHeader.'.'.$base64UrlPayload.'.'.$base64UrlSignature;
 
         $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',

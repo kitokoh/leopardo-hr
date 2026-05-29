@@ -3,6 +3,7 @@
 namespace App\Services\Communication;
 
 use App\Contracts\Communication\MessageProviderInterface;
+use App\Jobs\SendPushNotificationJob;
 use App\Models\CommunicationEvent;
 use App\Models\Employee;
 use App\Models\Notification;
@@ -13,6 +14,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class CommunicationService
 {
@@ -267,7 +269,7 @@ class CommunicationService
             $this->recordEvent($employee, $notification, $templateKey, $channel, $status, $metadata);
 
             return $status;
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             Log::warning('Communication channel dispatch failed', [
                 'employee_id' => $employee->id,
                 'channel' => $channel,
@@ -284,7 +286,7 @@ class CommunicationService
      */
     private function sendPush(Employee $employee, string $title, string $body, array $metadata): string
     {
-        \App\Jobs\SendPushNotificationJob::dispatch($employee->id, $title, $body, $metadata);
+        SendPushNotificationJob::dispatch($employee->id, $title, $body, $metadata);
 
         return 'queued';
     }
