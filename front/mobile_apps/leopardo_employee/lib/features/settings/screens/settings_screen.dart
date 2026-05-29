@@ -11,6 +11,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_employee/features/settings/data/settings_repository.dart';
@@ -166,6 +167,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _buildCabinetSection(),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
+          const SizedBox(height: 20),
+          _buildNotificationSection(context),
           const SizedBox(height: 20),
           _buildPasswordSection(context, authState),
           const SizedBox(height: 20),
@@ -973,6 +976,161 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNotificationSection(BuildContext context) {
+    return FutureBuilder<NotificationPreferences>(
+      future: ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: MobileSurface.cardDecoration(),
+            child: const LinearProgressIndicator(minHeight: 3),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: MobileSurface.cardDecoration(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Notifications',
+                  style: AppTypography.subtitle.copyWith(
+                    color: MobileSurface.text,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Preferences indisponibles pour le moment. Tire pour recharger plus tard.',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: MobileSurface.secondary,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        var preferences = snapshot.data!;
+        var saving = false;
+
+        return StatefulBuilder(
+          builder: (context, setLocalState) {
+            Future<void> save() async {
+              setLocalState(() => saving = true);
+              try {
+                final updated = await ref
+                    .read(settingsRepositoryProvider)
+                    .saveNotificationPreferences(preferences);
+                if (!context.mounted) return;
+                setLocalState(() {
+                  preferences = updated;
+                  saving = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Preferences notifications mises a jour.'),
+                  ),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                setLocalState(() => saving = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Mise a jour impossible : $e')),
+                );
+              }
+            }
+
+            Widget tile({
+              required String title,
+              required String subtitle,
+              required bool value,
+              required ValueChanged<bool> onChanged,
+            }) {
+              return SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                title: Text(title),
+                subtitle: Text(subtitle),
+                value: value,
+                activeThumbColor: AppColors.rh,
+                onChanged:
+                    saving
+                        ? null
+                        : (next) {
+                          setLocalState(() => onChanged(next));
+                          save();
+                        },
+              );
+            }
+
+            return Container(
+              padding: const EdgeInsets.all(20),
+              decoration: MobileSurface.cardDecoration(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notifications',
+                    style: AppTypography.subtitle.copyWith(
+                      color: MobileSurface.text,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Choisissez les canaux utiles sans perdre les alertes RH importantes.',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: MobileSurface.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  tile(
+                    title: 'Alertes dans l application',
+                    subtitle: 'Taches, decisions RH, pointage et rappels.',
+                    value: preferences.appEnabled,
+                    onChanged:
+                        (next) =>
+                            preferences = preferences.copyWith(appEnabled: next),
+                  ),
+                  tile(
+                    title: 'Push mobile',
+                    subtitle: 'Notifications immediates sur ce telephone.',
+                    value: preferences.pushEnabled,
+                    onChanged:
+                        (next) =>
+                            preferences = preferences.copyWith(pushEnabled: next),
+                  ),
+                  tile(
+                    title: 'Email',
+                    subtitle: 'Resume et confirmations importantes.',
+                    value: preferences.emailEnabled,
+                    onChanged:
+                        (next) => preferences =
+                            preferences.copyWith(emailEnabled: next),
+                  ),
+                  tile(
+                    title: 'Heures calmes',
+                    subtitle: 'Limiter les canaux externes hors horaires.',
+                    value: preferences.quietHoursEnabled,
+                    onChanged:
+                        (next) => preferences =
+                            preferences.copyWith(quietHoursEnabled: next),
+                  ),
+                  if (saving)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: LinearProgressIndicator(minHeight: 3),
+                    ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

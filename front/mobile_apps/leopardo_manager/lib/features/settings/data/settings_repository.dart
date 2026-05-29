@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
+import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_manager/features/settings/data/biometric_enrollment.dart';
 
 class SettingsRepository {
@@ -43,6 +44,34 @@ class SettingsRepository {
         'new_password': newPassword,
         'new_password_confirmation': confirmation,
       },
+    );
+  }
+
+  Future<NotificationPreferences> loadNotificationPreferences() async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/notification-preferences',
+      timeoutOverride: const Duration(seconds: 12),
+    );
+
+    return NotificationPreferences.fromJson(
+      ((response.data ?? const <String, dynamic>{})['data'] as Map)
+          .cast<String, dynamic>(),
+    );
+  }
+
+  Future<NotificationPreferences> saveNotificationPreferences(
+    NotificationPreferences preferences,
+  ) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/notification-preferences',
+      method: 'PATCH',
+      data: preferences.toJson(),
+      timeoutOverride: const Duration(seconds: 12),
+    );
+
+    return NotificationPreferences.fromJson(
+      ((response.data ?? const <String, dynamic>{})['data'] as Map)
+          .cast<String, dynamic>(),
     );
   }
 
