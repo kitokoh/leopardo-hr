@@ -10,6 +10,8 @@
 - API : intégration de Firebase HTTP v1 en natif dans `PushNotificationService` avec cache de 50 minutes pour le JWT OAuth 2.0.
 - Documentation : mise à jour des guides et du walkthrough pour l'intégration mobile HTTP v1.
 
+- Mobile employee/manager : synchronisation automatique du token FCM avec `/api/v1/device-tokens` apres authentification ou refresh token Firebase.
+
 ## [4.16.182] - 2026-05-28
 
 - Mobile core : ajout du composant partage `LeopardoQrCard` avec rendu QR visuel scannable via `qr_flutter`.
