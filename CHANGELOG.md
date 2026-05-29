@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.189] - 2026-05-29
+
+### Added
+
+- Documentation : ajout des Plans 57 a 65 pour cadrer les retours testeurs produit sur documentation API/developer ecosystem, branding tenant, positionnement Workforce OS, avances double validation, solde employe, PDF asynchrones, architecture pics de charge, cloture/timezone/GPS et paiement en masse/signature.
+
 ## [4.16.188] - 2026-05-29
 
 ### Fixed
