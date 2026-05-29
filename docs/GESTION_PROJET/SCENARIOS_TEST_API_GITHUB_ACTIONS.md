@@ -188,8 +188,8 @@ Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `
 ### 10. Notifications / evenements / audit
 
 - Evenement metier declenche la notification attendue
-- Liste notifications supporte filtre `type`, filtre `unread`, tri chronologique allowliste, pagination, `unread_count` et payload vide stable
-- Endpoint de lecture marque lu / non lu correctement
+- Liste notifications supporte filtre `type`, filtre `unread` et alias mobile `unread_only`, tri chronologique allowliste, pagination, `unread_count` et payload vide stable
+- Endpoints mobiles de lecture (`PUT /notifications/{id}/read`, `PUT /notifications/read-all`) et suppression (`DELETE /notifications/{id}`) restent scopes a l'utilisateur authentifie et auditent `communication_events`
 - `POST /api/v1/client-events` persiste uniquement les evenements UX allowlistes, exige auth + tenant, minimise les proprietes et refuse les evenements non fiables comme `login_failed`
 - `GET/PATCH /api/v1/notification-preferences` cree et met a jour les preferences de canaux de l'utilisateur authentifie, avec audit `communication_events`
 - `GET /api/v1/communication/analytics` est reserve aux managers `principal` et `rh`, retourne uniquement les agregats du tenant courant, et refuse les employes.
@@ -627,6 +627,7 @@ Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `
 - `GET /api/v1/notifications/unread` non-lues uniquement
 - `PATCH /api/v1/notifications/{id}/read` marquer comme lue
 - `POST /api/v1/notifications/mark-all-read` tout marquer comme lu
+- `PUT /api/v1/notifications/{id}/read`, `PUT /api/v1/notifications/read-all` et `DELETE /api/v1/notifications/{id}` gardent les alias mobiles employee/manager
 - Couverture Feature requise : seules les notifications de l'employe authentifie sont visibles/modifiees
 
 ### Exports

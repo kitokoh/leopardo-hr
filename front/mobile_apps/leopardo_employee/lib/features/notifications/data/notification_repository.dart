@@ -6,17 +6,45 @@ class NotificationRepository {
 
   NotificationRepository(this.apiClient);
 
-  Future<List<AppNotification>> getMyNotifications() async {
-    final response = await apiClient.dio.get('/notifications');
-    final items = response.data['data'] as List;
-    return items.map((e) => AppNotification.fromJson(e)).toList();
+  Future<List<AppNotification>> getMyNotifications({
+    bool unreadOnly = false,
+    int perPage = 30,
+  }) async {
+    final response = await apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/notifications',
+      queryParameters: {'unread': unreadOnly, 'per_page': perPage},
+      timeoutOverride: const Duration(seconds: 12),
+    );
+
+    return _decodeNotifications(response.data);
   }
 
   Future<void> markAllAsRead() async {
-    await apiClient.dio.put('/notifications/read-all');
+    await apiClient.requestWithRetry<void>(
+      '/notifications/read-all',
+      method: 'PUT',
+      timeoutOverride: const Duration(seconds: 12),
+    );
   }
 
   Future<void> markAsRead(int id) async {
-    await apiClient.dio.put('/notifications/$id/read');
+    await apiClient.requestWithRetry<void>(
+      '/notifications/$id/read',
+      method: 'PUT',
+      timeoutOverride: const Duration(seconds: 12),
+    );
+  }
+
+  List<AppNotification> _decodeNotifications(dynamic payload) {
+    final rawItems =
+        payload is Map<String, dynamic> ? payload['data'] : payload;
+    if (rawItems is! List) {
+      return const <AppNotification>[];
+    }
+
+    return rawItems
+        .whereType<Map>()
+        .map((item) => AppNotification.fromJson(item.cast<String, dynamic>()))
+        .toList(growable: false);
   }
 }

@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.185] - 2026-05-29
+
+### Changed
+
+- API notifications : compatibilite mobile renforcee avec le filtre `unread_only`, suppression scoppée utilisateur via `DELETE /api/v1/notifications/{notification}` et audit `communication_events`.
+- Mobile employee/manager : les listes notifications utilisent `requestWithRetry`, timeouts courts et parsing robuste des collections paginees Laravel pour eviter les spinners vides apres reveil Render.
+- Mobile manager : le module notifications consomme le filtre canonique `unread` et garde les actions lire/tout lire/supprimer sur les endpoints mobiles versionnes.
+
 ## [4.16.184] - 2026-05-29
 
 ### Changed

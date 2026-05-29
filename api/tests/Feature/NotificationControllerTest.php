@@ -64,6 +64,11 @@ class NotificationControllerTest extends TestCase
             ->assertOk()
             ->assertJsonCount(2, 'data')
             ->assertJsonPath('meta.unread_count', 1);
+
+        $this->getJson('/api/v1/notifications?unread_only=true')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Absence approved');
     }
 
     public function test_unread_endpoint_returns_only_unread_notifications(): void
@@ -149,6 +154,48 @@ class NotificationControllerTest extends TestCase
         $this->assertTrue($second->fresh()->is_read);
         $this->assertFalse($other->fresh()->is_read);
         $this->assertSame(2, CommunicationEvent::query()->where('employee_id', $employee->id)->count());
+    }
+
+    public function test_mobile_notification_mutation_aliases_and_delete_are_scoped(): void
+    {
+        [$company, $employee, $otherEmployee] = $this->notificationFixture();
+
+        $owned = Notification::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'type' => 'task',
+            'title' => 'Task assigned',
+            'body' => 'A new task was assigned.',
+            'created_at' => now(),
+        ]);
+        $other = Notification::create([
+            'company_id' => $company->id,
+            'employee_id' => $otherEmployee->id,
+            'type' => 'task',
+            'title' => 'Other task',
+            'body' => 'Must stay private.',
+            'created_at' => now(),
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->putJson("/api/v1/notifications/{$owned->id}/read")
+            ->assertOk()
+            ->assertJsonPath('data.is_read', true);
+
+        $this->putJson('/api/v1/notifications/read-all')
+            ->assertOk()
+            ->assertJsonPath('message', 'All notifications marked as read.');
+
+        $this->deleteJson("/api/v1/notifications/{$other->id}")
+            ->assertNotFound();
+
+        $this->deleteJson("/api/v1/notifications/{$owned->id}")
+            ->assertOk()
+            ->assertJsonPath('message', 'Notification deleted.');
+
+        $this->assertDatabaseMissing('notifications', ['id' => $owned->id]);
+        $this->assertDatabaseHas('notifications', ['id' => $other->id]);
     }
 
     /**
