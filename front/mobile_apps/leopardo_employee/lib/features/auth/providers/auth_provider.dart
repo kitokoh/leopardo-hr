@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
@@ -27,8 +29,11 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
+  final PushNotificationService _pushNotifications;
+  final ApiClient _apiClient;
 
-  AuthNotifier(this._repository) : super(AuthState()) {
+  AuthNotifier(this._repository, this._pushNotifications, this._apiClient)
+    : super(AuthState()) {
     checkAuth();
   }
 
@@ -97,6 +102,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
+    await _pushNotifications.unregisterCurrentToken(apiClient: _apiClient);
     await _repository.logout();
     state = AuthState(); // reset completely
   }
@@ -173,5 +179,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref.watch(authRepositoryProvider));
+  return AuthNotifier(
+    ref.watch(authRepositoryProvider),
+    ref.watch(pushNotificationServiceProvider),
+    ref.watch(apiClientProvider),
+  );
 });
