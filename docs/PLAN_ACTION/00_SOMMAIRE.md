@@ -42,6 +42,35 @@
 | 26 | `26_PLAN_MOBILE_MULTI_APP_PRODUCTION.md` | **NOUVEAU 2026-05-26** - Durcissement production de la structure mobile employee/manager |
 | 27 | `27_PLAN_MOBILE_RELEASE_READINESS.md` | **NOUVEAU 2026-05-26** - Readiness App Store / Play Store et verification workflows mobiles |
 
+## Plans operationnels ajoutes apres retours testeurs 2026-05-29
+
+Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils sont volontairement separes en lots coherents pour eviter les implementations inachevees : chaque agent doit choisir un plan, livrer ses lots dans l'ordre, mettre a jour `CHANGELOG.md`, `AGENTS.md` si une lecon durable apparait, puis pousser via PR avant de passer au plan suivant.
+
+| # | Fichier | Objectif |
+|---|---------|----------|
+| 57 | `57_PLAN_API_DOCS_ECOSYSTEME_DEVELOPPEUR.md` | Documentation API professionnelle, OpenAPI, API Explorer, erreurs standard et ecosysteme developpeur |
+| 58 | `58_PLAN_TENANT_BRANDING_PREMIUM.md` | Personnalisation entreprise : logo, couleurs, identite visuelle et experience premium tenant-scope |
+| 59 | `59_PLAN_POSITIONNEMENT_WORKFORCE_OS.md` | Requalification strategique du produit vers une proposition Workforce OS / Company OS mobile-first |
+| 60 | `60_PLAN_AVANCES_DOUBLE_VALIDATION.md` | Workflow avance salaire securise : validation manager, paiement declare, confirmation employee |
+| 61 | `61_PLAN_SOLDE_EMPLOYE_CYCLE_PAIE.md` | Solde employe, cycles de paie et paie simplifiee mobile-first |
+| 62 | `62_PLAN_PDF_BORDEREAUX_ASYNC.md` | Bordereaux, recus et justificatifs PDF generes en arriere-plan |
+| 63 | `63_PLAN_ARCHITECTURE_HEURES_POINTE.md` | Architecture pics de charge : Redis, cache, queues, batch jobs, k6 |
+| 64 | `64_PLAN_CLOTURE_TIMEZONE_GPS.md` | Cloture automatique des journees, timezones correctes et geofence GPS douce |
+| 65 | `65_PLAN_PAIEMENT_MASSE_SIGNATURE_NUMERIQUE.md` | Paiements en masse, confirmations employees, audit et preparation signature numerique |
+
+### Ordre d'execution recommande
+
+1. **Plan 57** : stabiliser la documentation API, les contrats JSON et la vision developpeur avant d'exposer davantage de workflows.
+2. **Plan 60** : securiser les avances, car le workflow financier actuel est deja utilise par les testeurs.
+3. **Plan 61 + Plan 62** : construire le solde employe et les documents de paiement sans bloquer l'application.
+4. **Plan 63** : deplacer les traitements lourds vers queues/cache/batch avant d'augmenter la charge marketing.
+5. **Plan 64** : rendre le pointage fiable en conditions reelles multi-pays, GPS et oublis de depart.
+6. **Plan 65** : ajouter paiement en masse, confirmations employees et preparation signature.
+7. **Plan 58** : personnalisation premium tenant une fois le socle operationnel stable.
+8. **Plan 59** : aligner la vitrine, le pricing et le storytelling sur ce qui est reellement livre.
+
+Chaque plan doit sortir avec son changement code/documentation, ses tests ou preuves CI, une entree `CHANGELOG.md` et, si une lecon durable apparait, une entree `AGENTS.md`.
+
 ---
 
 ## Etat actuel du projet (audit 2026-05-11 — post sprints 1-18)
