@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:leopardo_core/core/api/api_client.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -20,12 +23,23 @@ class PushNotificationService {
       FlutterLocalNotificationsPlugin();
 
   String? _deviceToken;
+  ApiClient? _apiClient;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  bool _initialized = false;
+
   String? get deviceToken => _deviceToken;
 
   Function(RemoteMessage)? onMessageReceived;
   Function(RemoteMessage)? onMessageOpenedApp;
 
-  Future<void> initialize() async {
+  Future<void> initialize({ApiClient? apiClient}) async {
+    _apiClient = apiClient ?? _apiClient;
+
+    if (_initialized) {
+      await _syncTokenWithBackend(_deviceToken);
+      return;
+    }
+
     try {
       await Firebase.initializeApp();
     } catch (e) {
@@ -50,6 +64,7 @@ class PushNotificationService {
     await _initLocalNotifications();
     await _getToken();
     _listenToMessages();
+    _initialized = true;
   }
 
   Future<void> _initLocalNotifications() async {
@@ -91,13 +106,38 @@ class PushNotificationService {
     try {
       _deviceToken = await _fcm.getToken();
       debugPrint('FCM Token: $_deviceToken');
+      await _syncTokenWithBackend(_deviceToken);
 
-      _fcm.onTokenRefresh.listen((newToken) {
+      await _tokenRefreshSubscription?.cancel();
+      _tokenRefreshSubscription = _fcm.onTokenRefresh.listen((newToken) {
         _deviceToken = newToken;
         debugPrint('FCM Token refreshed: $newToken');
+        unawaited(_syncTokenWithBackend(newToken));
       });
     } catch (e) {
       debugPrint('Failed to get FCM token: $e');
+    }
+  }
+
+  Future<void> _syncTokenWithBackend(String? token) async {
+    final apiClient = _apiClient;
+    if (token == null || apiClient == null) return;
+
+    try {
+      final platform =
+          Platform.isIOS ? 'ios' : (Platform.isAndroid ? 'android' : 'web');
+      await apiClient.requestWithRetry(
+        '/device-tokens',
+        method: 'POST',
+        data: {
+          'token': token,
+          'platform': platform,
+          'device_name': Platform.operatingSystemVersion,
+        },
+      );
+      debugPrint('FCM Token synced with backend');
+    } catch (e) {
+      debugPrint('Failed to sync FCM token with backend: $e');
     }
   }
 
