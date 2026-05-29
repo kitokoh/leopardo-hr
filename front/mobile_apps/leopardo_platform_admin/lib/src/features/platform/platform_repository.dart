@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
 import 'platform_models.dart';
@@ -28,6 +29,16 @@ class PlatformRepository {
     );
 
     final payload = response.data ?? {};
+    if (response.statusCode == 202 &&
+        payload['error']?.toString() == 'TWO_FA_REQUIRED') {
+      throw ApiException(
+        payload['message']?.toString() ??
+            'Code 2FA requis pour ce compte super-admin.',
+        statusCode: 202,
+        code: 'TWO_FA_REQUIRED',
+      );
+    }
+
     final token = payload['token']?.toString();
     if (token == null || token.isEmpty) {
       throw StateError('Token plateforme manquant');
@@ -40,6 +51,11 @@ class PlatformRepository {
   }
 
   Future<PlatformAdminUser> me() async {
+    final token = await _storage.getToken();
+    if (token == null || token.isEmpty) {
+      throw StateError('Session plateforme absente');
+    }
+
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/auth/me',
     );
