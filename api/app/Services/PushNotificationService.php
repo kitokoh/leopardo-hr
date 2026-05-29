@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\DeviceToken;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -67,60 +68,132 @@ class PushNotificationService
 
     public function sendToTokens(array $tokens, string $title, string $body, array $data = []): int
     {
-        $serverKey = config('services.firebase.server_key');
+        $projectId = config('services.firebase.project_id');
+        $accessToken = $this->getAccessToken();
 
-        if (empty($serverKey)) {
-            Log::warning('Firebase server key not configured, skipping push notification');
-
+        if (empty($projectId) || empty($accessToken)) {
+            Log::warning('Firebase project ID or access token not available, skipping push notification');
             return 0;
         }
 
         $sent = 0;
-        $chunks = array_chunk($tokens, 500);
+        $failedTokens = [];
 
-        foreach ($chunks as $chunk) {
+        foreach ($tokens as $token) {
             try {
                 $payload = [
-                    'registration_ids' => $chunk,
-                    'notification' => [
-                        'title' => $title,
-                        'body' => $body,
-                        'sound' => 'default',
+                    'message' => [
+                        'token' => $token,
+                        'notification' => [
+                            'title' => $title,
+                            'body' => $body,
+                        ],
+                        'data' => $this->formatDataForFcm($data),
                     ],
-                    'data' => $data,
-                    'priority' => 'high',
                 ];
 
                 $response = Http::withHeaders([
-                    'Authorization' => 'key='.$serverKey,
+                    'Authorization' => 'Bearer '.$accessToken,
                     'Content-Type' => 'application/json',
-                ])->post('https://fcm.googleapis.com/fcm/send', $payload);
+                ])->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", $payload);
 
                 if ($response->successful()) {
-                    $result = $response->json();
-                    $sent += (int) ($result['success'] ?? 0);
-
-                    $this->handleFailedTokens($chunk, $result['results'] ?? []);
+                    $sent++;
+                } else {
+                    $error = $response->json('error.status');
+                    if (in_array($error, ['NOT_FOUND', 'UNAUTHENTICATED', 'INVALID_ARGUMENT'])) {
+                        $failedTokens[] = $token;
+                    }
+                    Log::warning('Firebase HTTP v1 error', ['response' => $response->json()]);
                 }
             } catch (\Throwable $e) {
                 Log::error('Push notification failed', [
                     'error' => $e->getMessage(),
-                    'token_count' => count($chunk),
+                    'token' => $token,
                 ]);
             }
+        }
+
+        if (! empty($failedTokens)) {
+            $this->handleFailedTokens($failedTokens);
         }
 
         return $sent;
     }
 
-    private function handleFailedTokens(array $tokens, array $results): void
+    private function getAccessToken(): ?string
     {
-        foreach ($results as $index => $result) {
-            if (isset($result['error']) && in_array($result['error'], ['NotRegistered', 'InvalidRegistration'], true)) {
-                DeviceToken::query()
-                    ->where('token', $tokens[$index] ?? '')
-                    ->update(['is_active' => false]);
-            }
+        $cacheKey = 'firebase_access_token';
+        
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
         }
+
+        $credentialsJson = config('services.firebase.credentials');
+        if (empty($credentialsJson)) {
+            return null;
+        }
+
+        if (is_file($credentialsJson) && file_exists($credentialsJson)) {
+            $credentialsJson = file_get_contents($credentialsJson);
+        }
+
+        $credentials = json_decode($credentialsJson, true);
+        if (! $credentials || ! isset($credentials['client_email'], $credentials['private_key'])) {
+            return null;
+        }
+
+        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
+        $now = time();
+        $payload = json_encode([
+            'iss' => $credentials['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'exp' => $now + 3600,
+            'iat' => $now,
+        ]);
+
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+
+        $signature = '';
+        openssl_sign($base64UrlHeader.'.'.$base64UrlPayload, $signature, $credentials['private_key'], 'sha256WithRSAEncryption');
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        $jwt = $base64UrlHeader.'.'.$base64UrlPayload.'.'.$base64UrlSignature;
+
+        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion' => $jwt,
+        ]);
+
+        if ($response->successful()) {
+            $token = $response->json('access_token');
+            Cache::put($cacheKey, $token, 3000);
+            return $token;
+        }
+
+        Log::error('Failed to get Firebase access token', ['response' => $response->json()]);
+
+        return null;
+    }
+
+    private function formatDataForFcm(array $data): array
+    {
+        $formatted = [];
+        foreach ($data as $key => $value) {
+            $formatted[(string) $key] = is_array($value) ? json_encode($value) : (string) $value;
+        }
+        return $formatted;
+    }
+
+    private function handleFailedTokens(array $tokens): void
+    {
+        if (empty($tokens)) {
+            return;
+        }
+        DeviceToken::query()
+            ->whereIn('token', $tokens)
+            ->update(['is_active' => false]);
     }
 }
