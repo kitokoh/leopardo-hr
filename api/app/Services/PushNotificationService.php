@@ -182,7 +182,7 @@ class PushNotificationService
     {
         $formatted = [];
         foreach ($data as $key => $value) {
-            $formatted[(string)$key] = is_array($value) ? json_encode($value) : (string)$value;
+            $formatted[(string) $key] = is_array($value) ? json_encode($value) : (string) $value;
         }
         return $formatted;
     }
