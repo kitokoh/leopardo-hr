@@ -1,10 +1,16 @@
-﻿#  CHANGELOG - LEOPARDO RH 
+#  CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
-## [4.16.182] - 2026-05-28
+## [4.16.183] - 2026-05-29
 
 ### Added
+
+- API : création de `SendPushNotificationJob` pour asynchroniser l'envoi de push sans bloquer la requête utilisateur.
+- API : intégration de Firebase HTTP v1 en natif dans `PushNotificationService` avec cache de 50 minutes pour le JWT OAuth 2.0.
+- Documentation : mise à jour des guides et du walkthrough pour l'intégration mobile HTTP v1.
+
+## [4.16.182] - 2026-05-28
 
 - Mobile core : ajout du composant partage `LeopardoQrCard` avec rendu QR visuel scannable via `qr_flutter`.
 - Mobile employee : l'espace compte affiche maintenant un vrai QR employe et un collage explicite du QR entreprise.
