@@ -70,6 +70,7 @@ class FrontendApiContractTest extends TestCase
             'mobile notifications' => ['GET', 'api/v1/notifications'],
             'mobile notification read' => ['PUT', 'api/v1/notifications/{notification}/read'],
             'mobile notifications read all' => ['PUT', 'api/v1/notifications/read-all'],
+            'mobile notification delete' => ['DELETE', 'api/v1/notifications/{notification}'],
             'mobile notification preferences read' => ['GET', 'api/v1/notification-preferences'],
             'mobile notification preferences update' => ['PATCH', 'api/v1/notification-preferences'],
             'mobile device token register' => ['POST', 'api/v1/device-tokens'],
