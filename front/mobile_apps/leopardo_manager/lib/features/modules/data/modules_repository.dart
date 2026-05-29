@@ -222,11 +222,16 @@ class ModulesRepository {
     bool unreadOnly = false,
     int perPage = 30,
   }) async {
-    final response = await _apiClient.dio.get(
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/notifications',
-      queryParameters: {'unread_only': unreadOnly, 'per_page': perPage},
+      queryParameters: {'unread': unreadOnly, 'per_page': perPage},
+      timeoutOverride: const Duration(seconds: 12),
     );
-    final items = response.data['data'] as List;
+    final payload = response.data;
+    final items =
+        payload is Map<String, dynamic> && payload['data'] is List
+            ? payload['data'] as List
+            : const [];
     return items
         .map(
           (item) =>
@@ -236,19 +241,30 @@ class ModulesRepository {
   }
 
   Future<AppNotification> markNotificationRead(int notificationId) async {
-    final response = await _apiClient.dio.put(
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/notifications/$notificationId/read',
+      method: 'PUT',
+      timeoutOverride: const Duration(seconds: 12),
     );
     return AppNotification.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
+      ((response.data ?? const <String, dynamic>{})['data'] as Map)
+          .cast<String, dynamic>(),
     );
   }
 
   Future<void> markAllNotificationsRead() async {
-    await _apiClient.dio.put('/notifications/read-all');
+    await _apiClient.requestWithRetry<void>(
+      '/notifications/read-all',
+      method: 'PUT',
+      timeoutOverride: const Duration(seconds: 12),
+    );
   }
 
   Future<void> deleteNotification(int notificationId) async {
-    await _apiClient.dio.delete('/notifications/$notificationId');
+    await _apiClient.requestWithRetry<void>(
+      '/notifications/$notificationId',
+      method: 'DELETE',
+      timeoutOverride: const Duration(seconds: 12),
+    );
   }
 }

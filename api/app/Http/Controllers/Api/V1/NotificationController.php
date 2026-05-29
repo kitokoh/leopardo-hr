@@ -21,7 +21,8 @@ class NotificationController extends Controller
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
             'page' => ['nullable', 'integer', 'min:1'],
             'type' => ['nullable', 'string', 'max:80'],
-            'unread' => ['nullable', 'boolean'],
+            'unread' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
+            'unread_only' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
             'sort_dir' => ['nullable', 'in:asc,desc'],
         ]);
 
@@ -31,7 +32,8 @@ class NotificationController extends Controller
             $query->where('type', $validated['type']);
         }
 
-        if ($request->has('unread') && $request->boolean('unread')) {
+        if (($request->has('unread') && $request->boolean('unread'))
+            || ($request->has('unread_only') && $request->boolean('unread_only'))) {
             $query->where('is_read', false);
         }
 
@@ -98,6 +100,26 @@ class NotificationController extends Controller
         });
 
         return response()->json(['message' => 'All notifications marked as read.']);
+    }
+
+    public function destroy(Request $request, string $id): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        DB::transaction(function () use ($user, $id): void {
+            $notification = $user->notifications()->where('id', $id)->firstOrFail();
+            $notificationId = (int) $notification->id;
+            $notificationType = (string) $notification->type;
+
+            $notification->delete();
+
+            $this->recordCommunicationEvent($user, 'notification_deleted', $notificationId, [
+                'type' => $notificationType,
+            ]);
+        });
+
+        return response()->json(['message' => 'Notification deleted.']);
     }
 
     /** @param array<string, mixed> $metadata */

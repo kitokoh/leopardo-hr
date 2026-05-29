@@ -64,6 +64,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile / web client | Notifications | `GET /api/v1/notifications` | authentifie | `ApiListQueryContractTest`, `FrontendApiContractTest`, `NotificationControllerTest` |
 | Mobile | Marquer notification lue | `PUT /api/v1/notifications/{notification}/read` | authentifie | `FrontendApiContractTest` |
 | Mobile | Tout marquer lu | `PUT /api/v1/notifications/read-all` | authentifie | `FrontendApiContractTest` |
+| Mobile | Supprimer notification | `DELETE /api/v1/notifications/{notification}` | authentifie | `FrontendApiContractTest`, `NotificationControllerTest` |
 | Mobile / web client | Preferences notifications | `GET/PATCH /api/v1/notification-preferences` | authentifie | `NotificationPreferenceControllerTest` |
 | Mobile | Enregistrer push token | `POST /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
 | Mobile | Supprimer push token | `DELETE /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
