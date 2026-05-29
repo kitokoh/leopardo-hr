@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.188] - 2026-05-29
+
+### Fixed
+
+- Mobile employee/manager/platform admin : correction du demarrage gris en appelant `runApp()` avant les initialisations natives longues, avec ecran de demarrage controle, recuperation de la box Hive `offlineCache` et erreurs Flutter visibles.
+- Mobile employee/manager : l'initialisation Google Sign-In devient non bloquante afin qu'une config native OAuth absente ou invalide ne bloque plus l'application complete.
+
 ## [4.16.187] - 2026-05-29
 
 ### Changed
