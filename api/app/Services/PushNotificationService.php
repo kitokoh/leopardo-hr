@@ -114,7 +114,7 @@ class PushNotificationService
             }
         }
 
-        if (! empty($failedTokens)) {
+        if (count($failedTokens) > 0) {
             $this->handleFailedTokens($failedTokens);
         }
 
@@ -139,7 +139,7 @@ class PushNotificationService
         }
 
         $credentials = json_decode($credentialsJson, true);
-        if (! $credentials || ! isset($credentials['client_email'], $credentials['private_key'])) {
+        if (is_array($credentials) === false || isset($credentials['client_email'], $credentials['private_key']) === false) {
             return null;
         }
 
