@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.184] - 2026-05-29
+
+### Changed
+
+- Mobile platform admin : durcissement de la session super-admin, gestion explicite du `TWO_FA_REQUIRED`, bouton compte demo et validation du formulaire de creation client.
+- Documentation : ajout du Plan 56 platform admin mobile auth hardening.
+
 ## [4.16.183] - 2026-05-29
 
 ### Added

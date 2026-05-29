@@ -20,6 +20,12 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
   final _twoFactorController = TextEditingController();
   bool _obscurePassword = true;
 
+  void _fillDemoAccount() {
+    _emailController.text = 'admin@leopardo-rh.com';
+    _passwordController.text = 'admin';
+    _twoFactorController.clear();
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -84,6 +90,30 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       MobileErrorPanel(message: auth.error!),
                       const SizedBox(height: 14),
                     ],
+                    if (auth.requiresTwoFactor) ...[
+                      const MobilePanel(
+                        padding: EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.verified_user_rounded,
+                              color: AppColors.warning,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Ce compte protege la plateforme : saisir le code 2FA de l application authenticator.',
+                                style: TextStyle(
+                                  color: MobileSurface.secondary,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
                     _PlatformTextField(
                       controller: _emailController,
                       label: 'Email super-admin',
@@ -131,6 +161,20 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       label:
                           auth.isSubmitting ? 'Connexion...' : 'Se connecter',
                       onPressed: auth.isSubmitting ? null : _submit,
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: auth.isSubmitting ? null : _fillDemoAccount,
+                      icon: const Icon(Icons.science_rounded),
+                      label: const Text('Utiliser le compte demo'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: MobileSurface.secondary,
+                        side: const BorderSide(color: MobileSurface.border),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
                     ),
                   ],
                 ),
