@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.186] - 2026-05-29
+
+### Added
+
+- Mobile core : ajout du modele partage `NotificationPreferences` pour consommer le contrat `/api/v1/notification-preferences`.
+- Mobile employee/manager : l'ecran Compte expose maintenant les preferences notifications app, push, email et heures calmes avec sauvegarde API retry-aware.
+
 ## [4.16.185] - 2026-05-29
 
 ### Changed
