@@ -64,6 +64,7 @@ class NotificationListScreen extends ConsumerWidget {
                         itemBuilder: (context, index) {
                           final notification = notifications[index];
                           return _NotificationTile(
+                            key: ValueKey(notification.id),
                             title: notification.title,
                             body: notification.body,
                             isRead: notification.isRead,
@@ -74,6 +75,18 @@ class NotificationListScreen extends ConsumerWidget {
                                     .markAsRead(notification.id);
                                 ref.invalidate(notificationsProvider);
                               }
+                            },
+                            onDelete: () async {
+                              await ref
+                                  .read(notificationRepositoryProvider)
+                                  .deleteNotification(notification.id);
+                              ref.invalidate(notificationsProvider);
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Notification supprimee.'),
+                                ),
+                              );
                             },
                           );
                         },
@@ -98,82 +111,130 @@ class _NotificationTile extends StatelessWidget {
     required this.body,
     required this.isRead,
     required this.onTap,
+    required this.onDelete,
+    super.key,
   });
 
   final String title;
   final String body;
   final bool isRead;
   final VoidCallback onTap;
+  final Future<void> Function() onDelete;
 
   @override
   Widget build(BuildContext context) {
     final accent = isRead ? MobileSurface.disabled : AppColors.info;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Ink(
-          padding: const EdgeInsets.all(14),
-          decoration: MobileSurface.cardDecoration(
-            color:
-                isRead
-                    ? MobileSurface.surface
-                    : AppColors.info.withValues(alpha: 0.08),
-            radius: 14,
-          ),
-          child: Row(
-            children: [
-              MobileIconBubble(
-                icon:
-                    isRead
-                        ? Icons.notifications_none
-                        : Icons.notifications_active,
-                color: accent,
-                size: 38,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: AppTypography.bodySmall.copyWith(
-                              color: MobileSurface.text,
-                              fontWeight:
-                                  isRead ? FontWeight.w500 : FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        if (!isRead)
-                          Container(
-                            width: 7,
-                            height: 7,
-                            decoration: const BoxDecoration(
-                              color: AppColors.info,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      body,
-                      style: AppTypography.caption.copyWith(
-                        color: MobileSurface.secondary,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+    return Dismissible(
+      key: key ?? UniqueKey(),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (context) async {
+        await onDelete();
+        return true;
+      },
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: AppColors.danger.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: const Icon(Icons.delete_outline, color: AppColors.danger),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Ink(
+            padding: const EdgeInsets.all(14),
+            decoration: MobileSurface.cardDecoration(
+              color:
+                  isRead
+                      ? MobileSurface.surface
+                      : AppColors.info.withValues(alpha: 0.08),
+              radius: 14,
+            ),
+            child: Row(
+              children: [
+                MobileIconBubble(
+                  icon:
+                      isRead
+                          ? Icons.notifications_none
+                          : Icons.notifications_active,
+                  color: accent,
+                  size: 38,
                 ),
-              ),
-            ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: MobileSurface.text,
+                                fontWeight:
+                                    isRead ? FontWeight.w500 : FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          if (!isRead)
+                            Container(
+                              width: 7,
+                              height: 7,
+                              decoration: const BoxDecoration(
+                                color: AppColors.info,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        body,
+                        style: AppTypography.caption.copyWith(
+                          color: MobileSurface.secondary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                PopupMenuButton<String>(
+                  icon: const Icon(
+                    Icons.more_vert,
+                    color: MobileSurface.secondary,
+                  ),
+                  color: MobileSurface.surface,
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      onDelete();
+                    } else if (value == 'read') {
+                      onTap();
+                    }
+                  },
+                  itemBuilder:
+                      (_) => [
+                        if (!isRead)
+                          const PopupMenuItem(
+                            value: 'read',
+                            child: Text('Marquer comme lue'),
+                          ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Supprimer'),
+                        ),
+                      ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

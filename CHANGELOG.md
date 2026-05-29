@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.187] - 2026-05-29
+
+### Changed
+
+- Mobile employee/manager : les listes de notifications deviennent actionnables avec suppression par swipe ou menu, tout en conservant le marquage lu et le rafraichissement automatique.
+
 ## [4.16.186] - 2026-05-29
 
 ### Added
