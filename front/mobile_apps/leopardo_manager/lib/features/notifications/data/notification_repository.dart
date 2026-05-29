@@ -35,6 +35,14 @@ class NotificationRepository {
     );
   }
 
+  Future<void> deleteNotification(int id) async {
+    await apiClient.requestWithRetry<void>(
+      '/notifications/$id',
+      method: 'DELETE',
+      timeoutOverride: const Duration(seconds: 12),
+    );
+  }
+
   List<AppNotification> _decodeNotifications(dynamic payload) {
     final rawItems =
         payload is Map<String, dynamic> ? payload['data'] : payload;
