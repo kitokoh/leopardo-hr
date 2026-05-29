@@ -14,13 +14,13 @@ class SendPushNotificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 3;
+    public int $tries = 3;
 
     public function __construct(
         public int $employeeId,
         public string $title,
         public string $body,
-        public array $metadata = []
+        public array $metadata = [],
     ) {
         $this->onQueue((string) config('communication.queue', 'notifications'));
     }
