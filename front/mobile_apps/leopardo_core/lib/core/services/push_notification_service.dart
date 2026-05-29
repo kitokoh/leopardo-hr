@@ -141,6 +141,25 @@ class PushNotificationService {
     }
   }
 
+  Future<void> unregisterCurrentToken({ApiClient? apiClient}) async {
+    _apiClient = apiClient ?? _apiClient;
+    final client = _apiClient;
+    final token = _deviceToken;
+
+    if (client == null || token == null || token.isEmpty) return;
+
+    try {
+      await client.requestWithRetry(
+        '/device-tokens',
+        method: 'DELETE',
+        data: {'token': token},
+      );
+      debugPrint('FCM Token unregistered from backend');
+    } catch (e) {
+      debugPrint('Failed to unregister FCM token: $e');
+    }
+  }
+
   void _listenToMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _showLocalNotification(message);

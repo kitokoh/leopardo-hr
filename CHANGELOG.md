@@ -7,6 +7,7 @@
 ### Changed
 
 - Mobile platform admin : durcissement de la session super-admin, gestion explicite du `TWO_FA_REQUIRED`, bouton compte demo et validation du formulaire de creation client.
+- Mobile employee/manager : les tokens FCM sont retires via `DELETE /api/v1/device-tokens` avant la deconnexion pour eviter les pushes vers des sessions fermees.
 - Documentation : ajout du Plan 56 platform admin mobile auth hardening.
 
 ## [4.16.183] - 2026-05-29
