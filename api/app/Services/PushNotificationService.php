@@ -73,6 +73,7 @@ class PushNotificationService
 
         if (empty($projectId) || empty($accessToken)) {
             Log::warning('Firebase project ID or access token not available, skipping push notification');
+
             return 0;
         }
 
@@ -124,7 +125,7 @@ class PushNotificationService
     private function getAccessToken(): ?string
     {
         $cacheKey = 'firebase_access_token';
-        
+
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
         }
@@ -139,7 +140,10 @@ class PushNotificationService
         }
 
         $credentials = json_decode($credentialsJson, true);
-        if (is_array($credentials) === false || isset($credentials['client_email'], $credentials['private_key']) === false) {
+        if (
+            is_array($credentials) === false
+            || isset($credentials['client_email'], $credentials['private_key']) === false
+        ) {
             return null;
         }
 
@@ -170,6 +174,7 @@ class PushNotificationService
         if ($response->successful()) {
             $token = $response->json('access_token');
             Cache::put($cacheKey, $token, 3000);
+
             return $token;
         }
 
@@ -184,6 +189,7 @@ class PushNotificationService
         foreach ($data as $key => $value) {
             $formatted[(string) $key] = is_array($value) ? json_encode($value) : (string) $value;
         }
+
         return $formatted;
     }
 
@@ -192,6 +198,7 @@ class PushNotificationService
         if (empty($tokens)) {
             return;
         }
+
         DeviceToken::query()
             ->whereIn('token', $tokens)
             ->update(['is_active' => false]);
