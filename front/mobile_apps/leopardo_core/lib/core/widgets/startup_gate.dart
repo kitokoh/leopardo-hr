@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
@@ -10,12 +12,14 @@ class StartupGate extends StatefulWidget {
     required this.initializer,
     required this.child,
     required this.appName,
+    this.timeout = const Duration(seconds: 8),
     super.key,
   });
 
   final StartupInitializer initializer;
   final Widget child;
   final String appName;
+  final Duration timeout;
 
   @override
   State<StartupGate> createState() => _StartupGateState();
@@ -27,13 +31,24 @@ class _StartupGateState extends State<StartupGate> {
   @override
   void initState() {
     super.initState();
-    _startupFuture = widget.initializer();
+    _startupFuture = _runStartup();
   }
 
   void _retry() {
     setState(() {
-      _startupFuture = widget.initializer();
+      _startupFuture = _runStartup();
     });
+  }
+
+  Future<void> _runStartup() async {
+    try {
+      await widget.initializer().timeout(widget.timeout);
+    } on TimeoutException catch (error, stackTrace) {
+      debugPrint(
+        '${widget.appName} startup continued after timeout: ${error.message}',
+      );
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
 
   @override

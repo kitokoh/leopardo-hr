@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.190] - 2026-05-29
+
+### Changed
+
+- Plan 57 : renforcement de l'ecosysteme developpeur avec API Explorer enrichi, base API configurable, sections sandbox/auth/erreurs/webhooks, guide partenaire et OpenAPI mis a jour avec les conventions d'erreurs, rate limiting et serveur Render actuel.
+
 ## [4.16.189] - 2026-05-29
 
 ### Added

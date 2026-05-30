@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -24,7 +26,7 @@ void main() {
 }
 
 Future<void> _bootstrap() async {
-  await _safeGoogleSignInInitialize();
+  unawaited(_safeGoogleSignInInitialize());
   await _openOfflineCache();
   await _initializeLocales();
 }
