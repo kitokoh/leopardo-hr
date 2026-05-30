@@ -20,20 +20,59 @@
         button:disabled { opacity:.55; cursor:not-allowed; }
         pre { margin:0; white-space:pre-wrap; word-break:break-word; background:#0f172a; color:#e2e8f0; border-radius:12px; padding:14px; min-height:280px; }
         .row { display:flex; gap:8px; flex-wrap:wrap; }
+        .developer-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+        .mini { border:1px solid var(--border); border-radius:12px; padding:12px; background:#fbfdff; }
+        .mini h3 { margin:0 0 6px; font-size:14px; }
+        .pill { display:inline-flex; align-items:center; border:1px solid #99f6e4; background:#ccfbf1; color:#115e59; border-radius:999px; padding:3px 8px; font-size:12px; font-weight:900; }
         .muted { color:var(--muted); }
+        @media (max-width: 980px) { .developer-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
         @media (max-width: 820px) { .grid { grid-template-columns:1fr; } }
+        @media (max-width: 560px) { .developer-grid { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
 <header>
     <h1>API Explorer Leopardo RH</h1>
     <p class="muted" style="color:#cbd5e1">Connexion demo, token Bearer et requetes pre-remplies pour testeurs et developpeurs.</p>
+    <p>
+        <a href="/docs" style="color:#99f6e4;font-weight:900">OpenAPI</a>
+        <span style="color:#64748b"> / </span>
+        <a href="/docs/openapi.yaml" style="color:#99f6e4;font-weight:900">YAML canonique</a>
+        <span style="color:#64748b"> / </span>
+        <a href="/tester-guide" style="color:#99f6e4;font-weight:900">Guide testeur</a>
+    </p>
 </header>
 <main>
+    <section class="card">
+        <span class="pill">Developer preview</span>
+        <h2>Ecosysteme developpeur</h2>
+        <p class="muted">Cette page utilise les memes contrats que les apps mobile employee, manager, platform admin, la vitrine et les kiosques. Les requetes envoient toujours <code>Accept: application/json</code> et, apres login, <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+        <div class="developer-grid">
+            <div class="mini">
+                <h3>Sandbox Render</h3>
+                <p class="muted">Base actuelle : <code>https://gestionemployerbackend.onrender.com/api/v1</code>. En local, utilisez <code>/api/v1</code> via le meme domaine que cette page.</p>
+            </div>
+            <div class="mini">
+                <h3>Auth</h3>
+                <p class="muted">Employe/manager : <code>/auth/login</code>. Super-admin plateforme : <code>/platform/auth/login</code>. Les tokens sont personnels et doivent etre rotatifs.</p>
+            </div>
+            <div class="mini">
+                <h3>Erreurs standard</h3>
+                <p class="muted">Les erreurs doivent exposer <code>error</code>, <code>message</code> et, pour validation, <code>errors</code>. Les codes metier restent documentes dans OpenAPI.</p>
+            </div>
+            <div class="mini">
+                <h3>Webhooks</h3>
+                <p class="muted">Signature, retry et idempotence sont decrits dans le guide partenaire. Les partenaires doivent traiter les evenements comme rejouables.</p>
+            </div>
+        </div>
+    </section>
+
     <section class="grid">
         <aside class="card">
             <h2>Profil demo</h2>
             <p class="muted">Charge les profils exposes par <code>/api/v1/demo-users</code>.</p>
+            <label for="baseUrl">Base API</label>
+            <input id="baseUrl" type="url">
             <label for="profile">Utilisateur</label>
             <select id="profile"></select>
             <label for="email">Email</label>
@@ -125,10 +164,11 @@
     </section>
 </main>
 <script>
-const apiBase = `${window.location.origin}/api/v1`;
+const defaultApiBase = `${window.location.origin}/api/v1`;
 let token = '';
 let platformToken = '';
 const output = document.getElementById('output');
+const baseUrl = document.getElementById('baseUrl');
 const profile = document.getElementById('profile');
 const email = document.getElementById('email');
 const password = document.getElementById('password');
@@ -136,12 +176,14 @@ const endpoint = document.getElementById('endpoint');
 const method = document.getElementById('method');
 const body = document.getElementById('body');
 const tokenStatus = document.getElementById('tokenStatus');
+baseUrl.value = defaultApiBase;
 
 function print(value) {
     output.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
 }
 
 async function request(path, options = {}) {
+    const apiBase = baseUrl.value.replace(/\/+$/, '');
     const response = await fetch(`${apiBase}${path}`, {
         ...options,
         headers: {

@@ -19,7 +19,10 @@ class OpenApiDocsTest extends TestCase
         $this->get('/docs/openapi.yaml')
             ->assertOk()
             ->assertSee('openapi: "3.0.3"', false)
-            ->assertSee('Leopardo RH API', false);
+            ->assertSee('Leopardo RH API', false)
+            ->assertSee('https://gestionemployerbackend.onrender.com/api/v1', false)
+            ->assertSee('Error429', false)
+            ->assertSee('TWO_FA_REQUIRED', false);
     }
 
     public function test_root_exposes_tester_guide_and_api_explorer(): void
@@ -40,6 +43,10 @@ class OpenApiDocsTest extends TestCase
         $this->get('/api-explorer')
             ->assertOk()
             ->assertSee('API Explorer Leopardo RH')
+            ->assertSee('Developer preview')
+            ->assertSee('Sandbox Render')
+            ->assertSee('Authorization: Bearer')
+            ->assertSee('Webhooks')
             ->assertSee('/demo-users')
             ->assertSee('/notifications');
     }
