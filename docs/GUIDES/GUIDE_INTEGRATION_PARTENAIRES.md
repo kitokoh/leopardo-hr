@@ -16,11 +16,81 @@ Ce guide donne le contrat d'integration minimal pour les partenaires Leopardo RH
 
 Les endpoints stables sont exposes sous `/api/v1`.
 
+### Environnements
+
+| Environnement | URL | Usage |
+|---------------|-----|-------|
+| Production API | `https://gestionemployerbackend.onrender.com/api/v1` | Backend Render actuel pour apps mobiles et integrateurs autorises |
+| Documentation | `https://gestionemployerbackend.onrender.com/docs` | Swagger UI publique |
+| API Explorer | `https://gestionemployerbackend.onrender.com/api-explorer` | Requetes demo avec tokens Bearer |
+| Local | `http://localhost:8000/api/v1` | Developpement backend |
+
+Les comptes demo exposes par `/api/v1/demo-users` sont destines a la recette et a la documentation. Ils ne doivent pas etre reutilises comme comptes serveur a serveur.
+
 ### Authentification
 
 - Employes/managers : token Sanctum obtenu via `/api/v1/auth/login`.
 - Plateforme : token super-admin obtenu via `/api/v1/platform/auth/login`.
 - Les integrations serveur a serveur doivent utiliser un compte dedie, avec rotation controlee.
+- Chaque requete authentifiee doit envoyer `Authorization: Bearer <token>` et `Accept: application/json`.
+
+### Versioning
+
+- La version stable actuelle est `/api/v1`.
+- Une route ne doit pas changer de structure JSON sans migration documentee.
+- Les futurs breaking changes doivent passer par `/api/v2` ou par un champ de compatibilite explicite.
+- Les clients doivent ignorer les champs inconnus afin de rester compatibles avec les ajouts non cassants.
+
+### Format JSON standard
+
+Les ressources simples sont retournees sous une cle `data` lorsque c'est possible :
+
+```json
+{
+  "data": {
+    "id": 123,
+    "name": "Amina"
+  }
+}
+```
+
+Les listes paginees doivent rester compatibles Laravel :
+
+```json
+{
+  "data": [],
+  "links": {
+    "first": "https://example.test/api/v1/employees?page=1",
+    "last": "https://example.test/api/v1/employees?page=3"
+  },
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 42
+  }
+}
+```
+
+Les erreurs suivent le format :
+
+```json
+{
+  "error": "VALIDATION_ERROR",
+  "message": "The given data was invalid.",
+  "errors": {
+    "email": ["The email field is required."]
+  }
+}
+```
+
+Codes metier a traiter par les clients :
+
+- `UNAUTHENTICATED` ou HTTP `401` : reconnecter l'utilisateur.
+- `FORBIDDEN` ou HTTP `403` : permission insuffisante ou ressource hors perimetre.
+- `COMPANY_NOT_FOUND` : lookup tenant absent ou entreprise inactive.
+- `TWO_FA_REQUIRED` : le super-admin doit completer le second facteur.
+- `VALIDATION_ERROR` : afficher les erreurs champ par champ.
+- `RATE_LIMITED` ou HTTP `429` : retry avec backoff.
 
 ### Regles multi-tenant
 
@@ -56,6 +126,16 @@ Les webhooks diffusent les evenements metier vers un endpoint partenaire HTTPS.
   }
 }
 ```
+
+### Signature et idempotence
+
+Chaque webhook production devra inclure :
+
+- `X-Leopardo-Event-Id` : identifiant unique et idempotent.
+- `X-Leopardo-Timestamp` : horodatage Unix.
+- `X-Leopardo-Signature` : HMAC SHA-256 du payload brut avec le secret partage.
+
+Le partenaire doit refuser un timestamp trop ancien et ignorer proprement un `event_id` deja traite. Les retries doivent etre consideres normaux.
 
 ### Exigences partenaire
 

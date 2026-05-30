@@ -2,26 +2,29 @@ openapi: "3.0.3"
 
 info:
   title: "Leopardo RH API"
-  version: "4.1.81-2026-04-28"
+  version: "4.16.190-2026-05-29"
   description: |
     OpenAPI alignee sur la surface API reellement exposee par origin/main.
 
-    Cette specification documente uniquement les endpoints observes dans :
-    - routes/api.php
-    - routes/modules/rh.php
-    - routes/modules/cameras.php
+    Cette specification sert de contrat pour les apps employee, manager,
+    platform admin, kiosque, vitrine client et futurs integrateurs tiers.
 
-    Les modules de conception plus larges presents dans docs/dossierdeConception
-    ne sont pas repris ici tant qu'ils ne sont pas effectivement exposes.
+    Regles generales :
+    - base API stable sous /api/v1 ;
+    - authentification Bearer Sanctum ;
+    - listes paginees compatibles Laravel (data, links, meta) ;
+    - erreurs JSON standardisees (error, message, errors) ;
+    - isolation tenant stricte sur toutes les routes authentifiees.
 
-    Note:
-    le workspace local peut contenir des routes supplementaires en cours de
-    developpement non mergees. Cette spec vise la baseline origin/main analysee
-    pour l'audit documentaire.
+externalDocs:
+  description: "Guide integration partenaires et ecosysteme developpeur"
+  url: "https://gestionemployerbackend.onrender.com/api-explorer"
 
 servers:
+  - url: "https://gestionemployerbackend.onrender.com/api/v1"
+    description: "Staging/production Render actuel"
   - url: "https://api.leopardo-rh.com/api/v1"
-    description: "Production"
+    description: "Production future domaine dedie"
   - url: "http://localhost:8000/api/v1"
     description: "Local Docker"
 
@@ -52,6 +55,8 @@ tags:
   - name: "Cameras"
   - name: "Vehicle Tracking"
   - name: "Fleet Management"
+  - name: "Webhooks"
+    description: "Evenements sortants documentes pour integrateurs; livraison effective selon configuration tenant."
 
 paths:
   /health:
@@ -3826,6 +3831,16 @@ components:
       schema:
         type: string
 
+  headers:
+    XRequestId:
+      description: "Identifiant de correlation a fournir au support en cas d'incident."
+      schema:
+        type: string
+    RetryAfter:
+      description: "Delai conseille avant retry lorsqu'une limite de debit est atteinte."
+      schema:
+        type: integer
+
   responses:
     Error401:
       description: "Non authentifie"
@@ -3841,6 +3856,15 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     Error404:
       description: "Ressource introuvable"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Error429:
+      description: "Limite de debit atteinte"
+      headers:
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
       content:
         application/json:
           schema:
@@ -4158,29 +4182,47 @@ components:
 
     ErrorResponse:
       type: object
+      required: ["error", "message"]
       properties:
         error:
           type: string
+          enum:
+            - UNAUTHENTICATED
+            - FORBIDDEN
+            - RESOURCE_NOT_FOUND
+            - COMPANY_NOT_FOUND
+            - TWO_FA_REQUIRED
+            - VALIDATION_ERROR
+            - RATE_LIMITED
+            - NOT_IMPLEMENTED
           example: "RESOURCE_NOT_FOUND"
         message:
           type: string
-          example: "RESOURCE_NOT_FOUND"
+          example: "Ressource introuvable."
+        request_id:
+          type: string
+          nullable: true
+          example: "req_01HYZ4VY9K7M1A2B3C4D5E6F7G"
 
     ValidationErrorResponse:
       type: object
+      required: ["error", "message", "errors"]
       properties:
         error:
           type: string
           example: "VALIDATION_ERROR"
         message:
           type: string
-          example: "VALIDATION_ERROR"
+          example: "The given data was invalid."
         errors:
           type: object
           additionalProperties:
             type: array
             items:
               type: string
+        request_id:
+          type: string
+          nullable: true
 
     HealthCheck:
       type: object
