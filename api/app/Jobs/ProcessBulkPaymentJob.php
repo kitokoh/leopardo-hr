@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Jobs\GeneratePaySlipPdfJob;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Models\SalaryAdvance;
