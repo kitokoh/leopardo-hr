@@ -10,7 +10,6 @@ import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
-import 'package:leopardo_core/core/widgets/splash_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
@@ -54,19 +53,16 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/welcome',
     refreshListenable: authListenable,
     redirect: (context, state) {
       final authState = authListenable.value;
       final isAuth = authState.employee != null;
       final location = state.matchedLocation;
 
+      // Pendant l'hydratation auth, garder l'ecran courant visible.
       if (authState.isLoading) {
-        return location == '/splash' ? null : '/splash';
-      }
-
-      if (location == '/splash') {
-        return isAuth ? '/' : '/welcome';
+        return null;
       }
 
       const publicRoutes = {
@@ -85,12 +81,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/splash',
-        builder: (context, state) => const SplashScreen(
-          appName: 'Espace Manager',
-        ),
-      ),
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
@@ -273,7 +263,8 @@ class LeopardoApp extends ConsumerWidget {
       final previousEmployeeId = previous?.employee?.id;
       final currentEmployeeId = next.employee?.id;
 
-      if (currentEmployeeId != null && currentEmployeeId != previousEmployeeId) {
+      if (currentEmployeeId != null &&
+          currentEmployeeId != previousEmployeeId) {
         unawaited(
           ref
               .read(pushNotificationServiceProvider)

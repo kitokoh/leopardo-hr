@@ -7,11 +7,12 @@ class SecureStorage {
   static const Duration _timeout = Duration(seconds: 2);
   String? _cachedToken;
 
-  Box<dynamic> get _box => Hive.box('offlineCache');
+  Box<dynamic>? get _boxOrNull =>
+      Hive.isBoxOpen('offlineCache') ? Hive.box('offlineCache') : null;
 
   Future<void> saveToken(String token) async {
     _cachedToken = token;
-    await _box.put(_tokenKey, token);
+    await _boxOrNull?.put(_tokenKey, token);
 
     try {
       await _storage.write(key: _tokenKey, value: token).timeout(_timeout);
@@ -29,21 +30,21 @@ class SecureStorage {
       final token = await _storage.read(key: _tokenKey).timeout(_timeout);
       if (token != null && token.isNotEmpty) {
         _cachedToken = token;
-        await _box.put(_tokenKey, token);
+        await _boxOrNull?.put(_tokenKey, token);
         return token;
       }
     } catch (_) {
       // Fall back to Hive below.
     }
 
-    final token = _box.get(_tokenKey) as String?;
+    final token = _boxOrNull?.get(_tokenKey) as String?;
     _cachedToken = token;
     return token;
   }
 
   Future<void> deleteToken() async {
     _cachedToken = null;
-    await _box.delete(_tokenKey);
+    await _boxOrNull?.delete(_tokenKey);
 
     try {
       await _storage.delete(key: _tokenKey).timeout(_timeout);
@@ -54,7 +55,7 @@ class SecureStorage {
 
   Future<void> clearAll() async {
     _cachedToken = null;
-    await _box.delete(_tokenKey);
+    await _boxOrNull?.delete(_tokenKey);
 
     try {
       await _storage.deleteAll().timeout(_timeout);

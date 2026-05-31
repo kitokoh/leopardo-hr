@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
-import 'package:leopardo_core/core/widgets/splash_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'features/auth/platform_auth_controller.dart';
@@ -26,22 +25,16 @@ final platformRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
 
   return GoRouter(
-    initialLocation: '/platform/splash',
+    initialLocation: '/platform/login',
     refreshListenable: authListenable,
     redirect: (context, state) {
       final authState = authListenable.value;
       final location = state.matchedLocation;
-      final onSplash = location == '/platform/splash';
       final onLogin = location == '/platform/login';
 
-      // Pendant le bootstrap : rester sur le splash.
+      // Pendant l'hydratation auth, garder le login visible.
       if (authState.isBootstrapping) {
-        return onSplash ? null : '/platform/splash';
-      }
-
-      // Bootstrap terminé : quitter le splash.
-      if (onSplash) {
-        return authState.isAuthenticated ? '/platform' : '/platform/login';
+        return null;
       }
 
       if (!authState.isAuthenticated && !onLogin) return '/platform/login';
@@ -49,12 +42,6 @@ final platformRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/platform/splash',
-        builder: (context, state) => const SplashScreen(
-          appName: 'Administration',
-        ),
-      ),
       GoRoute(
         path: '/platform/login',
         builder: (context, state) => const PlatformLoginScreen(),
