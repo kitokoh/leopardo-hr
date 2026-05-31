@@ -31,18 +31,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final background = AppColors.backgroundFor(context);
+    final bg = AppColors.backgroundFor(context);
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
+    final compact = MediaQuery.of(context).size.height < 700;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error!),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.danger,
+          ),
+        );
       }
     });
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: bg,
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -50,20 +57,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             end: Alignment.bottomCenter,
             colors: [
               AppColors.tint(context, AppColors.rh, lightAlpha: 0.10),
-              background,
-              AppColors.tint(context, AppColors.ia, lightAlpha: 0.05),
+              bg,
             ],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+            padding: EdgeInsets.fromLTRB(24, compact ? 12 : 20, 24, 28),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // ── Retour ────────────────────────────────────────────────
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back_rounded),
                     tooltip: 'Retour',
                     onPressed: () {
                       if (context.canPop()) {
@@ -74,150 +82,196 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 8),
-                const _LoginHero(),
-                const SizedBox(height: 18),
-                Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceFor(context),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: AppColors.borderFor(context)),
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                SizedBox(height: compact ? 8 : 16),
+
+                // ── En-tête compact ───────────────────────────────────────
+                Row(
+                  children: [
+                    Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [AppColors.rh, AppColors.rhDark],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.rh.withValues(alpha: 0.25),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'L',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 22,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Connexion manager / RH',
-                          style: AppTypography.title.copyWith(
-                            color: AppColors.textPrimaryFor(context),
-                          ),
+                          'Leopardo RH',
+                          style: AppTypography.title.copyWith(color: text),
                         ),
-                        const SizedBox(height: 8),
                         Text(
-                          'Retrouvez vos equipes, validations RH et priorites du jour dans un espace mobile dedie.',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondaryFor(context),
-                          ),
+                          'Connexion Manager / RH',
+                          style: AppTypography.caption.copyWith(color: muted),
                         ),
-                        const SizedBox(height: 22),
-                        _BenefitStrip(),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          decoration: _fieldDecoration(
-                            context,
-                            label: 'Email',
-                            icon: Icons.email_outlined,
-                          ),
-                          validator: (value) {
-                            final email = value?.trim() ?? '';
-                            if (email.isEmpty) return 'Email obligatoire';
-                            if (!email.contains('@') || !email.contains('.')) {
-                              return 'Email invalide';
-                            }
-                            return null;
-                          },
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: compact ? 24 : 32),
+
+                // ── Formulaire ────────────────────────────────────────────
+                Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        decoration: _inputDecoration(
+                          context,
+                          label: 'Email',
+                          icon: Icons.email_outlined,
                         ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) => _submit(),
-                          decoration: _fieldDecoration(
-                            context,
-                            label: 'Mot de passe',
-                            icon: Icons.lock_outline,
-                            suffix: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: AppColors.textSecondaryFor(context),
-                              ),
-                              tooltip:
-                                  _obscurePassword
-                                      ? 'Afficher le mot de passe'
-                                      : 'Masquer le mot de passe',
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+                        validator: (value) {
+                          final v = value?.trim() ?? '';
+                          if (v.isEmpty) return 'Email obligatoire';
+                          if (!v.contains('@') || !v.contains('.')) {
+                            return 'Email invalide';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) => _submit(),
+                        decoration: _inputDecoration(
+                          context,
+                          label: 'Mot de passe',
+                          icon: Icons.lock_outline_rounded,
+                          suffix: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off_rounded
+                                  : Icons.visibility_rounded,
+                              color: muted,
+                            ),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
                             ),
                           ),
-                          validator: (value) {
-                            if ((value ?? '').isEmpty) {
-                              return 'Mot de passe obligatoire';
-                            }
-                            if ((value ?? '').length < 4) {
-                              return 'Mot de passe trop court';
-                            }
-                            return null;
-                          },
                         ),
-                        const SizedBox(height: 22),
-                        ElevatedButton(
+                        validator: (value) {
+                          if ((value ?? '').isEmpty) {
+                            return 'Mot de passe obligatoire';
+                          }
+                          if ((value ?? '').length < 4) {
+                            return 'Mot de passe trop court';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 22),
+
+                      // Bouton principal
+                      SizedBox(
+                        height: 52,
+                        child: ElevatedButton(
                           onPressed: authState.isLoading ? null : _submit,
-                          child:
-                              authState.isLoading
-                                  ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                      semanticsLabel: 'Connexion en cours...',
-                                    ),
-                                  )
-                                  : const Text('Entrer dans Leopardo RH'),
+                          child: authState.isLoading
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Se connecter',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
-                        const SizedBox(height: 16),
-                        OutlinedButton.icon(
-                          onPressed:
-                              authState.isLoading
-                                  ? null
-                                  : () {
-                                    HapticFeedback.lightImpact();
-                                    ref
-                                        .read(authProvider.notifier)
-                                        .loginWithGoogle();
-                                  },
-                          icon: const Icon(Icons.login),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Google Sign-In
+                      SizedBox(
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: authState.isLoading
+                              ? null
+                              : () {
+                                  HapticFeedback.lightImpact();
+                                  ref
+                                      .read(authProvider.notifier)
+                                      .loginWithGoogle();
+                                },
+                          icon: const Icon(Icons.login_rounded, size: 18),
                           label: const Text('Continuer avec Google'),
                         ),
-                        const SizedBox(height: 14),
-                        Text(
-                          'Votre entreprise vous a invite ? Activez d abord votre acces depuis l email recu, puis revenez vous connecter ici.',
-                          textAlign: TextAlign.center,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondaryFor(context),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextButton(
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Lien activation
+                      Center(
+                        child: TextButton(
                           onPressed: () => context.go('/register'),
-                          child: const Text('Je n ai pas encore d invitation'),
+                          child: const Text("Activer mon acces manager"),
                         ),
-                        const SizedBox(height: 8),
-                        TextButton.icon(
-                          onPressed: () => context.go('/user-login'),
-                          icon: const Icon(Icons.person_outlined, size: 18),
-                          label: const Text('Connexion compte personnel'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.ia,
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Séparateur
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: AppColors.borderFor(context),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        ElevatedButton.icon(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'ou',
+                              style: AppTypography.caption
+                                  .copyWith(color: muted),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: AppColors.borderFor(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Demo
+                      SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
                           onPressed: () async {
                             final user = await showDemoUserBottomSheet(
                               context,
@@ -231,15 +285,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   .login(user.email, user.password);
                             }
                           },
-                          icon: const Icon(Icons.group_outlined),
-                          label: const Text('Acces Demo'),
+                          icon: const Icon(Icons.science_outlined, size: 18),
+                          label: const Text('Tester avec un compte demo'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.rhDark,
                             foregroundColor: Colors.white,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -250,7 +304,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  InputDecoration _fieldDecoration(
+  InputDecoration _inputDecoration(
     BuildContext context, {
     required String label,
     required IconData icon,
@@ -258,168 +312,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: AppColors.textSecondaryFor(context)),
+      prefixIcon: Icon(icon),
       suffixIcon: suffix,
     );
   }
 
   void _submit() {
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      return;
-    }
-
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
     ref
         .read(authProvider.notifier)
         .login(_emailController.text.trim(), _passwordController.text);
-  }
-}
-
-class _LoginHero extends StatelessWidget {
-  const _LoginHero();
-
-  @override
-  Widget build(BuildContext context) {
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.borderFor(context)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.rh.withValues(alpha: 0.06),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 58,
-                height: 58,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.rh, AppColors.rhDark],
-                  ),
-                ),
-                child: const Center(
-                  child: Text(
-                    'L',
-                    style: TextStyle(
-                      fontFamily: AppTypography.fontFamily,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 28,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Leopardo RH',
-                      style: AppTypography.title.copyWith(color: text),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'L experience mobile des equipes terrain.',
-                      style: AppTypography.bodySmall.copyWith(color: muted),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Ouvrez votre journee avec une home claire et guidee.',
-            style: AppTypography.display.copyWith(color: text, fontSize: 30),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Connexion, modules actifs, pointage et suivi personnel se retrouvent dans un langage plus simple, plus humain et plus moderne.',
-            style: AppTypography.body.copyWith(color: muted),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BenefitStrip extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: [
-        _BenefitPill(
-          icon: Icons.fingerprint,
-          label: 'Pointage',
-          color: AppColors.rh,
-        ),
-        _BenefitPill(
-          icon: Icons.stacked_bar_chart,
-          label: 'Mon mois',
-          color: AppColors.info,
-        ),
-        _BenefitPill(
-          icon: Icons.auto_awesome,
-          label: 'Leo',
-          color: AppColors.ia,
-        ),
-      ],
-    );
-  }
-}
-
-class _BenefitPill extends StatelessWidget {
-  const _BenefitPill({
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.tint(
-          context,
-          color,
-          lightAlpha: 0.16,
-          darkAlpha: 0.24,
-        ),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
-          Text(label, style: AppTypography.caption.copyWith(color: color)),
-        ],
-      ),
-    );
   }
 }
