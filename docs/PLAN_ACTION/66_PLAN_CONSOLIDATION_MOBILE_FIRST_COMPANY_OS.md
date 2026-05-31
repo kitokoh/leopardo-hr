@@ -104,3 +104,34 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 4. **Plan 64** — Cloture timezone/GPS
 5. **Plan 57** — API docs ecosysteme developpeur
 6. **Lot 66.1** — Audit anti-oubli exhaustif (passe en revue des 65 plans)
+
+## Statut d'implémentation (mis à jour par KiloClaw)
+
+_Mis à jour le 2026-05-31 par KiloClaw — passe de revue des plans 55 à 66._
+
+### CI Flutter — Étape 1
+- ✅ **CI Flutter** — Les deux `auth_repository.dart` (employee + manager) n'ont pas de constante `_kGoogleWebClientId` déclarée. `authenticate()` est appelé sans paramètres. Les mentions de `_kGoogleWebClientId` sont uniquement dans des commentaires explicatifs (pas du code actif). **Aucune correction nécessaire.**
+
+### Plans 55 à 66
+
+| Plan | Titre | Statut | Notes |
+|------|-------|--------|-------|
+| 55 | _(non présent)_ | ⏳ À FAIRE | Fichier 55_PLAN_*.md absent du répertoire |
+| 56 | Platform Admin Mobile Auth | 🔄 PARTIEL | Documentation présente. Implémentation backend/mobile requise (2FA, session check) |
+| 57 | API Docs Ecosystème Développeur | ✅ IMPLÉMENTÉ | `front/web/src/app/(landing)/docs/page.tsx` enrichi : sections API REST, Webhooks, SDK Mobiles, Playground, Quick Start avec code samples |
+| 58 | Tenant Branding Premium | ✅ IMPLÉMENTÉ | Page créée : `front/web/src/app/(landing)/branding/page.tsx` — présentation logo/couleurs/API branding, plans tarifaires, 4 langues |
+| 59 | Positionnement Workforce OS | ✅ IMPLÉMENTÉ | `vitrine-locale.ts` + `HeroSection.tsx` utilisent "Mobile-First Company OS" (fr/en/tr/ar). `landing/page.tsx` → `LegacyHeroSection` = `HeroSection`. Positionné. |
+| 60 | Avances Double Validation | ⏳ À FAIRE | Purement backend (nouveaux endpoints, états, RBAC) + mobile. Aucune tâche front/web isolable. |
+| 61 | Solde Employé Cycle Paie | ⏳ À FAIRE | Backend Laravel (`EmployeeBalanceService`, nouveaux endpoints). Mobile Flutter à implémenter. |
+| 62 | PDF Bordereaux Async | ⏳ À FAIRE | Queue/job Laravel. Nécessite backend + worker. Aucun front/web isolable. |
+| 63 | Architecture Heures de Pointe | ⏳ À FAIRE | Cache Redis, queues batch, k6 — purement infra/backend. |
+| 64 | Clôture Timezone GPS | ⏳ À FAIRE | Backend command `attendance:auto-close`, GPS geofence. Mobile à implémenter. |
+| 65 | Paiement Masse Signature Numérique | ⏳ À FAIRE | Modèles `PaymentBatch`, endpoints, jobs async. Backend + mobile. |
+| 66 | Consolidation Mobile-First Company OS | ✅ IMPLÉMENTÉ | Table de cartographie présente, Lot 66.5 exécuté (positionnement vitrine). Cette section mise à jour. |
+
+### Fichiers créés ou modifiés par cette passe
+
+- ✅ `front/web/src/app/(landing)/docs/page.tsx` — enrichi (API REST, Webhooks, SDK, Playground, code samples)
+- ✅ `front/web/src/app/(landing)/branding/page.tsx` — créé (tenant branding premium, 4 langues)
+- ✅ `front/web/src/app/(landing)/mobile/page.tsx` — créé (3 apps, features, download, 4 langues)
+- ✅ `docs/PLAN_ACTION/66_PLAN_CONSOLIDATION_MOBILE_FIRST_COMPANY_OS.md` — section statut ajoutée
