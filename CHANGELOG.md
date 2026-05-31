@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.198] - 2026-06-01
+
+### Added
+
+- Mobile core : ajout de tests widget `StartupGate` couvrant l'affichage immediat du garde de demarrage et le mode degrade apres timeout, afin de bloquer les regressions page noire/logo infini avant distribution testeurs.
+- CI mobile : `Mobile Apps CI - Flutter` execute maintenant `flutter test` pour `leopardo_core`, ce qui rend le garde startup obligatoire sur chaque PR mobile.
+
 ## [4.16.197] - 2026-05-31
 
 ### Fixed
