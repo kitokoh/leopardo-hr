@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/cabinet_document.dart';
 import 'package:leopardo_core/models/cabinet_folder.dart';
 
@@ -8,18 +9,23 @@ class CabinetRepository {
 
   CabinetRepository(this.apiClient);
 
-  // ── Folders ─────────────────────────────────────────────────────────────
+  static const _actionTimeout = Duration(seconds: 10);
+  static const _readTimeout = Duration(seconds: 8);
+  static const _uploadTimeout = Duration(seconds: 30);
 
   Future<List<CabinetFolder>> getFolders({int? parentId}) async {
     final params = <String, dynamic>{};
     if (parentId != null) params['parent_id'] = parentId;
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/cabinet/folders',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: params,
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items
-        .map((e) => CabinetFolder.fromJson(e as Map<String, dynamic>))
+        .whereType<Map>()
+        .map((entry) => CabinetFolder.fromJson(entry.cast<String, dynamic>()))
         .toList();
   }
 
@@ -29,16 +35,19 @@ class CabinetRepository {
     String? color,
     String? icon,
   }) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/cabinet/folders',
+      method: 'POST',
       data: {
         'name': name,
         if (parentId != null) 'parent_id': parentId,
         if (color != null) 'color': color,
         if (icon != null) 'icon': icon,
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
-    return CabinetFolder.fromJson(response.data['data']);
+    return CabinetFolder.fromJson(extractDataMap(response.data));
   }
 
   Future<CabinetFolder> updateFolder(
@@ -49,29 +58,38 @@ class CabinetRepository {
     final data = <String, dynamic>{};
     if (name != null) data['name'] = name;
     if (parentId != null) data['parent_id'] = parentId;
-    final response = await apiClient.dio.put(
+    final response = await apiClient.requestWithRetry(
       '/cabinet/folders/$id',
+      method: 'PUT',
       data: data,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
-    return CabinetFolder.fromJson(response.data['data']);
+    return CabinetFolder.fromJson(extractDataMap(response.data));
   }
 
   Future<void> deleteFolder(int id) async {
-    await apiClient.dio.delete('/cabinet/folders/$id');
+    await apiClient.requestWithRetry(
+      '/cabinet/folders/$id',
+      method: 'DELETE',
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
   }
-
-  // ── Documents ───────────────────────────────────────────────────────────
 
   Future<List<CabinetDocument>> getDocuments({int? folderId}) async {
     final params = <String, dynamic>{};
     if (folderId != null) params['folder_id'] = folderId;
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/cabinet/documents',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: params,
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items
-        .map((e) => CabinetDocument.fromJson(e as Map<String, dynamic>))
+        .whereType<Map>()
+        .map((entry) => CabinetDocument.fromJson(entry.cast<String, dynamic>()))
         .toList();
   }
 
@@ -88,18 +106,24 @@ class CabinetRepository {
       if (name != null) 'name': name,
       if (notes != null) 'notes': notes,
     });
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/cabinet/documents',
+      method: 'POST',
       data: formData,
+      maxRetriesOverride: 0,
+      timeoutOverride: _uploadTimeout,
     );
-    return CabinetDocument.fromJson(response.data['data']);
+    return CabinetDocument.fromJson(extractDataMap(response.data));
   }
 
   Future<void> deleteDocument(int id) async {
-    await apiClient.dio.delete('/cabinet/documents/$id');
+    await apiClient.requestWithRetry(
+      '/cabinet/documents/$id',
+      method: 'DELETE',
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
   }
-
-  // ── Sharing ─────────────────────────────────────────────────────────────
 
   Future<void> shareViaEmail({
     required String shareableType,
@@ -107,8 +131,9 @@ class CabinetRepository {
     required String email,
     String? expiresAt,
   }) async {
-    await apiClient.dio.post(
+    await apiClient.requestWithRetry(
       '/cabinet/shares',
+      method: 'POST',
       data: {
         'shareable_type': shareableType,
         'shareable_id': shareableId,
@@ -116,6 +141,8 @@ class CabinetRepository {
         'shared_with_email': email,
         if (expiresAt != null) 'expires_at': expiresAt,
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
   }
 
@@ -124,22 +151,27 @@ class CabinetRepository {
     required int shareableId,
     String? expiresAt,
   }) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/cabinet/shares',
+      method: 'POST',
       data: {
         'shareable_type': shareableType,
         'shareable_id': shareableId,
         'shared_via': 'link',
         if (expiresAt != null) 'expires_at': expiresAt,
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
-    return response.data['data'] as Map<String, dynamic>;
+    return extractDataMap(response.data);
   }
 
-  // ── Stats ───────────────────────────────────────────────────────────────
-
   Future<Map<String, dynamic>> getStats() async {
-    final response = await apiClient.dio.get('/cabinet/stats');
-    return response.data['data'] as Map<String, dynamic>;
+    final response = await apiClient.requestWithRetry(
+      '/cabinet/stats',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    return extractDataMap(response.data);
   }
 }
