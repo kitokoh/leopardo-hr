@@ -46,6 +46,8 @@ final platformAuthControllerProvider =
     );
 
 class PlatformAuthController extends Notifier<PlatformAuthState> {
+  static const _startupAuthTimeout = Duration(seconds: 12);
+
   @override
   PlatformAuthState build() {
     Future.microtask(_hydrate);
@@ -54,7 +56,10 @@ class PlatformAuthController extends Notifier<PlatformAuthState> {
 
   Future<void> _hydrate() async {
     try {
-      final user = await ref.read(platformRepositoryProvider).me();
+      final user = await ref
+          .read(platformRepositoryProvider)
+          .me()
+          .timeout(_startupAuthTimeout);
       state = state.copyWith(user: user, isBootstrapping: false);
     } catch (_) {
       state = state.copyWith(

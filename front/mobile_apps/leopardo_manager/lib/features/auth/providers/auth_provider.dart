@@ -28,6 +28,8 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
+  static const _startupAuthTimeout = Duration(seconds: 12);
+
   final AuthRepository _repository;
   final PushNotificationService _pushNotifications;
   final ApiClient _apiClient;
@@ -40,7 +42,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> checkAuth() async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await _repository.checkAuth();
+      final data = await _repository.checkAuth().timeout(_startupAuthTimeout);
       if (data != null) {
         state = state.copyWith(isLoading: false, employee: data['employee']);
       } else {
