@@ -31,8 +31,8 @@ void main() {
 
 /// Ops critiques : JAMAIS soumises à un timeout.
 Future<void> _bootstrapCritical() async {
-  await _openOfflineCache();
-  await _initializeLocales();
+  await _runStartupStep('Hive offline cache', _openOfflineCache);
+  await _runStartupStep('Locale formatting', _initializeLocales);
 }
 
 /// Conservé pour compatibilité (non utilisé quand criticalInitializer est fourni).
@@ -80,6 +80,15 @@ Future<void> _initializeLocales() async {
   await initializeDateFormatting('en', null);
   await initializeDateFormatting('en_US', null);
   await initializeDateFormatting('en_GB', null);
+}
+
+Future<void> _runStartupStep(String label, Future<void> Function() step) async {
+  try {
+    await step();
+  } catch (error, stackTrace) {
+    debugPrint('Startup step skipped ($label): $error');
+    debugPrintStack(stackTrace: stackTrace);
+  }
 }
 
 class _StartupRuntimeError extends StatelessWidget {

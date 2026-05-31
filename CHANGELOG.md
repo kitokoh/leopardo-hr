@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.197] - 2026-05-31
+
+### Fixed
+
+- Mobile employee/manager/platform admin : `StartupGate` attend maintenant le premier frame Flutter avant de lancer les initialisations Hive/intl/Firebase/Google, et affiche un garde-fou visuel lisible au lieu d'une page noire si une initialisation bloque ou expire.
+- Mobile bootstrap : les initialisations critiques Hive et locales sont isolees par etape ; un echec de cache local ou de formatage de date est journalise et ne bloque plus l'ouverture de l'espace utilisateur.
+
 ## [4.16.196] - 2026-05-31
 
 ### Fixed
