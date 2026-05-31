@@ -15,8 +15,13 @@
         "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.27",
         "laravel/tinker": "^2.9",
+<<<<<<< HEAD
         "predis/predis": "^2.3",
         "sentry/sentry-laravel": "^4.0"
+=======
+        "sentry/sentry-laravel": "^4.0",
+        "predis/predis": "^2.3"
+>>>>>>> fa964bb7 (fix: composer.json predis ^2.3 (lock sync) + docs: audit POST_AUDIT_2026 skeleton)
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
