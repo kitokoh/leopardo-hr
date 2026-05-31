@@ -19,12 +19,23 @@ void main() {
   runApp(
     StartupGate(
       appName: 'Leopardo Employee',
+      // initializer est requis par l'API mais n'est plus exécuté directement
+      // quand criticalInitializer et optionalInitializer sont fournis.
       initializer: _bootstrap,
+      criticalInitializer: _bootstrapCritical,
+      optionalInitializer: _safeGoogleSignInInitialize,
       child: const ProviderScope(child: LeopardoApp()),
     ),
   );
 }
 
+/// Ops critiques : JAMAIS soumises à un timeout.
+Future<void> _bootstrapCritical() async {
+  await _openOfflineCache();
+  await _initializeLocales();
+}
+
+/// Conservé pour compatibilité (non utilisé quand criticalInitializer est fourni).
 Future<void> _bootstrap() async {
   unawaited(_safeGoogleSignInInitialize());
   await _openOfflineCache();

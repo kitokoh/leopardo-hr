@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-22
+Derniere mise a jour : 2026-05-31
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -44,6 +44,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.186, les preferences notifications employee/manager sont pilotables depuis les ecrans Compte via `/api/v1/notification-preferences`. Toute evolution UI doit garder le modele partage `leopardo_core/lib/models/notification_preferences.dart`, la sauvegarde retry-aware et les heures calmes compatibles avec `CommunicationService`.
 - Depuis v4.16.187, les listes notifications employee/manager doivent rester actionnables : tap = marquer lu, swipe/menu = supprimer via `DELETE /api/v1/notifications/{notification}`, puis refresh provider. Ne pas supprimer l'action de suppression sans retirer aussi le contrat frontend/API.
 - Depuis v4.16.188, les trois apps mobiles ne doivent plus bloquer `runApp()` sur Hive, Google Sign-In ou intl. Le bootstrap passe par `StartupGate`; Hive `offlineCache` doit tenter une recuperation par suppression/reouverture en cas de corruption, et Google Sign-In reste non bloquant. Ne pas remettre d'`await` natif fragile avant le premier frame, sinon les testeurs peuvent revoir une page grise.
+- Depuis v4.16.191, `StartupGate` distingue `criticalInitializer` (Hive, locales — sans timeout) et `optionalInitializer` (Google Sign-In — timeout 8s silencié). NE JAMAIS soumettre Hive ou `initializeDateFormatting` au timeout du `StartupGate` : sur cold start Render ou device lent, ces ops depassent facilement 8s et la future se termine avant que Hive soit pret, ce qui bloque l'app sur le logo indefiniment.
 - Le Plan 20 readiness lancement vit dans `docs/PLAN_ACTION/20_PLAN_READINESS_LANCEMENT_PRODUCTION.md`. Le cockpit API `GET /api/v1/launch-readiness` est la source de verite pour le score go-live tenant ; toute extension dashboard/support doit garder ce contrat tenant-scope et RBAC P/RH.
 - Depuis v4.16.127, la racine API Render expose aussi `/tester-guide` et `/api-explorer`. Garder ces pages publiques, legeres et coherentes avec `DemoCompanySeeder` pour que QA/dev puissent valider web client, mobile, admin plateforme et API sans preparer de payloads a la main.
 - Le login demo doit rester robuste meme si `public.user_lookups` est incomplet : `AuthService` peut retrouver l'employe dans les schemas tenants connus puis regenerer le lookup. Ne pas supprimer ce fallback sans fournir une commande ops de reparation demo.
