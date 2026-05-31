@@ -10577,18 +10577,6 @@ components:
     # Plan 33 — New Schemas
     # =============================================
 
-    PaginationMeta:
-      type: object
-      properties:
-        current_page:
-          type: integer
-        last_page:
-          type: integer
-        per_page:
-          type: integer
-        total:
-          type: integer
-
     Absence:
       type: object
       properties:
@@ -11129,31 +11117,6 @@ components:
           type: string
           format: date-time
 
-    Task:
-      type: object
-      properties:
-        id:
-          type: integer
-        title:
-          type: string
-        description:
-          type: string
-          nullable: true
-        status:
-          type: string
-        priority:
-          type: string
-        due_date:
-          type: string
-          format: date
-          nullable: true
-        assigned_to:
-          type: integer
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
-
     PaySlip:
       type: object
       properties:
@@ -11690,22 +11653,6 @@ components:
         created_at:
           type: string
           format: date-time
-
-    NotificationPreference:
-      type: object
-      properties:
-        id:
-          type: integer
-        employee_id:
-          type: integer
-        email_enabled:
-          type: boolean
-        push_enabled:
-          type: boolean
-        sms_enabled:
-          type: boolean
-        categories:
-          type: object
 
     AuditLog:
       type: object
