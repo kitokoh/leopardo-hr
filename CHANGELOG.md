@@ -325,6 +325,11 @@
 
 - Mobile employee : `Mon mois complet` utilise le client API avec timeout/retry controle pour eviter le spinner infini.
 - API attendance : la vue manager du pointage du jour filtre explicitement les employes par `company_id` pour renforcer l'isolation tenant.
+## [4.16.158] - 2026-05-31
+
+### Changed
+
+- Dependencies : bump `vite` de 8.0.13 a 8.0.14 dans `api/` (correctif securite/maintenance patch).
 
 ## [4.16.161] - 2026-05-31
 
