@@ -59,16 +59,19 @@ jobs:
           - name: employee
             project_path: front/mobile_apps/leopardo_employee
             artifact_name: leopardo-employee
+            version_prefix: employee
             firebase_secret: FIREBASE_EMPLOYEE_ANDROID_APP_ID
             android_package: com.leopardo.employee
           - name: manager
             project_path: front/mobile_apps/leopardo_manager
             artifact_name: leopardo-manager
+            version_prefix: manager
             firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
             android_package: com.leopardo.manager
           - name: platform_admin
             project_path: front/mobile_apps/leopardo_platform_admin
             artifact_name: leopardo-platform-admin
+            version_prefix: platform-admin
             firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
             android_package: com.leopardo.platformadmin
 
@@ -110,19 +113,23 @@ jobs:
           set -euo pipefail
           TAG="${GITHUB_REF_NAME:-}"
           INPUT_ENV="${{ github.event.inputs.environment }}"
+          APP_VERSION_PREFIX="${{ matrix.app.version_prefix }}"
 
           if [[ "$TAG" == *"-prod" ]]; then
             TARGET="prod"
-            BUILD_NAME="${TAG%-prod}"
+            BUILD_NAME="${APP_VERSION_PREFIX}-${TAG%-prod}"
           elif [[ "$TAG" == *"-staging" ]]; then
             TARGET="staging"
-            BUILD_NAME="${TAG%-staging}"
+            BUILD_NAME="${APP_VERSION_PREFIX}-${TAG%-staging}"
           elif [[ "$INPUT_ENV" == "prod" ]]; then
             TARGET="prod"
-            BUILD_NAME="manual-$(date +%Y%m%d)"
+            BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
+          elif [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "main" ]]; then
+            TARGET="staging"
+            BUILD_NAME="${APP_VERSION_PREFIX}-main-${GITHUB_RUN_NUMBER}"
           else
             TARGET="staging"
-            BUILD_NAME="manual-$(date +%Y%m%d)"
+            BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
           fi
 
           echo "TARGET=$TARGET" >> "$GITHUB_ENV"
