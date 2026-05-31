@@ -979,3 +979,49 @@ Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `
 - `seedExpenseClaims()` cree 2 notes de frais avec lignes detaillees
 - Tous utilisent `sharedTableExists()` pour tolerer les tables absentes
 - `cleanupExistingCompany()` nettoie les 12 nouvelles tables avant re-seed
+
+### Plans 60-65 — Double Validation Avances & Paiement en Masse (Redis Upstash)
+
+#### Plan 60 — Double Validation Avances Salaire
+- `POST /api/v1/salary-advances/{id}/manager-approve` : manager approuve, met `validation_status=manager_approved` et `manager_approved_at`
+- `POST /api/v1/salary-advances/{id}/declare-payment` : comptable declare paiement, met `payment_declared_at` et `payment_declared_by`
+- `POST /api/v1/salary-advances/{id}/employee-confirm` : employe confirme reception, met `employee_confirmed_at`
+- Acces refuse a un employe sans role manager sur les endpoints d'approbation (403)
+- Acces refuse a un manager d'une autre entreprise (404)
+
+#### Plan 61 — Cycles de Paie & Solde Employe (PayrollCycleController)
+- `GET /api/v1/payroll/cycles` : retourne la liste paginee des PayrollRuns pour l'entreprise (manager requis)
+- `GET /api/v1/payroll/cycles/current` : retourne `period_start`, `period_end`, `label` du cycle courant calcule
+- `GET /api/v1/employees/{id}/balance` : retourne `gross_due`, `advances`, `paid`, `remaining` pour le cycle courant
+- Employe peut consulter son propre solde ; manager peut consulter tout employe de son entreprise
+- Acces refuse a un employe consultant le solde d'un autre employe sans etre manager (403)
+- Acces refuse a un manager consultant un employe hors de son entreprise (404)
+
+#### Plan 62 — Generation PDF Bulletins de Paie Async (GeneratePaySlipPdfJob)
+- `GeneratePaySlipPdfJob` dispatche sur la queue `pdf` avec `tries=3`, `timeout=120`
+- Le job genere le PDF via dompdf, stocke dans `payslips/{company_id}/{year}/{month}/{employee_id}.pdf`
+- Met a jour `pay_slips.pdf_path` apres generation
+- Notifie l'employe via `PushNotificationService` apres generation reussie
+- Failure silencieuse si `PayrollRun`, `Employee`, `Company` ou `PaySlip` introuvable (log warning, pas d'exception)
+
+#### Plan 63 — Architecture Redis Upstash / QueueHealthCheck
+- `php artisan queue:health-check` retourne JSON avec `redis_ok`, `redis_latency_ms`, profondeurs des queues `default`, `pdf`, `notifications`, `payroll`, `webhooks`
+- Retourne `status=error` si Redis inaccessible (exit FAILURE)
+- Options `--queue=pdf --queue=payroll` limitent le check aux queues specifiees
+
+#### Plan 64 — Cloture Automatique Presences (AutoCloseAttendanceCommand)
+- `php artisan attendance:auto-close` cloture les pointages sans `check_out` depuis plus de 12h (defaut)
+- `--threshold=N` parametre le seuil en heures
+- `--dry-run` preview sans ecriture
+- Calcule `hours_worked` = diff check_in / auto check_out (cap 8h ou now si check_in+8h est futur)
+- Met `status=auto_closed`, `correction_note=auto_close`, `punch_note` explicatif
+
+#### Plan 65 — Paiement en Masse (BulkPaymentController + ProcessBulkPaymentJob)
+- `POST /api/v1/payroll-runs/{id}/bulk-pay` : dispatch `ProcessBulkPaymentJob` sur queue `payroll`, retourne 202 Accepted
+- Retourne 422 si le run n'est pas en status `validated` ou `calculated`
+- Retourne 409 si un job bulk-pay est deja en cours pour ce run (detection via Redis)
+- `GET /api/v1/payroll-runs/{id}/bulk-pay/status` : retourne `status`, `done`, `total` depuis Redis
+- Retourne `status=not_started` si aucun job trouve dans Redis
+- Retourne 503 avec `error` si Redis indisponible
+- `ProcessBulkPaymentJob` : marque les avances `manager_approved` en `payment_declared`, dispatch `GeneratePaySlipPdfJob` pour chaque employe, met le run en `paid`
+- Ecrit la progression Redis avec TTL 1h (`bulk_pay:run:{id}`)
