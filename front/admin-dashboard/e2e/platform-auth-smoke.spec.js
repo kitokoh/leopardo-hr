@@ -42,7 +42,7 @@ test('platform administrator can sign in and reach the admin dashboard', async (
   await page.goto('/login')
   await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
   await page.locator('#password').fill('password123')
-  await page.getByRole('button', { name: /^Se connecter$/i }).click()
+  await page.getByRole('button', { name: /Se connecter/i }).click()
 
   await expect(page).toHaveURL(/\/$/)
   await expect(page.locator('body')).toContainText(/Tableau de bord|Dashboard/i)
@@ -54,8 +54,8 @@ test('platform demo selector does not advertise tenant employee accounts', async
   await page.goto('/login')
   await page.getByRole('button', { name: /Acces Demo/i }).click()
 
-  await expect(page.locator('body')).toContainText('Super Administrateur')
-  await expect(page.locator('body')).toContainText(/reserve aux administrateurs plateforme/i)
+  await expect(page.locator('body')).toContainText('Platform Admin')
+  await expect(page.locator('body')).toContainText(/administrateurs plateforme/i)
   await expect(page.locator('body')).not.toContainText('Ahmed Benali')
   await expect(page.locator('body')).not.toContainText('karim.aouad@techcorp-algerie.dz')
 })

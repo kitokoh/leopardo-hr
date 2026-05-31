@@ -1,0 +1,15 @@
+
+> leopardo-admin-dashboard@1.0.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 1003 ms
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: use --host to expose
+7:53:23 AM [vite] hmr update /src/views/auth/LoginView.vue
+7:54:42 AM [vite] hmr update /src/views/auth/LoginView.vue
+7:58:10 AM [vite] hmr update /src/views/auth/LoginView.vue?vue&type=style&index=0&scoped=409777eb&lang.css, /src/views/auth/LoginView.vue
+8:02:54 AM [vite] hmr update /src/views/auth/LoginView.vue
+8:06:56 AM [vite] hmr update /src/views/auth/LoginView.vue
+8:08:05 AM [vite] hmr update /src/views/auth/LoginView.vue
