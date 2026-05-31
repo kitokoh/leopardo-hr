@@ -5,368 +5,231 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
-class WelcomeScreen extends StatefulWidget {
+/// Écran de bienvenue manager — accès direct, zéro friction.
+class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
-}
-
-class _WelcomeScreenState extends State<WelcomeScreen> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-
-  static List<_StoryCardData> _stories(BuildContext context) {
-    final l10n = context.l10n;
-
-    return <_StoryCardData>[
-      _StoryCardData(
-        title: l10n.welcomeStoryClarityTitle,
-        body: l10n.welcomeStoryClarityBody,
-        domain: 'ia',
-        icon: Icons.forum_outlined,
-      ),
-      _StoryCardData(
-        title: l10n.welcomeStoryFieldTitle,
-        body: l10n.welcomeStoryFieldBody,
-        domain: 'rh',
-        icon: Icons.phone_android_outlined,
-      ),
-      _StoryCardData(
-        title: l10n.welcomeStoryModulesTitle,
-        body: l10n.welcomeStoryModulesBody,
-        domain: 'finance',
-        icon: Icons.dashboard_customize_outlined,
-      ),
-    ];
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final background = AppColors.backgroundFor(context);
-    final compact = MediaQuery.of(context).size.height < 740;
-    final stories = _stories(context);
+    final bg = AppColors.backgroundFor(context);
+    final compact = MediaQuery.of(context).size.height < 700;
     final l10n = context.l10n;
+    final text = AppColors.textPrimaryFor(context);
+    final muted = AppColors.textSecondaryFor(context);
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: bg,
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              AppColors.tint(context, AppColors.rh, lightAlpha: 0.10),
-              background,
-              AppColors.tint(context, AppColors.ia, lightAlpha: 0.05),
+              AppColors.tint(context, AppColors.rh, lightAlpha: 0.12),
+              bg,
+              AppColors.tint(context, AppColors.finance, lightAlpha: 0.05),
             ],
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
-                child: _WelcomeHero(compact: compact),
-              ),
-              SizedBox(height: compact ? 14 : 22),
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: stories.length,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    return _StoryCard(story: stories[index]);
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-              _Dots(count: stories.length, current: _currentPage),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  24,
-                  compact ? 10 : 16,
-                  24,
-                  compact ? 14 : 24,
-                ),
-                child: Column(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: compact ? 16 : 28,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Logo + marque ─────────────────────────────────────────
+                Row(
                   children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => context.go('/login'),
-                        child: Text(l10n.login),
+                    Container(
+                      width: compact ? 50 : 62,
+                      height: compact ? 50 : 62,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [AppColors.rh, AppColors.rhDark],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.rh.withValues(alpha: 0.28),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () => context.go('/register'),
-                        child: Text(l10n.employeeInvitationAccess),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton.icon(
-                        onPressed: () => context.go('/user-register'),
-                        icon: const Icon(Icons.person_add_outlined, size: 18),
-                        label: Text(l10n.createPersonalAccount),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.ia,
+                      child: Center(
+                        child: Text(
+                          'L',
+                          style: TextStyle(
+                            fontFamily: AppTypography.fontFamily,
+                            fontWeight: FontWeight.w800,
+                            fontSize: compact ? 24 : 30,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      l10n.personalAccountExplanation,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondaryFor(context),
-                      ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Leopardo RH',
+                          style: AppTypography.title.copyWith(color: text),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'Espace Manager',
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.rh,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+                SizedBox(height: compact ? 24 : 36),
 
-class _WelcomeHero extends StatelessWidget {
-  const _WelcomeHero({required this.compact});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
-
-    return Container(
-      padding: EdgeInsets.all(compact ? 16 : 22),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceFor(context),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.borderFor(context)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.rh.withValues(alpha: 0.06),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: compact ? 46 : 58,
-                height: compact ? 46 : 58,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.rh, AppColors.rhDark],
+                // ── Titre ─────────────────────────────────────────────────
+                Text(
+                  l10n.welcomeHeroTitle,
+                  style: AppTypography.display.copyWith(
+                    color: text,
+                    fontSize: compact ? 26 : 32,
+                    height: 1.2,
                   ),
                 ),
-                child: Center(
-                  child: Text(
-                    'L',
-                    style: TextStyle(
-                      fontFamily: AppTypography.fontFamily,
-                      fontWeight: FontWeight.w700,
-                      fontSize: compact ? 22 : 28,
-                      color: Colors.white,
-                    ),
+                SizedBox(height: compact ? 8 : 12),
+                Text(
+                  l10n.welcomeHeroDescription,
+                  style: AppTypography.body.copyWith(color: muted),
+                ),
+                SizedBox(height: compact ? 20 : 28),
+
+                // ── Capacités manager ─────────────────────────────────────
+                _ManagerCapabilities(context: context),
+                const Spacer(),
+
+                // ── CTA principaux ────────────────────────────────────────
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () => context.go('/login'),
+                    child: Text(l10n.login),
                   ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.appTitle,
-                      style: AppTypography.title.copyWith(color: text),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      context.l10n.welcomeBrandSubtitle,
-                      style: AppTypography.bodySmall.copyWith(color: muted),
-                    ),
-                  ],
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () => context.go('/register'),
+                    child: Text(l10n.employeeInvitationAccess),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: compact ? 12 : 22),
-          Text(
-            context.l10n.welcomeHeroTitle,
-            style: AppTypography.display.copyWith(
-              color: text,
-              fontSize: compact ? 24 : 30,
+              ],
             ),
           ),
-          SizedBox(height: compact ? 6 : 10),
-          Text(
-            context.l10n.welcomeHeroDescription,
-            style: AppTypography.body.copyWith(color: muted),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _StoryCardData {
-  const _StoryCardData({
-    required this.title,
-    required this.body,
-    required this.domain,
+class _ManagerCapabilities extends StatelessWidget {
+  const _ManagerCapabilities({required this.context});
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext ctx) {
+    final items = [
+      _CapItem(
+        icon: Icons.people_alt_outlined,
+        label: 'Mon équipe',
+        color: AppColors.rh,
+      ),
+      _CapItem(
+        icon: Icons.access_time_rounded,
+        label: 'Présences',
+        color: AppColors.info,
+      ),
+      _CapItem(
+        icon: Icons.task_alt_rounded,
+        label: 'Tâches',
+        color: AppColors.finance,
+      ),
+      _CapItem(
+        icon: Icons.auto_awesome_rounded,
+        label: 'Leo IA',
+        color: AppColors.ia,
+      ),
+    ];
+
+    return Row(
+      children: items
+          .map(
+            (item) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.tint(
+                      ctx,
+                      item.color,
+                      lightAlpha: 0.12,
+                      darkAlpha: 0.20,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: item.color.withValues(alpha: 0.20),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(item.icon, color: item.color, size: 22),
+                      const SizedBox(height: 6),
+                      Text(
+                        item.label,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.caption.copyWith(
+                          color: item.color,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class _CapItem {
+  const _CapItem({
     required this.icon,
+    required this.label,
+    required this.color,
   });
 
-  final String title;
-  final String body;
-  final String domain;
   final IconData icon;
-}
-
-class _StoryCard extends StatelessWidget {
-  const _StoryCard({required this.story});
-
-  final _StoryCardData story;
-
-  @override
-  Widget build(BuildContext context) {
-    final compact = MediaQuery.of(context).size.height < 740;
-    final color = AppColors.forDomain(story.domain);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-      child: Container(
-        padding: EdgeInsets.all(compact ? 16 : 22),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceFor(context),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.borderFor(context)),
-        ),
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: compact ? 44 : 56,
-                height: compact ? 44 : 56,
-                decoration: BoxDecoration(
-                  color: AppColors.tint(
-                    context,
-                    color,
-                    lightAlpha: 0.18,
-                    darkAlpha: 0.24,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(story.icon, color: color),
-              ),
-              SizedBox(height: compact ? 12 : 22),
-              Text(
-                story.title,
-                style: AppTypography.title.copyWith(color: text),
-              ),
-              SizedBox(height: compact ? 6 : 10),
-              Text(
-                story.body,
-                style: AppTypography.body.copyWith(color: muted),
-              ),
-              SizedBox(height: compact ? 14 : 22),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _SignalPill(label: 'RH', color: AppColors.rh),
-                  _SignalPill(label: 'Finance', color: AppColors.finance),
-                  _SignalPill(label: 'Leo', color: AppColors.ia),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SignalPill extends StatelessWidget {
-  const _SignalPill({required this.label, required this.color});
-
   final String label;
   final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.tint(
-          context,
-          color,
-          lightAlpha: 0.16,
-          darkAlpha: 0.24,
-        ),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(label, style: AppTypography.caption.copyWith(color: color)),
-    );
-  }
-}
-
-class _Dots extends StatelessWidget {
-  const _Dots({required this.count, required this.current});
-
-  final int count;
-  final int current;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List<Widget>.generate(count, (index) {
-        final active = index == current;
-
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: active ? 24 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: active ? AppColors.rh : AppColors.borderFor(context),
-            borderRadius: BorderRadius.circular(999),
-          ),
-        );
-      }),
-    );
-  }
 }

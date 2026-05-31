@@ -76,86 +76,55 @@ class _StartupGateState extends State<StartupGate> {
     return FutureBuilder<void>(
       future: _startupFuture,
       builder: (context, snapshot) {
+        // Afficher l'app dès que les initialisations critiques sont terminées.
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.error == null) {
           return widget.child;
         }
 
+        // En cas d'erreur critique, afficher un panneau de récupération.
+        if (snapshot.hasError) {
+          return MaterialApp(
+            title: widget.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.dark,
+            home: Scaffold(
+              backgroundColor: MobileSurface.background,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: _StartupError(
+                        appName: widget.appName,
+                        error: snapshot.error!,
+                        onRetry: _retry,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Pendant le chargement : écran minimal, fond seul, sans texte superflu.
+        // Sur un device normal le bootstrap dure < 300ms et cet écran est
+        // presque invisible.
         return MaterialApp(
           title: widget.appName,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeMode.dark,
-          home: Scaffold(
+          home: const Scaffold(
             backgroundColor: MobileSurface.background,
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
-                    child:
-                        snapshot.error == null
-                            ? _StartupLoading(appName: widget.appName)
-                            : _StartupError(
-                              appName: widget.appName,
-                              error: snapshot.error!,
-                              onRetry: _retry,
-                            ),
-                  ),
-                ),
-              ),
-            ),
           ),
         );
       },
-    );
-  }
-}
-
-class _StartupLoading extends StatelessWidget {
-  const _StartupLoading({required this.appName});
-
-  final String appName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            color: AppColors.rh.withValues(alpha: 0.14),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.business_center_outlined,
-            color: AppColors.rh,
-            size: 34,
-          ),
-        ),
-        const SizedBox(height: 18),
-        Text(
-          appName,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: MobileSurface.text,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Preparation de votre espace...',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: MobileSurface.secondary, fontSize: 13),
-        ),
-        const SizedBox(height: 18),
-        const LinearProgressIndicator(minHeight: 3),
-      ],
     );
   }
 }
