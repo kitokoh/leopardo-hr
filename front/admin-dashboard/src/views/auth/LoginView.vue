@@ -13,7 +13,7 @@
           Leopardo RH
         </h2>
         <p class="mt-3 text-center text-brand-100/80 font-medium">
-          Administration Plateforme
+          Connectez-vous a votre espace d'administration
         </p>
       </div>
 
@@ -30,6 +30,7 @@
                   type="email"
                   autocomplete="email"
                   required
+                  autofocus
                   class="block w-full rounded-2xl border-0 bg-white/5 py-3 px-4 text-white ring-1 ring-inset ring-white/20 placeholder:text-brand-200/50 focus:ring-2 focus:ring-inset focus:ring-brand-400 sm:text-sm sm:leading-6 transition-all duration-200"
                   placeholder="admin@leopardo-rh.com"
                 />
@@ -52,10 +53,12 @@
                 <button
                   type="button"
                   class="absolute inset-y-0 right-0 flex items-center px-4 text-brand-200/60 hover:text-white transition-colors"
+                  :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                  :title="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
                   @click="showPassword = !showPassword"
                 >
-                  <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
-                  <EyeIcon v-else class="h-5 w-5" />
+                  <EyeSlashIcon v-if="showPassword" class="h-5 w-5" aria-hidden="true" />
+                  <EyeIcon v-else class="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -92,18 +95,21 @@
 
             <div class="text-sm">
               <a href="#" class="font-semibold text-brand-300 hover:text-brand-200 transition-colors">
-                Mot de passe oublié ?
+                Mot de passe oublie ?
               </a>
             </div>
           </div>
 
           <div v-if="error" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 animate-shake">
             <div class="flex">
-              <ExclamationTriangleIcon class="h-5 w-5 text-red-400" />
+              <ExclamationTriangleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
               <div class="ml-3">
-                <p class="text-sm font-medium text-red-200">
+                <h3 class="text-sm font-medium text-red-200">
+                  Erreur de connexion
+                </h3>
+                <div class="mt-1 text-xs text-red-300/80">
                   {{ error }}
-                </p>
+                </div>
               </div>
             </div>
           </div>
@@ -114,12 +120,12 @@
             class="group relative flex w-full justify-center rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 py-3 px-4 text-sm font-bold text-white shadow-lg hover:from-brand-400 hover:to-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             <span v-if="isLoading" class="absolute inset-y-0 left-0 flex items-center pl-4">
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             </span>
-            <LockClosedIcon v-else class="absolute inset-y-0 left-0 flex items-center pl-4 h-12 w-9 text-brand-300/50 group-hover:text-brand-200 transition-colors" />
+            <LockClosedIcon v-else class="absolute inset-y-0 left-0 flex items-center pl-4 h-12 w-9 text-brand-300/50 group-hover:text-brand-200 transition-colors" aria-hidden="true" />
             {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
           </button>
 
@@ -128,8 +134,8 @@
             class="w-full flex items-center justify-center space-x-2 rounded-2xl border border-white/10 bg-white/5 py-3 px-4 text-sm font-semibold text-white hover:bg-white/10 transition-all duration-200"
             @click="showDemoModal = true"
           >
-            <UserGroupIcon class="h-5 w-5 text-emerald-400" />
-            <span>Accès Démo</span>
+            <UserGroupIcon class="h-5 w-5 text-emerald-400" aria-hidden="true" />
+            <span>Acces Demo</span>
           </button>
         </form>
 
@@ -175,7 +181,7 @@
               class="p-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
               @click="showDemoModal = false"
             >
-              <XMarkIcon class="h-6 w-6" />
+              <XMarkIcon class="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
 
@@ -190,7 +196,7 @@
                   <div class="text-sm text-zinc-500">admin@leopardo-rh.com</div>
                 </div>
                 <div class="text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -200,7 +206,7 @@
             <div class="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4">
               <div class="flex">
                 <div class="shrink-0">
-                  <svg class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                  <svg class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                   </svg>
                 </div>
