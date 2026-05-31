@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.202] - 2026-06-01
+
+### Fixed
+
+- Mobile platform admin : durcissement du repository super-admin avec timeouts courts, `requestWithRetry` explicite et parsing tolerant des listes `data.items`. Les ecrans entreprises, plans, demandes client et metriques ne dependent plus de casts directs fragiles pendant la navigation.
+- Mobile core : `extractDataList()` supporte maintenant les payloads Laravel `{data: {items: [...]}}` et `extractDataMap()` supporte `{data: {item: {...}}}` pour unifier les contrats API utilises par les trois apps.
+
 ## [4.16.201] - 2026-06-01
 
 ### Fixed
