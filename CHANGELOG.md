@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.200] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager : les repositories pointage et absences utilisent maintenant `requestWithRetry` + parsing tolerant `extractDataList`/`extractDataMap` pour les historiques, resumes jour/mois, estimations rapides, taches du jour, corrections et soldes conges. Cela evite les chargements infinis quand Laravel renvoie une liste paginee ou un payload enveloppe.
+
 ## [4.16.199] - 2026-06-01
 
 ### Changed
