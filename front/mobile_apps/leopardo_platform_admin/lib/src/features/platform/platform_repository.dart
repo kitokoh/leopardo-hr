@@ -58,6 +58,9 @@ class PlatformRepository {
 
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/auth/me',
+      // Timeout court pour le bootstrap : ne pas bloquer le splash >10s.
+      timeoutOverride: const Duration(seconds: 10),
+      maxRetriesOverride: 1,
     );
     return PlatformAdminUser.fromJson(
       ((response.data ?? {})['data'] as Map).cast<String, dynamic>(),

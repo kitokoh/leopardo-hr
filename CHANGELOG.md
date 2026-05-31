@@ -326,6 +326,20 @@
 - Mobile employee : `Mon mois complet` utilise le client API avec timeout/retry controle pour eviter le spinner infini.
 - API attendance : la vue manager du pointage du jour filtre explicitement les employes par `company_id` pour renforcer l'isolation tenant.
 
+## [4.16.161] - 2026-05-31
+
+### Fixed
+
+- Mobile (Employee, Manager) : resolution de la race condition entre GoRouter et AuthNotifier
+  qui causait un ecran noir au demarrage. `AuthState` initialise maintenant avec `isLoading: true`
+  et `checkAuth()` est appele via `Future.microtask` pour laisser le router se construire.
+- Mobile (Employee, Manager) : timeout `/auth/me` reduit a 10 secondes pour eviter le blocage
+  sur l'ecran splash en cas de cold-start Render ou de reseau lent.
+- Mobile (Platform Admin) : `timeoutOverride: 10s`, `maxRetriesOverride: 1` sur le bootstrap
+  pour aligner le comportement avec les apps Employee/Manager.
+- CI : `predis/predis ^2.3` restaure dans `api/composer.json` (perdu lors du merge #638).
+  `composer.lock` regenere automatiquement via workflow `fix-composer-lock.yml`.
+
 ## [4.16.157] - 2026-05-26
 
 ### Changed

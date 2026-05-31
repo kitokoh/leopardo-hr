@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio_options;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
@@ -128,7 +129,16 @@ class AuthRepository {
     if (token == null) return null;
 
     try {
-      final response = await apiClient.dio.get('/auth/me');
+      // Timeout court (10 s) pour ne pas bloquer le splash plus longtemps que nécessaire.
+      // En cas de cold-start Render ou de réseau lent, l’utilisateur voit /welcome
+      // plutôt que rester coincé sur l’écran de chargement.
+      final response = await apiClient.dio.get(
+        '/auth/me',
+        options: dio_options.Options(
+          sendTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      );
       final data = response.data['data'];
       final employee = Employee.fromJson(data);
       await _persistEmployeeContext(employee);
