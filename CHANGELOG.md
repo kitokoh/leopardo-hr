@@ -344,6 +344,16 @@
   pour aligner le comportement avec les apps Employee/Manager.
 - CI : `predis/predis ^2.3` restaure dans `api/composer.json` (perdu lors du merge #638).
   `composer.lock` regenere automatiquement via workflow `fix-composer-lock.yml`.
+## [4.16.159] - 2026-05-31
+
+### Added
+
+- OpenAPI : documentation complete de ~250 routes manquantes (Plan 33, iterations 1-4) portant la couverture de 41% a quasi-complete.
+- OpenAPI : 40+ nouveaux schemas (Employee, Absence, Payroll, Task, Notification, Cabinet, etc.).
+
+### Fixed
+
+- OpenAPI : suppression de 3 schemas en double (`PaginationMeta`, `Task`, `NotificationPreference`) qui causaient une erreur de parsing YAML.
 
 ## [4.16.157] - 2026-05-26
 
