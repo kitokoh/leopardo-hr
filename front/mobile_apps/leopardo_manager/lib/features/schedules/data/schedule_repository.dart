@@ -1,13 +1,21 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 
 class ScheduleRepository {
   ScheduleRepository(this.apiClient);
 
   final ApiClient apiClient;
 
+  static const _actionTimeout = Duration(seconds: 10);
+  static const _readTimeout = Duration(seconds: 8);
+
   Future<List<WorkSchedule>> list() async {
-    final response = await apiClient.dio.get('/schedules');
-    final items = response.data['data'] as List;
+    final response = await apiClient.requestWithRetry(
+      '/schedules',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    final items = extractDataList(response.data);
 
     return items
         .map(
@@ -18,28 +26,35 @@ class ScheduleRepository {
   }
 
   Future<WorkSchedule> create(SchedulePayload payload) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/schedules',
+      method: 'POST',
       data: payload.toJson(),
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
-    return WorkSchedule.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return WorkSchedule.fromJson(extractDataMap(response.data));
   }
 
   Future<WorkSchedule> update(int scheduleId, SchedulePayload payload) async {
-    final response = await apiClient.dio.put(
+    final response = await apiClient.requestWithRetry(
       '/schedules/$scheduleId',
+      method: 'PUT',
       data: payload.toJson(),
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
 
-    return WorkSchedule.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return WorkSchedule.fromJson(extractDataMap(response.data));
   }
 
   Future<void> delete(int scheduleId) async {
-    await apiClient.dio.delete('/schedules/$scheduleId');
+    await apiClient.requestWithRetry(
+      '/schedules/$scheduleId',
+      method: 'DELETE',
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
   }
 }
 
