@@ -1,0 +1,11 @@
+
+> leopardo-admin-dashboard@1.0.0 dev
+> vite
+
+Re-optimizing dependencies because lockfile has changed
+Port 3001 is in use, trying another one...
+
+  VITE v5.4.21  ready in 516 ms
+
+  ➜  Local:   http://localhost:3002/
+  ➜  Network: use --host to expose

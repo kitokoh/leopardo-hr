@@ -1,205 +1,220 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-lg bg-indigo-600">
-          <span class="text-xl font-bold text-white">LRH</span>
+  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-600 via-brand-700 to-zinc-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Background Decorations -->
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/20 rounded-full blur-[120px] animate-pulse-slow"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-400/20 rounded-full blur-[120px] animate-pulse-slow"></div>
+
+    <div class="max-w-md w-full space-y-8 relative z-10 animate-fade-in">
+      <div class="text-center">
+        <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-glass animate-bounce-slow">
+          <span class="text-3xl font-extrabold text-white tracking-tighter">LRH</span>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          Administration Leopardo RH
+        <h2 class="mt-8 text-center text-4xl font-extrabold tracking-tight text-white drop-shadow-md">
+          Leopardo RH
         </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-          Connectez-vous a votre espace d'administration
+        <p class="mt-3 text-center text-brand-100/80 font-medium">
+          Administration Plateforme
         </p>
       </div>
 
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email" class="sr-only">Adresse email</label>
-            <input
-              id="email"
-              v-model="form.email"
-              name="email"
-              type="email"
-              autocomplete="email"
-              required
-              class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="Adresse email"
-            />
-          </div>
-          <div>
-            <label for="password" class="sr-only">Mot de passe</label>
-            <div class="relative">
-              <input
-                id="password"
-                v-model="form.password"
-                name="password"
-                :type="showPassword ? 'text' : 'password'"
-                autocomplete="current-password"
-                required
-                :class="[
-                  'relative block w-full border-0 py-1.5 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                  requiresTwoFactor ? '' : 'rounded-b-md'
-                ]"
-                placeholder="Mot de passe"
-              />
-              <button
-                type="button"
-                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 transition hover:text-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
-                :title="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
-                @click="showPassword = !showPassword"
-              >
-                <EyeSlashIcon v-if="showPassword" class="h-5 w-5" aria-hidden="true" />
-                <EyeIcon v-else class="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-          <div v-if="requiresTwoFactor">
-            <label for="two-factor-code" class="sr-only">Code de verification</label>
-            <input
-              id="two-factor-code"
-              v-model="form.twoFactorCode"
-              name="two-factor-code"
-              type="text"
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              required
-              class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="Code de verification a 6 chiffres"
-            />
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <input
-              id="remember-me"
-              v-model="form.remember"
-              name="remember-me"
-              type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-            />
-            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-              Se souvenir de moi
-            </label>
-          </div>
-
-          <div class="text-sm">
-            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-              Mot de passe oublie ?
-            </a>
-          </div>
-        </div>
-
-        <div v-if="error" class="rounded-md bg-red-50 p-4">
-          <div class="flex">
-            <ExclamationTriangleIcon class="h-5 w-5 text-red-400" />
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">
-                Erreur de connexion
-              </h3>
-              <div class="mt-2 text-sm text-red-700">
-                {{ error }}
+      <div class="mt-8 bg-white/10 dark:bg-zinc-900/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-3xl shadow-glass p-8 animate-slide-up">
+        <form class="space-y-6" @submit.prevent="handleLogin">
+          <div class="space-y-4">
+            <div>
+              <label for="email" class="block text-sm font-semibold text-brand-50 mb-2 ml-1">Adresse email</label>
+              <div class="relative group">
+                <input
+                  id="email"
+                  v-model="form.email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  class="block w-full rounded-2xl border-0 bg-white/5 py-3 px-4 text-white ring-1 ring-inset ring-white/20 placeholder:text-brand-200/50 focus:ring-2 focus:ring-inset focus:ring-brand-400 sm:text-sm sm:leading-6 transition-all duration-200"
+                  placeholder="admin@leopardo-rh.com"
+                />
               </div>
             </div>
-          </div>
-        </div>
 
-        <div>
-          <button
-            type="submit"
-            :disabled="isLoading"
-            class="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-              <LockClosedIcon
-                :class="[
-                  'h-5 w-5',
-                  isLoading ? 'animate-spin' : 'group-hover:text-indigo-400'
-                ]"
-                aria-hidden="true"
-              />
-            </span>
-            {{ isLoading ? 'Connexion...' : 'Se connecter' }}
-          </button>
-        </div>
-
-        <div class="mt-4 border-t border-gray-200 pt-4">
-          <button
-            type="button"
-            class="group relative flex w-full justify-center rounded-md bg-emerald-600 py-2 px-3 text-sm font-semibold text-white hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-            @click="showDemoModal = true"
-          >
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-              <UserGroupIcon class="h-5 w-5 group-hover:text-emerald-300" aria-hidden="true" />
-            </span>
-            Acces Demo
-          </button>
-        </div>
-
-        <!-- Demo users modal -->
-        <Teleport to="body">
-          <div
-            v-if="showDemoModal"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            @click.self="showDemoModal = false"
-          >
-            <div class="w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-xl bg-white shadow-2xl">
-              <div class="sticky top-0 flex items-center justify-between border-b bg-white px-6 py-4 rounded-t-xl">
-                <h3 class="text-lg font-bold text-gray-900">Choisir un compte demo</h3>
+            <div>
+              <label for="password" class="block text-sm font-semibold text-brand-50 mb-2 ml-1">Mot de passe</label>
+              <div class="relative group">
+                <input
+                  id="password"
+                  v-model="form.password"
+                  name="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  required
+                  class="block w-full rounded-2xl border-0 bg-white/5 py-3 pl-4 pr-12 text-white ring-1 ring-inset ring-white/20 placeholder:text-brand-200/50 focus:ring-2 focus:ring-inset focus:ring-brand-400 sm:text-sm sm:leading-6 transition-all duration-200"
+                  placeholder="••••••••"
+                />
                 <button
                   type="button"
-                  class="rounded-md text-gray-400 hover:text-gray-600"
-                  @click="showDemoModal = false"
+                  class="absolute inset-y-0 right-0 flex items-center px-4 text-brand-200/60 hover:text-white transition-colors"
+                  @click="showPassword = !showPassword"
                 >
-                  <XMarkIcon class="h-6 w-6" />
+                  <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
+                  <EyeIcon v-else class="h-5 w-5" />
                 </button>
               </div>
-              <div class="p-6 space-y-4">
-                <!-- Super Admin -->
-                <div>
-                  <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Super Admin</h4>
-                  <button
-                    type="button"
-                    class="w-full text-left rounded-lg border border-gray-200 p-3 hover:border-indigo-400 hover:bg-indigo-50 transition"
-                    @click="selectDemoUser('admin@leopardo-rh.com', 'password123')"
-                  >
-                    <div class="font-medium text-gray-900">Super Administrateur</div>
-                    <div class="text-sm text-gray-500">admin@leopardo-rh.com</div>
-                  </button>
-                </div>
+            </div>
 
-                <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                  Cet espace est reserve aux administrateurs plateforme. Les comptes RH et employes de demonstration se connectent depuis le portail client ou l'application mobile.
+            <div v-if="requiresTwoFactor" class="animate-fade-in">
+              <label for="two-factor-code" class="block text-sm font-semibold text-brand-50 mb-2 ml-1">Code de vérification</label>
+              <input
+                id="two-factor-code"
+                v-model="form.twoFactorCode"
+                name="two-factor-code"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                required
+                class="block w-full rounded-2xl border-0 bg-white/5 py-3 px-4 text-white ring-1 ring-inset ring-white/20 placeholder:text-brand-200/50 focus:ring-2 focus:ring-inset focus:ring-brand-400 sm:text-sm sm:leading-6 transition-all duration-200"
+                placeholder="000000"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center">
+              <input
+                id="remember-me"
+                v-model="form.remember"
+                name="remember-me"
+                type="checkbox"
+                class="h-4 w-4 rounded border-white/20 bg-white/5 text-brand-500 focus:ring-brand-400 focus:ring-offset-zinc-900"
+              />
+              <label for="remember-me" class="ml-2 block text-sm text-brand-100 hover:text-white cursor-pointer transition-colors">
+                Se souvenir de moi
+              </label>
+            </div>
+
+            <div class="text-sm">
+              <a href="#" class="font-semibold text-brand-300 hover:text-brand-200 transition-colors">
+                Mot de passe oublié ?
+              </a>
+            </div>
+          </div>
+
+          <div v-if="error" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 animate-shake">
+            <div class="flex">
+              <ExclamationTriangleIcon class="h-5 w-5 text-red-400" />
+              <div class="ml-3">
+                <p class="text-sm font-medium text-red-200">
+                  {{ error }}
                 </p>
               </div>
             </div>
           </div>
-        </Teleport>
 
-        <div class="mt-6 border-t border-gray-200 pt-6">
-          <div class="text-center">
-            <p class="text-xs text-gray-500">Statut du systeme</p>
-            <div class="mt-2 flex items-center justify-center space-x-4 text-xs">
-              <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">API</span>
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="group relative flex w-full justify-center rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 py-3 px-4 text-sm font-bold text-white shadow-lg hover:from-brand-400 hover:to-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          >
+            <span v-if="isLoading" class="absolute inset-y-0 left-0 flex items-center pl-4">
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </span>
+            <LockClosedIcon v-else class="absolute inset-y-0 left-0 flex items-center pl-4 h-12 w-9 text-brand-300/50 group-hover:text-brand-200 transition-colors" />
+            {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
+          </button>
+
+          <button
+            type="button"
+            class="w-full flex items-center justify-center space-x-2 rounded-2xl border border-white/10 bg-white/5 py-3 px-4 text-sm font-semibold text-white hover:bg-white/10 transition-all duration-200"
+            @click="showDemoModal = true"
+          >
+            <UserGroupIcon class="h-5 w-5 text-emerald-400" />
+            <span>Accès Démo</span>
+          </button>
+        </form>
+
+        <!-- System Status Footer -->
+        <div class="mt-8 pt-6 border-t border-white/10">
+          <div class="flex flex-col items-center space-y-3">
+            <p class="text-[10px] uppercase tracking-widest text-brand-300/40 font-bold">System Integrity</p>
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-1.5">
+                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <span class="text-[10px] text-brand-200/60 font-medium">API</span>
               </div>
-              <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">Base de donnees</span>
+              <div class="flex items-center space-x-1.5">
+                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <span class="text-[10px] text-brand-200/60 font-medium">DB</span>
               </div>
-              <div class="flex items-center">
-                <div class="h-2 w-2 rounded-full bg-green-400 mr-1"></div>
-                <span class="text-gray-600">WebSocket</span>
+              <div class="flex items-center space-x-1.5">
+                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <span class="text-[10px] text-brand-200/60 font-medium">WS</span>
               </div>
             </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
+
+    <!-- Demo users modal -->
+    <Teleport to="body">
+      <div
+        v-if="showDemoModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        @click.self="showDemoModal = false"
+      >
+        <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-md"></div>
+        <div class="w-full max-w-lg relative bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-scale-in">
+          <div class="flex items-center justify-between border-b border-white/5 p-6 bg-white/5">
+            <div>
+              <h3 class="text-xl font-bold text-white">Comptes de Démonstration</h3>
+              <p class="text-sm text-zinc-400 mt-1">Accédez instantanément à l'environnement de test</p>
+            </div>
+            <button
+              type="button"
+              class="p-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
+              @click="showDemoModal = false"
+            >
+              <XMarkIcon class="h-6 w-6" />
+            </button>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div class="group cursor-pointer" @click="selectDemoUser('admin@leopardo-rh.com', 'password123')">
+              <div class="flex items-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-500/50 hover:bg-brand-500/5 transition-all duration-300">
+                <div class="h-12 w-12 rounded-xl bg-brand-500/20 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                  <span class="text-brand-400 font-bold">SA</span>
+                </div>
+                <div class="flex-1">
+                  <div class="font-bold text-white">Super Administrateur</div>
+                  <div class="text-sm text-zinc-500">admin@leopardo-rh.com</div>
+                </div>
+                <div class="text-brand-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4">
+              <div class="flex">
+                <div class="shrink-0">
+                  <svg class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-xs text-amber-200/80 leading-relaxed">
+                    Cet espace est réservé aux administrateurs plateforme. Les comptes RH et employés se connectent depuis le portail client ou l'application mobile.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -260,7 +275,7 @@ async function handleLogin() {
       router.push('/')
     } else if (result.requiresTwoFactor) {
       requiresTwoFactor.value = true
-      error.value = result.message || 'Un code de verification est requis.'
+      error.value = result.message || 'Un code de vérification est requis.'
     } else {
       error.value = result.message || 'Erreur de connexion'
     }
@@ -272,3 +287,24 @@ async function handleLogin() {
   }
 }
 </script>
+
+<style scoped>
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes scale-in {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out forwards;
+}
+</style>
