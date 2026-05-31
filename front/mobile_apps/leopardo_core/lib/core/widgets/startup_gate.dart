@@ -12,14 +12,23 @@ class StartupGate extends StatefulWidget {
     required this.initializer,
     required this.child,
     required this.appName,
-    this.timeout = const Duration(seconds: 8),
+    /// [criticalInitializer] : ops sans timeout (Hive, locales).
+    /// Conservé pour compatibilité : si [criticalInitializer] est null,
+    /// [initializer] est utilisé sans timeout.
+    this.criticalInitializer,
+    /// [optionalInitializer] : ops optionnelles (Google Sign-In, etc.).
+    /// Lancées en parallèle, silenciées après [optionalTimeout].
+    this.optionalInitializer,
+    this.optionalTimeout = const Duration(seconds: 8),
     super.key,
   });
 
   final StartupInitializer initializer;
+  final StartupInitializer? criticalInitializer;
+  final StartupInitializer? optionalInitializer;
   final Widget child;
   final String appName;
-  final Duration timeout;
+  final Duration optionalTimeout;
 
   @override
   State<StartupGate> createState() => _StartupGateState();
@@ -41,14 +50,25 @@ class _StartupGateState extends State<StartupGate> {
   }
 
   Future<void> _runStartup() async {
-    try {
-      await widget.initializer().timeout(widget.timeout);
-    } on TimeoutException catch (error, stackTrace) {
-      debugPrint(
-        '${widget.appName} startup continued after timeout: ${error.message}',
+    // Lance les ops optionnelles en parallèle sans bloquer le chemin critique.
+    if (widget.optionalInitializer != null) {
+      unawaited(
+        widget.optionalInitializer!().timeout(widget.optionalTimeout).catchError(
+          (Object error, StackTrace stackTrace) {
+            debugPrint(
+              '${widget.appName} optional startup timed out or failed: $error',
+            );
+            debugPrintStack(stackTrace: stackTrace);
+          },
+        ),
       );
-      debugPrintStack(stackTrace: stackTrace);
     }
+
+    // Exécute les ops critiques SANS timeout.
+    // Si [criticalInitializer] est fourni, on l'utilise ; sinon fallback
+    // sur [initializer] (comportement compatible avec l'ancienne API).
+    final critical = widget.criticalInitializer ?? widget.initializer;
+    await critical();
   }
 
   @override
