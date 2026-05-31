@@ -60,11 +60,11 @@
         {
           "name": "salary_advances",
           "routes": ["/salary-advances"],
-          "endpoints": ["/salary-advances"],
+          "endpoints": ["/salary-advances", "/salary-advances/$advanceId/confirm-received"],
           "screenFiles": [
             "lib/features/salary_advances/screens/salary_advance_list_screen.dart"
           ],
-          "sourceTokens": ["_showRequestSheet", "requestAdvance", "cancelAdvance", "RefreshIndicator"]
+          "sourceTokens": ["_showRequestSheet", "requestAdvance", "cancelAdvance", "confirmReceived", "RefreshIndicator"]
         },
         {
           "name": "payrolls",
@@ -141,13 +141,13 @@
         {
           "name": "manager_decisions",
           "routes": ["/absences", "/salary-advances", "/approvals"],
-          "endpoints": ["/absences", "/salary-advances", "/approvals/pending", "/approvals/$id/approve", "/approvals/$id/reject"],
+          "endpoints": ["/absences", "/salary-advances", "/salary-advances/$advanceId/manager-approve", "/salary-advances/$advanceId/mark-paid", "/approvals/pending", "/approvals/$id/approve", "/approvals/$id/reject"],
           "screenFiles": [
             "lib/features/absences/screens/absence_list_screen.dart",
             "lib/features/salary_advances/screens/salary_advance_list_screen.dart",
             "lib/features/approvals/screens/approval_screen.dart"
           ],
-          "sourceTokens": ["approveAbsence", "rejectAbsence", "approveAdvance", "rejectAdvance", "_approve(", "_reject("]
+          "sourceTokens": ["approveAbsence", "rejectAbsence", "approveAdvance", "rejectAdvance", "markPaid", "_approve(", "_reject("]
         },
         {
           "name": "attendance",
