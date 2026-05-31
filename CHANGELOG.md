@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.191] - 2026-05-31
+
+### Fixed
+
+- Mobile employee/manager/platform admin : correction du blocage logo infini introduit par le timeout global de 8s dans `StartupGate`. Les ops critiques (`_openOfflineCache`, `_initializeLocales`) sont désormais exécutées sans timeout via `criticalInitializer` ; seul Google Sign-In (optionnel) est soumis à `optionalTimeout`. L'app ne peut plus rester bloquée sur l'écran de chargement à cause d'un timeout silencieux sur Hive ou les locales.
+
 ## [4.16.190] - 2026-05-29
 
 ### Changed
