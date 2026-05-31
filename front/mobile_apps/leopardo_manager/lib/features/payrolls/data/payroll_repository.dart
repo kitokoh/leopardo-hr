@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/payroll.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -9,9 +10,15 @@ class PayrollRepository {
 
   PayrollRepository(this.apiClient);
 
+  static const _readTimeout = Duration(seconds: 8);
+
   Future<List<Payroll>> getMyPayrolls() async {
-    final response = await apiClient.dio.get('/payrolls');
-    final items = response.data['data'] as List;
+    final response = await apiClient.requestWithRetry(
+      '/payrolls',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    final items = extractDataList(response.data);
     return items.map((e) => Payroll.fromJson(e)).toList();
   }
 
@@ -37,8 +44,12 @@ class PayrollRepository {
   }
 
   Future<List<Payroll>> getMyPaySlips() async {
-    final response = await apiClient.dio.get('/me/pay-slips');
-    final items = response.data['data'] as List;
+    final response = await apiClient.requestWithRetry(
+      '/me/pay-slips',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    final items = extractDataList(response.data);
     return items.map((e) => Payroll.fromJson(e)).toList();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/project_task.dart';
 
 class TaskRepository {
@@ -6,13 +7,17 @@ class TaskRepository {
 
   final ApiClient apiClient;
 
+  static const _actionTimeout = Duration(seconds: 10);
+  static const _readTimeout = Duration(seconds: 8);
+
   Future<List<Task>> listToday({int? assignedTo}) async {
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/tasks/today',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: {if (assignedTo != null) 'assigned_to': assignedTo},
     );
-    final items = response.data['data'];
-    if (items is! List) return const [];
+    final items = extractDataList(response.data);
     return items
         .whereType<Map>()
         .map((entry) => Task.fromJson(entry.cast<String, dynamic>()))
@@ -30,8 +35,9 @@ class TaskRepository {
     String? templateKey,
     String? recurrenceRule,
   }) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/tasks',
+      method: 'POST',
       data: {
         'title': title.trim(),
         if (description != null && description.trim().isNotEmpty)
@@ -47,10 +53,10 @@ class TaskRepository {
         if (recurrenceRule != null && recurrenceRule.trim().isNotEmpty)
           'recurrence_rule': recurrenceRule.trim(),
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
-    return Task.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return Task.fromJson(extractDataMap(response.data));
   }
 
   static String _formatDate(DateTime value) =>
