@@ -10,6 +10,7 @@ import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_core/core/widgets/splash_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
@@ -53,15 +54,21 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: authListenable,
     redirect: (context, state) {
       final authState = authListenable.value;
       final isAuth = authState.employee != null;
-
-      if (authState.isLoading) return null;
-
       final location = state.matchedLocation;
+
+      if (authState.isLoading) {
+        return location == '/splash' ? null : '/splash';
+      }
+
+      if (location == '/splash') {
+        return isAuth ? '/' : '/welcome';
+      }
+
       const publicRoutes = {
         '/welcome',
         '/login',
@@ -78,6 +85,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(
+          appName: 'Espace Manager',
+        ),
+      ),
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),

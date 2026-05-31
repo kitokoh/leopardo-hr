@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.193] - 2026-05-31
+
+### Added
+
+- Mobile employee / manager / platform admin : ajout d'un `SplashScreen` natif Flutter (logo Leopardo + glow émeraude + barre de progression) affiché pendant `checkAuth()`. L'app ne reste plus sur un écran vide pendant le cold start Render.
+
+### Changed
+
+- Mobile employee / manager / platform admin : le router démarre sur `/splash` (ou `/platform/splash`) et redirige automatiquement vers `/welcome` (non connecté) ou `/` (connecté) dès que le bootstrap auth est terminé. Plus de cas où `isLoading=true` laisse l'utilisateur sur un écran blanc/logo figé.
+
 ## [4.16.192] - 2026-05-31
 
 ### Changed
