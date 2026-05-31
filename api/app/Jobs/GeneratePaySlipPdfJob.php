@@ -16,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * Plan 62 — Génération asynchrone des bulletins de paie PDF.
@@ -31,6 +32,7 @@ class GeneratePaySlipPdfJob implements ShouldQueue
     use SerializesModels;
 
     public int $tries = 3;
+
     public int $timeout = 120;
 
     public function __construct(
@@ -78,10 +80,10 @@ class GeneratePaySlipPdfJob implements ShouldQueue
         try {
             // Build PDF HTML via Blade template
             $html = view('pdf.payslip', [
-                'slip'     => $slip,
+                'slip' => $slip,
                 'employee' => $employee,
-                'company'  => $company,
-                'run'      => $run,
+                'company' => $company,
+                'run' => $run,
             ])->render();
 
             // Generate PDF using dompdf (barryvdh/laravel-dompdf)
@@ -90,9 +92,9 @@ class GeneratePaySlipPdfJob implements ShouldQueue
             $binary = $pdf->output();
 
             // Store: storage/app/payslips/{tenant}/{year}/{month}/{employee_id}.pdf
-            $year  = $run->period_end->format('Y');
+            $year = $run->period_end->format('Y');
             $month = $run->period_end->format('m');
-            $path  = "payslips/{$company->id}/{$year}/{$month}/{$employee->id}.pdf";
+            $path = "payslips/{$company->id}/{$year}/{$month}/{$employee->id}.pdf";
 
             Storage::disk('local')->put($path, $binary);
 
@@ -113,13 +115,13 @@ class GeneratePaySlipPdfJob implements ShouldQueue
             $period = $run->period_end->format('M Y');
             $pushService->sendToEmployee($employee, [
                 'title' => 'Bulletin de paie disponible',
-                'body'  => "Votre bulletin de paie {$period} est prêt.",
-                'data'  => [
-                    'type'           => 'pay_slip_ready',
+                'body' => "Votre bulletin de paie {$period} est prêt.",
+                'data' => [
+                    'type' => 'pay_slip_ready',
                     'payroll_run_id' => $run->id,
                 ],
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning("GeneratePaySlipPdfJob: Push notification failed for employee #{$employee->id}: {$e->getMessage()}");
         }
     }

@@ -11,6 +11,7 @@ use App\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Throwable;
 
 /**
  * Plan 65 — Paiement en masse.
@@ -51,21 +52,21 @@ class BulkPaymentController extends Controller
                 $progress = json_decode($existing, true);
                 if (in_array($progress['status'] ?? '', ['starting', 'processing'], true)) {
                     return response()->json([
-                        'message'  => 'Bulk payment already in progress.',
+                        'message' => 'Bulk payment already in progress.',
                         'progress' => $progress,
                     ], 409);
                 }
             }
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Redis unavailable — allow dispatch to continue
         }
 
         ProcessBulkPaymentJob::dispatch($payrollRun->id, $actor->id);
 
         return response()->json([
-            'message'        => 'Bulk payment processing started.',
+            'message' => 'Bulk payment processing started.',
             'payroll_run_id' => $payrollRun->id,
-            'status'         => 'accepted',
+            'status' => 'accepted',
         ], 202);
     }
 
@@ -90,19 +91,19 @@ class BulkPaymentController extends Controller
 
         try {
             $raw = Redis::connection('default')->get($progressKey);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'payroll_run_id' => $payrollRun->id,
-                'status'         => 'unknown',
-                'error'          => 'Redis unavailable: ' . $e->getMessage(),
+                'status' => 'unknown',
+                'error' => 'Redis unavailable: '.$e->getMessage(),
             ], 503);
         }
 
         if ($raw === null) {
             return response()->json([
                 'payroll_run_id' => $payrollRun->id,
-                'status'         => 'not_started',
-                'message'        => 'No bulk payment job found for this run.',
+                'status' => 'not_started',
+                'message' => 'No bulk payment job found for this run.',
             ]);
         }
 

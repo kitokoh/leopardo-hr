@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Jobs\GeneratePaySlipPdfJob;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Models\SalaryAdvance;
@@ -15,6 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Throwable;
 
 /**
  * Plan 65 — Traitement asynchrone des paiements en masse.
@@ -34,7 +34,8 @@ class ProcessBulkPaymentJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public int $tries   = 3;
+    public int $tries = 3;
+
     public int $timeout = 300;
 
     public function __construct(
@@ -64,7 +65,7 @@ class ProcessBulkPaymentJob implements ShouldQueue
             ->get();
 
         $total = $slips->count();
-        $done  = 0;
+        $done = 0;
 
         $this->updateProgress(0, 'processing', $total);
 
@@ -75,7 +76,7 @@ class ProcessBulkPaymentJob implements ShouldQueue
                 ->where('company_id', $run->company_id)
                 ->where('validation_status', 'manager_approved')
                 ->update([
-                    'validation_status'   => 'payment_declared',
+                    'validation_status' => 'payment_declared',
                     'payment_declared_at' => now(),
                     'payment_declared_by' => $this->triggeredById,
                 ]);
@@ -89,7 +90,7 @@ class ProcessBulkPaymentJob implements ShouldQueue
 
         // ── Step 2: Mark payroll run as paid ────────────────────────────────
         $run->update([
-            'status'  => 'paid',
+            'status' => 'paid',
             'paid_at' => now(),
         ]);
 
@@ -100,25 +101,25 @@ class ProcessBulkPaymentJob implements ShouldQueue
         // ── Step 3: Audit log ───────────────────────────────────────────────
         Log::channel('stack')->info('bulk_payment_completed', [
             'payroll_run_id' => $run->id,
-            'company_id'     => $run->company_id,
-            'triggered_by'   => $this->triggeredById,
-            'slips_count'    => $total,
-            'paid_at'        => now()->toIso8601String(),
+            'company_id' => $run->company_id,
+            'triggered_by' => $this->triggeredById,
+            'slips_count' => $total,
+            'paid_at' => now()->toIso8601String(),
         ]);
     }
 
     private function updateProgress(int $done, string $status, int $total = 0): void
     {
         try {
-            $key  = "bulk_pay:run:{$this->payrollRunId}";
+            $key = "bulk_pay:run:{$this->payrollRunId}";
             $data = json_encode([
-                'status'    => $status,
-                'done'      => $done,
-                'total'     => $total,
+                'status' => $status,
+                'done' => $done,
+                'total' => $total,
                 'updated_at' => now()->toIso8601String(),
             ]);
             Redis::connection('default')->setex($key, 3600, $data);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Non-critical: progress tracking failure should not stop the job
             Log::warning("ProcessBulkPaymentJob: Redis progress update failed: {$e->getMessage()}");
         }

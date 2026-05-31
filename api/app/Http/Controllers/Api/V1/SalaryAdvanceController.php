@@ -138,16 +138,16 @@ class SalaryAdvanceController extends Controller
 
         $validated = $request->validate([
             'payment_reference' => 'nullable|string|max:255',
-            'payment_note'      => 'nullable|string|max:1000',
+            'payment_note' => 'nullable|string|max:1000',
         ]);
 
         $salaryAdvance->update([
             'payment_declared_at' => now(),
             'payment_declared_by' => $actor->id,
-            'payment_reference'   => $validated['payment_reference'] ?? null,
-            'payment_note'        => $validated['payment_note'] ?? null,
-            'validation_status'   => 'payment_declared',
-            'status'              => 'active', // keep existing status flow
+            'payment_reference' => $validated['payment_reference'] ?? null,
+            'payment_note' => $validated['payment_note'] ?? null,
+            'validation_status' => 'payment_declared',
+            'status' => 'active', // keep existing status flow
         ]);
 
         return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
@@ -174,7 +174,7 @@ class SalaryAdvanceController extends Controller
 
         $salaryAdvance->update([
             'employee_confirmed_at' => now(),
-            'validation_status'     => 'employee_confirmed',
+            'validation_status' => 'employee_confirmed',
         ]);
 
         return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
@@ -203,8 +203,8 @@ class SalaryAdvanceController extends Controller
         $salaryAdvance->update([
             'manager_approved_at' => now(),
             'manager_approved_by' => $actor->id,
-            'validation_status'   => 'manager_approved',
-            'status'              => 'approved',
+            'validation_status' => 'manager_approved',
+            'status' => 'approved',
         ]);
 
         return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();

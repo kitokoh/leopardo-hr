@@ -9,7 +9,6 @@ use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\SalaryAdvance;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 
 /**
  * Plan 61 — Solde employé & cycle de paie.
@@ -33,9 +32,9 @@ class PayrollCycleService
         $now = Carbon::now();
 
         return match ($payCycle) {
-            'weekly'  => $this->weeklyPeriod($now),
-            'daily'   => $this->dailyPeriod($now),
-            default   => $this->monthlyPeriod($now), // monthly
+            'weekly' => $this->weeklyPeriod($now),
+            'daily' => $this->dailyPeriod($now),
+            default => $this->monthlyPeriod($now), // monthly
         };
     }
 
@@ -54,7 +53,7 @@ class PayrollCycleService
     public function getEmployeeBalance(Employee $employee): array
     {
         $company = $employee->company;
-        $cycle   = $this->getCurrentCycle($company);
+        $cycle = $this->getCurrentCycle($company);
 
         // Latest validated payroll run for the current cycle
         /** @var PayrollRun|null $payrollRun */
@@ -66,7 +65,7 @@ class PayrollCycleService
             ->first();
 
         $grossDue = 0.0;
-        $paid     = 0.0;
+        $paid = 0.0;
 
         if ($payrollRun !== null) {
             // Fetch the pay slip for this employee in this run
@@ -76,7 +75,7 @@ class PayrollCycleService
 
             if ($paySlip !== null) {
                 $grossDue = (float) ($paySlip->net_salary ?? 0);
-                $paid     = $payrollRun->status === 'paid' ? $grossDue : 0.0;
+                $paid = $payrollRun->status === 'paid' ? $grossDue : 0.0;
             }
         }
 
@@ -92,14 +91,14 @@ class PayrollCycleService
 
         return [
             'employee_id' => $employee->id,
-            'period'      => [
+            'period' => [
                 'start' => $cycle['start']->toDateString(),
-                'end'   => $cycle['end']->toDateString(),
+                'end' => $cycle['end']->toDateString(),
             ],
-            'gross_due'   => round($grossDue, 2),
-            'advances'    => round((float) $advances, 2),
-            'paid'        => round($paid, 2),
-            'remaining'   => round($remaining, 2),
+            'gross_due' => round($grossDue, 2),
+            'advances' => round((float) $advances, 2),
+            'paid' => round($paid, 2),
+            'remaining' => round($remaining, 2),
         ];
     }
 
@@ -109,7 +108,7 @@ class PayrollCycleService
     public function closeCycle(PayrollRun $run): PayrollRun
     {
         $run->update([
-            'status'  => 'paid',
+            'status' => 'paid',
             'paid_at' => now(),
         ]);
 
@@ -123,7 +122,7 @@ class PayrollCycleService
     {
         return [
             'start' => $now->copy()->startOfMonth(),
-            'end'   => $now->copy()->endOfMonth(),
+            'end' => $now->copy()->endOfMonth(),
             'label' => $now->format('Y-m'),
         ];
     }
@@ -133,7 +132,7 @@ class PayrollCycleService
     {
         return [
             'start' => $now->copy()->startOfWeek(),
-            'end'   => $now->copy()->endOfWeek(),
+            'end' => $now->copy()->endOfWeek(),
             'label' => $now->format('Y-\WW'),
         ];
     }
@@ -143,7 +142,7 @@ class PayrollCycleService
     {
         return [
             'start' => $now->copy()->startOfDay(),
-            'end'   => $now->copy()->endOfDay(),
+            'end' => $now->copy()->endOfDay(),
             'label' => $now->toDateString(),
         ];
     }

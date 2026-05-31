@@ -53,12 +53,12 @@ class PayrollCycleController extends Controller
         $actor = $request->user();
 
         $company = $actor->company;
-        $cycle   = $this->cycleService->getCurrentCycle($company);
+        $cycle = $this->cycleService->getCurrentCycle($company);
 
         return response()->json([
             'period_start' => $cycle['start']->toDateString(),
-            'period_end'   => $cycle['end']->toDateString(),
-            'label'        => $cycle['label'],
+            'period_end' => $cycle['end']->toDateString(),
+            'label' => $cycle['label'],
         ]);
     }
 

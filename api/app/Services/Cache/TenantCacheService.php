@@ -15,8 +15,10 @@ use Illuminate\Support\Facades\Cache;
 class TenantCacheService
 {
     // TTL constants (seconds)
-    private const DEFAULT_TTL = 300;          // 5 minutes
-    private const EMPLOYEE_LIST_TTL = 300;    // 5 minutes — Plan 63
+    private const DEFAULT_TTL = 300; // 5 minutes
+
+    private const EMPLOYEE_LIST_TTL = 300; // 5 minutes — Plan 63
+
     private const ATTENDANCE_REPORT_TTL = 900; // 15 minutes — Plan 63
 
     public function remember(int $companyId, string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
