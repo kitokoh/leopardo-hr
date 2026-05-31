@@ -33,16 +33,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final ApiClient _apiClient;
 
   AuthNotifier(this._repository, this._pushNotifications, this._apiClient)
-    : super(AuthState()) {
-    checkAuth();
+    : super(AuthState(isLoading: true)) {
+    Future.microtask(checkAuth);
   }
 
   Future<void> checkAuth() async {
     state = state.copyWith(isLoading: true);
-    final data = await _repository.checkAuth();
-    if (data != null) {
-      state = state.copyWith(isLoading: false, employee: data['employee']);
-    } else {
+    try {
+      final data = await _repository.checkAuth();
+      if (data != null) {
+        state = state.copyWith(isLoading: false, employee: data['employee']);
+      } else {
+        state = state.copyWith(isLoading: false);
+      }
+    } catch (e) {
       state = state.copyWith(isLoading: false);
     }
   }
