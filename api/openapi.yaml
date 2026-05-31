@@ -4062,6 +4062,90 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
+  /salary-advances/{salaryAdvance}/manager-approve:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Valider une avance avant paiement (manager/RH)"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Avance validee par le manager"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /salary-advances/{salaryAdvance}/mark-paid:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Declarer l'avance comme envoyee (manager/RH)"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payment_reference:
+                  type: string
+                  nullable: true
+                payment_note:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Paiement declare"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /salary-advances/{salaryAdvance}/confirm-received:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Confirmer la reception de l'avance (employe)"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Reception confirmee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
   # --- Leave Policies ---
   /leave-policies:
     get:
@@ -10514,12 +10598,19 @@ components:
         employee_id:
           type: integer
         company_id:
-          type: integer
+          type: string
+        company_name:
+          type: string
+          nullable: true
         amount:
           type: number
         status:
           type: string
-          enum: [pending, approved, rejected, cancelled]
+          enum: [pending, approved, active, rejected, cancelled, repaid]
+        validation_status:
+          type: string
+          nullable: true
+          enum: [pending, manager_approved, payment_declared, employee_confirmed, rejected]
         reason:
           type: string
           nullable: true
@@ -10528,6 +10619,24 @@ components:
           nullable: true
         approved_by:
           type: integer
+          nullable: true
+        manager_approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        payment_declared_at:
+          type: string
+          format: date-time
+          nullable: true
+        payment_reference:
+          type: string
+          nullable: true
+        payment_note:
+          type: string
+          nullable: true
+        employee_confirmed_at:
+          type: string
+          format: date-time
           nullable: true
         created_at:
           type: string
@@ -11559,4 +11668,3 @@ components:
           minLength: 8
         company_code:
           type: string
-
