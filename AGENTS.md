@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-05-31
+Derniere mise a jour : 2026-05-31 (v4.16.192)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 

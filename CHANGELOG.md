@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.192] - 2026-05-31
+
+### Changed
+
+- Mobile startup : `StartupGate` ne montre plus l'écran "Preparation de votre espace" pendant le bootstrap. L'app démarre directement sur fond neutre (< 300ms sur device normal) ; seule une erreur critique affiche un panneau de récupération.
+- Mobile employee / manager : refonte des écrans d'accueil (`WelcomeScreen`) — suppression du carousel storytelling ; accès direct aux CTA principaux (Se connecter / Demo) avec logo, tagline et grille de modules visibles d'emblée.
+- Mobile employee / manager : refonte des écrans de connexion (`LoginScreen`) — formulaire direct sans bloc hero verbeux, snackbar d'erreur floating, boutons aux bonnes tailles (52px principal), disposition compacte sur petits écrans (< 700px).
+
 ## [4.16.191] - 2026-05-31
 
 ### Fixed
