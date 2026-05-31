@@ -47,6 +47,8 @@ type LandingCopy = {
     subtitleTail: string
     primaryCta: string
     secondaryCta: string
+    mobileBadge?: string
+    downloadCta?: string
     stats: HeroStat[]
   }
   features: {
@@ -131,11 +133,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     hero: {
       badge: 'Leo IA 2.0 disponible',
       badgeNew: 'Nouveau',
-      titleTop: 'Gerez vos RH',
-      titleBottom: 'comme un pro.',
-      subtitle: 'La plateforme tout-en-un pour moderniser votre gestion du personnel.',
-      subtitleHighlight: 'Pointage, paie, absences',
-      subtitleTail: 'et intelligence artificielle integree.',
+      titleTop: 'Le Mobile-First',
+      titleBottom: 'Company OS.',
+      subtitle: 'Workforce OS pour entreprises en mouvement : pointage, equipes, paie, validations et notifications.',
+      subtitleHighlight: 'Employee, Manager, Platform Admin',
+      subtitleTail: '— disponibles sur mobile, web et terrain.',
+      mobileBadge: 'Disponible sur mobile',
+      downloadCta: 'Telecharger les apps',
       primaryCta: 'Essai gratuit 14 jours',
       secondaryCta: 'Voir la demo',
       stats: [
@@ -205,10 +209,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       repoNote: 'Historique detaille : fichier CHANGELOG.md a la racine du depot.',
     },
     footer: {
-      description: "La solution moderne et intelligente pour gerer vos ressources humaines a l'ere de l'IA.",
+      description: "Mobile-First Company OS pour gerer votre personnel sur le terrain, en bureau et a distance. Employee, Manager et Platform Admin disponibles sur mobile.",
       sections: [
         { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
         { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute'] },
+        { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
       ],
       rights: 'Tous droits reserves.',
@@ -232,11 +237,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     hero: {
       badge: 'Leo AI 2.0 available',
       badgeNew: 'New',
-      titleTop: 'Run your HR',
-      titleBottom: 'like a pro.',
-      subtitle: 'The all-in-one platform to modernize your workforce operations.',
-      subtitleHighlight: 'Attendance, payroll, leave',
-      subtitleTail: 'with AI built into the daily workflow.',
+      titleTop: 'The Mobile-First',
+      titleBottom: 'Company OS.',
+      subtitle: 'Workforce OS for companies on the move: attendance, teams, payroll, approvals and smart notifications.',
+      subtitleHighlight: 'Employee, Manager, Platform Admin',
+      subtitleTail: '— available on mobile, web and field.',
+      mobileBadge: 'Available on mobile',
+      downloadCta: 'Download the apps',
       primaryCta: 'Start 14-day free trial',
       secondaryCta: 'Watch demo',
       stats: [
@@ -306,10 +313,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       repoNote: 'Full history: CHANGELOG.md at the repository root.',
     },
     footer: {
-      description: 'A modern HR platform for payroll, attendance, workforce visibility, and AI-assisted operations.',
+      description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
         { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
         { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
+        { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
       ],
       rights: 'All rights reserved.',
@@ -333,11 +341,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     hero: {
       badge: 'Leo IA 2.0 hazir',
       badgeNew: 'Yeni',
-      titleTop: 'IK operasyonlarini',
-      titleBottom: 'profesyonel yonetin.',
-      subtitle: 'Personel operasyonlarinizi modernlestiren hepsi bir arada platform.',
-      subtitleHighlight: 'Devam takibi, bordro, izin',
-      subtitleTail: 've gunluk is akisini guclendiren yapay zeka.',
+      titleTop: 'Mobile-First',
+      titleBottom: 'Company OS.',
+      subtitle: 'Hareket halindeki sirketler icin Workforce OS: devam, ekipler, bordro, onaylar ve akilli bildirimler.',
+      subtitleHighlight: 'Employee, Manager, Platform Admin',
+      subtitleTail: '— mobil, web ve sahada kullanilabilir.',
+      mobileBadge: 'Mobilde kullanilabilir',
+      downloadCta: 'Uygulamalari indir',
       primaryCta: '14 gun ucretsiz deneyin',
       secondaryCta: 'Demoyu izle',
       stats: [
@@ -407,10 +417,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       repoNote: 'Tam gecmis: depodaki CHANGELOG.md dosyasi.',
     },
     footer: {
-      description: 'Bordro, devam takibi, saha gorunurlugu ve yapay zeka destekli operasyonlar icin modern IK platformu.',
+      description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
         { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo'] },
         { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
+        { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
       ],
       rights: 'Tum haklari saklidir.',
@@ -434,11 +445,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     hero: {
       badge: 'Leo IA 2.0 متاح الان',
       badgeNew: 'جديد',
-      titleTop: 'ادارة الموارد البشرية',
-      titleBottom: 'باحترافية كاملة.',
-      subtitle: 'منصة متكاملة لتحديث عمليات الموظفين في شركتك.',
-      subtitleHighlight: 'الحضور والرواتب والاجازات',
-      subtitleTail: 'مع ذكاء اصطناعي مدمج في سير العمل اليومي.',
+      titleTop: 'نظام تشغيل الشركة',
+      titleBottom: 'المتحرك بالجوال.',
+      subtitle: 'Workforce OS للشركات في حركة دائمة: الحضور، الفرق، الرواتب، الموافقات والإشعارات.',
+      subtitleHighlight: 'Employee, Manager, Platform Admin',
+      subtitleTail: '— متاح على الجوال والويب والميدان.',
+      mobileBadge: 'متاح على الجوال',
+      downloadCta: 'تحميل التطبيقات',
       primaryCta: 'ابدأ تجربة 14 يوما',
       secondaryCta: 'شاهد العرض',
       stats: [
@@ -508,10 +521,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       repoNote: 'السجل الكامل في ملف CHANGELOG.md في جذر المستودع.',
     },
     footer: {
-      description: 'منصة حديثة للموارد البشرية للرواتب والحضور والرؤية التشغيلية مع قدرات ذكاء اصطناعي.',
+      description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
         { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز'] },
         { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
+        { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
       ],
       rights: 'جميع الحقوق محفوظة.',
