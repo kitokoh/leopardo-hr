@@ -19,16 +19,17 @@ use Illuminate\Support\Facades\Log;
  */
 class AutoCloseAttendanceCommand extends Command
 {
-    protected $signature   = 'attendance:auto-close
+    protected $signature = 'attendance:auto-close
                                 {--threshold=12 : Hours without check-out before auto-closing}
                                 {--dry-run : Preview without writing}';
+
     protected $description = 'Auto-close attendance logs that have no check-out after N hours (Plan 64)';
 
     public function handle(): int
     {
         $threshold = (int) $this->option('threshold');
-        $dryRun    = (bool) $this->option('dry-run');
-        $cutoff    = Carbon::now()->subHours($threshold);
+        $dryRun = (bool) $this->option('dry-run');
+        $cutoff = Carbon::now()->subHours($threshold);
 
         $this->info("Auto-close: looking for check-ins without check-out before {$cutoff->toDateTimeString()}");
 
@@ -46,6 +47,7 @@ class AutoCloseAttendanceCommand extends Command
 
         if ($dryRun) {
             $this->warn('Dry-run mode: no changes written.');
+
             return self::SUCCESS;
         }
 
@@ -62,11 +64,11 @@ class AutoCloseAttendanceCommand extends Command
             $hoursWorked = round($log->check_in->diffInMinutes($autoCheckOut) / 60, 2);
 
             $log->update([
-                'check_out'        => $autoCheckOut,
-                'hours_worked'     => $hoursWorked,
-                'punch_note'       => 'Auto-clôture système (aucun checkout détecté)',
-                'correction_note'  => 'auto_close',
-                'status'           => 'auto_closed',
+                'check_out' => $autoCheckOut,
+                'hours_worked' => $hoursWorked,
+                'punch_note' => 'Auto-clôture système (aucun checkout détecté)',
+                'correction_note' => 'auto_close',
+                'status' => 'auto_closed',
             ]);
 
             $closed++;

@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
+use Throwable;
 
 /**
  * Plan 63 — Queue health check command.
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Redis;
 class QueueHealthCheck extends Command
 {
     protected $signature = 'queue:health-check {--queue=* : Specific queue names to check}';
+
     protected $description = 'Check Redis connectivity and queue depths (Upstash-compatible)';
 
     /** Named queues defined in Plan 63. */
@@ -27,22 +29,23 @@ class QueueHealthCheck extends Command
 
         // Measure Redis round-trip latency
         $start = microtime(true);
-        $ping  = null;
+        $ping = null;
 
         try {
             $ping = Redis::connection('default')->ping();
             $latencyMs = round((microtime(true) - $start) * 1000, 2);
-            $redisOk   = true;
-        } catch (\Throwable $e) {
+            $redisOk = true;
+        } catch (Throwable $e) {
             $latencyMs = null;
-            $redisOk   = false;
+            $redisOk = false;
             $this->outputResult([
-                'status'            => 'error',
-                'redis_ok'          => false,
-                'redis_latency_ms'  => null,
-                'error'             => $e->getMessage(),
-                'queues'            => [],
+                'status' => 'error',
+                'redis_ok' => false,
+                'redis_latency_ms' => null,
+                'error' => $e->getMessage(),
+                'queues' => [],
             ]);
+
             return self::FAILURE;
         }
 
@@ -55,23 +58,23 @@ class QueueHealthCheck extends Command
                 // Laravel stores queues as `queues:{name}` in Redis
                 $length = Redis::connection('default')->llen("{$prefix}queues:{$queue}");
                 $queueStats[$queue] = [
-                    'depth'  => (int) $length,
+                    'depth' => (int) $length,
                     'status' => 'ok',
                 ];
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $queueStats[$queue] = [
-                    'depth'  => null,
+                    'depth' => null,
                     'status' => 'error',
-                    'error'  => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ];
             }
         }
 
         $result = [
-            'status'           => 'ok',
-            'redis_ok'         => $redisOk,
+            'status' => 'ok',
+            'redis_ok' => $redisOk,
             'redis_latency_ms' => $latencyMs,
-            'queues'           => $queueStats,
+            'queues' => $queueStats,
         ];
 
         $this->outputResult($result);

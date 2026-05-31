@@ -6,8 +6,8 @@ namespace App\Jobs;
 
 use App\Models\Company;
 use App\Models\Employee;
-use App\Models\PaySlip;
 use App\Models\PayrollRun;
+use App\Models\PaySlip;
 use App\Services\PushNotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -48,6 +48,7 @@ class GeneratePaySlipPdfJob implements ShouldQueue
         $run = PayrollRun::query()->withoutGlobalScopes()->find($this->payrollRunId);
         if ($run === null) {
             Log::warning("GeneratePaySlipPdfJob: PayrollRun #{$this->payrollRunId} not found.");
+
             return;
         }
 
@@ -55,6 +56,7 @@ class GeneratePaySlipPdfJob implements ShouldQueue
         $employee = Employee::query()->withoutGlobalScopes()->find($this->employeeId);
         if ($employee === null) {
             Log::warning("GeneratePaySlipPdfJob: Employee #{$this->employeeId} not found.");
+
             return;
         }
 
@@ -72,6 +74,7 @@ class GeneratePaySlipPdfJob implements ShouldQueue
 
         if ($slip === null) {
             Log::warning("GeneratePaySlipPdfJob: No PaySlip for employee #{$this->employeeId} in run #{$this->payrollRunId}.");
+
             return;
         }
 

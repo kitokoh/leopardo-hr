@@ -9,6 +9,7 @@ use App\Models\PaySlip;
 use App\Models\SalaryAdvance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -52,13 +53,14 @@ class ProcessBulkPaymentJob implements ShouldQueue
 
         if ($run === null) {
             Log::warning("ProcessBulkPaymentJob: PayrollRun #{$this->payrollRunId} not found.");
+
             return;
         }
 
         $this->updateProgress(0, 'starting');
 
         // ── Step 1: Collect all pay slips for this run ──────────────────────
-        /** @var \Illuminate\Database\Eloquent\Collection<int, PaySlip> $slips */
+        /** @var Collection<int, PaySlip> $slips */
         $slips = PaySlip::query()
             ->where('payroll_run_id', $run->id)
             ->whereIn('status', ['calculated', 'validated'])
