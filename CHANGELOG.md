@@ -17,6 +17,11 @@
 ### Changed
 - SalaryAdvance: nouveaux champs double validation (manager_approved_at, payment_declared_at, employee_confirmed_at, validation_status)
 - TenantCacheService: helpers TTL Upstash-compatibles (rememberEmployees, rememberAttendanceReport)
+## [4.16.194] - 2026-05-31
+
+### Fixed
+
+- Mobile employee/manager/platform admin : ajout d'une barriere anti-logo infini avec timeout court du bootstrap critique, Firebase platform admin sorti du chemin bloquant et timeout explicite de l'hydratation auth avant redirection vers l'ecran de connexion.
 
 ## [4.16.193] - 2026-05-31
 
@@ -341,6 +346,11 @@
 
 - Mobile employee : `Mon mois complet` utilise le client API avec timeout/retry controle pour eviter le spinner infini.
 - API attendance : la vue manager du pointage du jour filtre explicitement les employes par `company_id` pour renforcer l'isolation tenant.
+## [4.16.158] - 2026-05-31
+
+### Changed
+
+- Dependencies : bump `vite` de 8.0.13 a 8.0.14 dans `api/` (correctif securite/maintenance patch).
 
 ## [4.16.161] - 2026-05-31
 
@@ -355,6 +365,16 @@
   pour aligner le comportement avec les apps Employee/Manager.
 - CI : `predis/predis ^2.3` restaure dans `api/composer.json` (perdu lors du merge #638).
   `composer.lock` regenere automatiquement via workflow `fix-composer-lock.yml`.
+## [4.16.159] - 2026-05-31
+
+### Added
+
+- OpenAPI : documentation complete de ~250 routes manquantes (Plan 33, iterations 1-4) portant la couverture de 41% a quasi-complete.
+- OpenAPI : 40+ nouveaux schemas (Employee, Absence, Payroll, Task, Notification, Cabinet, etc.).
+
+### Fixed
+
+- OpenAPI : suppression de 3 schemas en double (`PaginationMeta`, `Task`, `NotificationPreference`) qui causaient une erreur de parsing YAML.
 
 ## [4.16.157] - 2026-05-26
 

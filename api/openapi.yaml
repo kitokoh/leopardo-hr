@@ -3719,6 +3719,3430 @@ paths:
         "200":
           description: "Liste des erreurs IA avec details"
 
+
+
+  # =============================================
+  # ITERATION 33.1 — CORE RH
+  # =============================================
+
+  # --- Absences ---
+  /absences:
+    get:
+      tags: ["Absences"]
+      summary: "Lister les absences"
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, approved, rejected, cancelled] }
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: month
+          in: query
+          schema: { type: integer }
+        - name: year
+          in: query
+          schema: { type: integer }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+        - name: sort_by
+          in: query
+          schema: { type: string, default: created_at }
+        - name: sort_dir
+          in: query
+          schema: { type: string, enum: [asc, desc], default: desc }
+      responses:
+        "200":
+          description: "Liste paginee des absences"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Absence"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Absences"]
+      summary: "Demander une absence"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreAbsenceRequest"
+      responses:
+        "201":
+          description: "Absence creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /absences/{absence}:
+    get:
+      tags: ["Absences"]
+      summary: "Voir une absence"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail absence"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+    delete:
+      tags: ["Absences"]
+      summary: "Annuler une absence (employe proprietaire)"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Absence annulee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /absences/{absence}/approve:
+    put:
+      tags: ["Absences"]
+      summary: "Approuver une absence (manager)"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Absence approuvee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /absences/{absence}/reject:
+    put:
+      tags: ["Absences"]
+      summary: "Rejeter une absence (manager)"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rejected_reason]
+              properties:
+                rejected_reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Absence rejetee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  # --- Salary Advances ---
+  /salary-advances:
+    get:
+      tags: ["Salary Advances"]
+      summary: "Lister les avances sur salaire"
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, approved, rejected, cancelled] }
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SalaryAdvance"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Salary Advances"]
+      summary: "Demander une avance sur salaire"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreSalaryAdvanceRequest"
+      responses:
+        "201":
+          description: "Avance creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /salary-advances/{salaryAdvance}:
+    get:
+      tags: ["Salary Advances"]
+      summary: "Voir une avance"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail avance"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+    delete:
+      tags: ["Salary Advances"]
+      summary: "Annuler une avance (employe proprietaire)"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Avance annulee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /salary-advances/{salaryAdvance}/approve:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Approuver une avance (manager)"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decision_comment:
+                  type: string
+      responses:
+        "200":
+          description: "Avance approuvee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /salary-advances/{salaryAdvance}/reject:
+    put:
+      tags: ["Salary Advances"]
+      summary: "Rejeter une avance (manager)"
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decision_comment:
+                  type: string
+      responses:
+        "200":
+          description: "Avance rejetee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SalaryAdvance"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  # --- Leave Policies ---
+  /leave-policies:
+    get:
+      tags: ["Leave Policies"]
+      summary: "Lister les politiques de conges"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LeavePolicy"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Leave Policies"]
+      summary: "Creer une politique de conges"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreLeavePolicyRequest"
+      responses:
+        "201":
+          description: "Politique creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LeavePolicy"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /leave-policies/{leavePolicy}:
+    get:
+      tags: ["Leave Policies"]
+      summary: "Voir une politique"
+      parameters:
+        - name: leavePolicy
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail politique"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LeavePolicy"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Leave Policies"]
+      summary: "Modifier une politique"
+      parameters:
+        - name: leavePolicy
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreLeavePolicyRequest"
+      responses:
+        "200":
+          description: "Politique modifiee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LeavePolicy"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Leave Policies"]
+      summary: "Supprimer une politique"
+      parameters:
+        - name: leavePolicy
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Politique supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /leave-balances:
+    get:
+      tags: ["Leave Policies"]
+      summary: "Soldes de conges globaux (manager)"
+      parameters:
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des soldes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LeaveBalance"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/leave-balances:
+    get:
+      tags: ["Me"]
+      summary: "Mes soldes de conges"
+      responses:
+        "200":
+          description: "Soldes employe courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LeaveBalance"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /leave-accruals:
+    get:
+      tags: ["Leave Policies"]
+      summary: "Lister les accruals"
+      responses:
+        "200":
+          description: "Liste des accruals"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LeaveAccrual"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Leave Policies"]
+      summary: "Creer un accrual"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreLeaveAccrualRequest"
+      responses:
+        "201":
+          description: "Accrual cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LeaveAccrual"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  # --- Contracts ---
+  /contracts:
+    get:
+      tags: ["Contracts"]
+      summary: "Lister les contrats"
+      parameters:
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, active, suspended, terminated, expired] }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contract"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Contracts"]
+      summary: "Creer un contrat"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreContractRequest"
+      responses:
+        "201":
+          description: "Contrat cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /contracts/expiring:
+    get:
+      tags: ["Contracts"]
+      summary: "Contrats expirant bientot"
+      parameters:
+        - name: days
+          in: query
+          schema: { type: integer, default: 30 }
+      responses:
+        "200":
+          description: "Liste des contrats expirants"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /contracts/{contract}:
+    get:
+      tags: ["Contracts"]
+      summary: "Voir un contrat"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail contrat avec avenants"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Contracts"]
+      summary: "Modifier un contrat"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContractRequest"
+      responses:
+        "200":
+          description: "Contrat modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /contracts/{contract}/activate:
+    post:
+      tags: ["Contracts"]
+      summary: "Activer un contrat draft"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Contrat active"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Only draft contracts can be activated"
+
+  /contracts/{contract}/suspend:
+    post:
+      tags: ["Contracts"]
+      summary: "Suspendre un contrat actif"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Contrat suspendu"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Only active contracts can be suspended"
+
+  /contracts/{contract}/terminate:
+    post:
+      tags: ["Contracts"]
+      summary: "Resilier un contrat"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [termination_reason]
+              properties:
+                termination_reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Contrat resilie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Contract must be active or suspended to terminate"
+
+  /contracts/{contract}/renew:
+    post:
+      tags: ["Contracts"]
+      summary: "Renouveler un contrat"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_date]
+              properties:
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+                  nullable: true
+                base_salary:
+                  type: number
+                  nullable: true
+      responses:
+        "201":
+          description: "Nouveau contrat cree (ancien expire)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /contracts/{contract}/amendments:
+    get:
+      tags: ["Contracts"]
+      summary: "Lister les avenants"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des avenants"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ContractAmendment"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Contracts"]
+      summary: "Creer un avenant"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amendment_type, changes, effective_date]
+              properties:
+                amendment_type:
+                  type: string
+                  enum: [salary_change, position_change, hours_change, renewal, other]
+                changes:
+                  type: object
+                effective_date:
+                  type: string
+                  format: date
+                reason:
+                  type: string
+                  nullable: true
+      responses:
+        "201":
+          description: "Avenant cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ContractAmendment"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /contracts/{contract}/generate-pdf:
+    get:
+      tags: ["Contracts"]
+      summary: "Donnees PDF du contrat"
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Donnees contrat pour generation PDF"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /me/contracts:
+    get:
+      tags: ["Me"]
+      summary: "Mes contrats"
+      responses:
+        "200":
+          description: "Liste de mes contrats"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contract"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- HR Referentials ---
+  /positions:
+    get:
+      tags: ["Referentials"]
+      summary: "Lister les postes"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee des postes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Position"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Referentials"]
+      summary: "Creer un poste"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: string
+                  nullable: true
+                department_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: "Poste cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Position"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /positions/{position}:
+    get:
+      tags: ["Referentials"]
+      summary: "Voir un poste"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail poste"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Position"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Referentials"]
+      summary: "Modifier un poste"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: string
+                  nullable: true
+                department_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: "Poste modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Position"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Referentials"]
+      summary: "Supprimer un poste"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Poste supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /sites:
+    get:
+      tags: ["Referentials"]
+      summary: "Lister les sites"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste des sites"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Site"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Referentials"]
+      summary: "Creer un site"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                city:
+                  type: string
+                  nullable: true
+                country:
+                  type: string
+                  nullable: true
+                latitude:
+                  type: number
+                  nullable: true
+                longitude:
+                  type: number
+                  nullable: true
+                geofence_radius:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: "Site cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Site"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /sites/{site}:
+    get:
+      tags: ["Referentials"]
+      summary: "Voir un site"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail site"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Site"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Referentials"]
+      summary: "Modifier un site"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                  nullable: true
+                city:
+                  type: string
+                  nullable: true
+                country:
+                  type: string
+                  nullable: true
+                latitude:
+                  type: number
+                  nullable: true
+                longitude:
+                  type: number
+                  nullable: true
+                geofence_radius:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: "Site modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Site"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Referentials"]
+      summary: "Supprimer un site"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Site supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /attendance/anomalies:
+    get:
+      tags: ["Attendance"]
+      summary: "Anomalies de pointage"
+      parameters:
+        - name: month
+          in: query
+          schema: { type: integer }
+        - name: year
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des anomalies"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /attendance/monthly-report:
+    get:
+      tags: ["Attendance"]
+      summary: "Rapport mensuel de pointage"
+      parameters:
+        - name: month
+          in: query
+          schema: { type: integer }
+        - name: year
+          in: query
+          schema: { type: integer }
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Rapport mensuel"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/pay-slips:
+    get:
+      tags: ["Me"]
+      summary: "Mes bulletins de paie"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste de mes bulletins"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaySlip"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/trainings:
+    get:
+      tags: ["Me"]
+      summary: "Mes formations"
+      responses:
+        "200":
+          description: "Liste de mes formations"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/trainings/{session}/enroll:
+    post:
+      tags: ["Me"]
+      summary: "Auto-inscription a une formation"
+      parameters:
+        - name: session
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "201":
+          description: "Inscription confirmee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/loans:
+    get:
+      tags: ["Me"]
+      summary: "Mes prets"
+      responses:
+        "200":
+          description: "Liste de mes prets"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Loan"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/loans/{loan}/repayments:
+    get:
+      tags: ["Me"]
+      summary: "Mes remboursements de pret"
+      parameters:
+        - name: loan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Historique remboursements"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /employees/import:
+    post:
+      tags: ["Employees"]
+      summary: "Importer des employes par CSV"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "Resultat import"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /employees/import-template:
+    get:
+      tags: ["Employees"]
+      summary: "Template CSV import"
+      responses:
+        "200":
+          description: "Fichier CSV template"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Auth extras ---
+  /auth/register:
+    post:
+      tags: ["Auth"]
+      summary: "Inscription employe"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeRegisterRequest"
+      responses:
+        "201":
+          description: "Inscription reussie"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /auth/google/token:
+    post:
+      tags: ["Auth"]
+      summary: "Connexion Google OAuth"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+      responses:
+        "200":
+          description: "Connexion reussie"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /auth/language:
+    patch:
+      tags: ["Auth"]
+      summary: "Changer la langue"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [language]
+              properties:
+                language:
+                  type: string
+                  enum: [fr, en, ar]
+      responses:
+        "200":
+          description: "Langue modifiee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /auth/refresh-token:
+    post:
+      tags: ["Auth"]
+      summary: "Rafraichir le token"
+      responses:
+        "200":
+          description: "Nouveau token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # =============================================
+  # ITERATION 33.2 — PAYROLL + BILLING
+  # =============================================
+
+  # --- Payroll Runs ---
+  /payroll-runs:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les sessions de paie"
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, calculating, validated, cancelled] }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PayrollRun"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Payroll"]
+      summary: "Creer une session de paie"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [period_month, period_year]
+              properties:
+                period_month:
+                  type: integer
+                  minimum: 1
+                  maximum: 12
+                period_year:
+                  type: integer
+                label:
+                  type: string
+                  nullable: true
+      responses:
+        "201":
+          description: "Session creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}:
+    get:
+      tags: ["Payroll"]
+      summary: "Voir une session de paie"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail session avec bulletins"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /payroll-runs/{payrollRun}/calculate:
+    post:
+      tags: ["Payroll"]
+      summary: "Calculer la paie"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Calcul lance"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Session must be in draft status"
+
+  /payroll-runs/{payrollRun}/validate:
+    post:
+      tags: ["Payroll"]
+      summary: "Valider la session de paie"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Session validee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollRun"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Only calculated runs can be validated"
+
+  /payroll-runs/{payrollRun}/cancel:
+    post:
+      tags: ["Payroll"]
+      summary: "Annuler une session de paie"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Session annulee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Validated runs cannot be cancelled"
+
+  /payroll-runs/{payrollRun}/summary:
+    get:
+      tags: ["Payroll"]
+      summary: "Resume de la session de paie"
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Totaux et statistiques"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Pay Slips ---
+  /pay-slips/{paySlip}:
+    get:
+      tags: ["Payroll"]
+      summary: "Voir un bulletin de paie"
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail bulletin"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PaySlip"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /pay-slips/{paySlip}/pdf:
+    get:
+      tags: ["Payroll"]
+      summary: "Telecharger bulletin PDF"
+      parameters:
+        - name: paySlip
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier PDF"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Bank Export ---
+  /bank-exports:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les exports bancaires"
+      responses:
+        "200":
+          description: "Liste des exports"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Payroll"]
+      summary: "Generer un export bancaire"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payroll_run_id, format]
+              properties:
+                payroll_run_id:
+                  type: integer
+                format:
+                  type: string
+                  enum: [sepa, csv, ach]
+      responses:
+        "201":
+          description: "Export genere"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /bank-exports/{bankExport}/download:
+    get:
+      tags: ["Payroll"]
+      summary: "Telecharger un export bancaire"
+      parameters:
+        - name: bankExport
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Billing ---
+  /billing/subscription:
+    get:
+      tags: ["Billing"]
+      summary: "Voir l'abonnement courant"
+      responses:
+        "200":
+          description: "Detail abonnement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /billing/upgrade:
+    post:
+      tags: ["Billing"]
+      summary: "Upgrader l'abonnement"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plan]
+              properties:
+                plan:
+                  type: string
+                  enum: [starter, pro, enterprise]
+                billing_cycle:
+                  type: string
+                  enum: [monthly, yearly]
+                payment_method_id:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Abonnement mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /billing/cancel:
+    post:
+      tags: ["Billing"]
+      summary: "Annuler l'abonnement"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  nullable: true
+                feedback:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Abonnement annule"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /billing/renew:
+    post:
+      tags: ["Billing"]
+      summary: "Renouveler l'abonnement"
+      responses:
+        "200":
+          description: "Abonnement renouvele"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Subscription"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /billing/invoices:
+    get:
+      tags: ["Billing"]
+      summary: "Lister les factures"
+      responses:
+        "200":
+          description: "Liste des factures"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Invoice"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /billing/invoices/{id}:
+    get:
+      tags: ["Billing"]
+      summary: "Voir une facture"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail facture"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Invoice"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /billing/invoices/{id}/pdf:
+    get:
+      tags: ["Billing"]
+      summary: "Telecharger facture PDF"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier PDF"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # =============================================
+  # ITERATION 33.3 — MODULES ETENDUS
+  # =============================================
+
+  # --- Recruitment ---
+  /recruitment/jobs:
+    get:
+      tags: ["Recruitment"]
+      summary: "Lister les offres d'emploi"
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, published, closed] }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/JobPosting"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Recruitment"]
+      summary: "Creer une offre d'emploi"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreJobPostingRequest"
+      responses:
+        "201":
+          description: "Offre creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /recruitment/jobs/{jobPosting}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Voir une offre"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail offre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier une offre"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreJobPostingRequest"
+      responses:
+        "200":
+          description: "Offre modifiee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/JobPosting"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/jobs/{jobPosting}/publish:
+    post:
+      tags: ["Recruitment"]
+      summary: "Publier une offre"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre publiee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/jobs/{jobPosting}/close:
+    post:
+      tags: ["Recruitment"]
+      summary: "Cloturer une offre"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre cloturee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/jobs/{jobPosting}/applicants:
+    get:
+      tags: ["Recruitment"]
+      summary: "Lister les candidats"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: stage
+          in: query
+          schema: { type: string }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste des candidats"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Applicant"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Recruitment"]
+      summary: "Ajouter un candidat"
+      parameters:
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreApplicantRequest"
+      responses:
+        "201":
+          description: "Candidat ajoute"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Applicant"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /recruitment/applicants/{applicant}:
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier un candidat"
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stage:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Candidat modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Applicant"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/applicants/{applicant}/interviews:
+    post:
+      tags: ["Recruitment"]
+      summary: "Planifier un entretien"
+      parameters:
+        - name: applicant
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scheduled_at, type]
+              properties:
+                scheduled_at:
+                  type: string
+                  format: date-time
+                type:
+                  type: string
+                  enum: [phone, video, onsite, technical]
+                interviewer_ids:
+                  type: array
+                  items:
+                    type: integer
+                location:
+                  type: string
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        "201":
+          description: "Entretien planifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /recruitment/interviews/{interview}:
+    put:
+      tags: ["Recruitment"]
+      summary: "Modifier un entretien"
+      parameters:
+        - name: interview
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [scheduled, completed, cancelled]
+                feedback:
+                  type: string
+                  nullable: true
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Training ---
+  /training/courses:
+    get:
+      tags: ["Training"]
+      summary: "Lister les formations"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TrainingCourse"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Training"]
+      summary: "Creer une formation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreTrainingCourseRequest"
+      responses:
+        "201":
+          description: "Formation creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TrainingCourse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /training/courses/{trainingCourse}:
+    get:
+      tags: ["Training"]
+      summary: "Voir une formation"
+      parameters:
+        - name: trainingCourse
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail formation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/TrainingCourse"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Training"]
+      summary: "Modifier une formation"
+      parameters:
+        - name: trainingCourse
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreTrainingCourseRequest"
+      responses:
+        "200":
+          description: "Formation modifiee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /training/courses/{trainingCourse}/sessions:
+    get:
+      tags: ["Training"]
+      summary: "Lister les sessions d'une formation"
+      parameters:
+        - name: trainingCourse
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des sessions"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Training"]
+      summary: "Creer une session de formation"
+      parameters:
+        - name: trainingCourse
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_date, end_date, max_participants]
+              properties:
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+                max_participants:
+                  type: integer
+                location:
+                  type: string
+                  nullable: true
+                trainer_name:
+                  type: string
+                  nullable: true
+      responses:
+        "201":
+          description: "Session creee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /training/sessions/{trainingSession}:
+    put:
+      tags: ["Training"]
+      summary: "Modifier une session"
+      parameters:
+        - name: trainingSession
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+                status:
+                  type: string
+                  enum: [planned, ongoing, completed, cancelled]
+      responses:
+        "200":
+          description: "Session modifiee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /training/sessions/{trainingSession}/enroll:
+    post:
+      tags: ["Training"]
+      summary: "Inscrire un employe"
+      parameters:
+        - name: trainingSession
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id]
+              properties:
+                employee_id:
+                  type: integer
+      responses:
+        "201":
+          description: "Inscription confirmee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /training/enrollments/{trainingEnrollment}:
+    put:
+      tags: ["Training"]
+      summary: "Modifier une inscription"
+      parameters:
+        - name: trainingEnrollment
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [enrolled, completed, cancelled]
+                score:
+                  type: number
+                  nullable: true
+                feedback:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Inscription modifiee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Loans ---
+  /loans:
+    get:
+      tags: ["Loans"]
+      summary: "Lister les prets"
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, approved, disbursed, repaying, completed, rejected] }
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Loan"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Loans"]
+      summary: "Demander un pret"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreLoanRequest"
+      responses:
+        "201":
+          description: "Pret cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Loan"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /loans/{employeeLoan}:
+    get:
+      tags: ["Loans"]
+      summary: "Voir un pret"
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail pret"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Loan"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /loans/{employeeLoan}/approve:
+    post:
+      tags: ["Loans"]
+      summary: "Approuver un pret"
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Pret approuve"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /loans/{employeeLoan}/disburse:
+    post:
+      tags: ["Loans"]
+      summary: "Decaisser un pret"
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Pret decaisse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Expense Claims ---
+  /expense-claims:
+    get:
+      tags: ["Expenses"]
+      summary: "Lister les notes de frais"
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [draft, submitted, approved, rejected] }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ExpenseClaim"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Expenses"]
+      summary: "Creer une note de frais"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreExpenseClaimRequest"
+      responses:
+        "201":
+          description: "Note creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ExpenseClaim"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /expense-claims/{expenseClaim}:
+    get:
+      tags: ["Expenses"]
+      summary: "Voir une note de frais"
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail note"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ExpenseClaim"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /expense-claims/{expenseClaim}/submit:
+    post:
+      tags: ["Expenses"]
+      summary: "Soumettre une note de frais"
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Note soumise"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /expense-claims/{expenseClaim}/approve:
+    post:
+      tags: ["Expenses"]
+      summary: "Approuver une note de frais"
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Note approuvee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /expense-claims/{expenseClaim}/reject:
+    post:
+      tags: ["Expenses"]
+      summary: "Rejeter une note de frais"
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejection_reason:
+                  type: string
+      responses:
+        "200":
+          description: "Note rejetee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  # =============================================
+  # ITERATION 33.4 — ADMIN, INTEGRATIONS
+  # =============================================
+
+  # --- Approvals ---
+  /approval-workflows:
+    get:
+      tags: ["Approvals"]
+      summary: "Lister les workflows d'approbation"
+      responses:
+        "200":
+          description: "Liste des workflows"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApprovalWorkflow"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Approvals"]
+      summary: "Creer un workflow"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreApprovalWorkflowRequest"
+      responses:
+        "201":
+          description: "Workflow cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ApprovalWorkflow"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /approval-workflows/{approvalWorkflow}:
+    put:
+      tags: ["Approvals"]
+      summary: "Modifier un workflow"
+      parameters:
+        - name: approvalWorkflow
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreApprovalWorkflowRequest"
+      responses:
+        "200":
+          description: "Workflow modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Approvals"]
+      summary: "Supprimer un workflow"
+      parameters:
+        - name: approvalWorkflow
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Workflow supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /approvals/pending:
+    get:
+      tags: ["Approvals"]
+      summary: "Approbations en attente"
+      responses:
+        "200":
+          description: "Liste des demandes en attente"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApprovalRequest"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /approvals/{approvalRequest}/approve:
+    post:
+      tags: ["Approvals"]
+      summary: "Approuver une demande"
+      parameters:
+        - name: approvalRequest
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: "Demande approuvee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ApprovalRequest"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /approvals/{approvalRequest}/reject:
+    post:
+      tags: ["Approvals"]
+      summary: "Rejeter une demande"
+      parameters:
+        - name: approvalRequest
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: "Demande rejetee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ApprovalRequest"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /approvals/history:
+    get:
+      tags: ["Approvals"]
+      summary: "Historique des approbations"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Historique pagine"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Cabinet (Digital Filing) ---
+  /cabinet/folders:
+    get:
+      tags: ["Cabinet"]
+      summary: "Lister les dossiers"
+      parameters:
+        - name: parent_id
+          in: query
+          schema: { type: integer, nullable: true }
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des dossiers"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CabinetFolder"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Cabinet"]
+      summary: "Creer un dossier"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+                employee_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: "Dossier cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CabinetFolder"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /cabinet/folders/{cabinetFolder}:
+    get:
+      tags: ["Cabinet"]
+      summary: "Voir un dossier"
+      parameters:
+        - name: cabinetFolder
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail dossier avec documents"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Cabinet"]
+      summary: "Modifier un dossier"
+      parameters:
+        - name: cabinetFolder
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: "Dossier modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Cabinet"]
+      summary: "Supprimer un dossier"
+      parameters:
+        - name: cabinetFolder
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Dossier supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/documents:
+    get:
+      tags: ["Cabinet"]
+      summary: "Lister les documents"
+      parameters:
+        - name: folder_id
+          in: query
+          schema: { type: integer }
+        - name: employee_id
+          in: query
+          schema: { type: integer }
+        - name: type
+          in: query
+          schema: { type: string }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste des documents"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CabinetDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Cabinet"]
+      summary: "Uploader un document"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, name]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                name:
+                  type: string
+                folder_id:
+                  type: integer
+                  nullable: true
+                employee_id:
+                  type: integer
+                  nullable: true
+                document_type:
+                  type: string
+                  nullable: true
+      responses:
+        "201":
+          description: "Document uploade"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CabinetDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /cabinet/documents/{cabinetDocument}:
+    get:
+      tags: ["Cabinet"]
+      summary: "Voir un document"
+      parameters:
+        - name: cabinetDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Detail document"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["Cabinet"]
+      summary: "Modifier un document"
+      parameters:
+        - name: cabinetDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                document_type:
+                  type: string
+      responses:
+        "200":
+          description: "Document modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Cabinet"]
+      summary: "Supprimer un document"
+      parameters:
+        - name: cabinetDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Document supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/documents/{cabinetDocument}/download:
+    get:
+      tags: ["Cabinet"]
+      summary: "Telecharger un document"
+      parameters:
+        - name: cabinetDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/documents/{cabinetDocument}/move:
+    post:
+      tags: ["Cabinet"]
+      summary: "Deplacer un document"
+      parameters:
+        - name: cabinetDocument
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [folder_id]
+              properties:
+                folder_id:
+                  type: integer
+      responses:
+        "200":
+          description: "Document deplace"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Org Chart ---
+  /org-chart:
+    get:
+      tags: ["Organization"]
+      summary: "Organigramme complet"
+      responses:
+        "200":
+          description: "Arbre hierarchique"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /org-chart/{employeeId}/subordinates:
+    get:
+      tags: ["Organization"]
+      summary: "Subordonnes d'un employe"
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste des subordonnes"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /org-chart/{employeeId}/manager-chain:
+    get:
+      tags: ["Organization"]
+      summary: "Chaine hierarchique"
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Liste managers vers le haut"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Dashboard ---
+  /dashboard/summary:
+    get:
+      tags: ["Dashboard"]
+      summary: "Resume dashboard"
+      responses:
+        "200":
+          description: "KPIs et compteurs"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/recent-activity:
+    get:
+      tags: ["Dashboard"]
+      summary: "Activite recente"
+      responses:
+        "200":
+          description: "Dernieres activites"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/kpi:
+    get:
+      tags: ["Dashboard"]
+      summary: "KPIs detailles"
+      responses:
+        "200":
+          description: "Indicateurs cles"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Exports ---
+  /exports/employees:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter les employes"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/attendance:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter le pointage"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+        - name: month
+          in: query
+          schema: { type: integer }
+        - name: year
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/pay-slips:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter les bulletins"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/absences:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter les absences"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/training:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter les formations"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/contracts:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter les contrats"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/vehicles:
+    get:
+      tags: ["Exports"]
+      summary: "Exporter la flotte"
+      parameters:
+        - name: format
+          in: query
+          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
+      responses:
+        "200":
+          description: "Donnees export"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /exports/history:
+    get:
+      tags: ["Exports"]
+      summary: "Historique des exports"
+      responses:
+        "200":
+          description: "Liste des exports precedents"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Notification Preferences ---
+  # --- Audit Log ---
+  /audit-logs:
+    get:
+      tags: ["Admin"]
+      summary: "Journal d'audit"
+      parameters:
+        - name: action
+          in: query
+          schema: { type: string }
+        - name: user_id
+          in: query
+          schema: { type: integer }
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 50 }
+      responses:
+        "200":
+          description: "Liste des evenements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AuditLog"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  # --- Webhooks ---
+  /webhooks:
+    get:
+      tags: ["Integrations"]
+      summary: "Lister les webhooks"
+      responses:
+        "200":
+          description: "Liste des webhooks"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Integrations"]
+      summary: "Creer un webhook"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events]
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                secret:
+                  type: string
+                  nullable: true
+                active:
+                  type: boolean
+                  default: true
+      responses:
+        "201":
+          description: "Webhook cree"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /webhooks/{webhook}:
+    put:
+      tags: ["Integrations"]
+      summary: "Modifier un webhook"
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+      responses:
+        "200":
+          description: "Webhook modifie"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Integrations"]
+      summary: "Supprimer un webhook"
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Webhook supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /webhooks/{webhook}/test:
+    post:
+      tags: ["Integrations"]
+      summary: "Tester un webhook"
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Test envoye"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # --- Features / i18n ---
+  /features:
+    get:
+      tags: ["Admin"]
+      summary: "Lister les feature flags"
+      responses:
+        "200":
+          description: "Liste des features"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /features/{feature}/toggle:
+    post:
+      tags: ["Admin"]
+      summary: "Activer/desactiver une feature"
+      parameters:
+        - name: feature
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Feature modifiee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /i18n/{locale}:
+    get:
+      tags: ["Admin"]
+      summary: "Traductions pour une locale"
+      parameters:
+        - name: locale
+          in: path
+          required: true
+          schema: { type: string, enum: [fr, en, ar] }
+      responses:
+        "200":
+          description: "Fichier de traduction"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -7003,3 +10427,1136 @@ components:
         granted_to_name:
           type: string
           nullable: true
+
+    # =============================================
+    # Plan 33 — New Schemas
+    # =============================================
+
+    Absence:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        employee_id:
+          type: integer
+        absence_type_id:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        days_count:
+          type: number
+        status:
+          type: string
+          enum: [pending, approved, rejected, cancelled]
+        reason:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        rejected_reason:
+          type: string
+          nullable: true
+        absence_type:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            code:
+              type: string
+            deducts_leave:
+              type: boolean
+        employee:
+          type: object
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StoreAbsenceRequest:
+      type: object
+      required: [absence_type_id, start_date, end_date]
+      properties:
+        absence_type_id:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          nullable: true
+
+    SalaryAdvance:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        company_id:
+          type: integer
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [pending, approved, rejected, cancelled]
+        reason:
+          type: string
+          nullable: true
+        decision_comment:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StoreSalaryAdvanceRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          minimum: 0
+        reason:
+          type: string
+          nullable: true
+
+    LeavePolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        name:
+          type: string
+        leave_type:
+          type: string
+        days_per_year:
+          type: number
+        carry_over_days:
+          type: integer
+        carry_over_expiry_months:
+          type: integer
+          nullable: true
+        accrual_method:
+          type: string
+          enum: [annual, monthly, biweekly]
+        requires_approval:
+          type: boolean
+        min_days_advance:
+          type: integer
+        max_consecutive_days:
+          type: integer
+          nullable: true
+        applicable_from:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    StoreLeavePolicyRequest:
+      type: object
+      required: [name, leave_type, days_per_year, accrual_method]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        leave_type:
+          type: string
+        days_per_year:
+          type: number
+          minimum: 0
+        carry_over_days:
+          type: integer
+          default: 0
+        carry_over_expiry_months:
+          type: integer
+          nullable: true
+        accrual_method:
+          type: string
+          enum: [annual, monthly, biweekly]
+        requires_approval:
+          type: boolean
+          default: true
+        min_days_advance:
+          type: integer
+          default: 0
+        max_consecutive_days:
+          type: integer
+          nullable: true
+        applicable_from:
+          type: string
+          format: date
+          nullable: true
+
+    LeaveBalance:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        leave_policy_id:
+          type: integer
+        total_days:
+          type: number
+        used_days:
+          type: number
+        remaining_days:
+          type: number
+        carried_over:
+          type: number
+        year:
+          type: integer
+        leave_policy:
+          $ref: "#/components/schemas/LeavePolicy"
+
+    LeaveAccrual:
+      type: object
+      properties:
+        id:
+          type: integer
+        leave_policy_id:
+          type: integer
+        employee_id:
+          type: integer
+        days:
+          type: number
+        accrual_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+
+    StoreLeaveAccrualRequest:
+      type: object
+      required: [leave_policy_id, employee_id, days, accrual_date]
+      properties:
+        leave_policy_id:
+          type: integer
+        employee_id:
+          type: integer
+        days:
+          type: number
+        accrual_date:
+          type: string
+          format: date
+
+    Contract:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        employee_id:
+          type: integer
+        contract_type:
+          type: string
+          enum: [cdi, cdd, stage, freelance, interim]
+        reference:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        base_salary:
+          type: number
+        currency:
+          type: string
+          nullable: true
+        salary_frequency:
+          type: string
+          enum: [monthly, hourly, daily]
+          nullable: true
+        work_hours_per_week:
+          type: number
+          nullable: true
+        probation_end_date:
+          type: string
+          format: date
+          nullable: true
+        benefits:
+          type: object
+          nullable: true
+        clauses:
+          type: object
+          nullable: true
+        status:
+          type: string
+          enum: [draft, active, suspended, terminated, expired]
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        terminated_at:
+          type: string
+          format: date-time
+          nullable: true
+        termination_reason:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+        employee:
+          type: object
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        department:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+          nullable: true
+        position:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    StoreContractRequest:
+      type: object
+      required: [employee_id, contract_type, start_date, base_salary]
+      properties:
+        employee_id:
+          type: integer
+        contract_type:
+          type: string
+          enum: [cdi, cdd, stage, freelance, interim]
+        reference:
+          type: string
+          maxLength: 50
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        job_title:
+          type: string
+          maxLength: 150
+          nullable: true
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        base_salary:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+          nullable: true
+        salary_frequency:
+          type: string
+          enum: [monthly, hourly, daily]
+          nullable: true
+        work_hours_per_week:
+          type: number
+          minimum: 0
+          maximum: 168
+          nullable: true
+        probation_end_date:
+          type: string
+          format: date
+          nullable: true
+        benefits:
+          type: object
+          nullable: true
+        clauses:
+          type: object
+          nullable: true
+
+    UpdateContractRequest:
+      type: object
+      properties:
+        contract_type:
+          type: string
+          enum: [cdi, cdd, stage, freelance, interim]
+        reference:
+          type: string
+          maxLength: 50
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        job_title:
+          type: string
+          maxLength: 150
+          nullable: true
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        base_salary:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+          nullable: true
+        salary_frequency:
+          type: string
+          enum: [monthly, hourly, daily]
+          nullable: true
+        work_hours_per_week:
+          type: number
+          nullable: true
+        probation_end_date:
+          type: string
+          format: date
+          nullable: true
+        benefits:
+          type: object
+          nullable: true
+        clauses:
+          type: object
+          nullable: true
+        status:
+          type: string
+          enum: [draft, active, suspended, terminated]
+        termination_reason:
+          type: string
+          nullable: true
+
+    ContractAmendment:
+      type: object
+      properties:
+        id:
+          type: integer
+        contract_id:
+          type: integer
+        company_id:
+          type: integer
+        amendment_type:
+          type: string
+          enum: [salary_change, position_change, hours_change, renewal, other]
+        changes:
+          type: object
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    Position:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        department_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    Site:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        geofence_radius:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    ScheduleSimple:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [fixed, rotating, flexible]
+        slots:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+
+    PaySlip:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        payroll_run_id:
+          type: integer
+        period_month:
+          type: integer
+        period_year:
+          type: integer
+        gross_salary:
+          type: number
+        net_salary:
+          type: number
+        total_deductions:
+          type: number
+        total_contributions:
+          type: number
+        lines:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+
+    PayrollRun:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        period_month:
+          type: integer
+        period_year:
+          type: integer
+        label:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, calculating, validated, cancelled]
+        total_gross:
+          type: number
+          nullable: true
+        total_net:
+          type: number
+          nullable: true
+        employee_count:
+          type: integer
+          nullable: true
+        calculated_at:
+          type: string
+          format: date-time
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        plan:
+          type: string
+          enum: [free, starter, pro, enterprise]
+        billing_cycle:
+          type: string
+          enum: [monthly, yearly]
+        status:
+          type: string
+          enum: [active, cancelled, past_due, trialing]
+        current_period_start:
+          type: string
+          format: date
+        current_period_end:
+          type: string
+          format: date
+        employee_limit:
+          type: integer
+          nullable: true
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [draft, sent, paid, overdue, cancelled]
+        issued_at:
+          type: string
+          format: date
+        due_at:
+          type: string
+          format: date
+        paid_at:
+          type: string
+          format: date
+          nullable: true
+
+    Loan:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        company_id:
+          type: integer
+        amount:
+          type: number
+        monthly_deduction:
+          type: number
+        total_repaid:
+          type: number
+        remaining:
+          type: number
+        status:
+          type: string
+          enum: [pending, approved, disbursed, repaying, completed, rejected]
+        reason:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        disbursed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    StoreLoanRequest:
+      type: object
+      required: [amount, monthly_deduction]
+      properties:
+        amount:
+          type: number
+          minimum: 0
+        monthly_deduction:
+          type: number
+          minimum: 0
+        reason:
+          type: string
+          nullable: true
+
+    ExpenseClaim:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        company_id:
+          type: integer
+        title:
+          type: string
+        total_amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [draft, submitted, approved, rejected]
+        items:
+          type: array
+          items:
+            type: object
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    StoreExpenseClaimRequest:
+      type: object
+      required: [title, items]
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        currency:
+          type: string
+          maxLength: 3
+          default: EUR
+        items:
+          type: array
+          items:
+            type: object
+            required: [description, amount, date]
+            properties:
+              description:
+                type: string
+              amount:
+                type: number
+                minimum: 0
+              date:
+                type: string
+                format: date
+              category:
+                type: string
+                nullable: true
+
+    JobPosting:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        contract_type:
+          type: string
+          nullable: true
+        salary_min:
+          type: number
+          nullable: true
+        salary_max:
+          type: number
+          nullable: true
+        status:
+          type: string
+          enum: [draft, published, closed]
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        closes_at:
+          type: string
+          format: date
+          nullable: true
+        applicant_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    StoreJobPostingRequest:
+      type: object
+      required: [title, description]
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        contract_type:
+          type: string
+          nullable: true
+        salary_min:
+          type: number
+          nullable: true
+        salary_max:
+          type: number
+          nullable: true
+        closes_at:
+          type: string
+          format: date
+          nullable: true
+        requirements:
+          type: array
+          items:
+            type: string
+
+    Applicant:
+      type: object
+      properties:
+        id:
+          type: integer
+        job_posting_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        stage:
+          type: string
+        rating:
+          type: integer
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        cv_url:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    StoreApplicantRequest:
+      type: object
+      required: [first_name, last_name, email]
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        cv_url:
+          type: string
+          nullable: true
+
+    TrainingCourse:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        duration_hours:
+          type: number
+          nullable: true
+        provider:
+          type: string
+          nullable: true
+        is_mandatory:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    StoreTrainingCourseRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        duration_hours:
+          type: number
+          nullable: true
+        provider:
+          type: string
+          nullable: true
+        is_mandatory:
+          type: boolean
+          default: false
+
+    ApprovalWorkflow:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        name:
+          type: string
+        entity_type:
+          type: string
+        steps:
+          type: array
+          items:
+            type: object
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    StoreApprovalWorkflowRequest:
+      type: object
+      required: [name, entity_type, steps]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        entity_type:
+          type: string
+        steps:
+          type: array
+          items:
+            type: object
+            required: [approver_type]
+            properties:
+              approver_type:
+                type: string
+                enum: [manager, role, specific_user]
+              approver_id:
+                type: integer
+                nullable: true
+              order:
+                type: integer
+        is_active:
+          type: boolean
+          default: true
+
+    ApprovalRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        entity_type:
+          type: string
+        entity_id:
+          type: integer
+        requester_id:
+          type: integer
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        current_step:
+          type: integer
+        steps:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+
+    CabinetFolder:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        name:
+          type: string
+        parent_id:
+          type: integer
+          nullable: true
+        employee_id:
+          type: integer
+          nullable: true
+        documents_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    CabinetDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        folder_id:
+          type: integer
+          nullable: true
+        employee_id:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        document_type:
+          type: string
+          nullable: true
+        file_path:
+          type: string
+        file_size:
+          type: integer
+        mime_type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        user_id:
+          type: integer
+          nullable: true
+        action:
+          type: string
+        entity_type:
+          type: string
+        entity_id:
+          type: integer
+        old_values:
+          type: object
+          nullable: true
+        new_values:
+          type: object
+          nullable: true
+        ip_address:
+          type: string
+          nullable: true
+        user_agent:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    EmployeeRegisterRequest:
+      type: object
+      required: [first_name, last_name, email, password, company_code]
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        company_code:
+          type: string
+
