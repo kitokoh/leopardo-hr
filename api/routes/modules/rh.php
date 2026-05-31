@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\NotificationStreamController;
 use App\Http\Controllers\Api\V1\OnboardingQrController;
 use App\Http\Controllers\Api\V1\PayrollController;
 use App\Http\Controllers\Api\V1\PositionController;
+use App\Http\Controllers\Api\V1\PayrollCycleController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\SalaryAdvanceController;
 use App\Http\Controllers\Api\V1\ScheduleController;
@@ -46,6 +47,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/me/company-qr/scan', [OnboardingQrController::class, 'scanCompany']);
 
     // ── Estimations ───────────────────────────────────────────────────────────
+    Route::get('/employees/{employee}/balance', [PayrollCycleController::class, 'employeeBalance'])->whereNumber('employee'); // Plan 61
     Route::get('/employees/{employee}/daily-summary', [EstimationController::class, 'dailySummary'])->whereNumber('employee');
     Route::get('/employees/{employee}/quick-estimate', [EstimationController::class, 'quickEstimate'])->whereNumber('employee');
     Route::get('/employees/{employee}/receipt', [EstimationController::class, 'receipt'])->whereNumber('employee');
@@ -93,6 +95,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/salary-advances/{salaryAdvance}/approve', [SalaryAdvanceController::class, 'approve'])->whereNumber('salaryAdvance');
     Route::put('/salary-advances/{salaryAdvance}/reject', [SalaryAdvanceController::class, 'reject'])->whereNumber('salaryAdvance');
     Route::delete('/salary-advances/{salaryAdvance}', [SalaryAdvanceController::class, 'destroy'])->whereNumber('salaryAdvance');
+    // Plan 60 — double validation workflow
+    Route::put('/salary-advances/{salaryAdvance}/manager-approve', [SalaryAdvanceController::class, 'managerApprove'])->whereNumber('salaryAdvance');
+    Route::put('/salary-advances/{salaryAdvance}/mark-paid', [SalaryAdvanceController::class, 'markPaid'])->whereNumber('salaryAdvance');
+    Route::put('/salary-advances/{salaryAdvance}/confirm-received', [SalaryAdvanceController::class, 'confirmReceived'])->whereNumber('salaryAdvance');
 
     // ── Module 3 — Payrolls ───────────────────────────────────────────────────
     Route::get('/payrolls', [PayrollController::class, 'index']);
