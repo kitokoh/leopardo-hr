@@ -9,6 +9,21 @@
 - Mobile employee/manager/platform admin : suppression du splash obligatoire au router et demarrage direct sur welcome/login afin qu'un `checkAuth`, Hive, Firebase ou Google Sign-In lent ne puisse plus figer l'app sur le logo. Le `StartupGate` lance les initialisations en arriere-plan et affiche immediatement l'application.
 - Mobile core : `SecureStorage`, `AppPreferences` et `TranslationCatalogCache` tolerent une box Hive `offlineCache` pas encore ouverte via fallback memoire, ce qui evite les crashs/ANR pendant les premiers frames.
 
+## [Unreleased]
+
+### Added
+- Plan 60: Double validation des avances salaire (migration, contrôleur, routes)
+- Plan 61: Service cycles de paie et solde employé (PayrollCycleService, PayrollCycleController)
+- Plan 62: Génération PDF bulletins de paie async (GeneratePaySlipPdfJob, queue `pdf`)
+- Plan 63: Architecture Redis Upstash — queues nommées (pdf, notifications, payroll, webhooks), QueueHealthCheck
+- Plan 64: Clôture automatique présences (AutoCloseAttendanceCommand, scheduler horaire)
+- Plan 65: Paiement en masse (ProcessBulkPaymentJob, BulkPaymentController avec progression Redis)
+- Redis Upstash TLS configuré dans database.php et queue.php
+- README: section architecture complète (Render, Vercel, Cloudflare, Upstash, Firebase)
+
+### Changed
+- SalaryAdvance: nouveaux champs double validation (manager_approved_at, payment_declared_at, employee_confirmed_at, validation_status)
+- TenantCacheService: helpers TTL Upstash-compatibles (rememberEmployees, rememberAttendanceReport)
 ## [4.16.194] - 2026-05-31
 
 ### Fixed

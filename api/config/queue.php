@@ -63,10 +63,48 @@ return [
             'after_commit' => false,
         ],
 
+        // Plan 63 — Redis queues (Upstash TLS)
         'redis' => [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
+        // Named queues for targeted dispatching
+        'redis-pdf' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'pdf',
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
+        'redis-notifications' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'notifications',
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 60),
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
+        'redis-payroll' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'payroll',
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 300),
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
+        'redis-webhooks' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'webhooks',
             'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
             'block_for' => null,
             'after_commit' => false,
