@@ -35,11 +35,20 @@ class SalaryAdvance extends Model
         'company_id', 'employee_id', 'amount', 'reason', 'status',
         'approved_by', 'decision_comment', 'repayment_months',
         'monthly_deduction', 'amount_remaining', 'repayment_plan',
+        // Plan 60 — double validation
+        'manager_approved_at', 'manager_approved_by',
+        'payment_declared_at', 'payment_declared_by',
+        'payment_reference', 'payment_note',
+        'employee_confirmed_at', 'validation_status',
     ];
 
     protected $casts = [
         'amount' => 'float', 'monthly_deduction' => 'float',
         'amount_remaining' => 'float', 'repayment_plan' => 'array',
+        // Plan 60
+        'manager_approved_at' => 'datetime',
+        'payment_declared_at' => 'datetime',
+        'employee_confirmed_at' => 'datetime',
     ];
 
     /** @return BelongsTo<Employee, $this> */

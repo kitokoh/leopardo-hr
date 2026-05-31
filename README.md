@@ -24,32 +24,74 @@ Leopardo RH is an enterprise-grade HR SaaS platform specifically designed to emp
 - 🌍 **International Ready:** Full RTL (Arabic) support and multilingual capabilities (FR, EN, TR).
 - 🔒 **Enterprise Security:** AES-256 data encryption at rest and strict RBAC governance.
 
-## 🏗 System Architecture
+## 🏗 Architecture & Infrastructure
 
 Leopardo RH is built on a modular monolith foundation, ensuring high performance and ease of deployment.
 
+### Déploiement de production
+
+| Composant | Plateforme | URL |
+|-----------|-----------|-----|
+| 🔧 API Laravel | Render | https://gestionemployerbackend.onrender.com |
+| 🌐 Vitrine Web | Vercel | https://leopardo-hr.vercel.app |
+| 📊 Admin Dashboard | Cloudflare Pages | https://admin.leopardo-hr.com |
+| ⚡ Redis Cache/Queue | Upstash | https://REDACTED.upstash.io |
+| 🔥 Firebase | Google Firebase | Projet : leopardo-rh |
+| 📱 App Employee (Android) | Firebase App Distribution | [Lien de test à venir] |
+| 📱 App Manager (Android) | Firebase App Distribution | [Lien de test à venir] |
+| 📱 App Platform Admin (Android) | Firebase App Distribution | [Lien de test à venir] |
+
+### Diagramme d'architecture
+
 ```mermaid
-graph LR
-    subgraph Clients
-        Web[Next.js Dashboard]
-        Mobile[Flutter App]
-        Kiosk[ZKTeco Kiosk]
+graph TB
+    subgraph "Clients"
+        VA[Vitrine Web\nVercel]
+        AD[Admin Dashboard\nCloudflare Pages]
+        ME[App Employee\nFlutter Android/iOS]
+        MM[App Manager\nFlutter Android/iOS]
+        MA[App Platform Admin\nFlutter Android/iOS]
+        KI[Kiosk ZKTeco\nLinux Desktop]
     end
 
-    subgraph Backend
-        API[Laravel 11 API]
-        Workers[Queue Workers]
+    subgraph "Backend — Render"
+        API[Laravel 11 API\ngestionemployerbackend.onrender.com]
+        QW[Queue Workers\nHorizon]
     end
 
-    subgraph Persistence
-        DB[(PostgreSQL 16)]
-        Redis[(Redis Cache)]
+    subgraph "Data & Cache — Upstash"
+        RD[(Redis\nUpstash TLS)]
     end
 
-    Web & Mobile & Kiosk --> API
-    API --> DB & Redis
-    Workers --> DB
+    subgraph "Database — Render"
+        PG[(PostgreSQL 16)]
+    end
+
+    subgraph "Firebase — Google"
+        FCM[FCM Push Notifications]
+        FAD[Firebase App Distribution\nAPK de test]
+        FS[Firebase Storage]
+    end
+
+    VA & AD & ME & MM & MA & KI --> API
+    API --> PG
+    API --> RD
+    QW --> RD
+    QW --> FCM
+    QW --> FS
+    API --> FCM
+    FAD --> ME & MM & MA
 ```
+
+### Queues Redis (Upstash)
+
+| Queue | Usage | Priorité |
+|-------|-------|----------|
+| `default` | Tâches générales | Normale |
+| `pdf` | Génération bulletins de paie PDF | Haute |
+| `notifications` | Push FCM employés | Haute |
+| `payroll` | Calculs de paie batch | Normale |
+| `webhooks` | Dispatch intégrations externes | Basse |
 
 For a deep dive into our design, see [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
