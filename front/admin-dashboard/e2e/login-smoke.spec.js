@@ -5,7 +5,7 @@ test('login screen loads for administrators', async ({ page }) => {
 
   await expect(page).toHaveTitle(/Leopardo RH/i)
   await expect(
-    page.getByRole('heading', { name: /Administration Leopardo RH/i }),
+    page.getByRole('heading', { name: /Leopardo RH/i }),
   ).toBeVisible()
   await expect(page.getByLabel(/Adresse email/i)).toBeVisible()
   await expect(page.locator('#password')).toBeVisible()

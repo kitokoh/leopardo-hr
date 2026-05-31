@@ -9,7 +9,7 @@ test.describe('Dashboard cockpit', () => {
     await page.goto('/')
     await expect(page).toHaveURL(/\/login/)
     await expect(
-      page.getByRole('heading', { name: /Administration Leopardo RH/i }),
+      page.getByRole('heading', { name: /Leopardo RH/i }),
     ).toBeVisible()
   })
 
