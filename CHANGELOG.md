@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.199] - 2026-06-01
+
+### Changed
+
+- Mobile manager/employee : stabilisation des listes RH critiques avec parsing tolerant des reponses paginees Laravel pour equipes, absences et avances, afin d'eviter les chargements infinis quand la reponse API est enveloppee.
+- Avances salaire : le mobile manager utilise maintenant le workflow double validation (`manager-approve` puis `mark-paid`), et le mobile employee peut confirmer la reception quand le paiement est declare.
+- API RH : les ressources avances/absences exposent davantage de contexte lisible mobile (`company_name`, email employe, statut de validation, dates paiement/reception) et la documentation OpenAPI inclut les routes de double validation.
+
 ## [4.16.198] - 2026-06-01
 
 ### Added

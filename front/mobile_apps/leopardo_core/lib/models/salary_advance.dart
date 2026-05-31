@@ -7,9 +7,16 @@ class SalaryAdvance {
     this.employeeName,
     this.employeeEmail,
     this.companyId,
+    this.companyName,
     this.reason,
     this.approvedBy,
     this.decisionComment,
+    this.validationStatus,
+    this.managerApprovedAt,
+    this.paymentDeclaredAt,
+    this.paymentReference,
+    this.paymentNote,
+    this.employeeConfirmedAt,
     this.repaymentMonths,
     this.monthlyDeduction,
     this.amountRemaining,
@@ -26,9 +33,16 @@ class SalaryAdvance {
   final String? employeeName;
   final String? employeeEmail;
   final String? companyId;
+  final String? companyName;
   final String? reason;
   final int? approvedBy;
   final String? decisionComment;
+  final String? validationStatus;
+  final DateTime? managerApprovedAt;
+  final DateTime? paymentDeclaredAt;
+  final String? paymentReference;
+  final String? paymentNote;
+  final DateTime? employeeConfirmedAt;
   final int? repaymentMonths;
   final double? monthlyDeduction;
   final double? amountRemaining;
@@ -51,6 +65,8 @@ class SalaryAdvance {
     final employee = json['employee'];
     final employeeMap =
         employee is Map ? employee.cast<String, dynamic>() : null;
+    final company = json['company'];
+    final companyMap = company is Map ? company.cast<String, dynamic>() : null;
     final firstName = employeeMap?['first_name']?.toString().trim() ?? '';
     final lastName = employeeMap?['last_name']?.toString().trim() ?? '';
     final composedName = '$firstName $lastName'.trim();
@@ -68,9 +84,23 @@ class SalaryAdvance {
       companyId:
           json['company_id']?.toString() ??
           employeeMap?['company_id']?.toString(),
+      companyName:
+          json['company_name']?.toString() ?? companyMap?['name']?.toString(),
       reason: json['reason'] as String?,
       approvedBy: (json['approved_by'] as num?)?.toInt(),
       decisionComment: json['decision_comment'] as String?,
+      validationStatus: json['validation_status']?.toString(),
+      managerApprovedAt: DateTime.tryParse(
+        json['manager_approved_at']?.toString() ?? '',
+      ),
+      paymentDeclaredAt: DateTime.tryParse(
+        json['payment_declared_at']?.toString() ?? '',
+      ),
+      paymentReference: json['payment_reference']?.toString(),
+      paymentNote: json['payment_note']?.toString(),
+      employeeConfirmedAt: DateTime.tryParse(
+        json['employee_confirmed_at']?.toString() ?? '',
+      ),
       repaymentMonths: _parseInt(json['repayment_months']),
       monthlyDeduction: _parseDouble(json['monthly_deduction']),
       amountRemaining: _parseDouble(json['amount_remaining']),
