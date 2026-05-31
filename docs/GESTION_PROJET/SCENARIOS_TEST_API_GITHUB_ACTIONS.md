@@ -983,9 +983,9 @@ Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `
 ### Plans 60-65 — Double Validation Avances & Paiement en Masse (Redis Upstash)
 
 #### Plan 60 — Double Validation Avances Salaire
-- `POST /api/v1/salary-advances/{id}/manager-approve` : manager approuve, met `validation_status=manager_approved` et `manager_approved_at`
-- `POST /api/v1/salary-advances/{id}/declare-payment` : comptable declare paiement, met `payment_declared_at` et `payment_declared_by`
-- `POST /api/v1/salary-advances/{id}/employee-confirm` : employe confirme reception, met `employee_confirmed_at`
+- `PUT /api/v1/salary-advances/{id}/manager-approve` : manager approuve, met `validation_status=manager_approved` et `manager_approved_at`
+- `PUT /api/v1/salary-advances/{id}/mark-paid` : comptable/manager declare paiement, met `payment_declared_at` et `payment_declared_by`
+- `PUT /api/v1/salary-advances/{id}/confirm-received` : employe confirme reception, met `employee_confirmed_at`
 - Acces refuse a un employe sans role manager sur les endpoints d'approbation (403)
 - Acces refuse a un manager d'une autre entreprise (404)
 

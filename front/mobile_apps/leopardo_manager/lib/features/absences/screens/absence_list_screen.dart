@@ -170,8 +170,18 @@ class AbsenceListScreen extends ConsumerWidget {
         submittedAt == null
             ? 'Date de demande non renseignee'
             : DateFormat('d MMM yyyy', 'fr_FR').format(submittedAt);
+    final requester = [
+      if (absence.employeeName?.trim().isNotEmpty == true)
+        absence.employeeName!.trim(),
+      if (absence.employeeEmail?.trim().isNotEmpty == true)
+        absence.employeeEmail!.trim(),
+    ].join(' - ');
+    final company =
+        absence.companyName?.trim().isNotEmpty == true
+            ? absence.companyName!.trim()
+            : 'Entreprise courante';
     return Text(
-      'Demande : $submittedLabel\nMotif : $reason',
+      '${requester.isEmpty ? '' : 'Demandeur : $requester\n'}Entreprise : $company\nDemande : $submittedLabel\nMotif : $reason',
       style: AppTypography.caption.copyWith(
         color: MobileSurface.secondary,
         height: 1.35,

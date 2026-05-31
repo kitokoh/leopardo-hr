@@ -41,7 +41,7 @@ class AbsenceController extends Controller
             ])
             ->with([
                 'absenceType:id,name,code,deducts_leave',
-                'employee:id,first_name,last_name',
+                'employee:id,first_name,last_name,email,company_id',
             ]);
 
         // RBAC: employee sees only own absences
@@ -87,7 +87,7 @@ class AbsenceController extends Controller
 
         return (new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
-            'employee:id,first_name,last_name',
+            'employee:id,first_name,last_name,email,company_id',
         ])))
             ->response()
             ->setStatusCode(201);
@@ -108,7 +108,7 @@ class AbsenceController extends Controller
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
-            'employee:id,first_name,last_name',
+            'employee:id,first_name,last_name,email,company_id',
         ]));
     }
 
@@ -129,7 +129,7 @@ class AbsenceController extends Controller
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
-            'employee:id,first_name,last_name',
+            'employee:id,first_name,last_name,email,company_id',
         ]));
     }
 
@@ -150,7 +150,7 @@ class AbsenceController extends Controller
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
-            'employee:id,first_name,last_name',
+            'employee:id,first_name,last_name,email,company_id',
         ]));
     }
 
@@ -171,7 +171,7 @@ class AbsenceController extends Controller
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
-            'employee:id,first_name,last_name',
+            'employee:id,first_name,last_name,email,company_id',
         ]));
     }
 }

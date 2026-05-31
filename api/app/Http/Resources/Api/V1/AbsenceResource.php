@@ -15,6 +15,7 @@ class AbsenceResource extends JsonResource
         return [
             'id' => $this->id,
             'company_id' => $this->company_id,
+            'company_name' => app()->bound('current_company') ? currentCompany()?->name : null,
             'employee_id' => $this->employee_id,
             'absence_type_id' => $this->absence_type_id,
             'start_date' => $this->start_date?->toDateString(),
@@ -29,6 +30,8 @@ class AbsenceResource extends JsonResource
                 'id' => $this->employee->id,
                 'first_name' => $this->employee->first_name,
                 'last_name' => $this->employee->last_name,
+                'email' => $this->employee->email,
+                'company_id' => $this->employee->company_id,
             ]),
             'employee_name' => $this->whenLoaded('employee', fn () => trim(($this->employee->first_name ?? '').' '.($this->employee->last_name ?? ''))),
             'absence_type' => $this->whenLoaded('absenceType', fn () => [

@@ -55,6 +55,9 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |
 | Mobile | Detail avance salaire | `GET /api/v1/salary-advances/{salaryAdvance}` | employe/manager | `FrontendApiContractTest` |
 | Mobile | Approbation avance salaire | `PUT /api/v1/salary-advances/{salaryAdvance}/approve` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
+| Mobile manager | Validation avance avant paiement | `PUT /api/v1/salary-advances/{salaryAdvance}/manager-approve` | manager principal/RH | `FrontendApiContractTest`, `mobile-workflow-contracts.json` |
+| Mobile manager | Declaration paiement avance | `PUT /api/v1/salary-advances/{salaryAdvance}/mark-paid` | manager principal/RH | `FrontendApiContractTest`, `mobile-workflow-contracts.json` |
+| Mobile employee | Confirmation reception avance | `PUT /api/v1/salary-advances/{salaryAdvance}/confirm-received` | employe proprietaire | `FrontendApiContractTest` |
 | Mobile | Refus avance salaire | `PUT /api/v1/salary-advances/{salaryAdvance}/reject` | manager principal/RH | `repository_contract_test.dart`, `mobile_marketing_readiness_test.dart` |
 | Mobile | Annulation avance salaire | `DELETE /api/v1/salary-advances/{salaryAdvance}` | employe/manager | `FrontendApiContractTest` |
 | Mobile manager | Validations en attente | `GET /api/v1/approvals/pending` | manager principal/RH | `FrontendApiContractTest` |

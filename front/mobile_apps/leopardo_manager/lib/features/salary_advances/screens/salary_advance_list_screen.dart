@@ -81,7 +81,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
 
                 return Semantics(
                   label:
-                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance.status)}.',
+                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance)}.',
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListCard(
@@ -93,7 +93,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                               ? '$amount - $reason'
                               : '$amount - $reason - $months mois',
                       trailing: MobileStatusPill(
-                        label: _getStatusLabel(advance.status),
+                        label: _getStatusLabel(advance),
                         color: color,
                       ),
                       footer: _advanceFooter(
@@ -134,9 +134,31 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   }) {
     final details = _advanceContext(advance);
 
-    if (advance.status != 'pending') return details;
+    final canManage = _canDecideAdvance(actor, advance);
 
-    if (_canDecideAdvance(actor, advance)) {
+    if (advance.status != 'pending') {
+      if (canManage && _canMarkPaid(advance)) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            details,
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _confirmMarkPaid(context, ref, advance),
+                icon: const Icon(Icons.verified_outlined, size: 18),
+                label: const Text('Marquer avance envoyee'),
+              ),
+            ),
+          ],
+        );
+      }
+
+      return details;
+    }
+
+    if (canManage) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -184,9 +206,28 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
         advance.repaymentMonths == null
             ? 'Remboursement a definir'
             : '${advance.repaymentMonths} mois';
+    final requester = [
+      if (advance.employeeName?.trim().isNotEmpty == true)
+        advance.employeeName!.trim(),
+      if (advance.employeeEmail?.trim().isNotEmpty == true)
+        advance.employeeEmail!.trim(),
+    ].join(' - ');
+    final company =
+        advance.companyName?.trim().isNotEmpty == true
+            ? advance.companyName!.trim()
+            : 'Entreprise courante';
+    final validation = _validationLabel(advance.validationStatus);
+    final payment = [
+      if (advance.managerApprovedAt != null)
+        'Validation manager : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.managerApprovedAt!)}',
+      if (advance.paymentDeclaredAt != null)
+        'Paiement declare : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.paymentDeclaredAt!)}',
+      if (advance.employeeConfirmedAt != null)
+        'Reception employee : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.employeeConfirmedAt!)}',
+    ].join('\n');
 
     return Text(
-      'Montant : $amount\nDate : $date\nMotif : $reason\nRemboursement : $repayment',
+      '${requester.isEmpty ? '' : 'Demandeur : $requester\n'}Entreprise : $company\nMontant : $amount\nDate : $date\nMotif : $reason\nRemboursement : $repayment\nValidation : $validation${payment.isEmpty ? '' : '\n$payment'}',
       style: AppTypography.caption.copyWith(
         color: MobileSurface.secondary,
         height: 1.35,
@@ -295,6 +336,50 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _confirmMarkPaid(
+    BuildContext context,
+    WidgetRef ref,
+    SalaryAdvance advance,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Avance envoyee ?'),
+            content: Text(
+              'Confirmez que ${(advance.amount ?? 0).toStringAsFixed(0)} DZD ont ete envoyes a ${advance.employeeName ?? 'Employe #${advance.employeeId}'}.\n\nL employe recevra ensuite la demande de confirmation de reception.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Retour'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Confirmer'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .markPaid(advanceId: advance.id);
+      ref.invalidate(salaryAdvancesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Paiement declare.')));
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    }
+  }
+
   void _showRejectAdvanceSheet(
     BuildContext context,
     WidgetRef ref,
@@ -333,8 +418,20 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
         actor.capabilities.contains('salary_advances.approve');
   }
 
-  static String _getStatusLabel(String status) {
-    switch (status) {
+  static bool _canMarkPaid(SalaryAdvance advance) {
+    final validation = advance.validationStatus ?? '';
+    return validation == 'manager_approved' ||
+        (validation.isEmpty && advance.status == 'approved') ||
+        advance.status == 'approved';
+  }
+
+  static String _getStatusLabel(SalaryAdvance advance) {
+    final validation = advance.validationStatus;
+    if (validation == 'manager_approved') return 'validee';
+    if (validation == 'payment_declared') return 'envoyee';
+    if (validation == 'employee_confirmed') return 'recue';
+
+    switch (advance.status) {
       case 'active':
         return 'active';
       case 'approved':
@@ -345,6 +442,24 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
         return 'rejetee';
       case 'cancelled':
         return 'annulee';
+      default:
+        return advance.status;
+    }
+  }
+
+  static String _validationLabel(String? status) {
+    switch (status) {
+      case 'manager_approved':
+        return 'manager valide, paiement a declarer';
+      case 'payment_declared':
+        return 'paiement declare, attente confirmation employe';
+      case 'employee_confirmed':
+        return 'reception confirmee par l employe';
+      case 'rejected':
+        return 'rejetee';
+      case 'pending':
+      case null:
+        return 'en attente';
       default:
         return status;
     }
