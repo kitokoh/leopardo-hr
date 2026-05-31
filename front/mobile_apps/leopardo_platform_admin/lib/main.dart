@@ -37,8 +37,8 @@ Future<void> _bootstrap() async {
 }
 
 Future<void> _bootstrapCritical() async {
-  await _openOfflineCache();
-  await _initializeLocales();
+  await _runStartupStep('Hive offline cache', _openOfflineCache);
+  await _runStartupStep('Locale formatting', _initializeLocales);
 }
 
 Future<void> _initFirebase() async {
@@ -68,6 +68,15 @@ Future<void> _initializeLocales() async {
   await initializeDateFormatting('ar', null);
   await initializeDateFormatting('tr_TR', null);
   await initializeDateFormatting('en_US', null);
+}
+
+Future<void> _runStartupStep(String label, Future<void> Function() step) async {
+  try {
+    await step();
+  } catch (error, stackTrace) {
+    debugPrint('Startup step skipped ($label): $error');
+    debugPrintStack(stackTrace: stackTrace);
+  }
 }
 
 class _StartupRuntimeError extends StatelessWidget {
