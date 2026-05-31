@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.203] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager : durcissement des repositories du placard numerique avec `requestWithRetry`, timeouts explicites et parsing tolerant `extractDataList`/`extractDataMap`. Les dossiers, documents, partages et statistiques cabinet ne dependent plus de casts directs fragiles ni de reponses Laravel non paginees.
+- Mobile cabinet : les uploads gardent un timeout dedie plus long, tandis que les actions courantes restent courtes pour eviter les spinners infinis sur les ecrans Compte.
+
 ## [4.16.202] - 2026-06-01
 
 ### Fixed
