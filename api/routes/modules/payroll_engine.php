@@ -10,7 +10,9 @@
  */
 
 use App\Http\Controllers\Api\V1\BankExportController;
+use App\Http\Controllers\Api\V1\BulkPaymentController;
 use App\Http\Controllers\Api\V1\CotisationSimulationController;
+use App\Http\Controllers\Api\V1\PayrollCycleController;
 use App\Http\Controllers\Api\V1\PayrollRunController;
 use App\Http\Controllers\Api\V1\PaySlipController;
 use App\Http\Controllers\Api\V1\SalaryComponentController;
@@ -84,5 +86,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/social-declarations/cnas-dz', [SocialDeclarationController::class, 'generateCnasDz']);
         Route::post('/social-declarations/cnss-ma', [SocialDeclarationController::class, 'generateCnssMa']);
         Route::post('/social-declarations/dsn-fr', [SocialDeclarationController::class, 'generateDsnFr']);
+
+        // Plan 61 — Payroll cycles
+        Route::get('/payroll/cycles', [PayrollCycleController::class, 'index']);
+        Route::get('/payroll/cycles/current', [PayrollCycleController::class, 'current']);
+
+        // Plan 65 — Bulk payment
+        Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
     });
 });

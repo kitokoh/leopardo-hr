@@ -37,6 +37,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('billing:check-overdue')->daily();
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
+        // Plan 64 — Auto-close attendance logs without check-out after 12h
+        $schedule->command('attendance:auto-close')->hourly();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

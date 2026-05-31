@@ -112,4 +112,101 @@ class SalaryAdvanceController extends Controller
 
         return (new SalaryAdvanceResource($advance->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Plan 60 — Double validation workflow
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * PUT /salary-advances/{id}/mark-paid
+     * Manager (principal | comptable | rh) marks an advance as paid.
+     */
+    public function markPaid(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403, 'Manager role required.');
+        }
+        if ($salaryAdvance->validation_status !== 'manager_approved') {
+            return response()->json(['message' => 'Advance must be manager-approved before declaring payment.'], 422);
+        }
+
+        $validated = $request->validate([
+            'payment_reference' => 'nullable|string|max:255',
+            'payment_note' => 'nullable|string|max:1000',
+        ]);
+
+        $salaryAdvance->update([
+            'payment_declared_at' => now(),
+            'payment_declared_by' => $actor->id,
+            'payment_reference' => $validated['payment_reference'] ?? null,
+            'payment_note' => $validated['payment_note'] ?? null,
+            'validation_status' => 'payment_declared',
+            'status' => 'active', // keep existing status flow
+        ]);
+
+        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
+    }
+
+    /**
+     * PUT /salary-advances/{id}/confirm-received
+     * Employee confirms they received the advance.
+     */
+    public function confirmReceived(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($salaryAdvance->employee_id !== $actor->id) {
+            abort(403, 'Only the advance owner can confirm reception.');
+        }
+        if ($salaryAdvance->validation_status !== 'payment_declared') {
+            return response()->json(['message' => 'Payment must be declared before employee confirmation.'], 422);
+        }
+
+        $salaryAdvance->update([
+            'employee_confirmed_at' => now(),
+            'validation_status' => 'employee_confirmed',
+        ]);
+
+        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
+    }
+
+    /**
+     * Alias kept for backward compatibility with Plan 60 naming.
+     * PUT /salary-advances/{id}/manager-approve
+     * Sets validation_status to manager_approved after existing approve flow.
+     */
+    public function managerApprove(Request $request, SalaryAdvance $salaryAdvance): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($salaryAdvance->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403, 'Manager role required.');
+        }
+        if (! in_array($salaryAdvance->status, ['pending', 'approved'], true)) {
+            return response()->json(['message' => 'Only pending advances can be manager-approved.'], 422);
+        }
+
+        $salaryAdvance->update([
+            'manager_approved_at' => now(),
+            'manager_approved_by' => $actor->id,
+            'validation_status' => 'manager_approved',
+            'status' => 'approved',
+        ]);
+
+        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
+    }
 }
