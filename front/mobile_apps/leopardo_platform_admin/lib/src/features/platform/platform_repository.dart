@@ -1,5 +1,6 @@
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
 import 'platform_models.dart';
@@ -10,6 +11,9 @@ class PlatformRepository {
   final ApiClient _apiClient;
   final SecureStorage _storage;
 
+  static const _actionTimeout = Duration(seconds: 10);
+  static const _readTimeout = Duration(seconds: 8);
+
   Future<PlatformAdminUser> login({
     required String email,
     required String password,
@@ -19,6 +23,7 @@ class PlatformRepository {
       '/platform/auth/login',
       method: 'POST',
       isLoginRequest: true,
+      timeoutOverride: _actionTimeout,
       data: {
         'email': email,
         'password': password,
@@ -45,9 +50,7 @@ class PlatformRepository {
     }
 
     await _storage.saveToken(token);
-    return PlatformAdminUser.fromJson(
-      (payload['data'] as Map).cast<String, dynamic>(),
-    );
+    return PlatformAdminUser.fromJson(extractDataMap(payload));
   }
 
   Future<PlatformAdminUser> me() async {
@@ -58,13 +61,11 @@ class PlatformRepository {
 
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/auth/me',
-      // Timeout court pour le bootstrap : ne pas bloquer le splash >10s.
-      timeoutOverride: const Duration(seconds: 10),
+      // Timeout court pour le bootstrap : ne pas bloquer le premier ecran.
+      timeoutOverride: _actionTimeout,
       maxRetriesOverride: 1,
     );
-    return PlatformAdminUser.fromJson(
-      ((response.data ?? {})['data'] as Map).cast<String, dynamic>(),
-    );
+    return PlatformAdminUser.fromJson(extractDataMap(response.data));
   }
 
   Future<void> logout() async {
@@ -72,6 +73,8 @@ class PlatformRepository {
       await _apiClient.requestWithRetry<Map<String, dynamic>>(
         '/platform/auth/logout',
         method: 'POST',
+        timeoutOverride: _actionTimeout,
+        maxRetriesOverride: 0,
       );
     } catch (_) {
       // Local cleanup remains mandatory even if the token is already expired.
@@ -83,43 +86,43 @@ class PlatformRepository {
   Future<PlatformMetrics> metrics() async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/metrics/overview',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
     );
-    return PlatformMetrics.fromJson(
-      ((response.data ?? {})['data'] as Map).cast<String, dynamic>(),
-    );
+    return PlatformMetrics.fromJson(extractDataMap(response.data));
   }
 
   Future<List<PlatformPlan>> plans() async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/plans',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
     );
-    final items = (((response.data ?? {})['data'] as Map?)?['items']);
-    if (items is List) {
-      return items
-          .whereType<Map>()
-          .map((item) => PlatformPlan.fromJson(item.cast<String, dynamic>()))
-          .toList();
-    }
-    return const [];
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map((item) => PlatformPlan.fromJson(item.cast<String, dynamic>()))
+        .toList();
   }
 
   Future<List<PlatformCompany>> companies() async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
     );
-    final data = (response.data ?? {})['data'];
-    if (data is List) {
-      return data
-          .whereType<Map>()
-          .map((item) => PlatformCompany.fromJson(item.cast<String, dynamic>()))
-          .toList();
-    }
-    return const [];
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map((item) => PlatformCompany.fromJson(item.cast<String, dynamic>()))
+        .toList();
   }
 
   Future<PlatformCompanyHealth> companyHealth(String companyId) async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies/$companyId/health',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
     );
     return PlatformCompanyHealth.fromJson(response.data ?? {});
   }
@@ -129,6 +132,8 @@ class PlatformRepository {
   ) async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies/$companyId/subscription',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
     );
     return PlatformCompanySubscription.fromJson(response.data ?? {});
   }
@@ -142,6 +147,8 @@ class PlatformRepository {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies/$companyId/subscription',
       method: 'PATCH',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
       data: {
         'plan_id': planId,
         'status': status,
@@ -154,6 +161,8 @@ class PlatformRepository {
   Future<PlatformCompanyFeatures> companyFeatures(String companyId) async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies/$companyId/features',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
     );
     return PlatformCompanyFeatures.fromJson(response.data ?? {});
   }
@@ -165,6 +174,8 @@ class PlatformRepository {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies/$companyId/features',
       method: 'PATCH',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
       data: {'features': features},
     );
     return PlatformCompanyFeatures.fromJson(response.data ?? {});
@@ -183,6 +194,8 @@ class PlatformRepository {
     await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies',
       method: 'POST',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
       data: {
         'name': name,
         'email': email,
@@ -199,19 +212,18 @@ class PlatformRepository {
   Future<List<PlatformCompanyRequest>> companyRequests() async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/company-requests',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
       queryParameters: {'status': 'pending'},
     );
-    final data = (response.data ?? {})['data'];
-    if (data is List) {
-      return data
-          .whereType<Map>()
-          .map(
-            (item) =>
-                PlatformCompanyRequest.fromJson(item.cast<String, dynamic>()),
-          )
-          .toList();
-    }
-    return const [];
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map(
+          (item) =>
+              PlatformCompanyRequest.fromJson(item.cast<String, dynamic>()),
+        )
+        .toList();
   }
 
   Future<void> reviewCompanyRequest({
@@ -222,6 +234,8 @@ class PlatformRepository {
     await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/company-requests/$id',
       method: 'PATCH',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
       data: {
         'status': approved ? 'approved' : 'rejected',
         if (adminNotes != null && adminNotes.trim().isNotEmpty)
