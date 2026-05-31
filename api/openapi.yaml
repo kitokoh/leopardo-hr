@@ -10954,7 +10954,7 @@ components:
           type: string
           format: date-time
 
-    Schedule:
+    ScheduleSimple:
       type: object
       properties:
         id:
