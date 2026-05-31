@@ -112,6 +112,11 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter analyze
 
+      - name: Run core widget tests
+        if: matrix.project.name == 'leopardo_core'
+        working-directory: ${{ matrix.project.path }}
+        run: flutter test
+
   flutter-build-debug:
     name: Build Debug ${{ matrix.project.name }}
     runs-on: ubuntu-latest
