@@ -1,0 +1,44 @@
+name: Fix — Regenerate composer.lock
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ fix/composer-predis-lock-and-mobile-nav ]
+    paths:
+      - 'api/composer.json'
+
+permissions:
+  contents: write
+
+jobs:
+  regen-lock:
+    name: composer update predis → commit lock
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+
+      - name: Regenerate lock for predis
+        working-directory: ./api
+        run: |
+          composer update predis/predis --no-interaction --prefer-dist
+
+      - name: Commit updated composer.lock
+        run: |
+          git config user.email "bot@kiloclaw.ai"
+          git config user.name "KiloClaw [bot]"
+          git add api/composer.json api/composer.lock
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "fix(ci): regenerate composer.lock with predis/predis ^2.3 [skip ci]"
+            git push
+          fi
