@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
@@ -108,10 +109,12 @@ class AttendanceRepository {
   }
 
   Future<DailySummary> getDailySummary(int employeeId) async {
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/employees/$employeeId/daily-summary',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
     );
-    return DailySummary.fromJson(response.data['data']);
+    return DailySummary.fromJson(extractDataMap(response.data));
   }
 
   Future<DailySummary> getMyDailySummary({DateTime? date}) async {
@@ -120,11 +123,13 @@ class AttendanceRepository {
       qp['date'] =
           '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     }
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/me/daily-summary',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: qp,
     );
-    return DailySummary.fromJson(response.data['data']);
+    return DailySummary.fromJson(extractDataMap(response.data));
   }
 
   Future<MonthlySummary> getMyMonthlySummary({int? year, int? month}) async {
@@ -137,9 +142,7 @@ class AttendanceRepository {
       timeoutOverride: _readTimeout,
       queryParameters: qp,
     );
-    return MonthlySummary.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return MonthlySummary.fromJson(extractDataMap(response.data));
   }
 
   Future<MonthlySummary> getMyQuickEstimate({
@@ -148,13 +151,13 @@ class AttendanceRepository {
   }) async {
     String fmt(DateTime d) =>
         '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/me/quick-estimate',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
       queryParameters: {'from': fmt(from), 'to': fmt(to)},
     );
-    return MonthlySummary.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return MonthlySummary.fromJson(extractDataMap(response.data));
   }
 
   Future<List<AttendanceLog>> getHistory(int year, int month) async {
@@ -173,7 +176,7 @@ class AttendanceRepository {
         'per_page': 50,
       },
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items.map((e) => AttendanceLog.fromJson(e)).toList();
   }
 
@@ -183,8 +186,7 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _readTimeout,
     );
-    final items = response.data['data'];
-    if (items is! List) return const [];
+    final items = extractDataList(response.data);
     return items
         .whereType<Map>()
         .map((entry) => entry.cast<String, dynamic>())
