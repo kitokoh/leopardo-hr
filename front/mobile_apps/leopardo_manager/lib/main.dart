@@ -42,7 +42,12 @@ Future<void> _bootstrap() async {
 
 Future<void> _safeGoogleSignInInitialize() async {
   try {
-    await GoogleSignIn.instance.initialize();
+    await GoogleSignIn.instance.initialize(
+      // serverClientId est le web client id (type 3) — obligatoire pour que
+      // authenticate() retourne un idToken vérifiable par le backend.
+      serverClientId:
+          '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com',
+    );
   } catch (error, stackTrace) {
     debugPrint('Google Sign-In init skipped: $error');
     debugPrintStack(stackTrace: stackTrace);

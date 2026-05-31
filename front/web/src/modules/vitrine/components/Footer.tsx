@@ -19,10 +19,15 @@ function getFooterHref(sectionIndex: number, linkIndex: number): string {
     '1-2': '/blog',
     '1-3': '/contact',
     '1-4': '/contact?topic=community',
-    '2-0': '/privacy',
-    '2-1': '/terms',
-    '2-2': '/terms',
-    '2-3': '/privacy',
+    '2-0': '/download#android-employee', // TODO: remplacer par le vrai lien Play Store Employee
+    '2-1': '/download#ios-employee',     // TODO: remplacer par le vrai lien App Store Employee
+    '2-2': '/download#android-manager',  // TODO: remplacer par le vrai lien Play Store Manager
+    '2-3': '/download#ios-manager',      // TODO: remplacer par le vrai lien App Store Manager
+    '2-4': '/download#android-admin',    // TODO: remplacer par le vrai lien Play Store Admin
+    '3-0': '/privacy',
+    '3-1': '/terms',
+    '3-2': '/terms',
+    '3-3': '/privacy',
   }
 
   return routes[key] ?? '#'
@@ -35,7 +40,7 @@ export function Footer() {
   return (
     <footer className="relative bg-white dark:bg-slate-950 border-t border-slate-200/80 dark:border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-4">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
