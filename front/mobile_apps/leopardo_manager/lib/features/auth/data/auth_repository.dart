@@ -52,7 +52,11 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> loginWithGoogle() async {
-    final googleUser = await _googleSignIn.authenticate();
+    final googleUser = await _googleSignIn.authenticate(
+      scopeHint: const ['email', 'profile'],
+      // ignore: deprecated_member_use
+      serverClientId: _kGoogleWebClientId,
+    );
 
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
     final String? idToken = googleAuth.idToken;
