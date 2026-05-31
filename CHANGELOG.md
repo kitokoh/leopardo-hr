@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.201] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager : durcissement des repositories secondaires (projets, taches, paie, depenses, contrats, formations, evaluations, onboarding, positions vehicule, approvals, horaires et tokens push) avec `requestWithRetry`, timeouts courts et parsing tolerant des collections API. Les listes de modules mobiles restent exploitables meme si l'API renvoie un format pagine Laravel.
+
 ## [4.16.200] - 2026-06-01
 
 ### Fixed

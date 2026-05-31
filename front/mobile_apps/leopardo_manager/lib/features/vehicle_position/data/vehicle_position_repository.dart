@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/vehicle_position.dart';
 
 class VehiclePositionRepository {
@@ -6,14 +7,24 @@ class VehiclePositionRepository {
 
   VehiclePositionRepository(this.apiClient);
 
+  static const _readTimeout = Duration(seconds: 8);
+
   Future<VehiclePosition> getPosition(int vehicleId) async {
-    final response = await apiClient.dio.get('/vehicles/$vehicleId/position');
-    return VehiclePosition.fromJson(response.data['data'] ?? response.data);
+    final response = await apiClient.requestWithRetry(
+      '/vehicles/$vehicleId/position',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    return VehiclePosition.fromJson(extractDataMap(response.data));
   }
 
   Future<List<VehiclePosition>> getMyVehicles() async {
-    final response = await apiClient.dio.get('/me/vehicles');
-    final items = response.data['data'] as List;
+    final response = await apiClient.requestWithRetry(
+      '/me/vehicles',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    final items = extractDataList(response.data);
     return items.map((e) => VehiclePosition.fromJson(e)).toList();
   }
 }
