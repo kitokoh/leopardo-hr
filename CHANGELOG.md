@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.196] - 2026-05-31
+
+### Fixed
+
+- Mobile Android employee/manager/platform admin : suppression du logo du splash natif (`launch_background`) et neutralisation du splash Android 12+ avec une icone transparente. Si Flutter ne rend pas son premier frame, le testeur ne voit plus un faux etat "logo charge" qui masque le diagnostic.
+- Mobile distribution : les noms de build APK/AAB sont maintenant prefixes par app (`employee-*`, `manager-*`, `platform-admin-*`) au lieu de rester generiques (`main-*` / `manual-*`).
+
 ## [4.16.195] - 2026-05-31
 
 ### Fixed

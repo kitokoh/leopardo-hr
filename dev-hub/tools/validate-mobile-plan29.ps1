@@ -92,7 +92,7 @@ $mobileDistribute = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workf
 
 Assert-Contains $deployMain "leopardo_platform_admin" "Deploy main mobile distribution"
 Assert-Contains $deployMain "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Deploy main mobile distribution"
-Assert-Contains $deployMain "leopardo-platform-admin-main" "Deploy main mobile distribution"
+Assert-Contains $deployMain "leopardo-platform-admin-staging" "Deploy main mobile distribution"
 
 Assert-Contains $mobileDistribute "branches:" "Mobile distribute auto trigger"
 Assert-Contains $mobileDistribute "front/mobile_apps/**" "Mobile distribute auto trigger"
