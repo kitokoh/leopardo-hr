@@ -81,9 +81,9 @@ Le job echoue si le `buildVersion` du build courant n'apparait pas dans App Dist
 
 Derniere verification connue :
 
-- Employee Android : release `manual-20260526 (7)` envoyee dans `leopardo-rh` sous `android:com.leopardo.employee`.
-- Manager Android : release `manual-20260526 (7)` envoyee dans `leopardo-rh` sous `android:com.leopardo.manager`.
-- Platform Admin Android : release `manual-20260526 (7)` envoyee dans `leopardo-rh` sous `android:com.leopardo.platformadmin`.
+- Employee Android : les builds doivent utiliser un nom de version prefixe `employee-*` et etre envoyes dans `leopardo-rh` sous `android:com.leopardo.employee`.
+- Manager Android : les builds doivent utiliser un nom de version prefixe `manager-*` et etre envoyes dans `leopardo-rh` sous `android:com.leopardo.manager`.
+- Platform Admin Android : les builds doivent utiliser un nom de version prefixe `platform-admin-*` et etre envoyes dans `leopardo-rh` sous `android:com.leopardo.platformadmin`.
 
 Important : Firebase App Distribution affiche les releases par app. Dans la console, selectionner le projet `leopardo-rh`, puis App Distribution, puis l'app Android `com.leopardo.employee`, `com.leopardo.manager` ou `com.leopardo.platformadmin`. Les fichiers iOS sont installes dans le depot, mais la distribution iOS necessitera un workflow macOS signe produisant un `.ipa`.
 
