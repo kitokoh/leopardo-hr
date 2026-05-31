@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.194] - 2026-05-31
+
+### Fixed
+
+- Mobile employee/manager/platform admin : ajout d'une barriere anti-logo infini avec timeout court du bootstrap critique, Firebase platform admin sorti du chemin bloquant et timeout explicite de l'hydratation auth avant redirection vers l'ecran de connexion.
+
 ## [4.16.193] - 2026-05-31
 
 ### Added
