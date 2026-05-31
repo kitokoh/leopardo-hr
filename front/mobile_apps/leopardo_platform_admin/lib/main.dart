@@ -25,15 +25,18 @@ Future<void> main() async {
     StartupGate(
       appName: 'Leopardo Platform Admin',
       initializer: _bootstrap,
-      criticalInitializer: _bootstrap,
-      // Pas d'optionalInitializer pour platform admin (pas de Google Sign-In).
+      criticalInitializer: _bootstrapCritical,
+      optionalInitializer: _initFirebase,
       child: const ProviderScope(child: PlatformAdminApp()),
     ),
   );
 }
 
 Future<void> _bootstrap() async {
-  await _initFirebase();
+  await _bootstrapCritical();
+}
+
+Future<void> _bootstrapCritical() async {
   await _openOfflineCache();
   await _initializeLocales();
 }

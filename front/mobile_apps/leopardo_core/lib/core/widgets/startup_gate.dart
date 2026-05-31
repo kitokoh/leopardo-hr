@@ -12,13 +12,9 @@ class StartupGate extends StatefulWidget {
     required this.initializer,
     required this.child,
     required this.appName,
-    /// [criticalInitializer] : ops sans timeout (Hive, locales).
-    /// Conservé pour compatibilité : si [criticalInitializer] est null,
-    /// [initializer] est utilisé sans timeout.
     this.criticalInitializer,
-    /// [optionalInitializer] : ops optionnelles (Google Sign-In, etc.).
-    /// Lancées en parallèle, silenciées après [optionalTimeout].
     this.optionalInitializer,
+    this.criticalTimeout = const Duration(seconds: 6),
     this.optionalTimeout = const Duration(seconds: 8),
     super.key,
   });
@@ -28,6 +24,7 @@ class StartupGate extends StatefulWidget {
   final StartupInitializer? optionalInitializer;
   final Widget child;
   final String appName;
+  final Duration criticalTimeout;
   final Duration optionalTimeout;
 
   @override
@@ -50,7 +47,6 @@ class _StartupGateState extends State<StartupGate> {
   }
 
   Future<void> _runStartup() async {
-    // Lance les ops optionnelles en parallèle sans bloquer le chemin critique.
     if (widget.optionalInitializer != null) {
       unawaited(
         widget.optionalInitializer!().timeout(widget.optionalTimeout).catchError(
@@ -64,11 +60,13 @@ class _StartupGateState extends State<StartupGate> {
       );
     }
 
-    // Exécute les ops critiques SANS timeout.
-    // Si [criticalInitializer] est fourni, on l'utilise ; sinon fallback
-    // sur [initializer] (comportement compatible avec l'ancienne API).
     final critical = widget.criticalInitializer ?? widget.initializer;
-    await critical();
+    try {
+      await critical().timeout(widget.criticalTimeout);
+    } on TimeoutException catch (error, stackTrace) {
+      debugPrint('${widget.appName} critical startup timed out: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
 
   @override
@@ -76,13 +74,11 @@ class _StartupGateState extends State<StartupGate> {
     return FutureBuilder<void>(
       future: _startupFuture,
       builder: (context, snapshot) {
-        // Afficher l'app dès que les initialisations critiques sont terminées.
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.error == null) {
           return widget.child;
         }
 
-        // En cas d'erreur critique, afficher un panneau de récupération.
         if (snapshot.hasError) {
           return MaterialApp(
             title: widget.appName,
@@ -111,18 +107,13 @@ class _StartupGateState extends State<StartupGate> {
           );
         }
 
-        // Pendant le chargement : écran minimal, fond seul, sans texte superflu.
-        // Sur un device normal le bootstrap dure < 300ms et cet écran est
-        // presque invisible.
         return MaterialApp(
           title: widget.appName,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeMode.dark,
-          home: const Scaffold(
-            backgroundColor: MobileSurface.background,
-          ),
+          home: const Scaffold(backgroundColor: MobileSurface.background),
         );
       },
     );
