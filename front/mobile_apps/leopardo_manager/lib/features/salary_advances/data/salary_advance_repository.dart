@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 
 class SalaryAdvanceRepository {
@@ -15,8 +16,10 @@ class SalaryAdvanceRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    final items = response.data['data'] as List;
-    return items.map((e) => SalaryAdvance.fromJson(e)).toList();
+    final items = extractDataList(response.data);
+    return items
+        .map((e) => SalaryAdvance.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
   }
 
   Future<SalaryAdvance> requestAdvance({
@@ -35,7 +38,7 @@ class SalaryAdvanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return SalaryAdvance.fromJson(response.data['data']);
+    return SalaryAdvance.fromJson(extractDataMap(response.data));
   }
 
   Future<SalaryAdvance> cancelAdvance(int advanceId) async {
@@ -45,7 +48,7 @@ class SalaryAdvanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return SalaryAdvance.fromJson(response.data['data']);
+    return SalaryAdvance.fromJson(extractDataMap(response.data));
   }
 
   Future<SalaryAdvance> approveAdvance({
@@ -54,7 +57,7 @@ class SalaryAdvanceRepository {
     int? repaymentMonths,
   }) async {
     final response = await apiClient.requestWithRetry(
-      '/salary-advances/$advanceId/approve',
+      '/salary-advances/$advanceId/manager-approve',
       method: 'PUT',
       data: {
         if (comment != null && comment.trim().isNotEmpty)
@@ -64,7 +67,7 @@ class SalaryAdvanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return SalaryAdvance.fromJson(response.data['data']);
+    return SalaryAdvance.fromJson(extractDataMap(response.data));
   }
 
   Future<SalaryAdvance> rejectAdvance({
@@ -78,6 +81,26 @@ class SalaryAdvanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return SalaryAdvance.fromJson(response.data['data']);
+    return SalaryAdvance.fromJson(extractDataMap(response.data));
+  }
+
+  Future<SalaryAdvance> markPaid({
+    required int advanceId,
+    String? paymentReference,
+    String? paymentNote,
+  }) async {
+    final response = await apiClient.requestWithRetry(
+      '/salary-advances/$advanceId/mark-paid',
+      method: 'PUT',
+      data: {
+        if (paymentReference != null && paymentReference.trim().isNotEmpty)
+          'payment_reference': paymentReference.trim(),
+        if (paymentNote != null && paymentNote.trim().isNotEmpty)
+          'payment_note': paymentNote.trim(),
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+    return SalaryAdvance.fromJson(extractDataMap(response.data));
   }
 }
