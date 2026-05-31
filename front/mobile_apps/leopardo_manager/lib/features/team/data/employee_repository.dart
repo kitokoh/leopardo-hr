@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/employee.dart';
 
 /// Repository CRUD pour la gestion des employes (manager/RH).
@@ -20,7 +21,7 @@ class EmployeeRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items
         .map((e) => Employee.fromJson((e as Map).cast<String, dynamic>()))
         .toList();
@@ -32,9 +33,7 @@ class EmployeeRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    return Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return Employee.fromJson(extractDataMap(response.data));
   }
 
   Future<Employee> create({
@@ -106,9 +105,7 @@ class EmployeeRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return Employee.fromJson(extractDataMap(response.data));
   }
 
   Future<CompanyQrPayload> getCompanyQrPayload() async {
@@ -117,9 +114,7 @@ class EmployeeRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    return CompanyQrPayload.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return CompanyQrPayload.fromJson(extractDataMap(response.data));
   }
 
   Future<EmployeeQrPrefill> scanEmployeeQr(String token) async {
@@ -130,7 +125,7 @@ class EmployeeRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    final data = (response.data['data'] as Map).cast<String, dynamic>();
+    final data = extractDataMap(response.data);
     return EmployeeQrPrefill.fromJson(
       (data['prefill'] as Map).cast<String, dynamic>(),
       token.trim(),
@@ -188,9 +183,7 @@ class EmployeeRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return Employee.fromJson(extractDataMap(response.data));
   }
 
   Future<Employee> update(int employeeId, Map<String, dynamic> patch) async {
@@ -201,9 +194,7 @@ class EmployeeRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return Employee.fromJson(extractDataMap(response.data));
   }
 
   Future<void> archive(int employeeId, {String? reason}) async {
@@ -224,7 +215,7 @@ class EmployeeRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items
         .map((e) => Invitation.fromJson((e as Map).cast<String, dynamic>()))
         .toList();

@@ -51,6 +51,8 @@ class SalaryAdvanceSecurityTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonCount(1, 'data');
         $response->assertJsonPath('data.0.employee_id', $employee1->id);
+        $response->assertJsonPath('data.0.validation_status', 'pending');
+        $response->assertJsonPath('data.0.employee.email', $employee1->email);
     }
 
     public function test_manager_cannot_list_salary_advances_of_another_tenant_employee(): void

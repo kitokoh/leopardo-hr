@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/absence.dart';
 
 class AbsenceRepository {
@@ -15,8 +16,10 @@ class AbsenceRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    final items = response.data['data'] as List;
-    return items.map((e) => Absence.fromJson(e)).toList();
+    final items = extractDataList(response.data);
+    return items
+        .map((e) => Absence.fromJson((e as Map).cast<String, dynamic>()))
+        .toList();
   }
 
   Future<List<Map<String, dynamic>>> getLeaveBalances() async {
@@ -25,7 +28,7 @@ class AbsenceRepository {
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items.cast<Map<String, dynamic>>();
   }
 
@@ -47,7 +50,7 @@ class AbsenceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Absence.fromJson(response.data['data']);
+    return Absence.fromJson(extractDataMap(response.data));
   }
 
   Future<Absence> cancelAbsence(int absenceId) async {
@@ -57,7 +60,7 @@ class AbsenceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Absence.fromJson(response.data['data']);
+    return Absence.fromJson(extractDataMap(response.data));
   }
 
   Future<Absence> approveAbsence(int absenceId) async {
@@ -67,7 +70,7 @@ class AbsenceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Absence.fromJson(response.data['data']);
+    return Absence.fromJson(extractDataMap(response.data));
   }
 
   Future<Absence> rejectAbsence({
@@ -81,6 +84,6 @@ class AbsenceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return Absence.fromJson(response.data['data']);
+    return Absence.fromJson(extractDataMap(response.data));
   }
 }

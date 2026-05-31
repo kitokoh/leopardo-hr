@@ -72,7 +72,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
 
                 return Semantics(
                   label:
-                      'Avance de $amount, motif : $reason, statut ${_getStatusLabel(advance.status)}.',
+                      'Avance de $amount, motif : $reason, statut ${_getStatusLabel(advance)}.',
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListCard(
@@ -82,7 +82,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
                       subtitle:
                           months == null ? reason : '$reason - $months mois',
                       trailing: MobileStatusPill(
-                        label: _getStatusLabel(advance.status),
+                        label: _getStatusLabel(advance),
                         color: color,
                       ),
                       footer: _advanceFooter(context, ref, advance),
@@ -115,6 +115,30 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     WidgetRef ref,
     SalaryAdvance advance,
   ) {
+    if (advance.validationStatus == 'payment_declared') {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Le manager a declare le paiement. Confirmez uniquement apres reception effective.',
+            style: AppTypography.caption.copyWith(
+              color: MobileSurface.secondary,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.icon(
+              onPressed: () => _confirmReceived(context, ref, advance.id),
+              icon: const Icon(Icons.verified_user_outlined, size: 16),
+              label: const Text('Confirmer reception'),
+            ),
+          ),
+        ],
+      );
+    }
+
     if (advance.status != 'pending') return null;
 
     return Align(
@@ -181,8 +205,61 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     }
   }
 
-  static String _getStatusLabel(String status) {
-    switch (status) {
+  Future<void> _confirmReceived(
+    BuildContext context,
+    WidgetRef ref,
+    int advanceId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Confirmer la reception ?'),
+            content: const Text(
+              'Confirmez seulement si le montant est effectivement arrive. Cette action sera historisee.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Retour'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Confirmer'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref
+          .read(salaryAdvanceRepositoryProvider)
+          .confirmReceived(advanceId);
+      ref.invalidate(salaryAdvancesProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Reception confirmee.')));
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    }
+  }
+
+  static String _getStatusLabel(SalaryAdvance advance) {
+    switch (advance.validationStatus) {
+      case 'manager_approved':
+        return 'validee';
+      case 'payment_declared':
+        return 'a confirmer';
+      case 'employee_confirmed':
+        return 'recue';
+    }
+
+    switch (advance.status) {
       case 'active':
         return 'active';
       case 'approved':
@@ -194,7 +271,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
       case 'cancelled':
         return 'annulee';
       default:
-        return status;
+        return advance.status;
     }
   }
 
