@@ -4,6 +4,11 @@ import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
+/// Web client ID du projet Firebase (type 3 dans google-services.json).
+/// Requis pour que Google Sign-In retourne un idToken valide côté backend.
+const _kGoogleWebClientId =
+    '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com';
+
 class AuthRepository {
   final _googleSignIn = GoogleSignIn.instance;
   final ApiClient apiClient;
