@@ -254,17 +254,20 @@ jobs:
         app:
           - name: employee
             project_path: front/mobile_apps/leopardo_employee
-            artifact_name: leopardo-employee-main
+            artifact_name: leopardo-employee-staging
+            version_prefix: employee
             firebase_secret: FIREBASE_EMPLOYEE_ANDROID_APP_ID
             android_package: com.leopardo.employee
           - name: manager
             project_path: front/mobile_apps/leopardo_manager
-            artifact_name: leopardo-manager-main
+            artifact_name: leopardo-manager-staging
+            version_prefix: manager
             firebase_secret: FIREBASE_MANAGER_ANDROID_APP_ID
             android_package: com.leopardo.manager
           - name: platform_admin
             project_path: front/mobile_apps/leopardo_platform_admin
-            artifact_name: leopardo-platform-admin-main
+            artifact_name: leopardo-platform-admin-staging
+            version_prefix: platform-admin
             firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
             android_package: com.leopardo.platformadmin
 
@@ -363,7 +366,7 @@ jobs:
           echo "API_BASE_URL=${DEFAULT_API_BASE_URL}" > .env.build
           flutter build apk --release \
             --dart-define-from-file=.env.build \
-            --build-name="main-${GITHUB_RUN_NUMBER}" \
+            --build-name="${{ matrix.app.version_prefix }}-main-${GITHUB_RUN_NUMBER}" \
             --build-number="${GITHUB_RUN_NUMBER}"
 
       - name: Upload mobile artifact
@@ -385,6 +388,7 @@ jobs:
           file: ${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk
           releaseNotes: |
             Auto deploy from main - Leopardo ${{ matrix.app.name }}
+            Build: ${{ matrix.app.version_prefix }}-main-${{ github.run_number }}
             Commit: ${{ needs.prepare.outputs.sha }}
             Workflow: ${{ github.workflow }}
             Backend: https://gestionemployerbackend.onrender.com
