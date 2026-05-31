@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -5,6 +7,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 
 import 'src/platform_admin_app.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,8 +33,19 @@ Future<void> main() async {
 }
 
 Future<void> _bootstrap() async {
+  await _initFirebase();
   await _openOfflineCache();
   await _initializeLocales();
+}
+
+Future<void> _initFirebase() async {
+  try {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  } catch (error, stackTrace) {
+    debugPrint('Firebase init skipped (platform_admin): $error');
+    debugPrintStack(stackTrace: stackTrace);
+  }
 }
 
 Future<void> _openOfflineCache() async {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
-import { ArrowRight, Play, Sparkles, Star, TrendingUp, Users, Zap } from 'lucide-react'
+import { ArrowRight, Download, Play, Smartphone, Sparkles, Star, TrendingUp, Users, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 import { ParticleField } from './ParticleField'
@@ -134,6 +134,38 @@ export function HeroSection() {
                 <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
               </div>
               {copy.hero.secondaryCta}
+            </Link>
+          </motion.div>
+
+          {/* Mobile apps availability bar — Workforce OS / Mobile-First Company OS */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
+          >
+            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+              <Smartphone className="w-4 h-4 text-emerald-500" />
+              <span className="font-medium">{copy.hero.mobileBadge ?? 'Available on mobile'}</span>
+              <span className="text-slate-300 dark:text-slate-600">—</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {['Employee', 'Manager', 'Platform Admin'].map((label) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-xs font-semibold"
+                >
+                  <Smartphone className="w-3 h-3" />
+                  {label}
+                </span>
+              ))}
+            </div>
+            <Link
+              href="/download"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              {copy.hero.downloadCta ?? 'Download'}
             </Link>
           </motion.div>
 

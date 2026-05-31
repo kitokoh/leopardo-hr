@@ -4,6 +4,9 @@ import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
+// Note: le Web Client ID Firebase (type 3) est configuré via GoogleSignIn.instance.initialize()
+// dans main.dart — c'est là qu'il doit être passé pour que authenticate() retourne un idToken.
+
 class AuthRepository {
   final _googleSignIn = GoogleSignIn.instance;
   final ApiClient apiClient;
@@ -47,6 +50,8 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> loginWithGoogle() async {
+    // serverClientId est configuré dans GoogleSignIn.instance.initialize() dans main.dart
+    // (web client id type 3 = _kGoogleWebClientId) — obligatoire pour l'idToken backend.
     final googleUser = await _googleSignIn.authenticate();
 
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
