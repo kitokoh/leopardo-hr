@@ -20,11 +20,20 @@ void main() {
     StartupGate(
       appName: 'Leopardo Manager',
       initializer: _bootstrap,
+      criticalInitializer: _bootstrapCritical,
+      optionalInitializer: _safeGoogleSignInInitialize,
       child: const ProviderScope(child: LeopardoApp()),
     ),
   );
 }
 
+/// Ops critiques : JAMAIS soumises à un timeout.
+Future<void> _bootstrapCritical() async {
+  await _openOfflineCache();
+  await _initializeLocales();
+}
+
+/// Conservé pour compatibilité.
 Future<void> _bootstrap() async {
   unawaited(_safeGoogleSignInInitialize());
   await _openOfflineCache();

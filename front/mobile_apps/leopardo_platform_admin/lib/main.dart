@@ -18,6 +18,8 @@ Future<void> main() async {
     StartupGate(
       appName: 'Leopardo Platform Admin',
       initializer: _bootstrap,
+      criticalInitializer: _bootstrap,
+      // Pas d'optionalInitializer pour platform admin (pas de Google Sign-In).
       child: const ProviderScope(child: PlatformAdminApp()),
     ),
   );
