@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.242)
+Derniere mise a jour : 2026-06-01 (v4.16.243)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -97,6 +97,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.227, l'audit ops production est garde par `dev-hub/tools/validate-production-ops-readiness.ps1`. Avant lancement, verifier `DEPLOYMENT_GUIDE.md`, Render deploy/rollback hooks, Redis/queues, scheduler, Firebase App Distribution, FCM backend et backup/restore. `FIREBASE_READBACK_REQUIRED=true` ne doit etre active qu'apres rotation et test du service account.
 - Depuis v4.16.228, le Plan 68 est cloture et la suite canonique est `docs/PLAN_ACTION/69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md`. Commencer par le lot 69.1 : recette mobile release sur vrais appareils/Firebase pour employee, manager et platform admin avant d'elargir marketing.
 - Depuis v4.16.229, la distribution Firebase staging Plan 69.1 run `26750677529` a reussi pour employee, manager et platform admin depuis `main` SHA `2fc2ca97058365ed468430c2c3323df0690d607e`. Le go final mobile reste conditionne au test sur appareils physiques documente dans `docs/validation/MOBILE_RELEASE_DEVICE_QA_2026_06_01.md`.
+- Depuis v4.16.243, `GET /api/v1/launch-readiness` doit reutiliser `currentCompany()` quand le middleware tenant l'a resolue et rester schema-aware sur les colonnes paie employees. Ne pas recharger `Company` via le `search_path` tenant dans ce cockpit de lancement.
 - Depuis v4.16.230, les apps employee/manager doivent lire les soldes conges personnels via `GET /api/v1/me/leave-balances`, jamais via `/leave-balances` qui reste manager-only. Les demos Render doivent aussi avoir des lignes `leave_balances` backfillees par `DemoCompanyOnceSeeder`; si le formulaire absence indique "aucun type disponible", verifier d'abord ce seed/backfill avant de toucher aux permissions.
 - Depuis v4.16.232, `EmployeeController@index` doit garder son `select` compatible avec `EmployeeResource` sans supposer que toutes les colonnes optionnelles existent deja sur tous les environnements. Utiliser `employeeIndexColumns()` + `relationColumns()` + `Schema::hasColumn`, y compris pour `company`, `schedule`, la recherche et les tris attendance. Garder `EmployeeResource::employeeAttribute()` tolerant aux attributs absents. Si `GET /api/v1/employees` retourne 500 en production, verifier d'abord les champs partiellement charges/colonnes optionnelles avant de toucher aux policies.
 - Apres un lot qui touche auth/web/admin/mobile, attendre les checks GitHub Actions du PR et verifier aussi les workflows `main` post-merge quand ils partent en cascade (deploy, staging E2E, OWASP, mobile) avant d'annoncer la preuve finale.
