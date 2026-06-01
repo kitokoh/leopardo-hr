@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.205] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager : durcissement des repositories auth et settings avec `requestWithRetry`, timeouts courts pour `/auth/me`, parsing tolerant `extractDataMap()` et uploads biometrie avec timeout dedie. Les flux login Google, register, logout, profil, langue, mot de passe, QR employe et biometrie ne reposent plus sur des appels Dio directs fragiles.
+- Mobile employee : les donnees Compte critiques (parcours professionnel, stats placard numerique, QR profil et scan QR entreprise) utilisent maintenant le client retry-aware pour reduire les ecrans bloques quand Render ou l'API repond lentement.
+
 ## [4.16.204] - 2026-06-01
 
 ### Fixed
