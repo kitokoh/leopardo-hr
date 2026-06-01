@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.242] - 2026-06-01
+
+### Fixed
+
+- Mobile startup P0 : `PushNotificationService` initialise maintenant Firebase/FCM de facon lazy et protegee, sans `FirebaseMessaging.instance` eager avant `Firebase.initializeApp()`, afin qu'un echec Firebase/FCM ne bloque jamais Employee, Manager ou Platform Admin au lancement.
+- Mobile Android : les trois apps separees appliquent maintenant le plugin Gradle `com.google.gms.google-services` en plus des `google-services.json`, pour garantir les ressources Firebase natives en release.
+- Mobile CI : `validate-mobile-runtime-smoke.ps1` verifie le contrat anti-ecran-noir, le plugin Google Services et l'absence de Firebase Messaging eager.
+
 ## [4.16.241] - 2026-06-01
 
 ### Added
