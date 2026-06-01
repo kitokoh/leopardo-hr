@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.224] - 2026-06-01
+
+### Added
+
+- Ajout du Plan 68 `68_PLAN_AUDIT_POST_67_QUALITE_CODE_LANCEMENT.md` pour organiser l'audit post-Plan 67 avant le prochain cycle produit.
+- Ajout du garde `repository-hygiene-report.ps1` et du rapport `REPOSITORY_HYGIENE_REPORT_2026_06_01.md` pour verifier branches distantes/locales et alignement `origin/main`.
+
+### Changed
+
+- Sommaire des plans : ajout du Plan 68 comme suite canonique apres cloture du Plan 67.
+
 ## [4.16.223] - 2026-06-01
 
 ### Added
