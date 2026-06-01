@@ -24,7 +24,7 @@ class AbsenceRepository {
 
   Future<List<Map<String, dynamic>>> getLeaveBalances() async {
     final response = await apiClient.requestWithRetry(
-      '/leave-balances',
+      '/me/leave-balances',
       maxRetriesOverride: 1,
       timeoutOverride: _readTimeout,
     );

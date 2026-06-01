@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.230] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager : les formulaires d'absence lisent maintenant les soldes self-service via `/me/leave-balances` au lieu de la route manager `/leave-balances`.
+- Demo Render : `DemoCompanySeeder` et `DemoCompanyOnceSeeder` creent/backfill les `leave_balances` des entreprises demo pour que les demandes d'absence testeur puissent recuperer un `absence_type_id`.
+
+### Added
+
+- Plan 69.2 : ajout du rapport `EMPLOYEE_TERRAIN_API_SMOKE_2026_06_01.md` couvrant login, lectures employee, pointage multiple, avance et blocage absence corrige.
+
 ## [4.16.229] - 2026-06-01
 
 ### Added

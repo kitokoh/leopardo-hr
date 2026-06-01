@@ -51,7 +51,7 @@
         {
           "name": "absences",
           "routes": ["/absences"],
-          "endpoints": ["/absences", "/leave-balances"],
+          "endpoints": ["/absences", "/me/leave-balances"],
           "screenFiles": [
             "lib/features/absences/screens/absence_list_screen.dart"
           ],
