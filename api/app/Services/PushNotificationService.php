@@ -7,22 +7,29 @@ use App\Models\Employee;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class PushNotificationService
 {
     public function registerToken(Employee $employee, string $token, string $platform = 'android', ?string $deviceName = null): DeviceToken
     {
+        $values = [
+            'platform' => $platform,
+            'device_name' => $deviceName,
+            'is_active' => true,
+            'last_used_at' => now(),
+        ];
+
+        if (Schema::hasColumn('device_tokens', 'company_id')) {
+            $values['company_id'] = (string) $employee->company_id;
+        }
+
         return DeviceToken::query()->updateOrCreate(
             [
                 'employee_id' => $employee->id,
                 'token' => $token,
             ],
-            [
-                'platform' => $platform,
-                'device_name' => $deviceName,
-                'is_active' => true,
-                'last_used_at' => now(),
-            ]
+            $values
         );
     }
 

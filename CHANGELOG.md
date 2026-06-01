@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.221] - 2026-06-01
+
+### Added
+
+- Plan 67.5 : ajout du garde `validate-mobile-notification-production-proof.ps1` pour figer le cycle FCM employee/manager, les actions notifications et les routes backend push.
+- API docs : documentation OpenAPI de `GET/POST/DELETE /device-tokens` et `POST /push-notifications/send`.
+- Tests backend : `DeviceTokenControllerTest` couvre maintenant register/upsert/list/delete et l'envoi test manager via `CommunicationService`.
+- Ajout du rapport `MOBILE_NOTIFICATIONS_PRODUCTION_PROOF_2026_06_01.md` avec scenarios employee, manager et limite explicite du super-admin push.
+- Scenarios API GitHub Actions : ajout de la note Plan 67.5 pour les contrats `/device-tokens` et `/push-notifications/send`.
+
+### Fixed
+
+- API push : `PushNotificationService::registerToken()` renseigne maintenant `company_id` lorsque la table `device_tokens` l'exige, tout en restant compatible avec les anciens schemas sans colonne tenant.
+
 ## [4.16.220] - 2026-06-01
 
 ### Added

@@ -48,6 +48,7 @@ class OpenApiDocsTest extends TestCase
             ->assertSee('Authorization: Bearer')
             ->assertSee('Webhooks')
             ->assertSee('/demo-users')
-            ->assertSee('/notifications');
+            ->assertSee('/notifications')
+            ->assertSee('/device-tokens');
     }
 }
