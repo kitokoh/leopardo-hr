@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.238] - 2026-06-01
+
+### Fixed
+
+- API paie mobile : `GET /api/v1/payroll/mobile-summary` selectionne maintenant les colonnes employe selon le schema courant afin d'eviter les 500 Render sur tenants historiques avant les backfills complets.
+
 ## [4.16.237] - 2026-06-01
 
 ### Added
