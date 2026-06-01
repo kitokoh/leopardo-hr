@@ -4,8 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
+use Database\Seeders\DemoCompanyOnceSeeder;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -53,6 +56,44 @@ class DemoUserControllerTest extends TestCase
         $this->getJson('/api/v1/demo-users')
             ->assertOk()
             ->assertJsonPath('data.companies.0.users.0.email', 'ahmed.benali@techcorp-algerie.dz');
+    }
+
+    public function test_demo_once_seeder_keeps_public_super_admin_credentials_usable(): void
+    {
+        config(['app.demo_mode_enabled' => true]);
+
+        DB::table('public.super_admins')->insert([
+            'name' => 'Super Administrateur',
+            'email' => 'admin@leopardo-rh.com',
+            'password_hash' => Hash::make('old-random-password'),
+            'two_fa_secret' => 'ABCDEFGHIJKLMNOP',
+            'created_at' => now(),
+        ]);
+
+        Schema::create('seed_locks', function (Blueprint $table): void {
+            $table->string('lock_key')->primary();
+            $table->timestampTz('ran_at')->nullable();
+            $table->timestampsTz();
+        });
+
+        foreach (['techcorp-algerie', 'pharmaplus-casablanca', 'digitalflow-tunis'] as $slug) {
+            Company::factory()->create([
+                'slug' => $slug,
+                'schema_name' => 'shared_tenants',
+                'tenancy_type' => 'shared',
+                'status' => 'active',
+            ]);
+        }
+
+        $this->seed(DemoCompanyOnceSeeder::class);
+
+        $superAdmin = DB::table('public.super_admins')
+            ->where('email', 'admin@leopardo-rh.com')
+            ->first();
+
+        $this->assertNotNull($superAdmin);
+        $this->assertTrue(Hash::check('password123', $superAdmin->password_hash));
+        $this->assertNull($superAdmin->two_fa_secret);
     }
 
     public function test_demo_login_recovers_missing_lookup_from_shared_tenant_schema(): void
