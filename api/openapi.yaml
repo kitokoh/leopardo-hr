@@ -5059,6 +5059,62 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /me/payment-documents:
+    get:
+      tags: ["Me"]
+      summary: "Mes documents de paiement"
+      description: "Liste les recus, bordereaux et bulletins generes en arriere-plan pour l'utilisateur connecte."
+      parameters:
+        - in: query
+          name: document_type
+          schema:
+            type: string
+            enum: [payment_receipt, payment_slip, advance_receipt, payroll_summary]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, generating, available, failed]
+      responses:
+        "200":
+          description: "Documents de paiement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaymentDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/payment-documents/{paymentDocument}/download:
+    get:
+      tags: ["Me"]
+      summary: "Telecharger un document de paiement"
+      parameters:
+        - in: path
+          name: paymentDocument
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier PDF"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "409":
+          description: "Document pas encore disponible"
+
   /payroll/mobile-summary:
     get:
       tags: ["Payroll"]
@@ -5086,6 +5142,60 @@ paths:
                           advances: { type: number, format: float }
                           paid: { type: number, format: float }
                           remaining: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /payroll-runs/{payrollRun}/payment-documents:
+    get:
+      tags: ["Payroll"]
+      summary: "Documents de paiement d'un cycle paie"
+      parameters:
+        - in: path
+          name: payrollRun
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Documents du cycle"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaymentDocument"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /payments/{payrollRun}/documents:
+    get:
+      tags: ["Payroll"]
+      summary: "Alias mobile pour documents de paiement d'un cycle"
+      parameters:
+        - in: path
+          name: payrollRun
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Documents du cycle"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaymentDocument"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -11208,6 +11318,55 @@ components:
             payroll_run_id:
               type: integer
               nullable: true
+
+    PaymentDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: integer
+          nullable: true
+        payroll_run_id:
+          type: integer
+          nullable: true
+        pay_slip_id:
+          type: integer
+          nullable: true
+        salary_advance_id:
+          type: integer
+          nullable: true
+        document_type:
+          type: string
+          enum: [payment_receipt, payment_slip, advance_receipt, payroll_summary]
+        status:
+          type: string
+          enum: [pending, generating, available, failed]
+        filename:
+          type: string
+          nullable: true
+        mime_type:
+          type: string
+          example: application/pdf
+        size_bytes:
+          type: integer
+          nullable: true
+        is_downloadable:
+          type: boolean
+        metadata:
+          type: object
+          additionalProperties: true
+        generated_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
 
     PayrollRun:
       type: object

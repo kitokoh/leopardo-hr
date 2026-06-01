@@ -51,7 +51,11 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
 | Mobile | Solde paie employe | `GET /api/v1/me/balance` | employe | `PayrollCycleIntegrationTest`, `FrontendApiContractTest` |
+| Mobile | Documents paiement employe | `GET /api/v1/me/payment-documents` | employe | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
+| Mobile | Telechargement document paiement | `GET /api/v1/me/payment-documents/{paymentDocument}/download` | employe | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
 | Mobile manager | Resume paie equipe | `GET /api/v1/payroll/mobile-summary` | manager principal/comptable | `PayrollCycleIntegrationTest`, `FrontendApiContractTest` |
+| Mobile manager | Documents paiement cycle | `GET /api/v1/payroll-runs/{payrollRun}/payment-documents` | manager principal/comptable | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
+| Mobile manager | Alias documents paiement | `GET /api/v1/payments/{payrollRun}/documents` | manager principal/comptable | `FrontendApiContractTest` |
 | Mobile | Statistiques placard numerique | `GET /api/v1/cabinet/stats` | employe | `AuthProfileSettingsTest` |
 | Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |

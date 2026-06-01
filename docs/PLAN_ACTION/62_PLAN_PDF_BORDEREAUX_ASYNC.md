@@ -12,35 +12,42 @@ Generer recus, bordereaux, justificatifs et fiches paiement sans bloquer l'appli
 
 ### Lot 62.1 - Contrat document paiement
 
-- Definir types : `payment_receipt`, `payment_slip`, `advance_receipt`, `payroll_summary`.
-- Lier document a employee, company, payment batch ou salary advance.
+- [x] Definir types : `payment_receipt`, `payment_slip`, `advance_receipt`, `payroll_summary`.
+- [x] Lier document a employee, company, payroll run, pay slip ou salary advance via `payment_documents`.
 
 ### Lot 62.2 - Job PDF async
 
-- Creer job `GeneratePaymentDocumentJob`.
-- Queue dediee `documents` ou `payroll`.
-- Retry, timeout, tags Horizon.
-- Ne jamais generer PDF dans la requete mobile.
+- [x] Creer job `GeneratePaymentDocumentJob`.
+- [x] Queue dediee `documents`, retry, timeout, tags Horizon.
+- [x] Ne jamais generer PDF dans la requete mobile : `mark-paid` cree un document `pending` puis dispatch le job.
 
 ### Lot 62.3 - Endpoints API
 
-- `GET /api/v1/me/payment-documents`
-- `GET /api/v1/me/payment-documents/{id}/download`
-- Manager : `GET /api/v1/payments/{id}/documents`
+- [x] `GET /api/v1/me/payment-documents`
+- [x] `GET /api/v1/me/payment-documents/{id}/download`
+- [x] Manager : `GET /api/v1/payroll-runs/{id}/payment-documents`
+- [x] Alias mobile : `GET /api/v1/payments/{id}/documents`
 
 ### Lot 62.4 - Mobile
 
-- Employee : liste documents et telechargement/partage.
-- Manager : statut generation documents apres paiement.
+- [ ] Employee : liste documents et telechargement/partage dans l'app mobile.
+- [ ] Manager : statut generation documents apres paiement dans l'app mobile.
 
 ## Tests
 
-- Queue assertion.
-- Storage fake.
-- Access control employee/manager.
+- [x] Queue assertion sur declaration paiement avance.
+- [x] Storage fake sur telechargement.
+- [x] Access control employee/manager.
 
 ## Criteres d'acceptation
 
-- Paiement declare retourne vite.
-- Document genere en arriere-plan.
-- L'utilisateur voit un statut clair : en cours, disponible, erreur.
+- [x] Paiement declare retourne vite et cree un document `pending`.
+- [x] Document genere en arriere-plan via queue `documents`.
+- [x] L'utilisateur voit un statut clair : `pending`, `generating`, `available`, `failed`.
+
+## Notes implementation 2026-06-01
+
+- Les bulletins historiques restent servis par `PaySlipPdfGenerator`.
+- `payment_documents` devient l'index documentaire mobile-first pour les recus, bordereaux et justificatifs.
+- `ProcessBulkPaymentJob` cree aussi des documents `payment_slip` pour les bulletins traites en masse.
+- Les ecrans mobiles dedies aux documents restent le reliquat du Plan 62.4 et doivent consommer les endpoints ci-dessus.
