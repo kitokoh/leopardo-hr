@@ -116,6 +116,10 @@ Stabiliser le cycle financier mobile-first : avance double validation, solde emp
 
 Rapport paie/finance + tests backend cibles si un workflow manque.
 
+### Statut
+
+**Go apres corrections #686/#688/#689.** Le smoke Render confirme l'avance double validation (`manager-approve`, `mark-paid`, `confirm-received`), le recu avance asynchrone, le cycle paie demo avec 11 bulletins, le payment batch marque paye, la confirmation employe d'un item, le resume mobile manager et le solde employe par manager. Rapport : `docs/validation/PAYROLL_FINANCE_API_SMOKE_2026_06_01.md`.
+
 ## Lot 69.6 - Observabilite lancement
 
 ### Objectif
