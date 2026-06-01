@@ -44,6 +44,14 @@ Ce gate definit le controle generalise de Leopardo RH avant de declarer un lot l
 - Historique pointage.
 - Modeles offline/sync critiques.
 - Contrats API stables.
+- Architecture multi-app canonique `front/mobile_apps/` : core, employee, manager/RH et platform admin.
+- Gardes runtime, GPS, branding tenant, notifications, workflow contracts et distribution Firebase.
+
+### Web vitrine et kiosk
+
+- Vitrine marketing/client presente et separable de l'admin interne.
+- Liens commerciaux et ressources publiques non casses.
+- Kiosk ZKTeco present, base API normalisee et routes kiosk documentees.
 
 ### Securite
 
@@ -95,3 +103,5 @@ Chaque controle generalise doit produire :
 - les echecs classes selon `environment | dependency | architecture | code | ci` ;
 - un score de readiness ;
 - les prochains lots recommandes.
+
+Depuis le 2026-06-01, le score local attendu est `22/22` checks sur le gate strict.

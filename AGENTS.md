@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.221)
+Derniere mise a jour : 2026-06-01 (v4.16.222)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -87,6 +87,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Les decisions d'architecture structurantes vivent dans `docs/architecture/adr/`, le diagramme C4 dans `docs/architecture/C4_ARCHITECTURE.md`, et le point d'entree operations dans `docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md`.
 - Le guide partenaire canonique est `docs/GUIDES/GUIDE_INTEGRATION_PARTENAIRES.md`; l'actualiser avec tout changement API/webhook/SSO expose aux integrateurs.
 - Le controle generalise de release vit dans `docs/validation/RELEASE_READINESS_GATE.md` avec le script `dev-hub/tools/release-readiness.ps1`; produire ou mettre a jour un rapport `docs/validation/RELEASE_READINESS_REPORT_*.md` avant de declarer un score production-ready.
+- Depuis v4.16.222, `release-readiness.ps1 -Strict` doit passer a `22/22` et couvrir aussi `front/mobile_apps/leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_platform_admin`, les gardes Plan 67, `mobile-distribute.yml`, `front/web` et `front/zkteco-kiosk`. Ne plus declarer une readiness mobile uniquement sur l'ancien `front/mobile`.
 - Apres un lot qui touche auth/web/admin/mobile, attendre les checks GitHub Actions du PR et verifier aussi les workflows `main` post-merge quand ils partent en cascade (deploy, staging E2E, OWASP, mobile) avant d'annoncer la preuve finale.
 - Le workflow manuel `Deploy - Leopardo RH` doit rester utilisable sur `main` sans dependance au lookup `workflow_run`; c'est le bouton ops pour relancer Render et reexecuter l'entrypoint (migrations/seeders) apres une correction de donnees demo.
 - Le smoke k6 `dev-hub/load/k6/api-core-smoke.js` doit rester read-only et suivre les endpoints reels du dashboard client (`auth/me`, `dashboard/summary`, `dashboard/recent-activity`, `dashboard/kpi`) avant d'ajouter des scenarios plus agressifs.
