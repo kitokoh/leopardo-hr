@@ -138,13 +138,15 @@ Cockpit de lancement documentaire et procedures d'escalade simples.
 
 ### Statut
 
-**Go technique, go-live conditionnel.** Le smoke Render confirme `health`, `live`, `ready`, `manager-digest` et `launch-readiness` apres correction #691. Le cockpit retourne un score `43` et `go_live_ready=false` avec un bloqueur requis `communication_governance` (`preferences_configured=1`, aucun echec communication 7j). Rapport : `docs/validation/LAUNCH_OBSERVABILITY_SMOKE_2026_06_01.md`.
+**Go technique API.** Le smoke Render confirme `health`, `ready`, `manager-digest` et `launch-readiness` apres corrections #691/#693/#694/#695. Le cockpit retourne maintenant `score=100`, `go_live_ready=true`, `required_blockers=0`, avec preferences notifications, paie minimale, geofence/kiosque et tracking client backfilles. Rapport : `docs/validation/LAUNCH_OBSERVABILITY_SMOKE_2026_06_01.md`.
 
 **Correctif prepare.** Le backfill `notifications:backfill-preferences` cree/repare les preferences notifications des employes actifs et l'entrypoint Render l'execute apres les seeders. Rapport : `docs/validation/LAUNCH_COMMUNICATION_GOVERNANCE_FIX_2026_06_01.md`.
 
 **Backfill demo prepare.** `DemoCompanyOnceSeeder` complete aussi les signaux demo necessaires au seuil readiness (`payroll_base`, `attendance_entry`, `client_experience_tracking`) quand les entreprises demo existent deja. Rapport : `docs/validation/LAUNCH_DEMO_READINESS_BACKFILL_2026_06_01.md`.
 
 **Correctif runtime Render.** Les backfills readiness restent actifs meme si `DISABLE_DEMO_SEEDING=true` et le backfill preferences force le schema `shared_tenants, public`, afin que le cockpit lise les memes donnees que les APIs tenant apres deploy.
+
+**Lot 69.6 cloture.** Les workflows `main` post-merge #695 sont verts : Tests, Deploy Staging, Deploy Render, E2E staging, OWASP et distribution Firebase des trois apps. Le dernier blocage restant est hors code : recette device physique a rejouer par testeurs.
 
 ## Priorite
 
