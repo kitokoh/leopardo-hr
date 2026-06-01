@@ -1028,7 +1028,8 @@ Note 2026-06-01 : le Plan 63 durcit les pics de charge. Les scenarios API/ops do
 - `--dry-run` preview sans ecriture
 - Calcule `hours_worked` selon `workday_hours + overtime_margin_minutes`, sans utiliser le statut invalide `auto_closed`
 - Met `correction_note=auto_close`, `punch_note` explicatif et `punch_meta.auto_close.correction_window=true`
-- `POST /api/v1/attendance/check-in|check-out` accepte `device_timezone`, `gps_lat`, `gps_lng`; le backend stocke UTC et retourne timezone locale + geofence doux (`inside=false` ne bloque pas)
+- `POST /api/v1/attendance/check-in|check-out` accepte `device_timezone`, `gps_lat`, `gps_lng`, `gps_accuracy`; le backend stocke UTC, retourne timezone locale + geofence doux (`inside=false` ne bloque pas) et expose `gps.accuracy_m`
+- Plan 67.3 ajoute le garde mobile/API `validate-mobile-location-readiness.ps1` pour garantir que les apps employee/manager collectent le GPS sans bloquer et que l'API conserve ce contrat.
 
 #### Plan 65 — Paiement en Masse (BulkPaymentController + ProcessBulkPaymentJob)
 - `POST /api/v1/payroll-runs/{id}/bulk-pay` : dispatch `ProcessBulkPaymentJob` sur queue `payroll`, retourne 202 Accepted

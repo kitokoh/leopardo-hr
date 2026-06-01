@@ -21,7 +21,11 @@ class AttendanceRepository {
     return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
-  Future<AttendanceLog> checkIn({double? gpsLat, double? gpsLng}) async {
+  Future<AttendanceLog> checkIn({
+    double? gpsLat,
+    double? gpsLng,
+    double? gpsAccuracy,
+  }) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-in',
       method: 'POST',
@@ -29,6 +33,7 @@ class AttendanceRepository {
         'device_timezone': _deviceTimezoneContext(),
         if (gpsLat != null) 'gps_lat': gpsLat,
         if (gpsLng != null) 'gps_lng': gpsLng,
+        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
       },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
@@ -36,7 +41,11 @@ class AttendanceRepository {
     return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
-  Future<AttendanceLog> checkOut({double? gpsLat, double? gpsLng}) async {
+  Future<AttendanceLog> checkOut({
+    double? gpsLat,
+    double? gpsLng,
+    double? gpsAccuracy,
+  }) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-out',
       method: 'POST',
@@ -44,6 +53,7 @@ class AttendanceRepository {
         'device_timezone': _deviceTimezoneContext(),
         if (gpsLat != null) 'gps_lat': gpsLat,
         if (gpsLng != null) 'gps_lng': gpsLng,
+        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
       },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,

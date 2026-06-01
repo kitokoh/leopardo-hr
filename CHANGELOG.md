@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.219] - 2026-06-01
+
+### Added
+
+- Plan 67.3 : ajout de `AttendanceLocationService` dans `leopardo_core` pour collecter le GPS au moment du pointage sans bloquer l'UX.
+- Apps employee/manager : ajout des permissions GPS Android/iOS, envoi de `gps_lat`, `gps_lng`, `gps_accuracy` et feedback doux si le geofence detecte un hors-zone.
+- API attendance : validation et exposition de `gps_accuracy` via `gps.accuracy_m`.
+- CI mobile : ajout du garde `validate-mobile-location-readiness.ps1` et du rapport `MOBILE_GPS_GEOFENCE_REPORT_2026_06_01.md`.
+
 ## [4.16.218] - 2026-06-01
 
 ### Changed
