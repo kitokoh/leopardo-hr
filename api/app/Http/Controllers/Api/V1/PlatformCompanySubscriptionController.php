@@ -13,6 +13,8 @@ class PlatformCompanySubscriptionController extends Controller
 {
     public function show(string $companyId): JsonResponse
     {
+        DB::statement('SET search_path TO public');
+
         $company = Company::query()->findOrFail($companyId);
 
         return new JsonResponse([
@@ -22,6 +24,8 @@ class PlatformCompanySubscriptionController extends Controller
 
     public function update(Request $request, string $companyId): JsonResponse
     {
+        DB::statement('SET search_path TO public');
+
         $company = Company::query()->findOrFail($companyId);
 
         $validated = $request->validate([

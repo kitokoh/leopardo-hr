@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.234)
+Derniere mise a jour : 2026-06-01 (v4.16.235)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -117,6 +117,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.171, `dev-hub/tools/mobile-workflow-contracts.json` couvre aussi `leopardo_platform_admin`. Toute nouvelle action mobile super-admin doit declarer sa route `/platform/*`, son endpoint `/platform/*` et ses tokens d'ecran dans ce contrat, en plus de garder le Plan 29 vert.
 - Depuis v4.16.184, le Plan 56 durcit l'app mobile `leopardo_platform_admin` : pas d'hydratation `/platform/auth/me` sans token local, gestion explicite du `202 TWO_FA_REQUIRED`, bouton compte demo super-admin et validation email/code pays sur la creation client.
 - Depuis v4.16.172, la fiche client mobile platform admin vit sur `/platform/companies/:companyId` et consomme `/platform/companies/{company}/health`, `/subscription` et `/features`. `PlatformCompany.id` doit rester une string pour supporter les UUID de `public.companies`; ne pas le recaster en int.
+- Depuis v4.16.235, les endpoints detail platform admin (`/platform/companies/{company}/health`, `/subscription`, `/features`) doivent forcer `SET search_path TO public` avant de charger `Company`. Sans ce garde, une creation client ou une requete tenant precedente peut laisser PostgreSQL chercher l'UUID dans le mauvais schema et produire un faux `404`.
 - Depuis v4.16.218, `leopardo_platform_admin` doit garder `PlatformRepository.createCompany()` avec retour `PlatformCompany` et redirection vers `/platform/companies/{companyId}` apres creation. Ne pas revenir a un `void` silencieux : le super-admin doit voir la fiche du client cree sans attendre un refresh manuel.
 - Depuis v4.16.173, cette fiche client est actionnable : edition abonnement via `GET /platform/plans` + `PATCH /platform/companies/{company}/subscription`, et edition modules via `PATCH /platform/companies/{company}/features`. Le module `rh` reste verrouille actif cote UI comme cote API.
 - Depuis v4.16.174, `shared/i18n/sync/sync-mobile.js` ecrit les catalogues ARB a la fois dans `front/mobile/lib/l10n` et `front/mobile_apps/leopardo_core/lib/l10n`. Ne pas laisser Jules traduire seulement l'ancien mobile : les apps employee/manager/platform admin lisent le core.

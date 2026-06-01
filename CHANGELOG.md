@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.235] - 2026-06-01
+
+### Fixed
+
+- API platform admin : les endpoints detail entreprise (`/platform/companies/{id}/health`, `/subscription`, `/features`) forcent maintenant `search_path=public` avant de charger `Company`, pour eviter les `404` apres provisioning ou apres une requete tenant.
+
 ## [4.16.234] - 2026-06-01
 
 ### Fixed
