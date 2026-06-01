@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.231] - 2026-06-01
+
+### Fixed
+
+- API manager/RH : `GET /api/v1/employees` selectionne maintenant tous les champs exposes par `EmployeeResource`, afin d'eviter les erreurs production sur liste equipe partiellement chargee.
+
+### Added
+
+- Plan 69.3 : ajout du rapport `MANAGER_RH_API_SMOKE_2026_06_01.md` avec le smoke manager/RH Render et le no-go partiel liste equipe corrige.
+
 ## [4.16.230] - 2026-06-01
 
 ### Fixed
