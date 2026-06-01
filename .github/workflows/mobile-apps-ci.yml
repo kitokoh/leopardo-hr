@@ -8,6 +8,7 @@ on:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
       - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
+      - 'dev-hub/tools/validate-mobile-runtime-smoke.ps1'
       - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
       - 'dev-hub/tools/validate-mobile-plan28.ps1'
       - 'dev-hub/tools/validate-mobile-plan29.ps1'
@@ -19,6 +20,7 @@ on:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/validate-mobile-apps-split.ps1'
       - 'dev-hub/tools/validate-mobile-release-readiness.ps1'
+      - 'dev-hub/tools/validate-mobile-runtime-smoke.ps1'
       - 'dev-hub/tools/validate-mobile-workflow-contracts.ps1'
       - 'dev-hub/tools/validate-mobile-plan28.ps1'
       - 'dev-hub/tools/validate-mobile-plan29.ps1'
@@ -54,6 +56,10 @@ jobs:
       - name: Validate mobile release readiness
         shell: pwsh
         run: '& ./dev-hub/tools/validate-mobile-release-readiness.ps1'
+
+      - name: Validate mobile runtime smoke
+        shell: pwsh
+        run: '& ./dev-hub/tools/validate-mobile-runtime-smoke.ps1'
 
       - name: Validate mobile workflow contracts
         shell: pwsh

@@ -42,6 +42,10 @@ Les testeurs ont deja vu des pages grises/noires ou un logo bloque. Meme si le c
 
 Les trois apps affichent un premier ecran Flutter lisible et le workflow mobile CI/Firebase reste vert.
 
+### Statut
+
+**Livre en cours de validation CI.** Le garde `dev-hub/tools/validate-mobile-runtime-smoke.ps1` bloque les regressions structurelles de demarrage et le rapport `docs/validation/MOBILE_RUNTIME_SMOKE_REPORT_2026_06_01.md` documente le contrat.
+
 ## Lot 67.2 - Super-admin platform admin end-to-end
 
 ### Probleme
