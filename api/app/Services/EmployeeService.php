@@ -7,6 +7,7 @@ use App\DTOs\UpdateEmployeeDTO;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Models\Employee;
+use App\Services\Cache\TenantCacheService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -15,6 +16,7 @@ class EmployeeService
 {
     public function __construct(
         private readonly UserInvitationService $userInvitationService,
+        private readonly TenantCacheService $tenantCache,
     ) {}
 
     public function create(CreateEmployeeDTO $dto, ?Employee $actor = null): Employee
@@ -51,6 +53,10 @@ class EmployeeService
         $this->applyBiometricConsent($payload);
 
         $employee = Employee::query()->create($payload);
+
+        if ($employee->company_id !== null) {
+            $this->tenantCache->invalidateEmployees($employee->company_id);
+        }
 
         EmployeeCreated::dispatch($employee);
 
@@ -121,6 +127,10 @@ class EmployeeService
         $employee->fill($payload);
         $employee->save();
 
+        if ($employee->company_id !== null) {
+            $this->tenantCache->invalidateEmployees($employee->company_id);
+        }
+
         return $employee;
     }
 
@@ -129,6 +139,10 @@ class EmployeeService
         $employee->status = 'archived';
         $employee->save();
         $employee->tokens()->delete();
+
+        if ($employee->company_id !== null) {
+            $this->tenantCache->invalidateEmployees($employee->company_id);
+        }
 
         EmployeeArchived::dispatch($employee);
 

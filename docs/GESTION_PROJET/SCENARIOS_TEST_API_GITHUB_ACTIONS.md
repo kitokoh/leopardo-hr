@@ -59,6 +59,8 @@ Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `
 
 Note 2026-06-01 : les documents de paiement asynchrones Plan 62 consomment `GET /api/v1/me/payment-documents`, `GET /api/v1/me/payment-documents/{paymentDocument}/download`, `GET /api/v1/payroll-runs/{payrollRun}/payment-documents` et l'alias `GET /api/v1/payments/{payrollRun}/documents`. Les scenarios API doivent verifier les statuts `pending/generating/available/failed`, le telechargement uniquement quand le fichier existe, l'isolation employee/tenant et la creation d'un document `advance_receipt` lors de `PUT /salary-advances/{id}/mark-paid`.
 
+Note 2026-06-01 : le Plan 63 durcit les pics de charge. Les scenarios API/ops doivent verifier que `GET /api/v1/health` expose les profondeurs des queues `documents`, `pdf`, `payroll`, `notifications`, `webhooks`, `default`, que `queue:health-check` retourne `failed_jobs`, que `GET /api/v1/dashboard/manager-digest` reste tenant-scope malgre le cache court, et que `GET /api/v1/schedules` invalide son cache apres create/update/delete.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
