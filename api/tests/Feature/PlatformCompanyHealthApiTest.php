@@ -184,6 +184,42 @@ class PlatformCompanyHealthApiTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_platform_company_detail_endpoints_resolve_public_company_after_tenant_search_path(): void
+    {
+        DB::table('plans')->insert([
+            'id' => 1,
+            'name' => 'Starter',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $company = Company::factory()->create([
+            'plan_id' => 1,
+            'timezone' => 'UTC',
+            'features' => ['rh' => true],
+        ]);
+
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+        DB::statement('CREATE TABLE IF NOT EXISTS shared_tenants.companies (LIKE public.companies INCLUDING ALL)');
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        $this->getJson("/api/v1/platform/companies/{$company->id}/health")
+            ->assertOk()
+            ->assertJsonPath('data.company.id', $company->id);
+
+        $this->getJson("/api/v1/platform/companies/{$company->id}/subscription")
+            ->assertOk()
+            ->assertJsonPath('data.company_id', $company->id);
+
+        $this->getJson("/api/v1/platform/companies/{$company->id}/features")
+            ->assertOk()
+            ->assertJsonPath('data.company_id', $company->id);
+    }
+
     private function superAdmin(): SuperAdmin
     {
         return SuperAdmin::query()->create([
