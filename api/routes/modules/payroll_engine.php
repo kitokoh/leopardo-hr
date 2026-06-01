@@ -90,6 +90,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // Plan 61 — Payroll cycles
         Route::get('/payroll/cycles', [PayrollCycleController::class, 'index']);
         Route::get('/payroll/cycles/current', [PayrollCycleController::class, 'current']);
+        Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
 
         // Plan 65 — Bulk payment
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
