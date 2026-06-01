@@ -70,6 +70,8 @@ class FrontendApiContractTest extends TestCase
             'mobile pay slips' => ['GET', 'api/v1/me/pay-slips'],
             'mobile pay slip detail' => ['GET', 'api/v1/me/pay-slips/{paySlip}'],
             'mobile pay slip pdf' => ['GET', 'api/v1/me/pay-slips/{paySlip}/pdf'],
+            'mobile employee balance' => ['GET', 'api/v1/me/balance'],
+            'mobile manager payroll summary' => ['GET', 'api/v1/payroll/mobile-summary'],
             'mobile notifications' => ['GET', 'api/v1/notifications'],
             'mobile notification read' => ['PUT', 'api/v1/notifications/{notification}/read'],
             'mobile notifications read all' => ['PUT', 'api/v1/notifications/read-all'],

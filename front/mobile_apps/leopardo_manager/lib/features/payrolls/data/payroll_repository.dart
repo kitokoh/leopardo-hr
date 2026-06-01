@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/payroll.dart';
+import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PayrollRepository {
@@ -20,6 +21,15 @@ class PayrollRepository {
     );
     final items = extractDataList(response.data);
     return items.map((e) => Payroll.fromJson(e)).toList();
+  }
+
+  Future<PayrollMobileSummary> getMobileSummary() async {
+    final response = await apiClient.requestWithRetry(
+      '/payroll/mobile-summary',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    return PayrollMobileSummary.fromJson(extractDataMap(response.data));
   }
 
   Future<String> downloadPayslipPdf(int payslipId) async {

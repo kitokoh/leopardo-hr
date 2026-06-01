@@ -992,7 +992,9 @@ Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `
 #### Plan 61 — Cycles de Paie & Solde Employe (PayrollCycleController)
 - `GET /api/v1/payroll/cycles` : retourne la liste paginee des PayrollRuns pour l'entreprise (manager requis)
 - `GET /api/v1/payroll/cycles/current` : retourne `period_start`, `period_end`, `label` du cycle courant calcule
+- `GET /api/v1/me/balance` : retourne le solde paie self-service du cycle courant avec devise, avances deduites et reste
 - `GET /api/v1/employees/{id}/balance` : retourne `gross_due`, `advances`, `paid`, `remaining` pour le cycle courant
+- `GET /api/v1/payroll/mobile-summary` : retourne la synthese mobile manager des soldes paie du perimetre autorise
 - Employe peut consulter son propre solde ; manager peut consulter tout employe de son entreprise
 - Acces refuse a un employe consultant le solde d'un autre employe sans etre manager (403)
 - Acces refuse a un manager consultant un employe hors de son entreprise (404)
