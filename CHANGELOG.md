@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.233] - 2026-06-01
+
+### Added
+
+- Plan 69.3 : rapport manager/RH mis a jour apres deploiement Render #680 avec preuve finale `GET /employees`, isolation tenant, creation/suppression tache et creation/archivage collaborateur temporaire.
+
 ## [4.16.232] - 2026-06-01
 
 ### Fixed
