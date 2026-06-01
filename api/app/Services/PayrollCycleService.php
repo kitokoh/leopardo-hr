@@ -48,7 +48,7 @@ class PayrollCycleService
      */
     public function getEmployeeBalance(Employee $employee): array
     {
-        $company = $employee->company;
+        $company = $this->resolveCompany($employee);
         if (($company instanceof Company) === false) {
             throw new \RuntimeException('Employee company is required to calculate payroll balance.');
         }
@@ -206,6 +206,26 @@ class PayrollCycleService
         $settings['week_start'] = max(1, min($settings['week_start'], 7));
 
         return $settings;
+    }
+
+    private function resolveCompany(Employee $employee): ?Company
+    {
+        if (app()->bound('current_company')) {
+            $company = currentCompany();
+            if ((string) $company->id === (string) $employee->company_id) {
+                return $company;
+            }
+        }
+
+        $company = $employee->relationLoaded('company') ? $employee->company : null;
+        if ($company instanceof Company) {
+            return $company;
+        }
+
+        /** @var Company|null $company */
+        $company = Company::query()->where('id', $employee->company_id)->first();
+
+        return $company;
     }
 
     private function companySetting(string $key, string $default): string

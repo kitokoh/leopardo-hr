@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.239] - 2026-06-01
+
+### Fixed
+
+- API paie mobile : `PayrollCycleService` reutilise l'entreprise courante resolue par le middleware tenant pour calculer les soldes, afin d'eviter les 500 lies au `search_path` quand une table tenant masque `public.companies`.
+
 ## [4.16.238] - 2026-06-01
 
 ### Fixed
