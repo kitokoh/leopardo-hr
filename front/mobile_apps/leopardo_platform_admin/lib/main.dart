@@ -10,7 +10,11 @@ import 'src/platform_admin_app.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  try {
+    await _ensureFirebaseInitialized();
+  } catch (error) {
+    debugPrint('Firebase background init skipped (platform_admin): $error');
+  }
 }
 
 Future<void> main() async {
@@ -43,12 +47,17 @@ Future<void> _bootstrapCritical() async {
 
 Future<void> _initFirebase() async {
   try {
-    await Firebase.initializeApp();
+    await _ensureFirebaseInitialized().timeout(const Duration(seconds: 6));
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (error, stackTrace) {
     debugPrint('Firebase init skipped (platform_admin): $error');
     debugPrintStack(stackTrace: stackTrace);
   }
+}
+
+Future<void> _ensureFirebaseInitialized() async {
+  if (Firebase.apps.isNotEmpty) return;
+  await Firebase.initializeApp();
 }
 
 Future<void> _openOfflineCache() async {
