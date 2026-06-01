@@ -141,6 +141,7 @@ void main() {
     await ExpenseRepository(client).getMyClaims();
     await ApprovalRepository(client).getPending();
     await OnboardingRepository(client).getChecklist();
+    await PayrollRepository(client).getPaymentDocumentsForPayrollRun(99);
 
     expect(recorder.requests, [
       'GET /absences',
@@ -152,6 +153,7 @@ void main() {
       'GET /expense-claims',
       'GET /approvals/pending',
       'GET /onboarding-setup/checklist',
+      'GET /payments/99/documents',
     ]);
   });
 

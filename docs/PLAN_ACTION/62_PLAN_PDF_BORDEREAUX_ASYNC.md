@@ -30,8 +30,8 @@ Generer recus, bordereaux, justificatifs et fiches paiement sans bloquer l'appli
 
 ### Lot 62.4 - Mobile
 
-- [ ] Employee : liste documents et telechargement/partage dans l'app mobile.
-- [ ] Manager : statut generation documents apres paiement dans l'app mobile.
+- [x] Employee : liste documents et telechargement dans l'app mobile.
+- [x] Manager : statut generation documents apres paiement dans l'app mobile.
 
 ## Tests
 
@@ -44,10 +44,11 @@ Generer recus, bordereaux, justificatifs et fiches paiement sans bloquer l'appli
 - [x] Paiement declare retourne vite et cree un document `pending`.
 - [x] Document genere en arriere-plan via queue `documents`.
 - [x] L'utilisateur voit un statut clair : `pending`, `generating`, `available`, `failed`.
+- [x] Employee/manager voient les documents disponibles ou en generation depuis les ecrans paie mobile.
 
 ## Notes implementation 2026-06-01
 
 - Les bulletins historiques restent servis par `PaySlipPdfGenerator`.
 - `payment_documents` devient l'index documentaire mobile-first pour les recus, bordereaux et justificatifs.
 - `ProcessBulkPaymentJob` cree aussi des documents `payment_slip` pour les bulletins traites en masse.
-- Les ecrans mobiles dedies aux documents restent le reliquat du Plan 62.4 et doivent consommer les endpoints ci-dessus.
+- Lot 62.4 livre le 2026-06-01 : employee affiche `Documents paiement` dans l'ecran paie et manager ouvre les documents d'un cycle via l'action dossier sur chaque ligne paie.
