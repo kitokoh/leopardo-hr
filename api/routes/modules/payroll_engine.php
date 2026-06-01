@@ -12,6 +12,7 @@
 use App\Http\Controllers\Api\V1\BankExportController;
 use App\Http\Controllers\Api\V1\BulkPaymentController;
 use App\Http\Controllers\Api\V1\CotisationSimulationController;
+use App\Http\Controllers\Api\V1\PaymentDocumentController;
 use App\Http\Controllers\Api\V1\PayrollCycleController;
 use App\Http\Controllers\Api\V1\PayrollRunController;
 use App\Http\Controllers\Api\V1\PaySlipController;
@@ -28,6 +29,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/pay-slips', [PaySlipController::class, 'myPaySlips']);
     Route::get('/me/pay-slips/{paySlip}', [PaySlipController::class, 'myPaySlipDetail'])->whereNumber('paySlip');
     Route::get('/me/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
+    Route::get('/me/payment-documents', [PaymentDocumentController::class, 'myDocuments']);
+    Route::get('/me/payment-documents/{paymentDocument}/download', [PaymentDocumentController::class, 'download'])->whereNumber('paymentDocument');
 
     // ── Cotisation Simulation (all employees) ────────────────────────────
     Route::post('/cotisation-simulation', [CotisationSimulationController::class, 'simulate']);
@@ -95,5 +98,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // Plan 65 — Bulk payment
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/payment-documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
+        Route::get('/payments/{payrollRun}/documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
     });
 });
