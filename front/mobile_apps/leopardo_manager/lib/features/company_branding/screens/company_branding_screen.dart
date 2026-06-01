@@ -256,7 +256,7 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: _brandMode,
+              initialValue: _brandMode,
               dropdownColor: MobileSurface.surface,
               decoration: _inputDecoration('Mode visuel'),
               items: const [
