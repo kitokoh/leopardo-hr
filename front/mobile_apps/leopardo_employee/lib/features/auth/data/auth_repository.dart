@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart' as dio_options;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
@@ -15,6 +15,9 @@ class AuthRepository {
   final AppPreferences preferences;
 
   AuthRepository(this.apiClient, this.storage, this.preferences);
+
+  static const _actionTimeout = Duration(seconds: 12);
+  static const _authCheckTimeout = Duration(seconds: 10);
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final response = await apiClient.requestWithRetry(
@@ -33,10 +36,14 @@ class AuthRepository {
     // Hydrate depuis /auth/me pour recuperer manager_role + capabilities
     // (la reponse /auth/login ne les expose pas).
     try {
-      final meResponse = await apiClient.dio.get('/auth/me');
-      final meData = meResponse.data['data'];
-      if (meData is Map) {
-        final employee = Employee.fromJson(meData.cast<String, dynamic>());
+      final meResponse = await apiClient.requestWithRetry(
+        '/auth/me',
+        timeoutOverride: _authCheckTimeout,
+        maxRetriesOverride: 0,
+      );
+      final meData = extractDataMap(meResponse.data);
+      if (meData.isNotEmpty) {
+        final employee = Employee.fromJson(meData);
         await _persistEmployeeContext(employee);
         return {'employee': employee};
       }
@@ -66,9 +73,13 @@ class AuthRepository {
     // Note: Le backend doit être capable de vérifier ce token.
     // Pour simplifier l'intégration Socialite existante, on peut passer par une route
     // qui accepte le token.
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/auth/google/token',
+      method: 'POST',
       data: {'token': idToken, 'device_name': 'Mobile App'},
+      isLoginRequest: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
 
     final data = response.data as Map<String, dynamic>;
@@ -89,8 +100,9 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    final response = await apiClient.dio.post(
+    final response = await apiClient.requestWithRetry(
       '/auth/register',
+      method: 'POST',
       data: {
         'first_name': firstName,
         'last_name': lastName,
@@ -99,6 +111,9 @@ class AuthRepository {
         'password_confirmation': password,
         'device_name': 'Mobile App',
       },
+      isLoginRequest: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
 
     final data = response.data as Map<String, dynamic>;
@@ -115,7 +130,12 @@ class AuthRepository {
 
   Future<void> logout() async {
     try {
-      await apiClient.dio.post('/auth/logout');
+      await apiClient.requestWithRetry(
+        '/auth/logout',
+        method: 'POST',
+        maxRetriesOverride: 0,
+        timeoutOverride: _actionTimeout,
+      );
     } catch (_) {
       // Ignore errors if token is already invalid
     } finally {
@@ -132,14 +152,12 @@ class AuthRepository {
       // Timeout court (10 s) pour ne pas bloquer le splash plus longtemps que nécessaire.
       // En cas de cold-start Render ou de réseau lent, l’utilisateur voit /welcome
       // plutôt que rester coincé sur l’écran de chargement.
-      final response = await apiClient.dio.get(
+      final response = await apiClient.requestWithRetry(
         '/auth/me',
-        options: dio_options.Options(
-          sendTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-        ),
+        timeoutOverride: _authCheckTimeout,
+        maxRetriesOverride: 0,
       );
-      final data = response.data['data'];
+      final data = extractDataMap(response.data);
       final employee = Employee.fromJson(data);
       await _persistEmployeeContext(employee);
       return {'employee': employee};
@@ -158,8 +176,9 @@ class AuthRepository {
     String? recoveryEmail,
     String? personalPhone,
   }) async {
-    final response = await apiClient.dio.patch(
+    final response = await apiClient.requestWithRetry(
       '/auth/profile',
+      method: 'PATCH',
       data: {
         'first_name': firstName.trim(),
         'last_name': lastName.trim(),
@@ -168,11 +187,11 @@ class AuthRepository {
         'recovery_email': recoveryEmail?.trim(),
         'personal_phone': personalPhone?.trim(),
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
 
-    final employee = Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    final employee = Employee.fromJson(extractDataMap(response.data));
     await _persistEmployeeContext(employee);
     return employee;
   }
@@ -182,25 +201,29 @@ class AuthRepository {
     required String newPassword,
     required String confirmation,
   }) async {
-    await apiClient.dio.post(
+    await apiClient.requestWithRetry(
       '/auth/change-password',
+      method: 'POST',
       data: {
         'current_password': currentPassword,
         'new_password': newPassword,
         'new_password_confirmation': confirmation,
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
   }
 
   Future<Employee> updatePreferredLanguage(String language) async {
-    final response = await apiClient.dio.patch(
+    final response = await apiClient.requestWithRetry(
       '/auth/language',
+      method: 'PATCH',
       data: {'language': language.trim().toLowerCase()},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
 
-    final employee = Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    final employee = Employee.fromJson(extractDataMap(response.data));
     await _persistEmployeeContext(employee);
     return employee;
   }
