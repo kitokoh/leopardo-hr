@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.207] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager/platform admin : `StartupGate` ne peut plus laisser une app bloquee indefiniment sur l'overlay de demarrage apres timeout ou erreur d'initialisation critique. L'utilisateur voit un message degrade court puis l'app s'ouvre automatiquement.
+- Mobile core : le test widget `StartupGate` couvre maintenant l'auto-continuation apres timeout critique, afin d'eviter une regression page noire/logo fige lors des distributions Firebase.
+
 ## [4.16.206] - 2026-06-01
 
 ### Fixed
