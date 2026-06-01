@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.215] - 2026-06-01
+
+### Added
+
+- Plan 58 : ajout du contrat tenant `GET/PATCH /api/v1/company/branding` pour nom affiche, logo, couleurs et mode visuel.
+- Mobile manager : ajout de l'ecran `Identite entreprise` avec preview logo/couleurs et sauvegarde via l'API branding.
+- OpenAPI, matrice frontend/API, contrats workflow mobile et tests backend couvrent maintenant la personnalisation entreprise.
+
 ## [4.16.214] - 2026-06-01
 
 ### Added

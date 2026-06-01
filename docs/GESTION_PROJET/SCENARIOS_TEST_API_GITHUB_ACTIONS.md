@@ -986,6 +986,13 @@ Note 2026-06-01 : le Plan 63 durcit les pics de charge. Les scenarios API/ops do
 
 ### Plans 60-65 — Double Validation Avances & Paiement en Masse (Redis Upstash)
 
+#### Plan 58 — Personnalisation Entreprise / Branding Tenant
+- `GET /api/v1/company/branding` : retourne le branding de l'entreprise courante depuis `companies.metadata.branding`, lisible par tout utilisateur authentifie du tenant.
+- `PATCH /api/v1/company/branding` : reserve aux managers `principal` et `rh`, valide `display_name`, `logo_url`, `primary_color`, `accent_color`, `brand_mode`.
+- Upload logo optionnel via champ multipart `logo`, stockage sur disk `public`, URL stable retournee dans `data.branding.logo_url`.
+- Validation stricte des couleurs au format hex `#RRGGBB`, fallback lisible cote API/mobile si la valeur est absente ou invalide.
+- `CompanyBrandingControllerTest` couvre lecture employee, refus modification employee, modification manager/RH, upload logo et validation couleur.
+
 #### Plan 60 — Double Validation Avances Salaire
 - `PUT /api/v1/salary-advances/{id}/manager-approve` : manager approuve, met `validation_status=manager_approved` et `manager_approved_at`
 - `PUT /api/v1/salary-advances/{id}/mark-paid` : comptable/manager declare paiement, met `payment_declared_at` et `payment_declared_by`
