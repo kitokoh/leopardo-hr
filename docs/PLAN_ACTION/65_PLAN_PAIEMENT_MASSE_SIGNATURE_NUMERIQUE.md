@@ -12,35 +12,36 @@ Permettre au manager de valider plusieurs paiements et preparer la validation em
 
 ### Lot 65.1 - Payment batch model
 
-- Modeles : `PaymentBatch`, `PaymentItem`, `PaymentConfirmation`.
-- Statuts : draft, processing, paid, partially_confirmed, confirmed, failed.
-- Liens : employee, payroll period, salary advances, documents.
+- [x] Modeles : `PaymentBatch`, `PaymentItem`, `PaymentConfirmation`.
+- [x] Statuts : draft, processing, paid, partially_confirmed, confirmed, failed.
+- [x] Liens : employee, payroll period, salary advances, documents/pay slips.
 
 ### Lot 65.2 - API paiement en masse
 
-- `POST /api/v1/payment-batches`
-- `GET /api/v1/payment-batches`
-- `GET /api/v1/payment-batches/{id}`
-- `POST /api/v1/payment-batches/{id}/mark-paid`
-- Employee : `POST /api/v1/payment-confirmations/{id}/confirm`
+- [x] `POST /api/v1/payment-batches`
+- [x] `GET /api/v1/payment-batches`
+- [x] `GET /api/v1/payment-batches/{id}`
+- [x] `POST /api/v1/payment-batches/{id}/mark-paid`
+- [x] Employee : `POST /api/v1/payment-confirmations/{id}/confirm`
 
 ### Lot 65.3 - Jobs asynchrones
 
-- Apres mark-paid : notifications employees, generation documents, audit events.
-- Reponse mobile immediate : "traitement en cours".
+- [x] Apres mark-paid : generation documents async via `GeneratePaymentDocumentJob`.
+- [x] Reponse mobile immediate : "traitement en cours".
+- [ ] Notification employee dediee a brancher sur `CommunicationService` dans le prochain lot communication finance.
 
 ### Lot 65.4 - Signature future-ready
 
-- Stocker acceptation employee : timestamp, device, IP si disponible, version document.
-- Ne pas implementer signature cryptographique complete sans decision juridique.
-- Preparer interface `SignatureProvider`.
+- [x] Stocker acceptation employee : timestamp, device, IP si disponible, version document.
+- [x] Ne pas implementer signature cryptographique complete sans decision juridique.
+- [ ] Preparer interface `SignatureProvider` quand le cadre juridique de signature sera tranche.
 
 ## Tests
 
-- RBAC manager/employee.
-- Idempotence confirmation.
-- Jobs dispatch.
-- Documents async.
+- [x] RBAC manager/employee.
+- [x] Idempotence confirmation.
+- [x] Jobs dispatch.
+- [x] Documents async.
 
 ## Criteres d'acceptation
 
