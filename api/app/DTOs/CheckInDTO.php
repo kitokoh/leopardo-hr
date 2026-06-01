@@ -10,6 +10,7 @@ final readonly class CheckInDTO
     public function __construct(
         public ?float $gps_lat = null,
         public ?float $gps_lng = null,
+        public ?float $gps_accuracy = null,
         public string $method = 'mobile',
         public ?string $occurred_at = null,
         public ?string $external_event_id = null,
@@ -29,6 +30,7 @@ final readonly class CheckInDTO
         return new self(
             gps_lat: $validated['gps_lat'] ?? null,
             gps_lng: $validated['gps_lng'] ?? null,
+            gps_accuracy: $validated['gps_accuracy'] ?? null,
             method: 'mobile',
             work_type: $validated['work_type'] ?? 'normal',
             punch_note: $validated['punch_note'] ?? null,

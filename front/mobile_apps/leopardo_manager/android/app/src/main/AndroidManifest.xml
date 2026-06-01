@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- Requis sur Android 13+ pour recevoir les notifications push -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- Requis pour le service Firebase Messaging en arrière-plan -->

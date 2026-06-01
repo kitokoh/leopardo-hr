@@ -52,6 +52,7 @@ class AttendanceLogResource extends JsonResource
             'gps' => [
                 'lat' => $this->gps_lat !== null ? (float) $this->gps_lat : null,
                 'lng' => $this->gps_lng !== null ? (float) $this->gps_lng : null,
+                'accuracy_m' => isset($meta['gps_accuracy']) ? (float) $meta['gps_accuracy'] : null,
             ],
             'geofence' => $meta['geofence'] ?? null,
         ];

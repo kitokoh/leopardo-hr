@@ -343,6 +343,7 @@ class AttendanceService
         return new CheckInDTO(
             gps_lat: is_float($dto) ? $dto : null,
             gps_lng: $gpsLng,
+            gps_accuracy: null,
             method: $method,
         );
     }
@@ -359,6 +360,7 @@ class AttendanceService
             'phase' => $phase,
             'device_timezone' => $timezone,
             'server_timezone' => $company->timezone,
+            'gps_accuracy' => $dto->gps_accuracy,
             'geofence' => $geofence,
         ];
     }

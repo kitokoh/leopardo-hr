@@ -10182,6 +10182,10 @@ components:
           type: number
         gps_lng:
           type: number
+        gps_accuracy:
+          type: number
+          nullable: true
+          description: "Approximate mobile GPS accuracy in meters."
         device_timezone:
           type: string
           description: "Timezone or UTC offset reported by the mobile device."
@@ -10254,6 +10258,9 @@ components:
               type: number
               nullable: true
             lng:
+              type: number
+              nullable: true
+            accuracy_m:
               type: number
               nullable: true
         geofence:
