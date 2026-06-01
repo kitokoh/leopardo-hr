@@ -66,25 +66,25 @@ class PayrollCycleController extends Controller
         ]);
     }
 
-    public function employeeBalance(Request $request, int $id): JsonResponse
+    public function employeeBalance(Request $request, int $employee): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->id !== $id && ! $actor->isManager()) {
+        if ($actor->id !== $employee && ! $actor->isManager()) {
             abort(403);
         }
 
-        /** @var Employee|null $employee */
-        $employee = Employee::query()
+        /** @var Employee|null $targetEmployee */
+        $targetEmployee = Employee::query()
             ->where('company_id', $actor->company_id)
-            ->find($id);
+            ->find($employee);
 
-        if ($employee === null) {
+        if ($targetEmployee === null) {
             abort(404);
         }
 
-        $payload = $this->cycleService->getEmployeeBalance($employee);
+        $payload = $this->cycleService->getEmployeeBalance($targetEmployee);
 
         return response()->json(['data' => $payload] + $payload);
     }

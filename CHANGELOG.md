@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.240] - 2026-06-01
+
+### Fixed
+
+- API paie mobile : `GET /api/v1/employees/{employee}/balance` utilise maintenant le parametre de route correct et `GET /api/v1/payroll/mobile-summary` degrade un solde employe isole en payload partiel au lieu de faire tomber toute la synthese manager.
+
 ## [4.16.239] - 2026-06-01
 
 ### Fixed
