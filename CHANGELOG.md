@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.208] - 2026-06-01
+
+### Fixed
+
+- Plan 60 avances salaire : ajout de tests backend couvrant le workflow financier complet `manager-approve -> mark-paid -> confirm-received`, ainsi que les blocages si paiement ou confirmation sont faits trop tot.
+- Tests backend : le schema MVP de test et le fixture PostgreSQL incluent maintenant les colonnes de double validation des avances (`validation_status`, declaration paiement, confirmation employe), afin que les contrats Plan 60 soient réellement testables.
+
 ## [4.16.207] - 2026-06-01
 
 ### Fixed

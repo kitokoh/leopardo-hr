@@ -379,6 +379,14 @@ trait CreatesMvpSchema
             $table->text('reason')->nullable();
             $table->string('status', 20)->default('pending');
             $table->unsignedInteger('approved_by')->nullable();
+            $table->timestampTz('manager_approved_at')->nullable();
+            $table->unsignedBigInteger('manager_approved_by')->nullable();
+            $table->timestampTz('payment_declared_at')->nullable();
+            $table->unsignedBigInteger('payment_declared_by')->nullable();
+            $table->string('payment_reference')->nullable();
+            $table->text('payment_note')->nullable();
+            $table->timestampTz('employee_confirmed_at')->nullable();
+            $table->string('validation_status', 32)->default('pending');
             $table->text('decision_comment')->nullable();
             $table->unsignedSmallInteger('repayment_months')->default(1);
             $table->decimal('monthly_deduction', 12, 2)->nullable();
