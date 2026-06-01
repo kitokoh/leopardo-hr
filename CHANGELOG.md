@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.245] - 2026-06-01
+
+### Added
+
+- Observabilite lancement : ajout de `notifications:backfill-preferences` et d'un provisioner partage pour creer/reparer les preferences notifications des employes actifs.
+
+### Fixed
+
+- Bootstrap Render : l'entrypoint backfill maintenant les preferences notifications apres migrations/seeders afin de lever le bloqueur `communication_governance` du cockpit `/api/v1/launch-readiness` sans intervention SQL manuelle.
+
 ## [4.16.244] - 2026-06-01
 
 ### Added

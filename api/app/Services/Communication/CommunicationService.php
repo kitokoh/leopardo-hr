@@ -18,7 +18,10 @@ use Throwable;
 
 class CommunicationService
 {
-    public function __construct(private readonly PushNotificationService $pushNotifications) {}
+    public function __construct(
+        private readonly PushNotificationService $pushNotifications,
+        private readonly NotificationPreferenceProvisioner $preferences,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $context
@@ -109,26 +112,7 @@ class CommunicationService
 
     private function preferencesFor(Employee $employee): NotificationPreference
     {
-        return NotificationPreference::query()->firstOrCreate(
-            ['employee_id' => $employee->id],
-            [
-                'company_id' => (string) $employee->company_id,
-                'app_enabled' => true,
-                'email_enabled' => true,
-                'push_enabled' => true,
-                'sms_enabled' => false,
-                'whatsapp_enabled' => false,
-                'locale' => 'fr',
-                'timezone' => $employee->company?->timezone,
-                'categories' => [
-                    'hr' => true,
-                    'payroll' => true,
-                    'security' => true,
-                    'system' => true,
-                    'marketing' => false,
-                ],
-            ]
-        );
+        return $this->preferences->ensureForEmployee($employee);
     }
 
     /**
