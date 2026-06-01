@@ -24,25 +24,25 @@ class EmployeeResource extends JsonResource
     {
         /** @var Employee $employee */
         $employee = $this->resource;
-        $resolvedLanguage = strtolower($this->preferred_language ?? $this->company?->language ?? Language::DEFAULT);
+        $resolvedLanguage = strtolower($this->employeeAttribute('preferred_language') ?? $this->company?->language ?? Language::DEFAULT);
         $company = $this->company;
-        $photoPath = data_get($this->resource, 'photo_path');
-        $contractStart = data_get($this->resource, 'contract_start');
+        $photoPath = $this->employeeAttribute('photo_path');
+        $contractStart = $this->employeeAttribute('contract_start');
 
         return [
             'id' => $this->id,
-            'matricule' => $this->matricule,
+            'matricule' => $this->employeeAttribute('matricule'),
             'company_id' => $this->company_id,
             'first_name' => $this->first_name,
-            'middle_name' => $this->middle_name,
+            'middle_name' => $this->employeeAttribute('middle_name'),
             'last_name' => $this->last_name,
-            'preferred_name' => $this->preferred_name,
+            'preferred_name' => $this->employeeAttribute('preferred_name'),
             'email' => $this->email,
-            'personal_email' => $this->personal_email,
-            'recovery_email' => $this->recovery_email,
-            'personal_phone' => $this->personal_phone,
-            'phone' => $this->phone,
-            'schedule_id' => $this->schedule_id,
+            'personal_email' => $this->employeeAttribute('personal_email'),
+            'recovery_email' => $this->employeeAttribute('recovery_email'),
+            'personal_phone' => $this->employeeAttribute('personal_phone'),
+            'phone' => $this->employeeAttribute('phone'),
+            'schedule_id' => $this->employeeAttribute('schedule_id'),
             'schedule' => $this->schedule ? [
                 'id' => $this->schedule->id,
                 'name' => $this->schedule->name,
@@ -59,17 +59,17 @@ class EmployeeResource extends JsonResource
             'photo_path' => $photoPath,
             'photo_url' => $photoPath,
             'hire_date' => $contractStart instanceof DateTimeInterface ? $contractStart->format('Y-m-d') : null,
-            'salary_type' => $this->salary_type,
-            'salary_base' => $this->salary_base,
-            'hourly_rate' => $this->hourly_rate,
+            'salary_type' => $this->employeeAttribute('salary_type'),
+            'salary_base' => $this->employeeAttribute('salary_base'),
+            'hourly_rate' => $this->employeeAttribute('hourly_rate'),
             'currency' => $company?->currency,
-            'biometric_face_enabled' => $this->biometric_face_enabled,
-            'biometric_fingerprint_enabled' => $this->biometric_fingerprint_enabled,
-            'address_line' => $this->address_line,
-            'postal_code' => $this->postal_code,
-            'emergency_contact_name' => $this->emergency_contact_name,
-            'emergency_contact_phone' => $this->emergency_contact_phone,
-            'extra_data' => $this->extra_data ?? [],
+            'biometric_face_enabled' => (bool) ($this->employeeAttribute('biometric_face_enabled') ?? false),
+            'biometric_fingerprint_enabled' => (bool) ($this->employeeAttribute('biometric_fingerprint_enabled') ?? false),
+            'address_line' => $this->employeeAttribute('address_line'),
+            'postal_code' => $this->employeeAttribute('postal_code'),
+            'emergency_contact_name' => $this->employeeAttribute('emergency_contact_name'),
+            'emergency_contact_phone' => $this->employeeAttribute('emergency_contact_phone'),
+            'extra_data' => $this->employeeAttribute('extra_data') ?? [],
             'language' => $resolvedLanguage,
             'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilities(),
@@ -84,6 +84,18 @@ class EmployeeResource extends JsonResource
                 'currency' => $company->currency,
             ] : null,
         ];
+    }
+
+    private function employeeAttribute(string $key): mixed
+    {
+        /** @var Employee $employee */
+        $employee = $this->resource;
+
+        if (! array_key_exists($key, $employee->getAttributes())) {
+            return null;
+        }
+
+        return $employee->getAttributeValue($key);
     }
 
     private function capabilities(): array

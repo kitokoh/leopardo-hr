@@ -6,7 +6,7 @@
 
 ### Fixed
 
-- API manager/RH : `GET /api/v1/employees` selectionne maintenant tous les champs exposes par `EmployeeResource`, afin d'eviter les erreurs production sur liste equipe partiellement chargee.
+- API manager/RH : `GET /api/v1/employees` selectionne maintenant les champs exposes par `EmployeeResource` uniquement quand ils existent dans le schema courant, et `EmployeeResource` tolere les attributs optionnels absents afin d'eviter les erreurs production sur liste equipe.
 
 ### Added
 
