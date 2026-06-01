@@ -65,6 +65,8 @@ Note 2026-06-01 : le Plan 63 durcit les pics de charge. Les scenarios API/ops do
 
 Note 2026-06-01 : le Plan 67.5 fige la preuve notifications mobile production. Les scenarios API doivent verifier `POST/GET/DELETE /api/v1/device-tokens`, `POST /api/v1/push-notifications/send`, l'upsert FCM avec `company_id` quand la colonne existe, la suppression scopee a l'utilisateur courant et l'audit `CommunicationService`. Le garde mobile associe est `dev-hub/tools/validate-mobile-notification-production-proof.ps1`.
 
+Note 2026-06-01 : les endpoints platform detail `GET /api/v1/platform/companies/{company}/health`, `GET/PATCH /subscription` et `GET/PATCH /features` doivent verifier que `Company` est toujours charge depuis `public.companies`, meme apres creation client ou requete tenant. Les scenarios super-admin doivent tester creation entreprise puis ouverture immediate de la fiche client par UUID.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap

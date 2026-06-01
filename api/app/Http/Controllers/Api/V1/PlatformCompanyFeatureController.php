@@ -7,11 +7,14 @@ use App\Models\Company;
 use App\Services\FeatureFlag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureController extends Controller
 {
     public function show(string $companyId): JsonResponse
     {
+        DB::statement('SET search_path TO public');
+
         $company = Company::query()->findOrFail($companyId);
 
         return new JsonResponse([
@@ -25,6 +28,8 @@ class PlatformCompanyFeatureController extends Controller
 
     public function update(Request $request, string $companyId): JsonResponse
     {
+        DB::statement('SET search_path TO public');
+
         $company = Company::query()->findOrFail($companyId);
 
         $validated = $request->validate([
