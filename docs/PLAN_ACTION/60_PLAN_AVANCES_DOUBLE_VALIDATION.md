@@ -57,3 +57,14 @@ Securiser le workflow avance salaire : demande employe, decision manager, declar
 - Aucun saut d'etape possible.
 - Historique financier lisible par manager et employe.
 - Les anciennes avances continuent d'etre listables.
+
+## Statut - 2026-06-01
+
+**Etat : implemente et securise par tests.**
+
+- Routes livrees : `manager-approve`, `mark-paid`, `confirm-received`.
+- Mobile manager : action de validation manager puis declaration paiement avec reference/note.
+- Mobile employee : confirmation de reception quand le paiement est declare.
+- OpenAPI et matrice frontend/API alignes.
+- Tests ajoutes : `SalaryAdvanceSecurityTest` couvre le chemin complet et les interdictions de saut d'etape.
+- Fixtures tests mis a jour : `CreatesMvpSchema.php` et `mvp_schema.pgsql.sql` portent les colonnes Plan 60.
