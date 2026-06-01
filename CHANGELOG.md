@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.247] - 2026-06-01
+
+### Fixed
+
+- Readiness Render : `DemoCompanyOnceSeeder` repare maintenant les signaux readiness des demos existantes meme quand `DISABLE_DEMO_SEEDING=true`, sans creer/recreer de demos.
+- Bootstrap notifications : `notifications:backfill-preferences` force le `search_path` PostgreSQL sur `shared_tenants, public` afin de creer les preferences dans le schema consomme par les APIs tenant.
+
 ## [4.16.246] - 2026-06-01
 
 ### Fixed
