@@ -9,6 +9,7 @@ import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
+import 'package:leopardo_core/core/location/attendance_location_context.dart';
 
 class AttendanceState {
   final bool isLoading;
@@ -129,17 +130,28 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       clearNotice: true,
     );
     try {
+      final location = await _attendanceLocation();
       final log = await _repository
-          .checkIn(workType: workType, punchNote: punchNote)
+          .checkIn(
+            workType: workType,
+            punchNote: punchNote,
+            gpsLat: location.latitude,
+            gpsLng: location.longitude,
+            gpsAccuracy: location.accuracyMeters,
+          )
           .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
         todaySessions: _upsertTodaySession(state.todaySessions, log),
         isPunching: false,
-        notice:
-            workType == 'overtime'
-                ? 'Heures supplementaires demarrees.'
-                : 'Arrivee enregistree a l instant.',
+        notice: _successNotice(
+          log: log,
+          fallback:
+              workType == 'overtime'
+                  ? 'Heures supplementaires demarrees.'
+                  : 'Arrivee enregistree a l instant.',
+          location: location,
+        ),
       );
       _loadSummary();
       return true;
@@ -162,17 +174,28 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       clearNotice: true,
     );
     try {
+      final location = await _attendanceLocation();
       final log = await _repository
-          .checkOut(workType: workType, punchNote: punchNote)
+          .checkOut(
+            workType: workType,
+            punchNote: punchNote,
+            gpsLat: location.latitude,
+            gpsLng: location.longitude,
+            gpsAccuracy: location.accuracyMeters,
+          )
           .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
         todaySessions: _upsertTodaySession(state.todaySessions, log),
         isPunching: false,
-        notice:
-            workType == 'break'
-                ? 'Pause enregistree.'
-                : 'Depart enregistre a l instant.',
+        notice: _successNotice(
+          log: log,
+          fallback:
+              workType == 'break'
+                  ? 'Pause enregistree.'
+                  : 'Depart enregistre a l instant.',
+          location: location,
+        ),
       );
       _loadSummary();
       return true;
@@ -277,6 +300,29 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
 
     return 'Le pointage n a pas pu etre confirme. Verifiez la connexion puis reessayez.';
+  }
+
+  Future<AttendanceLocationContext> _attendanceLocation() {
+    return _ref
+        .read(attendanceLocationServiceProvider)
+        .currentForAttendance(timeout: const Duration(seconds: 3));
+  }
+
+  String _successNotice({
+    required AttendanceLog log,
+    required String fallback,
+    required AttendanceLocationContext location,
+  }) {
+    final geofence = log.geofence;
+    if (geofence != null && geofence['inside'] == false) {
+      return '$fallback Vous semblez hors de la zone autorisee; votre manager sera notifie si la regle entreprise l exige.';
+    }
+
+    if (!location.hasCoordinates && location.message != null) {
+      return '$fallback ${location.message}';
+    }
+
+    return fallback;
   }
 
   List<AttendanceLog> _upsertTodaySession(
