@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\SalaryAdvance\DecideSalaryAdvanceRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\SalaryAdvanceIndexRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\StoreSalaryAdvanceRequest;
 use App\Http\Resources\Api\V1\SalaryAdvanceResource;
+use App\Jobs\GeneratePaymentDocumentJob;
 use App\Models\Employee;
 use App\Models\SalaryAdvance;
 use App\Services\SalaryAdvanceService;
@@ -150,7 +151,11 @@ class SalaryAdvanceController extends Controller
             'status' => 'active', // keep existing status flow
         ]);
 
-        return (new SalaryAdvanceResource($salaryAdvance->fresh()->load('employee:id,first_name,last_name,email,company_id')))->response();
+        $salaryAdvance->refresh();
+
+        GeneratePaymentDocumentJob::dispatchForSalaryAdvance($salaryAdvance, $actor->id);
+
+        return (new SalaryAdvanceResource($salaryAdvance->load('employee:id,first_name,last_name,email,company_id')))->response();
     }
 
     /**
