@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DemoCompanyOnceSeeder extends Seeder
 {
@@ -14,6 +15,8 @@ class DemoCompanyOnceSeeder extends Seeder
         'pharmaplus-casablanca',
         'digitalflow-tunis',
     ];
+
+    private const DEMO_SUPER_ADMIN_PASSWORD = 'password123';
 
     public function run(): void
     {
@@ -27,6 +30,8 @@ class DemoCompanyOnceSeeder extends Seeder
         }
 
         DB::statement('SET search_path TO public');
+
+        $this->syncDemoSuperAdmin();
 
         $existingDemoSlugs = DB::table('companies')
             ->whereIn('slug', self::DEMO_SLUGS)
@@ -165,6 +170,72 @@ class DemoCompanyOnceSeeder extends Seeder
         if ($created > 0) {
             $this->command?->info("DemoCompanyOnceSeeder backfilled {$created} demo leave balances.");
         }
+    }
+
+    private function syncDemoSuperAdmin(): void
+    {
+        if (! config('app.demo_mode_enabled', true)) {
+            return;
+        }
+
+        if (! $this->publicTableExists('super_admins')) {
+            return;
+        }
+
+        $email = config('demo.super_admin_email', env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com'));
+        $superAdmin = DB::table('super_admins')->where('email', $email)->first();
+
+        if (! $superAdmin) {
+            return;
+        }
+
+        $updates = [];
+
+        if (! Hash::check(self::DEMO_SUPER_ADMIN_PASSWORD, (string) $superAdmin->password_hash)) {
+            $updates['password_hash'] = Hash::make(self::DEMO_SUPER_ADMIN_PASSWORD);
+        }
+
+        if ($this->publicColumnExists('super_admins', 'two_fa_secret') && $superAdmin->two_fa_secret !== null) {
+            $updates['two_fa_secret'] = null;
+        }
+
+        if ($updates === []) {
+            return;
+        }
+
+        DB::table('super_admins')->where('email', $email)->update($updates);
+        $this->command?->info("Demo super-admin credentials synced for {$email}.");
+    }
+
+    private function publicTableExists(string $table): bool
+    {
+        $result = DB::selectOne(
+            'select exists (
+                select 1
+                from information_schema.tables
+                where table_schema = ?
+                  and table_name = ?
+            ) as exists',
+            ['public', $table]
+        );
+
+        return (bool) ($result->exists ?? false);
+    }
+
+    private function publicColumnExists(string $table, string $column): bool
+    {
+        $result = DB::selectOne(
+            'select exists (
+                select 1
+                from information_schema.columns
+                where table_schema = ?
+                  and table_name = ?
+                  and column_name = ?
+            ) as exists',
+            ['public', $table, $column]
+        );
+
+        return (bool) ($result->exists ?? false);
     }
 
     private function sharedTableExists(string $table): bool

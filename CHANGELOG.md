@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.234] - 2026-06-01
+
+### Fixed
+
+- Demo / platform admin : `DemoCompanyOnceSeeder` resynchronise le compte super-admin demo expose par `/api/v1/demo-users` (`admin@leopardo-rh.com` / `password123`) et desactive le 2FA demo si necessaire, afin que l'app mobile platform admin puisse etre testee sur Render.
+
+### Added
+
+- Test de regression `DemoUserControllerTest::test_demo_once_seeder_keeps_public_super_admin_credentials_usable`.
+
 ## [4.16.233] - 2026-06-01
 
 ### Added
