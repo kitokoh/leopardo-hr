@@ -183,7 +183,7 @@ class HealthController extends Controller
     }
 
     /**
-     * @return array{ok: bool, driver?: string, size?: int}
+     * @return array{ok: bool, driver?: string, size?: int, queues?: array<string, int>}
      */
     private function checkQueue(): array
     {
@@ -194,12 +194,18 @@ class HealthController extends Controller
         }
 
         try {
-            $size = app('queue')->connection()->size();
+            $connection = app('queue')->connection();
+            $queues = [];
+
+            foreach (['default', 'documents', 'pdf', 'payroll', 'notifications', 'webhooks'] as $queue) {
+                $queues[$queue] = (int) $connection->size($queue);
+            }
 
             return [
                 'ok' => true,
                 'driver' => $driver,
-                'size' => $size,
+                'size' => array_sum($queues),
+                'queues' => $queues,
             ];
         } catch (Throwable) {
             return ['ok' => false, 'driver' => $driver];

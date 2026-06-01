@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
 
@@ -21,7 +22,7 @@ class QueueHealthCheck extends Command
     protected $description = 'Check Redis connectivity and queue depths (Upstash-compatible)';
 
     /** Named queues defined in Plan 63. */
-    private array $defaultQueues = ['default', 'pdf', 'notifications', 'payroll', 'webhooks'];
+    private array $defaultQueues = ['default', 'documents', 'pdf', 'notifications', 'payroll', 'webhooks'];
 
     public function handle(): int
     {
@@ -49,14 +50,11 @@ class QueueHealthCheck extends Command
             return self::FAILURE;
         }
 
-        // Collect queue depths via LLEN (Redis list length for each queue)
         $queueStats = [];
-        $prefix = config('database.redis.options.prefix', '');
 
         foreach ($queues as $queue) {
             try {
-                // Laravel stores queues as `queues:{name}` in Redis
-                $length = Redis::connection('default')->llen("{$prefix}queues:{$queue}");
+                $length = app('queue')->connection('redis')->size((string) $queue);
                 $queueStats[$queue] = [
                     'depth' => (int) $length,
                     'status' => 'ok',
@@ -70,10 +68,15 @@ class QueueHealthCheck extends Command
             }
         }
 
+        $failedJobs = $this->failedJobsCount();
+
         $result = [
             'status' => 'ok',
             'redis_ok' => $redisOk,
             'redis_latency_ms' => $latencyMs,
+            'queue_connection' => config('queue.default'),
+            'worker_command' => 'php artisan queue:work redis --queue=documents,pdf,payroll,notifications,webhooks,default',
+            'failed_jobs' => $failedJobs,
             'queues' => $queueStats,
         ];
 
@@ -85,5 +88,16 @@ class QueueHealthCheck extends Command
     private function outputResult(array $data): void
     {
         $this->line(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    private function failedJobsCount(): ?int
+    {
+        try {
+            $table = (string) config('queue.failed.table', 'failed_jobs');
+
+            return DB::table($table)->count();
+        } catch (Throwable) {
+            return null;
+        }
     }
 }
