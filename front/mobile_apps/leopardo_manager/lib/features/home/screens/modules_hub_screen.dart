@@ -70,6 +70,18 @@ class ModulesHubScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 12),
+            MobileListCard(
+              icon: Icons.palette_outlined,
+              iconColor: AppColors.rh,
+              title: 'Identite entreprise',
+              subtitle: 'Logo, couleurs et nom affiche pour votre espace.',
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: MobileSurface.secondary,
+              ),
+              onTap: () => context.push('/company/branding'),
+            ),
             const SizedBox(height: 24),
             Text(
               'Modules actifs',

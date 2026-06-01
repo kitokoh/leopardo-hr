@@ -1142,6 +1142,62 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
+  /company/branding:
+    get:
+      tags: ["Company"]
+      summary: "Lire l'identite visuelle de l'entreprise courante"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "Branding entreprise"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CompanyBrandingResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Company"]
+      summary: "Mettre a jour l'identite visuelle entreprise"
+      description: "Reserve aux managers principal/RH du tenant courant. Accepte JSON ou multipart pour l'upload logo."
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyBrandingUpdateRequest"
+          multipart/form-data:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/CompanyBrandingUpdateRequest"
+                - type: object
+                  properties:
+                    logo:
+                      type: string
+                      format: binary
+      responses:
+        "200":
+          description: "Branding mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CompanyBrandingResponse"
+                  message:
+                    type: string
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /company/qr-onboarding/scan-employee:
     post:
       tags: ["Employees"]
@@ -7687,6 +7743,62 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
+    CompanyBranding:
+      type: object
+      properties:
+        display_name:
+          type: string
+          example: "TechCorp Algerie"
+        logo_url:
+          type: string
+          nullable: true
+          example: "https://api.example.com/storage/company-branding/logo.png"
+        logo_path:
+          type: string
+          nullable: true
+        logo_disk:
+          type: string
+          nullable: true
+          example: "public"
+        primary_color:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+          example: "#10B981"
+        accent_color:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+          example: "#2563EB"
+        brand_mode:
+          type: string
+          enum: ["default", "light", "dark", "auto"]
+    CompanyBrandingResponse:
+      type: object
+      properties:
+        company_id:
+          type: string
+          format: uuid
+        branding:
+          $ref: "#/components/schemas/CompanyBranding"
+    CompanyBrandingUpdateRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
+        primary_color:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        accent_color:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_mode:
+          type: string
+          enum: ["default", "light", "dark", "auto"]
     Schedule:
       type: object
       properties:

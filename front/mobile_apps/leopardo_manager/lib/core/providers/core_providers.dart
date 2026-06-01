@@ -23,6 +23,7 @@ import 'package:leopardo_manager/features/vehicle_position/data/vehicle_position
 import 'package:leopardo_manager/features/approvals/data/approval_repository.dart';
 import 'package:leopardo_manager/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_manager/features/schedules/data/schedule_repository.dart';
+import 'package:leopardo_manager/features/company_branding/data/company_branding_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();
@@ -150,4 +151,11 @@ final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
 final scheduleRepositoryProvider = Provider<ScheduleRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return ScheduleRepository(apiClient);
+});
+
+final companyBrandingRepositoryProvider = Provider<CompanyBrandingRepository>((
+  ref,
+) {
+  final apiClient = ref.watch(apiClientProvider);
+  return CompanyBrandingRepository(apiClient);
 });
