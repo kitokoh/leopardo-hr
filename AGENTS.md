@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.215)
+Derniere mise a jour : 2026-06-01 (v4.16.216)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -79,6 +79,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - La matrice frontend/API canonique vit dans `docs/validation/FRONTEND_API_CONTRACT_MATRIX.md`. Toute nouvelle dependance admin/mobile/kiosk a une route Laravel doit ajouter la ligne matrice et, au minimum, un garde dans `FrontendApiContractTest`.
 - Depuis v4.16.154, le Plan 30 API hardening vit dans `docs/PLAN_ACTION/30_PLAN_API_WORKFLOW_HARDENING.md`. `POST /api/v1/platform/companies` doit rester compatible avec le payload minimal de `leopardo_platform_admin` (name, email, country, city, manager names/email) en resolvant cote serveur `sector`, `plan_id`, `language`, `currency` et `timezone`. Ne pas rendre `sector` ou `plan_id` obligatoires sans adapter l'app mobile et les tests.
 - Depuis v4.16.189, les retours testeurs produit 31-44 sont formalises dans `docs/PLAN_ACTION/57_PLAN_API_DOCS_ECOSYSTEME_DEVELOPPEUR.md` a `65_PLAN_PAIEMENT_MASSE_SIGNATURE_NUMERIQUE.md`. Avant de coder ces chantiers, choisir le plan concerne, livrer ses lots dans l'ordre, mettre a jour `00_SOMMAIRE.md` si un nouveau plan est ajoute, puis pousser via PR pour garder la mission lisible.
+- Depuis v4.16.216, les plans 01-66 sont consideres comme historiques executes ou cartographies. Avant de rouvrir un ancien sujet, consulter `docs/validation/PLAN_ACTION_COVERAGE_MATRIX_2026_06_01.md`; les derniers lots de lancement doivent etre rattaches a `docs/PLAN_ACTION/67_PLAN_AUDIT_FINAL_QUALITE_PRODUIT.md` sauf besoin clairement hors perimetre.
 - Les decisions d'architecture structurantes vivent dans `docs/architecture/adr/`, le diagramme C4 dans `docs/architecture/C4_ARCHITECTURE.md`, et le point d'entree operations dans `docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md`.
 - Le guide partenaire canonique est `docs/GUIDES/GUIDE_INTEGRATION_PARTENAIRES.md`; l'actualiser avec tout changement API/webhook/SSO expose aux integrateurs.
 - Le controle generalise de release vit dans `docs/validation/RELEASE_READINESS_GATE.md` avec le script `dev-hub/tools/release-readiness.ps1`; produire ou mettre a jour un rapport `docs/validation/RELEASE_READINESS_REPORT_*.md` avant de declarer un score production-ready.
