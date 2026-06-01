@@ -12,6 +12,9 @@ class AttendanceLog {
   final double? workedHours;
   final double? overtimeHours;
   final int? lateMinutes;
+  final String? timezone;
+  final String? deviceTimezone;
+  final Map<String, dynamic>? geofence;
   final String? employeeName;
   final String? employeePhotoUrl;
 
@@ -29,6 +32,9 @@ class AttendanceLog {
     this.workedHours,
     this.overtimeHours,
     this.lateMinutes,
+    this.timezone,
+    this.deviceTimezone,
+    this.geofence,
     this.employeeName,
     this.employeePhotoUrl,
   });
@@ -81,6 +87,12 @@ class AttendanceLog {
       overtimeHours:
           overtimeRaw != null ? double.tryParse(overtimeRaw.toString()) : null,
       lateMinutes: lateRaw != null ? int.tryParse(lateRaw.toString()) : null,
+      timezone: json['timezone']?.toString(),
+      deviceTimezone: json['device_timezone']?.toString(),
+      geofence:
+          json['geofence'] is Map
+              ? (json['geofence'] as Map).cast<String, dynamic>()
+              : null,
       employeeName: employeeName,
       employeePhotoUrl: employeePhotoUrl,
     );
