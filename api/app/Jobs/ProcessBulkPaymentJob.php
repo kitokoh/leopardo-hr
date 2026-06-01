@@ -24,7 +24,7 @@ use Throwable;
  *
  * Steps:
  *   1. Mark all active SalaryAdvances in this payroll run as payment_declared.
- *   2. Dispatch GeneratePaySlipPdfJob for each employee.
+ *   2. Dispatch payslip PDF and payment document jobs for each employee.
  *   3. Write progress to Redis for status polling.
  *   4. Create audit entry.
  */
@@ -83,8 +83,9 @@ class ProcessBulkPaymentJob implements ShouldQueue
                     'payment_declared_by' => $this->triggeredById,
                 ]);
 
-            // Dispatch PDF generation job for this employee
+            // Dispatch legacy payslip PDF and Plan 62 document index generation.
             GeneratePaySlipPdfJob::dispatch($run->id, $slip->employee_id);
+            GeneratePaymentDocumentJob::dispatchForPaySlip($slip, $this->triggeredById);
 
             $done++;
             $this->updateProgress($done, 'processing', $total);

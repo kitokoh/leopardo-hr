@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.210] - 2026-06-01
+
+### Added
+
+- Plan 62 backend : ajout du contrat tenant `payment_documents` pour indexer les recus, bordereaux, bulletins et resumes paie generes en arriere-plan.
+- Ajout de `GeneratePaymentDocumentJob` sur queue `documents`, avec etats `pending/generating/available/failed` et generation PDF non bloquante.
+- Ajout des endpoints `GET /api/v1/me/payment-documents`, `GET /api/v1/me/payment-documents/{paymentDocument}/download`, `GET /api/v1/payroll-runs/{payrollRun}/payment-documents` et alias `GET /api/v1/payments/{payrollRun}/documents`.
+- La declaration de paiement d'une avance cree maintenant un recu asynchrone, et le paiement en masse cree aussi des documents de paiement lies aux bulletins.
+- OpenAPI, matrice frontend/API et tests de controle d'acces documents paiement mis a jour.
+
 ## [4.16.209] - 2026-06-01
 
 ### Added
