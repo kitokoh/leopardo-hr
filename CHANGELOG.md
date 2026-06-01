@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.216] - 2026-06-01
+
+### Added
+
+- Plan 66.1 : ajout de la matrice anti-oubli `docs/validation/PLAN_ACTION_COVERAGE_MATRIX_2026_06_01.md`, couvrant les 44 points consolides avec statut, plan source, preuve et prochain lot.
+- Ajout du Plan 67 `67_PLAN_AUDIT_FINAL_QUALITE_PRODUIT.md` pour reprendre les derniers lots launch-readiness : runtime mobile, super-admin E2E, GPS natif, theming tenant, notifications et rapport release.
+- Le sommaire des plans reference maintenant le Plan 67 comme suite canonique apres cloture/cartographie des plans 01-66.
+
 ## [4.16.215] - 2026-06-01
 
 ### Added

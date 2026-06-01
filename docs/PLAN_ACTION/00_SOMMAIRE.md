@@ -58,6 +58,7 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 | 64 | `64_PLAN_CLOTURE_TIMEZONE_GPS.md` | Cloture automatique des journees, timezones correctes et geofence GPS douce |
 | 65 | `65_PLAN_PAIEMENT_MASSE_SIGNATURE_NUMERIQUE.md` | Paiements en masse, confirmations employees, audit et preparation signature numerique |
 | 66 | `66_PLAN_CONSOLIDATION_MOBILE_FIRST_COMPANY_OS.md` | Plan maitre A-J : cartographie des 44 idees consolidees, anti-oubli et ordre de livraison |
+| 67 | `67_PLAN_AUDIT_FINAL_QUALITE_PRODUIT.md` | Audit final lancement : mobile runtime smoke, super-admin E2E, GPS natif, theming tenant, notifications et release readiness |
 
 ### Ordre d'execution recommande
 
@@ -70,6 +71,7 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 7. **Plan 58** : personnalisation premium tenant une fois le socle operationnel stable.
 8. **Plan 59** : aligner la vitrine, le pricing et le storytelling sur ce qui est reellement livre.
 9. **Plan 66** : maintenir la cartographie A-J a jour a chaque nouveau retour testeur ou changement de positionnement.
+10. **Plan 67** : executer les derniers lots de preuve produit avant marketing : runtime mobile, platform admin, GPS, branding applique, notifications et release readiness.
 
 Chaque plan doit sortir avec son changement code/documentation, ses tests ou preuves CI, une entree `CHANGELOG.md` et, si une lecon durable apparait, une entree `AGENTS.md`.
 
