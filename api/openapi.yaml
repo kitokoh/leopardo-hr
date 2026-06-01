@@ -5115,6 +5115,46 @@ paths:
         "409":
           description: "Document pas encore disponible"
 
+  /payment-confirmations/{paymentItem}/confirm:
+    post:
+      tags: ["Payroll"]
+      summary: "Confirmer la reception d'un paiement"
+      parameters:
+        - in: path
+          name: paymentItem
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device_signature:
+                  type: string
+                document_version:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        "200":
+          description: "Reception confirmee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll/mobile-summary:
     get:
       tags: ["Payroll"]
@@ -5173,6 +5213,102 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+
+  /payment-batches:
+    get:
+      tags: ["Payroll"]
+      summary: "Lister les lots de paiement"
+      responses:
+        "200":
+          description: "Lots de paiement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaymentBatch"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Payroll"]
+      summary: "Creer un lot de paiement depuis un cycle paie"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payroll_run_id]
+              properties:
+                payroll_run_id:
+                  type: integer
+                currency:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        "201":
+          description: "Lot cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PaymentBatch"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payment-batches/{paymentBatch}:
+    get:
+      tags: ["Payroll"]
+      summary: "Detail d'un lot de paiement"
+      parameters:
+        - in: path
+          name: paymentBatch
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Detail lot"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PaymentBatch"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /payment-batches/{paymentBatch}/mark-paid:
+    post:
+      tags: ["Payroll"]
+      summary: "Declarer un lot de paiement comme envoye"
+      parameters:
+        - in: path
+          name: paymentBatch
+          required: true
+          schema:
+            type: integer
+      responses:
+        "202":
+          description: "Traitement asynchrone lance"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PaymentBatch"
+                  message:
+                    type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   /payments/{payrollRun}/documents:
     get:
@@ -11421,6 +11557,76 @@ components:
           format: date-time
           nullable: true
         created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    PaymentBatch:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        payroll_run_id:
+          type: integer
+          nullable: true
+        period_start:
+          type: string
+          format: date
+          nullable: true
+        period_end:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+          enum: [draft, processing, paid, partially_confirmed, confirmed, failed]
+        total_amount:
+          type: number
+        currency:
+          type: string
+        items_count:
+          type: integer
+        marked_paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentItem"
+
+    PaymentItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee_name:
+          type: string
+          nullable: true
+        pay_slip_id:
+          type: integer
+          nullable: true
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [pending, paid, confirmed]
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        confirmed_at:
           type: string
           format: date-time
           nullable: true

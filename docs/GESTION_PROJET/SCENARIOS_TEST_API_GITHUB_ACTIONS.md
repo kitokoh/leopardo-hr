@@ -1032,3 +1032,6 @@ Note 2026-06-01 : le Plan 63 durcit les pics de charge. Les scenarios API/ops do
 - Retourne 503 avec `error` si Redis indisponible
 - `ProcessBulkPaymentJob` : marque les avances `manager_approved` en `payment_declared`, dispatch `GeneratePaySlipPdfJob` pour chaque employe, met le run en `paid`
 - Ecrit la progression Redis avec TTL 1h (`bulk_pay:run:{id}`)
+- `POST /api/v1/payment-batches` cree un lot de paiement auditable depuis un payroll run valide et ses pay slips
+- `POST /api/v1/payment-batches/{id}/mark-paid` marque les items comme payes et declenche les documents de paiement async
+- `POST /api/v1/payment-confirmations/{paymentItem}/confirm` permet a l'employe proprietaire de confirmer reception, de maniere idempotente, avec signature device/IP/user-agent/document_version
