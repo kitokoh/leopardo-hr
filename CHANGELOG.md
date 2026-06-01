@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.237] - 2026-06-01
+
+### Added
+
+- Plan 69.4 : ajout du rapport `PLATFORM_ADMIN_API_SMOKE_2026_06_01.md` avec preuve Render login super-admin, creation entreprise et fiche client platform.
+
 ## [4.16.236] - 2026-06-01
 
 ### Fixed

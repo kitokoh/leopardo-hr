@@ -95,6 +95,10 @@ Valider l'app platform admin : login obligatoire, compte demo, creation entrepri
 
 Rapport platform admin + corrections si creation ou navigation bloque.
 
+### Statut
+
+**Go apres corrections #682/#683/#684.** Le smoke Render confirme le login super-admin demo, `auth/me`, liste entreprises, portefeuille health, plans, creation entreprise et ouverture immediate de la fiche client (`health`, `subscription`, `features`). Les corrections livrees resynchronisent le compte demo et chargent les societes platform via `public.companies`. Rapport : `docs/validation/PLATFORM_ADMIN_API_SMOKE_2026_06_01.md`.
+
 ## Lot 69.5 - Paie, avances et documents asynchrones
 
 ### Objectif
