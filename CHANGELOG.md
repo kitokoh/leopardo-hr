@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.243] - 2026-06-01
+
+### Fixed
+
+- API readiness lancement : `GET /api/v1/launch-readiness` reutilise maintenant `currentCompany()` et garde le controle paie schema-aware afin d'eviter les faux 404/500 sur Render avec tenants shared PostgreSQL.
+
 ## [4.16.242] - 2026-06-01
 
 ### Fixed

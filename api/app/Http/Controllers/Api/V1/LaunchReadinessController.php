@@ -11,6 +11,7 @@ use App\Models\Employee;
 use App\Models\NotificationPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class LaunchReadinessController extends Controller
 {
@@ -24,7 +25,10 @@ class LaunchReadinessController extends Controller
             ], 403);
         }
 
-        $company = Company::query()->find((string) $actor->company_id);
+        $company = app()->bound('current_company') ? currentCompany() : null;
+        if (! $company instanceof Company || (string) $company->id !== (string) $actor->company_id) {
+            $company = Company::query()->find((string) $actor->company_id);
+        }
 
         if (! $company instanceof Company) {
             return response()->json([
@@ -42,13 +46,28 @@ class LaunchReadinessController extends Controller
             ->where('role', 'manager')
             ->where('status', 'active')
             ->count();
-        $payrollReady = Employee::query()
+        $payrollReadyQuery = Employee::query()
             ->where('company_id', $companyId)
-            ->where('status', 'active')
-            ->where(function ($query): void {
-                $query->where('salary_base', '>', 0)->orWhere('hourly_rate', '>', 0);
-            })
-            ->count();
+            ->where('status', 'active');
+
+        if (Schema::hasColumn('employees', 'salary_base') || Schema::hasColumn('employees', 'hourly_rate')) {
+            $payrollReadyQuery->where(function ($query): void {
+                $hasCondition = false;
+
+                if (Schema::hasColumn('employees', 'salary_base')) {
+                    $query->where('salary_base', '>', 0);
+                    $hasCondition = true;
+                }
+
+                if (Schema::hasColumn('employees', 'hourly_rate')) {
+                    $method = $hasCondition ? 'orWhere' : 'where';
+                    $query->{$method}('hourly_rate', '>', 0);
+                }
+            });
+            $payrollReady = $payrollReadyQuery->count();
+        } else {
+            $payrollReady = 0;
+        }
         $preferencesConfigured = NotificationPreference::query()
             ->where('company_id', $companyId)
             ->count();
