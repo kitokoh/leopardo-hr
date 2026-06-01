@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.226] - 2026-06-01
+
+### Added
+
+- Plan 68.3 : ajout du garde `validate-code-quality-governance.ps1` et du rapport `CODE_QUALITY_GOVERNANCE_REPORT_2026_06_01.md`.
+
+### Changed
+
+- Documentation API : `docs/api/README.md` pointe vers `/docs`, `/docs/openapi.yaml`, `/api-explorer` et les SDK canoniques.
+- Sommaire des plans : remplacement de l'ancien chemin `openapi/v1.yaml` par `api/openapi.yaml` et `/docs/openapi.yaml`.
+- Release readiness : le gate strict passe a `25/25` en incluant la preuve qualite code post-67.
+
 ## [4.16.225] - 2026-06-01
 
 ### Added

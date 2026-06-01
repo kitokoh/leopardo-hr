@@ -164,4 +164,4 @@ Chaque plan doit sortir avec son changement code/documentation, ses tests ou pre
 7. **DDD pour nouveaux modules** — Structure : `Domain/`, `Application/`, `Infrastructure/`, `Interfaces/`.
 8. **CHANGELOG.md** — Chaque PR met a jour le changelog.
 9. **AGENTS.md** — Chaque lecon operationnelle y est ajoutee.
-10. **OpenAPI** — Chaque nouvel endpoint est documente dans `openapi/v1.yaml`.
+10. **OpenAPI** — Chaque nouvel endpoint est documente dans `api/openapi.yaml` et servi via `/docs/openapi.yaml`.
