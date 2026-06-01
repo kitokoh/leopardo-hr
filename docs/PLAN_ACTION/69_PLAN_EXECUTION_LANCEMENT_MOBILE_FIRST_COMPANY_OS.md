@@ -140,6 +140,8 @@ Cockpit de lancement documentaire et procedures d'escalade simples.
 
 **Go technique, go-live conditionnel.** Le smoke Render confirme `health`, `live`, `ready`, `manager-digest` et `launch-readiness` apres correction #691. Le cockpit retourne un score `43` et `go_live_ready=false` avec un bloqueur requis `communication_governance` (`preferences_configured=1`, aucun echec communication 7j). Rapport : `docs/validation/LAUNCH_OBSERVABILITY_SMOKE_2026_06_01.md`.
 
+**Correctif prepare.** Le backfill `notifications:backfill-preferences` cree/repare les preferences notifications des employes actifs et l'entrypoint Render l'execute apres les seeders. Rapport : `docs/validation/LAUNCH_COMMUNICATION_GOVERNANCE_FIX_2026_06_01.md`.
+
 ## Priorite
 
 1. Lot 69.1
