@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.245)
+Derniere mise a jour : 2026-06-01 (v4.16.246)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -70,6 +70,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.128, `/api/v1/demo-users` est un contrat public de documentation QA, pas un endpoint secret : ne pas le rebloquer via `DEMO_MODE_ENABLED=false`. Pour desactiver l'auto-seed Render, utiliser `DISABLE_DEMO_SEEDING=true`.
 - `DemoCompanyOnceSeeder` doit verifier les slugs demo (`techcorp-algerie`, `pharmaplus-casablanca`, `digitalflow-tunis`) et non la simple presence d'une entreprise en `shared_tenants`; en mode shared, les vrais clients utilisent aussi ce schema.
 - Si le lock `demo_company_seed_v2` existe mais que ces slugs demo manquent, il doit etre considere stale et supprime par le seeder avant de relancer le seed. Ne pas reparer ce cas par SQL manuel tant que le seeder sait le faire.
+- Depuis v4.16.246, `DemoCompanyOnceSeeder` doit aussi backfiller les signaux readiness des demos existantes quand le lock est deja pose : salaire actif minimal, geofence, kiosque actif et client event recent. Si `/api/v1/launch-readiness` reste sous 70 sur TechCorp apres deploy, verifier ce backfill avant de modifier le controleur.
 - Les notifications web/mobile doivent rester vivantes : polling/refresh visible, badge non lu et action de lecture immediate. Toute refonte SSE/WebSocket doit conserver un fallback polling pour Render/proxy/mobile.
 - Dans `tests.yml`, ne pas faire porter la dette mobile historique a des PR backend/web en declenchant `mobile-tests` uniquement parce que le workflow lui-meme change. Le job mobile doit rester cale sur `mobile/**` tant que la base n'est pas completement assainie.
 - Pour `Backend Quality`, garder Pint et PHPStan en gates diff-aware sur les fichiers PHP backend modifies. Cela bloque les nouvelles regressions sans faire porter la dette historique hors perimetre au PR courant. Garder les artefacts et la visibilite du baseline.
