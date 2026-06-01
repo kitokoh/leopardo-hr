@@ -12,6 +12,7 @@
 use App\Http\Controllers\Api\V1\BankExportController;
 use App\Http\Controllers\Api\V1\BulkPaymentController;
 use App\Http\Controllers\Api\V1\CotisationSimulationController;
+use App\Http\Controllers\Api\V1\PaymentBatchController;
 use App\Http\Controllers\Api\V1\PaymentDocumentController;
 use App\Http\Controllers\Api\V1\PayrollCycleController;
 use App\Http\Controllers\Api\V1\PayrollRunController;
@@ -31,6 +32,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
     Route::get('/me/payment-documents', [PaymentDocumentController::class, 'myDocuments']);
     Route::get('/me/payment-documents/{paymentDocument}/download', [PaymentDocumentController::class, 'download'])->whereNumber('paymentDocument');
+    Route::post('/payment-confirmations/{paymentItem}/confirm', [PaymentBatchController::class, 'confirm'])->whereNumber('paymentItem');
 
     // ── Cotisation Simulation (all employees) ────────────────────────────
     Route::post('/cotisation-simulation', [CotisationSimulationController::class, 'simulate']);
@@ -96,6 +98,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
 
         // Plan 65 — Bulk payment
+        Route::get('/payment-batches', [PaymentBatchController::class, 'index']);
+        Route::post('/payment-batches', [PaymentBatchController::class, 'store']);
+        Route::get('/payment-batches/{paymentBatch}', [PaymentBatchController::class, 'show'])->whereNumber('paymentBatch');
+        Route::post('/payment-batches/{paymentBatch}/mark-paid', [PaymentBatchController::class, 'markPaid'])->whereNumber('paymentBatch');
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/payment-documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');

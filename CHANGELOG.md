@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.214] - 2026-06-01
+
+### Added
+
+- Plan 65 : ajout des tables/modeles `payment_batches`, `payment_items` et `payment_confirmations` pour suivre les paiements en masse au-dela de l'ancien job Redis.
+- Ajout des endpoints manager `GET/POST /api/v1/payment-batches`, `GET /api/v1/payment-batches/{paymentBatch}` et `POST /api/v1/payment-batches/{paymentBatch}/mark-paid`.
+- Ajout de l'endpoint employee `POST /api/v1/payment-confirmations/{paymentItem}/confirm`, idempotent et trace avec device signature, IP, user-agent et version document.
+- `mark-paid` declenche les documents de paiement async via `GeneratePaymentDocumentJob`.
+
 ## [4.16.213] - 2026-06-01
 
 ### Added

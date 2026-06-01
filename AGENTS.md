@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.213)
+Derniere mise a jour : 2026-06-01 (v4.16.214)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -116,6 +116,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.211, les apps employee/manager consomment les documents paiement depuis les ecrans paie. Le modele partage est `leopardo_core/lib/models/payment_document.dart`; employee utilise `/me/payment-documents`, manager utilise `/payments/{payrollRun}/documents`, et les deux telechargent via `/me/payment-documents/{document}/download`. Garder `dev-hub/tools/mobile-workflow-contracts.json` synchronise avec ces routes.
 - Depuis v4.16.212, le worker production doit ecouter `documents,pdf,payroll,notifications,webhooks,default` et `REDIS_CLIENT=predis` reste le defaut compatible Upstash. `queue:health-check` doit couvrir toutes ces queues, `failed_jobs` et la connexion active ; ne pas revenir a un worker limite a `payroll,notifications,default`, sinon les documents Plan 62 resteront en attente.
 - Depuis v4.16.213, `attendance:auto-close` ne doit pas utiliser le statut `auto_closed` car l'ancien schema tenant limite les statuts de pointage. Tracer l'auto-cloture via `correction_note=auto_close` et `punch_meta.auto_close`. Les payloads pointage doivent garder `device_timezone`, UTC, local entreprise et `geofence` doux ; hors zone ne bloque pas le pointage par defaut.
+- Depuis v4.16.214, le paiement en masse canonique passe par `payment_batches`, `payment_items` et `payment_confirmations`. Garder l'ancien `/payroll-runs/{id}/bulk-pay` compatible, mais les nouveaux frontends doivent privilegier `/payment-batches` puis `/payment-batches/{id}/mark-paid` et la confirmation employee `/payment-confirmations/{paymentItem}/confirm` pour l'audit financier/signature future-ready.
 - Depuis v4.16.178, l'UX de pointage employee est progressive : premier pointage = arrivee normale directe, premier depart = depart direct, puis les choix avances (`pause`, `reprise`, `overtime`, `mission`, `travel`) apparaissent seulement quand la journee contient deja des sessions. Ne pas remettre une bottom sheet obligatoire au premier clic.
 - Depuis v4.16.176, dans `leopardo_employee`, les trois points d'une ligne de semaine ouvrent d'abord un menu `Details de la journee` / correction. Garder cette separation : les details servent a lire sessions multiples, pauses, heures supp et gains ; la correction reste l'action RH de modification ou demande.
 - Depuis v4.16.177, dans `leopardo_manager`, la creation de taches terrain doit garder les templates metier et les champs API `category`, `template_key`, `recurrence_rule`, `estimated_minutes`. Les nouveaux templates doivent rester des presets UI legers, pas une logique metier dupliquee cote mobile.
