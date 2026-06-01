@@ -152,6 +152,10 @@ Les modules sont nombreux. Le lancement exige une preuve lisible par profil et n
 
 Le depot peut etre audite rapidement avant marketing, avec un score par surface et des actions restantes.
 
+### Statut
+
+**Livre en cours de validation CI.** Le gate `release-readiness.ps1 -Strict` couvre maintenant 22 controles, dont les trois apps mobiles de lancement, leurs gardes Plan 67, la vitrine web, le kiosk et les rapports 67.1-67.5. Rapport : `docs/validation/RELEASE_READINESS_REPORT_2026_06_01.md`.
+
 ## Lot 67.7 - Marketplace/open core cadrage
 
 ### Probleme

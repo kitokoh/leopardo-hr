@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.222] - 2026-06-01
+
+### Changed
+
+- Plan 67.6 : `release-readiness.ps1 -Strict` controle maintenant 22 points, incluant les trois apps mobiles de lancement, les gardes Plan 67, la distribution Firebase, la vitrine web et le kiosk.
+- Release readiness : ajout du rapport profile-based `RELEASE_READINESS_REPORT_2026_06_01.md` avec scores employee, manager/RH, platform admin, API, vitrine, kiosk et operations.
+- Documentation gate release : mise a jour du score attendu `22/22` et des surfaces mobile multi-app, vitrine et kiosk.
+
 ## [4.16.221] - 2026-06-01
 
 ### Added
