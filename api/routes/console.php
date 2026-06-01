@@ -102,6 +102,14 @@ Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
 Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
 Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
+Schedule::command('attendance:auto-close --threshold=12')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();
+Schedule::command('queue:health-check')
+    ->everyFiveMinutes()
+    ->when(fn (): bool => config('queue.default') === 'redis')
+    ->withoutOverlapping();
 
 Artisan::command('super-admin:reset-password {email} {password}', function (string $email, string $password) {
     DB::statement('SET search_path TO public');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Services\Cache\TenantCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -12,6 +13,10 @@ use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private readonly TenantCacheService $tenantCache,
+    ) {}
+
     public function summary(Request $request): JsonResponse
     {
         /** @var Employee $user */
@@ -54,54 +59,62 @@ class DashboardController extends Controller
         $user = $request->user();
         $companyId = (string) $user->company_id;
         $today = now()->toDateString();
-        $employeeIds = $this->scopedEmployeeIds($user);
 
-        $teamSize = count($employeeIds);
-        $present = $this->countTodayPresent($companyId, $today, $employeeIds);
-        $late = $this->countTodayLate($companyId, $today, $employeeIds);
-        $openSessions = $this->countOpenSessions($companyId, $today, $employeeIds);
-        $pendingAbsences = $this->countPendingByTable('absences', $companyId, $employeeIds);
-        $pendingAdvances = $this->countPendingByTable('salary_advances', $companyId, $employeeIds);
-        $pendingCorrections = $this->countPendingByTable('attendance_correction_requests', $companyId, $employeeIds);
-        $pendingActions = $pendingAbsences + $pendingAdvances + $pendingCorrections;
+        $data = $this->tenantCache->rememberManagerDigest(
+            $companyId,
+            $user->id,
+            $today,
+            function () use ($user, $companyId, $today): array {
+                $employeeIds = $this->scopedEmployeeIds($user);
 
-        return response()->json([
-            'data' => [
-                'date' => $today,
-                'team_scope' => $this->managerTeamScope($user),
-                'team_size' => $teamSize,
-                'present' => $present,
-                'late' => $late,
-                'open_sessions' => $openSessions,
-                'pending_actions' => $pendingActions,
-                'pending_absences' => $pendingAbsences,
-                'pending_salary_advances' => $pendingAdvances,
-                'pending_corrections' => $pendingCorrections,
-                'items' => [
-                    [
-                        'kind' => 'attendance',
-                        'label' => 'Présences enregistrées',
-                        'count' => $present,
-                        'severity' => 'success',
-                        'route' => '/manager/attendance',
+                $teamSize = count($employeeIds);
+                $present = $this->countTodayPresent($companyId, $today, $employeeIds);
+                $late = $this->countTodayLate($companyId, $today, $employeeIds);
+                $openSessions = $this->countOpenSessions($companyId, $today, $employeeIds);
+                $pendingAbsences = $this->countPendingByTable('absences', $companyId, $employeeIds);
+                $pendingAdvances = $this->countPendingByTable('salary_advances', $companyId, $employeeIds);
+                $pendingCorrections = $this->countPendingByTable('attendance_correction_requests', $companyId, $employeeIds);
+                $pendingActions = $pendingAbsences + $pendingAdvances + $pendingCorrections;
+
+                return [
+                    'date' => $today,
+                    'team_scope' => $this->managerTeamScope($user),
+                    'team_size' => $teamSize,
+                    'present' => $present,
+                    'late' => $late,
+                    'open_sessions' => $openSessions,
+                    'pending_actions' => $pendingActions,
+                    'pending_absences' => $pendingAbsences,
+                    'pending_salary_advances' => $pendingAdvances,
+                    'pending_corrections' => $pendingCorrections,
+                    'items' => [
+                        [
+                            'kind' => 'attendance',
+                            'label' => 'Presences enregistrees',
+                            'count' => $present,
+                            'severity' => 'success',
+                            'route' => '/manager/attendance',
+                        ],
+                        [
+                            'kind' => 'late',
+                            'label' => 'Retards a surveiller',
+                            'count' => $late,
+                            'severity' => $late > 0 ? 'warning' : 'success',
+                            'route' => '/manager/anomalies',
+                        ],
+                        [
+                            'kind' => 'actions',
+                            'label' => 'Actions RH en attente',
+                            'count' => $pendingActions,
+                            'severity' => $pendingActions > 0 ? 'info' : 'success',
+                            'route' => '/approvals',
+                        ],
                     ],
-                    [
-                        'kind' => 'late',
-                        'label' => 'Retards à surveiller',
-                        'count' => $late,
-                        'severity' => $late > 0 ? 'warning' : 'success',
-                        'route' => '/manager/anomalies',
-                    ],
-                    [
-                        'kind' => 'actions',
-                        'label' => 'Actions RH en attente',
-                        'count' => $pendingActions,
-                        'severity' => $pendingActions > 0 ? 'info' : 'success',
-                        'route' => '/approvals',
-                    ],
-                ],
-            ],
-        ]);
+                ];
+            }
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     public function recentActivity(Request $request): JsonResponse

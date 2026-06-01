@@ -51,6 +51,16 @@ class TenantCacheServiceTest extends TestCase
         $this->assertSame('tenant2', $this->service->get(2, 'setting'));
     }
 
+    public function test_uuid_like_tenant_ids_are_supported(): void
+    {
+        $tenantId = '9d8f2f4e-tenant';
+
+        $this->service->put($tenantId, 'dashboard.digest', ['present' => 3]);
+
+        $this->assertSame(['present' => 3], $this->service->get($tenantId, 'dashboard.digest'));
+        $this->assertSame(['present' => 3], Cache::get('tenant:9d8f2f4e-tenant:dashboard.digest'));
+    }
+
     public function test_get_returns_null_for_missing_key(): void
     {
         $this->assertNull($this->service->get(99, 'nonexistent'));
