@@ -7,113 +7,112 @@ namespace App\Services\Cache;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Tenant-scoped cache service with Upstash-compatible TTL patterns.
+ * Tenant-scoped cache service with Upstash-compatible key patterns.
  *
- * Upstash Redis supports standard GET/SET/TTL — no SCAN, no tagged cache.
- * All keys are prefixed with `tenant:{id}:` for easy manual invalidation.
+ * Upstash Redis does not provide a portable tagged-cache contract across all
+ * Laravel stores, so callers use explicit tenant keys and targeted invalidation.
  */
 class TenantCacheService
 {
-    // TTL constants (seconds)
-    private const DEFAULT_TTL = 300; // 5 minutes
+    private const DEFAULT_TTL = 300;
 
-    private const EMPLOYEE_LIST_TTL = 300; // 5 minutes — Plan 63
+    private const EMPLOYEE_LIST_TTL = 300;
 
-    private const ATTENDANCE_REPORT_TTL = 900; // 15 minutes — Plan 63
+    private const ATTENDANCE_REPORT_TTL = 900;
 
-    public function remember(int $companyId, string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
+    private const MANAGER_DIGEST_TTL = 30;
+
+    private const SCHEDULES_TTL = 300;
+
+    public function remember(int|string $companyId, string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
     {
-        $cacheKey = $this->tenantKey($companyId, $key);
-
-        return Cache::remember($cacheKey, $ttl, $callback);
+        return Cache::remember($this->tenantKey($companyId, $key), $ttl, $callback);
     }
 
-    public function forget(int $companyId, string $key): bool
+    public function forget(int|string $companyId, string $key): bool
     {
         return Cache::forget($this->tenantKey($companyId, $key));
     }
 
     /**
-     * Forget all keys matching a pattern for a tenant.
-     * Note: Upstash does not support SCAN/pattern deletion.
-     * Callers should pass exact keys or use forgetMany() with a list.
+     * Upstash-safe helper: callers should prefer exact keys because broad
+     * pattern deletion is not portable across Redis providers.
      */
-    public function forgetPattern(int $companyId, string $pattern): void
+    public function forgetPattern(int|string $companyId, string $pattern): void
     {
-        $prefix = "tenant:{$companyId}:{$pattern}";
-        Cache::forget($prefix);
+        Cache::forget("tenant:{$companyId}:{$pattern}");
     }
 
     /**
-     * Invalidate a list of known keys for a tenant.
+     * @param  list<string>  $keys
      */
-    public function forgetMany(int $companyId, array $keys): void
+    public function forgetMany(int|string $companyId, array $keys): void
     {
         foreach ($keys as $key) {
-            Cache::forget($this->tenantKey($companyId, $key));
+            $this->forget($companyId, $key);
         }
     }
 
-    /**
-     * Flush all cached data for a tenant.
-     * With Upstash (non-tagged driver), this only clears known keys via tags if available.
-     */
-    public function flush(int $companyId): void
+    public function flush(int|string $companyId): void
     {
-        $tags = ["tenant:{$companyId}"];
+        $store = Cache::store();
 
-        if (method_exists(Cache::store(), 'tags')) {
-            Cache::tags($tags)->flush();
+        if (method_exists($store, 'tags')) {
+            $store->tags(["tenant:{$companyId}"])->flush();
         }
     }
 
-    public function get(int $companyId, string $key): mixed
+    public function get(int|string $companyId, string $key): mixed
     {
         return Cache::get($this->tenantKey($companyId, $key));
     }
 
-    public function put(int $companyId, string $key, mixed $value, int $ttl = self::DEFAULT_TTL): bool
+    public function put(int|string $companyId, string $key, mixed $value, int $ttl = self::DEFAULT_TTL): bool
     {
         return Cache::put($this->tenantKey($companyId, $key), $value, $ttl);
     }
 
-    // ── Plan 63 — Upstash-optimised helpers ─────────────────────────────────
-
-    /**
-     * Cache employee list for a tenant (TTL: 5 min).
-     */
-    public function rememberEmployees(int $companyId, callable $callback): mixed
+    public function rememberEmployees(int|string $companyId, callable $callback): mixed
     {
         return $this->remember($companyId, 'employees:list', $callback, self::EMPLOYEE_LIST_TTL);
     }
 
-    /**
-     * Cache attendance report for a tenant+period (TTL: 15 min).
-     */
-    public function rememberAttendanceReport(int $companyId, string $period, callable $callback): mixed
+    public function rememberManagerDigest(int|string $companyId, int|string $managerId, string $date, callable $callback): mixed
+    {
+        return $this->remember($companyId, "dashboard:manager-digest:{$managerId}:{$date}", $callback, self::MANAGER_DIGEST_TTL);
+    }
+
+    public function rememberSchedules(int|string $companyId, callable $callback): mixed
+    {
+        return $this->remember($companyId, 'schedules:list', $callback, self::SCHEDULES_TTL);
+    }
+
+    public function rememberAttendanceReport(int|string $companyId, string $period, callable $callback): mixed
     {
         return $this->remember($companyId, "attendance:report:{$period}", $callback, self::ATTENDANCE_REPORT_TTL);
     }
 
-    /**
-     * Invalidate employee list cache when employees change.
-     */
-    public function invalidateEmployees(int $companyId): bool
+    public function invalidateEmployees(int|string $companyId): bool
     {
         return $this->forget($companyId, 'employees:list');
     }
 
-    /**
-     * Invalidate attendance reports for a tenant.
-     */
-    public function invalidateAttendanceReports(int $companyId, string $period): bool
+    public function invalidateSchedules(int|string $companyId): bool
+    {
+        return $this->forget($companyId, 'schedules:list');
+    }
+
+    public function invalidateManagerDigest(int|string $companyId, int|string $managerId, string $date): bool
+    {
+        return $this->forget($companyId, "dashboard:manager-digest:{$managerId}:{$date}");
+    }
+
+    public function invalidateAttendanceReports(int|string $companyId, string $period): bool
     {
         return $this->forget($companyId, "attendance:report:{$period}");
     }
 
-    // ── Internal ─────────────────────────────────────────────────────────────
-
-    private function tenantKey(int $companyId, string $key): string
+    private function tenantKey(int|string $companyId, string $key): string
     {
         return "tenant:{$companyId}:{$key}";
     }
