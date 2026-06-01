@@ -143,6 +143,14 @@ class MobileExperienceService
                 route: '/tasks',
                 status: 'active',
             );
+            $modules[] = $this->module(
+                key: 'company_branding',
+                title: 'Identite entreprise',
+                description: 'Adapter le nom affiche, le logo et les couleurs de l espace client.',
+                domain: 'rh',
+                route: '/company/branding',
+                status: 'active',
+            );
         }
 
         $modules[] = $this->module(

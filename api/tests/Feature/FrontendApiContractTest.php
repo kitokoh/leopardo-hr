@@ -89,6 +89,8 @@ class FrontendApiContractTest extends TestCase
             'mobile notification preferences update' => ['PATCH', 'api/v1/notification-preferences'],
             'mobile device token register' => ['POST', 'api/v1/device-tokens'],
             'mobile device token unregister' => ['DELETE', 'api/v1/device-tokens'],
+            'mobile company branding read' => ['GET', 'api/v1/company/branding'],
+            'mobile company branding update' => ['PATCH', 'api/v1/company/branding'],
             'admin dashboard summary' => ['GET', 'api/v1/dashboard/summary'],
             'admin dashboard recent activity' => ['GET', 'api/v1/dashboard/recent-activity'],
             'manager mobile dashboard digest' => ['GET', 'api/v1/dashboard/manager-digest'],
