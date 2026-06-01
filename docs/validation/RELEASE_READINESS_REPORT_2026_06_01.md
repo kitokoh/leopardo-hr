@@ -10,7 +10,8 @@ Le depot est maintenant auditable par surface avant marketing : API, employee mo
 
 | Commande / preuve | Resultat |
 |---|---|
-| `powershell -NoProfile -ExecutionPolicy Bypass -File dev-hub/tools/release-readiness.ps1 -Strict` | OK, 25/25 checks |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File dev-hub/tools/release-readiness.ps1 -Strict` | OK, 26/26 checks |
+| `dev-hub/tools/validate-production-ops-readiness.ps1` | OK, deploy/rollback/queues/Redis/Firebase/backup relies |
 | `dev-hub/tools/validate-code-quality-governance.ps1` | OK, docs canoniques et artefacts qualite post-67 alignes |
 | `dev-hub/tools/validate-frontend-api-contract-governance.ps1` | OK, matrice/API/mobile/OpenAPI CI relies |
 | `dev-hub/tools/validate-open-core-boundaries.ps1` | OK, bornes open core/marketplace documentees |
