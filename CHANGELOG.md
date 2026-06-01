@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.248] - 2026-06-01
+
+### Changed
+
+- Readiness lancement : mise a jour des rapports Plan 69 apres smoke Render post-#695 (`launch-readiness score=100`, `go_live_ready=true`, zero bloqueur requis) et cloture du lot observabilite API.
+
 ## [4.16.247] - 2026-06-01
 
 ### Fixed
