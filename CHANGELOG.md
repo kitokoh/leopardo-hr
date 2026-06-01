@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.223] - 2026-06-01
+
+### Added
+
+- Plan 67.7 : cadrage open core/marketplace avec ADR 0004, guide dedie et rapport readiness marketplace.
+- Ajout du garde `validate-open-core-boundaries.ps1` pour verifier que les bornes open source, enterprise-only, secrets, licences, scopes API et webhooks sont documentes.
+
+### Changed
+
+- Release readiness : le gate strict passe a `23/23` en incluant la preuve open core/marketplace.
+- Guide partenaires : rappel que les integrations passent par API publique, webhooks signes et scopes documentes, sans import direct du code interne.
+
 ## [4.16.222] - 2026-06-01
 
 ### Changed
