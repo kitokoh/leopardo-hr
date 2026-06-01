@@ -11,8 +11,9 @@ Reference main testee avant correction : `efd4c150`
 
 Correction livree dans ce lot :
 
-- `EmployeeController@index` selectionne maintenant tous les champs serialises par `EmployeeResource`.
-- Objectif : eviter les erreurs de ressource sur modeles Eloquent partiellement charges en production, tout en gardant la pagination et l'isolation tenant existantes.
+- `EmployeeController@index` selectionne maintenant les champs serialises par `EmployeeResource` seulement quand ils existent dans le schema courant.
+- `EmployeeResource` tolere les attributs optionnels absents sur les modeles partiellement charges.
+- Objectif : eviter les erreurs de ressource sur modeles Eloquent partiellement charges ou schemas Render partiellement migres, tout en gardant la pagination et l'isolation tenant existantes.
 
 ## Resultats Render avant correction
 
@@ -43,6 +44,7 @@ Impact :
 ## Corrections appliquees
 
 - `api/app/Http/Controllers/Api/V1/EmployeeController.php`
+- `api/app/Http/Resources/Api/V1/EmployeeResource.php`
 
 ## Validations locales rapides
 

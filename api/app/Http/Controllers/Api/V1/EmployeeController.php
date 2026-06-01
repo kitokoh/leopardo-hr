@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class EmployeeController extends Controller
 {
@@ -74,37 +75,7 @@ class EmployeeController extends Controller
                 'company:id,name,language,timezone,currency,features',
                 'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
             ])
-            ->select([
-                'id',
-                'matricule',
-                'company_id',
-                'schedule_id',
-                'first_name',
-                'middle_name',
-                'last_name',
-                'preferred_name',
-                'email',
-                'personal_email',
-                'recovery_email',
-                'personal_phone',
-                'phone',
-                'role',
-                'manager_role',
-                'status',
-                'photo_path',
-                'biometric_face_enabled',
-                'biometric_fingerprint_enabled',
-                'address_line',
-                'postal_code',
-                'emergency_contact_name',
-                'emergency_contact_phone',
-                'contract_start',
-                'salary_type',
-                'salary_base',
-                'hourly_rate',
-                'preferred_language',
-                'extra_data',
-            ]);
+            ->select($this->employeeIndexColumns());
 
         if (! empty($validated['status'])) {
             $query->where('status', $validated['status']);
@@ -140,6 +111,49 @@ class EmployeeController extends Controller
         ]);
 
         return EmployeeResource::collection($paginator)->response();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function employeeIndexColumns(): array
+    {
+        $columns = [
+            'id',
+            'matricule',
+            'company_id',
+            'schedule_id',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'preferred_name',
+            'email',
+            'personal_email',
+            'recovery_email',
+            'personal_phone',
+            'phone',
+            'role',
+            'manager_role',
+            'status',
+            'photo_path',
+            'biometric_face_enabled',
+            'biometric_fingerprint_enabled',
+            'address_line',
+            'postal_code',
+            'emergency_contact_name',
+            'emergency_contact_phone',
+            'contract_start',
+            'salary_type',
+            'salary_base',
+            'hourly_rate',
+            'preferred_language',
+            'extra_data',
+        ];
+
+        return array_values(array_filter(
+            $columns,
+            static fn (string $column): bool => Schema::hasColumn('employees', $column)
+        ));
     }
 
     /**
