@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.218] - 2026-06-01
+
+### Changed
+
+- Plan 67.2 : l'app mobile platform admin recupere maintenant le client cree par `POST /platform/companies` et redirige directement vers sa fiche.
+- `PlatformCompany.fromProvisioningResponse()` couvre le payload `data.company` et conserve les UUID comme strings pour le routing mobile.
+- Ajout du rapport `PLATFORM_ADMIN_E2E_REPORT_2026_06_01.md` et d'un test modele platform admin pour le mapping creation client.
+
 ## [4.16.217] - 2026-06-01
 
 ### Added

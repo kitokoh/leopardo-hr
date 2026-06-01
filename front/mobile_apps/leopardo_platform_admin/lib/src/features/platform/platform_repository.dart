@@ -181,7 +181,7 @@ class PlatformRepository {
     return PlatformCompanyFeatures.fromJson(response.data ?? {});
   }
 
-  Future<void> createCompany({
+  Future<PlatformCompany> createCompany({
     required String name,
     required String email,
     required String country,
@@ -191,7 +191,7 @@ class PlatformRepository {
     required String managerEmail,
     int? planId,
   }) async {
-    await _apiClient.requestWithRetry<Map<String, dynamic>>(
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies',
       method: 'POST',
       timeoutOverride: _actionTimeout,
@@ -207,6 +207,8 @@ class PlatformRepository {
         if (planId != null) 'plan_id': planId,
       },
     );
+
+    return PlatformCompany.fromProvisioningResponse(response.data ?? {});
   }
 
   Future<List<PlatformCompanyRequest>> companyRequests() async {
