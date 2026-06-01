@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.217] - 2026-06-01
+
+### Added
+
+- Plan 67.1 : ajout du garde `validate-mobile-runtime-smoke.ps1` pour bloquer les regressions de demarrage mobile avant premier rendu.
+- `mobile-apps-ci.yml` execute maintenant `Validate mobile runtime smoke` sur les changements `front/mobile_apps/**`.
+- Ajout du rapport `MOBILE_RUNTIME_SMOKE_REPORT_2026_06_01.md` documentant le contrat anti page noire/logo infini pour employee, manager et platform admin.
+
 ## [4.16.216] - 2026-06-01
 
 ### Added
