@@ -1011,16 +1011,17 @@ Note 2026-06-01 : le Plan 63 durcit les pics de charge. Les scenarios API/ops do
 - Failure silencieuse si `PayrollRun`, `Employee`, `Company` ou `PaySlip` introuvable (log warning, pas d'exception)
 
 #### Plan 63 — Architecture Redis Upstash / QueueHealthCheck
-- `php artisan queue:health-check` retourne JSON avec `redis_ok`, `redis_latency_ms`, profondeurs des queues `default`, `pdf`, `notifications`, `payroll`, `webhooks`
+- `php artisan queue:health-check` retourne JSON avec `redis_ok`, `redis_latency_ms`, profondeurs des queues `default`, `documents`, `pdf`, `notifications`, `payroll`, `webhooks`
 - Retourne `status=error` si Redis inaccessible (exit FAILURE)
 - Options `--queue=pdf --queue=payroll` limitent le check aux queues specifiees
 
-#### Plan 64 — Cloture Automatique Presences (AutoCloseAttendanceCommand)
-- `php artisan attendance:auto-close` cloture les pointages sans `check_out` depuis plus de 12h (defaut)
-- `--threshold=N` parametre le seuil en heures
+#### Plan 64 — Cloture Automatique Presences, Timezone et GPS doux
+- `php artisan attendance:auto-close` cloture les pointages sans `check_out` selon `company.metadata.attendance_auto_close` ou le fallback 12h
+- `--threshold=N` parametre le seuil fallback en heures
 - `--dry-run` preview sans ecriture
-- Calcule `hours_worked` = diff check_in / auto check_out (cap 8h ou now si check_in+8h est futur)
-- Met `status=auto_closed`, `correction_note=auto_close`, `punch_note` explicatif
+- Calcule `hours_worked` selon `workday_hours + overtime_margin_minutes`, sans utiliser le statut invalide `auto_closed`
+- Met `correction_note=auto_close`, `punch_note` explicatif et `punch_meta.auto_close.correction_window=true`
+- `POST /api/v1/attendance/check-in|check-out` accepte `device_timezone`, `gps_lat`, `gps_lng`; le backend stocke UTC et retourne timezone locale + geofence doux (`inside=false` ne bloque pas)
 
 #### Plan 65 — Paiement en Masse (BulkPaymentController + ProcessBulkPaymentJob)
 - `POST /api/v1/payroll-runs/{id}/bulk-pay` : dispatch `ProcessBulkPaymentJob` sur queue `payroll`, retourne 202 Accepted

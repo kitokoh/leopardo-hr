@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.213] - 2026-06-01
+
+### Added
+
+- Plan 64 : le pointage accepte maintenant `device_timezone` et expose UTC, heure locale entreprise, GPS et geofence doux dans `AttendanceLogResource`.
+- Plan 64 : ajout de `AttendanceGeofenceService` pour calculer la distance Haversine et determiner `geofence.inside` depuis un site employe ou `company.metadata.attendance_geofence`.
+- Mobile employee/manager : les repositories de pointage envoient le contexte timezone device et acceptent GPS optionnel sans bloquer l'UX.
+
+### Fixed
+
+- `attendance:auto-close` respecte maintenant `company.metadata.attendance_auto_close`, trace la fenetre de correction dans `punch_meta.auto_close` et n'utilise plus le statut invalide `auto_closed`.
+
 ## [4.16.212] - 2026-06-01
 
 ### Added

@@ -16,6 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $id
  * @property int|null $company_id
  * @property int|null $schedule_id
+ * @property int|null $site_id
  * @property string|null $matricule
  * @property string|null $zkteco_id
  * @property string $first_name
@@ -68,6 +69,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Department|null $department
  * @property-read Position|null $position
  * @property-read Schedule|null $schedule
+ * @property-read Site|null $site
  * @property-read Carbon|null $email_verified_at
  * @property-read Carbon|null $last_login_at
  */
@@ -82,6 +84,7 @@ class Employee extends Authenticatable
     protected $fillable = [
         'company_id',
         'schedule_id',
+        'site_id',
         'matricule',
         'zkteco_id',
         'first_name',
@@ -234,6 +237,12 @@ class Employee extends Authenticatable
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
+    }
+
+    /** @return BelongsTo<Site, $this> */
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class, 'site_id');
     }
 
     /** @return HasMany<BiometricEnrollmentRequest, $this> */

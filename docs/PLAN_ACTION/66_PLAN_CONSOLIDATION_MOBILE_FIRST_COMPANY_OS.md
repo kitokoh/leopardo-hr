@@ -21,7 +21,7 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 |-------|--------|---------------|------|
 | A - Depot, infra, API, async, charge, observabilite | 1-7 | 15, 16, 20, 21, 23, 27, 30, 57, 63 | Plan 57 et Plan 63 livres, continuer mesures staging/k6 |
 | B - Mobile-first experience, branding, design system, tenant branding | 8-11 | 25, 28, 41, 58 | Partiel, Plan 58 reste a implementer |
-| C - Pointage intelligent, multi-sessions, auto-close, timezone, GPS, kiosque/biometrie | 12-17 | 31, 42, 43, 49, 51, 64 | Multi-sessions livre, auto-close/timezone/GPS restent Plan 64 |
+| C - Pointage intelligent, multi-sessions, auto-close, timezone, GPS, kiosque/biometrie | 12-17 | 31, 42, 43, 49, 51, 64 | Multi-sessions livre ; Plan 64 livre pour timezone, geofence doux et auto-close configurable ; UX GPS native reste un lot mobile dedie |
 | D - Taches, performance, validations, notifications | 18-21 | 19, 31, 38, 50, 52, 60 | Partiel, double validation avances reste Plan 60 |
 | E - Profil portable, placard numerique, QR onboarding | 22-24 | 32, 33, 54 | Largement planifie/partiel, verifier UX et tests |
 | F - Manager/RH, horaires, isolation tenant | 25-28 | 34, 35, 36, 37, 40, 53 | Partiel, garder tests RBAC/tenant obligatoires |
@@ -102,7 +102,7 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 2. **Plan 61** — Solde employe / cycle paie  
 3. **Plan 62** — PDF bordereaux async
 4. **Plan 63** — Architecture heures de pointe / queues / cache
-5. **Plan 64** — Cloture timezone/GPS
+5. **Plan 64** — Cloture timezone/GPS — implemente
 5. **Plan 57** — API docs ecosysteme developpeur
 6. **Lot 66.1** — Audit anti-oubli exhaustif (passe en revue des 65 plans)
 
