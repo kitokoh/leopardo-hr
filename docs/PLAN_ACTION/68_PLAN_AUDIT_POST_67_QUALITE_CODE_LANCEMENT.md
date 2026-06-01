@@ -53,6 +53,10 @@ Identifier les zones de dette qui menacent le lancement sans lancer de refonte l
 - Liste de quick wins exploitables par PR courtes.
 - Garde anti-regression si un risque peut etre automatise.
 
+### Statut
+
+**Livre.** Le garde `dev-hub/tools/validate-code-quality-governance.ps1` bloque les references canoniques obsoletes (`openapi/v1.yaml`) et verifie la presence des artefacts post-67. Le rapport `docs/validation/CODE_QUALITY_GOVERNANCE_REPORT_2026_06_01.md` documente les corrections livrees et les zones backend a ne refactorer que par lots fonctionnels.
+
 ## Lot 68.4 - Audit production ops
 
 ### Objectif
