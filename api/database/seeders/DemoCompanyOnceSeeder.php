@@ -37,6 +37,7 @@ class DemoCompanyOnceSeeder extends Seeder
             ->exists();
 
         if ($alreadyRan && $existingDemoSlugs->count() === count(self::DEMO_SLUGS)) {
+            $this->backfillDemoLeaveBalances();
             $this->command?->info('DemoCompanyOnceSeeder skipped (already executed).');
 
             return;
@@ -48,6 +49,7 @@ class DemoCompanyOnceSeeder extends Seeder
         }
 
         if ($existingDemoSlugs->count() === count(self::DEMO_SLUGS)) {
+            $this->backfillDemoLeaveBalances();
             DB::table('seed_locks')->updateOrInsert(
                 ['lock_key' => self::LOCK_KEY],
                 [
@@ -72,6 +74,7 @@ class DemoCompanyOnceSeeder extends Seeder
         try {
             app()->instance('leopardo.demo_seed_once', true);
             $this->call(DemoCompanySeeder::class);
+            $this->backfillDemoLeaveBalances();
 
             DB::statement('SET search_path TO public');
             DB::table('seed_locks')
@@ -88,5 +91,99 @@ class DemoCompanyOnceSeeder extends Seeder
 
             throw $throwable;
         }
+    }
+
+    private function backfillDemoLeaveBalances(): void
+    {
+        if (
+            ! $this->sharedTableExists('employees')
+            || ! $this->sharedTableExists('absence_types')
+            || ! $this->sharedTableExists('leave_balances')
+        ) {
+            return;
+        }
+
+        $companies = DB::table('companies')
+            ->whereIn('slug', self::DEMO_SLUGS)
+            ->get(['id', 'slug']);
+
+        if ($companies->isEmpty()) {
+            return;
+        }
+
+        $year = (int) now()->format('Y');
+        $created = 0;
+
+        foreach ($companies as $company) {
+            $annualTypeId = DB::table($this->sharedTable('absence_types'))
+                ->where('company_id', $company->id)
+                ->where(function ($query): void {
+                    $query->where('code', 'like', 'CA_%')
+                        ->orWhere('name', 'like', 'Conge annuel%');
+                })
+                ->orderBy('id')
+                ->value('id');
+
+            if (! $annualTypeId) {
+                continue;
+            }
+
+            $employeeIds = DB::table($this->sharedTable('employees'))
+                ->where('company_id', $company->id)
+                ->where('status', 'active')
+                ->pluck('id')
+                ->map(fn ($id): int => (int) $id)
+                ->values();
+
+            foreach ($employeeIds as $index => $employeeId) {
+                $exists = DB::table($this->sharedTable('leave_balances'))
+                    ->where('company_id', $company->id)
+                    ->where('employee_id', $employeeId)
+                    ->where('absence_type_id', $annualTypeId)
+                    ->where('year', $year)
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
+
+                DB::table($this->sharedTable('leave_balances'))->insert([
+                    'company_id' => $company->id,
+                    'employee_id' => $employeeId,
+                    'absence_type_id' => $annualTypeId,
+                    'balance' => max(8, 18 - ($index % 5)),
+                    'used' => $index % 3,
+                    'pending' => 0,
+                    'year' => $year,
+                    'updated_at' => now(),
+                ]);
+
+                $created++;
+            }
+        }
+
+        if ($created > 0) {
+            $this->command?->info("DemoCompanyOnceSeeder backfilled {$created} demo leave balances.");
+        }
+    }
+
+    private function sharedTableExists(string $table): bool
+    {
+        $result = DB::selectOne(
+            'select exists (
+                select 1
+                from information_schema.tables
+                where table_schema = ?
+                  and table_name = ?
+            ) as exists',
+            ['shared_tenants', $table]
+        );
+
+        return (bool) ($result->exists ?? false);
+    }
+
+    private function sharedTable(string $table): string
+    {
+        return 'shared_tenants.'.$table;
     }
 }

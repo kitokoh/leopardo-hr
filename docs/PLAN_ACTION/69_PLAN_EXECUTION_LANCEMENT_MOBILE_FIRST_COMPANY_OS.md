@@ -52,6 +52,10 @@ Valider le parcours quotidien employe : login, pointage simple, pointages multip
 
 Rapport parcours employee + corrections ciblees si endpoint ou UI bloque.
 
+### Statut
+
+**Go partiel, correction livree.** Le smoke Render confirme le login employee, les lectures critiques, le pointage multiple (`normal` puis `overtime`) et la creation/annulation d'une avance. Le parcours absence a revele une rupture contrat mobile/API : les apps lisaient `/leave-balances` au lieu de `/me/leave-balances`, et les demos existantes n'avaient pas de `leave_balances`. Correction appliquee dans les apps employee/manager, le contrat mobile et les seeders demo. Rapport : `docs/validation/EMPLOYEE_TERRAIN_API_SMOKE_2026_06_01.md`.
+
 ## Lot 69.3 - Parcours manager/RH et isolation donnees
 
 ### Objectif
