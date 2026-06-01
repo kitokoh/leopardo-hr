@@ -116,32 +116,26 @@ class PayrollCycleService
     public function getMobileSummary(Employee $actor, int $limit = 50): array
     {
         $isGlobalPayrollManager = $actor->hasManagerRole('principal', 'rh', 'comptable');
+        $hasManagerColumn = Schema::hasColumn('employees', 'manager_id');
 
         $employees = Employee::query()
-            ->select([
-                'id',
-                'company_id',
-                'first_name',
-                'last_name',
-                'matricule',
-                'role',
-                'manager_role',
-                'manager_id',
-                'salary_type',
-                'salary_base',
-                'hourly_rate',
-                'status',
-            ])
+            ->select($this->employeeSummaryColumns())
             ->where('company_id', $actor->company_id)
-            ->where('status', '!=', 'archived')
-            ->when($isGlobalPayrollManager === false, function ($query) use ($actor): void {
+            ->when(Schema::hasColumn('employees', 'status'), function ($query): void {
+                $query->where('status', '!=', 'archived');
+            })
+            ->when($isGlobalPayrollManager === false && $hasManagerColumn, function ($query) use ($actor): void {
                 $query->where(function ($scope) use ($actor): void {
                     $scope->where('id', $actor->id)
                         ->orWhere('manager_id', $actor->id);
                 });
             })
-            ->orderBy('first_name')
-            ->orderBy('last_name')
+            ->when($isGlobalPayrollManager === false && $hasManagerColumn === false, function ($query) use ($actor): void {
+                $query->where('id', $actor->id);
+            })
+            ->when(Schema::hasColumn('employees', 'first_name'), fn ($query) => $query->orderBy('first_name'))
+            ->when(Schema::hasColumn('employees', 'last_name'), fn ($query) => $query->orderBy('last_name'))
+            ->orderBy('id')
             ->limit(max(1, min($limit, 100)))
             ->get();
 
@@ -149,6 +143,32 @@ class PayrollCycleService
             ->map(fn (Employee $employee): array => $this->getEmployeeBalance($employee))
             ->values()
             ->all();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function employeeSummaryColumns(): array
+    {
+        $columns = [
+            'id',
+            'company_id',
+            'first_name',
+            'last_name',
+            'matricule',
+            'role',
+            'manager_role',
+            'manager_id',
+            'salary_type',
+            'salary_base',
+            'hourly_rate',
+            'status',
+        ];
+
+        return array_values(array_filter(
+            $columns,
+            static fn (string $column): bool => Schema::hasColumn('employees', $column)
+        ));
     }
 
     public function closeCycle(PayrollRun $run): PayrollRun
