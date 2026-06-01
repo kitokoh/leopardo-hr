@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.206] - 2026-06-01
+
+### Fixed
+
+- Mobile employee/manager : durcissement des derniers repositories API hors telechargements payroll. Les flux `user_auth`, IA chat/voice et demande entreprise utilisent maintenant `requestWithRetry`, des timeouts explicites et le parsing tolerant `extractDataMap`/`extractDataList`.
+- Mobile employee/manager : les appels `/user/*`, `/ai/*` et `/company-requests` ne contournent plus les protections cold-start Render, ce qui reduit les risques de spinner infini ou de payload mal caste sur les ecrans secondaires.
+
 ## [4.16.205] - 2026-06-01
 
 ### Fixed
