@@ -30,6 +30,10 @@ Prouver que les trois apps `employee`, `manager` et `platform_admin` s'ouvrent, 
 
 Rapport device QA par app avec verdict `Go`, `Go conditionnel` ou `No-go`.
 
+### Statut
+
+**CI/Firebase livre. Device QA a confirmer.** Le workflow `Mobile - Build and Firebase Distribution` run `26750677529` a distribue avec succes les trois APK staging depuis `main` (`employee-manual-20260601`, `manager-manual-20260601`, `platform-admin-manual-20260601`). Rapport : `docs/validation/MOBILE_RELEASE_DEVICE_QA_2026_06_01.md`.
+
 ## Lot 69.2 - Parcours employe terrain
 
 ### Objectif
