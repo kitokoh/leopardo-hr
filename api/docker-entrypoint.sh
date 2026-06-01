@@ -307,6 +307,9 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Running gated demo seed (DEMO_SEED_ONCE)..."
     php artisan db:seed --class=DemoCompanyOnceSeeder --force
 
+    echo "Backfilling notification preferences for active employees..."
+    php artisan notifications:backfill-preferences
+
     mark_test_database_reset_complete
 fi
 
