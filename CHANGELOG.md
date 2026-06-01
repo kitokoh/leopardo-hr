@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.227] - 2026-06-01
+
+### Added
+
+- Plan 68.4 : ajout du garde `validate-production-ops-readiness.ps1` et du rapport `PRODUCTION_OPS_READINESS_REPORT_2026_06_01.md`.
+
+### Changed
+
+- `DEPLOYMENT_GUIDE.md` documente les secrets CI/CD/mobile critiques pour Render et Firebase Distribution.
+- Release readiness : le gate strict passe a `26/26` en incluant la preuve operations production.
+
 ## [4.16.226] - 2026-06-01
 
 ### Added
