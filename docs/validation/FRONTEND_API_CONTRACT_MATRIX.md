@@ -50,6 +50,8 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Bulletins employe | `GET /api/v1/me/pay-slips` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Detail bulletin | `GET /api/v1/me/pay-slips/{paySlip}` | employe | `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | PDF bulletin | `GET /api/v1/me/pay-slips/{paySlip}/pdf` | employe | `FrontendApiContractTest` |
+| Mobile | Solde paie employe | `GET /api/v1/me/balance` | employe | `PayrollCycleIntegrationTest`, `FrontendApiContractTest` |
+| Mobile manager | Resume paie equipe | `GET /api/v1/payroll/mobile-summary` | manager principal/comptable | `PayrollCycleIntegrationTest`, `FrontendApiContractTest` |
 | Mobile | Statistiques placard numerique | `GET /api/v1/cabinet/stats` | employe | `AuthProfileSettingsTest` |
 | Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |

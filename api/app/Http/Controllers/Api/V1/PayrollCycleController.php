@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\PayrollCycleService;
@@ -12,20 +13,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Plan 61 — Cycles de paie & solde employé.
- *
- * GET /payroll/cycles          — liste les cycles (PayrollRuns)
- * GET /payroll/cycles/current  — cycle courant calculé
- * GET /employees/{id}/balance  — solde employé pour le cycle courant
+ * Plan 61 - cycles de paie et solde employe mobile-first.
  */
 class PayrollCycleController extends Controller
 {
     public function __construct(private readonly PayrollCycleService $cycleService) {}
 
-    /**
-     * GET /payroll/cycles
-     * List all payroll runs for the authenticated company.
-     */
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -43,35 +36,41 @@ class PayrollCycleController extends Controller
         return response()->json($runs);
     }
 
-    /**
-     * GET /payroll/cycles/current
-     * Return the current computed pay cycle for the company.
-     */
     public function current(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $company = $actor->company;
-        $cycle = $this->cycleService->getCurrentCycle($company);
+        if (! $company instanceof Company) {
+            abort(404);
+        }
 
-        return response()->json([
+        $cycle = $this->cycleService->getCurrentCycle($company);
+        $payload = [
             'period_start' => $cycle['start']->toDateString(),
             'period_end' => $cycle['end']->toDateString(),
             'label' => $cycle['label'],
+        ];
+
+        return response()->json(['data' => $payload] + $payload);
+    }
+
+    public function myBalance(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        return response()->json([
+            'data' => $this->cycleService->getEmployeeBalance($actor),
         ]);
     }
 
-    /**
-     * GET /employees/{id}/balance
-     * Return the computed balance for an employee in the current cycle.
-     */
     public function employeeBalance(Request $request, int $id): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        // Self-service or manager
         if ($actor->id !== $id && ! $actor->isManager()) {
             abort(403);
         }
@@ -85,8 +84,35 @@ class PayrollCycleController extends Controller
             abort(404);
         }
 
-        $balance = $this->cycleService->getEmployeeBalance($employee);
+        $payload = $this->cycleService->getEmployeeBalance($employee);
 
-        return response()->json($balance);
+        return response()->json(['data' => $payload] + $payload);
+    }
+
+    public function mobileSummary(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $items = $this->cycleService->getMobileSummary(
+            actor: $actor,
+            limit: $request->integer('limit', 50),
+        );
+
+        return response()->json([
+            'data' => [
+                'items' => $items,
+                'totals' => [
+                    'gross_due' => round(array_sum(array_column($items, 'gross_due')), 2),
+                    'advances' => round(array_sum(array_column($items, 'advances')), 2),
+                    'paid' => round(array_sum(array_column($items, 'paid')), 2),
+                    'remaining' => round(array_sum(array_column($items, 'remaining')), 2),
+                ],
+            ],
+        ]);
     }
 }

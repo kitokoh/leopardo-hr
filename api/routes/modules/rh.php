@@ -56,6 +56,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/daily-summary', [MeController::class, 'dailySummary']);
     Route::get('/me/quick-estimate', [MeController::class, 'quickEstimate']);
     Route::get('/me/monthly-summary', [MeController::class, 'monthlySummary']);
+    Route::get('/me/balance', [PayrollCycleController::class, 'myBalance']);
 
     // ── Attendance ────────────────────────────────────────────────────────────
     Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
