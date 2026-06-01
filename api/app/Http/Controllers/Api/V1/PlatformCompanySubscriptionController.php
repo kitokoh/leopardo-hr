@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,9 +14,7 @@ class PlatformCompanySubscriptionController extends Controller
 {
     public function show(string $companyId): JsonResponse
     {
-        DB::statement('SET search_path TO public');
-
-        $company = Company::query()->findOrFail($companyId);
+        $company = PlatformCompanyLookup::findOrFail($companyId);
 
         return new JsonResponse([
             'data' => $this->payload($company),
@@ -24,9 +23,7 @@ class PlatformCompanySubscriptionController extends Controller
 
     public function update(Request $request, string $companyId): JsonResponse
     {
-        DB::statement('SET search_path TO public');
-
-        $company = Company::query()->findOrFail($companyId);
+        $company = PlatformCompanyLookup::findOrFail($companyId);
 
         $validated = $request->validate([
             'plan_id' => ['required', 'integer', Rule::exists('plans', 'id')],
