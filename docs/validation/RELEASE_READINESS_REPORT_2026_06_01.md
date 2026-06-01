@@ -10,7 +10,8 @@ Le depot est maintenant auditable par surface avant marketing : API, employee mo
 
 | Commande / preuve | Resultat |
 |---|---|
-| `powershell -NoProfile -ExecutionPolicy Bypass -File dev-hub/tools/release-readiness.ps1 -Strict` | OK, 22/22 checks |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File dev-hub/tools/release-readiness.ps1 -Strict` | OK, 23/23 checks |
+| `dev-hub/tools/validate-open-core-boundaries.ps1` | OK, bornes open core/marketplace documentees |
 | `dev-hub/tools/validate-mobile-runtime-smoke.ps1` | Couvert par Mobile Apps CI |
 | `dev-hub/tools/validate-mobile-location-readiness.ps1` | Couvert par Mobile Apps CI |
 | `dev-hub/tools/validate-mobile-tenant-branding.ps1` | Couvert par Mobile Apps CI |
