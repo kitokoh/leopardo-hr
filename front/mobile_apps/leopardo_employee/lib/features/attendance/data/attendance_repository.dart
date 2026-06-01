@@ -26,6 +26,7 @@ class AttendanceRepository {
     String? punchNote,
     double? gpsLat,
     double? gpsLng,
+    double? gpsAccuracy,
   }) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-in',
@@ -35,6 +36,7 @@ class AttendanceRepository {
         'device_timezone': _deviceTimezoneContext(),
         if (gpsLat != null) 'gps_lat': gpsLat,
         if (gpsLng != null) 'gps_lng': gpsLng,
+        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
         if (punchNote != null && punchNote.trim().isNotEmpty)
           'punch_note': punchNote.trim(),
       },
@@ -49,6 +51,7 @@ class AttendanceRepository {
     String? punchNote,
     double? gpsLat,
     double? gpsLng,
+    double? gpsAccuracy,
   }) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-out',
@@ -58,6 +61,7 @@ class AttendanceRepository {
         'device_timezone': _deviceTimezoneContext(),
         if (gpsLat != null) 'gps_lat': gpsLat,
         if (gpsLng != null) 'gps_lng': gpsLng,
+        if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
         if (punchNote != null && punchNote.trim().isNotEmpty)
           'punch_note': punchNote.trim(),
       },
