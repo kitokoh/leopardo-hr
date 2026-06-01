@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
@@ -16,16 +17,14 @@ final managerDigestProvider = FutureProvider.autoDispose<ManagerDigest>((
   ref,
 ) async {
   final apiClient = ref.watch(apiClientProvider);
-  final response = await apiClient.dio.get('/dashboard/manager-digest');
-  final raw = response.data;
-
-  if (raw is Map && raw['data'] is Map) {
-    return ManagerDigest.fromJson(
-      Map<String, dynamic>.from(raw['data'] as Map),
-    );
-  }
-
-  return const ManagerDigest.empty();
+  final response = await apiClient.requestWithRetry(
+    '/dashboard/manager-digest',
+    timeoutOverride: const Duration(seconds: 8),
+  );
+  final data = extractDataMap(response.data);
+  return data.isEmpty
+      ? const ManagerDigest.empty()
+      : ManagerDigest.fromJson(data);
 });
 
 class HomeScreen extends ConsumerWidget {
