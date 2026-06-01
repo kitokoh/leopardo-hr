@@ -5041,6 +5041,56 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /me/balance:
+    get:
+      tags: ["Me"]
+      summary: "Mon solde de paie courant"
+      description: "Retourne le montant du, les avances deduites, le deja paye et le reste a recevoir pour le cycle de paie courant."
+      responses:
+        "200":
+          description: "Solde employe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PayrollBalance"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /payroll/mobile-summary:
+    get:
+      tags: ["Payroll"]
+      summary: "Resume mobile des soldes paie equipe"
+      description: "Retourne les soldes paie du perimetre manager autorise avec totaux agreges."
+      responses:
+        "200":
+          description: "Resume manager mobile"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/PayrollBalance"
+                      totals:
+                        type: object
+                        properties:
+                          gross_due: { type: number, format: float }
+                          advances: { type: number, format: float }
+                          paid: { type: number, format: float }
+                          remaining: { type: number, format: float }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
   /me/trainings:
     get:
       tags: ["Me"]
@@ -11109,6 +11159,55 @@ components:
         created_at:
           type: string
           format: date-time
+
+    PayrollBalance:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+        employee_name:
+          type: string
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+            label:
+              type: string
+            cycle:
+              type: string
+              enum: [daily, weekly, monthly]
+        currency:
+          type: string
+          example: DZD
+        gross_due:
+          type: number
+          format: float
+        advances:
+          type: number
+          format: float
+        paid:
+          type: number
+          format: float
+        remaining:
+          type: number
+          format: float
+        pay_slip:
+          type: object
+          properties:
+            id:
+              type: integer
+              nullable: true
+            status:
+              type: string
+              nullable: true
+            payroll_run_id:
+              type: integer
+              nullable: true
 
     PayrollRun:
       type: object

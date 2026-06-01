@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/payroll.dart';
+import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PayrollRepository {
@@ -22,6 +23,15 @@ class PayrollRepository {
     return items.map((e) => Payroll.fromJson(e)).toList();
   }
 
+  Future<PayrollBalance> getMyBalance() async {
+    final response = await apiClient.requestWithRetry(
+      '/me/balance',
+      maxRetriesOverride: 0,
+      timeoutOverride: _readTimeout,
+    );
+    return PayrollBalance.fromJson(extractDataMap(response.data));
+  }
+
   Future<String> downloadPayslipPdf(int payslipId) async {
     final dir = await getApplicationDocumentsDirectory();
     final filePath = '${dir.path}/payslip_$payslipId.pdf';
@@ -32,7 +42,7 @@ class PayrollRepository {
     }
 
     await apiClient.dio.download(
-      '/pay-slips/$payslipId/pdf',
+      '/me/pay-slips/$payslipId/pdf',
       filePath,
       options: Options(
         responseType: ResponseType.bytes,
