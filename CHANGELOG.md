@@ -2,6 +2,13 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.204] - 2026-06-01
+
+### Fixed
+
+- Mobile manager : durcissement des repositories modules et organigramme avec `requestWithRetry`, timeouts courts et parsing tolerant des collections API. Les listes evaluations, avances, bulletins, paies, notifications et organigramme ne dependent plus de casts directs `response.data['data'] as List`.
+- Mobile manager : le digest d'accueil utilise maintenant le client API retry-aware et le helper `extractDataMap()` afin d'eviter un etat vide fragile si Laravel enveloppe differemment la reponse.
+
 ## [4.16.203] - 2026-06-01
 
 ### Fixed
