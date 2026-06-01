@@ -6,18 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationPreferenceResource;
 use App\Models\CommunicationEvent;
 use App\Models\Employee;
-use App\Models\NotificationPreference;
+use App\Services\Communication\NotificationPreferenceProvisioner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationPreferenceController extends Controller
 {
+    public function __construct(private readonly NotificationPreferenceProvisioner $preferences) {}
+
     public function show(Request $request): JsonResponse
     {
         /** @var Employee $employee */
         $employee = $request->user();
 
-        return (new NotificationPreferenceResource($this->preferencesFor($employee)))
+        return (new NotificationPreferenceResource($this->preferences->ensureForEmployee($employee)))
             ->response()
             ->setStatusCode(200);
     }
@@ -43,7 +45,7 @@ class NotificationPreferenceController extends Controller
             'quiet_hours.end' => ['sometimes', 'nullable', 'date_format:H:i'],
         ]);
 
-        $preferences = $this->preferencesFor($employee);
+        $preferences = $this->preferences->ensureForEmployee($employee);
         $preferences->fill($validated);
         $preferences->save();
 
@@ -66,34 +68,5 @@ class NotificationPreferenceController extends Controller
         ]);
 
         return (new NotificationPreferenceResource($preferences->fresh()))->response();
-    }
-
-    private function preferencesFor(Employee $employee): NotificationPreference
-    {
-        return NotificationPreference::query()->firstOrCreate(
-            ['employee_id' => $employee->id],
-            [
-                'company_id' => (string) $employee->company_id,
-                'app_enabled' => true,
-                'email_enabled' => true,
-                'push_enabled' => true,
-                'sms_enabled' => false,
-                'whatsapp_enabled' => false,
-                'locale' => $employee->preferred_language ?: null,
-                'timezone' => optional($employee->company)->timezone,
-                'categories' => [
-                    'hr' => true,
-                    'payroll' => true,
-                    'security' => true,
-                    'system' => true,
-                    'marketing' => false,
-                ],
-                'quiet_hours' => [
-                    'enabled' => false,
-                    'start' => null,
-                    'end' => null,
-                ],
-            ],
-        );
     }
 }
