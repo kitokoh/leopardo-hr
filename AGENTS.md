@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.230)
+Derniere mise a jour : 2026-06-01 (v4.16.231)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -96,6 +96,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.228, le Plan 68 est cloture et la suite canonique est `docs/PLAN_ACTION/69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md`. Commencer par le lot 69.1 : recette mobile release sur vrais appareils/Firebase pour employee, manager et platform admin avant d'elargir marketing.
 - Depuis v4.16.229, la distribution Firebase staging Plan 69.1 run `26750677529` a reussi pour employee, manager et platform admin depuis `main` SHA `2fc2ca97058365ed468430c2c3323df0690d607e`. Le go final mobile reste conditionne au test sur appareils physiques documente dans `docs/validation/MOBILE_RELEASE_DEVICE_QA_2026_06_01.md`.
 - Depuis v4.16.230, les apps employee/manager doivent lire les soldes conges personnels via `GET /api/v1/me/leave-balances`, jamais via `/leave-balances` qui reste manager-only. Les demos Render doivent aussi avoir des lignes `leave_balances` backfillees par `DemoCompanyOnceSeeder`; si le formulaire absence indique "aucun type disponible", verifier d'abord ce seed/backfill avant de toucher aux permissions.
+- Depuis v4.16.231, `EmployeeController@index` doit garder dans son `select` tous les champs serialises par `EmployeeResource` (`middle_name`, contacts personnels, biometrie, adresse, urgence, salaire, `extra_data`, etc.). Si `GET /api/v1/employees` retourne 500 en production, verifier d'abord les champs partiellement charges avant de toucher aux policies.
 - Apres un lot qui touche auth/web/admin/mobile, attendre les checks GitHub Actions du PR et verifier aussi les workflows `main` post-merge quand ils partent en cascade (deploy, staging E2E, OWASP, mobile) avant d'annoncer la preuve finale.
 - Le workflow manuel `Deploy - Leopardo RH` doit rester utilisable sur `main` sans dependance au lookup `workflow_run`; c'est le bouton ops pour relancer Render et reexecuter l'entrypoint (migrations/seeders) apres une correction de donnees demo.
 - Le smoke k6 `dev-hub/load/k6/api-core-smoke.js` doit rester read-only et suivre les endpoints reels du dashboard client (`auth/me`, `dashboard/summary`, `dashboard/recent-activity`, `dashboard/kpi`) avant d'ajouter des scenarios plus agressifs.

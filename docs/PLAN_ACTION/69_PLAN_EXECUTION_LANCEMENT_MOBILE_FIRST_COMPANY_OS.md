@@ -74,6 +74,10 @@ Valider que manager/RH voient uniquement leurs equipes, peuvent agir sur employe
 
 Rapport manager/RH + preuve isolation.
 
+### Statut
+
+**No-go partiel avant correction.** Le smoke Render confirme `auth/me`, `dashboard/manager-digest`, `schedules`, `tasks/today`, `absences`, `salary-advances` et `attendance/corrections`. `GET /employees?per_page=50` retourne `500`, ce qui bloque l'ecran Equipe et les workflows qui dependent du select collaborateur. Correction appliquee dans `EmployeeController@index` pour charger les champs serialises par `EmployeeResource`. Rapport : `docs/validation/MANAGER_RH_API_SMOKE_2026_06_01.md`.
+
 ## Lot 69.4 - Super-admin plateforme
 
 ### Objectif
