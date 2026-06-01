@@ -38,7 +38,9 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 - Marquer comme `implemente`, `partiel`, `a faire`, `hors lancement`.
 - Ne pas dupliquer les plans existants.
 
-**Statut : A faire** (necesssite un agent dedie pour passer en revue les 65 plans)
+**Statut : Implemente le 2026-06-01** via `docs/validation/PLAN_ACTION_COVERAGE_MATRIX_2026_06_01.md`.
+
+Decision : les plans 01-66 deviennent des plans historiques executes ou cartographies. Les gaps launch-readiness sont consolides dans le Plan 67.
 
 ### Lot 66.2 - Stabilite mobile immediate
 
@@ -55,7 +57,7 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 - Finance : avances, solde, paiements, documents.
 - Infra : queues, workers, monitoring, k6.
 
-**Statut : A faire** — Necesssite des passes de validation par domaine.
+**Statut : Repris dans Plan 67** — Les passes de validation par domaine sont formalisees dans les lots 67.1 a 67.6.
 
 ### Lot 66.4 - Marketplace et open core
 
@@ -63,7 +65,7 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 - Definir ce qui est open core et ce qui reste enterprise.
 - Ne rien ouvrir publiquement sans audit secrets, licences et donnees demo.
 
-**Statut : A faire** — Hors lancement immediat, a cadrer en lot futur.
+**Statut : Repris dans Plan 67.7** — Hors lancement immediat, a cadrer sans risque licence/secrets.
 
 ### Lot 66.5 - Positionnement final ✅ IMPLEMENTE
 
@@ -128,7 +130,7 @@ _Mis à jour le 2026-05-31 par KiloClaw — passe de revue des plans 55 à 66._
 | 63 | Architecture Heures de Pointe | ✅ IMPLÉMENTÉ | Redis/predis, queues documents/pdf/payroll/notifications/webhooks, cache digest/schedules, scheduler auto-close et runbook worker. |
 | 64 | Clôture Timezone GPS | ✅ IMPLÉMENTÉ | Timezone device, geofence doux, auto-close configurable et mobile repositories livres. UX GPS native reste lot mobile futur. |
 | 65 | Paiement Masse Signature Numérique | ✅ IMPLÉMENTÉ | Modèles `PaymentBatch`, `PaymentItem`, `PaymentConfirmation`, endpoints, confirmation idempotente et documents async. |
-| 66 | Consolidation Mobile-First Company OS | ✅ IMPLÉMENTÉ | Table de cartographie présente, Lot 66.5 exécuté (positionnement vitrine). Cette section mise à jour. |
+| 66 | Consolidation Mobile-First Company OS | ✅ IMPLÉMENTÉ | Matrice anti-oubli 44 points livree, Lot 66.5 execute (positionnement vitrine), suite consolidee dans Plan 67. |
 
 ### Fichiers créés ou modifiés par cette passe
 
