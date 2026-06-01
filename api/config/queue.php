@@ -101,6 +101,15 @@ return [
             'after_commit' => false,
         ],
 
+        'redis-documents' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'documents',
+            'retry_after' => (int) env('REDIS_QUEUE_DOCUMENTS_RETRY_AFTER', 300),
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
         'redis-webhooks' => [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),

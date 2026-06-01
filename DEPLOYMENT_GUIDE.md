@@ -26,6 +26,8 @@ DB_CONNECTION=pgsql
 DATABASE_URL=...
 CACHE_STORE=redis
 QUEUE_CONNECTION=redis
+REDIS_CLIENT=predis
+REDIS_SCHEME=tls
 REDIS_URL=...
 PAYROLL_QUEUE_PDF_WARMUP=true
 HR_REPORT_HEADCOUNT_CACHE_TTL=60
@@ -60,16 +62,26 @@ Creer un service Render separe de type Background Worker, branche `main`, meme i
 
 ```bash
 php artisan config:cache
-php artisan queue:work redis --queue=critical,payroll,notifications,default --sleep=3 --tries=3 --timeout=180 --max-time=3600
+php artisan queue:work redis --queue=documents,pdf,payroll,notifications,webhooks,default --sleep=3 --tries=3 --timeout=300 --max-time=3600
 ```
 
 Regles :
 
 - un worker ne doit pas servir de trafic HTTP ;
 - `QUEUE_CONNECTION` doit etre `redis` en production ;
+- `REDIS_CLIENT` doit rester `predis` avec Upstash, surtout quand TLS est actif ;
+- la queue `documents` est obligatoire pour les recus et bordereaux de paiement asynchrones ;
 - `--max-time=3600` force un recyclage regulier pour eviter les fuites memoire ;
 - augmenter les workers horizontalement avant d'augmenter fortement `--timeout` ;
 - garder `PAYROLL_QUEUE_PDF_WARMUP=true` si les PDF bulletins doivent etre pre-generes apres validation paie.
+
+Commande de verification worker :
+
+```bash
+php artisan queue:health-check
+```
+
+Elle doit retourner Redis `ok`, les profondeurs `documents`, `pdf`, `payroll`, `notifications`, `webhooks`, `default`, et un compteur `failed_jobs`.
 
 ## 5. Scheduler
 
@@ -90,7 +102,7 @@ Sur VPS, installer Supervisor et creer deux programmes separes :
 
 ```ini
 [program:leopardo-queue]
-command=php /var/www/leopardo-rh-api/artisan queue:work redis --queue=critical,payroll,notifications,default --sleep=3 --tries=3 --timeout=180 --max-time=3600
+command=php /var/www/leopardo-rh-api/artisan queue:work redis --queue=documents,pdf,payroll,notifications,webhooks,default --sleep=3 --tries=3 --timeout=300 --max-time=3600
 directory=/var/www/leopardo-rh-api
 autostart=true
 autorestart=true
@@ -127,6 +139,7 @@ Apres chaque deploiement production :
 ```bash
 php artisan about
 php artisan migrate:status
+php artisan queue:health-check
 php artisan queue:failed
 php artisan route:list --path=api/v1/health
 ```
