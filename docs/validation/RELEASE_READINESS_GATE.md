@@ -104,4 +104,4 @@ Chaque controle generalise doit produire :
 - un score de readiness ;
 - les prochains lots recommandes.
 
-Depuis le 2026-06-01, le score local attendu est `23/23` checks sur le gate strict.
+Depuis le 2026-06-01, le score local attendu est `24/24` checks sur le gate strict.
