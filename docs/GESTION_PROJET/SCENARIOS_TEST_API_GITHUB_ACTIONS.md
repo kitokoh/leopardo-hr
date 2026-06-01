@@ -67,6 +67,8 @@ Note 2026-06-01 : le Plan 67.5 fige la preuve notifications mobile production. L
 
 Note 2026-06-01 : les endpoints platform detail `GET /api/v1/platform/companies/{company}/health`, `GET/PATCH /subscription` et `GET/PATCH /features` doivent verifier que `Company` est toujours charge via `PlatformCompanyLookup` depuis `public.companies`, meme apres creation client ou requete tenant. Les scenarios super-admin doivent tester creation entreprise puis ouverture immediate de la fiche client par UUID.
 
+Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
