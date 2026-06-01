@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.209] - 2026-06-01
+
+### Added
+
+- Plan 61 solde employe : ajout des endpoints `GET /api/v1/me/balance` et `GET /api/v1/payroll/mobile-summary`, avec payload stable `gross_due`, `advances`, `paid`, `remaining`, devise et cycle courant.
+- Mobile employee/manager : les ecrans paie affichent maintenant un bloc solde avant les bulletins, afin que l'utilisateur voie le reste a recevoir et les avances deduites sans attendre un PDF.
+
+### Fixed
+
+- `PayrollCycleService` ne depend plus d'une propriete inexistante `Company::$settings` et lit les parametres de paie depuis `metadata.payroll` ou `company_settings`, avec fallback mensuel.
+- Tests backend : `PayrollCycleIntegrationTest` couvre le solde self-service, la deduction des avances et l'isolation tenant du resume mobile manager.
+
 ## [4.16.208] - 2026-06-01
 
 ### Fixed
