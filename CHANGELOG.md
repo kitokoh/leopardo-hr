@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.246] - 2026-06-01
+
+### Fixed
+
+- Readiness demo : `DemoCompanyOnceSeeder` backfill maintenant les signaux de lancement manquants des demos existantes (salaire actif minimal, geofence, kiosque actif, evenement client recent) afin que `/api/v1/launch-readiness` puisse atteindre le seuil go-live apres deploiement sans reseed destructif.
+
 ## [4.16.245] - 2026-06-01
 
 ### Added
