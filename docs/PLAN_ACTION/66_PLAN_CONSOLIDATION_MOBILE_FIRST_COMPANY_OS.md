@@ -19,14 +19,14 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 
 | Phase | Points | Plans sources | Etat |
 |-------|--------|---------------|------|
-| A - Depot, infra, API, async, charge, observabilite | 1-7 | 15, 16, 20, 21, 23, 27, 30, 57, 63 | Partiel, continuer Plan 57 puis Plan 63 |
+| A - Depot, infra, API, async, charge, observabilite | 1-7 | 15, 16, 20, 21, 23, 27, 30, 57, 63 | Plan 57 et Plan 63 livres, continuer mesures staging/k6 |
 | B - Mobile-first experience, branding, design system, tenant branding | 8-11 | 25, 28, 41, 58 | Partiel, Plan 58 reste a implementer |
 | C - Pointage intelligent, multi-sessions, auto-close, timezone, GPS, kiosque/biometrie | 12-17 | 31, 42, 43, 49, 51, 64 | Multi-sessions livre, auto-close/timezone/GPS restent Plan 64 |
 | D - Taches, performance, validations, notifications | 18-21 | 19, 31, 38, 50, 52, 60 | Partiel, double validation avances reste Plan 60 |
 | E - Profil portable, placard numerique, QR onboarding | 22-24 | 32, 33, 54 | Largement planifie/partiel, verifier UX et tests |
 | F - Manager/RH, horaires, isolation tenant | 25-28 | 34, 35, 36, 37, 40, 53 | Partiel, garder tests RBAC/tenant obligatoires |
 | G - Super-admin plateforme | 29-31 | 29, 45, 46, 56 | Partiel, continuer durcissement platform admin |
-| H - Paie/finance | 32-38 | 03, 60, 61, 62, 65 | A implementer par ordre 60 -> 61 -> 62 -> 65 |
+| H - Paie/finance | 32-38 | 03, 60, 61, 62, 65 | Plans 60, 61, 62 livres ; continuer Plan 65 si nouveau besoin signature numerique |
 | I - Internationalisation, docs dev, marketplace, open core | 39-42 | 10, 24, 47, 57, nouveau lot 66.4 | Marketplace/open core restent a cadrer |
 | J - Positionnement produit | 43-44 | 11, 16, 59 | **✅ IMPLEMENTE** — Lot 66.5 execute (voir ci-dessous) |
 
@@ -101,7 +101,8 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 1. **Plan 60** — Double validation avances salaires
 2. **Plan 61** — Solde employe / cycle paie  
 3. **Plan 62** — PDF bordereaux async
-4. **Plan 64** — Cloture timezone/GPS
+4. **Plan 63** — Architecture heures de pointe / queues / cache
+5. **Plan 64** — Cloture timezone/GPS
 5. **Plan 57** — API docs ecosysteme developpeur
 6. **Lot 66.1** — Audit anti-oubli exhaustif (passe en revue des 65 plans)
 
@@ -121,10 +122,10 @@ _Mis à jour le 2026-05-31 par KiloClaw — passe de revue des plans 55 à 66._
 | 57 | API Docs Ecosystème Développeur | ✅ IMPLÉMENTÉ | `front/web/src/app/(landing)/docs/page.tsx` enrichi : sections API REST, Webhooks, SDK Mobiles, Playground, Quick Start avec code samples |
 | 58 | Tenant Branding Premium | ✅ IMPLÉMENTÉ | Page créée : `front/web/src/app/(landing)/branding/page.tsx` — présentation logo/couleurs/API branding, plans tarifaires, 4 langues |
 | 59 | Positionnement Workforce OS | ✅ IMPLÉMENTÉ | `vitrine-locale.ts` + `HeroSection.tsx` utilisent "Mobile-First Company OS" (fr/en/tr/ar). `landing/page.tsx` → `LegacyHeroSection` = `HeroSection`. Positionné. |
-| 60 | Avances Double Validation | ⏳ À FAIRE | Purement backend (nouveaux endpoints, états, RBAC) + mobile. Aucune tâche front/web isolable. |
-| 61 | Solde Employé Cycle Paie | ⏳ À FAIRE | Backend Laravel (`EmployeeBalanceService`, nouveaux endpoints). Mobile Flutter à implémenter. |
-| 62 | PDF Bordereaux Async | ⏳ À FAIRE | Queue/job Laravel. Nécessite backend + worker. Aucun front/web isolable. |
-| 63 | Architecture Heures de Pointe | ⏳ À FAIRE | Cache Redis, queues batch, k6 — purement infra/backend. |
+| 60 | Avances Double Validation | ✅ IMPLÉMENTÉ | Workflow manager approve -> mark-paid -> confirm-received couvert par API/tests/mobile. |
+| 61 | Solde Employé Cycle Paie | ✅ IMPLÉMENTÉ | Endpoints solde employe et resume paie mobile branches sur `PayrollCycleService`. |
+| 62 | PDF Bordereaux Async | ✅ IMPLÉMENTÉ | `payment_documents`, job `GeneratePaymentDocumentJob`, API employee/manager et mobile livres. |
+| 63 | Architecture Heures de Pointe | ✅ IMPLÉMENTÉ | Redis/predis, queues documents/pdf/payroll/notifications/webhooks, cache digest/schedules, scheduler auto-close et runbook worker. |
 | 64 | Clôture Timezone GPS | ⏳ À FAIRE | Backend command `attendance:auto-close`, GPS geofence. Mobile à implémenter. |
 | 65 | Paiement Masse Signature Numérique | ⏳ À FAIRE | Modèles `PaymentBatch`, endpoints, jobs async. Backend + mobile. |
 | 66 | Consolidation Mobile-First Company OS | ✅ IMPLÉMENTÉ | Table de cartographie présente, Lot 66.5 exécuté (positionnement vitrine). Cette section mise à jour. |

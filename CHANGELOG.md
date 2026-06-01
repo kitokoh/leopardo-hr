@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.212] - 2026-06-01
+
+### Added
+
+- Plan 63 : `queue:health-check` expose maintenant les profondeurs des queues `documents`, `pdf`, `payroll`, `notifications`, `webhooks`, `default`, la connexion queue active et le compteur `failed_jobs`.
+- Plan 63 : cache tenant court sur `dashboard/manager-digest`, cache schedules avec invalidation create/update/delete, et invalidation employees cache sur create/update/archive.
+- Scheduler backend : `attendance:auto-close --threshold=12` est planifie toutes les heures et `queue:health-check` toutes les 5 minutes lorsque `QUEUE_CONNECTION=redis`.
+
+### Changed
+
+- Redis utilise `predis` par defaut pour rester compatible Upstash/TLS, avec `REDIS_SCHEME` configurable.
+- Le runbook de deploiement worker documente la queue `documents` et la commande worker production `documents,pdf,payroll,notifications,webhooks,default`.
+
 ## [4.16.211] - 2026-06-01
 
 ### Added

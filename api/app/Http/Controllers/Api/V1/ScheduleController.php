@@ -8,12 +8,17 @@ use App\Http\Requests\Api\V1\Schedule\UpdateScheduleRequest;
 use App\Http\Resources\Api\V1\ScheduleResource;
 use App\Models\Employee;
 use App\Models\Schedule;
+use App\Services\Cache\TenantCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ScheduleController extends Controller
 {
+    public function __construct(
+        private readonly TenantCacheService $tenantCache,
+    ) {}
+
     public function index(Request $request): AnonymousResourceCollection
     {
         /** @var Employee $user */
@@ -22,10 +27,15 @@ class ScheduleController extends Controller
             abort(403);
         }
 
-        return ScheduleResource::collection(Schedule::query()
-            ->select(['id', 'company_id', 'name', 'start_time', 'end_time', 'break_minutes', 'work_days', 'late_tolerance_minutes', 'overtime_threshold_daily', 'overtime_threshold_weekly', 'is_default', 'created_at'])
-            ->orderBy('name')
-            ->get());
+        $schedules = $this->tenantCache->rememberSchedules(
+            $user->company_id,
+            fn () => Schedule::query()
+                ->select(['id', 'company_id', 'name', 'start_time', 'end_time', 'break_minutes', 'work_days', 'late_tolerance_minutes', 'overtime_threshold_daily', 'overtime_threshold_weekly', 'is_default', 'created_at'])
+                ->orderBy('name')
+                ->get()
+        );
+
+        return ScheduleResource::collection($schedules);
     }
 
     public function store(StoreScheduleRequest $request): JsonResponse
@@ -42,6 +52,8 @@ class ScheduleController extends Controller
             'work_days' => $request->validated('work_days') ?? [1, 2, 3, 4, 5],
             ...$request->validated(),
         ]);
+
+        $this->tenantCache->invalidateSchedules($actor->company_id);
 
         return (new ScheduleResource($schedule))
             ->response()
@@ -70,6 +82,8 @@ class ScheduleController extends Controller
 
         $schedule->update($request->validated());
 
+        $this->tenantCache->invalidateSchedules($actor->company_id);
+
         return new ScheduleResource($schedule->fresh());
     }
 
@@ -85,6 +99,8 @@ class ScheduleController extends Controller
         }
 
         $schedule->delete();
+
+        $this->tenantCache->invalidateSchedules($user->company_id);
 
         return response()->json(['message' => 'Schedule deleted successfully']);
     }
