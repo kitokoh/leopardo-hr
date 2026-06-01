@@ -63,7 +63,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
+      final company = await ref
           .read(platformRepositoryProvider)
           .createCompany(
             name: _name.text.trim(),
@@ -79,7 +79,12 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Entreprise creee')));
-      context.pop();
+      if (company.id.isNotEmpty) {
+        final route = '/platform/companies/${Uri.encodeComponent(company.id)}';
+        context.go(route);
+      } else {
+        context.go('/platform/companies');
+      }
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
