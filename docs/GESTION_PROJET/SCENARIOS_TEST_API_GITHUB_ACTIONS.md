@@ -69,6 +69,8 @@ Note 2026-06-01 : les endpoints platform detail `GET /api/v1/platform/companies/
 
 Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
 
+Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` quand le middleware tenant a deja resolu l'entreprise. Les scenarios API shared PostgreSQL doivent eviter toute regression ou `$employee->company` recharge `Company` depuis un `search_path` tenant pouvant masquer `public.companies`.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
