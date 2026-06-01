@@ -39,17 +39,43 @@ class PlatformCompany {
   final String createdAt;
 
   factory PlatformCompany.fromJson(Map<String, dynamic> json) {
-    final planValue = json['plan'];
+    final data = (json['company'] as Map?)?.cast<String, dynamic>() ?? json;
+    final planValue = data['plan'];
+    final planName = data['plan_name'];
+
     return PlatformCompany(
-      id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? json['company_name']?.toString() ?? '-',
-      status: json['status']?.toString() ?? 'unknown',
-      country: json['country']?.toString() ?? '--',
+      id: data['id']?.toString() ?? '',
+      name: data['name']?.toString() ?? data['company_name']?.toString() ?? '-',
+      status: data['status']?.toString() ?? 'unknown',
+      country: data['country']?.toString() ?? '--',
       plan:
           planValue is Map
               ? planValue['name']?.toString() ?? 'Plan'
-              : planValue?.toString() ?? 'Plan',
-      createdAt: json['created_at']?.toString() ?? '',
+              : planName?.toString() ?? planValue?.toString() ?? 'Plan',
+      createdAt: data['created_at']?.toString() ?? '',
+    );
+  }
+
+  factory PlatformCompany.fromProvisioningResponse(Map<String, dynamic> json) {
+    final data = (json['data'] as Map?)?.cast<String, dynamic>() ?? json;
+    final company = (data['company'] as Map?)?.cast<String, dynamic>() ?? data;
+    final planValue = company['plan'];
+
+    return PlatformCompany(
+      id: company['id']?.toString() ?? '',
+      name:
+          company['name']?.toString() ??
+          company['company_name']?.toString() ??
+          '-',
+      status: company['status']?.toString() ?? 'unknown',
+      country: company['country']?.toString() ?? '--',
+      plan:
+          planValue is Map
+              ? planValue['name']?.toString() ?? 'Plan'
+              : company['plan_name']?.toString() ??
+                  company['plan']?.toString() ??
+                  'Plan',
+      createdAt: company['created_at']?.toString() ?? '',
     );
   }
 }
