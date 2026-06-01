@@ -14,8 +14,8 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Changement mot de passe | `POST /api/v1/auth/change-password` | authentifie | `FrontendApiContractTest` |
 | Mobile | Mise a jour profil durable | `PATCH /api/v1/auth/profile` | authentifie | `AuthProfileSettingsTest` |
 | Mobile | Deconnexion | `POST /api/v1/auth/logout` | authentifie | `FrontendApiContractTest` |
-| Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `FrontendApiContractTest` |
-| Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` |
+| Mobile | Pointage entree | `POST /api/v1/attendance/check-in` | employe | `Attendance\CheckInTest`, `AttendanceGeofenceServiceTest`, `FrontendApiContractTest` ; payload mobile inclut `device_timezone` et GPS optionnel |
+| Mobile | Pointage sortie | `POST /api/v1/attendance/check-out` | employe | `FrontendApiContractTest` ; payload mobile inclut `device_timezone` et GPS optionnel |
 | Mobile | Demande correction pointage | `POST /api/v1/attendance/corrections` | employe | `FrontendApiContractTest` |
 | Mobile manager | File corrections pointage | `GET /api/v1/attendance/corrections` | manager principal/RH | `CorrectionWorkflowTest`, `FrontendApiContractTest` |
 | Mobile manager | Appliquer/refuser correction | `PUT /api/v1/attendance/corrections/{correction}/approve`, `PUT /api/v1/attendance/corrections/{correction}/reject` | manager principal/RH | `CorrectionWorkflowTest`, `FrontendApiContractTest` |

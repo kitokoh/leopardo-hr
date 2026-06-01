@@ -45,6 +45,7 @@ class AttendanceTodayResource extends JsonResource
         $estimationService = app(EstimationService::class);
         $summary = $this->summary
             ?? $estimationService->dailySummary($employee, $this->log?->date?->toDateString());
+        $meta = is_array($this->log?->punch_meta) ? $this->log->punch_meta : [];
 
         return [
             'id' => $this->log?->id,
@@ -54,8 +55,12 @@ class AttendanceTodayResource extends JsonResource
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
             'checked_in' => (bool) $this->log?->check_in,
             'session_number' => (int) ($this->log?->session_number ?? 0),
-            'check_in_time' => $this->log?->check_in?->setTimezone($this->timezone)->format('H:i'),
-            'check_out_time' => $this->log?->check_out?->setTimezone($this->timezone)->format('H:i'),
+            'check_in' => $this->log?->check_in?->toIso8601String(),
+            'check_out' => $this->log?->check_out?->toIso8601String(),
+            'check_in_time' => $this->log?->check_in?->copy()->setTimezone($this->timezone)->format('H:i'),
+            'check_out_time' => $this->log?->check_out?->copy()->setTimezone($this->timezone)->format('H:i'),
+            'timezone' => $this->timezone,
+            'device_timezone' => $meta['device_timezone'] ?? null,
             'sessions_count' => (int) ($summary['sessions_count'] ?? 0),
             'work_type' => $this->log?->work_type ?? 'normal',
             'hours_worked' => (float) ($summary['hours_worked'] ?? 0.00),
@@ -66,6 +71,7 @@ class AttendanceTodayResource extends JsonResource
             'overtime_gain' => (float) $summary['overtime_gain'],
             'total_estimated' => (float) $summary['total_estimated'],
             'currency' => $summary['currency'],
+            'geofence' => $meta['geofence'] ?? null,
         ];
     }
 }

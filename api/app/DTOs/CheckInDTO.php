@@ -19,6 +19,7 @@ final readonly class CheckInDTO
         public ?string $source_device_code = null,
         public string $work_type = 'normal',
         public ?string $punch_note = null,
+        public ?string $device_timezone = null,
     ) {}
 
     public static function fromRequest(CheckInRequest|CheckOutRequest $request): self
@@ -31,6 +32,7 @@ final readonly class CheckInDTO
             method: 'mobile',
             work_type: $validated['work_type'] ?? 'normal',
             punch_note: $validated['punch_note'] ?? null,
+            device_timezone: $validated['device_timezone'] ?? null,
         );
     }
 }
