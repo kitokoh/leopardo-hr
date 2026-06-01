@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.220] - 2026-06-01
+
+### Added
+
+- Plan 67.4 : ajout du socle `TenantBranding` / `TenantTheme` / `TenantBrandMark` dans `leopardo_core`.
+- Apps employee/manager : lecture tolerante de `/company/branding`, application du theme tenant et affichage nom/logo entreprise sur la home.
+- CI mobile : ajout du garde `validate-mobile-tenant-branding.ps1` et du rapport `MOBILE_TENANT_BRANDING_REPORT_2026_06_01.md`.
+
 ## [4.16.219] - 2026-06-01
 
 ### Added

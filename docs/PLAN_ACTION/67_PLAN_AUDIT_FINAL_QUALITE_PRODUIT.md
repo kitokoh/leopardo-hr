@@ -105,6 +105,10 @@ Le Plan 58 livre le contrat branding et l'ecran manager, mais les apps n'appliqu
 
 Une entreprise cliente voit son identite visuelle dans son espace sans casser la lisibilite.
 
+### Statut
+
+**Livre en cours de validation CI.** `TenantBranding`, `TenantTheme` et `TenantBrandMark` sont partages dans `leopardo_core`; employee/manager lisent `/company/branding` apres auth, appliquent le theme tenant et affichent le nom/logo sur la home. Rapport : `docs/validation/MOBILE_TENANT_BRANDING_REPORT_2026_06_01.md`.
+
 ## Lot 67.5 - Notifications production proof
 
 ### Probleme
