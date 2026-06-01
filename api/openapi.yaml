@@ -1147,7 +1147,7 @@ paths:
       tags: ["Company"]
       summary: "Lire l'identite visuelle de l'entreprise courante"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Branding entreprise"
@@ -1165,7 +1165,7 @@ paths:
       summary: "Mettre a jour l'identite visuelle entreprise"
       description: "Reserve aux managers principal/RH du tenant courant. Accepte JSON ou multipart pour l'upload logo."
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
