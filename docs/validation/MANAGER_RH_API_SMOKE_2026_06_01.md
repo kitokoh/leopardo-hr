@@ -3,17 +3,19 @@
 Date : 2026-06-01  
 Backend : `https://gestionemployerbackend.onrender.com/api/v1`  
 Compte : `ahmed.benali@techcorp-algerie.dz`  
-Reference main testee avant correction : `efd4c150`
+Reference main testee avant correction : `efd4c150`  
+Reference main validee apres corrections : `8ba81073`
 
 ## Verdict
 
-**No-go partiel avant correction.** Les endpoints manager critiques repondent sauf la liste equipe `GET /employees?per_page=50`, qui retourne `500` sur Render. Cette route alimente l'ecran Equipe manager/RH : tant qu'elle casse, le manager peut voir le dashboard mais ne peut pas exploiter correctement son equipe.
+**Go apres corrections #679/#680.** Les endpoints manager critiques repondent, la liste equipe `GET /employees?per_page=50` ne retourne plus de `500` sur Render, et les actions manager de base sont executees avec le contrat mobile.
 
 Correction livree dans ce lot :
 
 - `EmployeeController@index` selectionne maintenant les champs serialises par `EmployeeResource` seulement quand ils existent dans le schema courant.
 - `EmployeeResource` tolere les attributs optionnels absents sur les modeles partiellement charges.
-- Objectif : eviter les erreurs de ressource sur modeles Eloquent partiellement charges ou schemas Render partiellement migres, tout en gardant la pagination et l'isolation tenant existantes.
+- `EmployeeController@index` filtre aussi les colonnes relationnelles `company` / `schedule`, la recherche et le tri attendance via `Schema::hasColumn`.
+- Objectif atteint : eviter les erreurs de ressource sur modeles Eloquent partiellement charges ou schemas Render partiellement migres, tout en gardant la pagination et l'isolation tenant existantes.
 
 ## Resultats Render avant correction
 
@@ -55,10 +57,11 @@ Le test local `php artisan test --filter=EmployeesRbacTest` n'a pas pu etre expl
 
 ## Prochaine preuve attendue
 
-Apres merge/deploiement Render :
+## Preuve finale Render apres corrections
 
-1. retester `GET /employees?per_page=50` avec le manager TechCorp ;
-2. confirmer que tous les `company_id` retournes correspondent au tenant du manager ;
-3. creer puis supprimer une tache assignee a Karim ;
-4. creer puis archiver un collaborateur temporaire sans invitation ;
-5. documenter le verdict final Plan 69.3.
+1. `GET /employees?per_page=50` avec le manager TechCorp : OK.
+2. Isolation liste equipe : OK, 13 collaborateurs retournes, un seul `company_id` (`9fffe35e-6777-42c1-b1db-faaee04d0ef7`).
+3. Creation puis suppression d'une tache assignee a Karim : OK, tache temporaire `10`.
+4. Creation puis archivage d'un collaborateur temporaire avec le contrat mobile (`send_invitation=true`, `salary_type=fixed`) : OK, collaborateur temporaire `31`.
+
+Verdict Plan 69.3 : **Go** pour les parcours manager/RH de base sur Render.
