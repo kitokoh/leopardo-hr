@@ -142,6 +142,8 @@ Cockpit de lancement documentaire et procedures d'escalade simples.
 
 **Correctif prepare.** Le backfill `notifications:backfill-preferences` cree/repare les preferences notifications des employes actifs et l'entrypoint Render l'execute apres les seeders. Rapport : `docs/validation/LAUNCH_COMMUNICATION_GOVERNANCE_FIX_2026_06_01.md`.
 
+**Backfill demo prepare.** `DemoCompanyOnceSeeder` complete aussi les signaux demo necessaires au seuil readiness (`payroll_base`, `attendance_entry`, `client_experience_tracking`) quand les entreprises demo existent deja. Rapport : `docs/validation/LAUNCH_DEMO_READINESS_BACKFILL_2026_06_01.md`.
+
 ## Priorite
 
 1. Lot 69.1
