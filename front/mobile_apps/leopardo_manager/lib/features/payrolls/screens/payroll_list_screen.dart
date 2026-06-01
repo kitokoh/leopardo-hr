@@ -5,6 +5,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/models/payment_document.dart';
 import 'package:leopardo_core/models/payroll_balance.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/payrolls/providers/payroll_provider.dart';
@@ -19,6 +20,7 @@ class PayrollListScreen extends ConsumerStatefulWidget {
 
 class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
   int? _downloadingId;
+  int? _downloadingDocumentId;
 
   Future<void> _downloadPdf(int payslipId) async {
     setState(() => _downloadingId = payslipId);
@@ -52,6 +54,67 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
     } finally {
       if (mounted) setState(() => _downloadingId = null);
     }
+  }
+
+  Future<void> _downloadPaymentDocument(PaymentDocument document) async {
+    setState(() => _downloadingDocumentId = document.id);
+    try {
+      final repo = ref.read(payrollRepositoryProvider);
+      final path = await repo.downloadPaymentDocument(document);
+      if (!mounted) return;
+
+      final uri = Uri.file(path);
+      final canLaunch = await canLaunchUrl(uri);
+      if (!mounted) return;
+
+      if (canLaunch) {
+        await launchUrl(uri);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Document telecharge: $path'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Document indisponible: ${e.toString()}'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _downloadingDocumentId = null);
+    }
+  }
+
+  void _showPaymentDocuments(int payrollRunId) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder:
+          (_) => Consumer(
+            builder: (context, ref, _) {
+              final documentsAsync = ref.watch(
+                payrollPaymentDocumentsProvider(payrollRunId),
+              );
+              return _PayrollDocumentsSheet(
+                documentsAsync: documentsAsync,
+                downloadingId: _downloadingDocumentId,
+                onRefresh:
+                    () => ref.refresh(
+                      payrollPaymentDocumentsProvider(payrollRunId).future,
+                    ),
+                onDownload: _downloadPaymentDocument,
+              );
+            },
+          ),
+    );
   }
 
   Future<void> _refresh() async {
@@ -169,6 +232,15 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                                           ? () => _downloadPdf(payroll.id)
                                           : null,
                                 ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.folder_copy_outlined,
+                                color: AppColors.warning,
+                              ),
+                              tooltip: 'Documents de paiement',
+                              onPressed:
+                                  () => _showPaymentDocuments(payroll.id),
+                            ),
                           ],
                         ),
                       );
@@ -203,6 +275,178 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                 ],
               ),
         ),
+      ),
+    );
+  }
+}
+
+class _PayrollDocumentsSheet extends StatelessWidget {
+  const _PayrollDocumentsSheet({
+    required this.documentsAsync,
+    required this.downloadingId,
+    required this.onRefresh,
+    required this.onDownload,
+  });
+
+  final AsyncValue<List<PaymentDocument>> documentsAsync;
+  final int? downloadingId;
+  final Future<List<PaymentDocument>> Function() onRefresh;
+  final ValueChanged<PaymentDocument> onDownload;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: MobileSurface.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                const MobileIconBubble(
+                  icon: Icons.folder_copy_outlined,
+                  color: AppColors.warning,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Documents paiement',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: MobileSurface.text,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Actualiser',
+                  icon: const Icon(Icons.refresh),
+                  color: MobileSurface.secondary,
+                  onPressed: () {
+                    onRefresh();
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            documentsAsync.when(
+              data:
+                  (documents) =>
+                      documents.isEmpty
+                          ? Text(
+                            'Aucun document genere pour ce cycle. Les recus apparaitront apres paiement.',
+                            style: AppTypography.caption.copyWith(
+                              color: MobileSurface.secondary,
+                            ),
+                          )
+                          : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                                documents
+                                    .map(
+                                      (document) => _PaymentDocumentTile(
+                                        document: document,
+                                        isDownloading:
+                                            downloadingId == document.id,
+                                        onDownload: onDownload,
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+              loading:
+                  () => const LinearProgressIndicator(
+                    minHeight: 3,
+                    color: AppColors.rh,
+                    backgroundColor: MobileSurface.surface,
+                  ),
+              error:
+                  (_, __) => Text(
+                    'Documents temporairement indisponibles',
+                    style: AppTypography.caption.copyWith(
+                      color: MobileSurface.secondary,
+                    ),
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PaymentDocumentTile extends StatelessWidget {
+  const _PaymentDocumentTile({
+    required this.document,
+    required this.isDownloading,
+    required this.onDownload,
+  });
+
+  final PaymentDocument document;
+  final bool isDownloading;
+  final ValueChanged<PaymentDocument> onDownload;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (document.status) {
+      'available' => AppColors.success,
+      'failed' => AppColors.danger,
+      'generating' => AppColors.warning,
+      _ => MobileSurface.secondary,
+    };
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Icon(Icons.description_outlined, size: 18, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  document.typeLabel,
+                  style: AppTypography.caption.copyWith(
+                    color: MobileSurface.text,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  document.statusLabel,
+                  style: AppTypography.caption.copyWith(color: color),
+                ),
+              ],
+            ),
+          ),
+          if (isDownloading)
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          else
+            IconButton(
+              tooltip: 'Telecharger',
+              icon: const Icon(Icons.download_outlined),
+              color:
+                  document.isAvailable
+                      ? AppColors.info
+                      : MobileSurface.secondary,
+              onPressed:
+                  document.isAvailable ? () => onDownload(document) : null,
+            ),
+        ],
       ),
     );
   }
