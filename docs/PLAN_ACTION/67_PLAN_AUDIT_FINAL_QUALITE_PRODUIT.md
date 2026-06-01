@@ -84,6 +84,10 @@ Le backend sait calculer le geofence, mais la partie permission native et feedba
 
 Le pointage reste possible sans GPS, mais devient plus fiable quand la permission est accordee.
 
+### Statut
+
+**Livre en cours de validation CI.** Les apps employee/manager collectent maintenant le GPS via `leopardo_core` avec timeout court, declarent les permissions natives Android/iOS, envoient `gps_lat`, `gps_lng` et `gps_accuracy`, et le garde `validate-mobile-location-readiness.ps1` documente la non-regression. Rapport : `docs/validation/MOBILE_GPS_GEOFENCE_REPORT_2026_06_01.md`.
+
 ## Lot 67.4 - Theming tenant applique
 
 ### Probleme

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/location/attendance_location_service.dart';
 import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
@@ -40,6 +41,12 @@ final pushNotificationServiceProvider = Provider<PushNotificationService>((
   ref,
 ) {
   return PushNotificationService();
+});
+
+final attendanceLocationServiceProvider = Provider<AttendanceLocationService>((
+  ref,
+) {
+  return const AttendanceLocationService();
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {

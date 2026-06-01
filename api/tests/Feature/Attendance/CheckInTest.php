@@ -70,6 +70,7 @@ class CheckInTest extends TestCase
             'client_time' => '1999-01-01 00:00:00',
             'gps_lat' => 36.7538,
             'gps_lng' => 3.0588,
+            'gps_accuracy' => 18.5,
             'device_timezone' => 'Africa/Algiers',
         ]);
 
@@ -77,6 +78,7 @@ class CheckInTest extends TestCase
         $response->assertJsonPath('data.status', 'ontime');
         $response->assertJsonPath('data.timezone', 'UTC');
         $response->assertJsonPath('data.device_timezone', 'Africa/Algiers');
+        $response->assertJsonPath('data.gps.accuracy_m', 18.5);
 
         $log = AttendanceLog::query()->firstOrFail();
 
@@ -87,6 +89,7 @@ class CheckInTest extends TestCase
         $this->assertSame('36.75380000', $log->gps_lat);
         $this->assertSame('3.05880000', $log->gps_lng);
         $this->assertSame('Africa/Algiers', $log->punch_meta['device_timezone']);
+        $this->assertSame(18.5, $log->punch_meta['gps_accuracy']);
     }
 
     public function test_check_in_returns_soft_geofence_context_without_blocking_outside_site(): void
