@@ -41,6 +41,7 @@ import 'package:leopardo_manager/features/manager/screens/manager_attendance_mon
 import 'package:leopardo_manager/features/manager/screens/manager_placeholder_screen.dart';
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
+import 'package:leopardo_manager/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -207,6 +208,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/schedules',
         builder: (context, state) => const ScheduleListScreen(),
+      ),
+      GoRoute(
+        path: '/company/branding',
+        builder: (context, state) => const CompanyBrandingScreen(),
       ),
       GoRoute(
         path: '/manager/dashboard',

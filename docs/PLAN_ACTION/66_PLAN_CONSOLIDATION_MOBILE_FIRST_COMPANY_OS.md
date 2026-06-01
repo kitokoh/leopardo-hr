@@ -20,7 +20,7 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 | Phase | Points | Plans sources | Etat |
 |-------|--------|---------------|------|
 | A - Depot, infra, API, async, charge, observabilite | 1-7 | 15, 16, 20, 21, 23, 27, 30, 57, 63 | Plan 57 et Plan 63 livres, continuer mesures staging/k6 |
-| B - Mobile-first experience, branding, design system, tenant branding | 8-11 | 25, 28, 41, 58 | Partiel, Plan 58 reste a implementer |
+| B - Mobile-first experience, branding, design system, tenant branding | 8-11 | 25, 28, 41, 58 | Plan 58 livre pour API + manager mobile ; application theme globale reste future |
 | C - Pointage intelligent, multi-sessions, auto-close, timezone, GPS, kiosque/biometrie | 12-17 | 31, 42, 43, 49, 51, 64 | Multi-sessions livre ; Plan 64 livre pour timezone, geofence doux et auto-close configurable ; UX GPS native reste un lot mobile dedie |
 | D - Taches, performance, validations, notifications | 18-21 | 19, 31, 38, 50, 52, 60 | Partiel, double validation avances reste Plan 60 |
 | E - Profil portable, placard numerique, QR onboarding | 22-24 | 32, 33, 54 | Largement planifie/partiel, verifier UX et tests |
@@ -120,7 +120,7 @@ _Mis à jour le 2026-05-31 par KiloClaw — passe de revue des plans 55 à 66._
 | 55 | _(non présent)_ | ⏳ À FAIRE | Fichier 55_PLAN_*.md absent du répertoire |
 | 56 | Platform Admin Mobile Auth | 🔄 PARTIEL | Documentation présente. Implémentation backend/mobile requise (2FA, session check) |
 | 57 | API Docs Ecosystème Développeur | ✅ IMPLÉMENTÉ | `front/web/src/app/(landing)/docs/page.tsx` enrichi : sections API REST, Webhooks, SDK Mobiles, Playground, Quick Start avec code samples |
-| 58 | Tenant Branding Premium | ✅ IMPLÉMENTÉ | Page créée : `front/web/src/app/(landing)/branding/page.tsx` — présentation logo/couleurs/API branding, plans tarifaires, 4 langues |
+| 58 | Tenant Branding Premium | ✅ IMPLÉMENTÉ | Contrat `GET/PATCH /api/v1/company/branding`, upload logo public, validation hex, OpenAPI, tests backend et écran manager mobile `Identite entreprise`. |
 | 59 | Positionnement Workforce OS | ✅ IMPLÉMENTÉ | `vitrine-locale.ts` + `HeroSection.tsx` utilisent "Mobile-First Company OS" (fr/en/tr/ar). `landing/page.tsx` → `LegacyHeroSection` = `HeroSection`. Positionné. |
 | 60 | Avances Double Validation | ✅ IMPLÉMENTÉ | Workflow manager approve -> mark-paid -> confirm-received couvert par API/tests/mobile. |
 | 61 | Solde Employé Cycle Paie | ✅ IMPLÉMENTÉ | Endpoints solde employe et resume paie mobile branches sur `PayrollCycleService`. |

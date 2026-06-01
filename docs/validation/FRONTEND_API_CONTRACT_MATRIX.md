@@ -37,6 +37,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile manager | Lecture QR employe | `POST /api/v1/company/qr-onboarding/scan-employee` | manager principal/RH | `OnboardingQrControllerTest`, `FrontendApiContractTest` |
 | Mobile manager | Creation employe depuis QR | `POST /api/v1/company/qr-onboarding/create-employee` | manager principal/RH | `OnboardingQrControllerTest`, `FrontendApiContractTest` |
 | Mobile employee | Demande integration via QR entreprise | `POST /api/v1/me/company-qr/scan` | employe | `FrontendApiContractTest` |
+| Mobile / admin client | Branding entreprise | `GET/PATCH /api/v1/company/branding` | lecture authentifiee, modification manager principal/RH | `CompanyBrandingControllerTest`, `FrontendApiContractTest` |
 | Mobile | Invitations equipe | `GET /api/v1/invitations` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Relance invitation | `POST /api/v1/invitations/{invitation}/resend` | manager principal/RH | `FrontendApiContractTest` |
 | Mobile | Liste absences | `GET /api/v1/absences` | employe/manager | `Absences\AbsenceIndexTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |

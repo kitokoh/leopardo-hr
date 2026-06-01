@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\FeatureManifestController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\ClientEventController;
+use App\Http\Controllers\Api\V1\CompanyBrandingController;
 use App\Http\Controllers\Api\V1\CommunicationAnalyticsController;
 use App\Http\Controllers\Api\V1\CompanyRequestController;
 use App\Http\Controllers\Api\V1\DemoUserController;
@@ -91,6 +92,8 @@ Route::prefix('v1')->group(function (): void {
         // Company requests for ordinary users
         Route::get('/company-requests', [CompanyRequestController::class, 'index']);
         Route::post('/company-requests', [CompanyRequestController::class, 'store']);
+        Route::get('/company/branding', [CompanyBrandingController::class, 'show']);
+        Route::patch('/company/branding', [CompanyBrandingController::class, 'update']);
 
         Route::get('/onboarding/checklist', OnboardingChecklistController::class);
     });

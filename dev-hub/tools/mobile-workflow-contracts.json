@@ -112,6 +112,7 @@
         "/team",
         "/schedules",
         "/tasks",
+        "/company/branding",
         "/me/monthly",
         "/history",
         "/modules",
@@ -180,6 +181,16 @@
             "lib/features/notifications/screens/notification_list_screen.dart"
           ],
           "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
+        },
+        {
+          "name": "company_branding",
+          "routes": ["/company/branding"],
+          "endpoints": ["/company/branding"],
+          "screenFiles": [
+            "lib/features/company_branding/screens/company_branding_screen.dart",
+            "lib/features/company_branding/data/company_branding_repository.dart"
+          ],
+          "sourceTokens": ["CompanyBrandingScreen", "Identite entreprise", ".update(", "/company/branding"]
         },
         {
           "name": "manager_dashboard_placeholder",
