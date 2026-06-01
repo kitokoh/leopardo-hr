@@ -8,6 +8,7 @@ use App\Events\AttendanceCheckedOut;
 use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
 use App\Models\AttendanceLog;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Schedule;
 use Illuminate\Support\Carbon;
@@ -16,6 +17,8 @@ class AttendanceService
 {
     /** @var array<int, string> */
     private const NON_WORK_TYPES = ['break'];
+
+    public function __construct(private readonly AttendanceGeofenceService $geofenceService) {}
 
     public function checkIn(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
     {
@@ -39,6 +42,7 @@ class AttendanceService
         $sessionNumber = $this->nextSessionNumber($employee, $today);
 
         $schedule = $this->resolveSchedule($employee);
+        $punchMeta = $this->buildPunchMeta($company, $employee, $dto, 'check_in');
 
         $status = 'incomplete';
         $lateMinutes = 0;
@@ -62,6 +66,7 @@ class AttendanceService
             'method' => $dto->method,
             'work_type' => $dto->work_type,
             'punch_note' => $dto->punch_note,
+            'punch_meta' => $punchMeta,
             'status' => $status,
             'late_minutes' => $lateMinutes,
             'gps_lat' => $dto->gps_lat,
@@ -95,6 +100,7 @@ class AttendanceService
         $schedule = $log->schedule_id
             ? $log->schedule
             : $this->resolveSchedule($employee);
+        $punchMeta = $this->buildPunchMeta($company, $employee, $dto, 'check_out');
 
         $seconds = $log->check_in?->diffInSeconds($nowUtc) ?? 0;
         $breakMinutes = $this->breakMinutesForLog($log, $dto, $schedule);
@@ -123,6 +129,7 @@ class AttendanceService
                 'closed_with' => $dto->work_type,
             ]);
         }
+        $log->punch_meta = array_merge($log->punch_meta ?? [], $punchMeta);
 
         if ($log->status === 'incomplete' && $schedule) {
             $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
@@ -199,7 +206,7 @@ class AttendanceService
                 'punch_note' => $dto->punch_note ?? $log->punch_note,
                 'punch_meta' => array_merge($log->punch_meta ?? [], [
                     'closed_with' => $dto->work_type,
-                ]),
+                ], $this->buildPunchMeta($company, $employee, $dto, 'external_check_out')),
             ])->save();
 
             return $log;
@@ -245,6 +252,9 @@ class AttendanceService
             'synced_from_offline' => $dto->synced_from_offline,
             'status' => $status,
             'late_minutes' => $lateMinutes,
+            'gps_lat' => $dto->gps_lat,
+            'gps_lng' => $dto->gps_lng,
+            'punch_meta' => $this->buildPunchMeta($company, $employee, $dto, 'external_check_in'),
         ]);
     }
 
@@ -335,5 +345,21 @@ class AttendanceService
             gps_lng: $gpsLng,
             method: $method,
         );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildPunchMeta(Company $company, Employee $employee, CheckInDTO $dto, string $phase): array
+    {
+        $timezone = $dto->device_timezone ?: $company->timezone;
+        $geofence = $this->geofenceService->evaluate($company, $employee, $dto->gps_lat, $dto->gps_lng);
+
+        return [
+            'phase' => $phase,
+            'device_timezone' => $timezone,
+            'server_timezone' => $company->timezone,
+            'geofence' => $geofence,
+        ];
     }
 }

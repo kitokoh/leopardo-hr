@@ -98,9 +98,11 @@ void main() {
 
   test('checkIn and checkOut use resilient attendance actions', () async {
     final paths = <String>[];
+    final payloads = <Map<String, dynamic>>[];
     final repo = AttendanceRepository(
       clientWithHandler((options, handler) {
         paths.add('${options.method} ${options.path}');
+        payloads.add((options.data as Map).cast<String, dynamic>());
         handler.resolve(
           Response(
             requestOptions: options,
@@ -130,6 +132,8 @@ void main() {
     final checkOut = await repo.checkOut();
 
     expect(paths, ['POST /attendance/check-in', 'POST /attendance/check-out']);
+    expect(payloads.first['device_timezone'], isA<String>());
+    expect(payloads.last['device_timezone'], isA<String>());
     expect(checkIn.id, 1);
     expect(checkIn.checkOut, isNull);
     expect(checkOut.id, 2);

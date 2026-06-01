@@ -9934,6 +9934,15 @@ components:
           type: number
         gps_lng:
           type: number
+        device_timezone:
+          type: string
+          description: "Timezone or UTC offset reported by the mobile device."
+        work_type:
+          type: string
+          enum: ["normal", "overtime", "break", "resume", "mission", "travel", "training", "other"]
+        punch_note:
+          type: string
+          nullable: true
 
     AttendanceLog:
       type: object
@@ -9953,8 +9962,29 @@ components:
           type: string
           format: date-time
           nullable: true
+        check_in_local:
+          type: string
+          format: date-time
+          nullable: true
+        check_out_local:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+        device_timezone:
+          type: string
+          nullable: true
         method:
           type: string
+        work_type:
+          type: string
+        punch_note:
+          type: string
+          nullable: true
+        punch_meta:
+          type: object
+          nullable: true
         source_device_code:
           type: string
           nullable: true
@@ -9969,6 +9999,33 @@ components:
         late_minutes:
           type: integer
           nullable: true
+        gps:
+          type: object
+          properties:
+            lat:
+              type: number
+              nullable: true
+            lng:
+              type: number
+              nullable: true
+        geofence:
+          type: object
+          nullable: true
+          properties:
+            configured:
+              type: boolean
+            inside:
+              type: boolean
+              nullable: true
+            distance_meters:
+              type: integer
+              nullable: true
+            radius_meters:
+              type: integer
+              nullable: true
+            source:
+              type: string
+              nullable: true
 
     AttendanceCorrectionRequestInput:
       type: object
