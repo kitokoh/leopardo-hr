@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/notification_preferences.dart';
@@ -13,6 +14,10 @@ class SettingsRepository {
   final ApiClient _apiClient;
   final AppPreferences _preferences;
 
+  static const _actionTimeout = Duration(seconds: 12);
+  static const _readTimeout = Duration(seconds: 10);
+  static const _uploadTimeout = Duration(seconds: 30);
+
   Future<Employee> updateProfile({
     required String firstName,
     required String lastName,
@@ -21,8 +26,9 @@ class SettingsRepository {
     String? recoveryEmail,
     String? personalPhone,
   }) async {
-    final response = await _apiClient.dio.patch(
+    final response = await _apiClient.requestWithRetry(
       '/auth/profile',
+      method: 'PATCH',
       data: {
         'first_name': firstName.trim(),
         'last_name': lastName.trim(),
@@ -31,44 +37,50 @@ class SettingsRepository {
         'recovery_email': recoveryEmail?.trim(),
         'personal_phone': personalPhone?.trim(),
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
 
-    return Employee.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return Employee.fromJson(extractDataMap(response.data));
   }
 
   Future<EmployeeCareer> loadCareer() async {
-    final response = await _apiClient.dio.get('/me/career');
-    return EmployeeCareer.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
+    final response = await _apiClient.requestWithRetry(
+      '/me/career',
+      timeoutOverride: _readTimeout,
     );
+    return EmployeeCareer.fromJson(extractDataMap(response.data));
   }
 
   Future<CabinetStats> loadCabinetStats() async {
-    final response = await _apiClient.dio.get('/cabinet/stats');
-    return CabinetStats.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
+    final response = await _apiClient.requestWithRetry(
+      '/cabinet/stats',
+      timeoutOverride: _readTimeout,
     );
+    return CabinetStats.fromJson(extractDataMap(response.data));
   }
 
   Future<EmployeeQrPayload> loadEmployeeQrPayload() async {
-    final response = await _apiClient.dio.get('/me/qr-profile');
-    return EmployeeQrPayload.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
+    final response = await _apiClient.requestWithRetry(
+      '/me/qr-profile',
+      timeoutOverride: _readTimeout,
     );
+    return EmployeeQrPayload.fromJson(extractDataMap(response.data));
   }
 
   Future<String> submitCompanyQr(String token, {String? message}) async {
-    final response = await _apiClient.dio.post(
+    final response = await _apiClient.requestWithRetry(
       '/me/company-qr/scan',
+      method: 'POST',
       data: {
         'qr_token': token.trim(),
         if (message != null && message.trim().isNotEmpty)
           'message': message.trim(),
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
-    final data = (response.data['data'] as Map).cast<String, dynamic>();
+    final data = extractDataMap(response.data);
     return (response.data['message'] ?? data['status'] ?? 'Demande envoyee')
         .toString();
   }
@@ -78,13 +90,16 @@ class SettingsRepository {
     required String newPassword,
     required String confirmation,
   }) async {
-    await _apiClient.dio.post(
+    await _apiClient.requestWithRetry(
       '/auth/change-password',
+      method: 'POST',
       data: {
         'current_password': currentPassword,
         'new_password': newPassword,
         'new_password_confirmation': confirmation,
       },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
     );
   }
 
@@ -137,13 +152,16 @@ class SettingsRepository {
   }
 
   Future<BiometricEnrollment?> loadBiometricEnrollment() async {
-    final response = await _apiClient.dio.get('/auth/biometric-enrollment');
-    final data = response.data['data'];
-    if (data == null) {
+    final response = await _apiClient.requestWithRetry(
+      '/auth/biometric-enrollment',
+      timeoutOverride: _readTimeout,
+    );
+    final data = extractDataMap(response.data);
+    if (data.isEmpty) {
       return null;
     }
 
-    return BiometricEnrollment.fromJson((data as Map).cast<String, dynamic>());
+    return BiometricEnrollment.fromJson(data);
   }
 
   Future<BiometricEnrollment> submitBiometricEnrollment({
@@ -170,13 +188,14 @@ class SettingsRepository {
         ),
     });
 
-    final response = await _apiClient.dio.post(
+    final response = await _apiClient.requestWithRetry(
       '/auth/biometric-enrollment',
+      method: 'POST',
       data: formData,
+      maxRetriesOverride: 0,
+      timeoutOverride: _uploadTimeout,
     );
-    return BiometricEnrollment.fromJson(
-      (response.data['data'] as Map).cast<String, dynamic>(),
-    );
+    return BiometricEnrollment.fromJson(extractDataMap(response.data));
   }
 }
 
@@ -291,10 +310,7 @@ class CabinetStats {
 }
 
 class EmployeeQrPayload {
-  const EmployeeQrPayload({
-    required this.token,
-    required this.expiresAt,
-  });
+  const EmployeeQrPayload({required this.token, required this.expiresAt});
 
   final String token;
   final String? expiresAt;
