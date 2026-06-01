@@ -11,6 +11,7 @@ use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Models\SalaryAdvance;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -140,9 +141,70 @@ class PayrollCycleService
             ->get();
 
         return $employees
-            ->map(fn (Employee $employee): array => $this->getEmployeeBalance($employee))
+            ->map(fn (Employee $employee): array => $this->safeEmployeeBalance($employee))
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function safeEmployeeBalance(Employee $employee): array
+    {
+        try {
+            return $this->getEmployeeBalance($employee);
+        } catch (\Throwable $exception) {
+            Log::warning('payroll.mobile_summary.employee_balance_failed', [
+                'employee_id' => $employee->id,
+                'company_id' => $employee->company_id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            $company = $this->resolveCompany($employee);
+            $settings = [
+                'pay_cycle' => 'monthly',
+                'pay_day' => 1,
+                'week_start' => 1,
+            ];
+            $cycle = $this->monthlyPeriod(Carbon::now($company?->timezone ?: 'UTC'));
+
+            if ($company instanceof Company) {
+                try {
+                    $settings = $this->payrollSettings($company);
+                    $cycle = $this->getCurrentCycle($company);
+                } catch (\Throwable $settingsException) {
+                    Log::warning('payroll.mobile_summary.company_settings_failed', [
+                        'employee_id' => $employee->id,
+                        'company_id' => $employee->company_id,
+                        'error' => $settingsException->getMessage(),
+                    ]);
+                }
+            }
+
+            $grossDue = $this->fallbackGrossDue($employee, $settings['pay_cycle']);
+
+            return [
+                'employee_id' => $employee->id,
+                'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+                'period' => [
+                    'start' => $cycle['start']->toDateString(),
+                    'end' => $cycle['end']->toDateString(),
+                    'label' => $cycle['label'],
+                    'cycle' => $settings['pay_cycle'],
+                ],
+                'currency' => $company?->currency ?? 'DZD',
+                'gross_due' => round($grossDue, 2),
+                'advances' => 0.0,
+                'paid' => 0.0,
+                'remaining' => round(max(0.0, $grossDue), 2),
+                'pay_slip' => [
+                    'id' => null,
+                    'status' => null,
+                    'payroll_run_id' => null,
+                ],
+                'warning' => 'partial_balance_fallback',
+            ];
+        }
     }
 
     /**

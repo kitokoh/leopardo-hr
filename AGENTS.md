@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.239)
+Derniere mise a jour : 2026-06-01 (v4.16.240)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -157,6 +157,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.166, l'ecran employee `/me/monthly` doit toujours afficher un resultat utile : chargement explicite, etat vide `Aucun pointage sur ce mois`, et action vers `/history`. `GET /api/v1/me/monthly-summary` doit rester valide pour un mois sans pointage avec `breakdown=[]` et totaux a zero.
 - Depuis v4.16.238, `GET /api/v1/payroll/mobile-summary` doit rester schema-aware sur les colonnes employees optionnelles (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms). Les tenants Render historiques peuvent ne pas avoir tous les backfills au moment du smoke ; ne pas remettre une selection brute de colonnes optionnelles dans `PayrollCycleService`.
 - Depuis v4.16.239, `PayrollCycleService` doit reutiliser `currentCompany()` quand le middleware tenant l'a deja resolue. Ne pas recharger aveuglement `$employee->company` dans les endpoints tenant shared PostgreSQL : le `search_path` peut masquer `public.companies` et provoquer un 500 sur les soldes paie mobiles.
+- Depuis v4.16.240, la route `GET /api/v1/employees/{employee}/balance` doit garder une signature controleur alignee sur `{employee}` et le resume `GET /api/v1/payroll/mobile-summary` doit degrader un solde individuel en `warning=partial_balance_fallback` plutot que retourner 500 pour tout l'ecran manager.
 - Depuis v4.16.208, le workflow avances salaire Plan 60 doit rester teste de bout en bout : `manager-approve`, `mark-paid`, puis `confirm-received`. Toute evolution des statuts `validation_status` doit mettre a jour `SalaryAdvanceSecurityTest`, `CreatesMvpSchema.php`, `mvp_schema.pgsql.sql`, OpenAPI et les repositories mobiles employee/manager.
 - Pour `front/zkteco-kiosk`, `apiBaseUrl` peut etre configure avec ou sans `/api/v1`; `app.js` normalise la base. Garder ce contrat pour eviter les URLs double-versionnees sur site client.
 - Les extensions kiosque `/api/v1/kiosks/{deviceCode}/employee-info`, `/announcements`, `/leave-balance` et `/qr-punch` sont des endpoints device token-only : elles doivent rester sous `throttle:api` avec `X-Kiosk-Token`, sans `auth:sanctum` utilisateur.

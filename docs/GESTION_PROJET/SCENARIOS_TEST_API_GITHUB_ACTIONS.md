@@ -71,6 +71,8 @@ Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summ
 
 Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` quand le middleware tenant a deja resolu l'entreprise. Les scenarios API shared PostgreSQL doivent eviter toute regression ou `$employee->company` recharge `Company` depuis un `search_path` tenant pouvant masquer `public.companies`.
 
+Note 2026-06-01 : `GET /api/v1/employees/{employee}/balance` et `GET /api/v1/payroll/mobile-summary` sont des surfaces mobiles manager critiques. Les scenarios doivent verifier que le parametre de route `{employee}` est correctement resolu, et qu'une erreur de calcul d'un employe n'entraine pas un 500 global de la synthese.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
