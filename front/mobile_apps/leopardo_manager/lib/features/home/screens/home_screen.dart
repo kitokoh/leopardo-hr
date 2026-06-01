@@ -9,8 +9,11 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
+import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 
 final managerDigestProvider = FutureProvider.autoDispose<ManagerDigest>((
@@ -47,6 +50,13 @@ class HomeScreen extends ConsumerWidget {
         employee?.firstName.isNotEmpty == true
             ? employee!.firstName
             : employee?.email.split('@').first ?? '';
+    final branding = ref.watch(
+      tenantBrandingProvider.select(
+        (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
+      ),
+    );
+    final primary = branding?.safePrimaryColor ?? AppColors.rh;
+    final accent = branding?.safeAccentColor ?? AppColors.ia;
     final canManageTeam = employee?.canManageTeam == true;
     const background = MobileSurface.background;
 
@@ -58,9 +68,9 @@ class HomeScreen extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.rh.withValues(alpha: 0.08),
+              primary.withValues(alpha: 0.08),
               background,
-              AppColors.ia.withValues(alpha: 0.05),
+              accent.withValues(alpha: 0.05),
             ],
           ),
         ),
@@ -75,6 +85,7 @@ class HomeScreen extends ConsumerWidget {
                       firstName: firstName,
                       stage: stage,
                       canManageTeam: canManageTeam,
+                      branding: branding,
                     ),
                     const SizedBox(height: 18),
                     _SectionTitle(
@@ -114,11 +125,13 @@ class _HeaderRow extends StatelessWidget {
     required this.firstName,
     required this.stage,
     required this.canManageTeam,
+    required this.branding,
   });
 
   final String firstName;
   final String stage;
   final bool canManageTeam;
+  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +143,7 @@ class _HeaderRow extends StatelessWidget {
             firstName: firstName,
             stage: stage,
             canManageTeam: canManageTeam,
+            branding: branding,
           ),
         ),
         const SizedBox(width: 12),
@@ -154,11 +168,13 @@ class _HeroHeader extends StatelessWidget {
     required this.firstName,
     required this.stage,
     required this.canManageTeam,
+    required this.branding,
   });
 
   final String firstName;
   final String stage;
   final bool canManageTeam;
+  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +205,7 @@ class _HeroHeader extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
+              TenantBrandMark(branding: branding, compact: true),
               LeopardoBadge.domain(
                 'rh',
                 canManageTeam ? 'RH / manager' : 'Experience employe',
