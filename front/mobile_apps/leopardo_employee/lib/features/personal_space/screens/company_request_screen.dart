@@ -44,8 +44,10 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
 
     try {
       final apiClient = ref.read(apiClientProvider);
-      await apiClient.dio.post(
+      await apiClient.requestWithRetry(
         '/company-requests',
+        method: 'POST',
+        timeoutOverride: const Duration(seconds: 15),
         data: {
           'company_name': _companyNameController.text.trim(),
           'sector': _sectorController.text.trim(),
