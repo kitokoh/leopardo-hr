@@ -69,12 +69,12 @@
         {
           "name": "payrolls",
           "routes": ["/payrolls"],
-          "endpoints": ["/me/pay-slips", "/me/balance", "/me/pay-slips/$payslipId/pdf"],
+          "endpoints": ["/me/pay-slips", "/me/balance", "/me/pay-slips/$payslipId/pdf", "/me/payment-documents", "/me/payment-documents/${document.id}/download"],
           "screenFiles": [
             "lib/features/payrolls/screens/payroll_list_screen.dart",
             "lib/features/payrolls/data/payroll_repository.dart"
           ],
-          "sourceTokens": ["_downloadPdf", "downloadPayslipPdf", "getMyBalance", "Mon solde", "RefreshIndicator"]
+          "sourceTokens": ["_downloadPdf", "downloadPayslipPdf", "getMyBalance", "getPaymentDocuments", "downloadPaymentDocument", "Documents paiement", "RefreshIndicator"]
         },
         {
           "name": "notifications",
@@ -153,12 +153,12 @@
         {
           "name": "payrolls",
           "routes": ["/payrolls"],
-          "endpoints": ["/payrolls", "/payroll/mobile-summary", "/pay-slips/$payslipId/pdf"],
+          "endpoints": ["/payrolls", "/payroll/mobile-summary", "/pay-slips/$payslipId/pdf", "/payments/$payrollRunId/documents", "/me/payment-documents/${document.id}/download"],
           "screenFiles": [
             "lib/features/payrolls/screens/payroll_list_screen.dart",
             "lib/features/payrolls/data/payroll_repository.dart"
           ],
-          "sourceTokens": ["getMobileSummary", "Solde equipe", "_downloadPdf", "RefreshIndicator"]
+          "sourceTokens": ["getMobileSummary", "getPaymentDocumentsForPayrollRun", "downloadPaymentDocument", "Solde equipe", "Documents paiement", "_downloadPdf", "RefreshIndicator"]
         },
         {
           "name": "attendance",

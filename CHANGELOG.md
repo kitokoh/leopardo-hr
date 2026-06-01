@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.211] - 2026-06-01
+
+### Added
+
+- Plan 62 mobile : l'app employee affiche maintenant les documents de paiement (`pending/generating/available/failed`) dans l'ecran paie et permet le telechargement des fichiers disponibles.
+- Plan 62 mobile : l'app manager expose une action `Documents paiement` sur chaque ligne paie pour consulter le statut de generation des documents d'un cycle et telecharger les fichiers disponibles.
+- Le contrat mobile multi-app documente maintenant les endpoints `/me/payment-documents`, `/me/payment-documents/{id}/download` et `/payments/{payrollRun}/documents`.
+
 ## [4.16.210] - 2026-06-01
 
 ### Added
