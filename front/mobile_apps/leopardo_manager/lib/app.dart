@@ -4,6 +4,7 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
@@ -42,6 +43,7 @@ import 'package:leopardo_manager/features/manager/screens/manager_placeholder_sc
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_manager/features/company_branding/screens/company_branding_screen.dart';
+import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -290,11 +292,16 @@ class LeopardoApp extends ConsumerWidget {
             : deviceLanguage);
     final isRtl = authState.employee?.isRtl ?? preferences.isRtl;
     final locale = _resolveLocale(languageCode);
+    final branding = ref.watch(
+      tenantBrandingProvider.select(
+        (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
+      ),
+    );
 
     return MaterialApp.router(
-      title: 'Leopardo RH',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      title: branding?.displayName ?? 'Leopardo RH',
+      theme: TenantTheme.apply(AppTheme.lightTheme, branding),
+      darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
       themeMode: ThemeMode.dark,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
