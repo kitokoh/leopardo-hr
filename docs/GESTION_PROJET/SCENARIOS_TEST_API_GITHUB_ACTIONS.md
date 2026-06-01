@@ -73,6 +73,8 @@ Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` 
 
 Note 2026-06-01 : `GET /api/v1/employees/{employee}/balance` et `GET /api/v1/payroll/mobile-summary` sont des surfaces mobiles manager critiques. Les scenarios doivent verifier que le parametre de route `{employee}` est correctement resolu, et qu'une erreur de calcul d'un employe n'entraine pas un 500 global de la synthese.
 
+Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant-scope. Les scenarios doivent verifier qu'il reutilise l'entreprise courante du middleware tenant, qu'il ne depend pas d'un rechargement `Company` vulnerable au `search_path`, et qu'il reste tolerant aux colonnes paie employees absentes pendant les migrations progressives.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
