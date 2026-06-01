@@ -81,6 +81,11 @@ foreach ($app in $apps) {
     Assert-Contains $main $app.ErrorText $app.Name
     Assert-Contains $shell $app.InitialRoute $app.Name
 
+    $settingsGradle = Read-RepoFile "front/mobile_apps/leopardo_$($app.Name)/android/settings.gradle.kts"
+    $appGradle = Read-RepoFile "front/mobile_apps/leopardo_$($app.Name)/android/app/build.gradle.kts"
+    Assert-Contains $settingsGradle 'id("com.google.gms.google-services") version' "$($app.Name) Android settings"
+    Assert-Contains $appGradle 'id("com.google.gms.google-services")' "$($app.Name) Android app Gradle"
+
     Write-Host "[mobile-runtime] $($app.Name): startup shell is guarded."
 }
 
@@ -95,5 +100,12 @@ Assert-Contains $startupGate "Ouverture de votre espace..." "StartupGate"
 $startupGateTest = Read-RepoFile "front/mobile_apps/leopardo_core/test/core/widgets/startup_gate_test.dart"
 Assert-Contains $startupGateTest "renders a visible startup guard" "StartupGate tests"
 Assert-Contains $startupGateTest "auto-continues after a critical bootstrap timeout" "StartupGate tests"
+
+$pushNotifications = Read-RepoFile "front/mobile_apps/leopardo_core/lib/core/services/push_notification_service.dart"
+if ($pushNotifications -match "final\s+FirebaseMessaging\s+_\w+\s*=\s*FirebaseMessaging\.instance") {
+    Fail "PushNotificationService must not instantiate FirebaseMessaging.instance eagerly before Firebase.initializeApp()."
+}
+Assert-Contains $pushNotifications "_ensureFirebaseInitialized" "PushNotificationService"
+Assert-Contains $pushNotifications "_messaging ??= FirebaseMessaging.instance" "PushNotificationService"
 
 Write-Host "[mobile-runtime] StartupGate anti-black-screen contract is valid."

@@ -9,7 +9,11 @@ import 'package:leopardo_core/core/api/api_client.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  try {
+    await _ensureFirebaseInitialized();
+  } catch (e) {
+    debugPrint('Firebase background init skipped: $e');
+  }
 }
 
 class PushNotificationService {
@@ -18,10 +22,13 @@ class PushNotificationService {
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
+  static const Duration _firebaseStartupTimeout = Duration(seconds: 6);
+  static const Duration _fcmOperationTimeout = Duration(seconds: 8);
+
+  FirebaseMessaging? _messaging;
   String? _deviceToken;
   ApiClient? _apiClient;
   StreamSubscription<String>? _tokenRefreshSubscription;
@@ -41,7 +48,7 @@ class PushNotificationService {
     }
 
     try {
-      await Firebase.initializeApp();
+      await _ensureFirebaseInitialized().timeout(_firebaseStartupTimeout);
     } catch (e) {
       debugPrint('Firebase init skipped: $e');
       return;
@@ -49,22 +56,30 @@ class PushNotificationService {
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    final settings = await _fcm.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
+    try {
+      final fcm = _messaging ??= FirebaseMessaging.instance;
+      final settings = await fcm
+          .requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+            provisional: false,
+          )
+          .timeout(_fcmOperationTimeout);
 
-    if (settings.authorizationStatus == AuthorizationStatus.denied) {
-      debugPrint('Push notifications permission denied');
+      if (settings.authorizationStatus == AuthorizationStatus.denied) {
+        debugPrint('Push notifications permission denied');
+        return;
+      }
+
+      await _initLocalNotifications().timeout(_fcmOperationTimeout);
+      await _getToken(fcm);
+      _listenToMessages();
+      _initialized = true;
+    } catch (e) {
+      debugPrint('Push notification init skipped: $e');
       return;
     }
-
-    await _initLocalNotifications();
-    await _getToken();
-    _listenToMessages();
-    _initialized = true;
   }
 
   Future<void> _initLocalNotifications() async {
@@ -102,14 +117,14 @@ class PushNotificationService {
     }
   }
 
-  Future<void> _getToken() async {
+  Future<void> _getToken(FirebaseMessaging fcm) async {
     try {
-      _deviceToken = await _fcm.getToken();
+      _deviceToken = await fcm.getToken().timeout(_fcmOperationTimeout);
       debugPrint('FCM Token: $_deviceToken');
       await _syncTokenWithBackend(_deviceToken);
 
       await _tokenRefreshSubscription?.cancel();
-      _tokenRefreshSubscription = _fcm.onTokenRefresh.listen((newToken) {
+      _tokenRefreshSubscription = fcm.onTokenRefresh.listen((newToken) {
         _deviceToken = newToken;
         debugPrint('FCM Token refreshed: $newToken');
         unawaited(_syncTokenWithBackend(newToken));
@@ -205,10 +220,27 @@ class PushNotificationService {
   }
 
   Future<void> subscribeToTopic(String topic) async {
-    await _fcm.subscribeToTopic(topic);
+    try {
+      await _ensureFirebaseInitialized().timeout(_firebaseStartupTimeout);
+      final fcm = _messaging ??= FirebaseMessaging.instance;
+      await fcm.subscribeToTopic(topic).timeout(_fcmOperationTimeout);
+    } catch (e) {
+      debugPrint('Subscribe to FCM topic skipped ($topic): $e');
+    }
   }
 
   Future<void> unsubscribeFromTopic(String topic) async {
-    await _fcm.unsubscribeFromTopic(topic);
+    try {
+      await _ensureFirebaseInitialized().timeout(_firebaseStartupTimeout);
+      final fcm = _messaging ??= FirebaseMessaging.instance;
+      await fcm.unsubscribeFromTopic(topic).timeout(_fcmOperationTimeout);
+    } catch (e) {
+      debugPrint('Unsubscribe from FCM topic skipped ($topic): $e');
+    }
   }
+}
+
+Future<void> _ensureFirebaseInitialized() async {
+  if (Firebase.apps.isNotEmpty) return;
+  await Firebase.initializeApp();
 }
