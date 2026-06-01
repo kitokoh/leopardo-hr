@@ -7,6 +7,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/company_branding/data/company_branding_repository.dart';
 import 'package:leopardo_manager/features/company_branding/providers/company_branding_provider.dart';
+import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 
 class CompanyBrandingScreen extends ConsumerWidget {
   const CompanyBrandingScreen({super.key});
@@ -193,6 +194,7 @@ class _BrandingFormState extends ConsumerState<_BrandingForm> {
             ),
           );
       ref.invalidate(companyBrandingProvider);
+      ref.invalidate(tenantBrandingProvider);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Identite entreprise mise a jour')),
