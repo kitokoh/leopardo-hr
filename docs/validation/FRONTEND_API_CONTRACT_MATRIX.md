@@ -82,6 +82,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile / web client | Preferences notifications | `GET/PATCH /api/v1/notification-preferences` | authentifie | `NotificationPreferenceControllerTest` |
 | Mobile | Enregistrer push token | `POST /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
 | Mobile | Supprimer push token | `DELETE /api/v1/device-tokens` | authentifie | `FrontendApiContractTest` |
+| Mobile manager | Envoi push test employe | `POST /api/v1/push-notifications/send` | manager | `DeviceTokenControllerTest`, `validate-mobile-notification-production-proof.ps1` |
 | Admin client | Resume dashboard | `GET /api/v1/dashboard/summary` | manager | `DashboardControllerTest`, `FrontendApiContractTest` |
 | Admin client | Activite recente dashboard | `GET /api/v1/dashboard/recent-activity` | manager | `DashboardControllerTest`, `FrontendApiContractTest` |
 | Mobile manager | Digest equipe du jour | `GET /api/v1/dashboard/manager-digest` | manager | `DashboardControllerTest`, `FrontendApiContractTest` |
