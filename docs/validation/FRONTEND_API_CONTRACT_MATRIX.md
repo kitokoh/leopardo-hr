@@ -56,6 +56,9 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile manager | Resume paie equipe | `GET /api/v1/payroll/mobile-summary` | manager principal/comptable | `PayrollCycleIntegrationTest`, `FrontendApiContractTest` |
 | Mobile manager | Documents paiement cycle | `GET /api/v1/payroll-runs/{payrollRun}/payment-documents` | manager principal/comptable | `PaymentDocumentControllerTest`, `FrontendApiContractTest` |
 | Mobile manager | Alias documents paiement | `GET /api/v1/payments/{payrollRun}/documents` | manager principal/comptable | `FrontendApiContractTest` |
+| Mobile manager | Lots paiement masse | `GET/POST /api/v1/payment-batches`, `GET /api/v1/payment-batches/{paymentBatch}` | manager principal/comptable | `PaymentBatchControllerTest`, `FrontendApiContractTest` |
+| Mobile manager | Declaration lot paye | `POST /api/v1/payment-batches/{paymentBatch}/mark-paid` | manager principal/comptable | `PaymentBatchControllerTest`, `FrontendApiContractTest` |
+| Mobile employee | Confirmation reception paiement | `POST /api/v1/payment-confirmations/{paymentItem}/confirm` | employe proprietaire | `PaymentBatchControllerTest`, `FrontendApiContractTest` |
 | Mobile | Statistiques placard numerique | `GET /api/v1/cabinet/stats` | employe | `AuthProfileSettingsTest` |
 | Mobile | Liste avances salaire | `GET /api/v1/salary-advances` | employe/manager | `repository_contract_test.dart` |
 | Mobile | Demande avance salaire | `POST /api/v1/salary-advances` | employe | `repository_contract_test.dart` |

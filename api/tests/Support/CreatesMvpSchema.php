@@ -1071,6 +1071,62 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('payment_batches'))) {
+            Schema::create($this->moduleTable('payment_batches'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('payroll_run_id')->nullable()->index();
+                $table->date('period_start')->nullable();
+                $table->date('period_end')->nullable();
+                $table->string('status', 30)->default('draft')->index();
+                $table->decimal('total_amount', 12, 2)->default(0);
+                $table->char('currency', 3)->default('DZD');
+                $table->unsignedInteger('items_count')->default(0);
+                $table->unsignedInteger('created_by')->nullable()->index();
+                $table->unsignedInteger('marked_paid_by')->nullable()->index();
+                $table->timestampTz('marked_paid_at')->nullable();
+                $table->timestampTz('confirmed_at')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_items'))) {
+            Schema::create($this->moduleTable('payment_items'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('payment_batch_id')->index();
+                $table->unsignedInteger('employee_id')->index();
+                $table->unsignedBigInteger('pay_slip_id')->nullable()->index();
+                $table->unsignedInteger('salary_advance_id')->nullable()->index();
+                $table->decimal('amount', 12, 2)->default(0);
+                $table->char('currency', 3)->default('DZD');
+                $table->string('status', 30)->default('pending')->index();
+                $table->timestampTz('paid_at')->nullable();
+                $table->timestampTz('confirmed_at')->nullable();
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('payment_confirmations'))) {
+            Schema::create($this->moduleTable('payment_confirmations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('payment_batch_id')->index();
+                $table->unsignedBigInteger('payment_item_id')->unique();
+                $table->unsignedInteger('employee_id')->index();
+                $table->string('status', 30)->default('confirmed')->index();
+                $table->timestampTz('confirmed_at');
+                $table->string('device_signature', 255)->nullable();
+                $table->string('ip_address', 64)->nullable();
+                $table->string('user_agent', 500)->nullable();
+                $table->string('document_version', 40)->default('v1');
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('pay_slip_lines'))) {
             Schema::create($this->moduleTable('pay_slip_lines'), function (Blueprint $table): void {
                 $table->id();
@@ -1482,6 +1538,9 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "applicants"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "job_postings"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slip_lines"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "payment_confirmations"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "payment_items"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "payment_batches"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "payment_documents"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "pay_slips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "privacy_requests"'.$cascade);

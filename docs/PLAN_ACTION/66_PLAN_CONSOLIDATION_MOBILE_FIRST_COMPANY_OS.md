@@ -26,7 +26,7 @@ Verifier que les 44 idees consolidees sont soit deja implementees, soit rattache
 | E - Profil portable, placard numerique, QR onboarding | 22-24 | 32, 33, 54 | Largement planifie/partiel, verifier UX et tests |
 | F - Manager/RH, horaires, isolation tenant | 25-28 | 34, 35, 36, 37, 40, 53 | Partiel, garder tests RBAC/tenant obligatoires |
 | G - Super-admin plateforme | 29-31 | 29, 45, 46, 56 | Partiel, continuer durcissement platform admin |
-| H - Paie/finance | 32-38 | 03, 60, 61, 62, 65 | Plans 60, 61, 62 livres ; continuer Plan 65 si nouveau besoin signature numerique |
+| H - Paie/finance | 32-38 | 03, 60, 61, 62, 65 | Plans 60, 61, 62 livres ; Plan 65 livre cote backend/API pour lots, confirmations et documents async |
 | I - Internationalisation, docs dev, marketplace, open core | 39-42 | 10, 24, 47, 57, nouveau lot 66.4 | Marketplace/open core restent a cadrer |
 | J - Positionnement produit | 43-44 | 11, 16, 59 | **✅ IMPLEMENTE** — Lot 66.5 execute (voir ci-dessous) |
 
@@ -126,8 +126,8 @@ _Mis à jour le 2026-05-31 par KiloClaw — passe de revue des plans 55 à 66._
 | 61 | Solde Employé Cycle Paie | ✅ IMPLÉMENTÉ | Endpoints solde employe et resume paie mobile branches sur `PayrollCycleService`. |
 | 62 | PDF Bordereaux Async | ✅ IMPLÉMENTÉ | `payment_documents`, job `GeneratePaymentDocumentJob`, API employee/manager et mobile livres. |
 | 63 | Architecture Heures de Pointe | ✅ IMPLÉMENTÉ | Redis/predis, queues documents/pdf/payroll/notifications/webhooks, cache digest/schedules, scheduler auto-close et runbook worker. |
-| 64 | Clôture Timezone GPS | ⏳ À FAIRE | Backend command `attendance:auto-close`, GPS geofence. Mobile à implémenter. |
-| 65 | Paiement Masse Signature Numérique | ⏳ À FAIRE | Modèles `PaymentBatch`, endpoints, jobs async. Backend + mobile. |
+| 64 | Clôture Timezone GPS | ✅ IMPLÉMENTÉ | Timezone device, geofence doux, auto-close configurable et mobile repositories livres. UX GPS native reste lot mobile futur. |
+| 65 | Paiement Masse Signature Numérique | ✅ IMPLÉMENTÉ | Modèles `PaymentBatch`, `PaymentItem`, `PaymentConfirmation`, endpoints, confirmation idempotente et documents async. |
 | 66 | Consolidation Mobile-First Company OS | ✅ IMPLÉMENTÉ | Table de cartographie présente, Lot 66.5 exécuté (positionnement vitrine). Cette section mise à jour. |
 
 ### Fichiers créés ou modifiés par cette passe
