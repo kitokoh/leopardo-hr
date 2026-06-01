@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.241] - 2026-06-01
+
+### Added
+
+- Plan 69.5 : ajout du rapport `PAYROLL_FINANCE_API_SMOKE_2026_06_01.md` avec preuve Render avance double validation, paiement masse, documents PDF asynchrones, confirmation employe, resume paie mobile et solde employe manager.
+
 ## [4.16.240] - 2026-06-01
 
 ### Fixed
