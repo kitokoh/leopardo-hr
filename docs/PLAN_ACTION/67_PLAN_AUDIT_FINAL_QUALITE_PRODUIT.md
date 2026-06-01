@@ -63,6 +63,10 @@ Le super-admin mobile est separe, mais le parcours complet doit etre prouve : lo
 
 Un super-admin peut se connecter et creer un client sans acces tenant parasite.
 
+### Statut
+
+**Livre en cours de validation CI.** `PlatformRepository.createCompany()` retourne maintenant le client cree, l'app ouvre sa fiche directement et `docs/validation/PLATFORM_ADMIN_E2E_REPORT_2026_06_01.md` documente le parcours.
+
 ## Lot 67.3 - GPS natif, geofence UX et notification douce
 
 ### Probleme
