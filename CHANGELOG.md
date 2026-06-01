@@ -2,6 +2,18 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.228] - 2026-06-01
+
+### Added
+
+- Ajout du Plan 69 `69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md` comme prochain cycle d'execution post-audit.
+- Ajout du rapport `NEXT_PRODUCT_PLAN_2026_06_01.md` pour cloturer le Plan 68 et prioriser les lots lancement.
+
+### Changed
+
+- Plan 68 : lot 68.5 et statut final marques livres, avec suite canonique vers Plan 69.
+- Sommaire des plans : ajout du Plan 69.
+
 ## [4.16.227] - 2026-06-01
 
 ### Added

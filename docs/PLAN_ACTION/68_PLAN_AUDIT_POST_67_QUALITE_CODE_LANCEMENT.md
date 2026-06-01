@@ -85,6 +85,10 @@ Produire le prochain plan d'action base sur l'audit, pas sur une accumulation br
 - Prioriser selon impact lancement, risque securite, impact business et effort.
 - Definir les lots de la prochaine execution.
 
+### Statut
+
+**Livre.** Le prochain cycle est formalise dans `docs/PLAN_ACTION/69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md`. Le rapport `docs/validation/NEXT_PRODUCT_PLAN_2026_06_01.md` explique l'ordre d'execution et cloture le Plan 68.
+
 ## Critere de cloture Plan 68
 
 - Depot distant propre.
@@ -92,3 +96,7 @@ Produire le prochain plan d'action base sur l'audit, pas sur une accumulation br
 - Readiness 23/23 toujours verte.
 - Contrats API/fronts verifies.
 - Nouveau plan produit redige a partir d'un audit concret.
+
+## Statut final
+
+**Cloture le 2026-06-01.** Les lots 68.1 a 68.5 sont livres. La suite canonique est le Plan 69.
