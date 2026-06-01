@@ -154,7 +154,7 @@ Le depot peut etre audite rapidement avant marketing, avec un score par surface 
 
 ### Statut
 
-**Livre en cours de validation CI.** Le gate `release-readiness.ps1 -Strict` couvre maintenant 22 controles, dont les trois apps mobiles de lancement, leurs gardes Plan 67, la vitrine web, le kiosk et les rapports 67.1-67.5. Rapport : `docs/validation/RELEASE_READINESS_REPORT_2026_06_01.md`.
+**Livre et merge.** Le gate `release-readiness.ps1 -Strict` couvre maintenant 22 controles, dont les trois apps mobiles de lancement, leurs gardes Plan 67, la vitrine web, le kiosk et les rapports 67.1-67.5. Rapport : `docs/validation/RELEASE_READINESS_REPORT_2026_06_01.md`.
 
 ## Lot 67.7 - Marketplace/open core cadrage
 
@@ -173,6 +173,10 @@ Marketplace et open core sont strategiques, mais non bloquants pour lancer. Les 
 
 Decision strategique documentee, sans exposer de code sensible.
 
+### Statut
+
+**Livre.** L'ADR `docs/architecture/adr/0004-open-core-marketplace-boundaries.md`, le guide `docs/GUIDES/GUIDE_OPEN_CORE_MARKETPLACE.md`, le rapport `docs/validation/MARKETPLACE_OPEN_CORE_READINESS_2026_06_01.md` et le garde `dev-hub/tools/validate-open-core-boundaries.ps1` cadrent les bornes open core, les surfaces enterprise-only, les secrets a isoler, les licences, les scopes API et les webhooks marketplace. Le gate release readiness controle maintenant aussi cette preuve.
+
 ## Ordre recommande
 
 1. Lot 67.1
@@ -185,4 +189,4 @@ Decision strategique documentee, sans exposer de code sensible.
 
 ## Statut
 
-**Cree le 2026-06-01.** Execution a demarrer apres merge de cette planification.
+**Cloture le 2026-06-01.** Les lots 67.1 a 67.7 sont livres ou cadres au niveau requis pour passer a l'audit suivant.
