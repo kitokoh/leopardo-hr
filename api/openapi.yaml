@@ -2975,6 +2975,155 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /device-tokens:
+    get:
+      tags: ["Notifications"]
+      summary: "Lister les tokens push actifs de l'utilisateur courant"
+      responses:
+        "200":
+          description: "Tokens actifs"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        employee_id:
+                          type: integer
+                        platform:
+                          type: string
+                          enum: [ios, android, web]
+                        device_name:
+                          type: string
+                          nullable: true
+                        is_active:
+                          type: boolean
+                        last_used_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Notifications"]
+      summary: "Enregistrer ou rafraichir le token FCM du device courant"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, platform]
+              properties:
+                token:
+                  type: string
+                  maxLength: 512
+                  example: "fcm-token-redacted"
+                platform:
+                  type: string
+                  enum: [ios, android, web]
+                device_name:
+                  type: string
+                  maxLength: 120
+                  nullable: true
+      responses:
+        "201":
+          description: "Token enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Notifications"]
+      summary: "Supprimer le token FCM du device courant au logout"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  maxLength: 512
+      responses:
+        "200":
+          description: "Token supprime"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Device token removed."
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /push-notifications/send:
+    post:
+      tags: ["Notifications"]
+      summary: "Envoyer une notification push de test a un employe"
+      description: "Reserve aux managers. Sert de preuve de bout en bout : notification app, push FCM et audit communication."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id, title, body]
+              properties:
+                employee_id:
+                  type: integer
+                title:
+                  type: string
+                  maxLength: 200
+                body:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Resultat d'envoi"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      sent:
+                        type: integer
+                      results:
+                        type: object
+                      notification_id:
+                        type: integer
+                        nullable: true
+                      employee_id:
+                        type: integer
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /notification-preferences:
     get:
       tags: ["Notifications"]

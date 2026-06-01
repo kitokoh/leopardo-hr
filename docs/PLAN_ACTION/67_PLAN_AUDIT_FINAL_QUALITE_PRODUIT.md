@@ -126,6 +126,10 @@ Les tokens FCM, preferences et jobs existent, mais il faut une preuve simple de 
 
 Les notifications ne sont plus seulement architecturales : chaque profil a au moins un scenario prouve.
 
+### Statut
+
+**Livre en cours de validation CI.** Le garde `validate-mobile-notification-production-proof.ps1` fige le cycle FCM employee/manager (init apres auth, sync `/device-tokens`, suppression logout), les actions notifications, les routes backend et la documentation OpenAPI. Les tests backend `DeviceTokenControllerTest` couvrent maintenant register/upsert/list/delete et l'envoi test manager. Rapport : `docs/validation/MOBILE_NOTIFICATIONS_PRODUCTION_PROOF_2026_06_01.md`.
+
 ## Lot 67.6 - Release readiness par profil
 
 ### Probleme

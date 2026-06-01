@@ -92,6 +92,7 @@
             <div class="row">
                 <button data-endpoint="/auth/me" type="button">/auth/me</button>
                 <button data-endpoint="/notifications?per_page=10" type="button">/notifications</button>
+                <button data-endpoint="/device-tokens" type="button">/device-tokens</button>
                 <button data-endpoint="/notification-preferences" type="button">/notification-preferences</button>
                 <button data-endpoint="/launch-readiness" type="button">/launch-readiness</button>
                 <button data-endpoint="/platform/auth/me" data-platform="1" type="button">/platform/auth/me</button>
