@@ -8,7 +8,10 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/core/branding/tenant_brand_mark.dart';
+import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -31,6 +34,13 @@ class HomeScreen extends ConsumerWidget {
         employee?.firstName.isNotEmpty == true
             ? employee!.firstName
             : employee?.email.split('@').first ?? '';
+    final branding = ref.watch(
+      tenantBrandingProvider.select(
+        (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
+      ),
+    );
+    final primary = branding?.safePrimaryColor ?? AppColors.rh;
+    final accent = branding?.safeAccentColor ?? AppColors.ia;
     const background = MobileSurface.background;
 
     return Scaffold(
@@ -41,9 +51,9 @@ class HomeScreen extends ConsumerWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.rh.withValues(alpha: 0.08),
+              primary.withValues(alpha: 0.08),
               background,
-              AppColors.ia.withValues(alpha: 0.05),
+              accent.withValues(alpha: 0.05),
             ],
           ),
         ),
@@ -54,7 +64,11 @@ class HomeScreen extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                   children: [
-                    _HeaderRow(firstName: firstName, stage: stage),
+                    _HeaderRow(
+                      firstName: firstName,
+                      stage: stage,
+                      branding: branding,
+                    ),
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
@@ -85,17 +99,28 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _HeaderRow extends StatelessWidget {
-  const _HeaderRow({required this.firstName, required this.stage});
+  const _HeaderRow({
+    required this.firstName,
+    required this.stage,
+    required this.branding,
+  });
 
   final String firstName;
   final String stage;
+  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: _HeroHeader(firstName: firstName, stage: stage)),
+        Expanded(
+          child: _HeroHeader(
+            firstName: firstName,
+            stage: stage,
+            branding: branding,
+          ),
+        ),
         const SizedBox(width: 12),
         Container(
           decoration: MobileSurface.cardDecoration(
@@ -114,10 +139,15 @@ class _HeaderRow extends StatelessWidget {
 }
 
 class _HeroHeader extends StatelessWidget {
-  const _HeroHeader({required this.firstName, required this.stage});
+  const _HeroHeader({
+    required this.firstName,
+    required this.stage,
+    required this.branding,
+  });
 
   final String firstName;
   final String stage;
+  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +178,7 @@ class _HeroHeader extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
+              TenantBrandMark(branding: branding, compact: true),
               LeopardoBadge.domain(
                 'rh',
                 'Experience employe',
