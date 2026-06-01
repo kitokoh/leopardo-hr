@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\Communication\NotificationPreferenceProvisioner;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class BackfillNotificationPreferences extends Command
 {
@@ -15,6 +16,10 @@ class BackfillNotificationPreferences extends Command
 
     public function handle(NotificationPreferenceProvisioner $provisioner): int
     {
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants, public');
+        }
+
         $stats = $provisioner->backfill(
             companyId: is_string($this->option('company')) ? $this->option('company') : null,
             dryRun: (bool) $this->option('dry-run'),

@@ -154,6 +154,63 @@ class DemoUserControllerTest extends TestCase
         $this->assertArrayHasKey('attendance_geofence', $metadata);
     }
 
+    public function test_demo_once_seeder_backfills_existing_demo_readiness_when_demo_creation_is_disabled(): void
+    {
+        putenv('DISABLE_DEMO_SEEDING=true');
+        $_ENV['DISABLE_DEMO_SEEDING'] = 'true';
+        $_SERVER['DISABLE_DEMO_SEEDING'] = 'true';
+
+        try {
+            Schema::create('seed_locks', function (Blueprint $table): void {
+                $table->string('lock_key')->primary();
+                $table->timestampTz('ran_at')->nullable();
+                $table->timestampsTz();
+            });
+
+            $companies = collect(['techcorp-algerie', 'pharmaplus-casablanca', 'digitalflow-tunis'])
+                ->mapWithKeys(fn (string $slug): array => [
+                    $slug => Company::factory()->create([
+                        'slug' => $slug,
+                        'schema_name' => 'shared_tenants',
+                        'tenancy_type' => 'shared',
+                        'status' => 'active',
+                        'metadata' => [],
+                    ]),
+                ]);
+
+            $employeeId = DB::table('shared_tenants.employees')->insertGetId([
+                'company_id' => $companies['techcorp-algerie']->id,
+                'first_name' => 'Disabled',
+                'last_name' => 'Backfill',
+                'email' => 'disabled.backfill@techcorp-algerie.dz',
+                'password_hash' => Hash::make('password123'),
+                'role' => 'employee',
+                'status' => 'active',
+                'salary_type' => 'fixed',
+                'salary_base' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $this->seed(DemoCompanyOnceSeeder::class);
+
+            $this->assertGreaterThan(0, (float) DB::table('shared_tenants.employees')
+                ->where('id', $employeeId)
+                ->value('salary_base'));
+            $this->assertTrue(DB::table('shared_tenants.attendance_kiosks')
+                ->where('company_id', $companies['techcorp-algerie']->id)
+                ->where('status', 'active')
+                ->exists());
+            $this->assertTrue(DB::table('shared_tenants.client_events')
+                ->where('company_id', $companies['techcorp-algerie']->id)
+                ->where('event_name', 'launch_readiness_backfilled')
+                ->exists());
+        } finally {
+            putenv('DISABLE_DEMO_SEEDING');
+            unset($_ENV['DISABLE_DEMO_SEEDING'], $_SERVER['DISABLE_DEMO_SEEDING']);
+        }
+    }
+
     public function test_demo_login_recovers_missing_lookup_from_shared_tenant_schema(): void
     {
         $company = Company::factory()->create([
