@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.225)
+Derniere mise a jour : 2026-06-01 (v4.16.226)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -91,6 +91,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.223, l'ouverture open core/marketplace est cadree par `docs/architecture/adr/0004-open-core-marketplace-boundaries.md` et `docs/GUIDES/GUIDE_OPEN_CORE_MARKETPLACE.md`. Ne pas publier de depot/package public sans secret scan, license scan, nettoyage demo data, validation juridique et scopes/webhooks documentes. Les plugins partenaires doivent passer par API publique et webhooks signes, jamais par import direct du backend Laravel ou des apps mobiles.
 - Depuis v4.16.224, l'audit post-Plan 67 vit dans `docs/PLAN_ACTION/68_PLAN_AUDIT_POST_67_QUALITE_CODE_LANCEMENT.md`. Utiliser `dev-hub/tools/repository-hygiene-report.ps1` pour verifier l'hygiene depot avant de supprimer des branches. Ne pas supprimer la branche locale historique `codex/plan57-api-docs-ecosystem` sans audit explicite de son contenu/stash.
 - Depuis v4.16.225, la gouvernance contrats front/API est verifiee par `dev-hub/tools/validate-frontend-api-contract-governance.ps1`. Toute nouvelle route critique consommee par mobile, admin, web ou kiosk doit rester alignee entre `docs/validation/FRONTEND_API_CONTRACT_MATRIX.md`, `api/tests/Feature/FrontendApiContractTest.php`, `api/openapi.yaml` et, si mobile, `dev-hub/tools/mobile-workflow-contracts.json`.
+- Depuis v4.16.226, `dev-hub/tools/validate-code-quality-governance.ps1` bloque le retour des chemins OpenAPI obsoletes dans les docs canoniques et verifie les artefacts qualite post-67. Les docs publiques doivent pointer vers `/docs` et `/docs/openapi.yaml`, pas vers l'ancien `/openapi/v1.yaml`.
 - Apres un lot qui touche auth/web/admin/mobile, attendre les checks GitHub Actions du PR et verifier aussi les workflows `main` post-merge quand ils partent en cascade (deploy, staging E2E, OWASP, mobile) avant d'annoncer la preuve finale.
 - Le workflow manuel `Deploy - Leopardo RH` doit rester utilisable sur `main` sans dependance au lookup `workflow_run`; c'est le bouton ops pour relancer Render et reexecuter l'entrypoint (migrations/seeders) apres une correction de donnees demo.
 - Le smoke k6 `dev-hub/load/k6/api-core-smoke.js` doit rester read-only et suivre les endpoints reels du dashboard client (`auth/me`, `dashboard/summary`, `dashboard/recent-activity`, `dashboard/kpi`) avant d'ajouter des scenarios plus agressifs.
