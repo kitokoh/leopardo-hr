@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.207)
+Derniere mise a jour : 2026-06-01 (v4.16.208)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -130,6 +130,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.164, la fiche collaborateur mobile manager est actionnable : `PATCH /api/v1/employees/{employee}` porte aussi `contract_start`, `salary_type`, `salary_base` et `hourly_rate`, et le mobile affiche/modifie telephone, poste, departement, lieu, salaire et horaire. Garder ces champs synchronises entre `EmployeeResource`, `Employee` Dart et la matrice frontend/API.
 - Depuis v4.16.165, le workflow taches du jour relie manager et pointage employe : le manager utilise `/tasks` pour assigner une tache, l'employe voit `/tasks/today` dans le pointage et cloture via `PATCH /tasks/{task}` avec `completed_minutes` et `completion_note`. Toute assignation `assigned_to.*` doit rester validee sur le `company_id` courant. Les tenants ayant une ancienne table `tasks` doivent aussi recevoir `category`, `checklist` et `visibility` via migration additive avant toute creation de tache. Le fixture PostgreSQL `mvp_schema.pgsql.sql` doit garder `tasks.assigned_to` en JSONB, pas en entier historique.
 - Depuis v4.16.166, l'ecran employee `/me/monthly` doit toujours afficher un resultat utile : chargement explicite, etat vide `Aucun pointage sur ce mois`, et action vers `/history`. `GET /api/v1/me/monthly-summary` doit rester valide pour un mois sans pointage avec `breakdown=[]` et totaux a zero.
+- Depuis v4.16.208, le workflow avances salaire Plan 60 doit rester teste de bout en bout : `manager-approve`, `mark-paid`, puis `confirm-received`. Toute evolution des statuts `validation_status` doit mettre a jour `SalaryAdvanceSecurityTest`, `CreatesMvpSchema.php`, `mvp_schema.pgsql.sql`, OpenAPI et les repositories mobiles employee/manager.
 - Pour `front/zkteco-kiosk`, `apiBaseUrl` peut etre configure avec ou sans `/api/v1`; `app.js` normalise la base. Garder ce contrat pour eviter les URLs double-versionnees sur site client.
 - Les extensions kiosque `/api/v1/kiosks/{deviceCode}/employee-info`, `/announcements`, `/leave-balance` et `/qr-punch` sont des endpoints device token-only : elles doivent rester sous `throttle:api` avec `X-Kiosk-Token`, sans `auth:sanctum` utilisateur.
 - Le smoke E2E staging API doit tester les routes reelles du backend. Pour un check auth sans token, utiliser `/api/v1/auth/me`, pas `/api/v1/me`.
