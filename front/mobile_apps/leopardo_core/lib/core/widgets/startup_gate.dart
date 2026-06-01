@@ -29,6 +29,10 @@ class StartupGate extends StatefulWidget {
 }
 
 class _StartupGateState extends State<StartupGate> {
+  static const Duration _degradedAutoContinueDelay = Duration(
+    milliseconds: 1200,
+  );
+
   bool _showStartupGuard = true;
   String? _startupWarning;
 
@@ -43,33 +47,32 @@ class _StartupGateState extends State<StartupGate> {
 
   Future<void> _runStartup() async {
     final critical = widget.criticalInitializer ?? widget.initializer;
+    String? warning;
+
     try {
       await critical().timeout(widget.criticalTimeout);
     } on TimeoutException catch (error, stackTrace) {
       debugPrint('${widget.appName} critical startup timed out: $error');
       debugPrintStack(stackTrace: stackTrace);
-      if (mounted) {
-        setState(() {
-          _startupWarning = 'Demarrage en mode securise';
-        });
-      }
-      return;
+      warning = 'Demarrage en mode securise';
     } catch (error, stackTrace) {
       debugPrint('${widget.appName} critical startup failed: $error');
       debugPrintStack(stackTrace: stackTrace);
-      if (mounted) {
-        setState(() {
-          _startupWarning = 'Initialisation partielle';
-        });
-      }
-      return;
+      warning = 'Initialisation partielle';
     }
 
     if (mounted) {
-      setState(() {
-        _showStartupGuard = false;
-        _startupWarning = null;
-      });
+      if (warning == null) {
+        setState(() {
+          _showStartupGuard = false;
+          _startupWarning = null;
+        });
+      } else {
+        setState(() {
+          _startupWarning = warning;
+        });
+        unawaited(_autoContinueAfterWarning());
+      }
     }
 
     if (widget.optionalInitializer != null) {
@@ -84,6 +87,14 @@ class _StartupGateState extends State<StartupGate> {
         ),
       );
     }
+  }
+
+  Future<void> _autoContinueAfterWarning() async {
+    await Future<void>.delayed(_degradedAutoContinueDelay);
+    if (!mounted) return;
+    setState(() {
+      _showStartupGuard = false;
+    });
   }
 
   @override
