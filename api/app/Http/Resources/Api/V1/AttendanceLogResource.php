@@ -18,6 +18,10 @@ class AttendanceLogResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $meta = is_array($this->punch_meta) ? $this->punch_meta : [];
+        $timezone = (string) ($meta['server_timezone'] ?? currentCompany()->timezone);
+        $deviceTimezone = $meta['device_timezone'] ?? null;
+
         return [
             'id' => $this->id,
             'employee_id' => $this->employee_id,
@@ -32,6 +36,10 @@ class AttendanceLogResource extends JsonResource
             'session_number' => (int) ($this->session_number ?? 1),
             'check_in' => $this->check_in?->toIso8601String(),
             'check_out' => $this->check_out?->toIso8601String(),
+            'check_in_local' => $this->check_in?->copy()->setTimezone($timezone)->toIso8601String(),
+            'check_out_local' => $this->check_out?->copy()->setTimezone($timezone)->toIso8601String(),
+            'timezone' => $timezone,
+            'device_timezone' => $deviceTimezone,
             'method' => $this->method,
             'work_type' => $this->work_type ?? 'normal',
             'punch_note' => $this->punch_note,
@@ -41,6 +49,11 @@ class AttendanceLogResource extends JsonResource
             'overtime_hours' => $this->overtime_hours,
             'status' => $this->status,
             'late_minutes' => $this->late_minutes,
+            'gps' => [
+                'lat' => $this->gps_lat !== null ? (float) $this->gps_lat : null,
+                'lng' => $this->gps_lng !== null ? (float) $this->gps_lng : null,
+            ],
+            'geofence' => $meta['geofence'] ?? null,
         ];
     }
 }

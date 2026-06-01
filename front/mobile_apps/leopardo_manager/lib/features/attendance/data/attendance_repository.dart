@@ -21,22 +21,30 @@ class AttendanceRepository {
     return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
   }
 
-  Future<AttendanceLog> checkIn() async {
+  Future<AttendanceLog> checkIn({double? gpsLat, double? gpsLng}) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-in',
       method: 'POST',
-      data: {},
+      data: {
+        'device_timezone': _deviceTimezoneContext(),
+        if (gpsLat != null) 'gps_lat': gpsLat,
+        if (gpsLng != null) 'gps_lng': gpsLng,
+      },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
     return AttendanceLog.fromJson(_dataMap(response.data));
   }
 
-  Future<AttendanceLog> checkOut() async {
+  Future<AttendanceLog> checkOut({double? gpsLat, double? gpsLng}) async {
     final response = await apiClient.requestWithRetry(
       '/attendance/check-out',
       method: 'POST',
-      data: {},
+      data: {
+        'device_timezone': _deviceTimezoneContext(),
+        if (gpsLat != null) 'gps_lat': gpsLat,
+        if (gpsLng != null) 'gps_lng': gpsLng,
+      },
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
@@ -330,6 +338,17 @@ class AttendanceRepository {
       return payload.cast<String, dynamic>();
     }
     return response;
+  }
+
+  static String _deviceTimezoneContext() {
+    final now = DateTime.now();
+    final offset = now.timeZoneOffset;
+    final sign = offset.isNegative ? '-' : '+';
+    final absolute = offset.abs();
+    final hours = absolute.inHours.toString().padLeft(2, '0');
+    final minutes = (absolute.inMinutes % 60).toString().padLeft(2, '0');
+
+    return 'UTC$sign$hours:$minutes; local=${now.timeZoneName}';
   }
 }
 
