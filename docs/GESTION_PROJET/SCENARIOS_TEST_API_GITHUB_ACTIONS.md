@@ -57,6 +57,8 @@ Note 2026-05-28 : les demandes RH visibles par mobile manager doivent etre decis
 
 Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `work_state` / `work_state_label` pour les etats `present`, `break`, `leave`, `mission`, `absent`, `offline`. Les scenarios API doivent verifier que ces etats restent scopes au tenant et que seul un manager principal peut modifier `role` / `manager_role` via `PATCH /employees/{employee}`.
 
+Note 2026-06-01 : les documents de paiement asynchrones Plan 62 consomment `GET /api/v1/me/payment-documents`, `GET /api/v1/me/payment-documents/{paymentDocument}/download`, `GET /api/v1/payroll-runs/{payrollRun}/payment-documents` et l'alias `GET /api/v1/payments/{payrollRun}/documents`. Les scenarios API doivent verifier les statuts `pending/generating/available/failed`, le telechargement uniquement quand le fichier existe, l'isolation employee/tenant et la creation d'un document `advance_receipt` lors de `PUT /salary-advances/{id}/mark-paid`.
+
 ## Matrice complete des scenarios backend
 
 ### 1. Sante technique et bootstrap
