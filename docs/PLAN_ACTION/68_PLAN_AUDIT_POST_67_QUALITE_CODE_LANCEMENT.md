@@ -37,6 +37,10 @@ Verifier que les surfaces mobiles employee, manager, platform admin, vitrine, ki
 - Produire un rapport des endpoints orphelins ou non documentes.
 - Corriger uniquement les divergences a fort risque.
 
+### Statut
+
+**Livre.** Le garde `dev-hub/tools/validate-frontend-api-contract-governance.ps1` relie maintenant la matrice frontend/API, `FrontendApiContractTest`, `mobile-workflow-contracts.json`, `mobile-apps-ci.yml`, `openapi-ci.yml` et les routes critiques de lancement. Rapport : `docs/validation/FRONTEND_API_CONTRACT_GOVERNANCE_REPORT_2026_06_01.md`.
+
 ## Lot 68.3 - Audit code quality pragmatique
 
 ### Objectif

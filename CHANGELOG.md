@@ -2,6 +2,17 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.225] - 2026-06-01
+
+### Added
+
+- Plan 68.2 : ajout du garde `validate-frontend-api-contract-governance.ps1` pour relier matrice frontend/API, `FrontendApiContractTest`, contrats mobiles et OpenAPI CI sur les routes critiques.
+- Ajout du rapport `FRONTEND_API_CONTRACT_GOVERNANCE_REPORT_2026_06_01.md`.
+
+### Changed
+
+- Release readiness : le gate strict passe a `24/24` en incluant la gouvernance contrats front/API.
+
 ## [4.16.224] - 2026-06-01
 
 ### Added
