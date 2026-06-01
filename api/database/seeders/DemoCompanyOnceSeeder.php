@@ -20,14 +20,7 @@ class DemoCompanyOnceSeeder extends Seeder
 
     public function run(): void
     {
-        $isProduction = app()->environment('production');
         $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
-
-        if ($isProduction && $disabled) {
-            $this->command?->info('DemoCompanyOnceSeeder skipped (DISABLE_DEMO_SEEDING=true).');
-
-            return;
-        }
 
         DB::statement('SET search_path TO public');
 
@@ -36,6 +29,17 @@ class DemoCompanyOnceSeeder extends Seeder
         $existingDemoSlugs = DB::table('companies')
             ->whereIn('slug', self::DEMO_SLUGS)
             ->pluck('slug');
+
+        if ($disabled) {
+            if ($existingDemoSlugs->isNotEmpty()) {
+                $this->backfillDemoLeaveBalances();
+                $this->backfillDemoLaunchReadinessSignals();
+            }
+
+            $this->command?->info('DemoCompanyOnceSeeder skipped creation (DISABLE_DEMO_SEEDING=true).');
+
+            return;
+        }
 
         $alreadyRan = DB::table('seed_locks')
             ->where('lock_key', self::LOCK_KEY)

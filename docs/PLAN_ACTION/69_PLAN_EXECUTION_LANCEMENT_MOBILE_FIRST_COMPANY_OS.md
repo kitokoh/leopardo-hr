@@ -144,6 +144,8 @@ Cockpit de lancement documentaire et procedures d'escalade simples.
 
 **Backfill demo prepare.** `DemoCompanyOnceSeeder` complete aussi les signaux demo necessaires au seuil readiness (`payroll_base`, `attendance_entry`, `client_experience_tracking`) quand les entreprises demo existent deja. Rapport : `docs/validation/LAUNCH_DEMO_READINESS_BACKFILL_2026_06_01.md`.
 
+**Correctif runtime Render.** Les backfills readiness restent actifs meme si `DISABLE_DEMO_SEEDING=true` et le backfill preferences force le schema `shared_tenants, public`, afin que le cockpit lise les memes donnees que les APIs tenant apres deploy.
+
 ## Priorite
 
 1. Lot 69.1
