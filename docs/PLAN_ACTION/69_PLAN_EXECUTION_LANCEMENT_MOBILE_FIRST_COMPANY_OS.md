@@ -136,6 +136,10 @@ Preparer une lecture simple du lancement : health API, queue health, erreurs 5xx
 
 Cockpit de lancement documentaire et procedures d'escalade simples.
 
+### Statut
+
+**Go technique, go-live conditionnel.** Le smoke Render confirme `health`, `live`, `ready`, `manager-digest` et `launch-readiness` apres correction #691. Le cockpit retourne un score `43` et `go_live_ready=false` avec un bloqueur requis `communication_governance` (`preferences_configured=1`, aucun echec communication 7j). Rapport : `docs/validation/LAUNCH_OBSERVABILITY_SMOKE_2026_06_01.md`.
+
 ## Priorite
 
 1. Lot 69.1

@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.244] - 2026-06-01
+
+### Added
+
+- Plan 69.6 : ajout du rapport `LAUNCH_OBSERVABILITY_SMOKE_2026_06_01.md` avec preuve Render health/live/ready, manager digest et launch-readiness, et verdict go-live conditionnel lie a `communication_governance`.
+
 ## [4.16.243] - 2026-06-01
 
 ### Fixed
