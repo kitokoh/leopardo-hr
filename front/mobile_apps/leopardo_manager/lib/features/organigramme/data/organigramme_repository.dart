@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 
 class OrgNode {
   final int id;
@@ -46,20 +47,26 @@ class OrganigrammeRepository {
   OrganigrammeRepository(this.apiClient);
 
   Future<List<OrgNode>> getOrgChart() async {
-    final response = await apiClient.dio.get('/org-chart');
-    final items = response.data['data'] as List;
+    final response = await apiClient.requestWithRetry(
+      '/org-chart',
+      timeoutOverride: const Duration(seconds: 10),
+    );
+    final items = extractDataList(response.data);
     return items
-        .map((e) => OrgNode.fromJson(e as Map<String, dynamic>))
+        .whereType<Map>()
+        .map((e) => OrgNode.fromJson(e.cast<String, dynamic>()))
         .toList();
   }
 
   Future<List<OrgNode>> getDepartmentHierarchy(int departmentId) async {
-    final response = await apiClient.dio.get(
+    final response = await apiClient.requestWithRetry(
       '/departments/$departmentId/hierarchy',
+      timeoutOverride: const Duration(seconds: 10),
     );
-    final items = response.data['data'] as List;
+    final items = extractDataList(response.data);
     return items
-        .map((e) => OrgNode.fromJson(e as Map<String, dynamic>))
+        .whereType<Map>()
+        .map((e) => OrgNode.fromJson(e.cast<String, dynamic>()))
         .toList();
   }
 }
