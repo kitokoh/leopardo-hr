@@ -9,6 +9,7 @@ import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
+import 'package:leopardo_core/core/location/attendance_location_context.dart';
 
 class AttendanceState {
   final bool isLoading;
@@ -116,11 +117,22 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       clearNotice: true,
     );
     try {
-      final log = await _repository.checkIn().timeout(_punchGuardTimeout);
+      final location = await _attendanceLocation();
+      final log = await _repository
+          .checkIn(
+            gpsLat: location.latitude,
+            gpsLng: location.longitude,
+            gpsAccuracy: location.accuracyMeters,
+          )
+          .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
         isPunching: false,
-        notice: 'Arrivee enregistree a l instant.',
+        notice: _successNotice(
+          log: log,
+          fallback: 'Arrivee enregistree a l instant.',
+          location: location,
+        ),
       );
       _loadSummary();
       return true;
@@ -143,11 +155,22 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
       clearNotice: true,
     );
     try {
-      final log = await _repository.checkOut().timeout(_punchGuardTimeout);
+      final location = await _attendanceLocation();
+      final log = await _repository
+          .checkOut(
+            gpsLat: location.latitude,
+            gpsLng: location.longitude,
+            gpsAccuracy: location.accuracyMeters,
+          )
+          .timeout(_punchGuardTimeout);
       state = state.copyWith(
         todayLog: log,
         isPunching: false,
-        notice: 'Depart enregistre a l instant.',
+        notice: _successNotice(
+          log: log,
+          fallback: 'Depart enregistre a l instant.',
+          location: location,
+        ),
       );
       _loadSummary();
       return true;
@@ -252,6 +275,29 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
     }
 
     return 'Le pointage n a pas pu etre confirme. Verifiez la connexion puis reessayez.';
+  }
+
+  Future<AttendanceLocationContext> _attendanceLocation() {
+    return _ref
+        .read(attendanceLocationServiceProvider)
+        .currentForAttendance(timeout: const Duration(seconds: 3));
+  }
+
+  String _successNotice({
+    required AttendanceLog log,
+    required String fallback,
+    required AttendanceLocationContext location,
+  }) {
+    final geofence = log.geofence;
+    if (geofence != null && geofence['inside'] == false) {
+      return '$fallback Pointage hors zone detecte; controlez le contexte avant validation RH.';
+    }
+
+    if (!location.hasCoordinates && location.message != null) {
+      return '$fallback ${location.message}';
+    }
+
+    return fallback;
   }
 }
 

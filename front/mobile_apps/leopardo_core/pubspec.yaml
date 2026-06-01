@@ -23,6 +23,7 @@ dependencies:
   firebase_core: ^3.13.0
   firebase_messaging: ^15.2.5
   flutter_local_notifications: ^19.2.1
+  geolocator: ^13.0.2
   json_annotation: ^4.11.0
   qr_flutter: ^4.1.0
 
