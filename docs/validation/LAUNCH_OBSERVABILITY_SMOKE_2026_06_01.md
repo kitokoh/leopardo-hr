@@ -2,7 +2,7 @@
 
 ## Contexte
 
-Validation Render du lot 69.6 apres correction #691 sur `GET /api/v1/launch-readiness`.
+Validation Render du lot 69.6 apres corrections #691, #693, #694 et #695 sur `GET /api/v1/launch-readiness`.
 
 - API : `https://gestionemployerbackend.onrender.com/api/v1`
 - Persona : manager demo `ahmed.benali@techcorp-algerie.dz`
@@ -16,26 +16,28 @@ Validation Render du lot 69.6 apres correction #691 sur `GET /api/v1/launch-read
 | `GET /health/live` | OK - `status=ok` |
 | `GET /health/ready` | OK - `status=ok` |
 | `GET /dashboard/manager-digest` | OK - payload operationnel avec `team_scope`, `team_size`, presences et actions |
-| `GET /launch-readiness` | OK apres #691 |
+| `GET /launch-readiness` | OK - score go-live complet apres #695 |
 
 ## Readiness lancement tenant
 
 | Indicateur | Valeur |
 |---|---|
-| Score | `43` |
-| Go-live ready | `false` |
-| Bloqueurs requis | `1` |
-| Bloqueur | `communication_governance` |
-| Detail bloqueur | `preferences_configured=1`, `communication_failures_7d=0` |
+| Score | `100` |
+| Go-live ready | `true` |
+| Bloqueurs requis | `0` |
+| Communication governance | `preferences_configured=11`, `communication_failures_7d=0` |
+| Payroll base | `payroll_ready_employees=11` |
+| Attendance entry | `geofence_configured=true`, `active_kiosks=1` |
+| Client experience tracking | `client_events_7d=1` |
 
 ## Interpretation
 
 Le cockpit technique est exploitable : health, ready, digest manager et readiness repondent sans 500/404.
 
-Le verdict lancement TechCorp reste **Go conditionnel / No-go marketing large** tant que les preferences de communication ne sont pas initialisees pour tous les utilisateurs actifs. Ce signal est fonctionnel, pas une panne API.
+Le verdict lancement TechCorp passe a **Go technique API / observabilite** : tous les checks requis et optionnels du cockpit sont complets apres execution des backfills runtime Render.
 
 ## Actions suivantes recommandees
 
-- Backfiller les `notification_preferences` manquantes pour les demos et nouveaux tenants.
-- Ajouter un smoke post-seed qui compare `preferences_configured` au nombre d'employes actifs.
+- Garder `notifications:backfill-preferences` et le backfill demo readiness dans l'entrypoint Render.
 - Continuer a surveiller les workflows post-merge : deploy, E2E staging, OWASP et distribution mobile.
+- Rejouer une recette terrain device sur les APK Firebase avant campagne marketing large.
