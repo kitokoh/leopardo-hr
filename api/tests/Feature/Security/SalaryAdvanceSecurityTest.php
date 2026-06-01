@@ -200,6 +200,114 @@ class SalaryAdvanceSecurityTest extends TestCase
         $response->assertStatus(403);
     }
 
+    public function test_salary_advance_double_validation_happy_path(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 750,
+            'reason' => 'Transport familial',
+            'status' => 'pending',
+            'validation_status' => 'pending',
+        ]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/manager-approve")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'approved')
+            ->assertJsonPath('data.validation_status', 'manager_approved')
+            ->assertJsonPath('data.manager_approved_by', $manager->id);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/mark-paid", [
+                'payment_reference' => 'CASH-2026-001',
+                'payment_note' => 'Remis en main propre',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'active')
+            ->assertJsonPath('data.validation_status', 'payment_declared')
+            ->assertJsonPath('data.payment_reference', 'CASH-2026-001')
+            ->assertJsonPath('data.payment_declared_by', $manager->id);
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/confirm-received")
+            ->assertOk()
+            ->assertJsonPath('data.validation_status', 'employee_confirmed');
+
+        $this->assertDatabaseHas('salary_advances', [
+            'id' => $advance->id,
+            'validation_status' => 'employee_confirmed',
+            'payment_reference' => 'CASH-2026-001',
+        ]);
+    }
+
+    public function test_manager_cannot_mark_salary_advance_paid_before_manager_approval(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'pending',
+            'validation_status' => 'pending',
+        ]);
+
+        $this->actingAs($manager, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/mark-paid")
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Advance must be manager-approved before declaring payment.');
+    }
+
+    public function test_employee_cannot_confirm_salary_advance_before_payment_declaration(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 500,
+            'status' => 'approved',
+            'validation_status' => 'manager_approved',
+            'manager_approved_by' => $manager->id,
+        ]);
+
+        $this->actingAs($employee, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/confirm-received")
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Payment must be declared before employee confirmation.');
+    }
+
+    public function test_employee_cannot_confirm_salary_advance_of_another_employee(): void
+    {
+        $company = $this->createCompany('Company A');
+        $manager = $this->createEmployee($company, 'manager', 'principal');
+        $employee1 = $this->createEmployee($company, 'employee');
+        $employee2 = $this->createEmployee($company, 'employee');
+
+        $advance = SalaryAdvance::query()->forceCreate([
+            'company_id' => $company->id,
+            'employee_id' => $employee2->id,
+            'amount' => 500,
+            'status' => 'active',
+            'validation_status' => 'payment_declared',
+            'manager_approved_by' => $manager->id,
+            'payment_declared_by' => $manager->id,
+        ]);
+
+        $this->actingAs($employee1, 'sanctum')
+            ->putJson("/api/v1/salary-advances/{$advance->id}/confirm-received")
+            ->assertStatus(403);
+    }
+
     private function createCompany(string $name): Company
     {
         return Company::query()->create([
