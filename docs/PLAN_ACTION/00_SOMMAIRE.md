@@ -72,6 +72,7 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 8. **Plan 59** : aligner la vitrine, le pricing et le storytelling sur ce qui est reellement livre.
 9. **Plan 66** : maintenir la cartographie A-J a jour a chaque nouveau retour testeur ou changement de positionnement.
 10. **Plan 67** : executer les derniers lots de preuve produit avant marketing : runtime mobile, platform admin, GPS, branding applique, notifications et release readiness.
+11. **Plan 68** : auditer le projet apres cloture Plan 67 : hygiene depot, contrats API/fronts, qualite code pragmatique, operations et prochain plan produit.
 
 Chaque plan doit sortir avec son changement code/documentation, ses tests ou preuves CI, une entree `CHANGELOG.md` et, si une lecon durable apparait, une entree `AGENTS.md`.
 
