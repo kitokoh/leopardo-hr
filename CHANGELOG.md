@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.229] - 2026-06-01
+
+### Added
+
+- Plan 69.1 : ajout du rapport `MOBILE_RELEASE_DEVICE_QA_2026_06_01.md` apres distribution Firebase staging des trois apps mobiles.
+
+### Changed
+
+- Plan 69 : lot 69.1 marque livre cote CI/Firebase, avec device QA encore a confirmer par testeurs physiques.
+
 ## [4.16.228] - 2026-06-01
 
 ### Added

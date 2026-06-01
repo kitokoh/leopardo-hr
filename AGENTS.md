@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.228)
+Derniere mise a jour : 2026-06-01 (v4.16.229)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -94,6 +94,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.226, `dev-hub/tools/validate-code-quality-governance.ps1` bloque le retour des chemins OpenAPI obsoletes dans les docs canoniques et verifie les artefacts qualite post-67. Les docs publiques doivent pointer vers `/docs` et `/docs/openapi.yaml`, pas vers l'ancien `/openapi/v1.yaml`.
 - Depuis v4.16.227, l'audit ops production est garde par `dev-hub/tools/validate-production-ops-readiness.ps1`. Avant lancement, verifier `DEPLOYMENT_GUIDE.md`, Render deploy/rollback hooks, Redis/queues, scheduler, Firebase App Distribution, FCM backend et backup/restore. `FIREBASE_READBACK_REQUIRED=true` ne doit etre active qu'apres rotation et test du service account.
 - Depuis v4.16.228, le Plan 68 est cloture et la suite canonique est `docs/PLAN_ACTION/69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md`. Commencer par le lot 69.1 : recette mobile release sur vrais appareils/Firebase pour employee, manager et platform admin avant d'elargir marketing.
+- Depuis v4.16.229, la distribution Firebase staging Plan 69.1 run `26750677529` a reussi pour employee, manager et platform admin depuis `main` SHA `2fc2ca97058365ed468430c2c3323df0690d607e`. Le go final mobile reste conditionne au test sur appareils physiques documente dans `docs/validation/MOBILE_RELEASE_DEVICE_QA_2026_06_01.md`.
 - Apres un lot qui touche auth/web/admin/mobile, attendre les checks GitHub Actions du PR et verifier aussi les workflows `main` post-merge quand ils partent en cascade (deploy, staging E2E, OWASP, mobile) avant d'annoncer la preuve finale.
 - Le workflow manuel `Deploy - Leopardo RH` doit rester utilisable sur `main` sans dependance au lookup `workflow_run`; c'est le bouton ops pour relancer Render et reexecuter l'entrypoint (migrations/seeders) apres une correction de donnees demo.
 - Le smoke k6 `dev-hub/load/k6/api-core-smoke.js` doit rester read-only et suivre les endpoints reels du dashboard client (`auth/me`, `dashboard/summary`, `dashboard/recent-activity`, `dashboard/kpi`) avant d'ajouter des scenarios plus agressifs.
