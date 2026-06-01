@@ -200,6 +200,7 @@ class DemoCompanySeeder extends Seeder
             $this->seedAttendanceLogs($companyId, $activeEmployeeIds);
             $absenceTypeIds = $this->createAbsenceTypes($companyId);
             $this->seedAbsences($companyId, $employeeIds, $absenceTypeIds, $managerIds['rh']);
+            $this->seedLeaveBalances($companyId, $activeEmployeeIds, $absenceTypeIds);
             $this->seedLeaveBalanceLogs($companyId, $employeeIds);
             $this->seedSalaryAdvance($companyId, $employeeIds[0] ?? null, $managerIds['rh'], $config['currency']);
             $this->seedPayrolls($companyId, $managerIds['principal'], $activeEmployeeIds, $config['currency']);
@@ -604,6 +605,37 @@ SQL);
                     'created_at' => now()->subMonth(),
                 ],
             ]);
+        }
+    }
+
+    private function seedLeaveBalances(string $companyId, array $employeeIds, array $absenceTypeIds): void
+    {
+        if (! $this->sharedTableExists('leave_balances')) {
+            return;
+        }
+
+        $annualTypeId = $absenceTypeIds['annual'] ?? null;
+        if (! $annualTypeId) {
+            return;
+        }
+
+        $year = (int) now()->format('Y');
+
+        foreach ($employeeIds as $index => $employeeId) {
+            DB::table($this->sharedTable('leave_balances'))->updateOrInsert(
+                [
+                    'company_id' => $companyId,
+                    'employee_id' => $employeeId,
+                    'absence_type_id' => $annualTypeId,
+                    'year' => $year,
+                ],
+                [
+                    'balance' => max(8, 18 - ($index % 5)),
+                    'used' => $index % 3,
+                    'pending' => 0,
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 
