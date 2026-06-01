@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.236] - 2026-06-01
+
+### Fixed
+
+- API platform admin : les endpoints detail entreprise utilisent maintenant `PlatformCompanyLookup` avec table qualifiee `public.companies` afin d'eviter les faux `404/500` lies au `search_path` PostgreSQL sur Render.
+
 ## [4.16.235] - 2026-06-01
 
 ### Fixed
