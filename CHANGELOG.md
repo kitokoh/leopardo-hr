@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.232] - 2026-06-01
+
+### Fixed
+
+- API manager/RH : `GET /api/v1/employees` filtre aussi les colonnes des relations `company` / `schedule`, de la recherche et du tri attendance selon le schema courant afin d'eviter les 500 Render quand un tenant historique n'a pas encore toutes les colonnes optionnelles.
+
 ## [4.16.231] - 2026-06-01
 
 ### Fixed

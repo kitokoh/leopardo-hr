@@ -72,8 +72,22 @@ class EmployeeController extends Controller
 
         $query = Employee::query()
             ->with([
-                'company:id,name,language,timezone,currency,features',
-                'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
+                'company' => fn ($query) => $query->select($this->relationColumns('companies', [
+                    'id',
+                    'name',
+                    'language',
+                    'timezone',
+                    'currency',
+                    'features',
+                ])),
+                'schedule' => fn ($query) => $query->select($this->relationColumns('schedules', [
+                    'id',
+                    'name',
+                    'start_time',
+                    'end_time',
+                    'break_minutes',
+                    'late_tolerance_minutes',
+                ])),
             ])
             ->select($this->employeeIndexColumns());
 
@@ -87,12 +101,17 @@ class EmployeeController extends Controller
 
         if (! empty($validated['search'])) {
             $needle = '%'.addcslashes((string) $validated['search'], '%_\\').'%';
-            $query->where(function (Builder $query) use ($needle): void {
-                $query
-                    ->where('first_name', 'like', $needle)
-                    ->orWhere('last_name', 'like', $needle)
-                    ->orWhere('email', 'like', $needle)
-                    ->orWhere('matricule', 'like', $needle);
+            $searchColumns = $this->relationColumns('employees', [
+                'first_name',
+                'last_name',
+                'email',
+                'matricule',
+            ]);
+            $query->where(function (Builder $query) use ($needle, $searchColumns): void {
+                foreach ($searchColumns as $index => $column) {
+                    $method = $index === 0 ? 'where' : 'orWhere';
+                    $query->{$method}($column, 'like', $needle);
+                }
             });
         }
 
@@ -157,6 +176,18 @@ class EmployeeController extends Controller
     }
 
     /**
+     * @param  list<string>  $columns
+     * @return list<string>
+     */
+    private function relationColumns(string $table, array $columns): array
+    {
+        return array_values(array_filter(
+            $columns,
+            static fn (string $column): bool => Schema::hasColumn($table, $column)
+        ));
+    }
+
+    /**
      * @param  Collection<int, Employee>  $employees
      */
     private function attachOperationalState(Collection $employees): void
@@ -179,9 +210,9 @@ class EmployeeController extends Controller
 
         $latestLogs = AttendanceLog::query()
             ->whereIn('employee_id', $employeeIds)
-            ->whereDate('date', $today)
-            ->orderByDesc('session_number')
-            ->orderByDesc('check_in')
+            ->when(Schema::hasColumn('attendance_logs', 'date'), fn (Builder $query) => $query->whereDate('date', $today))
+            ->when(Schema::hasColumn('attendance_logs', 'session_number'), fn (Builder $query) => $query->orderByDesc('session_number'))
+            ->when(Schema::hasColumn('attendance_logs', 'check_in'), fn (Builder $query) => $query->orderByDesc('check_in'))
             ->get()
             ->groupBy('employee_id')
             ->map(fn ($logs) => $logs->first());
