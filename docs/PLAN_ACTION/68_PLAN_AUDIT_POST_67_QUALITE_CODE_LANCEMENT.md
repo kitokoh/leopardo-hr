@@ -69,6 +69,10 @@ Verifier que les operations essentielles sont documentees et testables : deploy,
 - Mise a jour runbooks si une procedure manque.
 - Liste des secrets/envs requis pour lancement.
 
+### Statut
+
+**Livre.** Le garde `dev-hub/tools/validate-production-ops-readiness.ps1` relie deploy, rollback, queues, Redis, scheduler, notifications, Firebase Distribution et backup/restore. `DEPLOYMENT_GUIDE.md` documente les secrets CI/CD/mobile critiques. Rapport : `docs/validation/PRODUCTION_OPS_READINESS_REPORT_2026_06_01.md`.
+
 ## Lot 68.5 - Nouveau plan produit
 
 ### Objectif

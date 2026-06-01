@@ -1,6 +1,6 @@
 # DEPLOYMENT GUIDE - LEOPARDO RH
 
-Derniere mise a jour : 2026-05-16
+Derniere mise a jour : 2026-06-01
 
 Ce guide documente le deploiement operationnel minimal de l'API Laravel et des workers. Il complete les runbooks existants sans remplacer les configurations cloud.
 
@@ -35,6 +35,29 @@ LOG_CHANNEL=stack
 ```
 
 Les secrets doivent rester dans le dashboard du fournisseur cloud. Ne pas les committer.
+
+## 2.1 Secrets CI/CD et mobile
+
+Les workflows GitHub Actions et Firebase Distribution attendent aussi :
+
+```env
+RENDER_DEPLOY_HOOK_URL=...
+RENDER_ROLLBACK_HOOK_URL=...
+FIREBASE_TOKEN=...
+FIREBASE_EMPLOYEE_ANDROID_APP_ID=...
+FIREBASE_MANAGER_ANDROID_APP_ID=...
+FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID=...
+FIREBASE_SERVICE_ACCOUNT_JSON=...
+FIREBASE_READBACK_REQUIRED=false
+FIREBASE_PROJECT_ID=leopardo-rh
+```
+
+Regles :
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON` doit etre rote si la cle a ete exposee dans un chat, ticket, log ou document public.
+- `FIREBASE_READBACK_REQUIRED=true` ne doit etre active qu'apres avoir confirme que le service account peut lister les releases App Distribution.
+- les workflows `deploy-main.yml` et `mobile-distribute.yml` comparent les App IDs Firebase avec les fichiers `google-services.json` avant upload.
+- les APK doivent garder un nom prefixe par app (`employee-*`, `manager-*`, `platform-admin-*`).
 
 ## 3. Render Web Service - API
 
