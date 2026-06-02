@@ -103,11 +103,10 @@ Get your development environment up and running in minutes:
 # 1. Clone the repository
 git clone https://github.com/kitokoh/leopardo-hr.git && cd leopardo-hr
 
-# 2. Run the bootstrap script
-./dev-hub/scripts/bootstrap.sh
+# 2. Run the bootstrap
 
 # 3. Start the API
-cd api && ./vendor/bin/sail up -d
+cd api && .sail up -d
 ```
 
 Detailed onboarding instructions: [DEVELOPMENT.md](dev-hub/DEVELOPMENT.md).
