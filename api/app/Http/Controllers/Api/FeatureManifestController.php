@@ -9,17 +9,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Contrôleur pour l'API du manifeste des fonctionnalités
- *
- * Expose les endpoints pour que l'application mobile puisse récupérer
- * le manifeste des fonctionnalités disponibles et compatibles.
- */
 class FeatureManifestController extends Controller
 {
     public function __construct(
         private readonly FeatureRegistryInterface $registry,
     ) {}
+
+    /**
+     * Safely get authenticated user
+     */
+    private function getUser()
+    {
+        return Auth::user();
+    }
 
     /**
      * Récupère le manifeste complet des fonctionnalités
@@ -28,7 +30,14 @@ class FeatureManifestController extends Controller
     {
         try {
             $mobileVersion = $request->query('mobile_version', '1.0.0');
-            $user = Auth::user();
+            $user = $this->getUser();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
 
             Log::info('Feature manifest requested', [
                 'user_id' => $user->id,
@@ -36,16 +45,13 @@ class FeatureManifestController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            // Générer le manifeste pour la version mobile demandée
             $manifest = $this->registry->getManifest($mobileVersion);
 
-            // Filtrer les fonctionnalités selon les permissions de l'utilisateur
             $manifest['features'] = $this->filterFeaturesByPermissions(
                 $manifest['features'],
                 $user
             );
 
-            // Mettre à jour le nombre total après filtrage
             $manifest['total_features'] = count($manifest['features']);
             $manifest['user_id'] = $user->id;
             $manifest['user_role'] = $user->role ?? 'employee';
@@ -64,30 +70,34 @@ class FeatureManifestController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to generate feature manifest', [
                 'user_id' => Auth::id(),
-                'mobile_version' => $request->query('mobile_version'),
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate feature manifest',
-                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error',
+                'message' => 'Internal server error',
             ], 500);
         }
     }
 
-    /**
-     * Récupère les fonctionnalités compatibles avec une version mobile
-     */
     public function compatible(Request $request, string $version): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $user = $this->getUser();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
 
             $features = $this->registry->getCompatibleFeatures($version);
 
-            // Convertir en format manifeste et filtrer par permissions
-            $featuresArray = $features->map(fn ($feature) => $feature->toManifestArray())->toArray();
+            $featuresArray = $features->map(
+                fn ($feature) => $feature->toManifestArray()
+            )->toArray();
+
             $filteredFeatures = $this->filterFeaturesByPermissions($featuresArray, $user);
 
             return response()->json([
@@ -101,24 +111,28 @@ class FeatureManifestController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Failed to get compatible features', [
-                'user_id' => Auth::id(),
-                'version' => $version,
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get compatible features',
+                'message' => 'Internal server error',
             ], 500);
         }
     }
 
-    /**
-     * Récupère une fonctionnalité spécifique
-     */
     public function show(string $key): JsonResponse
     {
         try {
+            $user = $this->getUser();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
             $feature = $this->registry->getFeature($key);
 
             if (! $feature) {
@@ -128,9 +142,6 @@ class FeatureManifestController extends Controller
                 ], 404);
             }
 
-            $user = Auth::user();
-
-            // Vérifier les permissions
             if (! $this->userHasFeaturePermissions($user, $feature->permissions)) {
                 return response()->json([
                     'success' => false,
@@ -145,27 +156,21 @@ class FeatureManifestController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Failed to get feature', [
-                'user_id' => Auth::id(),
-                'feature_key' => $key,
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get feature',
+                'message' => 'Internal server error',
             ], 500);
         }
     }
 
-    /**
-     * Récupère les statistiques du registre (admin seulement)
-     */
     public function statistics(): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $user = $this->getUser();
 
-            // Vérifier que l'utilisateur est admin
             if (! $this->userIsAdmin($user)) {
                 return response()->json([
                     'success' => false,
@@ -173,45 +178,34 @@ class FeatureManifestController extends Controller
                 ], 403);
             }
 
-            $stats = $this->registry->getStatistics();
-
             return response()->json([
                 'success' => true,
-                'data' => $stats,
+                'data' => $this->registry->getStatistics(),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to get registry statistics', [
-                'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get statistics',
+                'message' => 'Internal server error',
             ], 500);
         }
     }
 
-    /**
-     * Synchronise le registre (admin seulement)
-     */
     public function synchronize(): JsonResponse
     {
         try {
-            $user = Auth::user();
+            $user = $this->getUser();
 
-            // Vérifier que l'utilisateur est admin
             if (! $this->userIsAdmin($user)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Admin access required',
                 ], 403);
             }
-
-            Log::info('Manual feature registry synchronization initiated', [
-                'user_id' => $user->id,
-            ]);
 
             $result = $this->registry->synchronize();
 
@@ -223,23 +217,16 @@ class FeatureManifestController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Failed to synchronize registry', [
-                'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Synchronization failed',
-                'error' => app()->environment('local') ? $e->getMessage() : 'Internal server error',
+                'message' => 'Internal server error',
             ], 500);
         }
     }
 
-    /**
-     * Filtre les fonctionnalités selon les permissions de l'utilisateur
-     *
-     * @param  mixed  $user
-     */
     private function filterFeaturesByPermissions(array $features, $user): array
     {
         return array_filter($features, function ($feature) use ($user) {
@@ -247,20 +234,13 @@ class FeatureManifestController extends Controller
         });
     }
 
-    /**
-     * Vérifie si l'utilisateur a les permissions pour une fonctionnalité
-     *
-     * @param  mixed  $user
-     */
-    private function userHasFeaturePermissions($user, array $requiredPermissions): bool
+    private function userHasFeaturePermissions($user, array $permissions): bool
     {
-        // Si aucune permission requise, la fonctionnalité est accessible
-        if (empty($requiredPermissions)) {
+        if (empty($permissions)) {
             return true;
         }
 
-        // Vérifier chaque permission requise
-        foreach ($requiredPermissions as $permission) {
+        foreach ($permissions as $permission) {
             if (! $user->can($permission)) {
                 return false;
             }
@@ -269,15 +249,14 @@ class FeatureManifestController extends Controller
         return true;
     }
 
-    /**
-     * Vérifie si l'utilisateur est administrateur
-     *
-     * @param  mixed  $user
-     */
     private function userIsAdmin($user): bool
     {
+        if (! $user) {
+            return false;
+        }
+
         $role = $user->role ?? '';
 
-        return $role === 'manager' || in_array($role, ['admin', 'super_admin'], true);
+        return in_array($role, ['admin', 'super_admin', 'manager'], true);
     }
 }
