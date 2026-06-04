@@ -1,52 +1,54 @@
 <template>
   <!-- Mobile sidebar overlay -->
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 z-40 lg:hidden"
-    @click="$emit('close')"
-  >
-    <div class="fixed inset-0 bg-gray-600 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-80"></div>
-  </div>
+  <transition name="fade">
+    <div
+      v-if="isOpen"
+      class="fixed inset-0 z-40 lg:hidden"
+      @click="$emit('close')"
+    >
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+    </div>
+  </transition>
 
   <!-- Sidebar -->
   <div
     :class="[
-      'fixed inset-y-0 left-0 z-50 w-64 transform bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
+      'fixed inset-y-0 left-0 z-50 w-64 transform bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-premium transition-all duration-300 ease-in-out lg:static lg:translate-x-0',
       isOpen ? 'translate-x-0' : '-translate-x-full'
     ]"
   >
     <!-- Logo -->
-    <div class="flex h-16 items-center justify-center border-b border-gray-200 dark:border-gray-700 px-6">
+    <div class="flex h-20 items-center justify-center border-b border-slate-200/50 dark:border-slate-800/50 px-6">
       <div class="flex items-center">
-        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-cyan-600 shadow-lg shadow-brand-500/20">
           <span class="text-sm font-bold text-white">LRH</span>
         </div>
-        <span class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Admin</span>
+        <span class="ml-3 text-xl font-bold tracking-tight text-slate-900 dark:text-white">Leopardo</span>
       </div>
     </div>
 
     <!-- Navigation -->
-    <nav class="mt-6 px-3" role="navigation" aria-label="Menu principal">
+    <nav class="mt-6 px-4" role="navigation" aria-label="Menu principal">
       <div class="space-y-1">
         <router-link
           v-for="item in navigation"
           :key="item.name"
           :to="item.path"
           :class="[
-            'group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            'group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
             $route.name === item.name
-              ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+              ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
           ]"
           @click="$emit('close')"
         >
           <component
             :is="item.icon"
             :class="[
-              'mr-3 h-5 w-5 flex-shrink-0',
+              'mr-3 h-5 w-5 flex-shrink-0 transition-colors',
               $route.name === item.name
-                ? 'text-indigo-500 dark:text-indigo-400'
-                : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-300'
+                ? 'text-white'
+                : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'
             ]"
           />
           {{ item.title }}
@@ -104,20 +106,20 @@
     </nav>
 
     <!-- User info -->
-    <div class="absolute bottom-0 w-full border-t border-gray-200 dark:border-gray-700 p-4">
+    <div class="absolute bottom-0 w-full border-t border-slate-200/50 dark:border-slate-800/50 p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
       <div class="flex items-center">
-        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
-          <span class="text-sm font-medium text-gray-700">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-sm">
+          <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
             {{ userInitials }}
           </span>
         </div>
-        <div class="ml-3 flex-1">
-          <p class="text-sm font-medium text-gray-900 dark:text-white">{{ authStore.userName }}</p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">{{ authStore.userRole }}</p>
+        <div class="ml-3 flex-1 overflow-hidden">
+          <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ authStore.userName }}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ authStore.userRole }}</p>
         </div>
         <button
           @click="handleLogout"
-          class="ml-2 rounded-md p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="ml-2 p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
           title="Déconnexion"
         >
           <ArrowRightOnRectangleIcon class="h-5 w-5" />
