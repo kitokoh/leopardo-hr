@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between animate-fade-in">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Cockpit plateforme</h1>
-        <p class="mt-1 text-sm text-gray-500">
-          Synthese commerciale, adoption terrain et demandes entrantes.
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Cockpit plateforme</h1>
+        <p class="mt-1 text-slate-500 dark:text-slate-400">
+          Synthèse commerciale, adoption terrain et demandes entrantes.
         </p>
       </div>
       <button class="btn-secondary" :disabled="isLoading" @click="loadDashboard">
@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5 animate-slide-up">
       <StatsCard title="MRR portefeuille" :value="formatCurrency(revenue.mrr, revenue.currency)" icon="CurrencyEuroIcon" color="purple" />
       <StatsCard title="ARR estime" :value="formatCurrency(revenue.arr, revenue.currency)" icon="ChartBarIcon" color="blue" />
       <StatsCard title="Clients actifs" :value="companyMetrics.active" icon="BuildingOfficeIcon" color="green" />
@@ -27,24 +27,24 @@
       {{ errorMessage }}
     </div>
 
-    <div v-else class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-      <section class="rounded-lg bg-white shadow xl:col-span-2">
-        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+    <div v-else class="grid grid-cols-1 gap-6 xl:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
+      <section class="card xl:col-span-2">
+        <div class="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-5">
           <div>
-            <h2 class="text-lg font-semibold text-gray-900">Priorites clients</h2>
-            <p class="text-sm text-gray-500">Actions qui protegent la retention et l'activation terrain.</p>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Priorités clients</h2>
+            <p class="text-sm text-slate-500">Actions qui protègent la rétention et l'activation terrain.</p>
           </div>
-          <router-link class="text-sm font-medium text-indigo-600 hover:text-indigo-800" to="/companies">
+          <router-link class="text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition-colors" to="/companies">
             Voir portefeuille
           </router-link>
         </div>
 
-        <div class="divide-y divide-gray-200">
-          <article v-for="item in priorityCompanies" :key="item.company.id" class="p-6">
+        <div class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
+          <article v-for="item in priorityCompanies" :key="item.company.id" class="p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div class="flex flex-wrap items-center gap-3">
-                  <h3 class="font-semibold text-gray-900">{{ item.company.name }}</h3>
+                  <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company.name }}</h3>
                   <span :class="riskClass(item.risk_level)">{{ riskLabel(item.risk_level) }}</span>
                   <span class="text-sm font-semibold text-gray-900">{{ item.health_score }}/100</span>
                 </div>
@@ -66,23 +66,23 @@
         </div>
       </section>
 
-      <section class="rounded-lg bg-white shadow">
-        <div class="border-b border-gray-200 px-6 py-4">
-          <h2 class="text-lg font-semibold text-gray-900">Demandes entrantes</h2>
-          <p class="text-sm text-gray-500">Nouveaux comptes a qualifier.</p>
+      <section class="card">
+        <div class="border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-5">
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Demandes entrantes</h2>
+          <p class="text-sm text-slate-500">Nouveaux comptes à qualifier.</p>
         </div>
-        <div class="divide-y divide-gray-200">
-          <article v-for="request in pendingCompanyRequests" :key="request.id" class="p-4">
+        <div class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
+          <article v-for="request in pendingCompanyRequests" :key="request.id" class="p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <h3 class="font-medium text-gray-900">{{ request.company_name }}</h3>
-                <p class="text-sm text-gray-500">{{ request.sector || 'Secteur non precise' }}</p>
+                <h3 class="font-bold text-slate-900 dark:text-white">{{ request.company_name }}</h3>
+                <p class="text-sm text-slate-500">{{ request.sector || 'Secteur non précisé' }}</p>
               </div>
-              <span class="rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-semibold text-yellow-800">
+              <span class="rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2.5 py-1 text-xs font-bold text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800">
                 A traiter
               </span>
             </div>
-            <p class="mt-2 text-sm text-gray-600">{{ request.email || request.user?.email || 'Contact non renseigne' }}</p>
+            <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">{{ request.email || request.user?.email || 'Contact non renseigné' }}</p>
           </article>
           <div v-if="pendingCompanyRequests.length === 0" class="p-6 text-sm text-gray-500">
             Aucune demande en attente.
@@ -96,57 +96,57 @@
       </section>
     </div>
 
-    <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <section class="rounded-lg bg-white p-6 shadow">
-        <h2 class="text-lg font-semibold text-gray-900">Adoption</h2>
+    <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-6 lg:grid-cols-3 animate-slide-up" style="animation-delay: 0.2s">
+      <section class="card p-6">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Adoption</h2>
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Pointages 30j</dt>
-            <dd class="font-semibold text-gray-900">{{ adoption.attendance_logs }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">Pointages 30j</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ adoption.attendance_logs }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Employes actifs</dt>
-            <dd class="font-semibold text-gray-900">{{ adoption.active_employees }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">Employés actifs</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ adoption.active_employees }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Clients a risque</dt>
-            <dd class="font-semibold text-gray-900">{{ summary.risk.high + summary.risk.medium }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">Clients à risque</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ summary.risk.high + summary.risk.medium }}</dd>
           </div>
         </dl>
       </section>
 
-      <section class="rounded-lg bg-white p-6 shadow">
-        <h2 class="text-lg font-semibold text-gray-900">Revenus</h2>
+      <section class="card p-6">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Revenus</h2>
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">MRR</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(revenue.mrr, revenue.currency) }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">MRR</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(revenue.mrr, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Encaisse 30j</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">Encaisse 30j</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Impayes</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(revenue.overdue_total, revenue.currency) }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">Impayés</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(revenue.overdue_total, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">ARPA</dt>
-            <dd class="font-semibold text-gray-900">{{ formatCurrency(averageRevenuePerAccount, revenue.currency) }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">ARPA</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ formatCurrency(averageRevenuePerAccount, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-gray-500">Abonnements actifs</dt>
-            <dd class="font-semibold text-gray-900">{{ subscriptionMetrics.active }}</dd>
+            <dt class="text-slate-500 dark:text-slate-400">Abonnements actifs</dt>
+            <dd class="font-bold text-slate-900 dark:text-white">{{ subscriptionMetrics.active }}</dd>
           </div>
         </dl>
       </section>
 
-      <section class="rounded-lg bg-white p-6 shadow">
-        <h2 class="text-lg font-semibold text-gray-900">Raccourcis</h2>
+      <section class="card p-6">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Raccourcis</h2>
         <div class="mt-4 grid grid-cols-1 gap-3 text-sm">
-          <router-link class="btn-secondary justify-center" to="/companies">Portefeuille clients</router-link>
-          <router-link class="btn-secondary justify-center" to="/subscriptions">Abonnements</router-link>
-          <router-link class="btn-secondary justify-center" to="/support">Demandes clients</router-link>
+          <router-link class="btn-secondary justify-center shadow-sm" to="/companies">Portefeuille clients</router-link>
+          <router-link class="btn-secondary justify-center shadow-sm" to="/subscriptions">Abonnements</router-link>
+          <router-link class="btn-secondary justify-center shadow-sm" to="/support">Demandes clients</router-link>
         </div>
       </section>
     </div>

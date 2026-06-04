@@ -1,32 +1,39 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8 animate-fade-in">
     <!-- Header with filters -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div class="card p-8 relative overflow-hidden">
+      <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
+
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Analytics Avancées</h1>
-          <p class="mt-1 text-sm text-gray-500">
-            Analyse approfondie des performances et tendances
+          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Analytics Avancées</h1>
+          <p class="text-slate-500 dark:text-slate-400 font-medium">
+            Analyse approfondie des performances et tendances de la plateforme
           </p>
         </div>
 
         <!-- Filters -->
-        <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-          <select
-            v-model="selectedPeriod"
-            @change="updateAnalytics"
-            class="rounded-md border-gray-300 text-sm"
-          >
-            <option value="7d">7 derniers jours</option>
-            <option value="30d">30 derniers jours</option>
-            <option value="90d">3 derniers mois</option>
-            <option value="1y">Cette année</option>
-          </select>
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
+            <button
+              v-for="period in ['7d', '30d', '90d', '1y']"
+              :key="period"
+              @click="selectedPeriod = period; updateAnalytics()"
+              :class="[
+                'px-4 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300',
+                selectedPeriod === period
+                  ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-premium'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              ]"
+            >
+              {{ period }}
+            </button>
+          </div>
 
           <select
             v-model="selectedMetric"
             @change="updateAnalytics"
-            class="rounded-md border-gray-300 text-sm"
+            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-800/50 text-sm font-bold focus:ring-brand-500 transition-all duration-200 px-4 py-2.5"
           >
             <option value="users">Utilisateurs</option>
             <option value="revenue">Revenus</option>
@@ -36,9 +43,9 @@
 
           <button
             @click="exportReport"
-            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            class="btn-secondary py-2.5"
           >
-            <DocumentArrowDownIcon class="h-4 w-4 mr-2" />
+            <DocumentArrowDownIcon class="h-5 w-5 mr-2" />
             Exporter
           </button>
         </div>
@@ -82,24 +89,27 @@
     </div>
 
     <!-- Advanced Charts -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2 animate-slide-up" style="animation-delay: 0.1s">
       <!-- Cohort Analysis -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Analyse de Cohortes</h3>
-          <div class="flex items-center space-x-2">
-            <span class="text-sm text-gray-500">Rétention par mois</span>
-            <InformationCircleIcon class="h-4 w-4 text-gray-400" />
+      <div class="card p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Analyse de Cohortes</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Rétention des utilisateurs par mois</p>
           </div>
+          <InformationCircleIcon class="h-6 w-6 text-slate-400 cursor-help" />
         </div>
         <CohortChart :data="analytics.cohortData" />
       </div>
 
       <!-- Funnel Analysis -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Entonnoir de Conversion</h3>
-          <select class="text-sm border-gray-300 rounded-md">
+      <div class="card p-8">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Entonnoir de Conversion</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Performance du cycle de vie client</p>
+          </div>
+          <select class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:ring-brand-500">
             <option>Inscription → Activation</option>
             <option>Activation → Abonnement</option>
             <option>Essai → Payant</option>
@@ -110,12 +120,12 @@
     </div>
 
     <!-- Predictive Analytics -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 animate-slide-up" style="animation-delay: 0.2s">
       <!-- Churn Prediction -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Prédiction de Churn</h3>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+      <div class="card p-8 border-t-4 border-t-red-500">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prédiction de Churn</h3>
+          <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-800 dark:text-red-300">
             {{ analytics.churnPrediction.riskUsers }} à risque
           </span>
         </div>
@@ -123,19 +133,19 @@
       </div>
 
       <!-- Revenue Forecast -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Prévision Revenus</h3>
-          <span class="text-sm text-gray-500">3 prochains mois</span>
+      <div class="card p-8 border-t-4 border-t-brand-500">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Prévision Revenus</h3>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400">3 PROCHAINS MOIS</span>
         </div>
         <RevenueForecastWidget :data="analytics.revenueForecast" />
       </div>
 
       <!-- Feature Adoption -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Adoption Fonctionnalités</h3>
-          <button class="text-sm text-indigo-600 hover:text-indigo-500">
+      <div class="card p-8 border-t-4 border-t-cyan-500">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Adoption Fonctionnalités</h3>
+          <button class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors">
             Voir détails
           </button>
         </div>

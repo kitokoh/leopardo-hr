@@ -1,7 +1,7 @@
 <template>
-  <div class="rounded-lg border bg-white p-4 shadow-sm">
+  <div class="stat-card">
     <div class="flex items-center justify-between">
-      <p class="text-sm font-medium text-gray-500">
+      <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
         {{ title }}
       </p>
       <span
@@ -15,10 +15,10 @@
         {{ Math.abs(trend) }}%
       </span>
     </div>
-    <p class="mt-2 text-2xl font-bold text-gray-900">
+    <p class="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
       {{ formattedValue }}
     </p>
-    <p v-if="subtitle" class="mt-1 text-xs text-gray-400">
+    <p v-if="subtitle" class="mt-1 text-xs font-medium text-slate-400 dark:text-slate-500">
       {{ subtitle }}
     </p>
   </div>
