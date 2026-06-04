@@ -2,19 +2,19 @@
   <Teleport to="body">
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-[110] flex items-start justify-center pt-[15vh] bg-black/50 backdrop-blur-sm"
+      class="fixed inset-0 z-[110] flex items-start justify-center pt-[15vh] bg-slate-950/60 backdrop-blur-md"
       @click.self="close"
       @keydown.escape="close"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden animate-fade-in">
-        <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <MagnifyingGlassIcon class="h-5 w-5 text-gray-400 flex-shrink-0" />
+      <div class="glass-card max-w-lg w-full mx-4 overflow-hidden animate-fade-in !rounded-3xl border-white/20 shadow-glass-lg">
+        <div class="flex items-center gap-4 px-6 py-5 border-b border-slate-200/50 dark:border-slate-800/50">
+          <MagnifyingGlassIcon class="h-6 w-6 text-brand-500 flex-shrink-0" />
           <input
             ref="searchInput"
             v-model="query"
             type="text"
             placeholder="Rechercher pages, actions..."
-            class="flex-1 bg-transparent text-sm text-gray-900 dark:text-white placeholder-gray-400 outline-none"
+            class="flex-1 bg-transparent text-lg font-bold text-slate-900 dark:text-white placeholder-slate-400 outline-none"
             @keydown.down.prevent="moveDown"
             @keydown.up.prevent="moveUp"
             @keydown.enter.prevent="selectCurrent"
@@ -24,21 +24,30 @@
           </kbd>
         </div>
 
-        <div class="max-h-72 overflow-y-auto py-2" v-if="filteredItems.length">
+        <div class="max-h-96 overflow-y-auto py-3 px-2" v-if="filteredItems.length">
           <div
             v-for="(item, index) in filteredItems"
             :key="item.id"
-            class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors"
-            :class="index === activeIndex ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
+            class="flex items-center gap-4 px-4 py-3 cursor-pointer rounded-2xl transition-all duration-200"
+            :class="index === activeIndex ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'"
             @click="selectItem(item)"
             @mouseenter="activeIndex = index"
           >
-            <component :is="item.icon" class="h-4 w-4 flex-shrink-0 opacity-60" />
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium truncate">{{ item.label }}</div>
-              <div class="text-xs opacity-60 truncate" v-if="item.description">{{ item.description }}</div>
+            <div
+              class="h-10 w-10 rounded-xl flex items-center justify-center transition-colors"
+              :class="index === activeIndex ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'"
+            >
+              <component :is="item.icon" class="h-5 w-5" />
             </div>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400" v-if="item.shortcut">
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-bold truncate">{{ item.label }}</div>
+              <div class="text-xs opacity-80 truncate font-medium" v-if="item.description">{{ item.description }}</div>
+            </div>
+            <span
+              class="text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider"
+              :class="index === activeIndex ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'"
+              v-if="item.shortcut"
+            >
               {{ item.shortcut }}
             </span>
           </div>
@@ -48,10 +57,10 @@
           Aucun resultat pour "{{ query }}"
         </div>
 
-        <div class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4 text-[10px] text-gray-400 dark:text-gray-500">
-          <span><kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded font-mono">↑↓</kbd> naviguer</span>
-          <span><kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded font-mono">↵</kbd> selectionner</span>
-          <span><kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded font-mono">esc</kbd> fermer</span>
+        <div class="px-6 py-4 border-t border-slate-200/50 dark:border-slate-800/50 flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↑↓</kbd> naviguer</span>
+          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">↵</kbd> sélectionner</span>
+          <span class="flex items-center gap-1.5"><kbd class="px-1.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-slate-500">esc</kbd> fermer</span>
         </div>
       </div>
     </div>
