@@ -1,27 +1,43 @@
 <template>
-  <div class="space-y-6">
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard title="Runs ce mois" :value="stats.runs_this_month" icon="ChartBarIcon" color="blue" />
-      <StatsCard title="Bulletins generes" :value="stats.slips_generated" icon="UsersIcon" color="green" />
-      <StatsCard title="Masse salariale (runs charges)" :value="formattedMasse" icon="CurrencyEuroIcon" color="purple" />
-      <StatsCard title="En attente validation" :value="stats.pending_validation" icon="ChartBarIcon" color="yellow" />
+  <div class="space-y-8 animate-fade-in">
+    <!-- Header -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Gestion de la Paie</h1>
+        <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium">
+          Cycles de paie, bulletins de salaire et structures salariales.
+        </p>
+      </div>
+      <button class="btn-secondary py-2.5" :disabled="loading" @click="fetchData">
+        Actualiser
+      </button>
     </div>
 
-    <div v-if="runSummary" class="rounded-lg border border-indigo-200 bg-indigo-50/60 p-4 shadow-sm">
-      <div class="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h3 class="font-semibold text-gray-900">
-            Resume du run {{ runSummary.run?.id }}
-          </h3>
-          <p class="mt-1 text-sm text-gray-600">
-            {{ formatPeriod(runSummary.run?.period_start, runSummary.run?.period_end) }}
-            · Statut {{ runSummary.run?.status }}
-          </p>
+    <!-- Stats -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
+      <StatsCard title="Runs ce mois" :value="stats.runs_this_month" icon="ChartBarIcon" color="blue" />
+      <StatsCard title="Bulletins générés" :value="stats.slips_generated" icon="UsersIcon" color="green" />
+      <StatsCard title="Masse salariale" :value="formattedMasse" icon="CurrencyEuroIcon" color="purple" />
+      <StatsCard title="Attente validation" :value="stats.pending_validation" icon="ChartBarIcon" color="yellow" />
+    </div>
+
+    <!-- Run Summary (Animated) -->
+    <transition name="scale">
+      <div v-if="runSummary" class="card p-6 bg-brand-50/50 dark:bg-brand-900/10 border-brand-200 dark:border-brand-800">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+              Résumé du run {{ runSummary.run?.id }}
+            </h3>
+            <p class="mt-1 text-sm text-gray-600">
+              {{ formatPeriod(runSummary.run?.period_start, runSummary.run?.period_end) }}
+              · Statut {{ runSummary.run?.status }}
+            </p>
+          </div>
+          <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900" @click="runSummary = null">
+            Fermer
+          </button>
         </div>
-        <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900" @click="runSummary = null">
-          Fermer
-        </button>
-      </div>
       <dl class="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
         <div>
           <dt class="text-gray-500">
@@ -65,15 +81,19 @@
         </ul>
       </div>
     </div>
+    </transition>
 
-    <div class="flex gap-2">
+    <!-- Tabs -->
+    <div class="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200/50 dark:border-slate-700/50 w-fit animate-slide-up" style="animation-delay: 0.1s">
       <button
         v-for="tab in tabs"
         :key="tab.key"
         type="button"
         :class="[
-          'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50'
+          'px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 uppercase tracking-wider',
+          activeTab === tab.key
+            ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-premium'
+            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
         ]"
         @click="activeTab = tab.key"
       >

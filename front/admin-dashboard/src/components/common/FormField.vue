@@ -4,7 +4,7 @@
     <label
       v-if="label"
       :for="fieldId"
-      class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+      class="block text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1 mb-1.5"
     >
       {{ label }}
       <span v-if="required" class="text-red-500 ml-0.5" aria-hidden="true">*</span>
@@ -18,7 +18,7 @@
     <p
       v-if="hint && !error"
       :id="hintId"
-      class="text-xs text-gray-500 dark:text-gray-400"
+      class="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1 mt-1"
     >
       {{ hint }}
     </p>
