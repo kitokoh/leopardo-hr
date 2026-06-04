@@ -1,7 +1,7 @@
 <template>
-  <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+  <header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm transition-all duration-300">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 items-center justify-between">
+      <div class="flex h-20 items-center justify-between">
         <!-- Mobile menu button -->
         <button
           @click="$emit('toggle-sidebar')"
@@ -14,15 +14,15 @@
         <div class="flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-start">
           <div class="w-full max-w-lg lg:max-w-xs">
             <label for="search" class="sr-only">Rechercher</label>
-            <div class="relative">
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+            <div class="relative group">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 transition-colors group-focus-within:text-brand-500">
+                <MagnifyingGlassIcon class="h-5 w-5 text-slate-400" />
               </div>
               <input
                 id="search"
                 v-model="searchQuery"
                 name="search"
-                class="block w-full rounded-md border-0 bg-gray-50 dark:bg-gray-700 py-1.5 pl-10 pr-3 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-600 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                class="block w-full rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50 py-2 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-brand-500 sm:text-sm sm:leading-6 transition-all duration-200"
                 placeholder="Rechercher..."
                 type="search"
                 @keyup.enter="handleSearch"
@@ -47,18 +47,18 @@
           </div>
 
           <!-- Quick stats -->
-          <div class="hidden md:flex items-center space-x-6 text-sm text-gray-500">
-            <div class="flex items-center">
-              <UsersIcon class="h-4 w-4 mr-1" />
-              <span>{{ dashboardStore.stats.totalUsers }}</span>
+          <div class="hidden md:flex items-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
+            <div class="flex items-center hover:text-brand-500 transition-colors">
+              <UsersIcon class="h-4 w-4 mr-1.5" />
+              <span class="font-medium">{{ dashboardStore.stats.totalUsers }}</span>
             </div>
-            <div class="flex items-center">
-              <BuildingOfficeIcon class="h-4 w-4 mr-1" />
-              <span>{{ dashboardStore.stats.totalCompanies }}</span>
+            <div class="flex items-center hover:text-brand-500 transition-colors">
+              <BuildingOfficeIcon class="h-4 w-4 mr-1.5" />
+              <span class="font-medium">{{ dashboardStore.stats.totalCompanies }}</span>
             </div>
-            <div class="flex items-center">
-              <CurrencyEuroIcon class="h-4 w-4 mr-1" />
-              <span>{{ dashboardStore.formattedRevenue }}</span>
+            <div class="flex items-center hover:text-brand-500 transition-colors">
+              <CurrencyEuroIcon class="h-4 w-4 mr-1.5" />
+              <span class="font-medium">{{ dashboardStore.formattedRevenue }}</span>
             </div>
           </div>
 

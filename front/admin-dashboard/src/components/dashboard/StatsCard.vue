@@ -1,11 +1,14 @@
 <template>
-  <div class="bg-white overflow-hidden shadow rounded-lg">
-    <div class="p-5">
+  <div class="stat-card relative overflow-hidden group">
+    <!-- Background Gradient for Premium feel -->
+    <div :class="['absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-30', colorClasses.glow]"></div>
+
+    <div class="relative z-10">
       <div class="flex items-center">
         <div class="flex-shrink-0">
           <div
             :class="[
-              'flex items-center justify-center h-8 w-8 rounded-md',
+              'flex items-center justify-center h-10 w-10 rounded-xl shadow-lg transition-transform group-hover:scale-110',
               colorClasses.bg
             ]"
           >
@@ -17,11 +20,11 @@
         </div>
         <div class="ml-5 w-0 flex-1">
           <dl>
-            <dt class="text-sm font-medium text-gray-500 truncate">
+            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
               {{ title }}
             </dt>
             <dd class="flex items-baseline">
-              <div class="text-2xl font-semibold text-gray-900">
+              <div class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {{ formattedValue }}
               </div>
               <div
@@ -116,24 +119,29 @@ const iconComponent = computed(() => iconMap[props.icon] || ChartBarIcon)
 const colorClasses = computed(() => {
   const colors = {
     blue: {
-      bg: 'bg-blue-500',
-      icon: 'text-white'
+      bg: 'bg-gradient-to-br from-blue-500 to-blue-600',
+      icon: 'text-white',
+      glow: 'bg-blue-500'
     },
     green: {
-      bg: 'bg-green-500',
-      icon: 'text-white'
+      bg: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
+      icon: 'text-white',
+      glow: 'bg-emerald-500'
     },
     purple: {
-      bg: 'bg-purple-500',
-      icon: 'text-white'
+      bg: 'bg-gradient-to-br from-brand-500 to-brand-600',
+      icon: 'text-white',
+      glow: 'bg-brand-500'
     },
     yellow: {
-      bg: 'bg-yellow-500',
-      icon: 'text-white'
+      bg: 'bg-gradient-to-br from-yellow-500 to-yellow-600',
+      icon: 'text-white',
+      glow: 'bg-yellow-500'
     },
     red: {
-      bg: 'bg-red-500',
-      icon: 'text-white'
+      bg: 'bg-gradient-to-br from-red-500 to-red-600',
+      icon: 'text-white',
+      glow: 'bg-red-500'
     }
   }
   return colors[props.color] || colors.blue
