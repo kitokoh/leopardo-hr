@@ -2,6 +2,20 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.249] - 2026-06-05
+
+### Added
+
+- Go-to-market 2026 : ajout du dossier `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/` avec audit marche/produit, positionnement, messaging, offres et direction commerciale.
+- Plan 70 : ajout de `70_PLAN_MARKET_LAUNCH_2026_COMPANY_OS.md` avec 72 actions nouvelles pour readiness marche, monetisation, preuves terrain, IA gouvernee, operations et expansion.
+- Contexte IA : ajout de `docs/CONTEXT/` pour donner a un nouvel agent le contexte produit, technique, operationnel et les priorites courantes.
+- Validation : ajout de `MARKET_LAUNCH_AUDIT_2026_06_05.md` avec verdict go pilote payant controle et sources marche 2026.
+
+### Fixed
+
+- Mobile Platform Admin : le bouton `Utiliser le compte demo` remplit maintenant le mot de passe seede `password123` au lieu de l'ancien `admin`.
+- Mobile Plan 29 : le garde CI bloque maintenant un retour au mauvais mot de passe demo platform admin.
+
 ## [4.16.248] - 2026-06-01
 
 ### Changed
