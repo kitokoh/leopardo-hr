@@ -74,6 +74,7 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 10. **Plan 67** : executer les derniers lots de preuve produit avant marketing : runtime mobile, platform admin, GPS, branding applique, notifications et release readiness.
 11. **Plan 68** : auditer le projet apres cloture Plan 67 : hygiene depot, contrats API/fronts, qualite code pragmatique, operations et prochain plan produit.
 12. **Plan 69** : executer la recette lancement Mobile-First Company OS : apps mobiles reelles, parcours employee/manager/platform admin, paie asynchrone et observabilite.
+13. **Plan 70** : convertir le Go technique en lancement marche 2026 : positionnement, packaging, demo admin mobile, preuves terrain, offres, ROI, IA gouvernee et 72 actions nouvelles.
 
 Chaque plan doit sortir avec son changement code/documentation, ses tests ou preuves CI, une entree `CHANGELOG.md` et, si une lecon durable apparait, une entree `AGENTS.md`.
 
