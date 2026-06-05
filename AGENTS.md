@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-01 (v4.16.247)
+Derniere mise a jour : 2026-06-05 (v4.16.249)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -65,6 +65,9 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.127, la racine API Render expose aussi `/tester-guide` et `/api-explorer`. Garder ces pages publiques, legeres et coherentes avec `DemoCompanySeeder` pour que QA/dev puissent valider web client, mobile, admin plateforme et API sans preparer de payloads a la main.
 - Le login demo doit rester robuste meme si `public.user_lookups` est incomplet : `AuthService` peut retrouver l'employe dans les schemas tenants connus puis regenerer le lookup. Ne pas supprimer ce fallback sans fournir une commande ops de reparation demo.
 - Depuis v4.16.234, le compte super-admin expose par `/api/v1/demo-users` doit rester réellement utilisable sur les environnements demo : `DemoCompanyOnceSeeder` resynchronise `admin@leopardo-rh.com` / `password123` et retire le 2FA demo si necessaire. Si l'app `leopardo_platform_admin` retourne `INVALID_CREDENTIALS` avec les credentials publics, verifier d'abord ce seeder/deploy avant de toucher au client mobile.
+- Depuis v4.16.249, le bouton demo de `leopardo_platform_admin` doit remplir `admin@leopardo-rh.com` / `password123`. `validate-mobile-plan29.ps1` garde ce contrat; ne pas remettre l'ancien mot de passe `admin`.
+- Le contexte rapide pour nouveaux agents vit dans `docs/CONTEXT/`. Avant un audit large, lire ce dossier avec `AGENTS.md`, `CHANGELOG.md` et les rapports `docs/validation/*`.
+- Le positionnement marche courant vit dans `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/`. Le produit doit etre vendu comme `Mobile-First Company OS` pour PME terrain, pas comme simple SIRH generaliste.
 - Le smoke auth marche exige toujours `POST /api/v1/auth/login` puis `GET /api/v1/auth/me` avec le token. En mode shared, `TenantMiddleware` doit pouvoir rehydrater l'employe Sanctum via `public.user_lookups` avant de poser le tenant.
 - En auth shared PostgreSQL, ne pas supposer que `Company` se resout via le `search_path` courant : si un schema tenant contient une table `companies`, il peut masquer `public.companies`. `AuthService` et `TenantMiddleware` doivent recharger l'entreprise depuis `public.companies` avant de conclure `COMPANY_NOT_FOUND`.
 - Depuis v4.16.128, `/api/v1/demo-users` est un contrat public de documentation QA, pas un endpoint secret : ne pas le rebloquer via `DEMO_MODE_ENABLED=false`. Pour desactiver l'auto-seed Render, utiliser `DISABLE_DEMO_SEEDING=true`.
