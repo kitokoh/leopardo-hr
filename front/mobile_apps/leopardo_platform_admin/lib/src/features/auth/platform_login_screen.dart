@@ -22,7 +22,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
 
   void _fillDemoAccount() {
     _emailController.text = 'admin@leopardo-rh.com';
-    _passwordController.text = 'admin';
+    _passwordController.text = 'password123';
     _twoFactorController.clear();
   }
 
