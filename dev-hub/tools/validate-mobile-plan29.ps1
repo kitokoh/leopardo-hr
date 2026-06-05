@@ -80,6 +80,12 @@ if (Test-Path -LiteralPath $appRoot) {
             Add-Failure "Platform admin contains empty UI handler in $($match.Path):$($match.LineNumber)"
         }
     }
+
+    Assert-Contains $appContent "admin@leopardo-rh.com" "Platform admin demo login"
+    Assert-Contains $appContent "password123" "Platform admin demo login"
+    if ($appContent.Contains("_passwordController.text = 'admin';")) {
+        Add-Failure "Platform admin demo login must use the seeded password password123, not the stale password admin."
+    }
 }
 
 Assert-Contains `

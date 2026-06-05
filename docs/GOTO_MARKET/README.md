@@ -62,6 +62,7 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 
 | Besoin | Fichier à lire |
 |--------|----------------|
+| Audit marche 2026 et positionnement actualise | [`2026_MARKET_LAUNCH_COMPANY_OS/README.md`](2026_MARKET_LAUNCH_COMPANY_OS/README.md) |
 | Comprendre le projet en 5 min | [`99_EXECUTIVE/READ_FIRST.md`](99_EXECUTIVE/READ_FIRST.md) |
 | Pitch investisseur | [`99_EXECUTIVE/ONE_PAGER.md`](99_EXECUTIVE/ONE_PAGER.md) |
 | Former un commercial | [`04_SALES/SALES_PLAYBOOK.md`](04_SALES/SALES_PLAYBOOK.md) |
