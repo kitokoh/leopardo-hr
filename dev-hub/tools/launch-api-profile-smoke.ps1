@@ -7,6 +7,8 @@ param(
     [string]$KioskToken = $env:LEOPARDO_KIOSK_TOKEN,
     [switch]$DisableDemoLogin,
     [switch]$IncludePlatformProvisioning,
+    [ValidateSet("trial", "active")]
+    [string]$PlatformProvisioningStatus = "trial",
     [int]$TimeoutSeconds = 20
 )
 
@@ -322,12 +324,12 @@ if ($IncludePlatformProvisioning) {
             manager_first_name = "Smoke"
             manager_last_name = "Plan72"
             manager_email = "plan72-manager-$suffix@example.com"
-            status = "trial"
+            status = $PlatformProvisioningStatus
         }
 
         Invoke-SmokeRequest `
             -Profile "platform_admin" `
-            -Name "platform_company_create_guarded" `
+            -Name "platform_company_create_$PlatformProvisioningStatus" `
             -Method "POST" `
             -Path "/platform/companies" `
             -Token $PlatformAdminToken `

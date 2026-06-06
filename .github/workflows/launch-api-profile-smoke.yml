@@ -17,6 +17,14 @@ on:
         required: false
         type: boolean
         default: false
+      platform_provisioning_status:
+        description: "Status for guarded platform provisioning smoke"
+        required: false
+        type: choice
+        options:
+          - trial
+          - active
+        default: trial
 
 permissions:
   contents: read
@@ -57,6 +65,7 @@ jobs:
 
           if ("${{ github.event.inputs.include_platform_provisioning }}" -eq "true") {
             $smokeArgs.IncludePlatformProvisioning = $true
+            $smokeArgs.PlatformProvisioningStatus = "${{ github.event.inputs.platform_provisioning_status }}"
           }
 
           if ("${{ github.event.inputs.disable_demo_login }}" -eq "true") {
