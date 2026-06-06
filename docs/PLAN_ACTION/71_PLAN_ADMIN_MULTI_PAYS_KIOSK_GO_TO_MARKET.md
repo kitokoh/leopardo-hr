@@ -111,6 +111,10 @@ Transformer le socle deja pret au lancement en experience commerciale et operati
 - Chaque bouton visible mene a un ecran ou une action fonctionnelle.
 - Les informations sensibles sont separees des actions commerciales ou documentaires.
 
+### Statut
+
+**Lot UX mobile livre.** Les apps `leopardo_employee` et `leopardo_manager` affichent maintenant une section "Vue d ensemble" en haut de `Compte`, structurée par identite portable, parcours/securite, documents, QR/biometrie, notifications et session. Cette section clarifie l'organisation sans ajouter de boutons morts ; la deconnexion reste volontairement en bas de page.
+
 ## Lot 71.7 - Audit commercial-technique go-to-market
 
 ### Actions
