@@ -58,6 +58,10 @@ Transformer le socle deja pret au lancement en experience commerciale et operati
 - Les nouveaux ecrans ne doivent pas ajouter de texte hardcode sans justification.
 - FR reste langue de developpement, EN/AR/TR sont les langues de traduction Jules.
 
+### Statut
+
+**Lot gouvernance livre.** Le guide Jules multilingue formalise les fichiers autorises et les prompts EN/AR/TR. Le script `dev-hub/tools/validate-i18n-debt.ps1` produit un rapport par surface afin de prioriser les textes hardcodes sans bloquer encore la CI en mode non strict.
+
 ## Lot 71.4 - Vitrine : essai reel par email
 
 ### Actions
