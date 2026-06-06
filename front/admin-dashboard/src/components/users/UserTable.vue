@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-300">
-      <thead class="bg-gray-50">
+    <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50">
+      <thead class="bg-slate-50/50 dark:bg-slate-800/50">
         <tr>
           <th scope="col" class="relative w-12 px-6 sm:w-16 sm:px-8">
             <input
@@ -9,7 +9,7 @@
               :checked="isAllSelected"
               :indeterminate="isIndeterminate"
               @change="$emit('select-all', $event.target.checked)"
-              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600"
             />
           </th>
           <th
@@ -17,24 +17,24 @@
             :key="column.key"
             scope="col"
             :class="[
-              'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
-              column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
+              'px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
+              column.sortable ? 'cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 transition-colors' : ''
             ]"
             @click="column.sortable && handleSort(column.key)"
           >
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center space-x-1.5">
               <span>{{ column.label }}</span>
               <div v-if="column.sortable" class="flex flex-col">
                 <ChevronUpIcon
                   :class="[
-                    'h-3 w-3',
-                    sortBy === column.key && sortOrder === 'asc' ? 'text-indigo-600' : 'text-gray-400'
+                    'h-3.5 w-3.5',
+                    sortBy === column.key && sortOrder === 'asc' ? 'text-brand-500' : 'text-slate-300'
                   ]"
                 />
                 <ChevronDownIcon
                   :class="[
-                    'h-3 w-3 -mt-1',
-                    sortBy === column.key && sortOrder === 'desc' ? 'text-indigo-600' : 'text-gray-400'
+                    'h-3.5 w-3.5 -mt-1.5',
+                    sortBy === column.key && sortOrder === 'desc' ? 'text-brand-500' : 'text-slate-300'
                   ]"
                 />
               </div>
@@ -45,13 +45,13 @@
           </th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-200 bg-white">
+      <tbody class="divide-y divide-slate-200/50 dark:divide-slate-800/50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm">
         <!-- Loading state -->
         <tr v-if="loading">
-          <td colspan="8" class="px-6 py-12 text-center">
-            <div class="flex items-center justify-center">
-              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-              <span class="ml-3 text-gray-500">Chargement des utilisateurs...</span>
+          <td colspan="8" class="px-6 py-16 text-center">
+            <div class="flex flex-col items-center justify-center">
+              <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-600 mb-4"></div>
+              <span class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Chargement des utilisateurs...</span>
             </div>
           </td>
         </tr>
@@ -72,8 +72,8 @@
           v-for="user in sortedUsers"
           :key="user.id"
           :class="[
-            'hover:bg-gray-50',
-            selectedUsers.includes(user.id) ? 'bg-indigo-50' : ''
+            'hover:bg-slate-50/80 dark:hover:bg-slate-800/80 transition-colors',
+            selectedUsers.includes(user.id) ? 'bg-brand-50/50 dark:bg-brand-900/10' : ''
           ]"
         >
           <td class="relative w-12 px-6 sm:w-16 sm:px-8">
@@ -81,105 +81,94 @@
               type="checkbox"
               :checked="selectedUsers.includes(user.id)"
               @change="$emit('select', user.id, $event.target.checked)"
-              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded-md border-slate-300 text-brand-600 focus:ring-brand-600"
             />
           </td>
 
           <!-- Avatar & Name -->
-          <td class="whitespace-nowrap px-6 py-4">
+          <td class="whitespace-nowrap px-6 py-5">
             <div class="flex items-center">
-              <div class="h-10 w-10 flex-shrink-0">
+              <div class="h-10 w-10 flex-shrink-0 relative">
                 <img
                   :src="user.avatar"
                   :alt="user.name"
-                  class="h-10 w-10 rounded-full"
+                  class="h-10 w-10 rounded-xl shadow-sm"
                 />
+                <div
+                  v-if="user.status === 'active'"
+                  class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-slate-900 bg-emerald-500 shadow-sm"
+                ></div>
               </div>
               <div class="ml-4">
-                <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
-                <div class="text-sm text-gray-500">{{ user.email }}</div>
+                <div class="text-sm font-bold text-slate-900 dark:text-white">{{ user.name }}</div>
+                <div class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ user.email }}</div>
               </div>
             </div>
           </td>
 
           <!-- Status -->
-          <td class="whitespace-nowrap px-6 py-4">
-            <span
-              :class="[
-                'inline-flex rounded-full px-2 text-xs font-semibold leading-5',
-                getStatusColor(user.status)
-              ]"
-            >
+          <td class="whitespace-nowrap px-6 py-5">
+            <span :class="getStatusColor(user.status)">
               {{ getStatusLabel(user.status) }}
             </span>
           </td>
 
           <!-- Role -->
-          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-            <span
-              :class="[
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                getRoleColor(user.role)
-              ]"
-            >
+          <td class="whitespace-nowrap px-6 py-5 text-sm text-slate-900">
+            <span :class="getRoleColor(user.role)">
               {{ getRoleLabel(user.role) }}
             </span>
           </td>
 
           <!-- Company -->
-          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+          <td class="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-700 dark:text-slate-300">
             {{ user.company?.name || '-' }}
           </td>
 
           <!-- Segment -->
-          <td class="whitespace-nowrap px-6 py-4">
-            <span
-              :class="[
-                'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
-                getSegmentColor(user.segment)
-              ]"
-            >
+          <td class="whitespace-nowrap px-6 py-5">
+            <span :class="getSegmentColor(user.segment)">
               {{ getSegmentLabel(user.segment) }}
             </span>
           </td>
 
           <!-- Last Login -->
-          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+          <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
             {{ formatLastLogin(user.lastLoginAt) }}
           </td>
 
           <!-- Created At -->
-          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+          <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
             {{ formatDate(user.createdAt) }}
           </td>
 
           <!-- Actions -->
-          <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+          <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
             <div class="flex items-center justify-end space-x-2">
               <button
                 @click="$emit('view', user)"
-                class="text-indigo-600 hover:text-indigo-900"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all duration-200"
                 title="Voir les détails"
               >
                 <EyeIcon class="h-4 w-4" />
               </button>
               <button
                 @click="$emit('edit', user)"
-                class="text-gray-600 hover:text-gray-900"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
                 title="Modifier"
               >
                 <PencilIcon class="h-4 w-4" />
               </button>
               <button
                 @click="$emit('impersonate', user)"
-                class="text-blue-600 hover:text-blue-900"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200"
                 title="Se connecter en tant que"
               >
                 <UserIcon class="h-4 w-4" />
               </button>
               <button
                 @click="$emit('delete', user)"
-                class="text-red-600 hover:text-red-900"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
                 title="Supprimer"
               >
                 <TrashIcon class="h-4 w-4" />
