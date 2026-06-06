@@ -63,6 +63,7 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 | 69 | `69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md` | Execution lancement : device QA, parcours employee/manager/platform admin, paie et observabilite |
 | 70 | `70_PLAN_MARKET_LAUNCH_2026_COMPANY_OS.md` | Lancement marche 2026 : positionnement, packaging, offres, ROI, IA gouvernee et expansion |
 | 71 | `71_PLAN_ADMIN_MULTI_PAYS_KIOSK_GO_TO_MARKET.md` | Go-to-market operationnel : admin plateforme, multi-pays/devise, i18n, vitrine essai, kiosk et audit commercial-technique |
+| 72 | `72_PLAN_WORKFLOWS_LANCEMENT_SURFACES.md` | Workflows lancement toutes surfaces : contrats routes, endpoints et boutons critiques pour vitrine, web admin, mobiles et kiosk |
 
 ### Ordre d'execution recommande
 
