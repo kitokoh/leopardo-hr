@@ -527,13 +527,13 @@ function impersonateUser(user) {
   // Implement impersonation logic
 }
 
-function handleUserCreated(user) {
+function handleUserCreated() {
   toast.success('Utilisateur créé avec succès')
   showCreateModal.value = false
   loadUsers()
 }
 
-function handleUserUpdated(user) {
+function handleUserUpdated() {
   toast.success('Utilisateur mis à jour')
   showEditModal.value = false
   loadUsers()
