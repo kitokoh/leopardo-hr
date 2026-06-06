@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\SuperAdmin;
 use App\Services\CompanyProvisioningService;
 use App\Services\UserInvitationService;
+use App\Support\CountryDefaults;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -107,6 +108,7 @@ class PlatformCompanyController extends Controller
             'language' => ['nullable', 'string', 'size:2'],
             'timezone' => ['nullable', 'string', 'max:50'],
             'currency' => ['nullable', 'string', 'size:3'],
+            'status' => ['nullable', Rule::in(['active', 'trial'])],
             'notes' => ['nullable', 'string', 'max:1000'],
             'manager_first_name' => ['required', 'string', 'max:100'],
             'manager_last_name' => ['required', 'string', 'max:100'],
@@ -115,10 +117,12 @@ class PlatformCompanyController extends Controller
         ]);
 
         $validated['sector'] = trim((string) ($validated['sector'] ?? '')) ?: 'Non precise';
-        $validated['country'] = strtoupper($validated['country']);
-        $validated['language'] = strtolower($validated['language'] ?? 'fr');
-        $validated['currency'] = strtoupper($validated['currency'] ?? 'DZD');
-        $validated['timezone'] = $validated['timezone'] ?? 'Africa/Algiers';
+        $countryDefaults = CountryDefaults::for($validated['country']);
+        $validated['country'] = $countryDefaults['country'];
+        $validated['language'] = strtolower($validated['language'] ?? $countryDefaults['language']);
+        $validated['currency'] = strtoupper($validated['currency'] ?? $countryDefaults['currency']);
+        $validated['timezone'] = $validated['timezone'] ?? $countryDefaults['timezone'];
+        $validated['status'] = $validated['status'] ?? 'trial';
         $validated['plan_id'] = $validated['plan_id']
             ?? DB::table('plans')->where('is_active', true)->orderBy('id')->value('id')
             ?? DB::table('plans')->orderBy('id')->value('id');
