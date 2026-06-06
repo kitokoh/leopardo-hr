@@ -578,6 +578,43 @@ paths:
                     type: string
                     example: "ok"
 
+  /platform/country-defaults:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les pays supportes et leurs defaults"
+      description: "Source de verite pour les formulaires platform admin : pays, libelle, langue, devise et fuseau horaire."
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Pays supportes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: ["country", "label", "language", "currency", "timezone"]
+                      properties:
+                        country:
+                          type: string
+                          example: "SN"
+                        label:
+                          type: string
+                          example: "Senegal"
+                        language:
+                          type: string
+                          example: "fr"
+                        currency:
+                          type: string
+                          example: "XOF"
+                        timezone:
+                          type: string
+                          example: "Africa/Dakar"
+
   /platform/companies:
     get:
       tags: ["Platform"]

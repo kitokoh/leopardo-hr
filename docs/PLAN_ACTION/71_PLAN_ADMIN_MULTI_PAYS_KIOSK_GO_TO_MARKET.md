@@ -40,6 +40,10 @@ Transformer le socle deja pret au lancement en experience commerciale et operati
 - Aucun nouveau parcours client ne doit afficher DZD si `company.currency` vaut autre chose.
 - Les nouveaux tenants doivent recevoir timezone/langue/devise coherents au provisioning.
 
+### Statut
+
+**Lot API/mobile livre.** Le backend expose `GET /api/v1/platform/country-defaults` comme source de verite super-admin pour pays, devise, fuseau horaire et langue. L'app `leopardo_platform_admin` consomme cette route avec fallback local non bloquant pour garder le formulaire utilisable pendant une latence API.
+
 ## Lot 71.3 - I18n centralisee toutes surfaces
 
 ### Actions
