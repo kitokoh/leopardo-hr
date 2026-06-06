@@ -1,0 +1,162 @@
+{
+  "version": "2026-06-06",
+  "description": "Launch workflow contracts for web, mobile and kiosk surfaces. Each workflow lists files and tokens that must remain wired before marketing traffic is increased.",
+  "delegateValidators": [
+    "dev-hub/tools/validate-mobile-workflow-contracts.ps1",
+    "dev-hub/tools/validate-mobile-plan29.ps1",
+    "dev-hub/tools/validate-mobile-runtime-smoke.ps1",
+    "dev-hub/tools/validate-mobile-release-readiness.ps1"
+  ],
+  "surfaces": [
+    {
+      "name": "web_vitrine",
+      "root": "front/web",
+      "searchRoots": ["front/web/src"],
+      "forbiddenTokens": ["/auth/signup"],
+      "workflows": [
+        {
+          "name": "guided_trial_signup",
+          "files": [
+            "front/web/src/app/(landing)/signup/page.tsx",
+            "front/web/src/modules/vitrine/components/forms/SignupForm.tsx",
+            "front/web/src/app/api/forms/signup/route.ts",
+            "front/web/e2e/marketing-funnel.spec.ts"
+          ],
+          "requiredTokens": [
+            "guided_trial",
+            "contact_under_24h",
+            "passwordCaptured: false",
+            "/api/forms/signup",
+            "a[href*=\"/auth/signup\"]"
+          ]
+        },
+        {
+          "name": "commercial_routes",
+          "files": [
+            "front/web/src/modules/vitrine/components/Navbar.tsx",
+            "front/web/src/app/(landing)/guides/rh-startup/page.tsx",
+            "front/web/src/app/(landing)/guides/planning-employes/page.tsx",
+            "front/web/src/app/(landing)/guides/checklist-paie/page.tsx",
+            "front/web/src/app/(landing)/demo/page.tsx",
+            "front/web/src/app/(landing)/pricing/page.tsx"
+          ],
+          "requiredTokens": [
+            "/signup",
+            "/demo",
+            "/pricing",
+            "/blog"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "web_admin_dashboard",
+      "root": "front/admin-dashboard",
+      "searchRoots": ["front/admin-dashboard/src"],
+      "workflows": [
+        {
+          "name": "admin_auth_navigation",
+          "files": [
+            "front/admin-dashboard/src/router/index.js",
+            "front/admin-dashboard/src/services/api.js",
+            "front/admin-dashboard/src/views/auth/LoginView.vue"
+          ],
+          "requiredTokens": [
+            "path: '/login'",
+            "requiresAuth: true",
+            "localStorage.getItem('admin_token')",
+            "window.location.href = '/login'"
+          ]
+        },
+        {
+          "name": "admin_operational_modules",
+          "files": [
+            "front/admin-dashboard/src/router/index.js",
+            "front/admin-dashboard/src/views/companies/CompaniesView.vue",
+            "front/admin-dashboard/src/views/payroll/PayrollView.vue",
+            "front/admin-dashboard/src/views/users/UsersView.vue"
+          ],
+          "requiredTokens": [
+            "path: '/companies'",
+            "path: '/payroll'",
+            "path: '/users'",
+            "fetchPortfolio",
+            "loadUsers"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mobile_platform_admin",
+      "root": "front/mobile_apps/leopardo_platform_admin",
+      "searchRoots": ["front/mobile_apps/leopardo_platform_admin/lib"],
+      "workflows": [
+        {
+          "name": "company_create_activate",
+          "files": [
+            "front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_create_screen.dart",
+            "front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart"
+          ],
+          "requiredTokens": [
+            "createCompany",
+            "status: _activateImmediately ? 'active' : 'trial'",
+            "/platform/companies",
+            "/platform/country-defaults",
+            "country.toUpperCase()",
+            "Creer le client"
+          ]
+        },
+        {
+          "name": "platform_company_operations",
+          "files": [
+            "front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart",
+            "front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_screen.dart"
+          ],
+          "requiredTokens": [
+            "/platform/companies/$companyId/subscription",
+            "/platform/companies/$companyId/features",
+            "/platform/companies/$companyId/health",
+            "updateCompanySubscription",
+            "updateCompanyFeatures"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "zkteco_kiosk",
+      "root": "front/zkteco-kiosk",
+      "searchRoots": ["front/zkteco-kiosk"],
+      "workflows": [
+        {
+          "name": "offline_first_punch",
+          "files": [
+            "front/zkteco-kiosk/index.html",
+            "front/zkteco-kiosk/app.js"
+          ],
+          "requiredTokens": [
+            "checkInButton",
+            "checkOutButton",
+            "localBridgeUrl: '/local'",
+            "${CONFIG.localBridgeUrl}/punch",
+            "isPunching",
+            "setPunchButtonsDisabled"
+          ]
+        },
+        {
+          "name": "kiosk_api_sync",
+          "files": [
+            "front/zkteco-kiosk/app.js",
+            "front/zkteco-kiosk/README.md"
+          ],
+          "requiredTokens": [
+            "/kiosks/${CONFIG.deviceCode}${path}",
+            "X-Kiosk-Token",
+            "sync",
+            "/roster",
+            "/qr-punch"
+          ]
+        }
+      ]
+    }
+  ]
+}
