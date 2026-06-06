@@ -49,12 +49,25 @@ Lot 72.2 livre cote gouvernance et outillage. La preuve live complete avec token
 
 ## Lot 72.3 - UX commerciale et multilingue
 
-### Actions restantes
+### Actions
 
 - Continuer la suppression progressive des textes hardcodes selon `I18N_DEBT_REPORT_2026_06_06.md`.
 - Prioriser vitrine, login, compte, checkout/essai, pricing et erreurs API visibles.
 - Verifier la lisibilite RTL arabe sur les pages publiques et les ecrans mobiles critiques.
+- Corriger les textes arabes corrompus visibles sur la navigation et les plans tarifaires.
+- Harmoniser l'offre commerciale sur 30 jours gratuits.
+- Ajouter une preuve operationnelle localisee sur la home pour clarifier les trois apps mobiles, deux apps web, le kiosk et l'API production.
+
+### Criteres
+
+- Aucun mojibake ou `???` ne reste dans les fichiers vitrine modifies.
+- Les CTA pricing et home pointent vers `/signup` ou `/demo`.
+- La section commerciale est disponible en FR/EN/TR/AR et respecte le RTL arabe.
+
+### Statut
+
+Lot 72.3 livre cote vitrine prioritaire. La migration i18n exhaustive reste progressive selon le rapport de dette i18n.
 
 ## Statut
 
-Lots 72.1 et 72.2 livres. Le manifeste `dev-hub/tools/launch-workflow-contracts.json`, le validateur `dev-hub/tools/validate-launch-workflows.ps1`, le smoke `dev-hub/tools/launch-api-profile-smoke.ps1`, les rapports `docs/validation/LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` / `docs/validation/LAUNCH_API_PROFILE_SMOKE_2026_06_06.md` et le gate `release-readiness.ps1` couvrent maintenant les workflows visibles de lancement et les smokes API par profil.
+Lots 72.1, 72.2 et 72.3 livres. Le manifeste `dev-hub/tools/launch-workflow-contracts.json`, le validateur `dev-hub/tools/validate-launch-workflows.ps1`, le smoke `dev-hub/tools/launch-api-profile-smoke.ps1`, les rapports `docs/validation/LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` / `docs/validation/LAUNCH_API_PROFILE_SMOKE_2026_06_06.md` et le gate `release-readiness.ps1` couvrent maintenant les workflows visibles de lancement, les smokes API par profil et la vitrine commerciale prioritaire.
