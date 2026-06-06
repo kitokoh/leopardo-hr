@@ -11,6 +11,8 @@
 - Backend : ajout de `CountryDefaults` pour deriver langue, devise et timezone a partir du pays lors du provisioning plateforme.
 - API platform : ajout de `GET /api/v1/platform/country-defaults` pour exposer la source de verite pays/devise/timezone/langue aux frontends super-admin.
 - I18n : ajout du guide Jules EN/AR/TR et du garde `validate-i18n-debt.ps1` pour mesurer les textes hardcodes par surface.
+- Plan 72 : ajout d'un contrat de workflows lancement multi-surface et du validateur `validate-launch-workflows.ps1`.
+- Validation lancement : ajout du rapport `LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` avec preuves Plan 72.1 et release readiness `27/27`.
 
 ### Changed
 
@@ -28,6 +30,7 @@
 - Documentation i18n : `shared/i18n/README.md` pointe maintenant vers le workflow traducteur et le rapport de dette.
 - Securite backend : mise a jour de `laravel/framework` vers `^12.60` / `v12.61.1` pour lever l'advisory Composer `CVE-2026-48019`.
 - API frontend tooling : mise a jour npm de `axios` 1.17.0, `concurrently` 10.0.3 et `vite` 8.0.16 pour garder le build Laravel/Vite a jour.
+- Gouvernance lancement : les workflows visibles web/mobile/kiosk doivent maintenant declarer leurs fichiers, routes, endpoints et tokens critiques dans `launch-workflow-contracts.json`.
 
 ## [4.16.249] - 2026-06-05
 
