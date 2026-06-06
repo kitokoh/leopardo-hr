@@ -119,29 +119,34 @@ class PlatformCompanyProvisioningTest extends TestCase
             ->actingAs($superAdmin, 'super_admin_api')
             ->postJson('/api/v1/platform/companies', [
                 'name' => 'Mobile Client',
-                'country' => 'dz',
-                'city' => 'Alger',
-                'email' => 'contact@mobile-client.dz',
+                'country' => 'sn',
+                'city' => 'Dakar',
+                'email' => 'contact@mobile-client.sn',
+                'status' => 'active',
                 'manager_first_name' => 'Amina',
                 'manager_last_name' => 'Rahmani',
-                'manager_email' => 'amina.rahmani@mobile-client.dz',
+                'manager_email' => 'amina.rahmani@mobile-client.sn',
             ]);
 
         $response->assertCreated()
             ->assertJsonPath('data.company.name', 'Mobile Client')
             ->assertJsonPath('data.company.sector', 'Non precise')
-            ->assertJsonPath('data.company.country', 'DZ')
+            ->assertJsonPath('data.company.country', 'SN')
             ->assertJsonPath('data.company.plan_id', 7)
-            ->assertJsonPath('data.company.currency', 'DZD')
-            ->assertJsonPath('data.company.timezone', 'Africa/Algiers')
-            ->assertJsonPath('data.manager.email', 'amina.rahmani@mobile-client.dz');
+            ->assertJsonPath('data.company.currency', 'XOF')
+            ->assertJsonPath('data.company.timezone', 'Africa/Dakar')
+            ->assertJsonPath('data.company.status', 'active')
+            ->assertJsonPath('data.manager.email', 'amina.rahmani@mobile-client.sn');
 
         DB::statement('SET search_path TO public');
 
         $this->assertDatabaseHas('companies', [
             'name' => 'Mobile Client',
             'sector' => 'Non precise',
-            'country' => 'DZ',
+            'country' => 'SN',
+            'currency' => 'XOF',
+            'timezone' => 'Africa/Dakar',
+            'status' => 'active',
             'plan_id' => 7,
         ]);
     }
