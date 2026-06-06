@@ -18,6 +18,7 @@
 - App mobile platform admin : le formulaire pays consomme maintenant l'API `country-defaults` avec fallback local non bloquant.
 - API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
 - Vitrine : `/signup` devient une demande d'essai guidee par email, sans mot de passe fantome, avec qualification entreprise/role/taille et prochaine etape explicite sous 24h ouvrables.
+- Vitrine : les CTA d'essai des guides RH/planning/paie pointent maintenant vers `/signup` avec source marketing, et la copie arabe de la page essai est lisible en RTL.
 - Kiosk : refonte de l'interface ZKTeco autour du geste biometrie doigt/visage, suppression des IDs HTML dupliques, confirmation de pointage plus lisible et protection contre les doubles clics.
 - Mobile employee/manager : ajout d'une vue d'ensemble moderne dans `Compte` pour clarifier identite portable, parcours, documents, QR/biometrie, notifications, securite et session sans ajouter de boutons non fonctionnels.
 - Admin dashboard : integration de la refonte premium du cockpit interne (tables, cartes, analytics, clients, paie, utilisateurs) avec tokens `glass-*` et `premium-text`.
