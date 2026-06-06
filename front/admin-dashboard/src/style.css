@@ -35,6 +35,18 @@
     @apply bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/20 dark:border-slate-800/50;
   }
 
+  .glass-light {
+    @apply bg-white/40 backdrop-blur-xl border border-white/30 shadow-glass-inner;
+  }
+
+  .glass-dark {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-slate-800/40 shadow-glass-inner;
+  }
+
+  .premium-text {
+    @apply tracking-tight font-semibold text-slate-900 dark:text-white;
+  }
+
   .card-header {
     @apply px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700;
   }
