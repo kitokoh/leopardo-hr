@@ -141,6 +141,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           _buildIdentityCard(context, employee?.role),
           const SizedBox(height: 20),
+          _buildAccountOverviewSection(isManager: isManager),
+          const SizedBox(height: 20),
           _buildProfileSection(context, authState),
           const SizedBox(height: 20),
           _buildLanguageSection(context, authState),
@@ -178,6 +180,86 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 : 'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountOverviewSection({required bool isManager}) {
+    final items = [
+      (
+        icon: Icons.admin_panel_settings_outlined,
+        color: AppColors.rh,
+        title: isManager ? 'Pilotage equipe' : 'Identite portable',
+        subtitle:
+            isManager
+                ? 'Profil, role et permissions restent lisibles pour les actions RH.'
+                : 'Vos informations personnelles restent attachees au compte.',
+      ),
+      (
+        icon: Icons.lock_outline_rounded,
+        color: AppColors.info,
+        title: 'Securite',
+        subtitle:
+            'Mot de passe, session et preferences sensibles sont regroupees.',
+      ),
+      (
+        icon: Icons.language_outlined,
+        color: AppColors.warning,
+        title: 'Langue et RTL',
+        subtitle:
+            'La langue choisie pilote aussi les notifications et textes futurs.',
+      ),
+      (
+        icon: Icons.notifications_active_outlined,
+        color: AppColors.danger,
+        title: 'Notifications',
+        subtitle: 'Canaux, heures calmes et alertes manager operationnelles.',
+      ),
+      (
+        icon: Icons.fingerprint_rounded,
+        color: AppColors.rhDark,
+        title: 'Biometrie',
+        subtitle:
+            isManager
+                ? 'Reservee aux profils employes dans cette app manager.'
+                : 'Preparation doigt et visage pour les bornes terrain.',
+      ),
+      (
+        icon: Icons.logout_rounded,
+        color: AppColors.danger,
+        title: 'Session',
+        subtitle: 'La deconnexion reste volontairement en bas de page.',
+      ),
+    ];
+
+    return MobilePanel(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Vue d ensemble',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            isManager
+                ? 'Un compte manager doit rester clair, securise et pret pour les decisions terrain.'
+                : 'Votre compte reste personnel meme quand vous changez d entreprise.',
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          ...items.map(
+            (item) => MobileListCard(
+              icon: item.icon,
+              iconColor: item.color,
+              title: item.title,
+              subtitle: item.subtitle,
             ),
           ),
         ],
@@ -591,7 +673,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildNotificationSection(BuildContext context) {
     return FutureBuilder<NotificationPreferences>(
-      future: ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
+      future:
+          ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -704,7 +787,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     value: preferences.appEnabled,
                     onChanged:
                         (next) =>
-                            preferences = preferences.copyWith(appEnabled: next),
+                            preferences = preferences.copyWith(
+                              appEnabled: next,
+                            ),
                   ),
                   tile(
                     title: 'Push mobile',
@@ -712,23 +797,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     value: preferences.pushEnabled,
                     onChanged:
                         (next) =>
-                            preferences = preferences.copyWith(pushEnabled: next),
+                            preferences = preferences.copyWith(
+                              pushEnabled: next,
+                            ),
                   ),
                   tile(
                     title: 'Email',
                     subtitle: 'Suivi des decisions et resumes importants.',
                     value: preferences.emailEnabled,
                     onChanged:
-                        (next) => preferences =
-                            preferences.copyWith(emailEnabled: next),
+                        (next) =>
+                            preferences = preferences.copyWith(
+                              emailEnabled: next,
+                            ),
                   ),
                   tile(
                     title: 'Heures calmes',
                     subtitle: 'Limiter les canaux externes hors horaires.',
                     value: preferences.quietHoursEnabled,
                     onChanged:
-                        (next) => preferences =
-                            preferences.copyWith(quietHoursEnabled: next),
+                        (next) =>
+                            preferences = preferences.copyWith(
+                              quietHoursEnabled: next,
+                            ),
                   ),
                   if (saving)
                     const Padding(

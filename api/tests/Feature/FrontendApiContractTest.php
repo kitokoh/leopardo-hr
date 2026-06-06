@@ -114,6 +114,7 @@ class FrontendApiContractTest extends TestCase
             'platform mobile me' => ['GET', 'api/v1/platform/auth/me'],
             'platform mobile logout' => ['POST', 'api/v1/platform/auth/logout'],
             'platform mobile plans' => ['GET', 'api/v1/platform/plans'],
+            'platform mobile country defaults' => ['GET', 'api/v1/platform/country-defaults'],
             'platform mobile companies list' => ['GET', 'api/v1/platform/companies'],
             'platform mobile company create' => ['POST', 'api/v1/platform/companies'],
             'platform mobile companies health' => ['GET', 'api/v1/platform/companies/health'],

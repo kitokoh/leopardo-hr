@@ -18,6 +18,7 @@ const state = {
   status: null,
   currentTab: 'punch',
   lastStatusRefreshAt: null,
+  isPunching: false,
 };
 
 // ── Selectors ────────────────────────────────────────
@@ -83,6 +84,30 @@ function initials(name) {
   return name ? name[0].toUpperCase() : '?';
 }
 
+function actionLabel(action) {
+  return action === 'check_out' ? 'depart' : 'arrivee';
+}
+
+function setPunchButtonsDisabled(disabled) {
+  if (els.checkInBtn) els.checkInBtn.disabled = disabled;
+  if (els.checkOutBtn) els.checkOutBtn.disabled = disabled;
+}
+
+async function findLocalRosterEmployee(identifier) {
+  try {
+    const payload = await fetchJson(`${CONFIG.localBridgeUrl}/roster`);
+    const roster = payload.data || [];
+    const normalized = identifier.toLowerCase();
+    return roster.find((employee) => {
+      return [employee.matricule, employee.zkteco_id, employee.email, employee.name]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase() === normalized);
+    }) || null;
+  } catch {
+    return null;
+  }
+}
+
 // ── Tab Navigation ───────────────────────────────────
 function initTabs() {
   $$('.tab').forEach(tab => {
@@ -145,13 +170,17 @@ async function refreshStatus() {
 }
 
 async function submitPunch(action) {
+  if (state.isPunching) return;
   const identifier = els.identifier.value.trim();
   if (!identifier) {
     setStatus('#statusBox', 'Veuillez saisir ou scanner un identifiant employe.', true);
     return;
   }
-  setStatus('#statusBox', 'Enregistrement local du pointage...');
+  state.isPunching = true;
+  setPunchButtonsDisabled(true);
+  setStatus('#statusBox', `Reconnaissance ${els.biometricType.value} et enregistrement ${actionLabel(action)}...`);
   try {
+    const employee = await findLocalRosterEmployee(identifier);
     const payload = await fetchJson(`${CONFIG.localBridgeUrl}/punch`, {
       method: 'POST',
       body: JSON.stringify({
@@ -161,12 +190,17 @@ async function submitPunch(action) {
       }),
     });
     const mode = payload.data.sync_status === 'synced' ? 'synchronise' : 'stocke hors ligne';
-    setStatus('#statusBox', `Pointage ${mode} pour ${identifier}.`);
+    const employeeLabel = employee?.name || identifier;
+    const eventTime = payload.data.occurred_at ? formatTime(payload.data.occurred_at) : formatTime(new Date().toISOString());
+    setStatus('#statusBox', `${actionLabel(action)} ${mode} a ${eventTime} pour ${employeeLabel}.`);
     els.identifier.value = '';
     els.identifier.focus();
     await refreshStatus();
   } catch (error) {
     setStatus('#statusBox', error.message || 'Echec de pointage.', true);
+  } finally {
+    state.isPunching = false;
+    setPunchButtonsDisabled(false);
   }
 }
 
