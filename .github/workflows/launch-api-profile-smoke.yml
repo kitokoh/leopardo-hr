@@ -1,0 +1,71 @@
+name: Launch API Profile Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "API base URL"
+        required: false
+        default: "https://gestionemployerbackend.onrender.com/api/v1"
+      include_platform_provisioning:
+        description: "Create a guarded trial company smoke record"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: launch-api-profile-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  launch-api-profile-smoke:
+    name: API profile smoke by role
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Prepare reports directory
+        shell: bash
+        run: mkdir -p docs/validation/runtime
+
+      - name: Run launch API profile smoke
+        shell: pwsh
+        env:
+          LEOPARDO_API_BASE_URL: ${{ github.event.inputs.base_url }}
+          LEOPARDO_MANAGER_TOKEN: ${{ secrets.LEOPARDO_MANAGER_TOKEN }}
+          LEOPARDO_EMPLOYEE_TOKEN: ${{ secrets.LEOPARDO_EMPLOYEE_TOKEN }}
+          LEOPARDO_PLATFORM_ADMIN_TOKEN: ${{ secrets.LEOPARDO_PLATFORM_ADMIN_TOKEN }}
+          LEOPARDO_KIOSK_DEVICE_CODE: ${{ secrets.LEOPARDO_KIOSK_DEVICE_CODE }}
+          LEOPARDO_KIOSK_TOKEN: ${{ secrets.LEOPARDO_KIOSK_TOKEN }}
+        run: |
+          $smokeArgs = @(
+            "-BaseUrl", "${env:LEOPARDO_API_BASE_URL}"
+          )
+
+          if ("${{ github.event.inputs.include_platform_provisioning }}" -eq "true") {
+            $smokeArgs += "-IncludePlatformProvisioning"
+          }
+
+          ./dev-hub/tools/launch-api-profile-smoke.ps1 @smokeArgs |
+            Tee-Object -FilePath docs/validation/runtime/launch-api-profile-smoke.txt
+
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
+      - name: Upload smoke report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: launch-api-profile-smoke
+          path: docs/validation/runtime/launch-api-profile-smoke.txt
+          if-no-files-found: ignore
+          retention-days: 14
