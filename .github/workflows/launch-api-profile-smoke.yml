@@ -12,6 +12,11 @@ on:
         required: false
         type: boolean
         default: false
+      disable_demo_login:
+        description: "Do not auto-login with public demo users when tokens are missing"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -52,6 +57,10 @@ jobs:
 
           if ("${{ github.event.inputs.include_platform_provisioning }}" -eq "true") {
             $smokeArgs.IncludePlatformProvisioning = $true
+          }
+
+          if ("${{ github.event.inputs.disable_demo_login }}" -eq "true") {
+            $smokeArgs.DisableDemoLogin = $true
           }
 
           ./dev-hub/tools/launch-api-profile-smoke.ps1 @smokeArgs |
