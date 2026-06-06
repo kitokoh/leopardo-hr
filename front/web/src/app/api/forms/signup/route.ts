@@ -7,8 +7,10 @@ const rateLimiter = new RateLimiter(5, 15 * 60 * 1000);
 
 const signupSchema = z.object({
   email: z.string().email().max(255),
-  password: z.string().min(8).max(200),
-  company: z.string().max(120).optional().or(z.literal('')),
+  company: z.string().min(2).max(120),
+  role: z.enum(['founder', 'manager', 'hr', 'operations', 'other']).optional(),
+  employees: z.enum(['1-10', '11-50', '51-200', '201-500', '500+']).optional(),
+  phone: z.string().max(40).optional().or(z.literal('')),
   plan: z.string().max(80).optional(),
   module: z.string().max(80).optional(),
   locale: z.enum(['fr', 'en', 'ar', 'tr']).optional(),
@@ -34,7 +36,8 @@ export async function POST(request: NextRequest) {
 
     const validatedData = signupSchema.parse(await request.json());
     const email = sanitizeEmail(validatedData.email);
-    const company = validatedData.company ? sanitizeInput(validatedData.company) : undefined;
+    const company = sanitizeInput(validatedData.company);
+    const phone = validatedData.phone ? sanitizeInput(validatedData.phone) : undefined;
     const lead = await captureMarketingLead(request, {
       type: 'signup',
       email,
@@ -45,8 +48,13 @@ export async function POST(request: NextRequest) {
       data: {
         email,
         company,
+        role: validatedData.role,
+        employees: validatedData.employees,
+        phone,
         plan: validatedData.plan,
         module: validatedData.module,
+        requestedWorkflow: 'guided_trial',
+        nextStep: 'sales_or_platform_admin_provisioning',
         passwordCaptured: false,
       },
     });
@@ -54,10 +62,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Demande d'essai enregistree. Verifiez votre email.",
+        message: "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables avec l'acces le plus adapte.",
         data: {
           id: lead.id,
           email,
+          company,
+          nextStep: 'contact_under_24h',
           confirmationSent: lead.emailForwarded,
           crmForwarded: lead.crmForwarded,
         },
