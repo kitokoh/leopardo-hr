@@ -106,6 +106,8 @@ export default {
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.1)',
         'glass-sm': '0 4px 16px 0 rgba(0, 0, 0, 0.05)',
+        'glass-lg': '0 12px 48px 0 rgba(0, 0, 0, 0.15)',
+        'glass-inner': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.06)',
         'premium': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       },
       fontFamily: {
@@ -116,6 +118,10 @@ export default {
         'bounce-slow': 'bounce 2s infinite',
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
+      },
+      backgroundImage: {
+        'brand-gradient': 'linear-gradient(135deg, var(--tw-gradient-stops))',
+        'surface-gradient': 'radial-gradient(circle at top left, var(--tw-gradient-stops))',
       },
       keyframes: {
         fadeIn: {
