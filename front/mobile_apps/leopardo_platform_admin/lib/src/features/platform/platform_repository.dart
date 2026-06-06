@@ -189,6 +189,7 @@ class PlatformRepository {
     required String managerFirstName,
     required String managerLastName,
     required String managerEmail,
+    required String status,
     int? planId,
   }) async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
@@ -201,6 +202,7 @@ class PlatformRepository {
         'email': email,
         'country': country.toUpperCase(),
         'city': city,
+        'status': status,
         'manager_first_name': managerFirstName,
         'manager_last_name': managerLastName,
         'manager_email': managerEmail,

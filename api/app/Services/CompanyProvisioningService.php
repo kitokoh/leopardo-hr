@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\SuperAdmin;
+use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -20,6 +21,12 @@ class CompanyProvisioningService
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
+        $countryDefaults = CountryDefaults::for($payload['country'] ?? null);
+        $payload['country'] = $countryDefaults['country'];
+        $payload['language'] = strtolower((string) ($payload['language'] ?? $countryDefaults['language']));
+        $payload['currency'] = strtoupper((string) ($payload['currency'] ?? $countryDefaults['currency']));
+        $payload['timezone'] = $payload['timezone'] ?? $countryDefaults['timezone'];
+
         $result = DB::transaction(function () use ($payload): array {
             $plan = DB::table('plans')->where('id', $payload['plan_id'])->first();
             $trialDays = (int) ($plan->trial_days ?? 14);
@@ -29,7 +36,7 @@ class CompanyProvisioningService
                 'name' => $payload['name'],
                 'slug' => $slug,
                 'sector' => $payload['sector'],
-                'country' => strtoupper($payload['country']),
+                'country' => $payload['country'],
                 'city' => $payload['city'],
                 'address' => $payload['address'] ?? null,
                 'email' => $payload['email'],
@@ -40,9 +47,9 @@ class CompanyProvisioningService
                 'status' => $payload['status'] ?? 'trial',
                 'subscription_start' => $payload['subscription_start'] ?? now()->toDateString(),
                 'subscription_end' => $payload['subscription_end'] ?? now()->addDays($trialDays)->toDateString(),
-                'language' => $payload['language'] ?? 'fr',
-                'timezone' => $payload['timezone'] ?? 'Africa/Algiers',
-                'currency' => $payload['currency'] ?? 'DZD',
+                'language' => $payload['language'],
+                'timezone' => $payload['timezone'],
+                'currency' => $payload['currency'],
                 'notes' => $payload['notes'] ?? null,
             ]);
 

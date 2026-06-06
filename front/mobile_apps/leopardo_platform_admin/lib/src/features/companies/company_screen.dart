@@ -54,7 +54,7 @@ class CompanyScreen extends ConsumerWidget {
                                     iconColor: AppColors.rh,
                                     title: company.name,
                                     subtitle:
-                                        '${company.country} - ${company.plan}',
+                                        '${company.country} / ${company.currency} - ${company.plan}',
                                     trailing: MobileStatusPill(
                                       label: company.status,
                                       color: _statusColor(company.status),

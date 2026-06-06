@@ -18,16 +18,23 @@ class AuthSelfRegistrationTest extends TestCase
         if (! Schema::hasTable('company_requests')) {
             Schema::create('company_requests', function ($table) {
                 $table->increments('id');
-                $table->unsignedInteger('employee_id');
+                $table->unsignedBigInteger('user_id')->nullable()->index();
+                $table->unsignedInteger('employee_id')->nullable();
                 $table->string('company_name');
-                $table->string('sector');
-                $table->char('country', 2);
-                $table->string('city');
-                $table->string('manager_name');
+                $table->string('sector')->nullable();
+                $table->char('country', 2)->nullable();
+                $table->string('city')->nullable();
+                $table->string('email')->nullable();
+                $table->string('phone')->nullable();
+                $table->text('description')->nullable();
+                $table->string('manager_name')->nullable();
                 $table->string('manager_id_card')->nullable();
                 $table->string('manager_phone')->nullable();
                 $table->text('notes')->nullable();
                 $table->string('status')->default('pending');
+                $table->uuid('approved_company_id')->nullable();
+                $table->text('admin_notes')->nullable();
+                $table->timestamp('reviewed_at')->nullable();
                 $table->timestamps();
             });
         }

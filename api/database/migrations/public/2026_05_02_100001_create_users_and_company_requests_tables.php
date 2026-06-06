@@ -92,6 +92,8 @@ return new class extends Migration
             }
         }
 
+        $this->reconcileCompanyRequestsTable();
+
         $this->createTableIfMissing('user_employee_links', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
@@ -127,6 +129,40 @@ return new class extends Migration
 
             throw $exception;
         }
+    }
+
+    private function reconcileCompanyRequestsTable(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        if (! DB::scalar("SELECT to_regclass('public.company_requests') IS NOT NULL")) {
+            return;
+        }
+
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS user_id BIGINT NULL');
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS email VARCHAR(255) NULL');
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS phone VARCHAR(255) NULL');
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS description TEXT NULL');
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS approved_company_id UUID NULL');
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS admin_notes TEXT NULL');
+        DB::statement('ALTER TABLE public.company_requests ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMP(0) WITHOUT TIME ZONE NULL');
+        DB::statement(<<<'SQL'
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'company_requests'
+          AND column_name = 'employee_id'
+    ) THEN
+        ALTER TABLE public.company_requests ALTER COLUMN employee_id DROP NOT NULL;
+    END IF;
+END $$;
+SQL);
+        DB::statement('CREATE INDEX IF NOT EXISTS company_requests_user_id_index ON public.company_requests (user_id)');
     }
 
     private function isDuplicateTableRace(QueryException $exception, string $table): bool
