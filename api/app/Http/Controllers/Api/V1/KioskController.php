@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class KioskController extends Controller
@@ -97,25 +98,26 @@ class KioskController extends Controller
         app()->instance('current_company', $company);
         $this->setTenantSearchPath($company);
 
+        $hasFaceColumn = Schema::hasColumn('employees', 'biometric_face_enabled');
+        $hasFingerprintColumn = Schema::hasColumn('employees', 'biometric_fingerprint_enabled');
+
         $items = Employee::query()
             ->where('company_id', $company->id)
             ->where('status', 'active')
-            ->where(function ($query): void {
-                $query
-                    ->where('biometric_face_enabled', true)
-                    ->orWhere('biometric_fingerprint_enabled', true);
+            ->when($hasFaceColumn || $hasFingerprintColumn, function ($query) use ($hasFaceColumn, $hasFingerprintColumn): void {
+                $query->where(function ($biometricQuery) use ($hasFaceColumn, $hasFingerprintColumn): void {
+                    if ($hasFaceColumn) {
+                        $biometricQuery->orWhere('biometric_face_enabled', true);
+                    }
+
+                    if ($hasFingerprintColumn) {
+                        $biometricQuery->orWhere('biometric_fingerprint_enabled', true);
+                    }
+                });
             })
             ->orderBy('id')
             ->get()
-            ->map(fn (Employee $employee) => [
-                'employee_id' => $employee->id,
-                'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-                'email' => $employee->email,
-                'matricule' => $employee->matricule,
-                'zkteco_id' => $employee->zkteco_id,
-                'face_enabled' => $employee->biometric_face_enabled,
-                'fingerprint_enabled' => $employee->biometric_fingerprint_enabled,
-            ])
+            ->map(fn (Employee $employee) => $this->serializeRosterEmployee($employee, $hasFaceColumn, $hasFingerprintColumn))
             ->values();
 
         return new JsonResponse([
@@ -213,6 +215,10 @@ class KioskController extends Controller
         $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
         $company = $kiosk->company;
         $this->setTenantSearchPath($company);
+
+        if (! Schema::hasTable('kiosk_announcements')) {
+            return new JsonResponse(['data' => []]);
+        }
 
         $announcements = KioskAnnouncement::query()
             ->where('company_id', $company->id)
@@ -362,6 +368,19 @@ class KioskController extends Controller
             'used' => $used,
             'pending' => $pending,
             'remaining' => $remaining,
+        ];
+    }
+
+    private function serializeRosterEmployee(Employee $employee, bool $hasFaceColumn, bool $hasFingerprintColumn): array
+    {
+        return [
+            'employee_id' => $employee->id,
+            'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+            'email' => $employee->email,
+            'matricule' => $employee->matricule,
+            'zkteco_id' => $employee->zkteco_id,
+            'face_enabled' => $hasFaceColumn ? (bool) ($employee->biometric_face_enabled ?? false) : false,
+            'fingerprint_enabled' => $hasFingerprintColumn ? (bool) ($employee->biometric_fingerprint_enabled ?? false) : false,
         ];
     }
 }

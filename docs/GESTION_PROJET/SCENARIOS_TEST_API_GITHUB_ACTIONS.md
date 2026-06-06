@@ -69,6 +69,8 @@ Note 2026-06-01 : les endpoints platform detail `GET /api/v1/platform/companies/
 
 Note 2026-06-06 : la creation platform admin `POST /api/v1/platform/companies` est multi-pays. Les scenarios super-admin doivent verifier qu'un payload mobile minimal peut creer un client non DZ en `trial` ou `active`, que `language`, `currency` et `timezone` sont derives par `CountryDefaults` quand ils sont omis, et qu'aucun fallback universel DZD/Africa-Algiers n'est reintroduit.
 
+Note 2026-06-07 : le smoke lancement peut enregistrer un kiosque temporaire via `POST /api/v1/kiosks` avec le manager demo quand `IncludeKioskProvisioning` est active, puis verifier `GET /api/v1/kiosks/{deviceCode}/roster` et `GET /api/v1/kiosks/{deviceCode}/announcements` avec le `X-Kiosk-Token` recu. Les scenarios kiosque doivent rester tolerants aux tenants historiques dont les colonnes biometrie employees ou la table `kiosk_announcements` ne sont pas encore presentes, afin de retourner un payload exploitable plutot qu'un 500 Render.
+
 Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
 
 Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` quand le middleware tenant a deja resolu l'entreprise. Les scenarios API shared PostgreSQL doivent eviter toute regression ou `$employee->company` recharge `Company` depuis un `search_path` tenant pouvant masquer `public.companies`.

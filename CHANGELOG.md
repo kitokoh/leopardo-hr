@@ -15,6 +15,7 @@
 - Validation lancement : ajout du rapport `LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` avec preuves Plan 72.1 et release readiness `27/27`.
 - Recette API lancement : ajout de `launch-api-profile-smoke.ps1` et du rapport `LAUNCH_API_PROFILE_SMOKE_2026_06_06.md` pour verifier les endpoints publics, employee, manager/RH, platform admin et kiosk avec tokens proteges.
 - CI lancement : ajout du workflow manuel `Launch API Profile Smoke` pour executer cette recette avec secrets GitHub et artefact de rapport.
+- CI lancement : ajout d'un provisioning kiosque controle au smoke API pour enregistrer un appareil temporaire via manager demo puis verifier `roster` et `announcements` avec le vrai `X-Kiosk-Token`.
 - Vitrine : ajout d'une section de preuve operationnelle localisee pour presenter les 3 apps mobiles, 2 apps web, kiosk/biometrie et API production avant les fonctionnalites.
 
 ### Changed
@@ -45,6 +46,7 @@
 - CI lancement : correction du workflow manuel `Launch API Profile Smoke` pour transmettre `BaseUrl` via splat hashtable PowerShell au lieu d'un array positionnel.
 - CI lancement : le smoke API peut maintenant resoudre automatiquement les tokens employee, manager et platform admin via `/demo-users` lorsque les secrets ne sont pas configures.
 - CI lancement : le smoke de creation entreprise platform admin peut maintenant verifier un statut `trial` ou `active` via `PlatformProvisioningStatus`.
+- CI lancement : le smoke kiosque peut maintenant sortir du `SKIP` via `IncludeKioskProvisioning` quand les secrets `LEOPARDO_KIOSK_DEVICE_CODE` / `LEOPARDO_KIOSK_TOKEN` ne sont pas fournis.
 
 ## [4.16.249] - 2026-06-05
 
