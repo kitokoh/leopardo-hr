@@ -26,6 +26,8 @@ if (-not $BaseUrl.EndsWith("/api/v1")) {
     $BaseUrl = "$BaseUrl/api/v1"
 }
 
+Write-Host "Launch API profile smoke base URL: $BaseUrl"
+
 $results = New-Object System.Collections.Generic.List[object]
 
 function Add-SmokeResult(
@@ -175,9 +177,26 @@ $platformChecks = @(
     @{ Name = "platform_companies_health"; Path = "/platform/companies/health?limit=5"; ExpectedStatus = @(200) }
 )
 
-Invoke-AuthenticatedReads -Profile "manager" -Token $ManagerToken -Checks $managerChecks
-Invoke-AuthenticatedReads -Profile "employee" -Token $EmployeeToken -Checks $employeeChecks
-Invoke-AuthenticatedReads -Profile "platform_admin" -Token $PlatformAdminToken -Checks $platformChecks
+$managerReadParams = @{
+    Profile = "manager"
+    Token = $ManagerToken
+    Checks = $managerChecks
+}
+Invoke-AuthenticatedReads @managerReadParams
+
+$employeeReadParams = @{
+    Profile = "employee"
+    Token = $EmployeeToken
+    Checks = $employeeChecks
+}
+Invoke-AuthenticatedReads @employeeReadParams
+
+$platformReadParams = @{
+    Profile = "platform_admin"
+    Token = $PlatformAdminToken
+    Checks = $platformChecks
+}
+Invoke-AuthenticatedReads @platformReadParams
 
 if (-not [string]::IsNullOrWhiteSpace($KioskDeviceCode) -and -not [string]::IsNullOrWhiteSpace($KioskToken)) {
     $kioskHeaders = @{ "X-Kiosk-Token" = $KioskToken }

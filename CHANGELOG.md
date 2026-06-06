@@ -41,6 +41,7 @@
 ### Fixed
 
 - CI lancement : correction du passage de `LEOPARDO_API_BASE_URL` au workflow `Launch API Profile Smoke` et protection du script contre les tokens absents afin de produire `SKIP` au lieu de faux echecs manager.
+- CI lancement : durcissement supplementaire du smoke API avec splat PowerShell interne pour que les tokens vides ne decalient jamais les parametres.
 
 ## [4.16.249] - 2026-06-05
 
