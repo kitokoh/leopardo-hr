@@ -19,6 +19,7 @@
 - API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
 - Vitrine : `/signup` devient une demande d'essai guidee par email, sans mot de passe fantome, avec qualification entreprise/role/taille et prochaine etape explicite sous 24h ouvrables.
 - Kiosk : refonte de l'interface ZKTeco autour du geste biometrie doigt/visage, suppression des IDs HTML dupliques, confirmation de pointage plus lisible et protection contre les doubles clics.
+- Mobile employee/manager : ajout d'une vue d'ensemble moderne dans `Compte` pour clarifier identite portable, parcours, documents, QR/biometrie, notifications, securite et session sans ajouter de boutons non fonctionnels.
 - OpenAPI et contrat mobile platform admin alignes avec le nouveau provisioning multi-pays.
 - Migrations publiques : la reconciliation `company_requests` garantit explicitement les colonnes modernes (`user_id`, contact, review) sur PostgreSQL public quand l'ancienne table `employee_id` existe deja.
 - Documentation i18n : `shared/i18n/README.md` pointe maintenant vers le workflow traducteur et le rapport de dette.
