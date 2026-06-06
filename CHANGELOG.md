@@ -44,6 +44,7 @@
 - CI lancement : durcissement supplementaire du smoke API avec splat PowerShell interne pour que les tokens vides ne decalient jamais les parametres.
 - CI lancement : correction du workflow manuel `Launch API Profile Smoke` pour transmettre `BaseUrl` via splat hashtable PowerShell au lieu d'un array positionnel.
 - CI lancement : le smoke API peut maintenant resoudre automatiquement les tokens employee, manager et platform admin via `/demo-users` lorsque les secrets ne sont pas configures.
+- CI lancement : le smoke de creation entreprise platform admin peut maintenant verifier un statut `trial` ou `active` via `PlatformProvisioningStatus`.
 
 ## [4.16.249] - 2026-06-05
 
