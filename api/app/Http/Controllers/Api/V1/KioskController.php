@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\KioskAnnouncement;
 use App\Services\KioskAttendanceService;
+use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -318,6 +319,10 @@ class KioskController extends Controller
             ->where('device_code', strtoupper($deviceCode))
             ->where('status', 'active')
             ->firstOrFail();
+
+        if ($kiosk->company_id !== null) {
+            $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
+        }
 
         $token = (string) $request->header('X-Kiosk-Token', '');
         abort_if($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash), 401, 'INVALID_KIOSK_TOKEN');
