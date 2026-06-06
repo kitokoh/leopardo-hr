@@ -10,6 +10,14 @@ Script canonique :
 powershell -ExecutionPolicy Bypass -File dev-hub\tools\launch-api-profile-smoke.ps1
 ```
 
+Workflow GitHub manuel :
+
+```text
+Launch API Profile Smoke
+```
+
+Ce workflow lit les memes variables via secrets GitHub et publie l'artefact `launch-api-profile-smoke`.
+
 ## Variables d'environnement
 
 - `LEOPARDO_API_BASE_URL` : base API, par defaut `https://gestionemployerbackend.onrender.com/api/v1`.
@@ -76,5 +84,6 @@ Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. E
 ## Statut
 
 - Garde ajoute : `dev-hub/tools/launch-api-profile-smoke.ps1`.
-- Gate release mis a jour pour verifier la presence du script et de ce rapport.
+- Workflow manuel ajoute : `.github/workflows/launch-api-profile-smoke.yml`.
+- Gate release mis a jour pour verifier la presence du script, du workflow et de ce rapport.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
