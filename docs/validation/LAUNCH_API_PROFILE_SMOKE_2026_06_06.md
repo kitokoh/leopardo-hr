@@ -75,7 +75,21 @@ Les profils sans token et sans demo login sont marques `SKIP`. Le script echoue 
 
 ## Ecriture controlee
 
-La creation d'entreprise de test est volontairement desactivee par defaut. Elle ne s'execute que si l'option suivante est fournie :
+Les ecritures de test sont volontairement desactivees par defaut. Elles ne s'executent que si une option explicite est fournie.
+
+### Kiosque
+
+Si `LEOPARDO_KIOSK_DEVICE_CODE` et `LEOPARDO_KIOSK_TOKEN` ne sont pas fournis, le smoke peut enregistrer un kiosque temporaire avec le token manager demo, recuperer le `device_code` et le `sync_token`, puis tester les endpoints kiosque reels :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File dev-hub\tools\launch-api-profile-smoke.ps1 -IncludeKioskProvisioning
+```
+
+Cette option cree un appareil `Plan72 Kiosk Smoke <timestamp>` dans l'environnement cible. Elle doit etre reservee aux environnements demo/staging ou aux fenetres de recette controlee.
+
+### Entreprise plateforme
+
+La creation d'entreprise de test ne s'execute que si l'option suivante est fournie :
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File dev-hub\tools\launch-api-profile-smoke.ps1 -IncludePlatformProvisioning
@@ -101,4 +115,5 @@ Le workflow manuel expose le meme choix via `platform_provisioning_status=trial|
 - Correction workflow : le workflow manuel doit appeler le script avec un splat hashtable, pas un array splat, afin que `BaseUrl` soit transmis par nom.
 - Auto-login demo : le smoke peut maintenant utiliser les comptes publics `/demo-users` pour couvrir manager, employee et platform admin sans secrets GitHub.
 - Provisioning controle : la creation entreprise smoke peut verifier `trial` ou `active` via `PlatformProvisioningStatus`.
+- Provisioning kiosque controle : le smoke peut enregistrer un kiosque temporaire via manager demo et couvrir `roster` + `announcements` avec le vrai `X-Kiosk-Token`.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
