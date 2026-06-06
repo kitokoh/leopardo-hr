@@ -105,6 +105,22 @@ class PlatformRepository {
         .toList();
   }
 
+  Future<List<PlatformCountryDefault>> countryDefaults() async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/country-defaults',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 1,
+    );
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map(
+          (item) =>
+              PlatformCountryDefault.fromJson(item.cast<String, dynamic>()),
+        )
+        .toList();
+  }
+
   Future<List<PlatformCompany>> companies() async {
     final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
       '/platform/companies',
