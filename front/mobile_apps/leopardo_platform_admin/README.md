@@ -13,6 +13,7 @@ Application Flutter reservee aux super-admins Leopardo RH. Elle administre la pl
 ## Perimetre Plan 29
 
 - Connexion super-admin via `/platform/auth/login`
+- Compte demo Render : `admin@leopardo-rh.com` / `password123`
 - Hydratation session via `/platform/auth/me`
 - Deconnexion via `/platform/auth/logout`
 - Cockpit metriques via `/platform/metrics/overview`

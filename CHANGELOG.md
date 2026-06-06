@@ -2,6 +2,44 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.250] - 2026-06-06
+
+### Added
+
+- Plan 71 : cadrage go-to-market admin plateforme, multi-pays, i18n, vitrine essai, kiosk et audit commercial-technique.
+- Audit go-to-market 2026-06-06 avec verdict pilote, risques et priorites commerciales/techniques.
+- Backend : ajout de `CountryDefaults` pour deriver langue, devise et timezone a partir du pays lors du provisioning plateforme.
+- API platform : ajout de `GET /api/v1/platform/country-defaults` pour exposer la source de verite pays/devise/timezone/langue aux frontends super-admin.
+- I18n : ajout du guide Jules EN/AR/TR et du garde `validate-i18n-debt.ps1` pour mesurer les textes hardcodes par surface.
+
+### Changed
+
+- App mobile platform admin : le formulaire de creation client propose un choix pays controle, affiche devise/timezone/langue, et permet de creer un client en essai ou actif.
+- App mobile platform admin : le formulaire pays consomme maintenant l'API `country-defaults` avec fallback local non bloquant.
+- API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
+- Vitrine : `/signup` devient une demande d'essai guidee par email, sans mot de passe fantome, avec qualification entreprise/role/taille et prochaine etape explicite sous 24h ouvrables.
+- Kiosk : refonte de l'interface ZKTeco autour du geste biometrie doigt/visage, suppression des IDs HTML dupliques, confirmation de pointage plus lisible et protection contre les doubles clics.
+- Mobile employee/manager : ajout d'une vue d'ensemble moderne dans `Compte` pour clarifier identite portable, parcours, documents, QR/biometrie, notifications, securite et session sans ajouter de boutons non fonctionnels.
+- Audit go-to-market : mise a jour du rapport 2026-06-06 apres execution des lots 71.4 a 71.6 et ajout des decisions restantes sur essai sandbox, recette device, i18n et branches distantes.
+- OpenAPI et contrat mobile platform admin alignes avec le nouveau provisioning multi-pays.
+- Migrations publiques : la reconciliation `company_requests` garantit explicitement les colonnes modernes (`user_id`, contact, review) sur PostgreSQL public quand l'ancienne table `employee_id` existe deja.
+- Documentation i18n : `shared/i18n/README.md` pointe maintenant vers le workflow traducteur et le rapport de dette.
+- Securite backend : mise a jour de `laravel/framework` vers `^12.60` / `v12.61.1` pour lever l'advisory Composer `CVE-2026-48019`.
+
+## [4.16.249] - 2026-06-05
+
+### Added
+
+- Go-to-market 2026 : ajout du dossier `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/` avec audit marche/produit, positionnement, messaging, offres et direction commerciale.
+- Plan 70 : ajout de `70_PLAN_MARKET_LAUNCH_2026_COMPANY_OS.md` avec 72 actions nouvelles pour readiness marche, monetisation, preuves terrain, IA gouvernee, operations et expansion.
+- Contexte IA : ajout de `docs/CONTEXT/` pour donner a un nouvel agent le contexte produit, technique, operationnel et les priorites courantes.
+- Validation : ajout de `MARKET_LAUNCH_AUDIT_2026_06_05.md` avec verdict go pilote payant controle et sources marche 2026.
+
+### Fixed
+
+- Mobile Platform Admin : le bouton `Utiliser le compte demo` remplit maintenant le mot de passe seede `password123` au lieu de l'ancien `admin`.
+- Mobile Plan 29 : le garde CI bloque maintenant un retour au mauvais mot de passe demo platform admin.
+
 ## [4.16.248] - 2026-06-01
 
 ### Changed

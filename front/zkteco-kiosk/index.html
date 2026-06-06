@@ -3,328 +3,736 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leopardo RH - Borne ZKTeco</title>
+  <title>Leopardo RH - Kiosk biometrie</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #020617;
-      --panel: #0f172a;
-      --line: #1e293b;
+      --bg: #07111f;
+      --surface: #0d1728;
+      --surface-strong: #111f34;
+      --line: #1d314d;
       --accent: #10b981;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --danger: #f43f5e;
+      --accent-dark: #047857;
+      --text: #e5eefb;
+      --soft: #98acc6;
+      --muted: #6f86a5;
+      --danger: #ef4444;
       --info: #38bdf8;
-      --warn: #fbbf24;
+      --warn: #f59e0b;
+      --radius: 18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; }
+
+    * { box-sizing: border-box; }
+
     body {
       min-height: 100vh;
-      font-family: Inter, Arial, sans-serif;
-      background: radial-gradient(circle at top, #0f172a, var(--bg) 60%);
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(16, 185, 129, 0.10), transparent 34%),
+        linear-gradient(215deg, rgba(56, 189, 248, 0.08), transparent 32%),
+        var(--bg);
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
     }
-    .app {
-      width: min(1080px, 100%);
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-    }
-    .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .eyebrow { color: #6ee7b7; text-transform: uppercase; letter-spacing: .28em; font-size: 12px; }
-    h1 { margin: 6px 0 4px; font-size: 28px; }
-    h2 { font-size: 20px; margin: 0 0 12px; }
-    h3 { font-size: 16px; margin: 0 0 8px; color: #cbd5e1; }
-    p { color: var(--muted); line-height: 1.5; font-size: 14px; }
 
-    /* Tab navigation */
-    .tabs { display: flex; gap: 6px; margin: 20px 0 16px; flex-wrap: wrap; }
-    .tab {
-      padding: 10px 18px; border-radius: 12px; border: 1px solid var(--line);
-      background: transparent; color: var(--muted); cursor: pointer; font-size: 14px;
-      transition: all .2s;
+    button, input, select {
+      font: inherit;
     }
-    .tab:hover { background: rgba(255,255,255,0.04); }
-    .tab.active { background: var(--accent); color: #022c22; font-weight: 700; border-color: var(--accent); }
+
+    button {
+      min-height: 52px;
+      border: 0;
+      cursor: pointer;
+      transition: transform .18s ease, opacity .18s ease, background .18s ease;
+    }
+
+    button:active { transform: scale(.985); }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+
+    input, select {
+      width: 100%;
+      min-height: 54px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #091425;
+      color: var(--text);
+      padding: 0 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, .13);
+    }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    p { color: var(--soft); line-height: 1.55; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+      padding: clamp(14px, 2vw, 28px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(13, 23, 40, .86);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), #38bdf8);
+      color: #031016;
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+
+    .eyebrow {
+      color: #7dd3fc;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    #companyName {
+      margin: 2px 0 0;
+      font-size: clamp(20px, 2.5vw, 30px);
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #locationLabel {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #071221;
+      color: var(--soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 18px rgba(245, 158, 11, .45);
+    }
+
+    .dot.ok {
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(16, 185, 129, .45);
+    }
+
+    .dot.bad {
+      background: var(--danger);
+      box-shadow: 0 0 18px rgba(239, 68, 68, .45);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .tabs {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(13, 23, 40, .78);
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--soft);
+      text-align: left;
+      font-weight: 800;
+    }
+
+    .tab span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tab:hover {
+      background: rgba(255, 255, 255, .045);
+    }
+
+    .tab.active {
+      background: #102e2b;
+      color: #d1fae5;
+      outline: 1px solid rgba(16, 185, 129, .35);
+    }
+
+    .content {
+      min-height: 620px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(13, 23, 40, .86);
+      padding: clamp(18px, 2.4vw, 30px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .28);
+    }
+
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* Cards */
-    .grid { display: grid; gap: 20px; grid-template-columns: 1.4fr 1fr; }
-    .grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .punch-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.25fr) minmax(260px, .75fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .biometric-stage {
+      display: grid;
+      place-items: center;
+      gap: 14px;
+      min-height: 320px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at center, rgba(16, 185, 129, .20), transparent 44%),
+        #091425;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .fingerprint {
+      width: min(240px, 50vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(16, 185, 129, .38);
+      box-shadow: 0 0 0 18px rgba(16, 185, 129, .05), inset 0 0 36px rgba(16, 185, 129, .12);
+    }
+
+    .fingerprint svg {
+      width: 44%;
+      color: var(--accent);
+      filter: drop-shadow(0 0 18px rgba(16, 185, 129, .35));
+    }
+
+    .stage-title {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+
+    .stage-copy {
+      max-width: 540px;
+      margin: 0 auto;
+      color: var(--soft);
+    }
+
     .card {
-      border: 1px solid var(--line); border-radius: 22px;
-      background: rgba(2, 6, 23, 0.72); padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(7, 17, 31, .76);
+      padding: 18px;
     }
-    label { display: block; margin-bottom: 6px; color: #cbd5e1; font-size: 13px; }
-    input, select, button {
-      width: 100%; border-radius: 14px; border: 1px solid var(--line);
-      background: #020617; color: var(--text); padding: 14px; font-size: 16px;
+
+    .field-stack { display: grid; gap: 13px; }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
     }
-    input:focus, select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
-    .actions { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin-top: 14px; }
-    button.primary { background: var(--accent); color: #022c22; font-weight: 700; border: none; cursor: pointer; }
-    button.primary:hover { opacity: 0.9; }
-    button.secondary { background: #1e293b; cursor: pointer; }
-    button.secondary:hover { background: #334155; }
-    button.info { background: var(--info); color: #0c1524; font-weight: 600; border: none; cursor: pointer; }
-    button.info:hover { opacity: 0.9; }
+
+    .primary {
+      border-radius: 16px;
+      background: var(--accent);
+      color: #032014;
+      font-weight: 900;
+    }
+
+    .secondary {
+      border-radius: 16px;
+      background: #1a2b44;
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .info {
+      border-radius: 16px;
+      background: #0ea5e9;
+      color: #02131f;
+      font-weight: 900;
+    }
+
     .status {
-      margin-top: 14px; border-radius: 14px; padding: 12px 14px;
-      background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #bbf7d0; min-height: 48px; font-size: 14px;
+      margin-top: 14px;
+      min-height: 54px;
+      border-radius: 16px;
+      padding: 13px 15px;
+      border: 1px solid rgba(16, 185, 129, .34);
+      background: rgba(16, 185, 129, .10);
+      color: #b7f7d9;
+      font-size: 14px;
+      font-weight: 700;
     }
-    .status.error { background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.3); color: #fecdd3; }
-    .pill {
-      display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
-      border-radius: 999px; border: 1px solid var(--line);
-      background: rgba(2, 6, 23, 0.72); color: #cbd5e1; font-size: 13px;
-    }
-    .dot { width: 10px; height: 10px; border-radius: 999px; background: #fbbf24; }
-    .dot.ok { background: #34d399; }
-    .dot.bad { background: #fb7185; }
-    .meta dt { color: var(--muted); font-size: 12px; margin-bottom: 2px; }
-    .meta dd { margin: 0 0 12px; font-weight: 600; font-size: 14px; }
 
-    /* Employee info card */
-    .employee-card { display: flex; gap: 16px; align-items: flex-start; }
+    .status.error {
+      border-color: rgba(239, 68, 68, .38);
+      background: rgba(239, 68, 68, .12);
+      color: #fecaca;
+    }
+
+    .meta {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta dt {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .meta dd {
+      margin: 3px 0 0;
+      color: var(--text);
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .employee-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
     .avatar {
-      width: 64px; height: 64px; border-radius: 50%; background: rgba(16,185,129,0.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+      width: 68px;
+      height: 68px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: #102e2b;
+      color: #7ee7c3;
+      font-size: 24px;
+      font-weight: 900;
     }
-    .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-    .emp-details { flex: 1; }
-    .emp-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-    .emp-meta { font-size: 13px; color: var(--muted); }
 
-    /* Leave balance */
-    .balance-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .emp-name {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+
+    .emp-meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .balance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
     .balance-item {
-      padding: 14px; border-radius: 14px; border: 1px solid var(--line);
-      background: rgba(2, 6, 23, 0.5); text-align: center;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #091425;
+      text-align: center;
     }
-    .balance-type { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-    .balance-value { font-size: 28px; font-weight: 800; color: var(--accent); margin: 6px 0 2px; }
-    .balance-total { font-size: 12px; color: var(--muted); }
 
-    /* Announcements */
+    .balance-type {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .balance-value {
+      margin: 7px 0 2px;
+      color: var(--accent);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .balance-total {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .announcement {
-      padding: 14px; border-radius: 14px; border: 1px solid var(--line);
-      background: rgba(2, 6, 23, 0.5); margin-bottom: 10px;
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #091425;
     }
-    .announcement.urgent { border-color: var(--danger); background: rgba(244,63,94,0.06); }
-    .announcement.high { border-color: var(--warn); background: rgba(251,191,36,0.06); }
-    .ann-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-    .ann-body { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .announcement.urgent { border-color: rgba(239, 68, 68, .55); }
+    .announcement.high { border-color: rgba(245, 158, 11, .55); }
+
     .ann-priority {
-      display: inline-block; padding: 2px 8px; border-radius: 6px;
-      font-size: 11px; font-weight: 600; text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .ann-priority.urgent { background: rgba(244,63,94,0.2); color: #fda4af; }
-    .ann-priority.high { background: rgba(251,191,36,0.2); color: #fde68a; }
-    .ann-priority.normal { background: rgba(56,189,248,0.2); color: #7dd3fc; }
-    .ann-priority.low { background: rgba(148,163,184,0.15); color: var(--muted); }
-
-    /* Demo modal */
-    .demo-overlay {
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 16px;
-    }
-    .demo-modal {
-      background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
-      width: min(520px, 100%); max-height: 80vh; overflow-y: auto; padding: 24px;
-    }
-    .demo-company-title {
-      font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
-      margin: 16px 0 8px; font-weight: 700;
-    }
-    .demo-company-title:first-child { margin-top: 0; }
-    .demo-user-btn {
-      width: 100%; text-align: left; padding: 12px 14px; border-radius: 14px;
-      border: 1px solid var(--line); background: rgba(2,6,23,0.5); color: var(--text);
-      cursor: pointer; margin-bottom: 8px; transition: border-color .2s;
-    }
-    .demo-user-btn:hover { border-color: var(--accent); background: rgba(16,185,129,0.08); }
-    .demo-user-name { font-weight: 700; font-size: 14px; }
-    .demo-user-email { font-size: 12px; color: var(--muted); }
-    .demo-user-role {
-      display: inline-block; padding: 2px 8px; border-radius: 8px;
-      font-size: 11px; font-weight: 600; background: rgba(16,185,129,0.15); color: #6ee7b7;
-      float: right; margin-top: 2px;
+      display: inline-flex;
+      margin-bottom: 7px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      background: rgba(56, 189, 248, .13);
+      color: #7dd3fc;
     }
 
-    /* QR */
+    .ann-priority.urgent { background: rgba(239, 68, 68, .16); color: #fecaca; }
+    .ann-priority.high { background: rgba(245, 158, 11, .16); color: #fde68a; }
+    .ann-priority.low { background: rgba(148, 163, 184, .12); color: var(--soft); }
+
+    .ann-title {
+      margin-bottom: 5px;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .ann-body {
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
     .qr-area {
-      min-height: 200px; border: 2px dashed var(--line); border-radius: 18px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 12px; padding: 24px; text-align: center;
+      min-height: 230px;
+      border: 2px dashed var(--line);
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      padding: 24px;
+      text-align: center;
+      background: #091425;
     }
-    .qr-icon { font-size: 48px; opacity: 0.6; }
 
-    /* Attendance today */
-    .attendance-row { display: flex; gap: 16px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+    .qr-icon {
+      font-size: 52px;
+      color: var(--soft);
+    }
+
     .att-badge {
-      padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      display: inline-flex;
+      margin: 4px 8px 4px 0;
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
     }
-    .att-in { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
-    .att-out { background: rgba(56,189,248,0.15); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.3); }
-    .att-pending { background: rgba(251,191,36,0.15); color: #fde68a; border: 1px solid rgba(251,191,36,0.3); }
 
-    .hidden { display: none; }
-    @media (max-width: 760px) {
-      .grid, .actions { grid-template-columns: 1fr; }
-      .employee-card { flex-direction: column; align-items: center; text-align: center; }
+    .att-in {
+      background: rgba(16, 185, 129, .15);
+      color: #b7f7d9;
+    }
+
+    .att-out {
+      background: rgba(56, 189, 248, .15);
+      color: #bae6fd;
+    }
+
+    .att-pending {
+      background: rgba(245, 158, 11, .15);
+      color: #fde68a;
+    }
+
+    .demo-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(2, 6, 23, .74);
+    }
+
+    .demo-modal {
+      width: min(560px, 100%);
+      max-height: 84vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--surface);
+      padding: 22px;
+    }
+
+    .demo-company-title {
+      margin: 16px 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .demo-user-btn {
+      width: 100%;
+      min-height: auto;
+      margin-bottom: 8px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #091425;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .demo-user-btn:hover { border-color: var(--accent); }
+    .demo-user-name { font-weight: 900; }
+    .demo-user-email { margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .demo-user-role { float: right; color: #7ee7c3; font-size: 11px; font-weight: 900; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 980px) {
+      .layout, .punch-grid { grid-template-columns: 1fr; }
+      .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 640px) {
+      .tabs, .actions { grid-template-columns: 1fr; }
+      #companyName { white-space: normal; }
     }
   </style>
 </head>
 <body>
-  <a href="#identifier" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Aller au formulaire de pointage</a>
-  <div class="app" role="main" aria-label="Borne de pointage ZKTeco">
-    <div class="eyebrow">ZKTeco Door Kiosk</div>
-    <h1 id="companyName">Chargement...</h1>
-    <p id="locationLabel">Initialisation de la borne d entree...</p>
-    <div class="pill" role="status" aria-live="polite"><span id="syncDot" class="dot" aria-hidden="true"></span><span id="syncLabel">Verification de l etat reseau...</span></div>
-
-
-    <nav class="tabs" role="tablist" aria-label="Sections du kiosk">
-      <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch">Pointage</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="info" aria-controls="panel-info">Info employe</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="announcements" aria-controls="panel-announcements">Annonces</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="leave" aria-controls="panel-leave">Solde conges</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="qr" aria-controls="panel-qr">QR Code</button>
-    </nav>
-
-    <!-- TAB: Pointage (existing functionality) -->
-    <div id="panel-punch" class="tab-panel active" role="tabpanel" aria-labelledby="tab-punch">
-      <div class="grid">
-        <section class="card">
-          <label for="identifier">Identifiant employe / zkteco_id / matricule</label>
-          <input id="identifier" name="identifier" autocomplete="off" placeholder="Scanner le doigt ou le visage, ou saisir l'identifiant" aria-label="Identifiant employe">
-          <label for="biometricType" style="margin-top: 12px;">Type biometrie</label>
-          <select id="biometricType" aria-label="Type de biometrie">
-            <option value="fingerprint">Empreinte</option>
-            <option value="face">Visage</option>
-            <option value="mixed">Mixte</option>
-          </select>
-          <div class="actions">
-            <button class="primary" id="checkInButton" aria-label="Pointer entree">Pointer entree</button>
-            <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Pointer sortie</button>
-          </div>
-          <div style="margin-top:12px;">
-            <button class="info" id="demoAccessBtn" style="background:#059669;color:white;" aria-label="Acces Demo">Acces Demo — Choisir un employe</button>
-          </div>
-          <div id="statusBox" class="status" role="alert" aria-live="polite">Pret a recevoir un pointage.</div>
-        </section>
-        <aside class="card">
-          <dl class="meta">
-            <dt>Code appareil</dt>
-            <dd id="deviceCode">-</dd>
-            <dt>Mode</dt>
-            <dd>ZKTeco / HID / bridge local offline-first</dd>
-            <dt>File locale</dt>
-            <dd id="queueCount">0 evenement en attente</dd>
-            <dt>Derniere synchronisation</dt>
-            <dd id="lastSyncAt">Verification en cours</dd>
-          </dl>
-        </aside>
-      </div>
-    </div>
-
-    <!-- TAB: Employee Info Post-Punch (H1) -->
-    <div id="panel-info" class="tab-panel" role="tabpanel" aria-labelledby="tab-info">
-      <div class="card">
-        <h2>Information employe</h2>
-        <p style="margin-bottom:14px;">Saisissez un identifiant pour afficher les informations de l'employe.</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <input id="infoIdentifier" placeholder="Matricule, email ou zkteco_id" style="flex:1;min-width:200px;" aria-label="Identifiant pour recherche employe">
-          <button class="info" style="width:auto;padding:14px 24px;" id="infoSearchBtn" aria-label="Rechercher employe">Rechercher</button>
+  <a href="#identifier" class="sr-only">Aller au formulaire de pointage</a>
+  <div class="shell" role="main" aria-label="Borne de pointage Leopardo RH">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">L</div>
+        <div>
+          <div class="eyebrow">Kiosk biometrie terrain</div>
+          <h1 id="companyName">Chargement...</h1>
+          <p id="locationLabel">Initialisation de la borne d'entree...</p>
         </div>
-        <div id="employeeInfoResult" class="hidden" style="margin-top:20px;">
-          <div class="employee-card">
-            <div class="avatar" id="empAvatar">?</div>
-            <div class="emp-details">
-              <div class="emp-name" id="empName">-</div>
-              <div class="emp-meta">
-                <span id="empMatricule">-</span> · <span id="empDepartment">-</span> · <span id="empPosition">-</span>
+      </div>
+      <div class="pill" role="status" aria-live="polite">
+        <span id="syncDot" class="dot" aria-hidden="true"></span>
+        <span id="syncLabel">Verification reseau...</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="tabs" role="tablist" aria-label="Sections du kiosk">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch">Pointage <span>doigt / visage</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="info" aria-controls="panel-info">Employe <span>infos jour</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="announcements" aria-controls="panel-announcements">Annonces <span>entreprise</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="leave" aria-controls="panel-leave">Conges <span>soldes</span></button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="qr" aria-controls="panel-qr">QR Code <span>fallback</span></button>
+      </nav>
+
+      <main class="content">
+        <section id="panel-punch" class="tab-panel active" role="tabpanel">
+          <div class="punch-grid">
+            <div class="biometric-stage">
+              <div class="fingerprint" aria-hidden="true">
+                <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M60 64c0 15-6 25-15 34" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                  <path d="M60 64c0 15 6 25 15 34" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+                  <path d="M40 58c0-12 9-21 20-21s20 9 20 21" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                  <path d="M29 69c-2-6-3-12-2-18 3-18 17-31 33-31s30 13 33 31c1 6 0 12-2 18" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".62"/>
+                  <path d="M21 87c-8-16-9-32-3-47C25 22 41 10 60 10s35 12 42 30c6 15 5 31-3 47" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".4"/>
+                  <path d="M47 78c3-5 4-10 4-16 0-6 4-10 9-10s9 4 9 10c0 6 1 11 4 16" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                </svg>
               </div>
+              <h2 class="stage-title">Posez le doigt</h2>
+              <p class="stage-copy">Le capteur ZKTeco reconnait l'employe. En fallback, scannez le visage, le QR ou saisissez le matricule.</p>
+            </div>
+
+            <div class="card">
+              <div class="field-stack">
+                <div>
+                  <label for="identifier">Identifiant employe / zkteco_id / matricule</label>
+                  <input id="identifier" name="identifier" autocomplete="off" placeholder="Scanner ou saisir l'identifiant" aria-label="Identifiant employe">
+                </div>
+                <div>
+                  <label for="biometricType">Mode de reconnaissance</label>
+                  <select id="biometricType" aria-label="Type de biometrie">
+                    <option value="fingerprint">Empreinte</option>
+                    <option value="face">Visage</option>
+                    <option value="mixed">Mixte</option>
+                  </select>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="primary" id="checkInButton" aria-label="Pointer entree">Arrivee</button>
+                <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Depart</button>
+              </div>
+              <button class="info" id="demoAccessBtn" style="margin-top:12px;" aria-label="Acces demo">Choisir un employe demo</button>
+              <div id="statusBox" class="status" role="alert" aria-live="polite">Pret a recevoir un pointage.</div>
             </div>
           </div>
-          <h3 style="margin-top:18px;">Pointage du jour</h3>
-          <div class="attendance-row" id="empAttendance">
-            <span class="att-badge att-pending">Aucun pointage aujourd'hui</span>
+
+          <aside class="card" style="margin-top:18px;">
+            <dl class="meta">
+              <div><dt>Code appareil</dt><dd id="deviceCode">-</dd></div>
+              <div><dt>Mode</dt><dd>ZKTeco / HID / bridge local offline-first</dd></div>
+              <div><dt>File locale</dt><dd id="queueCount">0 evenement en attente</dd></div>
+              <div><dt>Derniere synchronisation</dt><dd id="lastSyncAt">Verification en cours</dd></div>
+            </dl>
+          </aside>
+        </section>
+
+        <section id="panel-info" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <h2>Information employe</h2>
+            <p>Saisissez un identifiant pour afficher les informations utiles au pointage du jour.</p>
+            <div class="actions">
+              <input id="infoIdentifier" placeholder="Matricule, email ou zkteco_id" aria-label="Identifiant pour recherche employe">
+              <button class="info" id="infoSearchBtn" aria-label="Rechercher employe">Rechercher</button>
+            </div>
+            <div id="employeeInfoResult" class="hidden">
+              <div class="employee-card">
+                <div class="avatar" id="empAvatar">?</div>
+                <div>
+                  <div class="emp-name" id="empName">-</div>
+                  <div class="emp-meta"><span id="empMatricule">-</span> - <span id="empDepartment">-</span> - <span id="empPosition">-</span></div>
+                </div>
+              </div>
+              <h3 style="margin-top:22px;">Pointage du jour</h3>
+              <div class="attendance-row" id="empAttendance">
+                <span class="att-badge att-pending">Aucun pointage aujourd'hui</span>
+              </div>
+              <h3 style="margin-top:22px;">Soldes conges</h3>
+              <div class="balance-grid" id="empBalances"></div>
+            </div>
+            <div id="infoStatus" class="status hidden" role="alert" aria-live="polite"></div>
           </div>
-          <h3 style="margin-top:18px;">Soldes conges</h3>
-          <div class="balance-grid" id="empBalances"></div>
-        </div>
-        <div id="infoStatus" class="status hidden" role="alert" aria-live="polite"></div>
-      </div>
-    </div>
+        </section>
 
-        <div class="actions">
-          <button class="primary" id="checkInButton" aria-label="Pointer entree">Pointer entree</button>
-          <button class="secondary" id="checkOutButton" aria-label="Pointer sortie">Pointer sortie</button>
-    <!-- TAB: Announcements (H2) -->
-    <div id="panel-announcements" class="tab-panel" role="tabpanel" aria-labelledby="tab-announcements">
-      <div class="card">
-        <h2>Annonces</h2>
-        <p style="margin-bottom:14px;">Annonces actives de votre entreprise.</p>
-        <div id="announcementsList">
-          <p style="text-align:center;padding:40px 0;color:var(--muted);">Chargement des annonces...</p>
-        </div>
-      </div>
-    </div>
+        <section id="panel-announcements" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <h2>Annonces</h2>
+            <p>Annonces actives de votre entreprise.</p>
+            <div id="announcementsList">
+              <p style="text-align:center;padding:40px 0;color:var(--muted);">Chargement des annonces...</p>
+            </div>
+          </div>
+        </section>
 
-        <div id="statusBox" class="status" role="status" aria-live="polite" aria-atomic="true">Pret a recevoir un pointage.</div>
-      </section>
-    <!-- TAB: Leave Balance (H3) -->
-    <div id="panel-leave" class="tab-panel" role="tabpanel" aria-labelledby="tab-leave">
-      <div class="card">
-        <h2>Solde de conges</h2>
-        <p style="margin-bottom:14px;">Consultez votre solde de conges en saisissant votre identifiant.</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <input id="leaveIdentifier" placeholder="Matricule, email ou zkteco_id" style="flex:1;min-width:200px;" aria-label="Identifiant pour solde conges">
-          <button class="info" style="width:auto;padding:14px 24px;" id="leaveSearchBtn" aria-label="Consulter solde">Consulter</button>
-        </div>
-        <div id="leaveResult" class="hidden" style="margin-top:20px;">
-          <h3><span id="leaveEmpName">-</span> — <span id="leaveYear">2026</span></h3>
-          <div class="balance-grid" id="leaveBalances"></div>
-        </div>
-        <div id="leaveStatus" class="status hidden" role="alert" aria-live="polite"></div>
-      </div>
-    </div>
+        <section id="panel-leave" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <h2>Solde de conges</h2>
+            <p>Consultez votre solde de conges en saisissant votre identifiant.</p>
+            <div class="actions">
+              <input id="leaveIdentifier" placeholder="Matricule, email ou zkteco_id" aria-label="Identifiant pour solde conges">
+              <button class="info" id="leaveSearchBtn" aria-label="Consulter solde">Consulter</button>
+            </div>
+            <div id="leaveResult" class="hidden" style="margin-top:20px;">
+              <h3><span id="leaveEmpName">-</span> - <span id="leaveYear">2026</span></h3>
+              <div class="balance-grid" id="leaveBalances"></div>
+            </div>
+            <div id="leaveStatus" class="status hidden" role="alert" aria-live="polite"></div>
+          </div>
+        </section>
 
-    <!-- TAB: QR Code Punch (H4) -->
-    <div id="panel-qr" class="tab-panel" role="tabpanel" aria-labelledby="tab-qr">
-      <div class="card">
-        <h2>Pointage par QR Code</h2>
-        <p style="margin-bottom:14px;">Scannez votre QR code personnel ou collez les donnees du QR.</p>
-        <div class="qr-area" id="qrScanArea">
-          <div class="qr-icon" aria-hidden="true">&#9634;</div>
-          <p>Presentez votre QR code devant la camera ou collez les donnees ci-dessous</p>
-        </div>
-        <label for="qrDataInput" style="margin-top:14px;">Donnees QR (base64 ou texte)</label>
-        <input id="qrDataInput" placeholder="Collez les donnees du QR code ici" aria-label="Donnees QR code">
-        <div class="actions" style="margin-top:12px;">
-          <button class="primary" id="qrCheckInBtn" aria-label="Pointer entree via QR">Entree (QR)</button>
-          <button class="secondary" id="qrCheckOutBtn" aria-label="Pointer sortie via QR">Sortie (QR)</button>
-        </div>
-        <div id="qrStatus" class="status hidden" role="alert" aria-live="polite"></div>
-      </div>
+        <section id="panel-qr" class="tab-panel" role="tabpanel">
+          <div class="card">
+            <h2>Pointage par QR Code</h2>
+            <p>Scannez votre QR code personnel ou collez les donnees du QR.</p>
+            <div class="qr-area" id="qrScanArea">
+              <div>
+                <div class="qr-icon" aria-hidden="true">&#9634;</div>
+                <p>Presentez votre QR code devant la camera ou collez les donnees ci-dessous.</p>
+              </div>
+            </div>
+            <label for="qrDataInput" style="margin-top:14px;">Donnees QR</label>
+            <input id="qrDataInput" placeholder="Collez les donnees du QR code ici" aria-label="Donnees QR code">
+            <div class="actions">
+              <button class="primary" id="qrCheckInBtn" aria-label="Pointer entree via QR">Arrivee QR</button>
+              <button class="secondary" id="qrCheckOutBtn" aria-label="Pointer sortie via QR">Depart QR</button>
+            </div>
+            <div id="qrStatus" class="status hidden" role="alert" aria-live="polite"></div>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
 
-  <!-- Demo users modal (hidden by default) -->
-  <div id="demoOverlay" class="demo-overlay hidden">
+  <div id="demoOverlay" class="demo-overlay hidden" aria-modal="true" role="dialog" aria-label="Choisir un employe demo">
     <div class="demo-modal">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
         <h2 style="margin:0;">Choisir un employe demo</h2>
         <button class="secondary" style="width:auto;padding:8px 14px;font-size:13px;" id="demoCloseBtn">Fermer</button>
       </div>
