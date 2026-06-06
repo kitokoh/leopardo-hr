@@ -9,10 +9,12 @@
 - Plan 71 : cadrage go-to-market admin plateforme, multi-pays, i18n, vitrine essai, kiosk et audit commercial-technique.
 - Audit go-to-market 2026-06-06 avec verdict pilote, risques et priorites commerciales/techniques.
 - Backend : ajout de `CountryDefaults` pour deriver langue, devise et timezone a partir du pays lors du provisioning plateforme.
+- API platform : ajout de `GET /api/v1/platform/country-defaults` pour exposer la source de verite pays/devise/timezone/langue aux frontends super-admin.
 
 ### Changed
 
 - App mobile platform admin : le formulaire de creation client propose un choix pays controle, affiche devise/timezone/langue, et permet de creer un client en essai ou actif.
+- App mobile platform admin : le formulaire pays consomme maintenant l'API `country-defaults` avec fallback local non bloquant.
 - API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
 - OpenAPI et contrat mobile platform admin alignes avec le nouveau provisioning multi-pays.
 - Migrations publiques : la reconciliation `company_requests` garantit explicitement les colonnes modernes (`user_id`, contact, review) sur PostgreSQL public quand l'ancienne table `employee_id` existe deja.

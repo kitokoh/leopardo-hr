@@ -1059,3 +1059,8 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `POST /api/v1/payment-batches` cree un lot de paiement auditable depuis un payroll run valide et ses pay slips
 - `POST /api/v1/payment-batches/{id}/mark-paid` marque les items comme payes et declenche les documents de paiement async
 - `POST /api/v1/payment-confirmations/{paymentItem}/confirm` permet a l'employe proprietaire de confirmer reception, de maniere idempotente, avec signature device/IP/user-agent/document_version
+
+#### Plan 71 - Platform Admin Multi-Pays
+- `GET /api/v1/platform/country-defaults` : super-admin authentifie, retourne la liste canonique des pays supportes avec `country`, `label`, `language`, `currency`, `timezone`.
+- `POST /api/v1/platform/companies` : le payload mobile minimal peut envoyer seulement `country`; le backend derive langue, devise et timezone via `CountryDefaults`.
+- Les tests doivent couvrir au minimum `SN/XOF`, `CM/XAF`, `TR/TRY` et verifier qu'un nouveau pays ne retombe pas silencieusement sur `DZD`.

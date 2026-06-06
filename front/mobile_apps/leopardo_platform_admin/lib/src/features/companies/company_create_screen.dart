@@ -4,83 +4,68 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
 import '../../core/platform_providers.dart';
+import '../platform/platform_models.dart';
 import 'company_screen.dart';
 
-class _CountryOption {
-  const _CountryOption({
-    required this.code,
-    required this.label,
-    required this.currency,
-    required this.timezone,
-    required this.language,
-  });
-
-  final String code;
-  final String label;
-  final String currency;
-  final String timezone;
-  final String language;
-}
-
-const _countryOptions = [
-  _CountryOption(
-    code: 'DZ',
+const _fallbackCountryDefaults = [
+  PlatformCountryDefault(
+    country: 'DZ',
     label: 'Algerie',
     currency: 'DZD',
     timezone: 'Africa/Algiers',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'MA',
+  PlatformCountryDefault(
+    country: 'MA',
     label: 'Maroc',
     currency: 'MAD',
     timezone: 'Africa/Casablanca',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'TN',
+  PlatformCountryDefault(
+    country: 'TN',
     label: 'Tunisie',
     currency: 'TND',
     timezone: 'Africa/Tunis',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'SN',
+  PlatformCountryDefault(
+    country: 'SN',
     label: 'Senegal',
     currency: 'XOF',
     timezone: 'Africa/Dakar',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'CI',
+  PlatformCountryDefault(
+    country: 'CI',
     label: 'Cote d Ivoire',
     currency: 'XOF',
     timezone: 'Africa/Abidjan',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'CM',
+  PlatformCountryDefault(
+    country: 'CM',
     label: 'Cameroun',
     currency: 'XAF',
     timezone: 'Africa/Douala',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'FR',
+  PlatformCountryDefault(
+    country: 'FR',
     label: 'France',
     currency: 'EUR',
     timezone: 'Europe/Paris',
     language: 'fr',
   ),
-  _CountryOption(
-    code: 'TR',
+  PlatformCountryDefault(
+    country: 'TR',
     label: 'Turquie',
     currency: 'TRY',
     timezone: 'Europe/Istanbul',
     language: 'tr',
   ),
-  _CountryOption(
-    code: 'US',
+  PlatformCountryDefault(
+    country: 'US',
     label: 'Etats-Unis',
     currency: 'USD',
     timezone: 'America/New_York',
@@ -104,7 +89,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   final _managerFirstName = TextEditingController();
   final _managerLastName = TextEditingController();
   final _managerEmail = TextEditingController();
-  _CountryOption _selectedCountry = _countryOptions.first;
+  String _selectedCountryCode = _fallbackCountryDefaults.first.country;
   bool _activateImmediately = false;
   bool _submitting = false;
 
@@ -137,6 +122,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final selectedCountry = _selectedCountry(_countries());
     setState(() => _submitting = true);
     try {
       final company = await ref
@@ -144,7 +130,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           .createCompany(
             name: _name.text.trim(),
             email: _email.text.trim(),
-            country: _selectedCountry.code,
+            country: selectedCountry.country,
             city: _city.text.trim(),
             managerFirstName: _managerFirstName.text.trim(),
             managerLastName: _managerLastName.text.trim(),
@@ -174,6 +160,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final countries = _countries();
     return MobilePage(
       appBar: MobileTopBar(
         title: 'Nouveau client',
@@ -214,8 +201,8 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
                     ),
                   ],
                 ),
-                _countryPicker(),
-                _countryPreview(),
+                _countryPicker(countries),
+                _countryPreview(_selectedCountry(countries)),
                 _activationSwitch(),
                 _field(
                   _managerFirstName,
@@ -250,6 +237,24 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     );
   }
 
+  List<PlatformCountryDefault> _countries() {
+    return ref
+        .watch(platformCountryDefaultsProvider)
+        .maybeWhen(
+          data: (items) => items.isNotEmpty ? items : _fallbackCountryDefaults,
+          orElse: () => _fallbackCountryDefaults,
+        );
+  }
+
+  PlatformCountryDefault _selectedCountry(
+    List<PlatformCountryDefault> countries,
+  ) {
+    return countries.firstWhere(
+      (country) => country.country == _selectedCountryCode,
+      orElse: () => countries.first,
+    );
+  }
+
   Widget _field(
     TextEditingController controller,
     String label,
@@ -275,11 +280,13 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     );
   }
 
-  Widget _countryPicker() {
+  Widget _countryPicker(List<PlatformCountryDefault> countries) {
+    final selected = _selectedCountry(countries);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: DropdownButtonFormField<_CountryOption>(
-        initialValue: _selectedCountry,
+      child: DropdownButtonFormField<PlatformCountryDefault>(
+        initialValue: selected,
         dropdownColor: MobileSurface.surface,
         iconEnabledColor: MobileSurface.secondary,
         style: const TextStyle(color: MobileSurface.text),
@@ -291,27 +298,27 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         items:
-            _countryOptions
+            countries
                 .map(
                   (country) => DropdownMenuItem(
                     value: country,
-                    child: Text('${country.label} (${country.code})'),
+                    child: Text('${country.label} (${country.country})'),
                   ),
                 )
                 .toList(),
         onChanged: (country) {
           if (country == null) return;
-          setState(() => _selectedCountry = country);
+          setState(() => _selectedCountryCode = country.country);
         },
       ),
     );
   }
 
-  Widget _countryPreview() {
+  Widget _countryPreview(PlatformCountryDefault selectedCountry) {
     final items = [
-      ('Devise', _selectedCountry.currency),
-      ('Fuseau', _selectedCountry.timezone),
-      ('Langue', _selectedCountry.language.toUpperCase()),
+      ('Devise', selectedCountry.currency),
+      ('Fuseau', selectedCountry.timezone),
+      ('Langue', selectedCountry.language.toUpperCase()),
     ];
 
     return Container(
