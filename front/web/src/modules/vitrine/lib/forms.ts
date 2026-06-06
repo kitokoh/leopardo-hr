@@ -56,13 +56,14 @@ export async function submitSignupForm(
   page: string
 ): Promise<FormSubmissionResponse> {
   try {
-    // Sanitize inputs
     const sanitizedData = {
       email: sanitizeEmail(data.email),
-      password: data.password,
+      company: sanitizeInput(data.company),
+      role: data.role,
+      employees: data.employees,
+      phone: data.phone ? sanitizeInput(data.phone) : undefined,
     };
 
-    // Send to API
     const response = await fetch("/api/forms/signup", {
       method: "POST",
       headers: {
@@ -82,7 +83,7 @@ export async function submitSignupForm(
       const error = await response.json();
       return {
         success: false,
-        message: "Erreur lors de l'inscription",
+        message: "Erreur lors de la demande d'essai",
         error: error.message,
       };
     }
@@ -91,19 +92,18 @@ export async function submitSignupForm(
 
     return {
       success: true,
-      message: "Inscription réussie! Vérifiez votre email.",
+      message: result.message || "Demande d'essai envoyee. Notre equipe vous contacte sous 24h ouvrables.",
       data: result,
     };
   } catch (error) {
     safeLog("Signup form error:", error);
     return {
       success: false,
-      message: "Erreur lors de l'inscription",
+      message: "Erreur lors de la demande d'essai",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
   }
 }
-
 /**
  * Submit demo request form
  */

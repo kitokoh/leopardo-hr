@@ -158,6 +158,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         children: [
           _buildIdentityCard(context),
           const SizedBox(height: 20),
+          _buildAccountOverviewSection(),
+          const SizedBox(height: 20),
           _buildProfileSection(context, authState),
           const SizedBox(height: 20),
           _buildQrOnboardingSection(context),
@@ -297,6 +299,78 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAccountOverviewSection() {
+    final items = [
+      (
+        icon: Icons.badge_outlined,
+        color: AppColors.rh,
+        title: 'Identite portable',
+        subtitle:
+            'Email personnel, recuperation et telephone restent attaches au compte.',
+      ),
+      (
+        icon: Icons.work_history_outlined,
+        color: AppColors.info,
+        title: 'Parcours',
+        subtitle: 'Historique entreprise, poste, statut et disponibilite.',
+      ),
+      (
+        icon: Icons.folder_copy_outlined,
+        color: AppColors.warning,
+        title: 'Placard numerique',
+        subtitle:
+            'CV, contrats, diplomes et documents avec visibilite controlee.',
+      ),
+      (
+        icon: Icons.qr_code_2_rounded,
+        color: AppColors.rhDark,
+        title: 'QR onboarding',
+        subtitle: 'Partager votre profil ou scanner une entreprise.',
+      ),
+      (
+        icon: Icons.fingerprint_rounded,
+        color: AppColors.info,
+        title: 'Biometrie kiosk',
+        subtitle: 'Preparer doigt et visage pour les bornes terrain.',
+      ),
+      (
+        icon: Icons.notifications_active_outlined,
+        color: AppColors.danger,
+        title: 'Notifications',
+        subtitle: 'Canaux, heures calmes et alertes operationnelles.',
+      ),
+    ];
+
+    return MobilePanel(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Vue d ensemble',
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Votre compte reste utile meme quand vous changez d entreprise.',
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          ...items.map(
+            (item) => MobileListCard(
+              icon: item.icon,
+              iconColor: item.color,
+              title: item.title,
+              subtitle: item.subtitle,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -981,7 +1055,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildNotificationSection(BuildContext context) {
     return FutureBuilder<NotificationPreferences>(
-      future: ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
+      future:
+          ref.read(settingsRepositoryProvider).loadNotificationPreferences(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
@@ -1094,7 +1169,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     value: preferences.appEnabled,
                     onChanged:
                         (next) =>
-                            preferences = preferences.copyWith(appEnabled: next),
+                            preferences = preferences.copyWith(
+                              appEnabled: next,
+                            ),
                   ),
                   tile(
                     title: 'Push mobile',
@@ -1102,23 +1179,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     value: preferences.pushEnabled,
                     onChanged:
                         (next) =>
-                            preferences = preferences.copyWith(pushEnabled: next),
+                            preferences = preferences.copyWith(
+                              pushEnabled: next,
+                            ),
                   ),
                   tile(
                     title: 'Email',
                     subtitle: 'Resume et confirmations importantes.',
                     value: preferences.emailEnabled,
                     onChanged:
-                        (next) => preferences =
-                            preferences.copyWith(emailEnabled: next),
+                        (next) =>
+                            preferences = preferences.copyWith(
+                              emailEnabled: next,
+                            ),
                   ),
                   tile(
                     title: 'Heures calmes',
                     subtitle: 'Limiter les canaux externes hors horaires.',
                     value: preferences.quietHoursEnabled,
                     onChanged:
-                        (next) => preferences =
-                            preferences.copyWith(quietHoursEnabled: next),
+                        (next) =>
+                            preferences = preferences.copyWith(
+                              quietHoursEnabled: next,
+                            ),
                   ),
                   if (saving)
                     const Padding(
