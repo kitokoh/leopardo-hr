@@ -59,6 +59,10 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 | 65 | `65_PLAN_PAIEMENT_MASSE_SIGNATURE_NUMERIQUE.md` | Paiements en masse, confirmations employees, audit et preparation signature numerique |
 | 66 | `66_PLAN_CONSOLIDATION_MOBILE_FIRST_COMPANY_OS.md` | Plan maitre A-J : cartographie des 44 idees consolidees, anti-oubli et ordre de livraison |
 | 67 | `67_PLAN_AUDIT_FINAL_QUALITE_PRODUIT.md` | Audit final lancement : mobile runtime smoke, super-admin E2E, GPS natif, theming tenant, notifications et release readiness |
+| 68 | `68_PLAN_AUDIT_POST_67_QUALITE_CODE_LANCEMENT.md` | Audit post-67 : hygiene depot, qualite code, operations et prochain plan produit |
+| 69 | `69_PLAN_EXECUTION_LANCEMENT_MOBILE_FIRST_COMPANY_OS.md` | Execution lancement : device QA, parcours employee/manager/platform admin, paie et observabilite |
+| 70 | `70_PLAN_MARKET_LAUNCH_2026_COMPANY_OS.md` | Lancement marche 2026 : positionnement, packaging, offres, ROI, IA gouvernee et expansion |
+| 71 | `71_PLAN_ADMIN_MULTI_PAYS_KIOSK_GO_TO_MARKET.md` | Go-to-market operationnel : admin plateforme, multi-pays/devise, i18n, vitrine essai, kiosk et audit commercial-technique |
 
 ### Ordre d'execution recommande
 
@@ -75,6 +79,7 @@ Ces plans regroupent les points 31 a 44 remontes apres les tests produit. Ils so
 11. **Plan 68** : auditer le projet apres cloture Plan 67 : hygiene depot, contrats API/fronts, qualite code pragmatique, operations et prochain plan produit.
 12. **Plan 69** : executer la recette lancement Mobile-First Company OS : apps mobiles reelles, parcours employee/manager/platform admin, paie asynchrone et observabilite.
 13. **Plan 70** : convertir le Go technique en lancement marche 2026 : positionnement, packaging, demo admin mobile, preuves terrain, offres, ROI, IA gouvernee et 72 actions nouvelles.
+14. **Plan 71** : renforcer le go-to-market operationnel : creation/activation platform admin, multi-pays/devise, i18n centralisee, vitrine essai, kiosk biometrie-first et audit commercial-technique.
 
 Chaque plan doit sortir avec son changement code/documentation, ses tests ou preuves CI, une entree `CHANGELOG.md` et, si une lecon durable apparait, une entree `AGENTS.md`.
 

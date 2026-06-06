@@ -9,7 +9,8 @@ void main() {
           'id': '9b2f5b8e-tenant',
           'name': 'Client Terrain',
           'status': 'active',
-          'country': 'DZ',
+          'country': 'SN',
+          'currency': 'XOF',
           'plan_id': 7,
           'plan_name': 'Business',
           'created_at': '2026-06-01T07:00:00Z',
@@ -21,7 +22,8 @@ void main() {
     expect(company.id, '9b2f5b8e-tenant');
     expect(company.name, 'Client Terrain');
     expect(company.status, 'active');
-    expect(company.country, 'DZ');
+    expect(company.country, 'SN');
+    expect(company.currency, 'XOF');
     expect(company.plan, 'Business');
     expect(company.createdAt, '2026-06-01T07:00:00Z');
   });
@@ -31,10 +33,12 @@ void main() {
       'id': 'company-uuid-123',
       'name': 'Leopardo Client',
       'country': 'TR',
+      'currency': 'TRY',
       'plan': {'name': 'Scale'},
     });
 
     expect(company.id, 'company-uuid-123');
+    expect(company.currency, 'TRY');
     expect(company.plan, 'Scale');
   });
 }
