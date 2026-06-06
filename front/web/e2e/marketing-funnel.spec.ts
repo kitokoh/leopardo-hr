@@ -63,6 +63,20 @@ test.describe('Marketing funnel preview', () => {
     await expect(page.locator('#newsletter')).toContainText(/newsletter|success|reussie/i);
   });
 
+  test('keeps guide trial CTAs on the public guided signup flow', async ({ page }) => {
+    const guideRoutes = [
+      '/guides/rh-startup',
+      '/guides/planning-employes',
+      '/guides/checklist-paie',
+    ];
+
+    for (const route of guideRoutes) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('a[href*="/auth/signup"]')).toHaveCount(0);
+      await expect(page.locator('a[href^="/signup"]')).not.toHaveCount(0);
+    }
+  });
+
   test('keeps form API contracts explicit for invalid payloads', async ({ request }) => {
     const response = await request.post('/api/forms/demo', {
       data: {
