@@ -87,4 +87,5 @@ Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. E
 - Workflow manuel ajoute : `.github/workflows/launch-api-profile-smoke.yml`.
 - Gate release mis a jour pour verifier la presence du script, du workflow et de ce rapport.
 - Correction outillage : les tokens absents doivent toujours produire `SKIP`, jamais decaler les arguments positionnels du smoke.
+- Correction outillage : les appels internes utilisent un splat hashtable afin qu'un token vide ne soit jamais avale par le parametre suivant.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
