@@ -1,23 +1,37 @@
 import { z } from "zod";
 
 /**
- * Validation schemas for all forms
+ * Validation schemas for all forms.
  */
 
-// Signup form schema
 export const signupFormSchema = z.object({
   email: z
     .string()
     .email("Email invalide")
     .min(5, "Email trop court")
     .max(255, "Email trop long"),
-  password: z
+  company: z
     .string()
-    .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-    .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une majuscule")
-    .regex(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre")
-    .regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un caractère spécial"),
-  confirmPassword: z.string(),
+    .min(2, "Le nom de l'entreprise doit contenir au moins 2 caracteres")
+    .max(120, "Le nom de l'entreprise est trop long"),
+  role: z
+    .enum(["founder", "manager", "hr", "operations", "other"], {
+      message: "Selectionnez votre role",
+    })
+    .optional(),
+  employees: z
+    .enum(["1-10", "11-50", "51-200", "201-500", "500+"], {
+      message: "Selectionnez une taille d'equipe",
+    })
+    .optional(),
+  phone: z
+    .string()
+    .regex(
+      /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+      "Numero de telephone invalide"
+    )
+    .optional()
+    .or(z.literal("")),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: "Vous devez accepter les conditions d'utilisation",
   }),
@@ -25,11 +39,10 @@ export const signupFormSchema = z.object({
 
 export type SignupFormData = z.infer<typeof signupFormSchema>;
 
-// Demo request form schema
 export const demoFormSchema = z.object({
   name: z
     .string()
-    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .min(2, "Le nom doit contenir au moins 2 caracteres")
     .max(100, "Le nom est trop long"),
   email: z
     .string()
@@ -38,16 +51,19 @@ export const demoFormSchema = z.object({
     .max(255, "Email trop long"),
   company: z
     .string()
-    .min(2, "Le nom de l'entreprise doit contenir au moins 2 caractères")
+    .min(2, "Le nom de l'entreprise doit contenir au moins 2 caracteres")
     .max(100, "Le nom de l'entreprise est trop long"),
   phone: z
     .string()
-    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/, "Numéro de téléphone invalide")
+    .regex(
+      /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+      "Numero de telephone invalide"
+    )
     .optional()
     .or(z.literal("")),
   employees: z
     .enum(["1-10", "11-50", "51-200", "201-500", "500+"], {
-      message: "Sélectionnez une plage d'employés",
+      message: "Selectionnez une plage d'employes",
     })
     .optional(),
   preferredDate: z
@@ -56,18 +72,17 @@ export const demoFormSchema = z.object({
       const selectedDate = new Date(date);
       const today = new Date();
       return selectedDate > today;
-    }, "La date doit être dans le futur")
+    }, "La date doit etre dans le futur")
     .optional()
     .or(z.literal("")),
 });
 
 export type DemoFormData = z.infer<typeof demoFormSchema>;
 
-// Contact form schema
 export const contactFormSchema = z.object({
   name: z
     .string()
-    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .min(2, "Le nom doit contenir au moins 2 caracteres")
     .max(100, "Le nom est trop long"),
   email: z
     .string()
@@ -76,22 +91,24 @@ export const contactFormSchema = z.object({
     .max(255, "Email trop long"),
   subject: z
     .string()
-    .min(5, "Le sujet doit contenir au moins 5 caractères")
+    .min(5, "Le sujet doit contenir au moins 5 caracteres")
     .max(200, "Le sujet est trop long"),
   message: z
     .string()
-    .min(10, "Le message doit contenir au moins 10 caractères")
+    .min(10, "Le message doit contenir au moins 10 caracteres")
     .max(5000, "Le message est trop long"),
   phone: z
     .string()
-    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/, "Numéro de téléphone invalide")
+    .regex(
+      /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+      "Numero de telephone invalide"
+    )
     .optional()
     .or(z.literal("")),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 
-// Newsletter form schema
 export const newsletterFormSchema = z.object({
   email: z
     .string()
@@ -101,10 +118,6 @@ export const newsletterFormSchema = z.object({
 });
 
 export type NewsletterFormData = z.infer<typeof newsletterFormSchema>;
-
-/**
- * Validation helper functions
- */
 
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -118,7 +131,7 @@ export function validatePassword(password: string): {
   const errors: string[] = [];
 
   if (password.length < 8) {
-    errors.push("Le mot de passe doit contenir au moins 8 caractères");
+    errors.push("Le mot de passe doit contenir au moins 8 caracteres");
   }
   if (!/[A-Z]/.test(password)) {
     errors.push("Le mot de passe doit contenir au moins une majuscule");
@@ -127,7 +140,7 @@ export function validatePassword(password: string): {
     errors.push("Le mot de passe doit contenir au moins un chiffre");
   }
   if (!/[^A-Za-z0-9]/.test(password)) {
-    errors.push("Le mot de passe doit contenir au moins un caractère spécial");
+    errors.push("Le mot de passe doit contenir au moins un caractere special");
   }
 
   return {
@@ -154,25 +167,18 @@ export function validateMessage(message: string): boolean {
   return message.length >= 10 && message.length <= 5000;
 }
 
-/**
- * Sanitization helper functions
- */
-
 export function sanitizeInput(input: string): string {
   return input
     .trim()
-    .replace(/[<>]/g, "") // Remove angle brackets
-    .replace(/javascript:/gi, "") // Remove javascript: protocol
-    .replace(/on\w+\s*=/gi, ""); // Remove event handlers
+    .replace(/[<>]/g, "")
+    .replace(/javascript:/gi, "")
+    .replace(/on\w+\s*=/gi, "");
 }
 
 export function sanitizeEmail(email: string): string {
   return email.toLowerCase().trim();
 }
 
-/**
- * Rate limiting helper
- */
 export class RateLimiter {
   private attempts: Map<string, number[]> = new Map();
   private maxAttempts: number;
@@ -186,8 +192,6 @@ export class RateLimiter {
   isAllowed(identifier: string): boolean {
     const now = Date.now();
     const attempts = this.attempts.get(identifier) || [];
-
-    // Remove old attempts outside the window
     const recentAttempts = attempts.filter((time) => now - time < this.windowMs);
 
     if (recentAttempts.length >= this.maxAttempts) {
@@ -212,17 +216,11 @@ export class RateLimiter {
   }
 }
 
-/**
- * Form error type
- */
 export interface FormError {
   field: string;
   message: string;
 }
 
-/**
- * Parse Zod errors to form errors
- */
 export function parseZodErrors(error: z.ZodError): FormError[] {
   return error.issues.map((err) => ({
     field: err.path.join("."),
