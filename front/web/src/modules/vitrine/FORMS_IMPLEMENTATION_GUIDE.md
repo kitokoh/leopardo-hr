@@ -256,7 +256,10 @@ interface NewsletterFormProps {
 ```json
 {
   "email": "user@example.com",
-  "password": "SecurePass123!",
+  "company": "Acme Corp",
+  "role": "manager",
+  "employees": "11-50",
+  "phone": "+213555000000",
   "page": "/signup",
   "timestamp": "2024-01-01T12:00:00Z"
 }
@@ -266,10 +269,14 @@ interface NewsletterFormProps {
 ```json
 {
   "success": true,
-  "message": "Inscription réussie! Vérifiez votre email.",
+  "message": "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables avec l'acces le plus adapte.",
   "data": {
+    "id": "signup_1700000000000_abcd1234",
     "email": "user@example.com",
-    "confirmationSent": true
+    "company": "Acme Corp",
+    "nextStep": "contact_under_24h",
+    "confirmationSent": true,
+    "crmForwarded": true
   }
 }
 ```
@@ -278,13 +285,12 @@ interface NewsletterFormProps {
 ```json
 {
   "success": false,
-  "message": "Erreur lors de l'inscription",
+  "message": "Erreur lors de la demande d'essai",
   "error": "VALIDATION_ERROR"
 }
 ```
 
 ---
-
 ### POST /api/forms/demo
 
 **Request:**
