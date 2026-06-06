@@ -36,6 +36,14 @@ Lecteur ZKTeco / capteur visage
    - depuis son mobile
    - ou depuis la borne ZKTeco de l entreprise
 
+## Experience kiosk attendue
+
+- Le premier geste visible est la reconnaissance biometrie : doigt, visage, puis fallback QR ou matricule.
+- L interface garde de gros boutons tactiles `Arrivee` / `Depart`.
+- En cas de reseau lent, le bridge local continue de mettre les evenements en file SQLite puis synchronise plus tard.
+- Si le roster local connait l identifiant, la confirmation affiche le nom de l employe au lieu d un simple matricule.
+- Les donnees biometriques brutes ne sont pas stockees par l interface web : le terminal ZKTeco ou son SDK reste responsable du matching.
+
 ## Contenu du dossier
 
 - `index.html` : interface kiosque tactile
@@ -95,7 +103,7 @@ Deux modes reels sont prevus :
 
 ## Important sur la biometrie
 
-Le matériel ZKTeco reste responsable de la capture / matching brut de l empreinte ou du visage.
+Le materiel ZKTeco reste responsable de la capture / matching brut de l empreinte ou du visage.
 
 Leopardo RH gere ici :
 
@@ -105,4 +113,4 @@ Leopardo RH gere ici :
 - la synchronisation API
 - l affichage mobile une fois les donnees synchronisees
 
-Donc oui, la borne supporte bien le doigt et le visage, mais le **matching biometrie reel** depend du terminal / SDK ZKTeco branché sur le PC local.
+Donc oui, la borne supporte bien le doigt et le visage, mais le **matching biometrie reel** depend du terminal / SDK ZKTeco branche sur le PC local.
