@@ -13,6 +13,7 @@
 - I18n : ajout du guide Jules EN/AR/TR et du garde `validate-i18n-debt.ps1` pour mesurer les textes hardcodes par surface.
 - Plan 72 : ajout d'un contrat de workflows lancement multi-surface et du validateur `validate-launch-workflows.ps1`.
 - Validation lancement : ajout du rapport `LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` avec preuves Plan 72.1 et release readiness `27/27`.
+- Recette API lancement : ajout de `launch-api-profile-smoke.ps1` et du rapport `LAUNCH_API_PROFILE_SMOKE_2026_06_06.md` pour verifier les endpoints publics, employee, manager/RH, platform admin et kiosk avec tokens proteges.
 
 ### Changed
 
@@ -31,6 +32,7 @@
 - Securite backend : mise a jour de `laravel/framework` vers `^12.60` / `v12.61.1` pour lever l'advisory Composer `CVE-2026-48019`.
 - API frontend tooling : mise a jour npm de `axios` 1.17.0, `concurrently` 10.0.3 et `vite` 8.0.16 pour garder le build Laravel/Vite a jour.
 - Gouvernance lancement : les workflows visibles web/mobile/kiosk doivent maintenant declarer leurs fichiers, routes, endpoints et tokens critiques dans `launch-workflow-contracts.json`.
+- Release readiness : le gate verifie maintenant aussi la presence du smoke API par profil Plan 72.2.
 
 ## [4.16.249] - 2026-06-05
 
