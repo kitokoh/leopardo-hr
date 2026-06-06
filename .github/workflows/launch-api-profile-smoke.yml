@@ -47,7 +47,7 @@ jobs:
           LEOPARDO_KIOSK_TOKEN: ${{ secrets.LEOPARDO_KIOSK_TOKEN }}
         run: |
           $smokeArgs = @(
-            "-BaseUrl", "${env:LEOPARDO_API_BASE_URL}"
+            "-BaseUrl", "$env:LEOPARDO_API_BASE_URL"
           )
 
           if ("${{ github.event.inputs.include_platform_provisioning }}" -eq "true") {
