@@ -30,11 +30,22 @@ Le but n'est pas de remplacer les tests fonctionnels existants. Le but est d'ajo
 
 ## Lot 72.2 - Recette fonctionnelle exhaustive
 
-### Actions restantes
+### Actions
 
-- Ajouter des smokes API authentifies pour creation/activation entreprise, paie, pointage, absence, avance, notifications et kiosk.
-- Publier un rapport par profil : employee, manager, super-admin platform, client web admin, visiteur vitrine, borne kiosk.
-- Relier les resultats au `RELEASE_READINESS_GATE`.
+- Ajouter un smoke API par profil pour les parcours publics, employee, manager/RH, super-admin platform et kiosk.
+- Couvrir les lectures critiques : auth, pointage du jour, mois complet, absences/conges, avances, paie, notifications, liste employes, cockpit manager, platform companies, plans, pays/devise et sante clients.
+- Garder la creation entreprise de test derriere l'option explicite `-IncludePlatformProvisioning`.
+- Publier un rapport par profil et relier le script au `RELEASE_READINESS_GATE`.
+
+### Criteres
+
+- `dev-hub/tools/launch-api-profile-smoke.ps1` passe sans token en validant les endpoints publics et en marquant les profils prives `SKIP`.
+- Avec tokens proteges, les profils configures doivent retourner `PASS`.
+- Aucun secret n'est commite.
+
+### Statut
+
+Lot 72.2 livre cote gouvernance et outillage. La preuve live complete avec tokens doit etre executee en environnement CI/ops protege avant ouverture marketing large.
 
 ## Lot 72.3 - UX commerciale et multilingue
 
@@ -46,4 +57,4 @@ Le but n'est pas de remplacer les tests fonctionnels existants. Le but est d'ajo
 
 ## Statut
 
-Lot 72.1 livre. Le manifeste `dev-hub/tools/launch-workflow-contracts.json`, le validateur `dev-hub/tools/validate-launch-workflows.ps1`, le rapport `docs/validation/LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` et le gate `release-readiness.ps1` couvrent maintenant les workflows visibles de lancement.
+Lots 72.1 et 72.2 livres. Le manifeste `dev-hub/tools/launch-workflow-contracts.json`, le validateur `dev-hub/tools/validate-launch-workflows.ps1`, le smoke `dev-hub/tools/launch-api-profile-smoke.ps1`, les rapports `docs/validation/LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` / `docs/validation/LAUNCH_API_PROFILE_SMOKE_2026_06_06.md` et le gate `release-readiness.ps1` couvrent maintenant les workflows visibles de lancement et les smokes API par profil.
