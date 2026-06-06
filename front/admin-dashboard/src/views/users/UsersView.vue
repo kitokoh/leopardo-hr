@@ -1,16 +1,18 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8 animate-fade-in">
     <!-- Header with actions -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div class="card p-8 relative overflow-hidden">
+      <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl"></div>
+
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
-          <p class="mt-1 text-sm text-gray-500">
-            {{ filteredUsers.length }} utilisateur(s) • {{ stats.activeUsers }} actif(s) • {{ stats.newToday }} nouveau(x) aujourd'hui
+          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Gestion des Utilisateurs</h1>
+          <p class="text-slate-500 dark:text-slate-400 font-medium">
+            {{ filteredUsers.length }} utilisateur(s) • <span class="text-emerald-600 dark:text-emerald-400">{{ stats.activeUsers }} actif(s)</span> • <span class="text-brand-600 dark:text-brand-400">{{ stats.newToday }} nouveau(x) aujourd'hui</span>
           </p>
         </div>
 
-        <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+        <div class="flex flex-wrap items-center gap-3">
           <button
             @click="showBulkActions = !showBulkActions"
             :class="[
@@ -44,8 +46,8 @@
     </div>
 
     <!-- Filters and Search -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="card p-8 animate-slide-up" style="animation-delay: 0.1s">
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Search -->
         <div class="lg:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
@@ -209,7 +211,7 @@
     </div>
 
     <!-- Users Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="card overflow-hidden animate-slide-up" style="animation-delay: 0.2s">
       <UserTable
         :users="paginatedUsers"
         :selected-users="selectedUsers"
@@ -223,7 +225,7 @@
       />
 
       <!-- Pagination -->
-      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+      <div class="px-6 py-5 border-t border-slate-200/50 dark:border-slate-800/50">
         <Pagination
           :current-page="currentPage"
           :total-pages="totalPages"
@@ -525,13 +527,13 @@ function impersonateUser(user) {
   // Implement impersonation logic
 }
 
-function handleUserCreated(user) {
+function handleUserCreated() {
   toast.success('Utilisateur créé avec succès')
   showCreateModal.value = false
   loadUsers()
 }
 
-function handleUserUpdated(user) {
+function handleUserUpdated() {
   toast.success('Utilisateur mis à jour')
   showEditModal.value = false
   loadUsers()

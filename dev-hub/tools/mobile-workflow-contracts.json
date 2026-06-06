@@ -236,14 +236,14 @@
         {
           "name": "platform_companies",
           "routes": ["/platform", "/platform/companies", "/platform/companies/new", "/platform/companies/:companyId"],
-          "endpoints": ["/platform/metrics/overview", "/platform/plans", "/platform/companies", "/platform/companies/$companyId/health", "/platform/companies/$companyId/subscription", "/platform/companies/$companyId/features"],
+          "endpoints": ["/platform/metrics/overview", "/platform/plans", "/platform/country-defaults", "/platform/companies", "/platform/companies/$companyId/health", "/platform/companies/$companyId/subscription", "/platform/companies/$companyId/features"],
           "screenFiles": [
             "lib/src/features/dashboard/platform_dashboard_screen.dart",
             "lib/src/features/companies/company_screen.dart",
             "lib/src/features/companies/company_create_screen.dart",
             "lib/src/features/companies/company_detail_screen.dart"
           ],
-          "sourceTokens": ["context.push('/platform/companies')", "context.push('/platform/companies/new')", "Uri.encodeComponent(company.id)", "createCompany", "Creer le client", "companyHealth", "companySubscription", "companyFeatures", "plans", "updateCompanySubscription", "updateCompanyFeatures", "Modifier abonnement", "Modifier modules"]
+          "sourceTokens": ["context.push('/platform/companies')", "context.push('/platform/companies/new')", "Uri.encodeComponent(company.id)", "createCompany", "platformCountryDefaultsProvider", "Creer le client", "Pays du client", "Activer immediatement", "companyHealth", "companySubscription", "companyFeatures", "plans", "updateCompanySubscription", "updateCompanyFeatures", "Modifier abonnement", "Modifier modules"]
         },
         {
           "name": "platform_company_requests",

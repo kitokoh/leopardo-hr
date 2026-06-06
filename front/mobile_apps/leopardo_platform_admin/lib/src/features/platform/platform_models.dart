@@ -27,6 +27,7 @@ class PlatformCompany {
     required this.name,
     required this.status,
     required this.country,
+    required this.currency,
     required this.plan,
     required this.createdAt,
   });
@@ -35,6 +36,7 @@ class PlatformCompany {
   final String name;
   final String status;
   final String country;
+  final String currency;
   final String plan;
   final String createdAt;
 
@@ -48,6 +50,7 @@ class PlatformCompany {
       name: data['name']?.toString() ?? data['company_name']?.toString() ?? '-',
       status: data['status']?.toString() ?? 'unknown',
       country: data['country']?.toString() ?? '--',
+      currency: data['currency']?.toString() ?? '--',
       plan:
           planValue is Map
               ? planValue['name']?.toString() ?? 'Plan'
@@ -69,6 +72,7 @@ class PlatformCompany {
           '-',
       status: company['status']?.toString() ?? 'unknown',
       country: company['country']?.toString() ?? '--',
+      currency: company['currency']?.toString() ?? '--',
       plan:
           planValue is Map
               ? planValue['name']?.toString() ?? 'Plan'
@@ -76,6 +80,32 @@ class PlatformCompany {
                   company['plan']?.toString() ??
                   'Plan',
       createdAt: company['created_at']?.toString() ?? '',
+    );
+  }
+}
+
+class PlatformCountryDefault {
+  const PlatformCountryDefault({
+    required this.country,
+    required this.label,
+    required this.language,
+    required this.currency,
+    required this.timezone,
+  });
+
+  final String country;
+  final String label;
+  final String language;
+  final String currency;
+  final String timezone;
+
+  factory PlatformCountryDefault.fromJson(Map<String, dynamic> json) {
+    return PlatformCountryDefault(
+      country: json['country']?.toString().toUpperCase() ?? 'DZ',
+      label: json['label']?.toString() ?? 'Algerie',
+      language: json['language']?.toString() ?? 'fr',
+      currency: json['currency']?.toString() ?? 'DZD',
+      timezone: json['timezone']?.toString() ?? 'Africa/Algiers',
     );
   }
 }

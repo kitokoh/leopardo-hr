@@ -4,6 +4,7 @@ import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 
 import '../features/platform/platform_repository.dart';
+import '../features/platform/platform_models.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
 
@@ -24,3 +25,8 @@ final platformRepositoryProvider = Provider<PlatformRepository>((ref) {
     ref.watch(secureStorageProvider),
   );
 });
+
+final platformCountryDefaultsProvider =
+    FutureProvider<List<PlatformCountryDefault>>((ref) {
+      return ref.watch(platformRepositoryProvider).countryDefaults();
+    });
