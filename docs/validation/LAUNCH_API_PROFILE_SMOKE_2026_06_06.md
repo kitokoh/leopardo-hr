@@ -83,6 +83,14 @@ powershell -ExecutionPolicy Bypass -File dev-hub\tools\launch-api-profile-smoke.
 
 Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. Elle doit etre reservee aux environnements de staging/demo ou aux fenetres de recette controlee.
 
+Pour tester explicitement l'activation immediate cote platform admin :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File dev-hub\tools\launch-api-profile-smoke.ps1 -IncludePlatformProvisioning -PlatformProvisioningStatus active
+```
+
+Le workflow manuel expose le meme choix via `platform_provisioning_status=trial|active`.
+
 ## Statut
 
 - Garde ajoute : `dev-hub/tools/launch-api-profile-smoke.ps1`.
@@ -92,4 +100,5 @@ Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. E
 - Correction outillage : les appels internes utilisent un splat hashtable afin qu'un token vide ne soit jamais avale par le parametre suivant.
 - Correction workflow : le workflow manuel doit appeler le script avec un splat hashtable, pas un array splat, afin que `BaseUrl` soit transmis par nom.
 - Auto-login demo : le smoke peut maintenant utiliser les comptes publics `/demo-users` pour couvrir manager, employee et platform admin sans secrets GitHub.
+- Provisioning controle : la creation entreprise smoke peut verifier `trial` ou `active` via `PlatformProvisioningStatus`.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
