@@ -39,15 +39,14 @@ describe('SignupForm Component', () => {
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
-    it('should render password input', () => {
+    it('should render company input', () => {
       render(<SignupForm />);
-      const passwordInputs = screen.getAllByDisplayValue('');
-      expect(passwordInputs.length).toBeGreaterThan(0);
+      expect(screen.getByRole('textbox', { name: /entreprise/i })).toBeInTheDocument();
     });
 
     it('should render submit button', () => {
       render(<SignupForm />);
-      expect(screen.getByRole('button', { name: /sign up|get started/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /recevoir mon acces/i })).toBeInTheDocument();
     });
   });
 
@@ -56,16 +55,16 @@ describe('SignupForm Component', () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'invalid-email');
-      await userEvent.click(screen.getByRole('button', { name: /sign up|get started/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon acces/i }));
       
       await waitFor(() => {
-        expect(screen.getByText(/invalid email|valid email/i)).toBeInTheDocument();
+        expect(screen.getByText(/email invalide|valid email/i)).toBeInTheDocument();
       });
     });
 
     it('should show error for empty email', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /sign up|get started/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
@@ -73,49 +72,42 @@ describe('SignupForm Component', () => {
       });
     });
 
-    it('should show error for empty password', async () => {
+    it('should show error for empty company', async () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
-      const submitButton = screen.getByRole('button', { name: /sign up|get started/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText(/password|required/i)).toBeInTheDocument();
+        expect(screen.getByText(/entreprise|company/i)).toBeInTheDocument();
       });
     });
 
-    it('should show error for short password', async () => {
+    it('should show error for invalid phone', async () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
-      
-      const passwordInputs = screen.getAllByDisplayValue('');
-      if (passwordInputs.length > 0) {
-        await userEvent.type(passwordInputs[0], 'short');
-      }
-      
-      const submitButton = screen.getByRole('button', { name: /sign up|get started/i });
+      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      await userEvent.type(screen.getByRole('textbox', { name: /telephone/i }), 'not-a-phone');
+
+      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText(/password|character|length/i)).toBeInTheDocument();
+        expect(screen.getByText(/telephone|phone/i)).toBeInTheDocument();
       });
     });
   });
 
   describe('Form Submission', () => {
-    it('should accept valid email and password', async () => {
+    it('should accept valid trial request fields', async () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
-      
-      const passwordInputs = screen.getAllByDisplayValue('');
-      if (passwordInputs.length > 0) {
-        await userEvent.type(passwordInputs[0], 'ValidPassword123!');
-      }
-      
-      const submitButton = screen.getByRole('button', { name: /sign up|get started/i });
+      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+
+      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
       expect(submitButton).not.toBeDisabled();
     });
   });
@@ -155,7 +147,7 @@ describe('SignupForm Component', () => {
 
     it('should show loading state during submission', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /sign up|get started/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon acces/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');
     });
