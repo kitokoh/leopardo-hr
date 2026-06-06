@@ -6,6 +6,7 @@ param(
     [string]$KioskDeviceCode = $env:LEOPARDO_KIOSK_DEVICE_CODE,
     [string]$KioskToken = $env:LEOPARDO_KIOSK_TOKEN,
     [switch]$DisableDemoLogin,
+    [switch]$IncludeKioskProvisioning,
     [switch]$IncludePlatformProvisioning,
     [ValidateSet("trial", "active")]
     [string]$PlatformProvisioningStatus = "trial",
@@ -133,12 +134,24 @@ function Add-SkippedProfile([string]$Profile, [string]$Reason) {
 function Invoke-SmokeJson(
     [string]$Method,
     [string]$Path,
+    [string]$Token = "",
+    [hashtable]$Headers = @{},
     [hashtable]$Body = $null
 ) {
+    $requestHeaders = @{ "Accept" = "application/json" }
+
+    foreach ($key in $Headers.Keys) {
+        $requestHeaders[$key] = $Headers[$key]
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($Token)) {
+        $requestHeaders["Authorization"] = "Bearer $Token"
+    }
+
     $params = @{
         Uri = "$BaseUrl$Path"
         Method = $Method
-        Headers = @{ "Accept" = "application/json" }
+        Headers = $requestHeaders
         TimeoutSec = $TimeoutSeconds
     }
 
@@ -149,6 +162,45 @@ function Invoke-SmokeJson(
     }
 
     return Invoke-RestMethod @params
+}
+
+function Resolve-KioskCredentials {
+    if (-not [string]::IsNullOrWhiteSpace($KioskDeviceCode) -and -not [string]::IsNullOrWhiteSpace($KioskToken)) {
+        return
+    }
+
+    if (-not $IncludeKioskProvisioning) {
+        return
+    }
+
+    if ([string]::IsNullOrWhiteSpace($ManagerToken)) {
+        Add-SmokeResult "kiosk" "kiosk_register_guarded" "POST" "/kiosks" "SKIP" "-" "Manager token missing."
+        return
+    }
+
+    try {
+        $suffix = (Get-Date).ToUniversalTime().ToString("yyyyMMddHHmmss")
+        $body = @{
+            name = "Plan72 Kiosk Smoke $suffix"
+            location_label = "Launch smoke"
+            biometric_mode = "fingerprint"
+            trusted_device_label = "GitHub launch smoke"
+        }
+
+        $response = Invoke-SmokeJson -Method "POST" -Path "/kiosks" -Token $ManagerToken -Body $body
+        $data = $response.data
+        $script:KioskDeviceCode = [string]$data.device_code
+        $script:KioskToken = [string]$data.sync_token
+
+        if ([string]::IsNullOrWhiteSpace($script:KioskDeviceCode) -or [string]::IsNullOrWhiteSpace($script:KioskToken)) {
+            Add-SmokeResult "kiosk" "kiosk_register_guarded" "POST" "/kiosks" "FAIL" "201" "Registration response did not include device_code and sync_token."
+            return
+        }
+
+        Add-SmokeResult "kiosk" "kiosk_register_guarded" "POST" "/kiosks" "PASS" "201" "Demo kiosk credentials resolved."
+    } catch {
+        Add-SmokeResult "kiosk" "kiosk_register_guarded" "POST" "/kiosks" "FAIL" "n/a" $_.Exception.Message
+    }
 }
 
 function Select-DemoUser([object]$DemoData, [string]$Role, [string]$ManagerRole = "") {
@@ -252,6 +304,7 @@ Invoke-SmokeRequest "public" "ready_health" "GET" "/health/ready" "" @{} $null @
 Invoke-SmokeRequest "public" "demo_users_contract" "GET" "/demo-users" "" @{} $null @(200)
 
 Resolve-DemoTokens
+Resolve-KioskCredentials
 
 $managerChecks = @(
     @{ Name = "auth_me"; Path = "/auth/me"; ExpectedStatus = @(200) },
