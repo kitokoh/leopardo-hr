@@ -4,11 +4,11 @@
 
 Le socle Leopardo RH est maintenant suffisamment avance pour une phase pilote controlee : API stable, readiness Render verte, trois apps mobiles separees, super-admin mobile, vitrine, kiosk et documentation API existent. Le risque principal n'est plus l'absence de produit, mais l'ecart entre promesse commerciale et experience d'essai immediate.
 
-Le lancement marketing large doit donc etre conditionne a trois preuves finales :
+Le lancement marketing large doit donc etre conditionne a trois preuves finales, dont les deux premieres sont maintenant traitees cote produit :
 
-1. Essai vitrine reel et comprehensible par email.
-2. Platform admin capable de creer/activer un client multi-pays sans correction manuelle.
-3. Kiosk et apps mobiles testees sur parcours terrain avec etats vides et erreurs lisibles.
+1. Essai vitrine comprehensible par email : **livre en demande d'essai guidee**.
+2. Platform admin capable de creer/activer un client multi-pays sans correction manuelle : **livre cote API/mobile**.
+3. Kiosk et apps mobiles testees sur parcours terrain avec etats vides et erreurs lisibles : **kiosk et Compte mobile ameliores, recette device encore requise**.
 
 ## Ce qui est solide
 
@@ -26,15 +26,18 @@ Le lancement marketing large doit donc etre conditionne a trois preuves finales 
 - L'app mobile platform admin remplace le champ pays libre par un select controle avec apercu devise/timezone/langue.
 - La liste entreprises platform admin affiche maintenant pays + devise + plan.
 - OpenAPI et contrat mobile platform admin sont alignes.
+- La vitrine `/signup` ne collecte plus de mot de passe fantome : elle capture email professionnel, entreprise, role, taille d'equipe et telephone optionnel, puis annonce un retour sous 24h ouvrables.
+- Le kiosk ZKTeco a ete restructure autour du geste biometrie doigt/visage, sans IDs HTML dupliques, avec fallback QR/matricule et confirmation de pointage plus claire.
+- Les ecrans `Compte` employee/manager affichent une vue d'ensemble qui separe identite portable, parcours/securite, documents, QR/biometrie, notifications et session, sans ajouter de boutons non fonctionnels.
 
 ## Risques critiques
 
 ### Essai commercial
 
-Le bouton "Tester" / "Essai gratuit" capture aujourd'hui une demande. Ce n'est pas encore equivalent a un compte d'essai automatiquement provisionne. Pour vendre vite, il faut choisir explicitement :
+Le bouton "Tester" / "Essai gratuit" capture maintenant une demande d'essai guidee explicite. Ce n'est volontairement pas encore un compte d'essai automatiquement provisionne. Le prochain saut business sera de choisir entre :
 
-- soit essai automatique sandbox avec email de verification, quota, anti-abus et creation client limitee ;
-- soit demande d'essai assistee, mais le texte doit le dire clairement.
+- garder le modele assiste avec SLA commercial et instrumentation CRM ;
+- ajouter un provisioning sandbox automatique avec email de verification, quota, anti-abus et creation client limitee.
 
 ### I18n
 
@@ -42,19 +45,19 @@ L'architecture i18n existe, mais toutes les surfaces ne sont pas encore au meme 
 
 ### Kiosk terrain
 
-Le kiosk est fonctionnel, mais encore trop "console de borne" par endroits. Pour le terrain, le premier geste doit etre biometrie/QR, avec confirmation immediate et fallback identifiant. L'UI doit masquer la complexite device autant que possible.
+Le kiosk est maintenant plus proche de l'usage terrain : biometrie en premier, fallback QR/matricule, offline-first conserve. Le risque restant est materiel : tester sur vrai terminal ZKTeco/SDK, bridge local, reseau degrade et roster reel.
 
 ### Experience "Mon compte"
 
-La page compte porte beaucoup de fonctionnalites. Il faut la reorganiser en sections lisibles : identite, securite, parcours, documents, preferences, deconnexion. C'est important parce que l'employe garde son compte apres depart d'entreprise.
+La page compte est mieux organisee sur employee/manager. Les prochains gains doivent porter sur l'i18n progressive, les etats vides des documents/parcours et la preuve sur appareils reels.
 
 ## Recommandations prioritaires
 
-1. Finaliser Lot 71.4 : transformer `/signup` en essai reel ou clarifier qu'il s'agit d'une demande d'essai.
-2. Finaliser Lot 71.5 : kiosk biometrie-first, confirmation pointage, fallback offline clair.
-3. Finaliser Lot 71.6 : refonte "Mon compte" employee/manager avec sections et actions visibles.
-4. Lancer un inventaire i18n par surface, puis interdire les nouveaux textes hardcodes hors exceptions documentees.
-5. Ajouter l'endpoint pays si plusieurs frontends doivent partager la meme liste que `CountryDefaults`.
+1. Recette device : tester employee, manager, platform admin et kiosk sur appareils physiques / Firebase App Distribution.
+2. Decideur business : choisir si l'essai reste assiste ou devient sandbox automatique.
+3. I18n : traiter en priorite login, compte, pricing, demo, signup et notifications selon le rapport de dette.
+4. Branches distantes : ne pas merger la refonte admin-dashboard sans PR/checks, car elle touche 19 fichiers UI et supprime `dev_server.log`; traiter comme lot design dedie.
+5. Dependabot #700 : le PR est derriere `main`; le rebaser/mettre a jour avant toute decision, puis verifier Composer Audit.
 
 ## Positionnement commercial
 
