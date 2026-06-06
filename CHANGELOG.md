@@ -14,6 +14,7 @@
 - Plan 72 : ajout d'un contrat de workflows lancement multi-surface et du validateur `validate-launch-workflows.ps1`.
 - Validation lancement : ajout du rapport `LAUNCH_WORKFLOW_CONTRACTS_2026_06_06.md` avec preuves Plan 72.1 et release readiness `27/27`.
 - Recette API lancement : ajout de `launch-api-profile-smoke.ps1` et du rapport `LAUNCH_API_PROFILE_SMOKE_2026_06_06.md` pour verifier les endpoints publics, employee, manager/RH, platform admin et kiosk avec tokens proteges.
+- Vitrine : ajout d'une section de preuve operationnelle localisee pour presenter les 3 apps mobiles, 2 apps web, kiosk/biometrie et API production avant les fonctionnalites.
 
 ### Changed
 
@@ -22,6 +23,7 @@
 - API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
 - Vitrine : `/signup` devient une demande d'essai guidee par email, sans mot de passe fantome, avec qualification entreprise/role/taille et prochaine etape explicite sous 24h ouvrables.
 - Vitrine : les CTA d'essai des guides RH/planning/paie pointent maintenant vers `/signup` avec source marketing, et la copie arabe de la page essai est lisible en RTL.
+- Vitrine : la navigation arabe et les tarifs arabes visibles ne contiennent plus de texte corrompu, et la page pricing aligne FR/EN/TR/AR sur une offre d'essai de 30 jours.
 - Kiosk : refonte de l'interface ZKTeco autour du geste biometrie doigt/visage, suppression des IDs HTML dupliques, confirmation de pointage plus lisible et protection contre les doubles clics.
 - Mobile employee/manager : ajout d'une vue d'ensemble moderne dans `Compte` pour clarifier identite portable, parcours, documents, QR/biometrie, notifications, securite et session sans ajouter de boutons non fonctionnels.
 - Admin dashboard : integration de la refonte premium du cockpit interne (tables, cartes, analytics, clients, paie, utilisateurs) avec tokens `glass-*` et `premium-text`.
