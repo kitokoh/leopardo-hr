@@ -26,6 +26,7 @@
 - Migrations publiques : la reconciliation `company_requests` garantit explicitement les colonnes modernes (`user_id`, contact, review) sur PostgreSQL public quand l'ancienne table `employee_id` existe deja.
 - Documentation i18n : `shared/i18n/README.md` pointe maintenant vers le workflow traducteur et le rapport de dette.
 - Securite backend : mise a jour de `laravel/framework` vers `^12.60` / `v12.61.1` pour lever l'advisory Composer `CVE-2026-48019`.
+- API frontend tooling : mise a jour npm de `axios` 1.17.0, `concurrently` 10.0.3 et `vite` 8.0.16 pour garder le build Laravel/Vite a jour.
 
 ## [4.16.249] - 2026-06-05
 
