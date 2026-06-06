@@ -127,3 +127,7 @@ Transformer le socle deja pret au lancement en experience commerciale et operati
 
 - Rapport dans `docs/validation/`.
 - Decisions produit transformees en issues/lots avant lancement public.
+
+### Statut
+
+**Mis a jour apres execution.** L'audit commercial-technique 2026-06-06 indique maintenant les lots livres : provisioning platform admin multi-pays, endpoint `country-defaults`, gouvernance i18n, essai vitrine guide, kiosk biometrie-first et UX `Compte` employee/manager. Les risques restants sont la recette device, le choix business sandbox automatique vs essai assiste, la dette i18n priorisee et les branches distantes non encore qualifiees.
