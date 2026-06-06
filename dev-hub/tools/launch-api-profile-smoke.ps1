@@ -15,6 +15,12 @@ if ([string]::IsNullOrWhiteSpace($BaseUrl)) {
     $BaseUrl = "https://gestionemployerbackend.onrender.com/api/v1"
 }
 
+$ManagerToken = [string]$ManagerToken
+$EmployeeToken = [string]$EmployeeToken
+$PlatformAdminToken = [string]$PlatformAdminToken
+$KioskDeviceCode = [string]$KioskDeviceCode
+$KioskToken = [string]$KioskToken
+
 $BaseUrl = $BaseUrl.TrimEnd("/")
 if (-not $BaseUrl.EndsWith("/api/v1")) {
     $BaseUrl = "$BaseUrl/api/v1"
@@ -169,9 +175,9 @@ $platformChecks = @(
     @{ Name = "platform_companies_health"; Path = "/platform/companies/health?limit=5"; ExpectedStatus = @(200) }
 )
 
-Invoke-AuthenticatedReads "manager" $ManagerToken $managerChecks
-Invoke-AuthenticatedReads "employee" $EmployeeToken $employeeChecks
-Invoke-AuthenticatedReads "platform_admin" $PlatformAdminToken $platformChecks
+Invoke-AuthenticatedReads -Profile "manager" -Token $ManagerToken -Checks $managerChecks
+Invoke-AuthenticatedReads -Profile "employee" -Token $EmployeeToken -Checks $employeeChecks
+Invoke-AuthenticatedReads -Profile "platform_admin" -Token $PlatformAdminToken -Checks $platformChecks
 
 if (-not [string]::IsNullOrWhiteSpace($KioskDeviceCode) -and -not [string]::IsNullOrWhiteSpace($KioskToken)) {
     $kioskHeaders = @{ "X-Kiosk-Token" = $KioskToken }
