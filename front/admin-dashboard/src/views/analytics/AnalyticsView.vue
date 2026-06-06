@@ -203,15 +203,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import {
   DocumentArrowDownIcon,
   InformationCircleIcon,
-  ArrowPathIcon,
-  ArrowTrendingUpIcon as TrendingUpIcon,
-  ArrowTrendingDownIcon as TrendingDownIcon,
-  CurrencyEuroIcon,
-  UserPlusIcon
+  ArrowPathIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 
