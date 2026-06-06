@@ -19,7 +19,7 @@ export default function GuidesPlanningEmployesPage() {
         }}
         ctaSecondary={{
           text: 'Essai Gratuit',
-          href: '/auth/signup',
+          href: '/signup?source=guide-planning-employes',
         }}
       />
 
@@ -109,7 +109,7 @@ export default function GuidesPlanningEmployesPage() {
         }}
         ctaSecondary={{
           text: 'Passer à Leopardo',
-          href: '/auth/signup',
+          href: '/signup?source=guide-planning-employes-footer',
         }}
       />
     </MainLayout>

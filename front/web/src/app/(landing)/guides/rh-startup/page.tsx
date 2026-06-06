@@ -19,7 +19,7 @@ export default function GuidesRHStartupPage() {
         }}
         ctaSecondary={{
           text: 'Essai Gratuit',
-          href: '/auth/signup',
+          href: '/signup?source=guide-rh-startup',
         }}
       />
 
@@ -175,7 +175,7 @@ export default function GuidesRHStartupPage() {
         }}
         ctaSecondary={{
           text: 'Essayer Leopardo',
-          href: '/auth/signup',
+          href: '/signup?source=guide-rh-startup-footer',
         }}
       />
     </MainLayout>

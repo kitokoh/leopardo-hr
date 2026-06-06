@@ -80,6 +80,8 @@ Transformer le socle deja pret au lancement en experience commerciale et operati
 
 **Lot vitrine livre.** `/signup` est maintenant un tunnel de demande d'essai guidee, sans collecte de mot de passe tant qu'un workspace n'est pas provisionne. Le formulaire collecte email professionnel, entreprise, role, taille d'equipe et telephone optionnel ; l'API `POST /api/forms/signup` transmet un lead exploitable avec `nextStep=contact_under_24h` et champs CRM/platform admin utiles.
 
+**Durcissement post-merge livre.** Les anciens CTA des guides marketing (`/auth/signup`) ont ete remplaces par `/signup` avec une source explicite pour le tracking, et la copie arabe de la page essai est redevenue lisible pour le RTL et le travail de traduction Jules.
+
 ## Lot 71.5 - Kiosk moderne et biometrie terrain
 
 ### Actions
