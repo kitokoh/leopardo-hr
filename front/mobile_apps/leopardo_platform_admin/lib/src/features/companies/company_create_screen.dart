@@ -4,7 +4,74 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
 import '../../core/platform_providers.dart';
+import '../platform/platform_models.dart';
 import 'company_screen.dart';
+
+const _fallbackCountryDefaults = [
+  PlatformCountryDefault(
+    country: 'DZ',
+    label: 'Algerie',
+    currency: 'DZD',
+    timezone: 'Africa/Algiers',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'MA',
+    label: 'Maroc',
+    currency: 'MAD',
+    timezone: 'Africa/Casablanca',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'TN',
+    label: 'Tunisie',
+    currency: 'TND',
+    timezone: 'Africa/Tunis',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'SN',
+    label: 'Senegal',
+    currency: 'XOF',
+    timezone: 'Africa/Dakar',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'CI',
+    label: 'Cote d Ivoire',
+    currency: 'XOF',
+    timezone: 'Africa/Abidjan',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'CM',
+    label: 'Cameroun',
+    currency: 'XAF',
+    timezone: 'Africa/Douala',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'FR',
+    label: 'France',
+    currency: 'EUR',
+    timezone: 'Europe/Paris',
+    language: 'fr',
+  ),
+  PlatformCountryDefault(
+    country: 'TR',
+    label: 'Turquie',
+    currency: 'TRY',
+    timezone: 'Europe/Istanbul',
+    language: 'tr',
+  ),
+  PlatformCountryDefault(
+    country: 'US',
+    label: 'Etats-Unis',
+    currency: 'USD',
+    timezone: 'America/New_York',
+    language: 'en',
+  ),
+];
 
 class CompanyCreateScreen extends ConsumerStatefulWidget {
   const CompanyCreateScreen({super.key});
@@ -18,11 +85,12 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _email = TextEditingController();
-  final _country = TextEditingController(text: 'DZ');
   final _city = TextEditingController();
   final _managerFirstName = TextEditingController();
   final _managerLastName = TextEditingController();
   final _managerEmail = TextEditingController();
+  String _selectedCountryCode = _fallbackCountryDefaults.first.country;
+  bool _activateImmediately = false;
   bool _submitting = false;
 
   String? _required(String? value) =>
@@ -37,18 +105,11 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     return null;
   }
 
-  String? _countryValidator(String? value) {
-    final trimmed = value?.trim().toUpperCase() ?? '';
-    if (trimmed.length != 2) return 'Code pays ISO sur 2 lettres';
-    return null;
-  }
-
   @override
   void dispose() {
     for (final controller in [
       _name,
       _email,
-      _country,
       _city,
       _managerFirstName,
       _managerLastName,
@@ -61,6 +122,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final selectedCountry = _selectedCountry(_countries());
     setState(() => _submitting = true);
     try {
       final company = await ref
@@ -68,11 +130,12 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           .createCompany(
             name: _name.text.trim(),
             email: _email.text.trim(),
-            country: _country.text.trim(),
+            country: selectedCountry.country,
             city: _city.text.trim(),
             managerFirstName: _managerFirstName.text.trim(),
             managerLastName: _managerLastName.text.trim(),
             managerEmail: _managerEmail.text.trim(),
+            status: _activateImmediately ? 'active' : 'trial',
           );
       ref.invalidate(platformCompaniesProvider);
       if (!mounted) return;
@@ -97,6 +160,7 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final countries = _countries();
     return MobilePage(
       appBar: MobileTopBar(
         title: 'Nouveau client',
@@ -129,15 +193,6 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
                   children: [
                     Expanded(
                       child: _field(
-                        _country,
-                        'Pays',
-                        Icons.flag,
-                        validator: _countryValidator,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _field(
                         _city,
                         'Ville',
                         Icons.location_city,
@@ -146,6 +201,9 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
                     ),
                   ],
                 ),
+                _countryPicker(countries),
+                _countryPreview(_selectedCountry(countries)),
+                _activationSwitch(),
                 _field(
                   _managerFirstName,
                   'Prenom manager principal',
@@ -179,6 +237,24 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
     );
   }
 
+  List<PlatformCountryDefault> _countries() {
+    return ref
+        .watch(platformCountryDefaultsProvider)
+        .maybeWhen(
+          data: (items) => items.isNotEmpty ? items : _fallbackCountryDefaults,
+          orElse: () => _fallbackCountryDefaults,
+        );
+  }
+
+  PlatformCountryDefault _selectedCountry(
+    List<PlatformCountryDefault> countries,
+  ) {
+    return countries.firstWhere(
+      (country) => country.country == _selectedCountryCode,
+      orElse: () => countries.first,
+    );
+  }
+
   Widget _field(
     TextEditingController controller,
     String label,
@@ -200,6 +276,115 @@ class _CompanyCreateScreenState extends ConsumerState<CompanyCreateScreen> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         validator: validator,
+      ),
+    );
+  }
+
+  Widget _countryPicker(List<PlatformCountryDefault> countries) {
+    final selected = _selectedCountry(countries);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField<PlatformCountryDefault>(
+        initialValue: selected,
+        dropdownColor: MobileSurface.surface,
+        iconEnabledColor: MobileSurface.secondary,
+        style: const TextStyle(color: MobileSurface.text),
+        decoration: InputDecoration(
+          labelText: 'Pays du client',
+          prefixIcon: const Icon(Icons.public_rounded),
+          filled: true,
+          fillColor: MobileSurface.chip,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        items:
+            countries
+                .map(
+                  (country) => DropdownMenuItem(
+                    value: country,
+                    child: Text('${country.label} (${country.country})'),
+                  ),
+                )
+                .toList(),
+        onChanged: (country) {
+          if (country == null) return;
+          setState(() => _selectedCountryCode = country.country);
+        },
+      ),
+    );
+  }
+
+  Widget _countryPreview(PlatformCountryDefault selectedCountry) {
+    final items = [
+      ('Devise', selectedCountry.currency),
+      ('Fuseau', selectedCountry.timezone),
+      ('Langue', selectedCountry.language.toUpperCase()),
+    ];
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: MobileSurface.cardDecoration(
+        color: MobileSurface.chip,
+        radius: 12,
+      ),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children:
+            items
+                .map(
+                  (item) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: MobileSurface.surface,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: MobileSurface.border),
+                    ),
+                    child: Text(
+                      '${item.$1}: ${item.$2}',
+                      style: const TextStyle(
+                        color: MobileSurface.secondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+      ),
+    );
+  }
+
+  Widget _activationSwitch() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: MobileSurface.cardDecoration(
+        color: MobileSurface.chip,
+        radius: 12,
+      ),
+      child: SwitchListTile.adaptive(
+        value: _activateImmediately,
+        onChanged: (value) => setState(() => _activateImmediately = value),
+        activeThumbColor: Colors.white,
+        activeTrackColor: const Color(0xFF10B981),
+        title: const Text(
+          'Activer immediatement',
+          style: TextStyle(
+            color: MobileSurface.text,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          _activateImmediately
+              ? 'Le client sera cree en statut actif.'
+              : 'Le client demarre en essai, puis peut etre active depuis sa fiche.',
+          style: const TextStyle(color: MobileSurface.muted, fontSize: 12),
+        ),
       ),
     );
   }

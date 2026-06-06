@@ -67,6 +67,8 @@ Note 2026-06-01 : le Plan 67.5 fige la preuve notifications mobile production. L
 
 Note 2026-06-01 : les endpoints platform detail `GET /api/v1/platform/companies/{company}/health`, `GET/PATCH /subscription` et `GET/PATCH /features` doivent verifier que `Company` est toujours charge via `PlatformCompanyLookup` depuis `public.companies`, meme apres creation client ou requete tenant. Les scenarios super-admin doivent tester creation entreprise puis ouverture immediate de la fiche client par UUID.
 
+Note 2026-06-06 : la creation platform admin `POST /api/v1/platform/companies` est multi-pays. Les scenarios super-admin doivent verifier qu'un payload mobile minimal peut creer un client non DZ en `trial` ou `active`, que `language`, `currency` et `timezone` sont derives par `CountryDefaults` quand ils sont omis, et qu'aucun fallback universel DZD/Africa-Algiers n'est reintroduit.
+
 Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
 
 Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` quand le middleware tenant a deja resolu l'entreprise. Les scenarios API shared PostgreSQL doivent eviter toute regression ou `$employee->company` recharge `Company` depuis un `search_path` tenant pouvant masquer `public.companies`.
@@ -1057,3 +1059,8 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `POST /api/v1/payment-batches` cree un lot de paiement auditable depuis un payroll run valide et ses pay slips
 - `POST /api/v1/payment-batches/{id}/mark-paid` marque les items comme payes et declenche les documents de paiement async
 - `POST /api/v1/payment-confirmations/{paymentItem}/confirm` permet a l'employe proprietaire de confirmer reception, de maniere idempotente, avec signature device/IP/user-agent/document_version
+
+#### Plan 71 - Platform Admin Multi-Pays
+- `GET /api/v1/platform/country-defaults` : super-admin authentifie, retourne la liste canonique des pays supportes avec `country`, `label`, `language`, `currency`, `timezone`.
+- `POST /api/v1/platform/companies` : le payload mobile minimal peut envoyer seulement `country`; le backend derive langue, devise et timezone via `CountryDefaults`.
+- Les tests doivent couvrir au minimum `SN/XOF`, `CM/XAF`, `TR/TRY` et verifier qu'un nouveau pays ne retombe pas silencieusement sur `DZD`.
