@@ -27,7 +27,9 @@ Ce workflow lit les memes variables via secrets GitHub et publie l'artefact `lau
 - `LEOPARDO_KIOSK_DEVICE_CODE` : code borne kiosk.
 - `LEOPARDO_KIOSK_TOKEN` : token `X-Kiosk-Token`.
 
-Les profils sans token sont marques `SKIP`. Le script echoue uniquement si un endpoint configure retourne une erreur.
+Quand les tokens employee, manager ou platform admin sont absents, le script utilise par defaut `/demo-users` pour resoudre un compte demo et obtenir un token temporaire. Passer `-DisableDemoLogin` ou l'input GitHub `disable_demo_login=true` pour forcer le mode `SKIP`.
+
+Les profils sans token et sans demo login sont marques `SKIP`. Le script echoue uniquement si un endpoint configure retourne une erreur.
 
 ## Couverture
 
@@ -89,4 +91,5 @@ Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. E
 - Correction outillage : les tokens absents doivent toujours produire `SKIP`, jamais decaler les arguments positionnels du smoke.
 - Correction outillage : les appels internes utilisent un splat hashtable afin qu'un token vide ne soit jamais avale par le parametre suivant.
 - Correction workflow : le workflow manuel doit appeler le script avec un splat hashtable, pas un array splat, afin que `BaseUrl` soit transmis par nom.
+- Auto-login demo : le smoke peut maintenant utiliser les comptes publics `/demo-users` pour couvrir manager, employee et platform admin sans secrets GitHub.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
