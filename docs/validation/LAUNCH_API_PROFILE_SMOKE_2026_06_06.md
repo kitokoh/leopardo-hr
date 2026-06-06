@@ -88,4 +88,5 @@ Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. E
 - Gate release mis a jour pour verifier la presence du script, du workflow et de ce rapport.
 - Correction outillage : les tokens absents doivent toujours produire `SKIP`, jamais decaler les arguments positionnels du smoke.
 - Correction outillage : les appels internes utilisent un splat hashtable afin qu'un token vide ne soit jamais avale par le parametre suivant.
+- Correction workflow : le workflow manuel doit appeler le script avec un splat hashtable, pas un array splat, afin que `BaseUrl` soit transmis par nom.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
