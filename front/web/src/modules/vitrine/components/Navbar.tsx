@@ -150,22 +150,30 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'الموارد',
       items: [
-        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'أدلة', description: 'أفضل ممارسات الموارد البشرية' },
-        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'مدونة', description: 'مقالات ورؤى الموارد البشرية' },
+        { href: '/guides/rh-startup', icon: <BookOpen className="w-4 h-4" />, label: 'الأدلة', description: 'ممارسات عملية للموارد البشرية والفرق الميدانية' },
+        { href: '/blog', icon: <PenTool className="w-4 h-4" />, label: 'رؤى التشغيل', description: 'تحليلات وأفكار نمو للشركات الصغيرة والمتوسطة' },
+        { href: '/docs', icon: <Book className="w-4 h-4" />, label: 'توثيق API', description: 'أدلة تقنية للتكاملات والشركاء' },
         { href: '/changelog', icon: <FileText className="w-4 h-4" />, label: 'سجل التغييرات', description: 'آخر تحديثات المنتج' },
       ],
     },
-    { href: '/docs', label: 'الوثائق' },
     { href: '/contact', label: 'اتصل بنا' },
+    {
+      label: 'تثبيت Leopardo',
+      items: [
+        { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'عميل سطح المكتب للمزامنة وأجهزة ZKTeco' },
+        { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'مساحة عمل للفرق الميدانية' },
+        { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'الحضور والخدمة الذاتية على الجوال' },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'تطبيق iOS للموظفين والمديرين' },
+      ],
+    },
     {
       label: 'المجتمع',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'منتدى', description: 'تواصل مع المجتمع' },
-        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'الأسئلة الشائعة', description: 'الأسئلة المتكررة' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المنتدى', description: 'تواصل مع المجتمع' },
+        { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'الأسئلة الشائعة', description: 'إجابات سريعة قبل الإطلاق' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'الدعم', description: 'تواصل مع فريقنا' },
       ],
     },
-    { href: '/download', label: 'ليوباردو لويندوز' },
   ],
 }
 

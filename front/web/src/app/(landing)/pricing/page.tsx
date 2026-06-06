@@ -72,9 +72,9 @@ type PricingPageCopy = {
 const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
   fr: {
     hero: {
-      headline: 'Tarifs clairs pour lancer vos RH sans friction',
-      subheadline: 'Choisissez un plan adapte a votre equipe, puis evoluez sans changer de plateforme.',
-      primary: 'Essai gratuit',
+      headline: 'Tarifs serieux pour piloter vos equipes terrain',
+      subheadline: '30 jours pour tester pointage, paie, absences, managers et workflows avant engagement.',
+      primary: 'Demarrer 30 jours gratuits',
       secondary: 'Parler aux ventes',
       badge: 'Tarification',
     },
@@ -139,7 +139,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           id: 'free-trial',
           question: 'Y a-t-il un essai gratuit ?',
-          answer: 'Oui. Les plans incluent un essai de 14 jours pour tester les workflows RH essentiels avant engagement.',
+          answer: 'Oui. Les plans incluent un essai de 30 jours pour tester les workflows RH essentiels avant engagement.',
           category: 'Essai',
         },
         {
@@ -159,16 +159,16 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     cta: {
       badge: 'Pret a demarrer',
       headline: 'Transformez votre gestion RH sans complexite',
-      subheadline: 'Demarrez avec un essai gratuit, puis activez les modules dont votre equipe a vraiment besoin.',
-      primary: 'Essai gratuit',
+      subheadline: 'Demarrez avec 30 jours gratuits, puis activez les modules dont votre equipe a vraiment besoin.',
+      primary: 'Demarrer 30 jours gratuits',
       secondary: 'Contacter les ventes',
     },
   },
   en: {
     hero: {
       headline: 'Clear pricing for HR teams ready to scale',
-      subheadline: 'Pick the right plan for your team and grow without changing platform.',
-      primary: 'Start free trial',
+      subheadline: 'Test attendance, payroll, leave, managers and workflows for 30 days before committing.',
+      primary: 'Start 30-day trial',
       secondary: 'Talk to sales',
       badge: 'Pricing',
     },
@@ -233,7 +233,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           id: 'free-trial',
           question: 'Is there a free trial?',
-          answer: 'Yes. Plans include a 14-day trial so you can test core HR workflows before committing.',
+          answer: 'Yes. Plans include a 30-day trial so you can test core HR workflows before committing.',
           category: 'Trial',
         },
         {
@@ -253,16 +253,16 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     cta: {
       badge: 'Ready to start',
       headline: 'Upgrade HR operations without adding complexity',
-      subheadline: 'Start with a free trial, then enable the modules your team really needs.',
-      primary: 'Start free trial',
+      subheadline: 'Start with 30 days free, then enable the modules your team really needs.',
+      primary: 'Start 30-day trial',
       secondary: 'Talk to sales',
     },
   },
   tr: {
     hero: {
       headline: 'Buyumeye hazir IK ekipleri icin net fiyatlama',
-      subheadline: 'Ekibinize uygun plani secin ve platform degistirmeden olcekleyin.',
-      primary: 'Ucretsiz dene',
+      subheadline: 'Yoklama, bordro, izinler, yoneticiler ve is akislari icin 30 gun boyunca deneyin.',
+      primary: '30 gun ucretsiz basla',
       secondary: 'Satisla gorus',
       badge: 'Fiyatlar',
     },
@@ -327,7 +327,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           id: 'free-trial',
           question: 'Ucretsiz deneme var mi?',
-          answer: 'Evet. Temel IK akislarini test etmeniz icin planlarda 14 gunluk deneme bulunur.',
+          answer: 'Evet. Temel IK akislarini test etmeniz icin planlarda 30 gunluk deneme bulunur.',
           category: 'Deneme',
         },
         {
@@ -347,8 +347,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     cta: {
       badge: 'Baslamaya hazir',
       headline: 'IK operasyonlarini karmasiklik eklemeden guclendirin',
-      subheadline: 'Ucretsiz deneme ile baslayin, ekibinizin gercekten ihtiyac duydugu modulleri acin.',
-      primary: 'Ucretsiz dene',
+      subheadline: '30 gun ucretsiz baslayin, ekibinizin gercekten ihtiyac duydugu modulleri acin.',
+      primary: '30 gun ucretsiz basla',
       secondary: 'Satisla gorus',
     },
   },
@@ -356,7 +356,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     hero: {
       headline: 'أسعار واضحة لفرق الموارد البشرية الجاهزة للنمو',
       subheadline: 'اختر الخطة المناسبة لفريقك ثم وسع العمل بدون تغيير المنصة.',
-      primary: 'ابدأ تجربة مجانية',
+      primary: 'ابدأ 30 يوما مجانا',
       secondary: 'تحدث مع المبيعات',
       badge: 'الأسعار',
     },
@@ -421,7 +421,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           id: 'free-trial',
           question: 'هل توجد تجربة مجانية؟',
-          answer: 'نعم. تتضمن الخطط تجربة لمدة 14 يوما لاختبار مسارات الموارد البشرية الأساسية قبل الاشتراك.',
+          answer: 'نعم. تتضمن الخطط تجربة لمدة 30 يوما لاختبار مسارات الموارد البشرية الأساسية قبل الاشتراك.',
           category: 'التجربة',
         },
         {
@@ -441,8 +441,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     cta: {
       badge: 'جاهز للبدء',
       headline: 'طور عمليات الموارد البشرية بدون تعقيد',
-      subheadline: 'ابدأ بتجربة مجانية ثم فعّل الوحدات التي يحتاجها فريقك فعلا.',
-      primary: 'ابدأ تجربة مجانية',
+      subheadline: 'ابدأ 30 يوما مجانا ثم فعّل الوحدات التي يحتاجها فريقك فعلا.',
+      primary: 'ابدأ 30 يوما مجانا',
       secondary: 'تحدث مع المبيعات',
     },
   },

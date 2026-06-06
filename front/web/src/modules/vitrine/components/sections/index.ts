@@ -39,3 +39,4 @@ export { MiniCaseStudies, type MiniCaseStudiesProps } from './MiniCaseStudies';
 export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScreenshots';
 export { MarketingReadinessSection } from './MarketingReadinessSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
+export { OperationalProofSection, type OperationalProofSectionProps } from './OperationalProofSection';
