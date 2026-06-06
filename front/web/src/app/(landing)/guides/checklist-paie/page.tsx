@@ -19,7 +19,7 @@ export default function GuidesChecklistPaiePage() {
         }}
         ctaSecondary={{
           text: 'Essai Gratuit',
-          href: '/auth/signup',
+          href: '/signup?source=guide-checklist-paie',
         }}
       />
 
@@ -120,7 +120,7 @@ export default function GuidesChecklistPaiePage() {
         }}
         ctaSecondary={{
           text: 'Automatiser avec Leopardo',
-          href: '/auth/signup',
+          href: '/signup?source=guide-checklist-paie-footer',
         }}
       />
     </MainLayout>
