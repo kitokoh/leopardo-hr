@@ -94,6 +94,10 @@ Transformer le socle deja pret au lancement en experience commerciale et operati
 - L'employe deja enrole peut pointer sans formulaire long.
 - La borne reste utilisable si le bridge local ou le reseau est lent.
 
+### Statut
+
+**Lot interface livre.** `front/zkteco-kiosk/index.html` a ete restructure sans IDs dupliques ni blocs mal imbriques, avec un premier geste visuel centre sur la biometrie doigt/visage et des fallbacks QR/matricule. `app.js` bloque les doubles clics de pointage, garde l'offline-first via `/local/punch`, et affiche une confirmation plus lisible avec le nom employe quand le roster local le permet.
+
 ## Lot 71.6 - UX "Mon compte" et experience apps
 
 ### Actions
