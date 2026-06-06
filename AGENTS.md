@@ -34,6 +34,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le runbook backup existe deja dans `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` ; en cas de plan CI/CD, penser mise a jour/allegement avant creation d'une nouvelle doc.
 - Le depot porte deux surfaces frontend distinctes : `admin-dashboard/` pour la plateforme interne et `web/` pour la vitrine / portail manager Next.js. Ne pas confondre les workflows ni les URLs de deploiement.
 - Pour `admin-dashboard/`, garder `web-ci.yml` cible sur `admin-dashboard/**` avec lint/build/Playwright.
+- Depuis v4.16.250, `front/admin-dashboard` porte une refonte premium basee sur les tokens `glass-*`, `premium-text`, `shadow-glass-*` et les surfaces `card`. Toute evolution UI admin doit reutiliser ces primitives plutot que revenir aux anciennes cartes plates `rounded-lg bg-white shadow`.
 - Pour `web/`, utiliser un workflow dedie vitrine (`web-marketing-ci.yml`) sur `web/**` au lieu de recycler les checks admin.
 - La vitrine `front/web` doit garder les liens commerciaux reels dans la navigation et le footer (`/blog`, `/guides/rh-startup`, `/pricing`, `/demo`, `/contact`). Eviter les CTA `#` ou routes API relatives cote Vercel.
 - Les assets SEO/PWA canoniques de la vitrine sont `front/web/public/icon.svg`, `favicon.svg`, `brand/opengraph.svg` et `manifest.json`; si un PNG est ajoute plus tard, verifier qu'il existe vraiment avant de le declarer dans le manifeste.
