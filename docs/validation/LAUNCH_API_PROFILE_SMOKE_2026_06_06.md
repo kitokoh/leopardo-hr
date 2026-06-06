@@ -86,4 +86,5 @@ Cette option cree une entreprise `Plan72 Smoke <timestamp>` en statut `trial`. E
 - Garde ajoute : `dev-hub/tools/launch-api-profile-smoke.ps1`.
 - Workflow manuel ajoute : `.github/workflows/launch-api-profile-smoke.yml`.
 - Gate release mis a jour pour verifier la presence du script, du workflow et de ce rapport.
+- Correction outillage : les tokens absents doivent toujours produire `SKIP`, jamais decaler les arguments positionnels du smoke.
 - Execution complete avec tokens a realiser par ops/CI protegee avant ouverture marketing large.
