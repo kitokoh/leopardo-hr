@@ -10,6 +10,7 @@
 - Audit go-to-market 2026-06-06 avec verdict pilote, risques et priorites commerciales/techniques.
 - Backend : ajout de `CountryDefaults` pour deriver langue, devise et timezone a partir du pays lors du provisioning plateforme.
 - API platform : ajout de `GET /api/v1/platform/country-defaults` pour exposer la source de verite pays/devise/timezone/langue aux frontends super-admin.
+- I18n : ajout du guide Jules EN/AR/TR et du garde `validate-i18n-debt.ps1` pour mesurer les textes hardcodes par surface.
 
 ### Changed
 
@@ -18,6 +19,7 @@
 - API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
 - OpenAPI et contrat mobile platform admin alignes avec le nouveau provisioning multi-pays.
 - Migrations publiques : la reconciliation `company_requests` garantit explicitement les colonnes modernes (`user_id`, contact, review) sur PostgreSQL public quand l'ancienne table `employee_id` existe deja.
+- Documentation i18n : `shared/i18n/README.md` pointe maintenant vers le workflow traducteur et le rapport de dette.
 - Securite backend : mise a jour de `laravel/framework` vers `^12.60` / `v12.61.1` pour lever l'advisory Composer `CVE-2026-48019`.
 
 ## [4.16.249] - 2026-06-05
