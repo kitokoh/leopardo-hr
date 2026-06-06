@@ -38,6 +38,10 @@
 - Release readiness : le gate verifie maintenant aussi la presence du smoke API par profil Plan 72.2.
 - Release readiness : le gate verifie maintenant aussi la presence du workflow manuel de smoke API par profil.
 
+### Fixed
+
+- CI lancement : correction du passage de `LEOPARDO_API_BASE_URL` au workflow `Launch API Profile Smoke` et protection du script contre les tokens absents afin de produire `SKIP` au lieu de faux echecs manager.
+
 ## [4.16.249] - 2026-06-05
 
 ### Added
