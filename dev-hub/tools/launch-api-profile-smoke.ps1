@@ -5,6 +5,7 @@ param(
     [string]$PlatformAdminToken = $env:LEOPARDO_PLATFORM_ADMIN_TOKEN,
     [string]$KioskDeviceCode = $env:LEOPARDO_KIOSK_DEVICE_CODE,
     [string]$KioskToken = $env:LEOPARDO_KIOSK_TOKEN,
+    [switch]$DisableDemoLogin,
     [switch]$IncludePlatformProvisioning,
     [int]$TimeoutSeconds = 20
 )
@@ -127,6 +128,106 @@ function Add-SkippedProfile([string]$Profile, [string]$Reason) {
     Add-SmokeResult $Profile "profile_skipped" "-" "-" "SKIP" "-" $Reason
 }
 
+function Invoke-SmokeJson(
+    [string]$Method,
+    [string]$Path,
+    [hashtable]$Body = $null
+) {
+    $params = @{
+        Uri = "$BaseUrl$Path"
+        Method = $Method
+        Headers = @{ "Accept" = "application/json" }
+        TimeoutSec = $TimeoutSeconds
+    }
+
+    $jsonBody = New-JsonBody $Body
+    if ($null -ne $jsonBody) {
+        $params["Body"] = $jsonBody
+        $params["ContentType"] = "application/json"
+    }
+
+    return Invoke-RestMethod @params
+}
+
+function Select-DemoUser([object]$DemoData, [string]$Role, [string]$ManagerRole = "") {
+    foreach ($company in @($DemoData.companies)) {
+        foreach ($user in @($company.users)) {
+            if ($user.role -ne $Role) {
+                continue
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($ManagerRole) -and $user.manager_role -ne $ManagerRole) {
+                continue
+            }
+
+            return $user
+        }
+    }
+
+    return $null
+}
+
+function Resolve-DemoTokens {
+    if ($DisableDemoLogin) {
+        return
+    }
+
+    $needsTenantToken = [string]::IsNullOrWhiteSpace($ManagerToken) -or [string]::IsNullOrWhiteSpace($EmployeeToken)
+    $needsPlatformToken = [string]::IsNullOrWhiteSpace($PlatformAdminToken)
+
+    if (-not $needsTenantToken -and -not $needsPlatformToken) {
+        return
+    }
+
+    try {
+        $demoResponse = Invoke-SmokeJson -Method "GET" -Path "/demo-users"
+        $demoData = $demoResponse.data
+
+        if ([string]::IsNullOrWhiteSpace($ManagerToken)) {
+            $manager = Select-DemoUser -DemoData $demoData -Role "manager" -ManagerRole "principal"
+            if ($null -eq $manager) {
+                $manager = Select-DemoUser -DemoData $demoData -Role "manager"
+            }
+
+            if ($null -ne $manager) {
+                $login = Invoke-SmokeJson -Method "POST" -Path "/auth/login" -Body @{
+                    email = [string]$manager.email
+                    password = [string]$manager.password
+                }
+                $script:ManagerToken = [string]$login.token
+                Add-SmokeResult "manager" "demo_login" "POST" "/auth/login" "PASS" "200" "Demo manager token resolved."
+            } else {
+                Add-SmokeResult "manager" "demo_login" "POST" "/auth/login" "FAIL" "n/a" "No demo manager found."
+            }
+        }
+
+        if ([string]::IsNullOrWhiteSpace($EmployeeToken)) {
+            $employee = Select-DemoUser -DemoData $demoData -Role "employee"
+            if ($null -ne $employee) {
+                $login = Invoke-SmokeJson -Method "POST" -Path "/auth/login" -Body @{
+                    email = [string]$employee.email
+                    password = [string]$employee.password
+                }
+                $script:EmployeeToken = [string]$login.token
+                Add-SmokeResult "employee" "demo_login" "POST" "/auth/login" "PASS" "200" "Demo employee token resolved."
+            } else {
+                Add-SmokeResult "employee" "demo_login" "POST" "/auth/login" "FAIL" "n/a" "No demo employee found."
+            }
+        }
+
+        if ([string]::IsNullOrWhiteSpace($PlatformAdminToken) -and $null -ne $demoData.super_admin) {
+            $login = Invoke-SmokeJson -Method "POST" -Path "/platform/auth/login" -Body @{
+                email = [string]$demoData.super_admin.email
+                password = [string]$demoData.super_admin.password
+            }
+            $script:PlatformAdminToken = [string]$login.token
+            Add-SmokeResult "platform_admin" "demo_login" "POST" "/platform/auth/login" "PASS" "200" "Demo platform admin token resolved."
+        }
+    } catch {
+        Add-SmokeResult "demo" "demo_login_resolver" "POST" "/auth/login" "FAIL" "n/a" $_.Exception.Message
+    }
+}
+
 function Invoke-AuthenticatedReads([string]$Profile, [string]$Token, [array]$Checks) {
     if ([string]::IsNullOrWhiteSpace($Token)) {
         Add-SkippedProfile $Profile "Token env var missing."
@@ -147,6 +248,8 @@ function Invoke-AuthenticatedReads([string]$Profile, [string]$Token, [array]$Che
 Invoke-SmokeRequest "public" "live_health" "GET" "/health/live" "" @{} $null @(200)
 Invoke-SmokeRequest "public" "ready_health" "GET" "/health/ready" "" @{} $null @(200, 503)
 Invoke-SmokeRequest "public" "demo_users_contract" "GET" "/demo-users" "" @{} $null @(200)
+
+Resolve-DemoTokens
 
 $managerChecks = @(
     @{ Name = "auth_me"; Path = "/auth/me"; ExpectedStatus = @(200) },
