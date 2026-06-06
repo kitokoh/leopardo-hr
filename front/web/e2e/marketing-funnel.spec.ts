@@ -9,12 +9,13 @@ test.describe('Marketing funnel preview', () => {
       waitUntil: 'domcontentloaded',
     });
 
-    await expect(page.locator('body')).toContainText(/Start Leopardo RH|Demarrez Leopardo RH/i);
+    await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
 
     const signupForm = page.locator('main form').first();
     await signupForm.locator('input[type="email"]').fill('trial.lead@example.com');
-    await signupForm.locator('input[type="password"]').first().fill('ValidPassword123!');
-    await signupForm.locator('input[type="password"]').nth(1).fill('ValidPassword123!');
+    await signupForm.locator('input[name="company"]').fill('Leopardo Trial Co');
+    await signupForm.locator('select[name="role"]').selectOption('manager');
+    await signupForm.locator('select[name="employees"]').selectOption('11-50');
     await signupForm.locator('input[type="checkbox"]').check();
     const [signupResponse] = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/api/forms/signup')),
@@ -22,7 +23,7 @@ test.describe('Marketing funnel preview', () => {
     ]);
 
     expect(signupResponse.status()).toBe(201);
-    await expect(page.locator('body')).toContainText(/inscription|essai|trial|email|enregistree/i);
+    await expect(page.locator('body')).toContainText(/demande d'essai|trial request|24h|email/i);
   });
 
   test('captures a localized demo request without leaving the vitrine', async ({ page }) => {

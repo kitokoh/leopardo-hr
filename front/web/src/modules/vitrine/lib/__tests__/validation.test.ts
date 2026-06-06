@@ -13,11 +13,12 @@ import {
 
 describe('Form Validation Schemas', () => {
   describe('signupFormSchema', () => {
-    it('should validate correct email and password', () => {
+    it('should validate correct trial request', () => {
       const data = {
         email: 'test@example.com',
-        password: 'ValidPassword123!',
-        confirmPassword: 'ValidPassword123!',
+        company: 'Acme Corp',
+        role: 'manager',
+        employees: '11-50',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema.parse(data)).not.toThrow();
@@ -26,58 +27,45 @@ describe('Form Validation Schemas', () => {
     it('should reject invalid email', () => {
       const data = {
         email: 'invalid-email',
-        password: 'ValidPassword123!',
-        confirmPassword: 'ValidPassword123!',
+        company: 'Acme Corp',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema.parse(data)).toThrow();
     });
 
-    it('should reject short password', () => {
+    it('should reject empty company', () => {
       const data = {
         email: 'test@example.com',
-        password: 'short',
-        confirmPassword: 'short',
+        company: '',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema.parse(data)).toThrow();
     });
 
-    it('should reject password without uppercase', () => {
+    it('should reject invalid phone when provided', () => {
       const data = {
         email: 'test@example.com',
-        password: 'validpassword123!',
-        confirmPassword: 'validpassword123!',
+        company: 'Acme Corp',
+        phone: 'not-a-phone',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema.parse(data)).toThrow();
     });
 
-    it('should reject password without number', () => {
+    it('should accept empty optional phone', () => {
       const data = {
         email: 'test@example.com',
-        password: 'ValidPassword!',
-        confirmPassword: 'ValidPassword!',
+        company: 'Acme Corp',
+        phone: '',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema.parse(data)).toThrow();
-    });
-
-    it('should reject password without special character', () => {
-      const data = {
-        email: 'test@example.com',
-        password: 'ValidPassword123',
-        confirmPassword: 'ValidPassword123',
-        agreeToTerms: true,
-      };
-      expect(() => signupFormSchema.parse(data)).toThrow();
+      expect(() => signupFormSchema.parse(data)).not.toThrow();
     });
 
     it('should reject when terms not agreed', () => {
       const data = {
         email: 'test@example.com',
-        password: 'ValidPassword123!',
-        confirmPassword: 'ValidPassword123!',
+        company: 'Acme Corp',
         agreeToTerms: false,
       };
       expect(() => signupFormSchema.parse(data)).toThrow();
@@ -94,8 +82,7 @@ describe('Form Validation Schemas', () => {
       validEmails.forEach(email => {
         const data = {
           email,
-          password: 'ValidPassword123!',
-          confirmPassword: 'ValidPassword123!',
+          company: 'Acme Corp',
           agreeToTerms: true,
         };
         expect(() => signupFormSchema.parse(data)).not.toThrow();
@@ -357,8 +344,7 @@ describe('Form Validation Schemas', () => {
     it('should provide helpful error messages', () => {
       const data = {
         email: 'invalid',
-        password: 'short',
-        confirmPassword: 'short',
+        company: '',
         agreeToTerms: false,
       };
 
