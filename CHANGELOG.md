@@ -24,6 +24,7 @@
 
 ### Changed
 
+- Admin dashboard : le cockpit plateforme expose maintenant un panneau de workflows critiques pour creer/activer les clients, traiter les demandes, surveiller les risques, piloter abonnements, verifier systeme et ouvrir les integrations.
 - Mobile manager : l'ecran Horaires devient une surface explicite de regles entreprise avec repos/conges visibles et affectation employes preselectionnee quand une regle est deja appliquee.
 - Mobile platform admin : la fiche client affiche maintenant une action directe `Activer client` pour convertir un tenant en essai vers `active` sans passer par le formulaire complet d'abonnement.
 - App mobile platform admin : le formulaire de creation client propose un choix pays controle, affiche devise/timezone/langue, et permet de creer un client en essai ou actif.
