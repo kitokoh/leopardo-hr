@@ -39,6 +39,9 @@ class MobilePayloadContractTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'timezone' => 'Africa/Algiers',
+            'currency' => 'DZD',
+            'features' => ['rh' => true, 'finance' => true],
         ]);
 
         $employee = Employee::query()->create([
@@ -288,6 +291,9 @@ class MobilePayloadContractTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'timezone' => 'Africa/Algiers',
+            'currency' => 'DZD',
+            'features' => ['rh' => true, 'finance' => true],
         ]);
 
         $manager = Employee::query()->create([
@@ -328,6 +334,15 @@ class MobilePayloadContractTest extends TestCase
                     'status',
                     'photo_url',
                     'hire_date',
+                    'currency',
+                    'features',
+                    'company' => [
+                        'id',
+                        'name',
+                        'language',
+                        'timezone',
+                        'currency',
+                    ],
                 ],
             ],
             'meta' => [
@@ -337,6 +352,15 @@ class MobilePayloadContractTest extends TestCase
             ],
         ]);
         $response->assertJsonPath('meta.per_page', 10);
+
+        $employeePayload = collect($response->json('data'))->firstWhere('email', 'employee@company.test');
+
+        $this->assertSame('DZD', $employeePayload['currency']);
+        $this->assertSame($company->id, $employeePayload['company']['id']);
+        $this->assertSame('Company A', $employeePayload['company']['name']);
+        $this->assertSame('Africa/Algiers', $employeePayload['company']['timezone']);
+        $this->assertSame('DZD', $employeePayload['company']['currency']);
+        $this->assertTrue($employeePayload['features']['rh']);
     }
 
     public function test_attendance_history_payload_matches_mobile_contract(): void

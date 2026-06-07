@@ -13,6 +13,7 @@ use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Absence;
 use App\Models\AttendanceLog;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Services\DataAccessAuditLogger;
 use App\Services\EmployeeService;
@@ -72,14 +73,6 @@ class EmployeeController extends Controller
 
         $query = Employee::query()
             ->with([
-                'company' => fn ($query) => $query->select($this->relationColumns('companies', [
-                    'id',
-                    'name',
-                    'language',
-                    'timezone',
-                    'currency',
-                    'features',
-                ])),
                 'schedule' => fn ($query) => $query->select($this->relationColumns('schedules', [
                     'id',
                     'name',
@@ -121,6 +114,7 @@ class EmployeeController extends Controller
             ->paginate($perPage);
 
         $this->attachOperationalState($paginator->getCollection());
+        $this->attachCompanyContext($paginator->getCollection(), currentCompany());
 
         $this->dataAccessAuditLogger->record($request, $actor, 'hr_data.employee_list_viewed', null, [
             'resource' => 'employees',
@@ -267,6 +261,20 @@ class EmployeeController extends Controller
 
             $employee->setAttribute('work_state', 'offline');
             $employee->setAttribute('work_state_label', 'Hors ligne');
+        });
+    }
+
+    /**
+     * @param  Collection<int, Employee>  $employees
+     */
+    private function attachCompanyContext(Collection $employees, ?Company $company): void
+    {
+        if (! $company instanceof Company) {
+            return;
+        }
+
+        $employees->each(function (Employee $employee) use ($company): void {
+            $employee->setRelation('company', $company);
         });
     }
 
