@@ -38,6 +38,7 @@ class FrontendApiContractTest extends TestCase
             'mobile manager schedules list' => ['GET', 'api/v1/schedules'],
             'mobile manager schedule create' => ['POST', 'api/v1/schedules'],
             'mobile manager schedule update' => ['PUT', 'api/v1/schedules/{schedule}'],
+            'mobile manager schedule assign employees' => ['POST', 'api/v1/schedules/{schedule}/assign-employees'],
             'mobile manager schedule delete' => ['DELETE', 'api/v1/schedules/{schedule}'],
             'mobile tasks today' => ['GET', 'api/v1/tasks/today'],
             'mobile task create' => ['POST', 'api/v1/tasks'],

@@ -88,7 +88,11 @@ trait CreatesMvpSchema
             $table->time('start_time');
             $table->time('end_time');
             $table->unsignedSmallInteger('break_minutes')->default(60);
+            $table->json('break_rules')->nullable();
             $table->json('work_days')->nullable();
+            $table->json('rest_days')->nullable();
+            $table->json('leave_rules')->nullable();
+            $table->text('assignment_notes')->nullable();
             $table->unsignedSmallInteger('late_tolerance_minutes')->default(15);
             $table->decimal('overtime_threshold_daily', 4, 2)->default(8.00);
             $table->decimal('overtime_threshold_weekly', 5, 2)->default(40.00);
