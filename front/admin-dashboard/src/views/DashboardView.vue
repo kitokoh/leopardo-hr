@@ -27,7 +27,44 @@
       {{ errorMessage }}
     </div>
 
-    <div v-else class="grid grid-cols-1 gap-6 xl:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
+    <section v-if="!isLoading && !errorMessage" class="card overflow-hidden animate-slide-up" style="animation-delay: 0.08s">
+      <div class="border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
+        <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-600 dark:text-brand-400">Workflows plateforme</p>
+            <h2 class="mt-1 text-xl font-bold text-slate-900 dark:text-white">Exécuter les opérations critiques</h2>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Création client, activation, suivi santé, abonnements, support et intégrations.
+            </p>
+          </div>
+          <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+            {{ companyMetrics.active }} clients actifs
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 divide-y divide-slate-200/50 dark:divide-slate-800/50 md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-3">
+        <router-link
+          v-for="workflow in workflowCards"
+          :key="workflow.title"
+          :to="workflow.to"
+          class="group p-6 transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/60"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="font-bold text-slate-900 group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-300">
+                {{ workflow.title }}
+              </h3>
+              <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{{ workflow.description }}</p>
+            </div>
+            <span :class="workflow.badgeClass">{{ workflow.badge }}</span>
+          </div>
+          <p class="mt-4 text-sm font-bold text-brand-600 dark:text-brand-400">{{ workflow.action }}</p>
+        </router-link>
+      </div>
+    </section>
+
+    <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-6 xl:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
       <section class="card xl:col-span-2">
         <div class="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-5">
           <div>
@@ -49,7 +86,7 @@
                   <span class="text-sm font-semibold text-gray-900">{{ item.health_score }}/100</span>
                 </div>
                 <p class="mt-1 text-sm text-gray-500">
-                  {{ item.plan.name || 'Sans plan' }} · {{ item.employees_active }} employes actifs · {{ item.attendance_logs_30d }} pointages 30j
+                  {{ item.plan.name || 'Sans plan' }} · {{ item.employees_active }} employés actifs · {{ item.attendance_logs_30d }} pointages 30j
                 </p>
                 <p class="mt-3 text-sm text-gray-700">
                   {{ item.next_action?.label || 'Aucune action prioritaire detectee.' }}
@@ -220,6 +257,56 @@ const adoption = computed(() => portfolioItems.value.reduce((totals, item) => ({
   attendance_logs: totals.attendance_logs + Number(item.attendance_logs_30d || 0),
   active_employees: totals.active_employees + Number(item.employees_active || 0),
 }), { attendance_logs: 0, active_employees: 0 }))
+const workflowCards = computed(() => [
+  {
+    title: 'Créer ou activer un client',
+    description: 'Qualifier une entreprise, ouvrir son tenant et vérifier son statut de lancement.',
+    action: 'Ouvrir le portefeuille clients',
+    to: '/companies',
+    badge: `${companyMetrics.value.total} tenants`,
+    badgeClass: 'rounded-full bg-brand-100 px-2.5 py-1 text-xs font-bold text-brand-700 dark:bg-brand-900/40 dark:text-brand-300',
+  },
+  {
+    title: 'Traiter les demandes entrantes',
+    description: 'Suivre les demandes d’essai, prioriser les leads et éviter les prospects bloqués.',
+    action: 'Voir les demandes clients',
+    to: '/support',
+    badge: `${pendingRequests.value} à traiter`,
+    badgeClass: 'rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+  },
+  {
+    title: 'Surveiller les clients à risque',
+    description: 'Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.',
+    action: 'Analyser les priorités',
+    to: '/analytics',
+    badge: `${summary.value.risk.high + summary.value.risk.medium} risques`,
+    badgeClass: 'rounded-full bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700 dark:bg-red-900/40 dark:text-red-300',
+  },
+  {
+    title: 'Piloter abonnements et revenus',
+    description: 'Contrôler MRR, impayés, plans actifs et trajectoire commerciale de la plateforme.',
+    action: 'Ouvrir abonnements',
+    to: '/subscriptions',
+    badge: formatCurrency(revenue.value.mrr, revenue.value.currency),
+    badgeClass: 'rounded-full bg-purple-100 px-2.5 py-1 text-xs font-bold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+  },
+  {
+    title: 'Vérifier système et sécurité',
+    description: 'Contrôler santé API, configuration, logs, sauvegardes et signaux d’incident.',
+    action: 'Ouvrir système',
+    to: '/system',
+    badge: 'Ops',
+    badgeClass: 'rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  },
+  {
+    title: 'Préparer intégrations partenaires',
+    description: 'Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.',
+    action: 'Ouvrir webhooks',
+    to: '/webhooks',
+    badge: 'API',
+    badgeClass: 'rounded-full bg-cyan-100 px-2.5 py-1 text-xs font-bold text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300',
+  },
+])
 
 async function loadDashboard() {
   isLoading.value = true
