@@ -8,15 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendanceKiosk;
 use App\Models\Company;
 use App\Models\Employee;
-use App\Models\KioskAnnouncement;
 use App\Services\KioskAttendanceService;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Throwable;
 
 class KioskController extends Controller
 {
@@ -221,20 +222,36 @@ class KioskController extends Controller
             return new JsonResponse(['data' => []]);
         }
 
-        $announcements = KioskAnnouncement::query()
+        $hasIsActive = Schema::hasColumn('kiosk_announcements', 'is_active');
+        $hasStartsAt = Schema::hasColumn('kiosk_announcements', 'starts_at');
+        $hasExpiresAt = Schema::hasColumn('kiosk_announcements', 'expires_at');
+        $hasPriority = Schema::hasColumn('kiosk_announcements', 'priority');
+        $hasCreatedAt = Schema::hasColumn('kiosk_announcements', 'created_at');
+
+        $announcements = DB::table('kiosk_announcements')
             ->where('company_id', $company->id)
-            ->active()
-            ->orderByDesc('priority')
-            ->orderByDesc('created_at')
+            ->when($hasIsActive, fn ($query) => $query->where('is_active', true))
+            ->when($hasStartsAt, function ($query): void {
+                $query->where(function ($windowQuery): void {
+                    $windowQuery->whereNull('starts_at')->orWhere('starts_at', '<=', now());
+                });
+            })
+            ->when($hasExpiresAt, function ($query): void {
+                $query->where(function ($windowQuery): void {
+                    $windowQuery->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+                });
+            })
+            ->when($hasPriority, fn ($query) => $query->orderByDesc('priority'))
+            ->when($hasCreatedAt, fn ($query) => $query->orderByDesc('created_at'), fn ($query) => $query->orderByDesc('id'))
             ->limit(10)
             ->get()
-            ->map(fn ($a) => [
-                'id' => $a->id,
-                'title' => $a->title,
-                'body' => $a->body,
-                'priority' => $a->priority,
-                'starts_at' => $a->starts_at?->toIso8601String(),
-                'expires_at' => $a->expires_at?->toIso8601String(),
+            ->map(fn ($announcement) => [
+                'id' => $announcement->id,
+                'title' => $announcement->title ?? '',
+                'body' => $announcement->body ?? '',
+                'priority' => $announcement->priority ?? 'normal',
+                'starts_at' => $this->nullableIsoString($announcement->starts_at ?? null),
+                'expires_at' => $this->nullableIsoString($announcement->expires_at ?? null),
             ]);
 
         return new JsonResponse(['data' => $announcements]);
@@ -374,6 +391,19 @@ class KioskController extends Controller
             'pending' => $pending,
             'remaining' => $remaining,
         ];
+    }
+
+    private function nullableIsoString(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($value)->toIso8601String();
+        } catch (Throwable) {
+            return (string) $value;
+        }
     }
 
     private function serializeRosterEmployee(Employee $employee, bool $hasFaceColumn, bool $hasFingerprintColumn): array
