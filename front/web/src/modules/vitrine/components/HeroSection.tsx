@@ -5,6 +5,7 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { AlertCircle, ArrowRight, CheckCircle, Download, Mail, Play, Smartphone, Sparkles, Star, TrendingUp, Users, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import type { AppLocale } from '@/lib/i18n'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 import { ParticleField } from './ParticleField'
 
@@ -50,40 +51,14 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
 
 const statIcons = [TrendingUp, Users, Zap, Star]
 
-const quickTrialCopy = {
-  fr: {
-    placeholder: 'email@entreprise.com',
-    submit: 'Tester maintenant',
-    submitting: 'Envoi...',
-    legal: 'Email uniquement. Notre equipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
-    success: "Demande recue. L'equipe Leopardo vous contacte sous 24h ouvrables.",
-    error: "Impossible d'envoyer la demande pour le moment.",
-  },
-  en: {
-    placeholder: 'work@email.com',
-    submit: 'Try now',
-    submitting: 'Sending...',
-    legal: 'Email only. Our team prepares the right trial access, no password or card required.',
-    success: 'Request received. The Leopardo team will contact you within 24 business hours.',
-    error: 'Unable to send the request right now.',
-  },
-  tr: {
-    placeholder: 'is@eposta.com',
-    submit: 'Hemen dene',
-    submitting: 'Gonderiliyor...',
-    legal: 'Sadece e-posta. Ekibimiz sifre veya kart istemeden uygun deneme erisimini hazirlar.',
-    success: 'Talep alindi. Leopardo ekibi 24 is saati icinde size ulasir.',
-    error: 'Talep su anda gonderilemiyor.',
-  },
-  ar: {
-    placeholder: 'email@company.com',
-    submit: 'جرّب الآن',
-    submitting: 'جار الإرسال...',
-    legal: 'البريد فقط. نجهز تجربة مناسبة بدون كلمة مرور أو بطاقة دفع.',
-    success: 'تم استلام الطلب. سيتواصل معك فريق Leopardo خلال 24 ساعة عمل.',
-    error: 'تعذر إرسال الطلب الآن.',
-  },
-} as const
+type QuickTrialCopy = {
+  placeholder: string
+  submit: string
+  submitting: string
+  legal: string
+  success: string
+  error: string
+}
 
 function deriveCompanyFromEmail(email: string): string {
   const domain = email.split('@')[1]?.split('.')[0]?.trim()
@@ -97,11 +72,10 @@ function deriveCompanyFromEmail(email: string): string {
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
-function QuickTrialEmailForm({ locale }: { locale: keyof typeof quickTrialCopy }) {
+function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy: QuickTrialCopy }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
-  const copy = quickTrialCopy[locale] ?? quickTrialCopy.fr
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -285,7 +259,7 @@ export function HeroSection() {
           </motion.div>
 
           {/* One-field guided trial request */}
-          <QuickTrialEmailForm locale={locale} />
+          <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
 
           {/* Mobile apps availability bar - Workforce OS / Mobile-First Company OS */}
           <motion.div
