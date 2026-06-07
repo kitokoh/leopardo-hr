@@ -21,8 +21,8 @@ class ScheduleListScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Horaires',
-        subtitle: 'Regles, pauses et heures supp',
+        title: 'Regles entreprise',
+        subtitle: 'Horaires, repos, conges et heures supp',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
@@ -32,7 +32,7 @@ class ScheduleListScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showScheduleSheet(context, ref),
         icon: const Icon(Icons.add_alarm_outlined),
-        label: const Text('Nouvel horaire'),
+        label: const Text('Nouvelle regle'),
       ),
       body: RefreshIndicator(
         color: AppColors.rh,
@@ -49,9 +49,9 @@ class ScheduleListScreen extends ConsumerWidget {
                 children: const [
                   EmptyState(
                     icon: Icons.schedule_outlined,
-                    title: 'Aucun horaire',
+                    title: 'Aucune regle entreprise',
                     description:
-                        'Creez le premier horaire pour cadrer les presences, pauses et heures supplementaires.',
+                        'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
                   ),
                 ],
               );
@@ -68,7 +68,7 @@ class ScheduleListScreen extends ConsumerWidget {
                   iconColor: schedule.isDefault ? AppColors.rh : AppColors.info,
                   title: schedule.name,
                   subtitle:
-                      '${schedule.startTime} - ${schedule.endTime} | pause ${schedule.breakMinutes} min',
+                      '${schedule.startTime} - ${schedule.endTime} | pause ${schedule.breakMinutes} min | repos ${schedule.restDaysLabel}',
                   trailing:
                       schedule.isDefault
                           ? const MobileStatusPill(
@@ -98,7 +98,7 @@ class ScheduleListScreen extends ConsumerWidget {
             );
           },
           loading:
-              () => const MobileEmptyLoading(label: 'Chargement des horaires'),
+              () => const MobileEmptyLoading(label: 'Chargement des regles'),
           error:
               (error, _) => ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -163,6 +163,7 @@ class _ScheduleFooter extends StatelessWidget {
           label: 'Tolerance ${schedule.lateToleranceMinutes} min',
           color: AppColors.warning,
         ),
+        MobileStatusPill(label: schedule.leaveRulesLabel, color: AppColors.rh),
         MobileStatusPill(
           label:
               'Supp/j ${schedule.overtimeThresholdDaily.toStringAsFixed(1)}h',
@@ -173,6 +174,11 @@ class _ScheduleFooter extends StatelessWidget {
               'Supp/sem ${schedule.overtimeThresholdWeekly.toStringAsFixed(0)}h',
           color: AppColors.info,
         ),
+        if (schedule.assignmentNotes?.trim().isNotEmpty == true)
+          const MobileStatusPill(
+            label: 'Notes internes',
+            color: AppColors.info,
+          ),
       ],
     );
   }
@@ -191,6 +197,7 @@ class _ScheduleAssignSheet extends ConsumerStatefulWidget {
 class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
   final Set<int> _selectedIds = <int>{};
   bool _submitting = false;
+  bool _selectionHydrated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +232,7 @@ class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
               ),
               const SizedBox(height: 18),
               Text(
-                'Affecter une regle',
+                'Affecter une regle entreprise',
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
@@ -237,15 +244,25 @@ class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
                   color: MobileSurface.secondary,
                 ),
               ),
+              const SizedBox(height: 8),
+              Text(
+                'Les employes deja rattaches a cette regle sont preselectionnes.',
+                style: AppTypography.caption.copyWith(
+                  color: MobileSurface.secondary,
+                ),
+              ),
               const SizedBox(height: 16),
               Expanded(
                 child: teamAsync.when(
-                  data:
-                      (employees) => _EmployeeSelectionList(
-                        employees: employees,
-                        selectedIds: _selectedIds,
-                        onToggle: _toggleEmployee,
-                      ),
+                  data: (employees) {
+                    _hydrateCurrentAssignments(employees);
+
+                    return _EmployeeSelectionList(
+                      employees: employees,
+                      selectedIds: _selectedIds,
+                      onToggle: _toggleEmployee,
+                    );
+                  },
                   loading:
                       () =>
                           const MobileEmptyLoading(label: 'Chargement equipe'),
@@ -280,6 +297,17 @@ class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
         _selectedIds.add(employeeId);
       }
     });
+  }
+
+  void _hydrateCurrentAssignments(List<Employee> employees) {
+    if (_selectionHydrated) return;
+
+    _selectedIds.addAll(
+      employees
+          .where((employee) => employee.scheduleId == widget.schedule.id)
+          .map((employee) => employee.id),
+    );
+    _selectionHydrated = true;
   }
 
   Future<void> _submit() async {
@@ -499,14 +527,14 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
               ),
               const SizedBox(height: 18),
               Text(
-                editing ? 'Modifier horaire' : 'Nouvel horaire',
+                editing ? 'Modifier la regle' : 'Nouvelle regle entreprise',
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Ces regles servent au pointage, aux pauses et aux heures supplementaires.',
+                'Ces regles servent au pointage, aux repos, aux conges, aux pauses et aux heures supplementaires.',
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -663,7 +691,7 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
               const SizedBox(height: 16),
               MobilePrimaryAction(
                 icon: editing ? Icons.save_outlined : Icons.add_alarm_outlined,
-                label: editing ? 'Enregistrer' : 'Creer horaire',
+                label: editing ? 'Enregistrer' : 'Creer la regle',
                 onPressed: _submitting ? null : _submit,
               ),
               if (editing && widget.schedule?.isDefault == false) ...[
