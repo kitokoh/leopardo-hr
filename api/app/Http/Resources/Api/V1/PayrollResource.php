@@ -21,6 +21,7 @@ class PayrollResource extends JsonResource
             'base_salary' => $this->base_salary,
             'gross_salary' => $this->gross_salary,
             'net_salary' => $this->net_salary,
+            'currency' => currentCompany()?->currency ?? 'DZD',
             'total_deductions' => $this->total_deductions,
             'total_additions' => $this->total_additions,
             'status' => $this->status,

@@ -67,8 +67,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final advance = advances[index];
                 final color = _getStatusColor(advance.status);
-                final amount =
-                    '${(advance.amount ?? 0).toStringAsFixed(0)} DZD';
+                final amount = _formatMoney(advance.amount, advance.currency);
                 final reason =
                     advance.reason?.trim().isNotEmpty == true
                         ? advance.reason!
@@ -192,7 +191,7 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
   }
 
   Widget _advanceContext(SalaryAdvance advance) {
-    final amount = '${(advance.amount ?? 0).toStringAsFixed(0)} DZD';
+    final amount = _formatMoney(advance.amount, advance.currency);
     final reason =
         advance.reason?.trim().isNotEmpty == true
             ? advance.reason!.trim()
@@ -294,13 +293,14 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     WidgetRef ref,
     SalaryAdvance advance,
   ) async {
+    final amount = _formatMoney(advance.amount, advance.currency);
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
           (_) => AlertDialog(
             title: const Text('Approuver cette avance ?'),
             content: Text(
-              '${advance.employeeName ?? 'Employe #${advance.employeeId}'} demande ${(advance.amount ?? 0).toStringAsFixed(0)} DZD.\n\nMotif : ${advance.reason?.trim().isNotEmpty == true ? advance.reason!.trim() : 'non renseigne'}\n\nLa decision sera envoyee a l employe.',
+              '${advance.employeeName ?? 'Employe #${advance.employeeId}'} demande $amount.\n\nMotif : ${advance.reason?.trim().isNotEmpty == true ? advance.reason!.trim() : 'non renseigne'}\n\nLa decision sera envoyee a l employe.',
             ),
             actions: [
               TextButton(
@@ -341,13 +341,14 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
     WidgetRef ref,
     SalaryAdvance advance,
   ) async {
+    final amount = _formatMoney(advance.amount, advance.currency);
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
           (_) => AlertDialog(
             title: const Text('Avance envoyee ?'),
             content: Text(
-              'Confirmez que ${(advance.amount ?? 0).toStringAsFixed(0)} DZD ont ete envoyes a ${advance.employeeName ?? 'Employe #${advance.employeeId}'}.\n\nL employe recevra ensuite la demande de confirmation de reception.',
+              'Confirmez que $amount ont ete envoyes a ${advance.employeeName ?? 'Employe #${advance.employeeId}'}.\n\nL employe recevra ensuite la demande de confirmation de reception.',
             ),
             actions: [
               TextButton(
@@ -478,6 +479,9 @@ class SalaryAdvanceListScreen extends ConsumerWidget {
         return MobileSurface.disabled;
     }
   }
+
+  static String _formatMoney(double? amount, String currency) =>
+      '${(amount ?? 0).toStringAsFixed(0)} $currency';
 }
 
 class _SalaryAdvanceRequestSheet extends ConsumerStatefulWidget {
@@ -506,6 +510,7 @@ class _SalaryAdvanceRequestSheetState
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final currency = ref.watch(authProvider).employee?.currency ?? 'DZD';
 
     return Padding(
       padding: EdgeInsets.fromLTRB(22, 18, 22, bottom + 24),
@@ -544,9 +549,9 @@ class _SalaryAdvanceRequestSheetState
                 decimal: true,
               ),
               style: const TextStyle(color: MobileSurface.text),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Montant demande',
-                suffixText: 'DZD',
+                suffixText: currency,
               ),
               validator: (value) {
                 final amount = _parseAmount(value ?? '');

@@ -1243,6 +1243,10 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
   Widget build(BuildContext context) {
     final schedulesAsync = ref.watch(schedulesProvider);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final currency =
+        ref.watch(authProvider).employee?.currency ??
+        widget.employee.currency ??
+        'DZD';
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
@@ -1364,6 +1368,8 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
                       _salaryType == 'hourly'
                           ? 'Taux horaire'
                           : 'Salaire de base',
+                  suffixText:
+                      _salaryType == 'hourly' ? '$currency/h' : currency,
                 ),
               ),
               const SizedBox(height: 10),
@@ -1528,6 +1534,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final schedulesAsync = ref.watch(schedulesProvider);
+    final currency = ref.watch(authProvider).employee?.currency ?? 'DZD';
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: SingleChildScrollView(
@@ -1712,9 +1719,9 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 TextFormField(
                   controller: _hourlyRate,
                   style: const TextStyle(color: MobileSurface.text),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Taux horaire',
-                    suffixText: 'DZD/h',
+                    suffixText: '$currency/h',
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -1730,7 +1737,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                         _salaryType == 'daily'
                             ? 'Salaire journalier'
                             : 'Salaire mensuel brut',
-                    suffixText: 'DZD',
+                    suffixText: currency,
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,

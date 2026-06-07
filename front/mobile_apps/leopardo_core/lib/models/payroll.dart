@@ -5,6 +5,7 @@ class Payroll {
   final int year;
   final double grossSalary;
   final double netSalary;
+  final String currency;
   final String status;
   final String? pdfPath;
   final DateTime? validatedAt;
@@ -16,6 +17,7 @@ class Payroll {
     required this.year,
     required this.grossSalary,
     required this.netSalary,
+    this.currency = 'DZD',
     required this.status,
     this.pdfPath,
     this.validatedAt,
@@ -29,6 +31,7 @@ class Payroll {
       year: json['period_year'] as int,
       grossSalary: (json['gross_salary'] as num).toDouble(),
       netSalary: (json['net_salary'] as num).toDouble(),
+      currency: json['currency']?.toString() ?? 'DZD',
       status: json['status'] as String,
       pdfPath: json['pdf_path'] as String?,
       validatedAt:

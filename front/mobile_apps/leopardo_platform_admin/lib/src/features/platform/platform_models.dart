@@ -104,8 +104,8 @@ class PlatformCountryDefault {
       country: json['country']?.toString().toUpperCase() ?? 'DZ',
       label: json['label']?.toString() ?? 'Algerie',
       language: json['language']?.toString() ?? 'fr',
-      currency: json['currency']?.toString() ?? 'DZD',
-      timezone: json['timezone']?.toString() ?? 'Africa/Algiers',
+      currency: json['currency']?.toString() ?? '--',
+      timezone: json['timezone']?.toString() ?? '--',
     );
   }
 }
@@ -209,7 +209,7 @@ class PlatformCompanySubscription {
       planId: (plan['id'] as num?)?.toInt() ?? 0,
       status: data['status']?.toString() ?? 'unknown',
       planName: plan['name']?.toString() ?? 'Plan',
-      currency: data['currency']?.toString() ?? 'DZD',
+      currency: data['currency']?.toString() ?? '--',
       monthlyPrice: plan['price_monthly'] as num? ?? 0,
       maxEmployees: (plan['max_employees'] as num?)?.toInt(),
       subscriptionEnd: data['subscription_end']?.toString(),
