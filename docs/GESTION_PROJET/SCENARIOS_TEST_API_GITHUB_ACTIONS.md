@@ -77,6 +77,8 @@ Note 2026-06-07 : `GET /api/v1/kiosks/{deviceCode}/announcements` doit aussi tol
 
 Note 2026-06-07 : si `kiosk_announcements` existe sans colonne `company_id`, l'endpoint kiosque doit retourner `data=[]`. Une annonce non scoppable ne doit jamais etre renvoyee par defaut, car cela risquerait une fuite inter-tenant.
 
+Note 2026-06-07 : les annonces kiosque sont une fonctionnalite non critique. Si une table tenant historique reste non queryable malgre les gardes de colonnes, l'endpoint doit journaliser l'erreur et retourner `data=[]` afin que le kiosque puisse continuer roster/pointage sans page bloquee.
+
 Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
 
 Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` quand le middleware tenant a deja resolu l'entreprise. Les scenarios API shared PostgreSQL doivent eviter toute regression ou `$employee->company` recharge `Company` depuis un `search_path` tenant pouvant masquer `public.companies`.

@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Throwable;
@@ -222,42 +223,52 @@ class KioskController extends Controller
             return new JsonResponse(['data' => []]);
         }
 
-        $columns = Schema::getColumnListing('kiosk_announcements');
-        $hasColumn = fn (string $column): bool => in_array($column, $columns, true);
+        try {
+            $columns = Schema::getColumnListing('kiosk_announcements');
+            $hasColumn = fn (string $column): bool => in_array($column, $columns, true);
 
-        if (! $hasColumn('company_id')) {
+            if (! $hasColumn('company_id')) {
+                return new JsonResponse(['data' => []]);
+            }
+
+            $announcements = DB::table('kiosk_announcements')
+                ->where('company_id', $company->id)
+                ->when($hasColumn('is_active'), fn ($query) => $query->where('is_active', true))
+                ->when($hasColumn('starts_at'), function ($query): void {
+                    $query->where(function ($windowQuery): void {
+                        $windowQuery->whereNull('starts_at')->orWhere('starts_at', '<=', now());
+                    });
+                })
+                ->when($hasColumn('expires_at'), function ($query): void {
+                    $query->where(function ($windowQuery): void {
+                        $windowQuery->whereNull('expires_at')->orWhere('expires_at', '>=', now());
+                    });
+                })
+                ->when($hasColumn('priority'), fn ($query) => $query->orderByDesc('priority'))
+                ->when(
+                    $hasColumn('created_at'),
+                    fn ($query) => $query->orderByDesc('created_at'),
+                    fn ($query) => $hasColumn('id') ? $query->orderByDesc('id') : $query
+                )
+                ->limit(10)
+                ->get()
+                ->map(fn ($announcement) => [
+                    'id' => $announcement->id ?? null,
+                    'title' => $announcement->title ?? '',
+                    'body' => $announcement->body ?? '',
+                    'priority' => $announcement->priority ?? 'normal',
+                    'starts_at' => $this->nullableIsoString($announcement->starts_at ?? null),
+                    'expires_at' => $this->nullableIsoString($announcement->expires_at ?? null),
+                ]);
+        } catch (Throwable $exception) {
+            Log::warning('Kiosk announcements skipped because the tenant table is not queryable.', [
+                'company_id' => $company->id,
+                'device_code' => $kiosk->device_code,
+                'error' => $exception->getMessage(),
+            ]);
+
             return new JsonResponse(['data' => []]);
         }
-
-        $announcements = DB::table('kiosk_announcements')
-            ->where('company_id', $company->id)
-            ->when($hasColumn('is_active'), fn ($query) => $query->where('is_active', true))
-            ->when($hasColumn('starts_at'), function ($query): void {
-                $query->where(function ($windowQuery): void {
-                    $windowQuery->whereNull('starts_at')->orWhere('starts_at', '<=', now());
-                });
-            })
-            ->when($hasColumn('expires_at'), function ($query): void {
-                $query->where(function ($windowQuery): void {
-                    $windowQuery->whereNull('expires_at')->orWhere('expires_at', '>=', now());
-                });
-            })
-            ->when($hasColumn('priority'), fn ($query) => $query->orderByDesc('priority'))
-            ->when(
-                $hasColumn('created_at'),
-                fn ($query) => $query->orderByDesc('created_at'),
-                fn ($query) => $hasColumn('id') ? $query->orderByDesc('id') : $query
-            )
-            ->limit(10)
-            ->get()
-            ->map(fn ($announcement) => [
-                'id' => $announcement->id ?? null,
-                'title' => $announcement->title ?? '',
-                'body' => $announcement->body ?? '',
-                'priority' => $announcement->priority ?? 'normal',
-                'starts_at' => $this->nullableIsoString($announcement->starts_at ?? null),
-                'expires_at' => $this->nullableIsoString($announcement->expires_at ?? null),
-            ]);
 
         return new JsonResponse(['data' => $announcements]);
     }
