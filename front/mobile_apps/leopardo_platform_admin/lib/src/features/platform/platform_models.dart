@@ -184,6 +184,7 @@ class PlatformCompanyHealth {
 
 class PlatformCompanySubscription {
   const PlatformCompanySubscription({
+    required this.planId,
     required this.status,
     required this.planName,
     required this.currency,
@@ -192,6 +193,7 @@ class PlatformCompanySubscription {
     required this.subscriptionEnd,
   });
 
+  final int planId;
   final String status;
   final String planName;
   final String currency;
@@ -204,6 +206,7 @@ class PlatformCompanySubscription {
     final plan = (data['plan'] as Map?)?.cast<String, dynamic>() ?? {};
 
     return PlatformCompanySubscription(
+      planId: (plan['id'] as num?)?.toInt() ?? 0,
       status: data['status']?.toString() ?? 'unknown',
       planName: plan['name']?.toString() ?? 'Plan',
       currency: data['currency']?.toString() ?? 'DZD',

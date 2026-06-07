@@ -5,7 +5,9 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 
 import '../../core/platform_providers.dart';
+import '../dashboard/platform_dashboard_screen.dart';
 import '../platform/platform_models.dart';
+import 'company_screen.dart';
 
 final platformCompanyDetailProvider =
     FutureProvider.family<_CompanyDetailData, String>((ref, companyId) async {
@@ -48,17 +50,15 @@ class CompanyDetailScreen extends ConsumerWidget {
       children: [
         detail.when(
           data:
-              (data) => _CompanyDetailContent(
-                companyId: companyId,
-                data: data,
-              ),
+              (data) => _CompanyDetailContent(companyId: companyId, data: data),
           loading: () => const MobileEmptyLoading(label: 'Chargement client'),
           error:
               (error, _) => MobileErrorPanel(
                 message: error.toString(),
                 onRetry:
-                    () =>
-                        ref.invalidate(platformCompanyDetailProvider(companyId)),
+                    () => ref.invalidate(
+                      platformCompanyDetailProvider(companyId),
+                    ),
               ),
         ),
       ],
@@ -200,6 +200,20 @@ class _CompanyDetailContent extends ConsumerWidget {
                 data.subscription.subscriptionEnd ?? 'Non definie',
               ),
               const SizedBox(height: 12),
+              if (data.subscription.status == 'trial') ...[
+                MobilePrimaryAction(
+                  icon: Icons.verified_rounded,
+                  label: 'Activer client',
+                  onPressed:
+                      () => _activateCompany(
+                        context: context,
+                        ref: ref,
+                        companyId: companyId,
+                        subscription: data.subscription,
+                      ),
+                ),
+                const SizedBox(height: 10),
+              ],
               MobilePrimaryAction(
                 icon: Icons.edit_note_rounded,
                 label: 'Modifier abonnement',
@@ -290,6 +304,43 @@ class _CompanyDetailContent extends ConsumerWidget {
       ],
     );
   }
+
+  Future<void> _activateCompany({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String companyId,
+    required PlatformCompanySubscription subscription,
+  }) async {
+    if (subscription.planId <= 0) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Plan actuel introuvable')));
+      return;
+    }
+
+    try {
+      await ref
+          .read(platformRepositoryProvider)
+          .updateCompanySubscription(
+            companyId: companyId,
+            planId: subscription.planId,
+            status: 'active',
+            notes: 'Activation directe depuis app mobile platform admin.',
+          );
+      ref.invalidate(platformCompanyDetailProvider(companyId));
+      ref.invalidate(platformCompaniesProvider);
+      ref.invalidate(platformMetricsProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Client active')));
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.toString())));
+    }
+  }
 }
 
 class _SubscriptionSheet extends ConsumerStatefulWidget {
@@ -349,9 +400,9 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
       ref.invalidate(platformCompanyDetailProvider(widget.companyId));
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Abonnement mis a jour')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Abonnement mis a jour')));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -379,22 +430,26 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
               items
                   .where((plan) => plan.isActive || plan.id == _planId)
                   .toList();
-          _planId ??= activePlans
-              .firstWhere(
-                (plan) => plan.name == widget.subscription.planName,
-                orElse:
-                    () => activePlans.isNotEmpty
-                        ? activePlans.first
-                        : const PlatformPlan(
-                          id: 0,
-                          name: 'Plan',
-                          monthlyPrice: 0,
-                          yearlyPrice: 0,
-                          maxEmployees: null,
-                          isActive: true,
-                        ),
-              )
-              .id;
+          _planId ??=
+              activePlans
+                  .firstWhere(
+                    (plan) =>
+                        plan.id == widget.subscription.planId ||
+                        plan.name == widget.subscription.planName,
+                    orElse:
+                        () =>
+                            activePlans.isNotEmpty
+                                ? activePlans.first
+                                : const PlatformPlan(
+                                  id: 0,
+                                  name: 'Plan',
+                                  monthlyPrice: 0,
+                                  yearlyPrice: 0,
+                                  maxEmployees: null,
+                                  isActive: true,
+                                ),
+                  )
+                  .id;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -447,8 +502,7 @@ class _SubscriptionSheetState extends ConsumerState<_SubscriptionSheet> {
                 onChanged:
                     _submitting
                         ? null
-                        : (value) =>
-                            setState(() => _status = value ?? _status),
+                        : (value) => setState(() => _status = value ?? _status),
               ),
               const SizedBox(height: 12),
               TextField(
