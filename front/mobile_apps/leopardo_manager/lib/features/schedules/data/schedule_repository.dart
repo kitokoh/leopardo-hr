@@ -56,6 +56,18 @@ class ScheduleRepository {
       timeoutOverride: _actionTimeout,
     );
   }
+
+  Future<int> assignEmployees(int scheduleId, List<int> employeeIds) async {
+    final response = await apiClient.requestWithRetry(
+      '/schedules/$scheduleId/assign-employees',
+      method: 'POST',
+      data: {'employee_ids': employeeIds},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+    final data = extractDataMap(response.data);
+    return WorkSchedule._asInt(data['assigned_count']);
+  }
 }
 
 class WorkSchedule {
@@ -65,7 +77,11 @@ class WorkSchedule {
     required this.startTime,
     required this.endTime,
     required this.breakMinutes,
+    required this.breakRules,
     required this.workDays,
+    required this.restDays,
+    required this.leaveRules,
+    required this.assignmentNotes,
     required this.lateToleranceMinutes,
     required this.overtimeThresholdDaily,
     required this.overtimeThresholdWeekly,
@@ -77,7 +93,11 @@ class WorkSchedule {
   final String startTime;
   final String endTime;
   final int breakMinutes;
+  final List<ScheduleBreakRule> breakRules;
   final List<int> workDays;
+  final List<int> restDays;
+  final List<ScheduleLeaveRule> leaveRules;
+  final String? assignmentNotes;
   final int lateToleranceMinutes;
   final double overtimeThresholdDaily;
   final double overtimeThresholdWeekly;
@@ -90,12 +110,37 @@ class WorkSchedule {
       startTime: _normalizeTime(json['start_time']),
       endTime: _normalizeTime(json['end_time']),
       breakMinutes: _asInt(json['break_minutes']),
+      breakRules:
+          (json['break_rules'] as List?)
+              ?.whereType<Map>()
+              .map(
+                (entry) =>
+                    ScheduleBreakRule.fromJson(entry.cast<String, dynamic>()),
+              )
+              .toList() ??
+          const [],
       workDays:
           (json['work_days'] as List?)
               ?.map((day) => _asInt(day))
               .where((day) => day >= 1 && day <= 7)
               .toList() ??
           const [1, 2, 3, 4, 5],
+      restDays:
+          (json['rest_days'] as List?)
+              ?.map((day) => _asInt(day))
+              .where((day) => day >= 1 && day <= 7)
+              .toList() ??
+          const [],
+      leaveRules:
+          (json['leave_rules'] as List?)
+              ?.whereType<Map>()
+              .map(
+                (entry) =>
+                    ScheduleLeaveRule.fromJson(entry.cast<String, dynamic>()),
+              )
+              .toList() ??
+          const [],
+      assignmentNotes: json['assignment_notes']?.toString(),
       lateToleranceMinutes: _asInt(json['late_tolerance_minutes']),
       overtimeThresholdDaily: _asDouble(json['overtime_threshold_daily']),
       overtimeThresholdWeekly: _asDouble(json['overtime_threshold_weekly']),
@@ -109,7 +154,11 @@ class WorkSchedule {
       startTime: startTime,
       endTime: endTime,
       breakMinutes: breakMinutes,
+      breakRules: breakRules,
       workDays: workDays,
+      restDays: restDays,
+      leaveRules: leaveRules,
+      assignmentNotes: assignmentNotes,
       lateToleranceMinutes: lateToleranceMinutes,
       overtimeThresholdDaily: overtimeThresholdDaily,
       overtimeThresholdWeekly: overtimeThresholdWeekly,
@@ -136,13 +185,88 @@ class WorkSchedule {
   }
 }
 
+class ScheduleBreakRule {
+  const ScheduleBreakRule({
+    required this.label,
+    required this.startTime,
+    required this.endTime,
+    required this.minutes,
+    required this.isPaid,
+  });
+
+  final String label;
+  final String? startTime;
+  final String? endTime;
+  final int minutes;
+  final bool isPaid;
+
+  factory ScheduleBreakRule.fromJson(Map<String, dynamic> json) {
+    return ScheduleBreakRule(
+      label: json['label']?.toString() ?? 'Pause',
+      startTime: json['start_time']?.toString(),
+      endTime: json['end_time']?.toString(),
+      minutes: WorkSchedule._asInt(json['minutes']),
+      isPaid: json['is_paid'] == true || json['is_paid'] == 1,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'label': label.trim().isEmpty ? 'Pause' : label.trim(),
+      if (startTime != null && startTime!.isNotEmpty) 'start_time': startTime,
+      if (endTime != null && endTime!.isNotEmpty) 'end_time': endTime,
+      'minutes': minutes,
+      'is_paid': isPaid,
+    };
+  }
+}
+
+class ScheduleLeaveRule {
+  const ScheduleLeaveRule({
+    required this.label,
+    this.type,
+    this.daysPerYear,
+    this.policyId,
+  });
+
+  final String label;
+  final String? type;
+  final double? daysPerYear;
+  final int? policyId;
+
+  factory ScheduleLeaveRule.fromJson(Map<String, dynamic> json) {
+    return ScheduleLeaveRule(
+      label: json['label']?.toString() ?? 'Conge',
+      type: json['type']?.toString(),
+      daysPerYear: WorkSchedule._asDouble(json['days_per_year']),
+      policyId:
+          json['policy_id'] is num
+              ? (json['policy_id'] as num).toInt()
+              : int.tryParse(json['policy_id']?.toString() ?? ''),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'label': label.trim().isEmpty ? 'Conge' : label.trim(),
+      if (type != null && type!.trim().isNotEmpty) 'type': type!.trim(),
+      if (daysPerYear != null) 'days_per_year': daysPerYear,
+      if (policyId != null) 'policy_id': policyId,
+    };
+  }
+}
+
 class SchedulePayload {
   const SchedulePayload({
     required this.name,
     required this.startTime,
     required this.endTime,
     required this.breakMinutes,
+    required this.breakRules,
     required this.workDays,
+    required this.restDays,
+    required this.leaveRules,
+    required this.assignmentNotes,
     required this.lateToleranceMinutes,
     required this.overtimeThresholdDaily,
     required this.overtimeThresholdWeekly,
@@ -153,7 +277,11 @@ class SchedulePayload {
   final String startTime;
   final String endTime;
   final int breakMinutes;
+  final List<ScheduleBreakRule> breakRules;
   final List<int> workDays;
+  final List<int> restDays;
+  final List<ScheduleLeaveRule> leaveRules;
+  final String? assignmentNotes;
   final int lateToleranceMinutes;
   final double overtimeThresholdDaily;
   final double overtimeThresholdWeekly;
@@ -165,7 +293,12 @@ class SchedulePayload {
       'start_time': startTime,
       'end_time': endTime,
       'break_minutes': breakMinutes,
+      'break_rules': breakRules.map((rule) => rule.toJson()).toList(),
       'work_days': workDays,
+      'rest_days': restDays,
+      'leave_rules': leaveRules.map((rule) => rule.toJson()).toList(),
+      if (assignmentNotes != null && assignmentNotes!.trim().isNotEmpty)
+        'assignment_notes': assignmentNotes!.trim(),
       'late_tolerance_minutes': lateToleranceMinutes,
       'overtime_threshold_daily': overtimeThresholdDaily,
       'overtime_threshold_weekly': overtimeThresholdWeekly,

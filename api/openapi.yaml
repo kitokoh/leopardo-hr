@@ -326,6 +326,56 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /schedules/{schedule}/assign-employees:
+    parameters:
+      - name: schedule
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: ["Schedules"]
+      summary: "Affecter un horaire/regle entreprise a des employes"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ["employee_ids"]
+              properties:
+                employee_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items:
+                    type: integer
+      responses:
+        "200":
+          description: "Horaire affecte aux employes du tenant courant"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      schedule:
+                        $ref: "#/components/schemas/Schedule"
+                      assigned_count:
+                        type: integer
+                      employee_ids:
+                        type: array
+                        items:
+                          type: integer
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /auth/profile:
     patch:
       tags: ["Auth"]
@@ -8010,6 +8060,48 @@ components:
             type: integer
             minimum: 1
             maximum: 7
+        rest_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        break_rules:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              start_time:
+                type: string
+                nullable: true
+              end_time:
+                type: string
+                nullable: true
+              minutes:
+                type: integer
+              is_paid:
+                type: boolean
+        leave_rules:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              type:
+                type: string
+                nullable: true
+              days_per_year:
+                type: number
+                nullable: true
+              policy_id:
+                type: integer
+                nullable: true
+        assignment_notes:
+          type: string
+          nullable: true
         late_tolerance_minutes:
           type: integer
           minimum: 0
@@ -8042,6 +8134,55 @@ components:
             type: integer
             minimum: 1
             maximum: 7
+        rest_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        break_rules:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                maxLength: 80
+              start_time:
+                type: string
+                pattern: "^\\d{2}:\\d{2}$"
+              end_time:
+                type: string
+                pattern: "^\\d{2}:\\d{2}$"
+              minutes:
+                type: integer
+                minimum: 0
+                maximum: 480
+              is_paid:
+                type: boolean
+        leave_rules:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                maxLength: 120
+              type:
+                type: string
+                maxLength: 80
+              days_per_year:
+                type: number
+                minimum: 0
+                maximum: 365
+              policy_id:
+                type: integer
+                minimum: 1
+        assignment_notes:
+          type: string
+          maxLength: 1000
         late_tolerance_minutes:
           type: integer
           minimum: 0

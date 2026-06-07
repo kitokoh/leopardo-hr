@@ -638,12 +638,13 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ### Horaires manager
 - `GET /api/v1/schedules` liste les horaires tenant-scope visibles mobile manager
-- `POST /api/v1/schedules` cree un horaire avec pause, tolerance retard, jours travailles et seuils heures supp
-- `PUT /api/v1/schedules/{schedule}` modifie les regles horaires existantes
+- `POST /api/v1/schedules` cree une regle entreprise avec pause, tolerance retard, jours travailles, jours de repos, regles conges, notes internes et seuils heures supp
+- `PUT /api/v1/schedules/{schedule}` modifie les regles horaires existantes sans casser les tenants historiques partiellement migres
+- `POST /api/v1/schedules/{schedule}/assign-employees` affecte une regle a une selection d'employes du meme tenant et refuse toute liste contenant un employe hors entreprise
 - `DELETE /api/v1/schedules/{schedule}` supprime un horaire non defaut
 - `POST /api/v1/employees` peut recevoir `schedule_id` pour affecter l'horaire des la creation employe
 - `PATCH /api/v1/employees/{employee}` peut corriger horaire, date d'embauche, salaire/taux horaire et metadonnees poste/departement/lieu depuis la fiche mobile manager
-- Couverture Feature requise : manager autorise, employe refuse, isolation tenant des horaires, refus d'un `schedule_id` hors entreprise
+- Couverture Feature requise : manager autorise, employe refuse, isolation tenant des horaires, refus d'un `schedule_id` hors entreprise, assignation multi-employes et rollback logique si un ID hors tenant est fourni
 
 ### Taches du jour et pointage
 

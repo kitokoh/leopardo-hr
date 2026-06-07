@@ -15,6 +15,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $end_time
  * @property int $break_minutes
  * @property array<mixed> $work_days
+ * @property array<mixed>|null $rest_days
+ * @property array<mixed>|null $break_rules
+ * @property array<mixed>|null $leave_rules
+ * @property string|null $assignment_notes
  * @property int $late_tolerance_minutes
  * @property string $overtime_threshold_daily
  * @property string $overtime_threshold_weekly
@@ -36,6 +40,10 @@ class Schedule extends Model
         'end_time',
         'break_minutes',
         'work_days',
+        'rest_days',
+        'break_rules',
+        'leave_rules',
+        'assignment_notes',
         'late_tolerance_minutes',
         'overtime_threshold_daily',
         'overtime_threshold_weekly',
@@ -45,6 +53,9 @@ class Schedule extends Model
     protected $casts = [
         'break_minutes' => 'integer',
         'work_days' => 'array',
+        'rest_days' => 'array',
+        'break_rules' => 'array',
+        'leave_rules' => 'array',
         'late_tolerance_minutes' => 'integer',
         'overtime_threshold_daily' => 'decimal:2',
         'overtime_threshold_weekly' => 'decimal:2',
