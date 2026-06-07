@@ -83,6 +83,10 @@
             "path: '/payroll'",
             "path: '/users'",
             "fetchPortfolio",
+            "submitCreateClient",
+            "/platform/country-defaults",
+            "/platform/companies",
+            "Creer le client",
             "loadUsers"
           ]
         }
