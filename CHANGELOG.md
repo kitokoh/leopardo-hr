@@ -50,6 +50,7 @@
 - API kiosque : `roster` et `announcements` resolvent maintenant l'entreprise depuis `public.companies` afin d'eviter les 500 PostgreSQL quand `shared_tenants` masque la table publique.
 - API kiosque : `announcements` reste tolerant aux colonnes optionnelles absentes sur une table tenant historique (`is_active`, dates, priorite, timestamps) afin de retourner une liste exploitable au lieu d'un 500 Render.
 - API kiosque : `announcements` retourne maintenant `data=[]` si une table tenant historique ne contient pas `company_id`, afin d'eviter a la fois un 500 et toute fuite inter-tenant.
+- API kiosque : `announcements` passe en fail-open journalise pour que les annonces non critiques ne bloquent jamais un appareil kiosque en production lorsqu'un tenant historique a une table non queryable.
 
 ## [4.16.249] - 2026-06-05
 
