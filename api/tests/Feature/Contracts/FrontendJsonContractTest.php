@@ -206,6 +206,29 @@ class FrontendJsonContractTest extends TestCase
             ->assertJsonPath('data.0.expires_at', null);
     }
 
+    public function test_kiosk_announcements_return_empty_when_legacy_table_cannot_be_tenant_scoped(): void
+    {
+        [$company] = $this->kioskActor();
+        [$kiosk, $plainToken] = $this->kiosk($company);
+
+        Schema::dropIfExists('kiosk_announcements');
+        Schema::create('kiosk_announcements', function (Blueprint $table): void {
+            $table->id();
+            $table->string('title', 200);
+            $table->text('body');
+        });
+
+        DB::table('kiosk_announcements')->insert([
+            'title' => 'Unscoped notice',
+            'body' => 'Cette annonce ne doit pas fuiter sans company_id.',
+        ]);
+
+        $this->withHeader('X-Kiosk-Token', $plainToken)
+            ->getJson("/api/v1/kiosks/{$kiosk->device_code}/announcements")
+            ->assertOk()
+            ->assertJsonPath('data', []);
+    }
+
     public function test_kiosk_token_only_employee_info_and_leave_balance_payloads_match_kiosk_contract(): void
     {
         [$company, , $employee] = $this->kioskActor();
