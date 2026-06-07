@@ -20,6 +20,7 @@
 - CI lancement : ajout du workflow manuel `Launch API Profile Smoke` pour executer cette recette avec secrets GitHub et artefact de rapport.
 - CI lancement : ajout d'un provisioning kiosque controle au smoke API pour enregistrer un appareil temporaire via manager demo puis verifier `roster` et `announcements` avec le vrai `X-Kiosk-Token`.
 - Vitrine : ajout d'une section de preuve operationnelle localisee pour presenter les 3 apps mobiles, 2 apps web, kiosk/biometrie et API production avant les fonctionnalites.
+- Vitrine : ajout d'un formulaire hero email-only `hero_email_trial` qui capture une demande d'essai guidee via `/api/forms/signup` sans mot de passe ni carte bancaire.
 
 ### Changed
 
@@ -42,6 +43,8 @@
 - Gouvernance lancement : les workflows visibles web/mobile/kiosk doivent maintenant declarer leurs fichiers, routes, endpoints et tokens critiques dans `launch-workflow-contracts.json`.
 - Release readiness : le gate verifie maintenant aussi la presence du smoke API par profil Plan 72.2.
 - Release readiness : le gate verifie maintenant aussi la presence du workflow manuel de smoke API par profil.
+- Vitrine : le hero marketing et le CTA final alignent maintenant l'essai commercial sur 30 jours en FR/EN/TR/AR, coherent avec la page pricing.
+- Contrats lancement : `guided_trial_signup` couvre aussi le formulaire email-only de la premiere vue et le test Playwright associe.
 
 ### Fixed
 
