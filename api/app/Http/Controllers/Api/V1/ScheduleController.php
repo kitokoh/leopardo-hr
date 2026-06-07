@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Schedule\AssignScheduleEmployeesRequest;
 use App\Http\Requests\Api\V1\Schedule\StoreScheduleRequest;
 use App\Http\Requests\Api\V1\Schedule\UpdateScheduleRequest;
 use App\Http\Resources\Api\V1\ScheduleResource;
@@ -30,7 +31,25 @@ class ScheduleController extends Controller
         $schedules = $this->tenantCache->rememberSchedules(
             $user->company_id,
             fn () => Schedule::query()
-                ->select(['id', 'company_id', 'name', 'start_time', 'end_time', 'break_minutes', 'work_days', 'late_tolerance_minutes', 'overtime_threshold_daily', 'overtime_threshold_weekly', 'is_default', 'created_at'])
+                ->select([
+                    'id',
+                    'company_id',
+                    'name',
+                    'start_time',
+                    'end_time',
+                    'break_minutes',
+                    'break_rules',
+                    'work_days',
+                    'rest_days',
+                    'leave_rules',
+                    'assignment_notes',
+                    'late_tolerance_minutes',
+                    'overtime_threshold_daily',
+                    'overtime_threshold_weekly',
+                    'is_default',
+                    'created_at',
+                    'updated_at',
+                ])
                 ->orderBy('name')
                 ->get()
         );
@@ -54,6 +73,7 @@ class ScheduleController extends Controller
         ]);
 
         $this->tenantCache->invalidateSchedules($actor->company_id);
+        $this->tenantCache->invalidateEmployees($actor->company_id);
 
         return (new ScheduleResource($schedule))
             ->response()
@@ -83,8 +103,52 @@ class ScheduleController extends Controller
         $schedule->update($request->validated());
 
         $this->tenantCache->invalidateSchedules($actor->company_id);
+        $this->tenantCache->invalidateEmployees($actor->company_id);
 
         return new ScheduleResource($schedule->fresh());
+    }
+
+    public function assignEmployees(AssignScheduleEmployeesRequest $request, Schedule $schedule): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ((string) $schedule->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        /** @var array<int, int> $employeeIds */
+        $employeeIds = array_values(
+            array_unique(array_map('intval', $request->validated('employee_ids')))
+        );
+        $employees = Employee::query()
+            ->where('company_id', $actor->company_id)
+            ->whereIn('id', $employeeIds)
+            ->get(['id']);
+
+        if ($employees->count() !== count($employeeIds)) {
+            return response()->json([
+                'message' => 'Some employees cannot receive this schedule.',
+                'errors' => [
+                    'employee_ids' => ['Only employees from the current company can be assigned.'],
+                ],
+            ], 422);
+        }
+
+        Employee::query()
+            ->where('company_id', $actor->company_id)
+            ->whereIn('id', $employeeIds)
+            ->update(['schedule_id' => $schedule->id]);
+
+        $this->tenantCache->invalidateEmployees($actor->company_id);
+
+        return response()->json([
+            'data' => [
+                'schedule' => new ScheduleResource($schedule->fresh()),
+                'assigned_count' => count($employeeIds),
+                'employee_ids' => $employeeIds,
+            ],
+        ]);
     }
 
     public function destroy(Request $request, Schedule $schedule): JsonResponse
@@ -101,6 +165,7 @@ class ScheduleController extends Controller
         $schedule->delete();
 
         $this->tenantCache->invalidateSchedules($user->company_id);
+        $this->tenantCache->invalidateEmployees($user->company_id);
 
         return response()->json(['message' => 'Schedule deleted successfully']);
     }

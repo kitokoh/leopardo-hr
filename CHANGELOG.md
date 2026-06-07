@@ -6,6 +6,9 @@
 
 ### Added
 
+- Mobile manager/API : les horaires deviennent des regles entreprise enrichies avec pauses structurees, jours de repos, regles conges et notes internes.
+- API manager : ajout de `POST /api/v1/schedules/{schedule}/assign-employees` pour affecter une regle horaire a plusieurs employes du tenant courant avec garde anti-fuite inter-tenant.
+- Mobile manager : ajout de l'action "Affecter aux employes" dans l'ecran Horaires afin d'appliquer une regle a une selection d'employes existants.
 - Plan 71 : cadrage go-to-market admin plateforme, multi-pays, i18n, vitrine essai, kiosk et audit commercial-technique.
 - Audit go-to-market 2026-06-06 avec verdict pilote, risques et priorites commerciales/techniques.
 - Backend : ajout de `CountryDefaults` pour deriver langue, devise et timezone a partir du pays lors du provisioning plateforme.

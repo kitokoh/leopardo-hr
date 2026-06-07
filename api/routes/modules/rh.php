@@ -137,6 +137,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/schedules/{schedule}', [ScheduleController::class, 'show'])->whereNumber('schedule');
     Route::put('/schedules/{schedule}', [ScheduleController::class, 'update'])->whereNumber('schedule');
     Route::patch('/schedules/{schedule}', [ScheduleController::class, 'update'])->whereNumber('schedule');
+    Route::post('/schedules/{schedule}/assign-employees', [ScheduleController::class, 'assignEmployees'])->whereNumber('schedule');
     Route::delete('/schedules/{schedule}', [ScheduleController::class, 'destroy'])->whereNumber('schedule');
 
     // ── Module 5 — Notifications ──────────────────────────────────────────────
