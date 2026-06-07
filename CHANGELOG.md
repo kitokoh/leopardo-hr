@@ -44,6 +44,7 @@
 - Release readiness : le gate verifie maintenant aussi la presence du smoke API par profil Plan 72.2.
 - Release readiness : le gate verifie maintenant aussi la presence du workflow manuel de smoke API par profil.
 - Vitrine : le hero marketing et le CTA final alignent maintenant l'essai commercial sur 30 jours en FR/EN/TR/AR, coherent avec la page pricing.
+- I18n vitrine : la copie du formulaire rapide `hero_email_trial` est centralisee dans `vitrine-locale.ts` au lieu d'etre portee par le composant hero.
 - Contrats lancement : `guided_trial_signup` couvre aussi le formulaire email-only de la premiere vue et le test Playwright associe.
 
 ### Fixed

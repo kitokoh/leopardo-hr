@@ -51,6 +51,14 @@ type LandingCopy = {
     downloadCta?: string
     stats: HeroStat[]
   }
+  heroQuickTrial: {
+    placeholder: string
+    submit: string
+    submitting: string
+    legal: string
+    success: string
+    error: string
+  }
   features: {
     badge: string
     title: string
@@ -148,6 +156,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { value: 99, suffix: '.9%', label: 'Uptime' },
         { value: 4, suffix: '.9', label: 'Note moyenne' },
       ],
+    },
+    heroQuickTrial: {
+      placeholder: 'email@entreprise.com',
+      submit: 'Tester maintenant',
+      submitting: 'Envoi...',
+      legal: 'Email uniquement. Notre equipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
+      success: "Demande recue. L'equipe Leopardo vous contacte sous 24h ouvrables.",
+      error: "Impossible d'envoyer la demande pour le moment.",
     },
     features: {
       badge: 'Fonctionnalites',
@@ -253,6 +269,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { value: 4, suffix: '.9', label: 'Average rating' },
       ],
     },
+    heroQuickTrial: {
+      placeholder: 'work@email.com',
+      submit: 'Try now',
+      submitting: 'Sending...',
+      legal: 'Email only. Our team prepares the right trial access, no password or card required.',
+      success: 'Request received. The Leopardo team will contact you within 24 business hours.',
+      error: 'Unable to send the request right now.',
+    },
     features: {
       badge: 'Features',
       title: 'Everything your team',
@@ -357,6 +381,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { value: 4, suffix: '.9', label: 'Ortalama puan' },
       ],
     },
+    heroQuickTrial: {
+      placeholder: 'is@eposta.com',
+      submit: 'Hemen dene',
+      submitting: 'Gonderiliyor...',
+      legal: 'Sadece e-posta. Ekibimiz sifre veya kart istemeden uygun deneme erisimini hazirlar.',
+      success: 'Talep alindi. Leopardo ekibi 24 is saati icinde size ulasir.',
+      error: 'Talep su anda gonderilemiyor.',
+    },
     features: {
       badge: 'Ozellikler',
       title: 'Ekibinizin ihtiyac duydugu',
@@ -460,6 +492,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { value: 99, suffix: '.9%', label: 'جاهزية' },
         { value: 4, suffix: '.9', label: 'متوسط التقييم' },
       ],
+    },
+    heroQuickTrial: {
+      placeholder: 'email@company.com',
+      submit: 'جرّب الآن',
+      submitting: 'جار الإرسال...',
+      legal: 'البريد فقط. نجهز تجربة مناسبة بدون كلمة مرور أو بطاقة دفع.',
+      success: 'تم استلام الطلب. سيتواصل معك فريق Leopardo خلال 24 ساعة عمل.',
+      error: 'تعذر إرسال الطلب الآن.',
     },
     features: {
       badge: 'الميزات',
