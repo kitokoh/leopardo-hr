@@ -5,9 +5,11 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_manager/features/schedules/providers/schedule_provider.dart';
+import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 
 class ScheduleListScreen extends ConsumerWidget {
   const ScheduleListScreen({super.key});
@@ -66,7 +68,7 @@ class ScheduleListScreen extends ConsumerWidget {
                   iconColor: schedule.isDefault ? AppColors.rh : AppColors.info,
                   title: schedule.name,
                   subtitle:
-                      '${schedule.startTime} - ${schedule.endTime} · pause ${schedule.breakMinutes} min',
+                      '${schedule.startTime} - ${schedule.endTime} | pause ${schedule.breakMinutes} min',
                   trailing:
                       schedule.isDefault
                           ? const MobileStatusPill(
@@ -78,7 +80,19 @@ class ScheduleListScreen extends ConsumerWidget {
                             color: AppColors.info,
                           ),
                   onTap: () => _showScheduleSheet(context, ref, schedule),
-                  footer: _ScheduleFooter(schedule: schedule),
+                  footer: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _ScheduleFooter(schedule: schedule),
+                      const SizedBox(height: 10),
+                      TextButton.icon(
+                        onPressed:
+                            () => _showAssignSheet(context, ref, schedule),
+                        icon: const Icon(Icons.group_add_outlined, size: 17),
+                        label: const Text('Affecter aux employes'),
+                      ),
+                    ],
+                  ),
                 );
               },
             );
@@ -116,6 +130,22 @@ class ScheduleListScreen extends ConsumerWidget {
       builder: (_) => _ScheduleFormSheet(schedule: schedule),
     );
   }
+
+  void _showAssignSheet(
+    BuildContext context,
+    WidgetRef ref,
+    WorkSchedule schedule,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: MobileSurface.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _ScheduleAssignSheet(schedule: schedule),
+    );
+  }
 }
 
 class _ScheduleFooter extends StatelessWidget {
@@ -148,6 +178,217 @@ class _ScheduleFooter extends StatelessWidget {
   }
 }
 
+class _ScheduleAssignSheet extends ConsumerStatefulWidget {
+  const _ScheduleAssignSheet({required this.schedule});
+
+  final WorkSchedule schedule;
+
+  @override
+  ConsumerState<_ScheduleAssignSheet> createState() =>
+      _ScheduleAssignSheetState();
+}
+
+class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
+  final Set<int> _selectedIds = <int>{};
+  bool _submitting = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final teamAsync = ref.watch(teamListProvider);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: SafeArea(
+        top: false,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.78,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: MobileSurface.border,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'Affecter une regle',
+                style: AppTypography.subtitle.copyWith(
+                  color: MobileSurface.text,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.schedule.name,
+                style: AppTypography.bodySmall.copyWith(
+                  color: MobileSurface.secondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: teamAsync.when(
+                  data:
+                      (employees) => _EmployeeSelectionList(
+                        employees: employees,
+                        selectedIds: _selectedIds,
+                        onToggle: _toggleEmployee,
+                      ),
+                  loading:
+                      () =>
+                          const MobileEmptyLoading(label: 'Chargement equipe'),
+                  error:
+                      (error, _) => MobileErrorPanel(
+                        message: error.toString(),
+                        onRetry: () => ref.invalidate(teamListProvider),
+                      ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              MobilePrimaryAction(
+                icon: Icons.done_all_outlined,
+                label:
+                    _selectedIds.isEmpty
+                        ? 'Selectionner des employes'
+                        : 'Affecter ${_selectedIds.length} employe(s)',
+                onPressed: _selectedIds.isEmpty || _submitting ? null : _submit,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _toggleEmployee(int employeeId) {
+    setState(() {
+      if (_selectedIds.contains(employeeId)) {
+        _selectedIds.remove(employeeId);
+      } else {
+        _selectedIds.add(employeeId);
+      }
+    });
+  }
+
+  Future<void> _submit() async {
+    setState(() => _submitting = true);
+    try {
+      final count = await ref
+          .read(scheduleRepositoryProvider)
+          .assignEmployees(widget.schedule.id, _selectedIds.toList());
+      ref.invalidate(teamListProvider);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Regle affectee a $count employe(s).')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+}
+
+class _EmployeeSelectionList extends StatelessWidget {
+  const _EmployeeSelectionList({
+    required this.employees,
+    required this.selectedIds,
+    required this.onToggle,
+  });
+
+  final List<Employee> employees;
+  final Set<int> selectedIds;
+  final void Function(int employeeId) onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    if (employees.isEmpty) {
+      return const EmptyState(
+        icon: Icons.people_outline,
+        title: 'Aucun employe',
+        description: 'Ajoutez d abord des employes pour affecter une regle.',
+      );
+    }
+
+    return ListView.separated(
+      itemCount: employees.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final employee = employees[index];
+        final selected = selectedIds.contains(employee.id);
+
+        return InkWell(
+          onTap: () => onToggle(employee.id),
+          borderRadius: BorderRadius.circular(14),
+          child: Ink(
+            padding: const EdgeInsets.all(12),
+            decoration: MobileSurface.cardDecoration(
+              color:
+                  selected
+                      ? AppColors.rh.withValues(alpha: 0.12)
+                      : MobileSurface.chip,
+              borderColor:
+                  selected
+                      ? AppColors.rh.withValues(alpha: 0.45)
+                      : MobileSurface.border,
+              radius: 14,
+            ),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: selected,
+                  onChanged: (_) => onToggle(employee.id),
+                  activeColor: AppColors.rh,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        employee.fullName,
+                        style: AppTypography.body.copyWith(
+                          color: MobileSurface.text,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        employee.scheduleName == null
+                            ? 'Aucune regle affectee'
+                            : 'Actuel : ${employee.scheduleName}',
+                        style: AppTypography.caption.copyWith(
+                          color: MobileSurface.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _ScheduleFormSheet extends ConsumerStatefulWidget {
   const _ScheduleFormSheet({this.schedule});
 
@@ -164,6 +405,8 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
   late final TextEditingController _toleranceCtrl;
   late final TextEditingController _dailyCtrl;
   late final TextEditingController _weeklyCtrl;
+  late final TextEditingController _leaveDaysCtrl;
+  late final TextEditingController _notesCtrl;
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
   late Set<int> _workDays;
@@ -199,6 +442,13 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
     _weeklyCtrl = TextEditingController(
       text: (schedule?.overtimeThresholdWeekly ?? 40).toStringAsFixed(0),
     );
+    _leaveDaysCtrl = TextEditingController(
+      text: (schedule?.leaveRules.isNotEmpty == true
+              ? schedule!.leaveRules.first.daysPerYear ?? 21
+              : 21)
+          .toStringAsFixed(0),
+    );
+    _notesCtrl = TextEditingController(text: schedule?.assignmentNotes ?? '');
     _startTime = _parseTime(schedule?.startTime ?? '08:00');
     _endTime = _parseTime(schedule?.endTime ?? '17:00');
     _workDays = {
@@ -214,6 +464,8 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
     _toleranceCtrl.dispose();
     _dailyCtrl.dispose();
     _weeklyCtrl.dispose();
+    _leaveDaysCtrl.dispose();
+    _notesCtrl.dispose();
     super.dispose();
   }
 
@@ -338,6 +590,14 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              _ScheduleTextField(
+                controller: _leaveDaysCtrl,
+                label: 'Conge annuel jours',
+                icon: Icons.beach_access_outlined,
+                keyboardType: TextInputType.number,
+                validator: _positiveDoubleValidator,
+              ),
               const SizedBox(height: 16),
               Text(
                 'Jours travailles',
@@ -378,6 +638,27 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
                   ),
                 ),
                 onChanged: (value) => setState(() => _isDefault = value),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _notesCtrl,
+                maxLines: 3,
+                maxLength: 1000,
+                style: AppTypography.body.copyWith(color: MobileSurface.text),
+                decoration: InputDecoration(
+                  labelText: 'Regles internes',
+                  hintText:
+                      'Repos, consignes de pause, conges, exceptions terrain...',
+                  prefixIcon: const Icon(
+                    Icons.rule_folder_outlined,
+                    color: MobileSurface.secondary,
+                  ),
+                  filled: true,
+                  fillColor: MobileSurface.chip,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               MobilePrimaryAction(
@@ -482,12 +763,39 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
   }
 
   SchedulePayload _payload() {
+    final breakMinutes = int.parse(_breakCtrl.text);
+    final workDays = _workDays.toList()..sort();
+    final restDays =
+        <int>{1, 2, 3, 4, 5, 6, 7}.difference(_workDays).toList()..sort();
+    final leaveDays = double.parse(_leaveDaysCtrl.text.replaceAll(',', '.'));
+
     return SchedulePayload(
       name: _nameCtrl.text,
       startTime: _formatTime(_startTime),
       endTime: _formatTime(_endTime),
-      breakMinutes: int.parse(_breakCtrl.text),
-      workDays: _workDays.toList()..sort(),
+      breakMinutes: breakMinutes,
+      breakRules:
+          breakMinutes > 0
+              ? [
+                ScheduleBreakRule(
+                  label: 'Pause principale',
+                  startTime: null,
+                  endTime: null,
+                  minutes: breakMinutes,
+                  isPaid: false,
+                ),
+              ]
+              : const [],
+      workDays: workDays,
+      restDays: restDays,
+      leaveRules: [
+        ScheduleLeaveRule(
+          label: 'Conge annuel',
+          type: 'annual',
+          daysPerYear: leaveDays,
+        ),
+      ],
+      assignmentNotes: _notesCtrl.text,
       lateToleranceMinutes: int.parse(_toleranceCtrl.text),
       overtimeThresholdDaily: double.parse(
         _dailyCtrl.text.replaceAll(',', '.'),
