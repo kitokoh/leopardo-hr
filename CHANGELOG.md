@@ -47,6 +47,7 @@
 - CI lancement : le smoke API peut maintenant resoudre automatiquement les tokens employee, manager et platform admin via `/demo-users` lorsque les secrets ne sont pas configures.
 - CI lancement : le smoke de creation entreprise platform admin peut maintenant verifier un statut `trial` ou `active` via `PlatformProvisioningStatus`.
 - CI lancement : le smoke kiosque peut maintenant sortir du `SKIP` via `IncludeKioskProvisioning` quand les secrets `LEOPARDO_KIOSK_DEVICE_CODE` / `LEOPARDO_KIOSK_TOKEN` ne sont pas fournis.
+- API kiosque : `roster` et `announcements` resolvent maintenant l'entreprise depuis `public.companies` afin d'eviter les 500 PostgreSQL quand `shared_tenants` masque la table publique.
 
 ## [4.16.249] - 2026-06-05
 
