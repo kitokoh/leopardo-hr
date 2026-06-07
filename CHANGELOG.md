@@ -23,6 +23,7 @@
 
 ### Changed
 
+- Mobile platform admin : la fiche client affiche maintenant une action directe `Activer client` pour convertir un tenant en essai vers `active` sans passer par le formulaire complet d'abonnement.
 - App mobile platform admin : le formulaire de creation client propose un choix pays controle, affiche devise/timezone/langue, et permet de creer un client en essai ou actif.
 - App mobile platform admin : le formulaire pays consomme maintenant l'API `country-defaults` avec fallback local non bloquant.
 - API platform : `POST /api/v1/platform/companies` accepte maintenant `status=trial|active` et ne force plus DZD/Africa-Algiers quand le pays indique une autre devise.
