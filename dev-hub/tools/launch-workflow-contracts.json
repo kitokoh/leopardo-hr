@@ -110,14 +110,16 @@
           "name": "platform_company_operations",
           "files": [
             "front/mobile_apps/leopardo_platform_admin/lib/src/features/platform/platform_repository.dart",
-            "front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_screen.dart"
+            "front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_screen.dart",
+            "front/mobile_apps/leopardo_platform_admin/lib/src/features/companies/company_detail_screen.dart"
           ],
           "requiredTokens": [
             "/platform/companies/$companyId/subscription",
             "/platform/companies/$companyId/features",
             "/platform/companies/$companyId/health",
             "updateCompanySubscription",
-            "updateCompanyFeatures"
+            "updateCompanyFeatures",
+            "Activer client"
           ]
         }
       ]
