@@ -103,6 +103,32 @@ class WorkSchedule {
   final double overtimeThresholdWeekly;
   final bool isDefault;
 
+  static const _dayLabels = <int, String>{
+    1: 'Lun',
+    2: 'Mar',
+    3: 'Mer',
+    4: 'Jeu',
+    5: 'Ven',
+    6: 'Sam',
+    7: 'Dim',
+  };
+
+  String get restDaysLabel {
+    if (restDays.isEmpty) return 'aucun';
+
+    return restDays.map((day) => _dayLabels[day] ?? day.toString()).join(', ');
+  }
+
+  String get leaveRulesLabel {
+    if (leaveRules.isEmpty) return 'Conges non definis';
+
+    final primary = leaveRules.first;
+    final days = primary.daysPerYear;
+    if (days == null || days <= 0) return primary.label;
+
+    return '${primary.label} ${days.toStringAsFixed(days.truncateToDouble() == days ? 0 : 1)} j/an';
+  }
+
   factory WorkSchedule.fromJson(Map<String, dynamic> json) {
     return WorkSchedule(
       id: _asInt(json['id']),
