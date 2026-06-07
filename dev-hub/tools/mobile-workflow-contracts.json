@@ -138,7 +138,7 @@
             "lib/features/schedules/screens/schedule_list_screen.dart",
             "lib/features/tasks/screens/task_list_screen.dart"
           ],
-          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer horaire", "Assigner une tache", "templateKey"]
+          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer la regle", "Assigner une tache", "templateKey"]
         },
         {
           "name": "manager_decisions",
