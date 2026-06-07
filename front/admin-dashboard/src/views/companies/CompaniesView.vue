@@ -7,9 +7,14 @@
           Adoption, risque, revenus récurrents et prochaine action par entreprise.
         </p>
       </div>
-      <button class="btn-secondary py-2.5" :disabled="isLoading" @click="fetchPortfolio">
-        Actualiser
-      </button>
+      <div class="flex flex-wrap gap-3">
+        <button class="btn-primary py-2.5" @click="openCreateClient">
+          Creer un client
+        </button>
+        <button class="btn-secondary py-2.5" :disabled="isLoading" @click="fetchPortfolio">
+          Actualiser
+        </button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
@@ -83,16 +88,139 @@
         </table>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="showCreateModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-client-title"
+      >
+        <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/20 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-8">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-600 dark:text-brand-400">Provisionnement</p>
+              <h2 id="create-client-title" class="mt-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                Creer un client plateforme
+              </h2>
+              <p class="mt-2 max-w-2xl text-sm font-medium text-slate-500 dark:text-slate-400">
+                Cree l'entreprise, le manager principal, l'abonnement initial et l'invitation sans sortir du cockpit.
+              </p>
+            </div>
+            <button
+              class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-black text-slate-500 transition hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-900"
+              type="button"
+              @click="closeCreateClient"
+            >
+              Fermer
+            </button>
+          </div>
+
+          <form class="mt-6 space-y-6" @submit.prevent="submitCreateClient">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span>Nom entreprise *</span>
+                <input v-model.trim="createForm.name" class="form-input" required maxlength="100" placeholder="Atlas Services" />
+              </label>
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span>Email entreprise *</span>
+                <input v-model.trim="createForm.email" class="form-input" required type="email" maxlength="150" placeholder="contact@atlas.example" />
+              </label>
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span>Pays *</span>
+                <select v-model="createForm.country" class="form-input" required>
+                  <option v-for="country in countryDefaults" :key="country.country" :value="country.country">
+                    {{ country.label }} - {{ country.country }}
+                  </option>
+                </select>
+              </label>
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span>Ville *</span>
+                <input v-model.trim="createForm.city" class="form-input" required maxlength="100" placeholder="Alger" />
+              </label>
+            </div>
+
+            <div class="rounded-2xl border border-brand-100 bg-brand-50/70 p-4 dark:border-brand-900/40 dark:bg-brand-950/20">
+              <div class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+                <div>
+                  <p class="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Devise</p>
+                  <p class="mt-1 font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.currency }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Timezone</p>
+                  <p class="mt-1 font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.timezone }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Langue</p>
+                  <p class="mt-1 font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.language.toUpperCase() }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span>Prenom manager principal *</span>
+                <input v-model.trim="createForm.manager_first_name" class="form-input" required maxlength="100" placeholder="Amina" />
+              </label>
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                <span>Nom manager principal *</span>
+                <input v-model.trim="createForm.manager_last_name" class="form-input" required maxlength="100" placeholder="Benali" />
+              </label>
+              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200 sm:col-span-2">
+                <span>Email manager principal *</span>
+                <input v-model.trim="createForm.manager_email" class="form-input" required type="email" maxlength="150" placeholder="manager@atlas.example" />
+              </label>
+            </div>
+
+            <label class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/60">
+              <input v-model="activateImmediately" class="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" type="checkbox" />
+              <span>
+                <span class="block text-sm font-black text-slate-900 dark:text-white">Activer le client immediatement</span>
+                <span class="mt-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
+                  Sinon le client reste en essai et pourra etre active depuis sa fiche abonnement.
+                </span>
+              </span>
+            </label>
+
+            <div v-if="createError" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+              {{ createError }}
+            </div>
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button class="btn-secondary justify-center" type="button" @click="closeCreateClient">
+                Annuler
+              </button>
+              <button class="btn-primary justify-center" type="submit" :disabled="isCreating">
+                {{ isCreating ? 'Creation...' : 'Creer le client' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 
+const router = useRouter()
+const toast = useToast()
 const isLoading = ref(false)
 const errorMessage = ref('')
+const showCreateModal = ref(false)
+const isCreating = ref(false)
+const createError = ref('')
+const activateImmediately = ref(false)
+const countryDefaults = ref([
+  { country: 'DZ', label: 'Algerie', language: 'fr', currency: 'DZD', timezone: 'Africa/Algiers' },
+])
+const createForm = ref(defaultCreateForm())
 const summary = ref({
   companies: 0,
   active_companies: 0,
@@ -110,6 +238,10 @@ const sortedItems = computed(() => {
 })
 
 const formattedMrr = computed(() => formatCurrency(summary.value.mrr, 'EUR'))
+const selectedCountryDefault = computed(() => {
+  return countryDefaults.value.find((country) => country.country === createForm.value.country)
+    || countryDefaults.value[0]
+})
 
 async function fetchPortfolio() {
   isLoading.value = true
@@ -124,6 +256,76 @@ async function fetchPortfolio() {
     errorMessage.value = 'Impossible de charger le cockpit clients.'
   } finally {
     isLoading.value = false
+  }
+}
+
+async function fetchCountryDefaults() {
+  try {
+    const response = await api.get('/platform/country-defaults')
+    const countries = response.data?.data || []
+    if (Array.isArray(countries) && countries.length > 0) {
+      countryDefaults.value = countries
+      if (!countries.some((country) => country.country === createForm.value.country)) {
+        createForm.value.country = countries[0].country
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load country defaults:', error)
+  }
+}
+
+function defaultCreateForm() {
+  return {
+    name: '',
+    email: '',
+    country: 'DZ',
+    city: '',
+    manager_first_name: '',
+    manager_last_name: '',
+    manager_email: '',
+  }
+}
+
+function openCreateClient() {
+  createForm.value = {
+    ...defaultCreateForm(),
+    country: countryDefaults.value[0]?.country || 'DZ',
+  }
+  activateImmediately.value = false
+  createError.value = ''
+  showCreateModal.value = true
+}
+
+function closeCreateClient() {
+  if (isCreating.value) return
+  showCreateModal.value = false
+}
+
+async function submitCreateClient() {
+  isCreating.value = true
+  createError.value = ''
+
+  try {
+    const payload = {
+      ...createForm.value,
+      country: createForm.value.country.toUpperCase(),
+      status: activateImmediately.value ? 'active' : 'trial',
+    }
+    const response = await api.post('/platform/companies', payload)
+    const company = response.data?.data?.company
+
+    showCreateModal.value = false
+    toast.success('Client cree et invitation manager envoyee.')
+    await fetchPortfolio()
+
+    if (company?.id) {
+      router.push(`/companies/${company.id}`)
+    }
+  } catch (error) {
+    console.error('Failed to create platform company:', error)
+    createError.value = error.response?.data?.message || 'Impossible de creer ce client.'
+  } finally {
+    isCreating.value = false
   }
 }
 
@@ -144,5 +346,14 @@ function riskClass(risk) {
   return classes[risk] || classes.medium
 }
 
-onMounted(fetchPortfolio)
+onMounted(() => {
+  fetchPortfolio()
+  fetchCountryDefaults()
+})
 </script>
+
+<style scoped>
+.form-input {
+  @apply mt-1 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-white;
+}
+</style>
