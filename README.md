@@ -34,12 +34,12 @@ Leopardo RH is built on a modular monolith foundation, ensuring high performance
 |-----------|-----------|-----|
 | 🔧 API Laravel | Render | https://gestionemployerbackend.onrender.com |
 | 🌐 Vitrine Web | Vercel | https://leopardo-hr.vercel.app |
-| 📊 Admin Dashboard | Cloudflare Pages | https://admin.leopardo-hr.com |
+| 📊 Admin Dashboard | Cloudflare Pages | https://leo-admin.pages.com |
 | ⚡ Redis Cache/Queue | Upstash | https://REDACTED.upstash.io |
 | 🔥 Firebase | Google Firebase | Projet : leopardo-rh |
-| 📱 App Employee (Android) | Firebase App Distribution | [Lien de test à venir] |
-| 📱 App Manager (Android) | Firebase App Distribution | [Lien de test à venir] |
-| 📱 App Platform Admin (Android) | Firebase App Distribution | [Lien de test à venir] |
+| 📱 App Employee (Android) | Firebase App Distribution | https://appdistribution.firebase.dev/i/e2bde6595da9d96e |
+| 📱 App Manager (Android) | Firebase App Distribution | https://appdistribution.firebase.dev/i/e51102534a5dff22 |
+| 📱 App Platform Admin (Android) | Firebase App Distribution | https://appdistribution.firebase.dev/i/f37b128b1c89a006 |
 
 ### Diagramme d'architecture
 
