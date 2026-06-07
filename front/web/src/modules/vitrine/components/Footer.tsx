@@ -19,11 +19,11 @@ function getFooterHref(sectionIndex: number, linkIndex: number): string {
     '1-2': '/blog',
     '1-3': '/contact',
     '1-4': '/contact?topic=community',
-    '2-0': '/download#android-employee', // TODO: remplacer par le vrai lien Play Store Employee
-    '2-1': '/download#ios-employee',     // TODO: remplacer par le vrai lien App Store Employee
-    '2-2': '/download#android-manager',  // TODO: remplacer par le vrai lien Play Store Manager
-    '2-3': '/download#ios-manager',      // TODO: remplacer par le vrai lien App Store Manager
-    '2-4': '/download#android-admin',    // TODO: remplacer par le vrai lien Play Store Admin
+    '2-0': '/download#mobile-apps',
+    '2-1': '/download#mobile-apps',
+    '2-2': '/download#mobile-apps',
+    '2-3': '/download#mobile-apps',
+    '2-4': '/download#mobile-apps',
     '3-0': '/privacy',
     '3-1': '/terms',
     '3-2': '/terms',

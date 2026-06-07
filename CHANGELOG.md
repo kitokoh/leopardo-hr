@@ -49,6 +49,7 @@
 
 ### Fixed
 
+- Vitrine : les boutons d'installation mobile de `/download` utilisent maintenant des URLs publiques configurables par app (`NEXT_PUBLIC_LEOPARDO_*_ANDROID_URL` / `*_IOS_URL`) et basculent vers une demande testeur qualifiee au lieu de liens morts `#android/#ios`.
 - Mobile employee/manager : les montants de pointage, avances, salaires et fiches de paie utilisent maintenant la devise renvoyee par l'API ou le profil tenant au lieu d'afficher `DZD` en dur sur les clients multi-pays.
 - API manager/mobile : `GET /api/v1/employees` rattache maintenant le `currentCompany()` resolu par le middleware tenant au payload liste, afin de garder `company`, `currency` et `features` non nuls sur Render/shared PostgreSQL meme si `shared_tenants` masque `public.companies`.
 - E2E staging vitrine : le smoke cible l'entree acquisition email de la landing au lieu de supposer que le premier formulaire est toujours une newsletter.
