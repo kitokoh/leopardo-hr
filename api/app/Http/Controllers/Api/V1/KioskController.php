@@ -222,31 +222,36 @@ class KioskController extends Controller
             return new JsonResponse(['data' => []]);
         }
 
-        $hasIsActive = Schema::hasColumn('kiosk_announcements', 'is_active');
-        $hasStartsAt = Schema::hasColumn('kiosk_announcements', 'starts_at');
-        $hasExpiresAt = Schema::hasColumn('kiosk_announcements', 'expires_at');
-        $hasPriority = Schema::hasColumn('kiosk_announcements', 'priority');
-        $hasCreatedAt = Schema::hasColumn('kiosk_announcements', 'created_at');
+        $columns = Schema::getColumnListing('kiosk_announcements');
+        $hasColumn = fn (string $column): bool => in_array($column, $columns, true);
+
+        if (! $hasColumn('company_id')) {
+            return new JsonResponse(['data' => []]);
+        }
 
         $announcements = DB::table('kiosk_announcements')
             ->where('company_id', $company->id)
-            ->when($hasIsActive, fn ($query) => $query->where('is_active', true))
-            ->when($hasStartsAt, function ($query): void {
+            ->when($hasColumn('is_active'), fn ($query) => $query->where('is_active', true))
+            ->when($hasColumn('starts_at'), function ($query): void {
                 $query->where(function ($windowQuery): void {
                     $windowQuery->whereNull('starts_at')->orWhere('starts_at', '<=', now());
                 });
             })
-            ->when($hasExpiresAt, function ($query): void {
+            ->when($hasColumn('expires_at'), function ($query): void {
                 $query->where(function ($windowQuery): void {
                     $windowQuery->whereNull('expires_at')->orWhere('expires_at', '>=', now());
                 });
             })
-            ->when($hasPriority, fn ($query) => $query->orderByDesc('priority'))
-            ->when($hasCreatedAt, fn ($query) => $query->orderByDesc('created_at'), fn ($query) => $query->orderByDesc('id'))
+            ->when($hasColumn('priority'), fn ($query) => $query->orderByDesc('priority'))
+            ->when(
+                $hasColumn('created_at'),
+                fn ($query) => $query->orderByDesc('created_at'),
+                fn ($query) => $hasColumn('id') ? $query->orderByDesc('id') : $query
+            )
             ->limit(10)
             ->get()
             ->map(fn ($announcement) => [
-                'id' => $announcement->id,
+                'id' => $announcement->id ?? null,
                 'title' => $announcement->title ?? '',
                 'body' => $announcement->body ?? '',
                 'priority' => $announcement->priority ?? 'normal',

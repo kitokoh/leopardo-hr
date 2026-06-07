@@ -75,6 +75,8 @@ Note 2026-06-07 : les endpoints kiosque token-only doivent resoudre l'entreprise
 
 Note 2026-06-07 : `GET /api/v1/kiosks/{deviceCode}/announcements` doit aussi tolerer une table `kiosk_announcements` tenant historique dont les colonnes de filtrage ou tri (`is_active`, `starts_at`, `expires_at`, `priority`, `created_at`) ne sont pas encore presentes. Le contrat attendu reste une reponse 200 avec `data=[]` ou des annonces serialisees, jamais un 500.
 
+Note 2026-06-07 : si `kiosk_announcements` existe sans colonne `company_id`, l'endpoint kiosque doit retourner `data=[]`. Une annonce non scoppable ne doit jamais etre renvoyee par defaut, car cela risquerait une fuite inter-tenant.
+
 Note 2026-06-01 : le resume paie mobile manager `GET /api/v1/payroll/mobile-summary` doit rester tolerant aux tenants historiques partiellement migres. Les scenarios API doivent verifier que `PayrollCycleService` ne selectionne que les colonnes employees existantes (`manager_id`, `salary_type`, `salary_base`, `hourly_rate`, noms) et retourne un payload vide ou partiel exploitable au lieu d'un 500.
 
 Note 2026-06-01 : les soldes paie mobiles doivent reutiliser `currentCompany()` quand le middleware tenant a deja resolu l'entreprise. Les scenarios API shared PostgreSQL doivent eviter toute regression ou `$employee->company` recharge `Company` depuis un `search_path` tenant pouvant masquer `public.companies`.
