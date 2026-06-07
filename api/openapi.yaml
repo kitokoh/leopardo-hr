@@ -11904,6 +11904,9 @@ components:
           type: number
         net_salary:
           type: number
+        currency:
+          type: string
+          example: XOF
         total_deductions:
           type: number
         total_contributions:
