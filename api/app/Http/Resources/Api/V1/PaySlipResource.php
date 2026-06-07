@@ -24,6 +24,7 @@ class PaySlipResource extends JsonResource
             'gross_salary' => $this->gross_salary,
             'total_deductions' => $this->total_deductions,
             'net_salary' => $this->net_salary,
+            'currency' => currentCompany()?->currency ?? 'DZD',
             'employer_contributions' => $this->employer_contributions,
             'total_cost' => $this->total_cost,
             'working_days' => $this->working_days,

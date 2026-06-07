@@ -135,10 +135,17 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   AppColors.warning,
                 ),
               ...week.map(
-                (day) => _buildDayRow(day, canDirectEdit: canDirectEdit),
+                (day) => _buildDayRow(
+                  day,
+                  canDirectEdit: canDirectEdit,
+                  currency: attState.summary?.currency ?? 'DZD',
+                ),
               ),
               const SizedBox(height: 10),
-              _buildWeekSummary(week),
+              _buildWeekSummary(
+                week,
+                currency: attState.summary?.currency ?? 'DZD',
+              ),
             ],
           ),
         ),
@@ -807,7 +814,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildDayRow(AttendanceDaySummary day, {required bool canDirectEdit}) {
+  Widget _buildDayRow(
+    AttendanceDaySummary day, {
+    required bool canDirectEdit,
+    required String currency,
+  }) {
     final barColor =
         day.isAbsent
             ? _soft
@@ -877,8 +888,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       const SizedBox(height: 2),
                       Text(
                         day.isAbsent
-                            ? '0 DZD'
-                            : '${day.estimatedEarnings.toStringAsFixed(0)} DZD',
+                            ? '0 $currency'
+                            : '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
                         style: TextStyle(
                           fontSize: 10,
                           color: day.isAbsent ? _soft : AppColors.rh,
@@ -896,6 +907,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   context,
                   day: day,
                   canDirectEdit: canDirectEdit,
+                  currency: currency,
                 ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
@@ -924,7 +936,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildWeekSummary(List<AttendanceDaySummary> week) {
+  Widget _buildWeekSummary(
+    List<AttendanceDaySummary> week, {
+    required String currency,
+  }) {
     final totalMinutes = week
         .where((day) => !day.isAbsent)
         .fold<int>(0, (sum, day) => sum + day.workedMinutes);
@@ -951,7 +966,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             color: const Color(0xFFC8D8F0),
           ),
           _WeekStat(
-            value: '${totalEarnings.toStringAsFixed(0)} DZD',
+            value: '${totalEarnings.toStringAsFixed(0)} $currency',
             label: 'Gain estime',
             color: AppColors.rh,
           ),
@@ -1004,6 +1019,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     BuildContext context, {
     required AttendanceDaySummary day,
     required bool canDirectEdit,
+    required String currency,
   }) {
     showModalBottomSheet(
       context: context,
@@ -1036,7 +1052,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         'Voir les pointages, pauses, heures supp et temps reel.',
                     onTap: () {
                       Navigator.pop(ctx);
-                      _showDayDetailsSheet(context, day);
+                      _showDayDetailsSheet(context, day, currency: currency);
                     },
                   ),
                   const SizedBox(height: 8),
@@ -1067,7 +1083,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  void _showDayDetailsSheet(BuildContext context, AttendanceDaySummary day) {
+  void _showDayDetailsSheet(
+    BuildContext context,
+    AttendanceDaySummary day, {
+    required String currency,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1131,7 +1151,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                             child: _DetailMetric(
                               label: 'Gain estime',
                               value:
-                                  '${day.estimatedEarnings.toStringAsFixed(0)} DZD',
+                                  '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
                               color: AppColors.rh,
                             ),
                           ),

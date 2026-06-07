@@ -132,10 +132,17 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   AppColors.warning,
                 ),
               ...week.map(
-                (day) => _buildDayRow(day, canDirectEdit: canDirectEdit),
+                (day) => _buildDayRow(
+                  day,
+                  canDirectEdit: canDirectEdit,
+                  currency: attState.summary?.currency ?? 'DZD',
+                ),
               ),
               const SizedBox(height: 10),
-              _buildWeekSummary(week),
+              _buildWeekSummary(
+                week,
+                currency: attState.summary?.currency ?? 'DZD',
+              ),
             ],
           ),
         ),
@@ -549,7 +556,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildDayRow(AttendanceDaySummary day, {required bool canDirectEdit}) {
+  Widget _buildDayRow(
+    AttendanceDaySummary day, {
+    required bool canDirectEdit,
+    required String currency,
+  }) {
     final barColor =
         day.isAbsent
             ? _soft
@@ -619,8 +630,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       const SizedBox(height: 2),
                       Text(
                         day.isAbsent
-                            ? '0 DZD'
-                            : '${day.estimatedEarnings.toStringAsFixed(0)} DZD',
+                            ? '0 $currency'
+                            : '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
                         style: TextStyle(
                           fontSize: 10,
                           color: day.isAbsent ? _soft : AppColors.rh,
@@ -667,7 +678,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     );
   }
 
-  Widget _buildWeekSummary(List<AttendanceDaySummary> week) {
+  Widget _buildWeekSummary(
+    List<AttendanceDaySummary> week, {
+    required String currency,
+  }) {
     final totalMinutes = week
         .where((day) => !day.isAbsent)
         .fold<int>(0, (sum, day) => sum + day.workedMinutes);
@@ -694,7 +708,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             color: const Color(0xFFC8D8F0),
           ),
           _WeekStat(
-            value: '${totalEarnings.toStringAsFixed(0)} DZD',
+            value: '${totalEarnings.toStringAsFixed(0)} $currency',
             label: 'Gain estime',
             color: AppColors.rh,
           ),

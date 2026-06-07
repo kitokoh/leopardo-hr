@@ -181,7 +181,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${payroll.netSalary.toStringAsFixed(2)} DZD net',
+                                '${payroll.netSalary.toStringAsFixed(2)} ${payroll.currency} net',
                                 style: AppTypography.caption.copyWith(
                                   color: MobileSurface.secondary,
                                 ),
