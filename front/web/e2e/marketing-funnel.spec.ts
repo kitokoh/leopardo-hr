@@ -4,6 +4,23 @@ test.describe('Marketing funnel preview', () => {
   test.describe.configure({ mode: 'serial' });
   test.setTimeout(90_000);
 
+  test('captures a one-field trial request from the homepage hero', async ({ page }) => {
+    await page.goto('/?lang=en&utm_source=e2e_quick_trial', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    const quickTrialForm = page.locator('section form').first();
+    await quickTrialForm.locator('input[type="email"]').fill('quick.trial@example.com');
+
+    const [signupResponse] = await Promise.all([
+      page.waitForResponse((response) => response.url().includes('/api/forms/signup')),
+      quickTrialForm.locator('button[type="submit"]').click(),
+    ]);
+
+    expect(signupResponse.status()).toBe(201);
+    await expect(page.locator('body')).toContainText(/request received|demande recue|24 business hours|24h/i);
+  });
+
   test('captures a trial signup request from the public /signup page', async ({ page }) => {
     await page.goto('/signup?lang=en&utm_source=e2e&plan=business', {
       waitUntil: 'domcontentloaded',
