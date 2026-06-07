@@ -17,6 +17,7 @@
         {
           "name": "guided_trial_signup",
           "files": [
+            "front/web/src/modules/vitrine/components/HeroSection.tsx",
             "front/web/src/app/(landing)/signup/page.tsx",
             "front/web/src/modules/vitrine/components/forms/SignupForm.tsx",
             "front/web/src/app/api/forms/signup/route.ts",
@@ -26,6 +27,7 @@
             "guided_trial",
             "contact_under_24h",
             "passwordCaptured: false",
+            "hero_email_trial",
             "/api/forms/signup",
             "a[href*=\"/auth/signup\"]"
           ]
