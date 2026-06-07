@@ -178,6 +178,34 @@ class FrontendJsonContractTest extends TestCase
             ]);
     }
 
+    public function test_kiosk_announcements_tolerate_legacy_partial_table(): void
+    {
+        [$company] = $this->kioskActor();
+        [$kiosk, $plainToken] = $this->kiosk($company);
+
+        Schema::dropIfExists('kiosk_announcements');
+        Schema::create('kiosk_announcements', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->string('title', 200);
+            $table->text('body');
+        });
+
+        DB::table('kiosk_announcements')->insert([
+            'company_id' => $company->id,
+            'title' => 'Legacy notice',
+            'body' => 'Annonce issue d un tenant historique.',
+        ]);
+
+        $this->withHeader('X-Kiosk-Token', $plainToken)
+            ->getJson("/api/v1/kiosks/{$kiosk->device_code}/announcements")
+            ->assertOk()
+            ->assertJsonPath('data.0.title', 'Legacy notice')
+            ->assertJsonPath('data.0.priority', 'normal')
+            ->assertJsonPath('data.0.starts_at', null)
+            ->assertJsonPath('data.0.expires_at', null);
+    }
+
     public function test_kiosk_token_only_employee_info_and_leave_balance_payloads_match_kiosk_contract(): void
     {
         [$company, , $employee] = $this->kioskActor();
