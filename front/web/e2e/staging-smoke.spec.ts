@@ -35,12 +35,12 @@ test.describe('Web vitrine staging smoke', () => {
     await expect(page.locator('body')).toContainText(/Conditions|Terms|CGU/i);
   });
 
-  test('keeps locale and newsletter entry points in the delivered HTML', async ({ page }) => {
+  test('keeps locale and email acquisition entry points in the delivered HTML', async ({ page }) => {
     await open(page, '/');
 
     await expect(page.locator('body')).toContainText(/Francais|English|Turkce|العربية/i);
 
     await expect(page.locator('input[type="email"]').first()).toHaveAttribute('placeholder', /email/i);
-    await expect(page.locator('form button[type="submit"]').first()).toContainText(/OK|Subscribe|Inscrire/i);
+    await expect(page.locator('form button[type="submit"]').first()).toContainText(/Tester|Try|Dene|جرّب/i);
   });
 });
