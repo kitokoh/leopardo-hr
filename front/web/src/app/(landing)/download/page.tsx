@@ -34,6 +34,60 @@ type RequirementItem = {
 };
 
 type AppLocale = 'fr' | 'en' | 'tr' | 'ar';
+type MobilePlatform = 'android' | 'ios';
+type MobileAppSlug = 'employee' | 'manager' | 'platform-admin';
+
+type MobileDownloadTarget = {
+  href: string;
+  isFallback: boolean;
+};
+
+const mobileDownloadEnv: Record<
+  MobileAppSlug,
+  Record<MobilePlatform, string | undefined>
+> = {
+  employee: {
+    android: process.env.NEXT_PUBLIC_LEOPARDO_EMPLOYEE_ANDROID_URL,
+    ios: process.env.NEXT_PUBLIC_LEOPARDO_EMPLOYEE_IOS_URL,
+  },
+  manager: {
+    android: process.env.NEXT_PUBLIC_LEOPARDO_MANAGER_ANDROID_URL,
+    ios: process.env.NEXT_PUBLIC_LEOPARDO_MANAGER_IOS_URL,
+  },
+  'platform-admin': {
+    android: process.env.NEXT_PUBLIC_LEOPARDO_PLATFORM_ADMIN_ANDROID_URL,
+    ios: process.env.NEXT_PUBLIC_LEOPARDO_PLATFORM_ADMIN_IOS_URL,
+  },
+};
+
+function mobileDownloadTarget(
+  slug: MobileAppSlug,
+  platform: MobilePlatform,
+): MobileDownloadTarget {
+  const configured = mobileDownloadEnv[slug][platform]?.trim();
+
+  if (configured) {
+    return { href: configured, isFallback: false };
+  }
+
+  return {
+    href: `/signup?source=download_${slug}_${platform}`,
+    isFallback: true,
+  };
+}
+
+function testerFallbackLabel(locale: AppLocale): string {
+  switch (locale) {
+    case 'en':
+      return 'Join the tester list';
+    case 'tr':
+      return 'Test listesine katil';
+    case 'ar':
+      return 'انضم إلى قائمة الاختبار';
+    default:
+      return 'Rejoindre les testeurs';
+  }
+}
 
 const copy: Record<AppLocale, {
   badge: string;
@@ -202,10 +256,9 @@ const copy: Record<AppLocale, {
 };
 
 type MobileApp = {
+  slug: MobileAppSlug;
   name: string;
   description: string;
-  androidHref: string; // TODO: remplacer par le vrai lien Google Play
-  iosHref: string;    // TODO: remplacer par le vrai lien App Store
   androidLabel: string;
   iosLabel: string;
 };
@@ -220,27 +273,21 @@ const mobileAppsData: Record<AppLocale, {
     sectionSubtitle: 'Pointage, gestion RH et supervision multi-tenant directement depuis votre smartphone.',
     apps: [
       {
+        slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',
-        androidHref: '#android-employee', // TODO: remplacer par le vrai lien Google Play
-        iosHref: '#ios-employee',          // TODO: remplacer par le vrai lien App Store
-        androidLabel: 'Bientot sur Google Play',
+        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',        androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
       {
+        slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Gestion des equipes, planification des horaires, approbation des demandes et suivi des presences.',
-        androidHref: '#android-manager', // TODO: remplacer par le vrai lien Google Play
-        iosHref: '#ios-manager',          // TODO: remplacer par le vrai lien App Store
-        androidLabel: 'Bientot sur Google Play',
+        description: 'Gestion des equipes, planification des horaires, approbation des demandes et suivi des presences.',        androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
       {
+        slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'Supervision multi-tenant, configuration globale et controle des tenants depuis mobile.',
-        androidHref: '#android-admin', // TODO: remplacer par le vrai lien Google Play
-        iosHref: '#ios-admin',          // TODO: remplacer par le vrai lien App Store
-        androidLabel: 'Bientot sur Google Play',
+        description: 'Supervision multi-tenant, configuration globale et controle des tenants depuis mobile.',        androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
     ],
@@ -250,27 +297,21 @@ const mobileAppsData: Record<AppLocale, {
     sectionSubtitle: 'Attendance, HR management and multi-tenant supervision directly from your smartphone.',
     apps: [
       {
+        slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Mobile attendance, leave requests, payslip access and HR notifications for employees.',
-        androidHref: '#android-employee', // TODO: replace with real Google Play link
-        iosHref: '#ios-employee',          // TODO: replace with real App Store link
-        androidLabel: 'Coming soon on Google Play',
+        description: 'Mobile attendance, leave requests, payslip access and HR notifications for employees.',        androidLabel: 'Coming soon on Google Play',
         iosLabel: 'Coming soon on App Store',
       },
       {
+        slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Team management, schedule planning, approval workflows and attendance monitoring.',
-        androidHref: '#android-manager', // TODO: replace with real Google Play link
-        iosHref: '#ios-manager',          // TODO: replace with real App Store link
-        androidLabel: 'Coming soon on Google Play',
+        description: 'Team management, schedule planning, approval workflows and attendance monitoring.',        androidLabel: 'Coming soon on Google Play',
         iosLabel: 'Coming soon on App Store',
       },
       {
+        slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'Multi-tenant supervision, global configuration and tenant controls from your mobile.',
-        androidHref: '#android-admin', // TODO: replace with real Google Play link
-        iosHref: '#ios-admin',          // TODO: replace with real App Store link
-        androidLabel: 'Coming soon on Google Play',
+        description: 'Multi-tenant supervision, global configuration and tenant controls from your mobile.',        androidLabel: 'Coming soon on Google Play',
         iosLabel: 'Coming soon on App Store',
       },
     ],
@@ -280,27 +321,21 @@ const mobileAppsData: Record<AppLocale, {
     sectionSubtitle: 'Akilli telefonunuzdan devam takibi, IK yonetimi ve cok kiracili denetim.',
     apps: [
       {
+        slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Mobil devam takibi, izin talepleri, odeme belgeleri ve calisan bildirimleri.',
-        androidHref: '#android-employee', // TODO: Gercek Google Play baglantisiyla degistirin
-        iosHref: '#ios-employee',          // TODO: Gercek App Store baglantisiyla degistirin
-        androidLabel: "Google Play'de Yakin Zamanda",
+        description: 'Mobil devam takibi, izin talepleri, odeme belgeleri ve calisan bildirimleri.',        androidLabel: "Google Play'de Yakin Zamanda",
         iosLabel: "App Store'da Yakin Zamanda",
       },
       {
+        slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Takim yonetimi, program planlama, onay surecleri ve devam izleme.',
-        androidHref: '#android-manager', // TODO: Gercek Google Play baglantisiyla degistirin
-        iosHref: '#ios-manager',          // TODO: Gercek App Store baglantisiyla degistirin
-        androidLabel: "Google Play'de Yakin Zamanda",
+        description: 'Takim yonetimi, program planlama, onay surecleri ve devam izleme.',        androidLabel: "Google Play'de Yakin Zamanda",
         iosLabel: "App Store'da Yakin Zamanda",
       },
       {
+        slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'Cok kiracili denetim, global yapilandirma ve mobilden kira kontrolleri.',
-        androidHref: '#android-admin', // TODO: Gercek Google Play baglantisiyla degistirin
-        iosHref: '#ios-admin',          // TODO: Gercek App Store baglantisiyla degistirin
-        androidLabel: "Google Play'de Yakin Zamanda",
+        description: 'Cok kiracili denetim, global yapilandirma ve mobilden kira kontrolleri.',        androidLabel: "Google Play'de Yakin Zamanda",
         iosLabel: "App Store'da Yakin Zamanda",
       },
     ],
@@ -310,27 +345,21 @@ const mobileAppsData: Record<AppLocale, {
     sectionSubtitle: 'الحضور وإدارة الموارد البشرية والإشراف متعدد المستأجرين مباشرة من هاتفك الذكي.',
     apps: [
       {
+        slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'تسجيل الحضور عبر الجوال وطلبات الإجازة وقسائم الرواتب وإشعارات الموظفين.',
-        androidHref: '#android-employee', // TODO: استبدل برابط Google Play الحقيقي
-        iosHref: '#ios-employee',          // TODO: استبدل برابط App Store الحقيقي
-        androidLabel: 'قريبًا على Google Play',
+        description: 'تسجيل الحضور عبر الجوال وطلبات الإجازة وقسائم الرواتب وإشعارات الموظفين.',        androidLabel: 'قريبًا على Google Play',
         iosLabel: 'قريبًا على App Store',
       },
       {
+        slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'إدارة الفريق وجدولة المواعيد وسير عمل الموافقات ومراقبة الحضور.',
-        androidHref: '#android-manager', // TODO: استبدل برابط Google Play الحقيقي
-        iosHref: '#ios-manager',          // TODO: استبدل برابط App Store الحقيقي
-        androidLabel: 'قريبًا على Google Play',
+        description: 'إدارة الفريق وجدولة المواعيد وسير عمل الموافقات ومراقبة الحضور.',        androidLabel: 'قريبًا على Google Play',
         iosLabel: 'قريبًا على App Store',
       },
       {
+        slug: 'platform-admin',
         name: 'Leopardo Platform Admin',
-        description: 'الإشراف متعدد المستأجرين والتكوين العام والتحكم في المستأجرين من الجوال.',
-        androidHref: '#android-admin', // TODO: استبدل برابط Google Play الحقيقي
-        iosHref: '#ios-admin',          // TODO: استبدل برابط App Store الحقيقي
-        androidLabel: 'قريبًا على Google Play',
+        description: 'الإشراف متعدد المستأجرين والتكوين العام والتحكم في المستأجرين من الجوال.',        androidLabel: 'قريبًا على Google Play',
         iosLabel: 'قريبًا على App Store',
       },
     ],
@@ -341,26 +370,26 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
   fr: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Synchronisation ZKTeco, mode hors-ligne et supervision site.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les equipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
-    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '#android-employee' /* TODO: remplacer par le vrai lien Play Store */ },
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '#ios-employee' /* TODO: remplacer par le vrai lien App Store */ },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/download#mobile-apps'},
   ],
   en: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco sync, offline mode and site supervision.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Desktop client for field teams and administrators.', href: '/contact?topic=download-macos' },
-    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobile attendance, HR requests and employee notifications.', href: '#android-employee' /* TODO: replace with real Play Store link */ },
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Mobile experience for managers and employees on iPhone.', href: '#ios-employee' /* TODO: replace with real App Store link */ },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobile attendance, HR requests and employee notifications.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Mobile experience for managers and employees on iPhone.', href: '/download#mobile-apps'},
   ],
   tr: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco senkronizasyonu, cevrimdisi mod ve saha denetimi.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Saha ekipleri ve yoneticiler icin masaustu istemcisi.', href: '/contact?topic=download-macos' },
-    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobil yoklama, IK talepleri ve calisan bildirimleri.', href: '#android-employee' /* TODO: Gercek Play Store baglantisiyla degistirin */ },
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'iPhone uzerinde yonetici ve calisan deneyimi.', href: '#ios-employee' /* TODO: Gercek App Store baglantisiyla degistirin */ },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobil yoklama, IK talepleri ve calisan bildirimleri.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'iPhone uzerinde yonetici ve calisan deneyimi.', href: '/download#mobile-apps'},
   ],
   ar: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'مزامنة ZKTeco ووضع عدم الاتصال وإشراف المواقع.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'عميل مكتبي لفرق الميدان والمسؤولين.', href: '/contact?topic=download-macos' },
-    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'الحضور عبر الهاتف وطلبات الموارد البشرية والإشعارات.', href: '#android-employee' /* TODO: استبدل برابط Play Store الحقيقي */ },
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'تجربة موبايل للمديرين والموظفين على iPhone.', href: '#ios-employee' /* TODO: استبدل برابط App Store الحقيقي */ },
+    { platform: 'Android', title: 'Leopardo Mobile Android', description: 'الحضور عبر الهاتف وطلبات الموارد البشرية والإشعارات.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'تجربة موبايل للمديرين والموظفين على iPhone.', href: '/download#mobile-apps'},
   ],
 };
 
@@ -527,7 +556,7 @@ export default function DownloadPage() {
       </section>
 
       {/* ===== Section Applications Mobiles ===== */}
-      <section className="relative py-24 bg-slate-50 dark:bg-slate-900/50">
+      <section id="mobile-apps" className="relative py-24 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-4">
@@ -539,15 +568,20 @@ export default function DownloadPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mobileApps.apps.map((app, index) => (
-              <motion.div
-                key={app.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 shadow-sm hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-all"
-              >
+            {mobileApps.apps.map((app, index) => {
+              const androidTarget = mobileDownloadTarget(app.slug, 'android');
+              const iosTarget = mobileDownloadTarget(app.slug, 'ios');
+              const fallbackLabel = testerFallbackLabel(locale as AppLocale);
+
+              return (
+                <motion.div
+                  key={app.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 shadow-sm hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-all"
+                >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
                   <Smartphone className="w-6 h-6" />
                 </div>
@@ -557,30 +591,31 @@ export default function DownloadPage() {
                 <div className="space-y-3">
                   {/* Google Play button */}
                   <a
-                    href={app.androidHref}
+                    href={androidTarget.href}
                     className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-700 transition-colors text-sm font-semibold"
                     aria-label={`${app.name} - Google Play`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M3.18 23.76c.31.17.67.18.99.04l12.45-7.2-2.88-2.87-10.56 10.03zM.8 1.4C.3 1.88 0 2.64 0 3.65v16.7c0 1.01.3 1.77.81 2.25l.12.11 9.35-9.35v-.22L.92 3.29.8 1.4zM20.67 10.4l-2.82-1.63-3.22 3.22 3.22 3.22 2.85-1.65c.81-.47.81-1.23-.03-1.7v-.06zM3.18.24L15.63 7.43l-2.88 2.87L2.19.27C2.5.13 2.87.07 3.18.24z"/>
                     </svg>
-                    <span>{app.androidLabel}</span>
+                    <span>{androidTarget.isFallback ? fallbackLabel : app.androidLabel}</span>
                   </a>
 
                   {/* App Store button */}
                   <a
-                    href={app.iosHref}
+                    href={iosTarget.href}
                     className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-700 transition-colors text-sm font-semibold"
                     aria-label={`${app.name} - App Store`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
-                    <span>{app.iosLabel}</span>
+                    <span>{iosTarget.isFallback ? fallbackLabel : app.iosLabel}</span>
                   </a>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
