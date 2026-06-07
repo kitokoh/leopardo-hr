@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
-import { ArrowRight, Download, Play, Smartphone, Sparkles, Star, TrendingUp, Users, Zap } from 'lucide-react'
+import { AlertCircle, ArrowRight, CheckCircle, Download, Mail, Play, Smartphone, Sparkles, Star, TrendingUp, Users, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import type { FormEvent } from 'react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 import { ParticleField } from './ParticleField'
 
@@ -49,9 +50,155 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
 
 const statIcons = [TrendingUp, Users, Zap, Star]
 
+const quickTrialCopy = {
+  fr: {
+    placeholder: 'email@entreprise.com',
+    submit: 'Tester maintenant',
+    submitting: 'Envoi...',
+    legal: 'Email uniquement. Notre equipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
+    success: "Demande recue. L'equipe Leopardo vous contacte sous 24h ouvrables.",
+    error: "Impossible d'envoyer la demande pour le moment.",
+  },
+  en: {
+    placeholder: 'work@email.com',
+    submit: 'Try now',
+    submitting: 'Sending...',
+    legal: 'Email only. Our team prepares the right trial access, no password or card required.',
+    success: 'Request received. The Leopardo team will contact you within 24 business hours.',
+    error: 'Unable to send the request right now.',
+  },
+  tr: {
+    placeholder: 'is@eposta.com',
+    submit: 'Hemen dene',
+    submitting: 'Gonderiliyor...',
+    legal: 'Sadece e-posta. Ekibimiz sifre veya kart istemeden uygun deneme erisimini hazirlar.',
+    success: 'Talep alindi. Leopardo ekibi 24 is saati icinde size ulasir.',
+    error: 'Talep su anda gonderilemiyor.',
+  },
+  ar: {
+    placeholder: 'email@company.com',
+    submit: 'جرّب الآن',
+    submitting: 'جار الإرسال...',
+    legal: 'البريد فقط. نجهز تجربة مناسبة بدون كلمة مرور أو بطاقة دفع.',
+    success: 'تم استلام الطلب. سيتواصل معك فريق Leopardo خلال 24 ساعة عمل.',
+    error: 'تعذر إرسال الطلب الآن.',
+  },
+} as const
+
+function deriveCompanyFromEmail(email: string): string {
+  const domain = email.split('@')[1]?.split('.')[0]?.trim()
+
+  if (!domain || domain.length < 2) {
+    return 'Demande essai Leopardo'
+  }
+
+  return domain
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
+function QuickTrialEmailForm({ locale }: { locale: keyof typeof quickTrialCopy }) {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
+  const copy = quickTrialCopy[locale] ?? quickTrialCopy.fr
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const normalizedEmail = email.trim().toLowerCase()
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setStatus('error')
+      setMessage(copy.error)
+      return
+    }
+
+    setStatus('submitting')
+    setMessage('')
+
+    try {
+      const response = await fetch('/api/forms/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          company: deriveCompanyFromEmail(normalizedEmail),
+          role: 'operations',
+          employees: '1-10',
+          locale,
+          page: '/',
+          source: 'hero_email_trial',
+          timestamp: new Date().toISOString(),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('trial_request_failed')
+      }
+
+      setStatus('success')
+      setMessage(copy.success)
+      setEmail('')
+    } catch {
+      setStatus('error')
+      setMessage(copy.error)
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.62 }}
+      className="mx-auto mt-8 max-w-2xl"
+    >
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white/90 p-2 shadow-2xl shadow-emerald-500/10 backdrop-blur dark:border-slate-800/80 dark:bg-slate-900/85 sm:flex-row"
+      >
+        <label className="flex min-h-14 flex-1 items-center gap-3 rounded-xl bg-slate-50 px-4 text-left dark:bg-slate-950/60">
+          <Mail className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+          <span className="sr-only">Email</span>
+          <input
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            type="email"
+            required
+            autoComplete="email"
+            placeholder={copy.placeholder}
+            className="w-full bg-transparent text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={status === 'submitting' || status === 'success'}
+          className="inline-flex min-h-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 text-sm font-black text-white shadow-lg shadow-emerald-500/20 transition hover:from-emerald-600 hover:to-cyan-600 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {status === 'submitting' ? copy.submitting : copy.submit}
+        </button>
+      </form>
+
+      <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">{copy.legal}</p>
+
+      {message && (
+        <div
+          className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
+            status === 'success'
+              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+              : 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300'
+          }`}
+        >
+          {status === 'success' ? <CheckCircle className="h-3.5 w-3.5" /> : <AlertCircle className="h-3.5 w-3.5" />}
+          {message}
+        </div>
+      )}
+    </motion.div>
+  )
+}
+
 export function HeroSection() {
   const ref = useRef<HTMLElement>(null)
-  const { copy } = useVitrineLocale()
+  const { copy, locale } = useVitrineLocale()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const y = useSpring(useTransform(scrollYProgress, [0, 1], [0, -200]), { stiffness: 80, damping: 30 })
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
@@ -137,7 +284,10 @@ export function HeroSection() {
             </Link>
           </motion.div>
 
-          {/* Mobile apps availability bar — Workforce OS / Mobile-First Company OS */}
+          {/* One-field guided trial request */}
+          <QuickTrialEmailForm locale={locale} />
+
+          {/* Mobile apps availability bar - Workforce OS / Mobile-First Company OS */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -147,7 +297,7 @@ export function HeroSection() {
             <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
               <Smartphone className="w-4 h-4 text-emerald-500" />
               <span className="font-medium">{copy.hero.mobileBadge ?? 'Available on mobile'}</span>
-              <span className="text-slate-300 dark:text-slate-600">—</span>
+              <span className="text-slate-300 dark:text-slate-600">-</span>
             </div>
             <div className="flex items-center gap-2">
               {['Employee', 'Manager', 'Platform Admin'].map((label) => (
