@@ -175,7 +175,6 @@ import {
   EyeIcon,
   EyeSlashIcon,
   SparklesIcon,
-  XMarkIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 

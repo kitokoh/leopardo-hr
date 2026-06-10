@@ -246,10 +246,6 @@ import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { Switch } from '@headlessui/vue'
 import {
-  BuildingOffice2Icon,
-  UsersIcon,
-  BanknotesIcon,
-  ExclamationTriangleIcon,
   ArrowPathIcon,
   PlusIcon,
   XMarkIcon,

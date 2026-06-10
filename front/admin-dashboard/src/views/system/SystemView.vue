@@ -124,10 +124,10 @@
             <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Sécurité</h3>
             <span
               :class="[
-                'px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border',
-                securityStatus.level === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                securityStatus.level === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                'bg-red-50 text-red-700 border-red-200'
+                'px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all duration-500 shadow-glass-sm',
+                securityStatus.level === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' :
+                securityStatus.level === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' :
+                'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/40'
               ]"
             >
               {{ securityStatus.label }}
@@ -222,12 +222,7 @@ import {
   HeartIcon,
   WrenchScrewdriverIcon,
   ArrowPathIcon,
-  ServerIcon,
-  CircleStackIcon,
-  CloudIcon,
-  WifiIcon,
-  BeakerIcon,
-  GlobeAltIcon
+  BeakerIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 
@@ -235,13 +230,10 @@ import { useToast } from 'vue-toastification'
 import SystemStatusCard from '@/components/system/SystemStatusCard.vue'
 import RealTimeMetricsChart from '@/components/system/RealTimeMetricsChart.vue'
 import ResourceUsageWidget from '@/components/system/ResourceUsageWidget.vue'
-import AutomatedTasksList from '@/components/system/AutomatedTasksList.vue'
 import BackupManagement from '@/components/system/BackupManagement.vue'
 import SecurityMonitoring from '@/components/system/SecurityMonitoring.vue'
 import SystemConfiguration from '@/components/system/SystemConfiguration.vue'
 import ApiTestingTools from '@/components/system/ApiTestingTools.vue'
-import AutoScalingManager from '@/components/system/AutoScalingManager.vue'
-import LoadBalancerStatus from '@/components/system/LoadBalancerStatus.vue'
 import CreateTaskModal from '@/components/system/CreateTaskModal.vue'
 import ImportConfigModal from '@/components/system/ImportConfigModal.vue'
 import ApiTesterModal from '@/components/system/ApiTesterModal.vue'

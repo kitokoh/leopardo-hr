@@ -117,13 +117,13 @@
           <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ authStore.userName }}</p>
           <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ authStore.userRole }}</p>
         </div>
-        <button
-          @click="handleLogout"
+        <router-link
+          to="/logout"
           class="ml-2 p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
           title="Déconnexion"
         >
           <ArrowRightOnRectangleIcon class="h-5 w-5" />
-        </button>
+        </router-link>
       </div>
     </div>
   </div>
@@ -312,14 +312,4 @@ const userInitials = computed(() => {
 const healthStatus = computed(() => dashboardStore.healthStatus)
 const onlineUsersCount = computed(() => realtimeStore.onlineUsers.length)
 const criticalAlertsCount = computed(() => dashboardStore.criticalAlerts.length)
-
-// Methods
-async function handleLogout() {
-  try {
-    await authStore.logout()
-    router.push('/login')
-  } catch (error) {
-    console.error('Logout failed:', error)
-  }
-}
 </script>
