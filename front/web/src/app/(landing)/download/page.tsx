@@ -60,11 +60,24 @@ const mobileDownloadEnv: Record<
   },
 };
 
+const firebaseTesterLinks: Partial<Record<MobileAppSlug, Partial<Record<MobilePlatform, string>>>> = {
+  employee: {
+    android: 'https://appdistribution.firebase.dev/i/e2bde6595da9d96e',
+  },
+  manager: {
+    android: 'https://appdistribution.firebase.dev/i/e51102534a5dff22',
+  },
+  'platform-admin': {
+    android: 'https://appdistribution.firebase.dev/i/f37b128b1c89a006',
+  },
+};
+
 function mobileDownloadTarget(
   slug: MobileAppSlug,
   platform: MobilePlatform,
 ): MobileDownloadTarget {
-  const configured = mobileDownloadEnv[slug][platform]?.trim();
+  const configured = mobileDownloadEnv[slug][platform]?.trim()
+    || firebaseTesterLinks[slug]?.[platform]?.trim();
 
   if (configured) {
     return { href: configured, isFallback: false };
@@ -87,6 +100,35 @@ function testerFallbackLabel(locale: AppLocale): string {
     default:
       return 'Rejoindre les testeurs';
   }
+}
+
+function firebaseTesterLabel(locale: AppLocale): string {
+  switch (locale) {
+    case 'en':
+      return 'Install tester build';
+    case 'tr':
+      return 'Test surumunu yukle';
+    case 'ar':
+      return 'تثبيت نسخة الاختبار';
+    default:
+      return 'Installer la version test';
+  }
+}
+
+function mobileDownloadLabel(
+  target: MobileDownloadTarget,
+  configuredLabel: string,
+  locale: AppLocale,
+): string {
+  if (target.isFallback) {
+    return testerFallbackLabel(locale);
+  }
+
+  if (target.href.includes('appdistribution.firebase.dev')) {
+    return firebaseTesterLabel(locale);
+  }
+
+  return configuredLabel;
 }
 
 const copy: Record<AppLocale, {
@@ -571,7 +613,7 @@ export default function DownloadPage() {
             {mobileApps.apps.map((app, index) => {
               const androidTarget = mobileDownloadTarget(app.slug, 'android');
               const iosTarget = mobileDownloadTarget(app.slug, 'ios');
-              const fallbackLabel = testerFallbackLabel(locale as AppLocale);
+              const currentLocale = locale as AppLocale;
 
               return (
                 <motion.div
@@ -598,7 +640,7 @@ export default function DownloadPage() {
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M3.18 23.76c.31.17.67.18.99.04l12.45-7.2-2.88-2.87-10.56 10.03zM.8 1.4C.3 1.88 0 2.64 0 3.65v16.7c0 1.01.3 1.77.81 2.25l.12.11 9.35-9.35v-.22L.92 3.29.8 1.4zM20.67 10.4l-2.82-1.63-3.22 3.22 3.22 3.22 2.85-1.65c.81-.47.81-1.23-.03-1.7v-.06zM3.18.24L15.63 7.43l-2.88 2.87L2.19.27C2.5.13 2.87.07 3.18.24z"/>
                     </svg>
-                    <span>{androidTarget.isFallback ? fallbackLabel : app.androidLabel}</span>
+                    <span>{mobileDownloadLabel(androidTarget, app.androidLabel, currentLocale)}</span>
                   </a>
 
                   {/* App Store button */}
@@ -610,7 +652,7 @@ export default function DownloadPage() {
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
-                    <span>{iosTarget.isFallback ? fallbackLabel : app.iosLabel}</span>
+                    <span>{mobileDownloadLabel(iosTarget, app.iosLabel, currentLocale)}</span>
                   </a>
                 </div>
               </motion.div>
