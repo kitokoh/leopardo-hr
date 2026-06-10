@@ -25,6 +25,8 @@
 ### Changed
 
 - Admin dashboard : le cockpit clients permet maintenant de creer un client plateforme complet depuis `/companies`, avec pays/devise/timezone/langue derives par `/platform/country-defaults`, statut `trial` ou `active`, manager principal et redirection vers la fiche creee.
+- Admin dashboard : la fiche detail client est modernisee et expose une action directe `Activer client` adossee au contrat `/platform/companies/{company}/subscription`.
+- Admin dashboard : la page de connexion super-admin est modernisee et expose un bouton direct `Utiliser le compte demo super-admin` avec le mot de passe demo public `password123`.
 - Admin dashboard : le cockpit plateforme expose maintenant un panneau de workflows critiques pour creer/activer les clients, traiter les demandes, surveiller les risques, piloter abonnements, verifier systeme et ouvrir les integrations.
 - Mobile manager : l'ecran Horaires devient une surface explicite de regles entreprise avec repos/conges visibles et affectation employes preselectionnee quand une regle est deja appliquee.
 - Mobile platform admin : la fiche client affiche maintenant une action directe `Activer client` pour convertir un tenant en essai vers `active` sans passer par le formulaire complet d'abonnement.
@@ -53,6 +55,7 @@
 ### Fixed
 
 - Vitrine : les boutons d'installation mobile de `/download` utilisent maintenant des URLs publiques configurables par app (`NEXT_PUBLIC_LEOPARDO_*_ANDROID_URL` / `*_IOS_URL`) et basculent vers une demande testeur qualifiee au lieu de liens morts `#android/#ios`.
+- Vitrine : `/download` utilise maintenant les liens Firebase App Distribution Android du README comme fallback reel pour Employee, Manager et Platform Admin lorsque les variables publiques de store ne sont pas configurees.
 - Mobile employee/manager : les montants de pointage, avances, salaires et fiches de paie utilisent maintenant la devise renvoyee par l'API ou le profil tenant au lieu d'afficher `DZD` en dur sur les clients multi-pays.
 - API manager/mobile : `GET /api/v1/employees` rattache maintenant le `currentCompany()` resolu par le middleware tenant au payload liste, afin de garder `company`, `currency` et `features` non nuls sur Render/shared PostgreSQL meme si `shared_tenants` masque `public.companies`.
 - E2E staging vitrine : le smoke cible l'entree acquisition email de la landing au lieu de supposer que le premier formulaire est toujours une newsletter.

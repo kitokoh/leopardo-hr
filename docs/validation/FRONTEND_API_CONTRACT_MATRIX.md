@@ -106,6 +106,7 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Admin dashboard plateforme | Pays/devise/timezone client | `GET /api/v1/platform/country-defaults` | super-admin | `PlatformCompanyProvisioningTest`, `FrontendApiContractTest`, `launch-workflow-contracts.json` |
 | Admin dashboard plateforme | Creation entreprise depuis cockpit | `POST /api/v1/platform/companies` | super-admin | `PlatformCompanyProvisioningTest`, `FrontendApiContractTest`, `launch-workflow-contracts.json` |
 | Admin dashboard plateforme | Sante portefeuille clients | `GET /api/v1/platform/companies/health` | super-admin | `PlatformCompanyHealthApiTest`, `FrontendApiContractTest`, `launch-workflow-contracts.json` |
+| Admin dashboard plateforme | Activation et abonnement client | `GET/PATCH /api/v1/platform/companies/{company}/subscription` | super-admin | `PlatformCompanySubscriptionApiTest`, `FrontendApiContractTest`, `launch-workflow-contracts.json` |
 | Platform admin mobile | Connexion | `POST /api/v1/platform/auth/login` | super-admin public auth | `PlatformAuthTest`, `FrontendApiContractTest` |
 | Platform admin mobile | Session courante | `GET /api/v1/platform/auth/me` | super-admin | `PlatformAuthTest`, `FrontendApiContractTest` |
 | Platform admin mobile | Deconnexion | `POST /api/v1/platform/auth/logout` | super-admin | `FrontendApiContractTest` |

@@ -67,7 +67,9 @@
             "path: '/login'",
             "requiresAuth: true",
             "localStorage.getItem('admin_token')",
-            "window.location.href = '/login'"
+            "window.location.href = '/login'",
+            "Utiliser le compte demo super-admin",
+            "password123"
           ]
         },
         {
@@ -75,6 +77,7 @@
           "files": [
             "front/admin-dashboard/src/router/index.js",
             "front/admin-dashboard/src/views/companies/CompaniesView.vue",
+            "front/admin-dashboard/src/views/companies/CompanyDetailView.vue",
             "front/admin-dashboard/src/views/payroll/PayrollView.vue",
             "front/admin-dashboard/src/views/users/UsersView.vue"
           ],
@@ -87,6 +90,8 @@
             "/platform/country-defaults",
             "/platform/companies",
             "Creer le client",
+            "/platform/companies/${route.params.id}/subscription",
+            "Activer client",
             "loadUsers"
           ]
         }

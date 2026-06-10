@@ -320,9 +320,8 @@ const featuresForm = ref({})
 const originalFeatures = ref({})
 
 const scoreColor = computed(() => {
-  const score = health.value?.adoption?.health_score || 0
-  if (score >= 75) return 'green'
-  if (score >= 50) return 'yellow'
+  if (healthScore.value >= 75) return 'green'
+  if (healthScore.value >= 50) return 'yellow'
   return 'red'
 })
 
@@ -389,6 +388,16 @@ async function saveFeatures() {
   }
 }
 
+async function activateClient() {
+  if (!subscriptionForm.value.plan_id) {
+    toast.error('Plan client manquant.')
+    return
+  }
+
+  subscriptionForm.value.status = 'active'
+  await saveSubscription()
+}
+
 function fillSubscriptionForm(subscription) {
   if (!subscription) return
 
@@ -402,11 +411,21 @@ function fillSubscriptionForm(subscription) {
 }
 
 function formatCurrency(value, currency = 'EUR') {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: currency || 'EUR',
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0))
+  const amount = Number(value || 0)
+
+  try {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency || 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  } catch {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 }
 
 function formatDate(value) {
