@@ -1,103 +1,133 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Abonnements</h1>
-        <p class="mt-1 text-sm text-gray-500">
+        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Abonnements</h1>
+        <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg text-pretty max-w-2xl">
           Packaging, MRR et contrats clients disponibles pour le cockpit super-admin.
         </p>
       </div>
-      <button class="btn-secondary" :disabled="isLoading" @click="loadSubscriptions">
+      <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="loadSubscriptions">
+        <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
         Actualiser
       </button>
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard title="MRR portefeuille" :value="formattedMrr" icon="CurrencyEuroIcon" color="purple" />
-      <StatsCard title="Abonnements actifs" :value="subscriptionMetrics.active" icon="CreditCardIcon" color="green" />
-      <StatsCard title="Past due" :value="subscriptionMetrics.past_due" icon="ChartBarIcon" color="yellow" />
-      <StatsCard title="Impayes" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="CreditCardIcon" color="red" />
+    <!-- Revenue & Subscription KPIs -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
+      <StatsCard title="MRR Portefeuille" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
+      <StatsCard title="Abonnements Actifs" :value="subscriptionMetrics.active" icon="CheckBadgeIcon" color="green" />
+      <StatsCard title="Retards Paiement" :value="subscriptionMetrics.past_due" icon="ClockIcon" color="yellow" />
+      <StatsCard title="Impayés Totaux" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="ExclamationCircleIcon" color="red" />
     </div>
 
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-      <section class="rounded-lg bg-white shadow xl:col-span-2">
-        <div class="border-b border-gray-200 px-6 py-4">
-          <h2 class="text-lg font-semibold text-gray-900">Catalogue plans</h2>
-          <p class="text-sm text-gray-500">Source de verite API pour les upgrades et suspensions.</p>
+    <div class="grid grid-cols-1 gap-8 xl:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
+      <!-- Plans Catalog -->
+      <section class="card xl:col-span-2">
+        <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Squares2X2Icon class="h-5 w-5 text-brand-500" />
+            Catalogue des Offres
+          </h2>
+          <p class="mt-1 text-sm font-medium text-slate-500">Source de vérité API pour les quotas et fonctionnalités.</p>
         </div>
-        <div v-if="isLoading" class="p-6 text-sm text-gray-500">Chargement...</div>
-        <div v-else class="grid grid-cols-1 gap-4 p-6 lg:grid-cols-2">
-          <article v-for="plan in plans" :key="plan.id" class="rounded-lg border border-gray-200 p-4">
-            <div class="flex items-start justify-between gap-3">
+
+        <div v-if="isLoading && plans.length === 0" class="flex h-64 items-center justify-center">
+          <div class="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
+        </div>
+
+        <div v-else class="grid grid-cols-1 gap-6 p-6 lg:grid-cols-2">
+          <article
+            v-for="plan in plans"
+            :key="plan.id"
+            class="group relative flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-glass-lg dark:border-slate-800 dark:bg-slate-900/50 overflow-hidden"
+          >
+            <div class="flex items-start justify-between gap-3 relative z-10">
               <div>
-                <h3 class="font-semibold text-gray-900">{{ plan.name }}</h3>
-                <p class="text-sm text-gray-500">
-                  {{ plan.max_employees || 'Illimite' }} employes · {{ plan.trial_days }} jours essai
+                <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{{ plan.name }}</h3>
+                <p class="mt-1 text-sm font-bold text-slate-500">
+                  {{ plan.max_employees || 'Illimité' }} employés · {{ plan.trial_days }}j essai
                 </p>
               </div>
-              <span :class="plan.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'" class="rounded-full px-2.5 py-1 text-xs font-semibold">
-                {{ plan.is_active ? 'Actif' : 'Inactif' }}
+              <span :class="['rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border', plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200']">
+                {{ plan.is_active ? 'Public' : 'Archive' }}
               </span>
             </div>
-            <div class="mt-4 flex items-baseline gap-2">
-              <span class="text-2xl font-bold text-gray-900">{{ formatCurrency(plan.price_monthly) }}</span>
-              <span class="text-sm text-gray-500">/ mois</span>
+
+            <div class="mt-6 flex items-baseline gap-2 relative z-10">
+              <span class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ formatCurrency(plan.price_monthly) }}</span>
+              <span class="text-sm font-bold text-slate-500">/ mois</span>
             </div>
-            <p class="mt-1 text-sm text-gray-500">{{ formatCurrency(plan.price_yearly) }} / an</p>
-            <div class="mt-4 flex flex-wrap gap-2">
+            <p class="mt-1 text-xs font-bold text-brand-600/70 uppercase tracking-widest">{{ formatCurrency(plan.price_yearly) }} facturé annuellement</p>
+
+            <div class="mt-6 flex flex-wrap gap-2 relative z-10">
               <span
                 v-for="feature in enabledFeatures(plan)"
                 :key="feature"
-                class="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700"
+                class="rounded-lg bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-400"
               >
                 {{ feature }}
               </span>
-              <span v-if="enabledFeatures(plan).length === 0" class="text-xs text-gray-400">Aucune feature declaree</span>
             </div>
+
+            <!-- Subtle background accent -->
+            <div class="absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-brand-500/5 blur-2xl transition-all group-hover:bg-brand-500/10"></div>
           </article>
         </div>
       </section>
 
-      <section class="rounded-lg bg-white shadow">
-        <div class="border-b border-gray-200 px-6 py-4">
-          <h2 class="text-lg font-semibold text-gray-900">Clients a traiter</h2>
-          <p class="text-sm text-gray-500">Priorite abonnement et retention.</p>
-        </div>
-        <div class="divide-y divide-gray-200">
-          <div class="p-4">
-            <dl class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <dt class="text-gray-500">ARR estime</dt>
-                <dd class="mt-1 font-semibold text-gray-900">{{ formatCurrency(revenue.arr, revenue.currency) }}</dd>
+      <!-- Revenue Insights -->
+      <section class="space-y-6">
+        <div class="card">
+          <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-800/50 dark:bg-slate-800/30">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Santé Commerciale</h2>
+          </div>
+          <div class="p-6">
+            <dl class="space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">ARR Estimé</dt>
+                <dd class="text-sm font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.arr, revenue.currency) }}</dd>
               </div>
-              <div>
-                <dt class="text-gray-500">Encaisse 30j</dt>
-                <dd class="mt-1 font-semibold text-gray-900">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Encaisse 30j</dt>
+                <dd class="text-sm font-black text-emerald-600">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
               </div>
-              <div>
-                <dt class="text-gray-500">Abonnements total</dt>
-                <dd class="mt-1 font-semibold text-gray-900">{{ subscriptionMetrics.total }}</dd>
+              <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Total Abonnés</dt>
+                <dd class="text-sm font-black text-slate-900 dark:text-white">{{ subscriptionMetrics.total }}</dd>
               </div>
-              <div>
-                <dt class="text-gray-500">Trials</dt>
-                <dd class="mt-1 font-semibold text-gray-900">{{ subscriptionMetrics.trial }}</dd>
+              <div class="flex items-center justify-between">
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Périodes d'essai</dt>
+                <dd class="text-sm font-black text-blue-600">{{ subscriptionMetrics.trial }}</dd>
               </div>
             </dl>
           </div>
-          <div v-for="item in priorityClients" :key="item.company.id" class="p-4">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="font-medium text-gray-900">{{ item.company.name }}</p>
-                <p class="text-sm text-gray-500">{{ item.plan.name || 'Sans plan' }} · {{ item.risk_level }}</p>
-              </div>
-              <router-link class="text-sm font-medium text-indigo-600 hover:text-indigo-800" :to="`/companies/${item.company.id}`">
-                Gerer
-              </router-link>
-            </div>
-            <p v-if="item.next_action" class="mt-2 text-sm text-gray-600">{{ item.next_action.label }}</p>
+        </div>
+
+        <div class="card">
+          <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-800/50 dark:bg-slate-800/30">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Priorités Rétention</h2>
           </div>
-          <div v-if="priorityClients.length === 0 && !isLoading" class="p-6 text-sm text-gray-500">
-            Aucun client prioritaire.
+          <div class="divide-y divide-slate-100 dark:divide-slate-800">
+            <article v-for="item in priorityClients" :key="item.company.id" class="p-4 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-900/50">
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-black text-slate-900 dark:text-white truncate uppercase">{{ item.company.name }}</p>
+                  <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {{ item.plan.name || 'Sans plan' }} · <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ item.risk_level }} risk</span>
+                  </p>
+                </div>
+                <router-link class="shrink-0 rounded-lg bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400 transition-colors" :to="`/companies/${item.company.id}`">
+                  Gérer
+                </router-link>
+              </div>
+              <p v-if="item.next_action" class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                <span class="text-brand-500 mr-1">→</span> {{ item.next_action.label }}
+              </p>
+            </article>
+            <div v-if="priorityClients.length === 0 && !isLoading" class="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Aucun risque immédiat détecté
+            </div>
           </div>
         </div>
       </section>
@@ -107,6 +137,14 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import {
+  ArrowPathIcon,
+  BanknotesIcon,
+  CheckBadgeIcon,
+  ClockIcon,
+  ExclamationCircleIcon,
+  Squares2X2Icon
+} from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 
@@ -169,7 +207,21 @@ async function loadSubscriptions() {
 function enabledFeatures(plan) {
   return Object.entries(plan.features || {})
     .filter(([, enabled]) => Boolean(enabled))
-    .map(([feature]) => feature)
+    .map(([feature]) => formatFeatureLabel(feature))
+}
+
+function formatFeatureLabel(feature) {
+  const labels = {
+    rh: 'RH',
+    finance: 'Finance',
+    ai: 'Leo IA',
+    cameras: 'Vidéo',
+    tracking: 'Suivi',
+    planning: 'Planning',
+    training: 'Formations',
+    cabinet: 'Documents'
+  }
+  return labels[feature] || feature.toUpperCase()
 }
 
 function formatCurrency(value, currency = 'EUR') {

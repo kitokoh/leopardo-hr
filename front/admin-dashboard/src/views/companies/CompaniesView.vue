@@ -1,85 +1,114 @@
 <template>
   <div class="space-y-8 animate-fade-in">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Cockpit clients</h1>
-        <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium">
+        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Portefeuille Clients</h1>
+        <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
           Adoption, risque, revenus récurrents et prochaine action par entreprise.
         </p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <button class="btn-primary py-2.5" @click="openCreateClient">
-          Creer un client
+        <button class="btn-primary py-2.5 shadow-premium" @click="openCreateClient">
+          <PlusIcon class="mr-2 h-5 w-5" />
+          Nouveau Client
         </button>
-        <button class="btn-secondary py-2.5" :disabled="isLoading" @click="fetchPortfolio">
+        <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="fetchPortfolio">
+          <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
           Actualiser
         </button>
       </div>
     </div>
 
+    <!-- Summary Stats -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-      <StatsCard title="Clients suivis" :value="summary.companies" icon="BuildingOfficeIcon" color="blue" />
-      <StatsCard title="Clients actifs" :value="summary.active_companies" icon="UsersIcon" color="green" />
-      <StatsCard title="MRR" :value="formattedMrr" icon="CurrencyEuroIcon" color="purple" />
-      <StatsCard title="Risque eleve" :value="summary.risk.high" icon="ChartBarIcon" color="red" />
+      <StatsCard title="Clients Suivis" :value="summary.companies" icon="BuildingOffice2Icon" color="blue" />
+      <StatsCard title="Clients Actifs" :value="summary.active_companies" icon="UsersIcon" color="green" />
+      <StatsCard title="MRR Global" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
+      <StatsCard title="Alerte Risque" :value="summary.risk.high" icon="ExclamationTriangleIcon" color="red" />
     </div>
 
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
-      <div class="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-5">
+      <div class="flex flex-col gap-4 border-b border-slate-200/50 dark:border-slate-800/50 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Portefeuille</h2>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Clients classés par score de santé et priorité commerciale.</p>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Répertoire des Entreprises</h2>
+          <p class="text-sm text-slate-500">Liste classée par score de santé et priorité commerciale.</p>
         </div>
-        <div class="flex gap-3">
-          <span class="rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">High {{ summary.risk.high }}</span>
-          <span class="rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-yellow-800 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">Medium {{ summary.risk.medium }}</span>
-          <span class="rounded-full bg-green-100 dark:bg-green-900/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">Low {{ summary.risk.low }}</span>
+        <div class="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30">
+            <div class="h-1.5 w-1.5 rounded-full bg-red-500"></div>
+            <span class="text-[10px] font-black uppercase text-red-700 dark:text-red-400">High {{ summary.risk.high }}</span>
+          </div>
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30">
+            <div class="h-1.5 w-1.5 rounded-full bg-amber-500"></div>
+            <span class="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400">Med {{ summary.risk.medium }}</span>
+          </div>
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/30">
+            <div class="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+            <span class="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400">Low {{ summary.risk.low }}</span>
+          </div>
         </div>
       </div>
 
-      <div v-if="isLoading" class="p-12 text-center text-sm text-slate-500 dark:text-slate-400">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
-        Chargement du portefeuille...
+      <div v-if="isLoading && items.length === 0" class="flex flex-col items-center justify-center p-20 gap-4">
+        <div class="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
+        <p class="text-sm font-bold text-slate-500">Synchronisation du portefeuille...</p>
       </div>
-      <div v-else-if="errorMessage" class="p-12 text-center text-sm text-red-600 font-bold bg-red-50 dark:bg-red-900/20 m-6 rounded-2xl">{{ errorMessage }}</div>
+
+      <div v-else-if="errorMessage" class="m-6 rounded-2xl bg-red-50 p-8 text-center border border-red-100 dark:bg-red-950/20 dark:border-red-900/30">
+        <p class="text-sm font-bold text-red-600">{{ errorMessage }}</p>
+        <button class="btn-secondary mt-4" @click="fetchPortfolio">Réessayer</button>
+      </div>
+
       <div v-else class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50">
-          <thead class="bg-slate-50/50 dark:bg-slate-800/50">
+          <thead class="bg-slate-50/50 dark:bg-slate-900/30">
             <tr>
-              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Entreprise</th>
-              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Plan</th>
-              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Santé</th>
-              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pointage 30j</th>
-              <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Action</th>
-              <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Détail</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Entreprise</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Plan & MRR</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Santé Opér.</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Pointage (30j)</th>
+              <th class="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Action Recommandée</th>
+              <th class="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Gestion</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-200/50 dark:divide-slate-800/50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm">
-            <tr v-for="item in sortedItems" :key="item.company.id" class="hover:bg-slate-50/80 dark:hover:bg-slate-800/80 transition-colors">
+          <tbody class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
+            <tr v-for="item in sortedItems" :key="item.company.id" class="group hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
               <td class="whitespace-nowrap px-6 py-5">
-                <div class="font-bold text-slate-900 dark:text-white">{{ item.company.name }}</div>
-                <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">{{ item.company.status }} · {{ item.company.country }}</div>
+                <div class="flex items-center gap-3">
+                  <div class="h-10 w-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-600 dark:text-brand-400 font-black text-xs uppercase">
+                    {{ item.company.name.substring(0, 2) }}
+                  </div>
+                  <div>
+                    <div class="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{{ item.company.name }}</div>
+                    <div class="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest">
+                      {{ item.company.status }} · {{ item.company.country }}
+                    </div>
+                  </div>
+                </div>
               </td>
-              <td class="whitespace-nowrap px-6 py-5 text-sm">
-                <div class="font-semibold text-slate-700 dark:text-slate-300">{{ item.plan.name || 'Sans plan' }}</div>
-                <div class="text-xs font-bold text-brand-600 dark:text-brand-400 mt-1">{{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}/mois</div>
+              <td class="whitespace-nowrap px-6 py-5">
+                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.plan.name || 'SANS PLAN' }}</div>
+                <div class="text-xs font-black text-brand-600 dark:text-brand-400 mt-0.5">{{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}/m</div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
                 <div class="flex items-center gap-3">
                   <span :class="riskClass(item.risk_level)">{{ item.risk_level }}</span>
-                  <span class="text-sm font-black text-slate-900 dark:text-white">{{ item.health_score }}/100</span>
+                  <span class="text-sm font-black text-slate-900 dark:text-white">{{ item.health_score }}%</span>
                 </div>
               </td>
-              <td class="whitespace-nowrap px-6 py-5 text-sm">
-                <div class="font-semibold text-slate-700 dark:text-slate-300">{{ item.attendance_logs_30d }} logs</div>
-                <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{{ item.employees_active }} employés actifs</div>
+              <td class="whitespace-nowrap px-6 py-5">
+                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.attendance_logs_30d }} logs</div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active }} actifs</div>
               </td>
-              <td class="min-w-[260px] px-6 py-5 text-sm">
-                <span v-if="item.next_action" class="font-medium text-slate-700 dark:text-slate-300">{{ item.next_action.label }}</span>
-                <span v-else class="text-slate-400 italic">Aucune action prioritaire</span>
+              <td class="px-6 py-5">
+                <div v-if="item.next_action" class="flex items-center gap-2">
+                  <div class="h-1.5 w-1.5 rounded-full bg-brand-500"></div>
+                  <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ item.next_action.label }}</span>
+                </div>
+                <span v-else class="text-[10px] font-black text-slate-300 uppercase tracking-widest">RAS</span>
               </td>
               <td class="whitespace-nowrap px-6 py-5 text-right">
-                <router-link class="inline-flex items-center px-3 py-1.5 rounded-lg bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-bold hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-all duration-200" :to="`/companies/${item.company.id}`">
+                <router-link class="inline-flex items-center px-4 py-2 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-all shadow-glass-sm group-hover:shadow-glass hover:-translate-y-0.5" :to="`/companies/${item.company.id}`">
                   Ouvrir
                 </router-link>
               </td>
@@ -89,110 +118,119 @@
       </div>
     </div>
 
+    <!-- Create Modal -->
     <Teleport to="body">
       <div
         v-if="showCreateModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 py-8 backdrop-blur-md"
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-client-title"
       >
-        <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/20 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-8">
-          <div class="flex items-start justify-between gap-4">
+        <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950 sm:p-0">
+          <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-100 bg-white/90 px-6 py-5 dark:border-slate-800 dark:bg-slate-950/90 backdrop-blur-md">
             <div>
-              <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-600 dark:text-brand-400">Provisionnement</p>
-              <h2 id="create-client-title" class="mt-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
-                Creer un client plateforme
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">Système</p>
+              <h2 id="create-client-title" class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+                Provisionnement Client
               </h2>
-              <p class="mt-2 max-w-2xl text-sm font-medium text-slate-500 dark:text-slate-400">
-                Cree l'entreprise, le manager principal, l'abonnement initial et l'invitation sans sortir du cockpit.
-              </p>
             </div>
             <button
-              class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-black text-slate-500 transition hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-900"
+              class="rounded-xl border border-slate-200 p-2 text-slate-400 transition hover:bg-slate-100 dark:border-slate-800 dark:hover:bg-slate-900"
               type="button"
               @click="closeCreateClient"
             >
-              Fermer
+              <XMarkIcon class="h-6 w-6" />
             </button>
           </div>
 
-          <form class="mt-6 space-y-6" @submit.prevent="submitCreateClient">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                <span>Nom entreprise *</span>
-                <input v-model.trim="createForm.name" class="form-input" required maxlength="100" placeholder="Atlas Services" />
-              </label>
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                <span>Email entreprise *</span>
-                <input v-model.trim="createForm.email" class="form-input" required type="email" maxlength="150" placeholder="contact@atlas.example" />
-              </label>
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                <span>Pays *</span>
+          <form class="p-8 space-y-8" @submit.prevent="submitCreateClient">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nom entreprise *</label>
+                <input v-model.trim="createForm.name" class="form-input" required maxlength="100" placeholder="Ex: TECHCORP ALGERIE" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Email contact *</label>
+                <input v-model.trim="createForm.email" class="form-input" required type="email" maxlength="150" placeholder="contact@techcorp.example" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Pays *</label>
                 <select v-model="createForm.country" class="form-input" required>
                   <option v-for="country in countryDefaults" :key="country.country" :value="country.country">
-                    {{ country.label }} - {{ country.country }}
+                    {{ country.label }} ({{ country.country }})
                   </option>
                 </select>
-              </label>
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                <span>Ville *</span>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Ville de déploiement *</label>
                 <input v-model.trim="createForm.city" class="form-input" required maxlength="100" placeholder="Alger" />
-              </label>
+              </div>
             </div>
 
-            <div class="rounded-2xl border border-brand-100 bg-brand-50/70 p-4 dark:border-brand-900/40 dark:bg-brand-950/20">
-              <div class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+            <!-- Regional Defaults Summary -->
+            <div class="rounded-2xl border border-brand-100 bg-brand-50/50 p-5 dark:border-brand-900/30 dark:bg-brand-950/20">
+              <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p class="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Devise</p>
-                  <p class="mt-1 font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.currency }}</p>
+                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">Devise</p>
+                  <p class="mt-1 text-sm font-black text-slate-900 dark:text-white uppercase">{{ selectedCountryDefault.currency }}</p>
                 </div>
                 <div>
-                  <p class="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Timezone</p>
-                  <p class="mt-1 font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.timezone }}</p>
+                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">Fuseau Horaire</p>
+                  <p class="mt-1 text-sm font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.timezone }}</p>
                 </div>
                 <div>
-                  <p class="text-xs font-black uppercase tracking-widest text-brand-600 dark:text-brand-400">Langue</p>
-                  <p class="mt-1 font-black text-slate-900 dark:text-white">{{ selectedCountryDefault.language.toUpperCase() }}</p>
+                  <p class="text-[9px] font-black uppercase tracking-widest text-brand-600/70">Langue Défaut</p>
+                  <p class="mt-1 text-sm font-black text-slate-900 dark:text-white uppercase">{{ selectedCountryDefault.language }}</p>
                 </div>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                <span>Prenom manager principal *</span>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 pt-4">
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Prénom Manager *</label>
                 <input v-model.trim="createForm.manager_first_name" class="form-input" required maxlength="100" placeholder="Amina" />
-              </label>
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                <span>Nom manager principal *</span>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nom Manager *</label>
                 <input v-model.trim="createForm.manager_last_name" class="form-input" required maxlength="100" placeholder="Benali" />
-              </label>
-              <label class="space-y-1.5 text-sm font-bold text-slate-700 dark:text-slate-200 sm:col-span-2">
-                <span>Email manager principal *</span>
-                <input v-model.trim="createForm.manager_email" class="form-input" required type="email" maxlength="150" placeholder="manager@atlas.example" />
-              </label>
+              </div>
+              <div class="space-y-1.5 sm:col-span-2">
+                <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Manager Principal *</label>
+                <input v-model.trim="createForm.manager_email" class="form-input" required type="email" maxlength="150" placeholder="manager@techcorp.example" />
+              </div>
             </div>
 
-            <label class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900/60">
-              <input v-model="activateImmediately" class="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" type="checkbox" />
-              <span>
-                <span class="block text-sm font-black text-slate-900 dark:text-white">Activer le client immediatement</span>
-                <span class="mt-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
-                  Sinon le client reste en essai et pourra etre active depuis sa fiche abonnement.
-                </span>
-              </span>
-            </label>
+            <div class="flex items-center gap-4 p-5 rounded-2xl border border-slate-100 bg-slate-50 dark:bg-slate-900 dark:border-slate-800">
+              <Switch
+                v-model="activateImmediately"
+                :class="[activateImmediately ? 'bg-brand-600' : 'bg-slate-200 dark:bg-slate-700', 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950']"
+              >
+                <span class="sr-only">Activer immédiatement</span>
+                <span
+                  aria-hidden="true"
+                  :class="[activateImmediately ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']"
+                />
+              </Switch>
+              <div>
+                <span class="block text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Activer le client immédiatement</span>
+                <span class="mt-0.5 block text-xs font-medium text-slate-500">Sinon le client reste en essai (trial).</span>
+              </div>
+            </div>
 
-            <div v-if="createError" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+            <div v-if="createError" class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700 dark:border-red-900/40 dark:bg-red-950/30">
+              <ExclamationCircleIcon class="inline-block h-5 w-5 mr-2 -mt-0.5" />
               {{ createError }}
             </div>
 
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <button class="btn-secondary justify-center" type="button" @click="closeCreateClient">
+            <div class="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end sm:gap-4">
+              <button class="btn-secondary px-8 py-3 uppercase tracking-widest text-xs font-black" type="button" @click="closeCreateClient">
                 Annuler
               </button>
-              <button class="btn-primary justify-center" type="submit" :disabled="isCreating">
-                {{ isCreating ? 'Creation...' : 'Creer le client' }}
+              <button class="btn-primary px-10 py-3 uppercase tracking-widest text-xs font-black shadow-premium" type="submit" :disabled="isCreating">
+                <PlusIcon v-if="!isCreating" class="mr-2 h-4 w-4" />
+                <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                {{ isCreating ? 'Provisionnement...' : 'Créer le client' }}
               </button>
             </div>
           </form>
@@ -206,6 +244,17 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { Switch } from '@headlessui/vue'
+import {
+  BuildingOffice2Icon,
+  UsersIcon,
+  BanknotesIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  PlusIcon,
+  XMarkIcon,
+  ExclamationCircleIcon
+} from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 
@@ -302,6 +351,7 @@ function closeCreateClient() {
 }
 
 async function submitCreateClient() {
+  if (isCreating.value) return
   isCreating.value = true
   createError.value = ''
 
@@ -315,7 +365,7 @@ async function submitCreateClient() {
     const company = response.data?.data?.company
 
     showCreateModal.value = false
-    toast.success('Client cree et invitation manager envoyee.')
+    toast.success('Client créé et invitation manager envoyée.')
     await fetchPortfolio()
 
     if (company?.id) {
@@ -339,9 +389,9 @@ function formatCurrency(value, currency = 'EUR') {
 
 function riskClass(risk) {
   const classes = {
-    high: 'rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700',
-    medium: 'rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-semibold text-yellow-800',
-    low: 'rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700',
+    high: 'rounded-lg bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800',
+    medium: 'rounded-lg bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
+    low: 'rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800',
   }
   return classes[risk] || classes.medium
 }
@@ -354,6 +404,6 @@ onMounted(() => {
 
 <style scoped>
 .form-input {
-  @apply mt-1 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-white;
+  @apply block w-full rounded-2xl border border-slate-200 bg-white/50 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-800 dark:bg-slate-950/50 dark:text-white backdrop-blur-sm placeholder:text-slate-400;
 }
 </style>
