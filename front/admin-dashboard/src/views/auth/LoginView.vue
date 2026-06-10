@@ -1,23 +1,26 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-600 via-brand-700 to-zinc-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.22),transparent_34%),linear-gradient(135deg,#020617,#0f172a_45%,#064e3b)] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
     <!-- Background Decorations -->
     <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/20 rounded-full blur-[120px] animate-pulse-slow"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-400/20 rounded-full blur-[120px] animate-pulse-slow"></div>
 
     <div class="max-w-md w-full space-y-8 relative z-10 animate-fade-in">
       <div class="text-center">
-        <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-glass animate-bounce-slow">
+        <div class="mx-auto h-20 w-20 flex items-center justify-center rounded-[1.75rem] bg-white/10 backdrop-blur-xl border border-white/20 shadow-glass">
           <span class="text-3xl font-extrabold text-white tracking-tighter">LRH</span>
+        </div>
+        <div class="mt-6 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-1.5 text-xs font-black uppercase tracking-[0.22em] text-emerald-200">
+          Console platform admin
         </div>
         <h2 class="mt-8 text-center text-4xl font-extrabold tracking-tight text-white drop-shadow-md">
           Leopardo RH
         </h2>
         <p class="mt-3 text-center text-brand-100/80 font-medium">
-          Connectez-vous a votre espace d'administration
+          Pilotez les clients, abonnements, risques et operations depuis une console securisee.
         </p>
       </div>
 
-      <div class="mt-8 bg-white/10 dark:bg-zinc-900/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-3xl shadow-glass p-8 animate-slide-up">
+      <div class="mt-8 bg-white/10 dark:bg-zinc-900/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-[2rem] shadow-glass p-8 animate-slide-up">
         <form class="space-y-6" @submit.prevent="handleLogin">
           <div class="space-y-4">
             <div>
@@ -127,6 +130,16 @@
             </span>
             <LockClosedIcon v-else class="absolute inset-y-0 left-0 flex items-center pl-4 h-12 w-9 text-brand-300/50 group-hover:text-brand-200 transition-colors" aria-hidden="true" />
             {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
+          </button>
+
+          <button
+            type="button"
+            :disabled="isLoading"
+            class="w-full flex items-center justify-center space-x-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 py-3 px-4 text-sm font-bold text-emerald-100 hover:bg-emerald-400/15 disabled:opacity-50 transition-all duration-200"
+            @click="selectDemoUser('admin@leopardo-rh.com', 'password123')"
+          >
+            <UserGroupIcon class="h-5 w-5 text-emerald-300" aria-hidden="true" />
+            <span>Utiliser le compte demo super-admin</span>
           </button>
 
           <button
