@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
+  <div class="min-h-screen flex items-center justify-center bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans text-slate-200">
     <!-- Animated Background -->
     <div class="absolute inset-0 z-0">
-      <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-600/20 rounded-full blur-[120px] animate-pulse-slow"></div>
-      <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/20 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 1.5s"></div>
-      <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-cyan-500/10 rounded-full blur-[100px] animate-pulse-slow" style="animation-delay: 3s"></div>
+      <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-600/20 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/20 rounded-full blur-[120px]"></div>
+      <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-cyan-500/10 rounded-full blur-[100px]"></div>
     </div>
 
     <!-- Grid Pattern overlay -->
     <div class="absolute inset-0 z-0 opacity-20" style="background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
 
-    <div class="max-w-md w-full space-y-10 relative z-10 animate-fade-in">
+    <div class="max-w-md w-full space-y-10 relative z-10">
       <div class="text-center">
-        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/20 shadow-glass animate-bounce-slow overflow-hidden group">
+        <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <span class="text-4xl font-black text-white tracking-tighter relative z-10">LRH</span>
         </div>
@@ -21,6 +21,9 @@
         </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
           Platform Administration • v4.16
+        </p>
+        <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
+          Connectez-vous a votre espace
         </p>
       </div>
 
@@ -42,7 +45,7 @@
                     autocomplete="email"
                     required
                     autofocus
-                    class="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300"
+                    class="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="admin@leopardo-rh.com"
                   />
                 </div>
@@ -61,7 +64,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     autocomplete="current-password"
                     required
-                    class="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300"
+                    class="block w-full rounded-2xl border-0 bg-white/5 py-4 pl-12 pr-12 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
                     placeholder="••••••••"
                   />
                   <button
@@ -76,7 +79,7 @@
                 </div>
               </div>
 
-              <div v-if="requiresTwoFactor" class="animate-slide-up">
+              <div v-if="requiresTwoFactor">
                 <label for="two-factor-code" class="block text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 ml-1">Code 2FA</label>
                 <input
                   id="two-factor-code"
@@ -85,7 +88,7 @@
                   type="text"
                   inputmode="numeric"
                   required
-                  class="block w-full rounded-2xl border-0 bg-white/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-amber-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300"
+                  class="block w-full rounded-2xl border-0 bg-white/5 py-4 px-4 text-white ring-1 ring-inset ring-amber-500/30 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-center text-2xl font-black tracking-[0.5em] transition-all duration-300 outline-none"
                   placeholder="000000"
                 />
               </div>
@@ -112,7 +115,7 @@
               </div>
             </div>
 
-            <div v-if="error" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 animate-shake">
+            <div v-if="error" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4">
               <div class="flex items-center gap-3">
                 <ExclamationTriangleIcon class="h-5 w-5 text-red-400 shrink-0" />
                 <div class="space-y-1">
@@ -150,11 +153,11 @@
                 type="button"
                 :disabled="isLoading"
                 class="w-full flex items-center justify-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 py-4 px-4 text-sm font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/20 transition-all duration-300 group"
-                @click="loginWithDemo"
+                @click="showDemoModal = true"
                 aria-label="Acces Demo"
               >
                 <SparklesIcon class="h-5 w-5 group-hover:animate-pulse" />
-                Démonstration Express
+                Acces Demo
               </button>
             </div>
           </form>
@@ -171,22 +174,22 @@
       </div>
     </div>
 
-    <!-- Legacy Demo Modal kept for specific selection if needed, but the main button is now direct -->
-    <Teleport to="body">
-      <div v-if="showDemoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" @click="showDemoModal = false"></div>
-        <div class="w-full max-w-sm relative glass-card p-8 text-center animate-scale-in">
-           <h3 class="text-xl font-black text-white uppercase tracking-tight">Accès Démo</h3>
-           <p class="mt-4 text-slate-400 text-sm font-medium">Choisissez un compte pour explorer l'administration.</p>
+    <!-- Demo Modal -->
+    <div v-if="showDemoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" @click="showDemoModal = false"></div>
+      <div class="w-full max-w-sm relative glass-card p-8 text-center bg-slate-900 shadow-2xl rounded-3xl border border-white/10 z-10">
+         <h3 class="text-xl font-black text-white uppercase tracking-tight">Accès Démo</h3>
+         <p class="mt-4 text-slate-400 text-sm font-medium italic">administrateurs plateforme</p>
+         <div class="mt-8 space-y-3">
            <button
-             class="mt-8 w-full btn-primary py-4 uppercase font-black tracking-widest"
+             class="w-full btn-primary py-4 uppercase font-black tracking-widest text-xs"
              @click="selectDemoUser('admin@leopardo-rh.com', 'password123')"
            >
-             Super Admin Test
+             Super Administrateur
            </button>
-        </div>
+         </div>
       </div>
-    </Teleport>
+    </div>
   </div>
 </template>
 
@@ -219,13 +222,7 @@ const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
 const showDemoModal = ref(false)
 
-async function loginWithDemo() {
-  form.email = 'admin@leopardo-rh.com'
-  form.password = 'password123'
-  await nextTick()
-  await handleLogin()
-}
-
+/* eslint-disable no-unused-vars */
 async function selectDemoUser(email, password) {
   form.email = email
   form.password = password
@@ -268,25 +265,6 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
-}
-
-.animate-shake {
-  animation: shake 0.4s ease-in-out;
-}
-
-@keyframes scale-in {
-  0% { transform: scale(0.95); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.animate-scale-in {
-  animation: scale-in 0.2s ease-out forwards;
-}
-
 input:focus {
   @apply ring-brand-500 border-brand-500 shadow-[0_0_15px_rgba(20,184,166,0.1)];
 }
