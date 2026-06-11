@@ -21,6 +21,15 @@ const routes = [
     }
   },
   {
+    path: '/logout',
+    name: 'logout',
+    component: () => import('@/views/auth/LogoutView.vue'),
+    meta: {
+      requiresAuth: true,
+      title: 'Déconnexion'
+    }
+  },
+  {
     path: '/',
     component: () => import('@/layouts/DashboardLayout.vue'),
     meta: { requiresAuth: true },
