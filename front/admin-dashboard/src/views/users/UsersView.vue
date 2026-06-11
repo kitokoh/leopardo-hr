@@ -16,19 +16,19 @@
           <button
             @click="showBulkActions = !showBulkActions"
             :class="[
-              'inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md',
+              'inline-flex items-center px-4 py-2.5 border text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 shadow-glass-sm',
               selectedUsers.length > 0
-                ? 'border-indigo-300 text-indigo-700 bg-indigo-50 hover:bg-indigo-100'
-                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                ? 'border-brand-300 text-brand-700 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800'
+                : 'border-slate-200 text-slate-700 bg-white/50 hover:bg-white dark:border-slate-800 dark:text-slate-300 dark:bg-slate-900/50'
             ]"
           >
             <CheckCircleIcon class="h-4 w-4 mr-2" />
-            Actions groupées ({{ selectedUsers.length }})
+            Actions ({{ selectedUsers.length }})
           </button>
 
           <button
             @click="exportUsers"
-            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            class="btn-secondary py-2.5 text-xs font-black uppercase tracking-widest"
           >
             <DocumentArrowDownIcon class="h-4 w-4 mr-2" />
             Exporter
@@ -36,10 +36,10 @@
 
           <button
             @click="showCreateModal = true"
-            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+            class="btn-primary py-2.5 text-xs font-black uppercase tracking-widest shadow-premium"
           >
             <UserPlusIcon class="h-4 w-4 mr-2" />
-            Nouvel utilisateur
+            Nouveau
           </button>
         </div>
       </div>
@@ -50,24 +50,24 @@
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Search -->
         <div class="lg:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
-          <div class="relative">
-            <MagnifyingGlassIcon class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Rechercher</label>
+          <div class="relative group">
+            <MagnifyingGlassIcon class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Nom, email, entreprise..."
-              class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+              class="block w-full pl-12 pr-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none"
             />
           </div>
         </div>
 
         <!-- Status Filter -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Statut</label>
           <select
             v-model="filters.status"
-            class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            class="block w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none appearance-none"
           >
             <option value="">Tous les statuts</option>
             <option value="active">Actif</option>
@@ -79,10 +79,10 @@
 
         <!-- Role Filter -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Rôle</label>
           <select
             v-model="filters.role"
-            class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+            class="block w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none appearance-none"
           >
             <option value="">Tous les rôles</option>
             <option value="admin">Administrateur</option>
@@ -94,12 +94,13 @@
       </div>
 
       <!-- Advanced Filters Toggle -->
-      <div class="mt-4">
+      <div class="mt-6">
         <button
           @click="showAdvancedFilters = !showAdvancedFilters"
-          class="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
+          class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors flex items-center"
         >
-          {{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés
+          <span>{{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés</span>
+          <ChevronDownIcon :class="['ml-2 h-4 w-4 transition-transform duration-300', showAdvancedFilters ? 'rotate-180' : '']" />
         </button>
       </div>
 
@@ -166,43 +167,43 @@
     </div>
 
     <!-- Bulk Actions Panel -->
-    <div v-if="showBulkActions && selectedUsers.length > 0" class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+    <div v-if="showBulkActions && selectedUsers.length > 0" class="bg-brand-50/50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-2xl p-4 backdrop-blur-md animate-fade-in">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <InformationCircleIcon class="h-5 w-5 text-indigo-400 mr-2" />
-          <span class="text-sm font-medium text-indigo-800">
-            {{ selectedUsers.length }} utilisateur(s) sélectionné(s)
+          <InformationCircleIcon class="h-5 w-5 text-brand-500 mr-2" />
+          <span class="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">
+            {{ selectedUsers.length }} sélectionné(s)
           </span>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-6">
           <button
             @click="bulkAction('activate')"
-            class="text-sm font-medium text-green-700 hover:text-green-600"
+            class="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 transition-colors"
           >
             Activer
           </button>
           <button
             @click="bulkAction('deactivate')"
-            class="text-sm font-medium text-yellow-700 hover:text-yellow-600"
+            class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
           >
             Désactiver
           </button>
           <button
             @click="bulkAction('suspend')"
-            class="text-sm font-medium text-red-700 hover:text-red-600"
+            class="text-[10px] font-black uppercase tracking-widest text-red-600 hover:text-red-500 transition-colors"
           >
             Suspendre
           </button>
           <button
             @click="bulkAction('export')"
-            class="text-sm font-medium text-indigo-700 hover:text-indigo-600"
+            class="text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-500 transition-colors"
           >
-            Exporter sélection
+            Exporter
           </button>
           <button
             @click="clearSelection"
-            class="text-sm font-medium text-gray-500 hover:text-gray-400"
+            class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-500 transition-colors"
           >
             Annuler
           </button>
@@ -267,7 +268,8 @@ import {
   DocumentArrowDownIcon,
   CheckCircleIcon,
   MagnifyingGlassIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 

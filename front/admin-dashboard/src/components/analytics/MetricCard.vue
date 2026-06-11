@@ -1,11 +1,14 @@
 <template>
-  <div class="bg-white overflow-hidden shadow rounded-lg">
-    <div class="p-5">
+  <div class="stat-card relative overflow-hidden group">
+    <!-- Background Gradient for Premium feel -->
+    <div :class="['absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-opacity group-hover:opacity-30', colorClasses.glow]"></div>
+
+    <div class="relative z-10">
       <div class="flex items-center">
         <div class="flex-shrink-0">
           <div
             :class="[
-              'flex items-center justify-center h-8 w-8 rounded-md',
+              'flex items-center justify-center h-10 w-10 rounded-xl shadow-lg transition-transform group-hover:scale-110',
               colorClasses.bg
             ]"
           >
@@ -17,11 +20,11 @@
         </div>
         <div class="ml-5 w-0 flex-1">
           <dl>
-            <dt class="text-sm font-medium text-gray-500 truncate">
+            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
               {{ title }}
             </dt>
             <dd class="flex items-baseline">
-              <div class="text-2xl font-semibold text-gray-900">
+              <div class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {{ prefix }}{{ formattedValue }}{{ suffix }}
               </div>
               <div
@@ -48,15 +51,15 @@
       </div>
 
       <!-- Mini chart or progress bar -->
-      <div v-if="showProgress" class="mt-4">
-        <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+      <div v-if="showProgress" class="mt-4 animate-slide-up">
+        <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1.5">
           <span>Progression</span>
           <span>{{ progressValue }}%</span>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
+        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
           <div
             :class="[
-              'h-2 rounded-full transition-all duration-500',
+              'h-full rounded-full transition-all duration-1000 ease-out',
               colorClasses.progress
             ]"
             :style="{ width: `${progressValue}%` }"
@@ -66,8 +69,8 @@
     </div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-      <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+    <div v-if="isLoading" class="absolute inset-0 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm flex items-center justify-center z-20">
+      <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-600"></div>
     </div>
   </div>
 </template>
@@ -154,33 +157,39 @@ const iconComponent = computed(() => iconMap[props.icon] || ChartBarIcon)
 const colorClasses = computed(() => {
   const colors = {
     blue: {
-      bg: 'bg-blue-500',
+      bg: 'bg-gradient-to-br from-blue-500 to-blue-600',
       icon: 'text-white',
+      glow: 'bg-blue-500',
       progress: 'bg-blue-500'
     },
     green: {
-      bg: 'bg-green-500',
+      bg: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
       icon: 'text-white',
-      progress: 'bg-green-500'
+      glow: 'bg-emerald-500',
+      progress: 'bg-emerald-500'
     },
     purple: {
-      bg: 'bg-purple-500',
+      bg: 'bg-gradient-to-br from-brand-500 to-brand-600',
       icon: 'text-white',
-      progress: 'bg-purple-500'
+      glow: 'bg-brand-500',
+      progress: 'bg-brand-500'
     },
     yellow: {
-      bg: 'bg-yellow-500',
+      bg: 'bg-gradient-to-br from-yellow-500 to-yellow-600',
       icon: 'text-white',
+      glow: 'bg-yellow-500',
       progress: 'bg-yellow-500'
     },
     red: {
-      bg: 'bg-red-500',
+      bg: 'bg-gradient-to-br from-red-500 to-red-600',
       icon: 'text-white',
+      glow: 'bg-red-500',
       progress: 'bg-red-500'
     },
     indigo: {
-      bg: 'bg-indigo-500',
+      bg: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
       icon: 'text-white',
+      glow: 'bg-indigo-500',
       progress: 'bg-indigo-500'
     }
   }
