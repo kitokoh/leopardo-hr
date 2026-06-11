@@ -17,9 +17,9 @@
           <span class="text-4xl font-black text-white tracking-tighter relative z-10">L</span>
           <span class="text-4xl font-black text-brand-400 tracking-tighter relative z-10">R</span>
         </div>
-        <h2 class="mt-8 text-center text-5xl font-black tracking-tight text-white uppercase italic">
+        <h1 class="mt-8 text-center text-5xl font-black tracking-tight text-white uppercase italic">
           Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
-        </h2>
+        </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
           Platform Administration • v4.16
         </p>
@@ -30,7 +30,7 @@
           <form class="space-y-6" @submit.prevent="handleLogin">
             <div class="space-y-5">
               <div>
-                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Identifiant Admin</label>
+                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-brand-400 mb-2 ml-1">Adresse email</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <EnvelopeIcon class="h-5 w-5 text-slate-500" />
@@ -91,10 +91,34 @@
               </div>
             </div>
 
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  id="remember-me"
+                  v-model="form.remember"
+                  name="remember-me"
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-white/10 bg-white/5 text-brand-600 focus:ring-brand-500 transition-all duration-300"
+                />
+                <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  Se souvenir de moi
+                </label>
+              </div>
+
+              <div class="text-xs font-bold">
+                <a href="#" class="text-brand-500 hover:text-brand-400 transition-colors">
+                  Mot de passe oublié ?
+                </a>
+              </div>
+            </div>
+
             <div v-if="error" class="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 animate-shake">
               <div class="flex items-center gap-3">
                 <ExclamationTriangleIcon class="h-5 w-5 text-red-400 shrink-0" />
-                <p class="text-xs font-bold text-red-300 leading-tight">{{ error }}</p>
+                <div class="space-y-1">
+                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">Erreur de connexion</h3>
+                  <p class="text-[10px] font-bold text-red-300/80 leading-tight">{{ error }}</p>
+                </div>
               </div>
             </div>
 
@@ -110,7 +134,7 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 </span>
-                {{ isLoading ? 'Authentification...' : 'Accéder au Cockpit' }}
+                {{ isLoading ? 'Authentification...' : 'Se connecter' }}
               </button>
 
               <div class="relative">
