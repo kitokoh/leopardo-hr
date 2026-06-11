@@ -14,8 +14,7 @@
       <div class="text-center">
         <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/20 shadow-glass animate-bounce-slow overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <span class="text-4xl font-black text-white tracking-tighter relative z-10">L</span>
-          <span class="text-4xl font-black text-brand-400 tracking-tighter relative z-10">R</span>
+          <span class="text-4xl font-black text-white tracking-tighter relative z-10">LRH</span>
         </div>
         <h1 class="mt-8 text-center text-5xl font-black tracking-tight text-white uppercase italic">
           Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
@@ -69,6 +68,7 @@
                     type="button"
                     class="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-white transition-colors"
                     @click="showPassword = !showPassword"
+                    :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
                   >
                     <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
                     <EyeIcon v-else class="h-5 w-5" />
@@ -107,7 +107,7 @@
 
               <div class="text-xs font-bold">
                 <a href="#" class="text-brand-500 hover:text-brand-400 transition-colors">
-                  Mot de passe oublié ?
+                  Mot de passe oublie ?
                 </a>
               </div>
             </div>
@@ -151,6 +151,7 @@
                 :disabled="isLoading"
                 class="w-full flex items-center justify-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 py-4 px-4 text-sm font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/20 transition-all duration-300 group"
                 @click="loginWithDemo"
+                aria-label="Acces Demo"
               >
                 <SparklesIcon class="h-5 w-5 group-hover:animate-pulse" />
                 Démonstration Express
@@ -209,7 +210,7 @@ const form = reactive({
   email: '',
   password: '',
   twoFactorCode: '',
-  remember: true,
+  remember: false,
 })
 
 const isLoading = ref(false)
