@@ -154,13 +154,16 @@
     </div>
 
     <!-- Segmentation Analysis -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Segmentation Utilisateurs</h3>
+    <div class="card p-8 animate-slide-up" style="animation-delay: 0.3s">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Segmentation Utilisateurs</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Répartition stratégique de la base</p>
+        </div>
         <div class="flex items-center space-x-3">
           <select
             v-model="selectedSegmentation"
-            class="text-sm border-gray-300 rounded-md"
+            class="rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:ring-brand-500"
           >
             <option value="behavior">Comportement</option>
             <option value="value">Valeur</option>
@@ -169,7 +172,7 @@
           </select>
           <button
             @click="refreshSegmentation"
-            class="p-2 text-gray-400 hover:text-gray-500"
+            class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowPathIcon class="h-4 w-4" />
           </button>
@@ -179,17 +182,19 @@
     </div>
 
     <!-- Performance Benchmarks -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Benchmarks Sectoriels</h3>
-        <span class="text-sm text-gray-500">Comparaison avec la moyenne du secteur</span>
+    <div class="card p-8 animate-slide-up" style="animation-delay: 0.4s">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Benchmarks Sectoriels</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Comparaison avec la moyenne du secteur</p>
+        </div>
       </div>
       <BenchmarkChart :data="analytics.benchmarkData" />
     </div>
 
     <!-- Insights & Recommendations -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Insights & Recommandations</h3>
+    <div class="card p-8 animate-slide-up" style="animation-delay: 0.5s">
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Insights & Recommandations</h3>
       <div class="space-y-4">
         <InsightCard
           v-for="insight in analytics.insights"

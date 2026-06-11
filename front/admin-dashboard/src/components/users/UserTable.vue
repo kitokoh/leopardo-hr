@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-hidden">
     <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50">
-      <thead class="bg-slate-50/50 dark:bg-slate-800/50">
+      <thead class="bg-slate-50/50 dark:bg-slate-900/30">
         <tr>
           <th scope="col" class="relative w-12 px-6 sm:w-16 sm:px-8">
             <input
@@ -9,7 +9,7 @@
               :checked="isAllSelected"
               :indeterminate="isIndeterminate"
               @change="$emit('select-all', $event.target.checked)"
-              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600"
+              class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded-md border-slate-300 text-brand-600 focus:ring-brand-600 dark:bg-slate-800 dark:border-slate-700"
             />
           </th>
           <th
@@ -17,7 +17,7 @@
             :key="column.key"
             scope="col"
             :class="[
-              'px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
+              'px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400',
               column.sortable ? 'cursor-pointer hover:text-slate-700 dark:hover:text-slate-200 transition-colors' : ''
             ]"
             @click="column.sortable && handleSort(column.key)"
@@ -27,13 +27,13 @@
               <div v-if="column.sortable" class="flex flex-col">
                 <ChevronUpIcon
                   :class="[
-                    'h-3.5 w-3.5',
+                    'h-3 w-3',
                     sortBy === column.key && sortOrder === 'asc' ? 'text-brand-500' : 'text-slate-300'
                   ]"
                 />
                 <ChevronDownIcon
                   :class="[
-                    'h-3.5 w-3.5 -mt-1.5',
+                    'h-3 w-3 -mt-1',
                     sortBy === column.key && sortOrder === 'desc' ? 'text-brand-500' : 'text-slate-300'
                   ]"
                 />
@@ -108,14 +108,14 @@
 
           <!-- Status -->
           <td class="whitespace-nowrap px-6 py-5">
-            <span :class="getStatusColor(user.status)">
+            <span :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border', getStatusColor(user.status)]">
               {{ getStatusLabel(user.status) }}
             </span>
           </td>
 
           <!-- Role -->
-          <td class="whitespace-nowrap px-6 py-5 text-sm text-slate-900">
-            <span :class="getRoleColor(user.role)">
+          <td class="whitespace-nowrap px-6 py-5">
+            <span :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border', getRoleColor(user.role)]">
               {{ getRoleLabel(user.role) }}
             </span>
           </td>
@@ -277,12 +277,12 @@ function handleSort(column) {
 
 function getStatusColor(status) {
   const colors = {
-    active: 'bg-green-100 text-green-800',
-    inactive: 'bg-gray-100 text-gray-800',
-    suspended: 'bg-red-100 text-red-800',
-    pending: 'bg-yellow-100 text-yellow-800'
+    active: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
+    inactive: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-800',
+    suspended: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/40',
+    pending: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800'
   }
-  return colors[status] || 'bg-gray-100 text-gray-800'
+  return colors[status] || 'bg-slate-50 text-slate-700 border-slate-200'
 }
 
 function getStatusLabel(status) {
@@ -290,19 +290,19 @@ function getStatusLabel(status) {
     active: 'Actif',
     inactive: 'Inactif',
     suspended: 'Suspendu',
-    pending: 'En attente'
+    pending: 'Attente'
   }
   return labels[status] || status
 }
 
 function getRoleColor(role) {
   const colors = {
-    admin: 'bg-purple-100 text-purple-800',
-    manager: 'bg-blue-100 text-blue-800',
-    employee: 'bg-gray-100 text-gray-800',
-    hr: 'bg-green-100 text-green-800'
+    admin: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
+    manager: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+    employee: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-800',
+    hr: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800'
   }
-  return colors[role] || 'bg-gray-100 text-gray-800'
+  return colors[role] || 'bg-slate-50 text-slate-700 border-slate-200'
 }
 
 function getRoleLabel(role) {
@@ -317,13 +317,13 @@ function getRoleLabel(role) {
 
 function getSegmentColor(segment) {
   const colors = {
-    champions: 'bg-green-100 text-green-800',
-    loyal: 'bg-blue-100 text-blue-800',
-    potential: 'bg-yellow-100 text-yellow-800',
-    new: 'bg-purple-100 text-purple-800',
-    'at-risk': 'bg-red-100 text-red-800'
+    champions: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
+    loyal: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+    potential: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
+    new: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
+    'at-risk': 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/40'
   }
-  return colors[segment] || 'bg-gray-100 text-gray-800'
+  return colors[segment] || 'bg-slate-50 text-slate-700 border-slate-200'
 }
 
 function getSegmentLabel(segment) {
