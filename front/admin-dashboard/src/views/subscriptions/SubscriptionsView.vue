@@ -40,7 +40,7 @@
           <article
             v-for="plan in plans"
             :key="plan.id"
-            class="group relative flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-glass-lg dark:border-slate-800 dark:bg-slate-900/50 overflow-hidden"
+            class="group relative flex flex-col rounded-3xl border border-slate-200/60 bg-white/50 backdrop-blur-md p-6 shadow-sm transition-all hover:shadow-glass-lg hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-900/40 overflow-hidden"
           >
             <div class="flex items-start justify-between gap-3 relative z-10">
               <div>
