@@ -89,9 +89,9 @@ sequenceDiagram
 
 | Étape | Interaction | Détail |
 |--------|-------------|---------|
-| 1-2 | **Requête de validation de paie** | Le gestionnaire lance le calcul pour une liste d'employe9s, un mois et une anne9e donne9s. Les middleware RBAC et de limites de plan sont vérifie9s en premier lieu. |
+| 1-2 | **Requête de validation de paie** | Le gestionnaire lance le calcul pour une liste d'employe9s, un mois et une anne9e donne9s. Les middleware RBAC et de limites de plan sont ve9rifie9s en premier lieu. |
 | 3-4 | **Job asynchrone** | Le calcul e9tant potentiellement lourd, il est dispatche9 dans une queue Laravel. Le gestionnaire rec00oit un `job_id` pour interroger le statut via polling. |
-| 5a-b | **Configuration & mode9le RH** | Les réglages de l'entreprise sont recupe9re9s depuis le cache Redis (cle9 `tenant:{uuid}:settings`). Les mode9les de cotisations et baremes IR sont issus du mode9le RH du pays. |
+| 5a-b | **Configuration & mode9le RH** | Les re9glages de l'entreprise sont recupe9re9s depuis le cache Redis (cle9 `tenant:{uuid}:settings`). Les mode9les de cotisations et baremes IR sont issus du mode9le RH du pays. |
 | 5c-e | **Calcul du brut** | Le salaire de base est additionne9 aux heures supple9mentaires calcule9es e0 partir des `attendance_logs` du mois. |
 | 5f-h | **Deductions sociales et fiscales** | La sécurité sociale (part salarie9e) est de9duite du brut. L'imp00ft sur le revenu est calcule9 par tranches progressives. |
 | 5i | **Pe9nalite9s de retard** | Les minutes de retard sont recupe9re9es depuis les pointages. La conversion en fuseau horaire de l'entreprise est obligatoire pour un calcul correct. |

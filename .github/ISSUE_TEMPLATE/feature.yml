@@ -1,12 +1,13 @@
-name: 🚀 Feature Request
-description: Suggest an idea for Leopardo RH
+name: "🚀 Feature Request"
+description: Suggest an idea for this project
+title: "[FEATURE]: "
 labels: ["enhancement"]
 body:
   - type: textarea
     id: problem
     attributes:
       label: Is your feature request related to a problem?
-      description: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+      description: A clear and concise description of what the problem is.
     validations:
       required: true
   - type: textarea
