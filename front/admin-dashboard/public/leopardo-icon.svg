@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Leopardo RH">
+  <rect width="512" height="512" rx="96" fill="#0f172a"/>
+  <path d="M118 339V143h55v148h102v48H118Z" fill="#ecfeff"/>
+  <path d="M284 143h110v48h-55v148h-55V143Z" fill="#34d399"/>
+  <path d="M102 382h308" stroke="#22d3ee" stroke-width="26" stroke-linecap="round"/>
+</svg>
