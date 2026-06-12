@@ -10,7 +10,7 @@
     <!-- Grid Pattern overlay -->
     <div class="absolute inset-0 z-0 opacity-20" style="background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
 
-    <div class="max-w-md w-full space-y-10 relative z-10 animate-fade-in">
+    <div class="max-w-md w-full space-y-10 relative z-10">
       <div class="text-center">
         <div class="mx-auto h-24 w-24 flex items-center justify-center rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/20 shadow-glass overflow-hidden group">
           <div class="absolute inset-0 bg-gradient-to-br from-brand-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -22,7 +22,7 @@
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
           Platform Administration • v4.16
         </p>
-        <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-xs">
+        <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
           Connectez-vous a votre espace
         </p>
       </div>
@@ -222,6 +222,7 @@ const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
 const showDemoModal = ref(false)
 
+/* eslint-disable no-unused-vars */
 async function selectDemoUser(email, password) {
   form.email = email
   form.password = password
