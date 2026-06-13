@@ -18,6 +18,7 @@ import {
   type AppLocale,
   type StoredAuthUser,
 } from '@/lib/i18n';
+import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
 
 export default function DashboardLayout({
   children,
@@ -116,6 +117,14 @@ export default function DashboardLayout({
     )));
     setUnreadCount((count) => Math.max(0, count - 1));
   };
+
+  const [showWizard, setShowWizard] = useState(false);
+
+  useEffect(() => {
+    if (user && user.role === 'manager' && user.company?.metadata?.onboarding_completed !== true) {
+      setShowWizard(true);
+    }
+  }, [user]);
 
   const handleLanguageChange = async (value: string) => {
     const nextLocale = normalizeLocale(value);
@@ -295,6 +304,7 @@ export default function DashboardLayout({
             children
           )}
         </main>
+        {showWizard && user && <OnboardingWizard user={user} onComplete={() => setShowWizard(false)} />}
       </div>
     </div>
   );
