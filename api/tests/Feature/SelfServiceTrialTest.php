@@ -6,13 +6,13 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Mail\TrialWelcomeMail;
 use App\Services\TenantManager;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class SelfServiceTrialTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     public function test_can_provision_trial_tenant_successfully()
     {
