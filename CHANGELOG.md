@@ -14,6 +14,7 @@
 - API : ajout de la configuration Stripe dans `config/services.php` et `.env.example` (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_STARTER/BUSINESS/ENTERPRISE).
 - Vitrine : la route `POST /api/forms/signup` appelle desormais le backend `POST /api/v1/trial/signup` pour provisioner instantanement le tenant; en cas d'echec API, fallback vers le guided trial existant.
 - Vitrine : `SignupForm` affiche les credentials (email + mot de passe temporaire avec copier-coller) apres provisioning reussi, avec boutons "Se connecter" et "Telecharger l'app".
+- Planification : ajout de `docs/PLAN_ACTION2/`, un backlog atomique importable dans GitHub Projects pour piloter la prochaine phase produit, securite, stabilite, marketing, mobile, kiosk, API, finance, i18n et operations.
 
 ### Changed
 
