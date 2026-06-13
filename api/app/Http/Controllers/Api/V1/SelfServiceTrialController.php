@@ -110,6 +110,9 @@ class SelfServiceTrialController extends Controller
                 'sector' => $this->mapRoleToSector($validated['role'] ?? null),
                 'country' => $country,
                 'city' => 'Non précisé',
+                'manager_name' => $this->managerNameForCompanyRequest($validated, $email),
+                'manager_phone' => $validated['phone'] ?? null,
+                'notes' => 'Self-service trial signup.',
                 'email' => $email,
                 'phone' => $validated['phone'] ?? null,
                 'plan_id' => $trialPlan->id,
@@ -397,5 +400,27 @@ class SelfServiceTrialController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    private function managerNameForCompanyRequest(array $validated, string $email): string
+    {
+        $name = trim(implode(' ', array_filter([
+            $validated['first_name'] ?? null,
+            $validated['last_name'] ?? null,
+        ], fn ($value) => is_string($value) && trim($value) !== '')));
+
+        if ($name !== '') {
+            return $name;
+        }
+
+        $localPart = explode('@', $email)[0] ?: 'manager';
+
+        return str($localPart)
+            ->replace(['.', '_', '-', '+'], ' ')
+            ->title()
+            ->toString();
     }
 }
