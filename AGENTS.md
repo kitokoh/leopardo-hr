@@ -1,6 +1,6 @@
 ﻿# AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-06-06 (v4.16.250)
+Derniere mise a jour : 2026-06-13 (v4.16.251)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -123,6 +123,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.250, la migration publique `2026_05_02_100001_create_users_and_company_requests_tables.php` doit reconciler explicitement `public.company_requests` sur PostgreSQL avec `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`. Ne pas remplacer ce garde par de simples `Schema::hasColumn()` : l'ancienne table `employee_id` peut deja exister et les flux user/company-request modernes ont besoin de `user_id`.
 - Depuis v4.16.189, les retours testeurs produit 31-44 sont formalises dans `docs/PLAN_ACTION/57_PLAN_API_DOCS_ECOSYSTEME_DEVELOPPEUR.md` a `65_PLAN_PAIEMENT_MASSE_SIGNATURE_NUMERIQUE.md`. Avant de coder ces chantiers, choisir le plan concerne, livrer ses lots dans l'ordre, mettre a jour `00_SOMMAIRE.md` si un nouveau plan est ajoute, puis pousser via PR pour garder la mission lisible.
 - Depuis v4.16.251, les nouveaux lots post-consolidation doivent partir de `docs/PLAN_ACTION2/`. `02_BACKLOG_ATOMIQUE.md` contient les tickets PA2 atomiques et `03_GITHUB_PROJECT_IMPORT.csv` peut etre importe dans GitHub Projects. Ne pas creer un nouveau plan disperse tant qu'un ticket PA2 couvre deja le besoin.
+- Depuis v4.16.251, `PLAN_ACTION2` v1.1 etend le backlog a 130 tickets, avec les scopes canoniques `05_SCOPE_PAYS_PAIE_POINTAGE.md`, `06_COMMUNICATION_ANNONCES_DISCUSSIONS.md` et `07_SUPERVISION_GITHUB_PROJECT.md`. Les chantiers pays/devise/regles locales, pointage multi-evenements, paie complete, discussions, annonces, email/WhatsApp et supervision multi-agents doivent etre rattaches a ces tickets avant implementation.
 - Depuis v4.16.216, les plans 01-66 sont consideres comme historiques executes ou cartographies. Avant de rouvrir un ancien sujet, consulter `docs/validation/PLAN_ACTION_COVERAGE_MATRIX_2026_06_01.md`; les derniers lots de lancement doivent etre rattaches a `docs/PLAN_ACTION/67_PLAN_AUDIT_FINAL_QUALITE_PRODUIT.md` sauf besoin clairement hors perimetre.
 - Les decisions d'architecture structurantes vivent dans `docs/architecture/adr/`, le diagramme C4 dans `docs/architecture/C4_ARCHITECTURE.md`, et le point d'entree operations dans `docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md`.
 - Le guide partenaire canonique est `docs/GUIDES/GUIDE_INTEGRATION_PARTENAIRES.md`; l'actualiser avec tout changement API/webhook/SSO expose aux integrateurs.
