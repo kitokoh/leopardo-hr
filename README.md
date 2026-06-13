@@ -31,12 +31,27 @@ Leopardo RH is a comprehensive **High-Performance Ecosystem** designed to bridge
 
 ---
 
-## 📸 Visual Showcase
+## 🎥 Visual Showcase
 
+### 🚀 Platform in Action
+<p align="center">
+  <video src="assets/videos/landing_demo.webm" width="800" controls muted autoplay loop>
+    Your browser does not support the video tag.
+  </video>
+</p>
+
+### 📱 Mobile Ecosystem
 <p align="center">
   <img src="assets/screenshots/leopardo_employee-splash-preview.png" width="250" alt="Employee App">
   <img src="assets/screenshots/leopardo_manager-splash-preview.png" width="250" alt="Manager App">
   <img src="assets/screenshots/leopardo_platform_admin-splash-preview.png" width="250" alt="Platform Admin">
+</p>
+
+### 🔐 Admin Cockpit
+<p align="center">
+  <video src="assets/videos/admin_demo.webm" width="800" controls muted autoplay loop>
+    Your browser does not support the video tag.
+  </video>
 </p>
 
 ---
