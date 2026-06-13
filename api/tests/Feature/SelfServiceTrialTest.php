@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\CompanyRequest;
 use App\Mail\TrialWelcomeMail;
+use App\Services\TenantManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -50,7 +51,7 @@ class SelfServiceTrialTest extends TestCase
 
         // Verify manager created in the tenant
         // Switch to the tenant DB context to check employee
-        app(\App\Services\TenantManager::class)->setTenant($company);
+        app(TenantManager::class)->setTenant($company);
 
         $manager = Employee::where('email', 'founder@newtech.dz')->first();
         $this->assertNotNull($manager);
@@ -58,7 +59,7 @@ class SelfServiceTrialTest extends TestCase
         $this->assertEquals('Founder', $manager->first_name); // Auto-extracted
         $this->assertEquals('Newtech.dz', $manager->last_name);
 
-        app(\App\Services\TenantManager::class)->resetToPrevious();
+        app(TenantManager::class)->resetToPrevious();
 
         // Verify CRM record created in public schema
         $this->assertDatabaseHas('company_requests', [

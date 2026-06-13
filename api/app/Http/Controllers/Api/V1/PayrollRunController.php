@@ -10,6 +10,7 @@ use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\Payroll\PayrollCalculator;
+use App\Http\Requests\Api\V1\Payroll\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +40,7 @@ class PayrollRunController extends Controller
         return PayrollRunResource::collection($runs)->response();
     }
 
-    public function store(\App\Http\Requests\Api\V1\Payroll\StorePayrollRunRequest $request): JsonResponse
+    public function store(StorePayrollRunRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -211,7 +212,7 @@ class PayrollRunController extends Controller
             $file = fopen('php://output', 'w');
             
             // Add BOM for Excel UTF-8 compatibility
-            fputs($file, "\xEF\xBB\xBF");
+            fwrite($file, "\xEF\xBB\xBF");
             
             fputcsv($file, [
                 'Matricule',

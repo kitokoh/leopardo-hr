@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyRequest;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
 class PlatformCrmPipelineController extends Controller
@@ -58,8 +59,11 @@ class PlatformCrmPipelineController extends Controller
 
     private function calculateDaysLeft(?string $endDate): ?int
     {
-        if (!$endDate) return null;
-        $diff = now()->diffInDays(\Carbon\Carbon::parse($endDate), false);
+        if (! $endDate) {
+            return null;
+        }
+        $diff = now()->diffInDays(Carbon::parse($endDate), false);
+
         return $diff > 0 ? (int) $diff : 0;
     }
 }

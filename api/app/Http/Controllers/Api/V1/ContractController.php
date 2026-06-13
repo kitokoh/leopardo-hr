@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\Employee;
+use App\Services\ContractPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -351,7 +352,7 @@ class ContractController extends Controller
         return ContractResource::collection($contracts)->response();
     }
 
-    public function generatePdf(Request $request, Contract $contract, \App\Services\ContractPdfGenerator $generator)
+    public function generatePdf(Request $request, Contract $contract, ContractPdfGenerator $generator)
     {
         /** @var Employee $actor */
         $actor = $request->user();

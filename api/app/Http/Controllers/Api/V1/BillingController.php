@@ -29,7 +29,7 @@ class BillingController extends Controller
             ->latest()
             ->first();
 
-        if (! $subscription) {
+        if (!$subscription) {
             return response()->json(['data' => null, 'message' => 'No active subscription.'], 404);
         }
 
@@ -40,7 +40,7 @@ class BillingController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        if (! $user->isManager()) {
+        if (!$user->isManager()) {
             abort(403);
         }
 
@@ -53,7 +53,7 @@ class BillingController extends Controller
             ->latest()
             ->first();
 
-        if (! $subscription) {
+        if (!$subscription) {
             $subscription = Subscription::create([
                 'company_id' => $user->company_id,
                 'plan' => $validated['plan'],
@@ -78,7 +78,7 @@ class BillingController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        if (! $user->isManager()) {
+        if (!$user->isManager()) {
             abort(403);
         }
 
@@ -103,7 +103,7 @@ class BillingController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        if (! $user->isManager()) {
+        if (!$user->isManager()) {
             abort(403);
         }
 
@@ -187,7 +187,7 @@ class BillingController extends Controller
             'cancel_url' => 'required|url|max:500',
         ]);
 
-        if (! config('services.stripe.secret')) {
+        if (!config('services.stripe.secret')) {
             return new JsonResponse([
                 'error' => 'STRIPE_NOT_CONFIGURED',
                 'message' => 'Le paiement en ligne n\'est pas encore configuré.',
@@ -230,7 +230,7 @@ class BillingController extends Controller
 
         $stripeCustomerId = $company->metadata['stripe_customer_id'] ?? null;
 
-        if (! $stripeCustomerId) {
+        if (!$stripeCustomerId) {
             return new JsonResponse([
                 'error' => 'NO_STRIPE_CUSTOMER',
                 'message' => 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',

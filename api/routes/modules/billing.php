@@ -13,7 +13,6 @@
 use App\Http\Controllers\Api\V1\BillingController;
 use App\Http\Controllers\Api\V1\FeatureFlagController;
 use App\Http\Controllers\Api\V1\OnboardingStepController;
-use App\Http\Controllers\Api\V1\PaymentWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────

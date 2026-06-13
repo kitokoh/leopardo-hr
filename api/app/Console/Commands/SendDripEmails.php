@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 class SendDripEmails extends Command
 {
     protected $signature = 'app:send-drip-emails';
+
     protected $description = 'Send drip campaign emails to companies in trial';
 
     public function handle(): int
