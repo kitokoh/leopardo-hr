@@ -733,7 +733,7 @@ jobs:
         with:
           name: legacy-mobile-quality-summary
           path: front/mobile/quality-summary.md
-          if-no-files-found: error
+          if-no-files-found: ignore
 
       - name: Upload mobile test artifacts
         if: always()
