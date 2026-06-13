@@ -103,8 +103,8 @@ graph TB
 | Module | Access Point | Technology Stack |
 | :--- | :--- | :--- |
 | **API Backend** | [Gateway](https://gestionemployerbackend.onrender.com) | Laravel 11, PostgreSQL |
-| **Corporate Web** | [Live Preview](https://leopardo-hr.vercel.app) | Next.js 15, Tailwind CSS |
-| **Admin Panel** | [Dashboard](https://leo-admin.pages.com) | Cloudflare Pages |
+| **Corporate Web** | [Live Preview](https://gestionemployer-backend.vercel.app) | Next.js 15, Tailwind CSS |
+| **Admin Panel** | [Dashboard](https://leo-admin.pages.dev) | Cloudflare Pages |
 | **Mobile 1** | [Download APK](https://appdistribution.firebase.dev/i/e2bde6595da9d96e) | Flutter 3.x, Riverpod |
 | **Mobile Tenant** | [Download APK](https://appdistribution.firebase.dev/i/e51102534a5dff22) | Flutter 3.x, Riverpod |
 | **Mobile Admin** | [Download APK](https://appdistribution.firebase.dev/i/f37b128b1c89a006) | Flutter 3.x, Riverpod |
