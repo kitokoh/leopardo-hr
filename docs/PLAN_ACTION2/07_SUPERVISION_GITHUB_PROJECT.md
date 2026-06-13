@@ -49,8 +49,46 @@ Le lead agent verifie regulierement:
 
 ## Automation a construire
 
-- Script de validation du CSV: colonnes, ID uniques, dependances existantes.
-- Script de generation d'issues depuis CSV.
+- Script de validation du CSV: `dev-hub/tools/validate-plan-action2.ps1`.
+- Script de choix de tache pour agent: `dev-hub/tools/pick-plan-action2-task.ps1`.
+- Script de synchronisation GitHub Project: `dev-hub/tools/sync-plan-action2-project.ps1`.
+- Workflow de validation/sync: `.github/workflows/plan-action2-project.yml`.
 - Action GitHub qui refuse une PR sans ID PA2 quand elle touche code produit.
 - Rapport hebdomadaire des tickets ouverts, bloques, merges et a verifier.
 
+## Configuration GitHub Project
+
+Pour synchroniser les tickets dans GitHub Projects v2, configurer:
+
+- secret `PLAN_ACTION2_PROJECT_TOKEN`: PAT avec scope `project` et acces au project cible;
+- variable `PLAN_ACTION2_PROJECT_OWNER`: login proprietaire du project;
+- variable `PLAN_ACTION2_PROJECT_OWNER_TYPE`: `user` ou `organization`;
+- variable `PLAN_ACTION2_PROJECT_NUMBER`: numero du project v2.
+
+Le workflow se lance:
+
+- sur PR pour valider le CSV sans ecrire dans GitHub Project;
+- sur merge vers `main` pour creer les tickets manquants;
+- manuellement via `workflow_dispatch` avec possibilite `dry_run`.
+
+## Commandes agent
+
+Avant de commencer un lot:
+
+```powershell
+git fetch origin main
+git switch -c codex/pa2-<ticket-id-slug> origin/main
+.\dev-hub\tools\pick-plan-action2-task.ps1 -Priority P0
+```
+
+Pour filtrer:
+
+```powershell
+.\dev-hub\tools\pick-plan-action2-task.ps1 -Area Paie -OutputPath .\tmp\pa2-task.md
+```
+
+Avant de pousser une PR qui modifie `PLAN_ACTION2`:
+
+```powershell
+.\dev-hub\tools\validate-plan-action2.ps1
+```

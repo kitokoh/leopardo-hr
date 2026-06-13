@@ -7,6 +7,7 @@
 ### Added
 
 - Planification : extension PLAN_ACTION2 v1.1 a 130 tickets avec scopes pays/paie/pointage, communication/annonces/discussions et supervision GitHub Projects multi-agents.
+- Outillage : ajout des scripts alidate-plan-action2.ps1, pick-plan-action2-task.ps1, sync-plan-action2-project.ps1 et du workflow PLAN_ACTION2 Project Sync pour valider, selectionner et synchroniser les tickets PA2 vers GitHub Projects.
 
 - API : ajout de `POST /api/v1/trial/signup` — endpoint public de provisioning self-service qui cree un tenant trial (30 jours) avec manager principal en < 30 secondes, sans intervention super-admin.
 - API : ajout de `SelfServiceTrialController` avec generation de mot de passe lisible, detection de doublon email, creation `CompanyRequest` pour tracabilite CRM, et fallback defensif search_path.

@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
 
+function uniqueEmail(prefix: string): string {
+  return `${prefix}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}@example.com`;
+}
+
 test.describe('Marketing funnel preview', () => {
   test.describe.configure({ mode: 'serial' });
   test.setTimeout(90_000);
@@ -10,7 +14,7 @@ test.describe('Marketing funnel preview', () => {
     });
 
     const quickTrialForm = page.locator('section form').first();
-    await quickTrialForm.locator('input[type="email"]').fill('quick.trial@example.com');
+    await quickTrialForm.locator('input[type="email"]').fill(uniqueEmail('quick.trial'));
 
     const [signupResponse] = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/api/forms/signup')),
@@ -29,7 +33,7 @@ test.describe('Marketing funnel preview', () => {
     await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
 
     const signupForm = page.locator('main form').first();
-    await signupForm.locator('input[type="email"]').fill('trial.lead@example.com');
+    await signupForm.locator('input[type="email"]').fill(uniqueEmail('trial.lead'));
     await signupForm.locator('input[name="company"]').fill('Leopardo Trial Co');
     await signupForm.locator('select[name="role"]').selectOption('manager');
     await signupForm.locator('select[name="employees"]').selectOption('11-50');
@@ -69,8 +73,9 @@ test.describe('Marketing funnel preview', () => {
     await page.waitForTimeout(500);
     const newsletterInput = page.locator('#newsletter input[type="email"]');
     const newsletterButton = page.locator('#newsletter button[type="submit"]');
-    await newsletterInput.fill('newsletter.lead@example.com');
-    await expect(newsletterInput).toHaveValue('newsletter.lead@example.com');
+    const newsletterEmail = uniqueEmail('newsletter.lead');
+    await newsletterInput.fill(newsletterEmail);
+    await expect(newsletterInput).toHaveValue(newsletterEmail);
     const [newsletterResponse] = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/api/forms/newsletter')),
       newsletterButton.click(),
