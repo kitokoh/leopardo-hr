@@ -40,3 +40,4 @@ export { ProductScreenshots, type ProductScreenshotsProps } from './ProductScree
 export { MarketingReadinessSection } from './MarketingReadinessSection';
 export { TrustedBrands, type TrustedBrandsProps } from './TrustedBrands';
 export { OperationalProofSection, type OperationalProofSectionProps } from './OperationalProofSection';
+export { LaunchOperatingSystemSection } from './LaunchOperatingSystemSection';
