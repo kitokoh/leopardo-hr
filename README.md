@@ -35,12 +35,17 @@ Leopardo RH is a comprehensive **High-Performance Ecosystem** designed to bridge
 
 ### 🚀 Platform in Action
 <p align="center">
-  <video src="assets/videos/landing_demo.webm" width="800" controls muted autoplay loop>
+  <video src="assets/videos/landing_demo.webm" width="800" controls muted autoplay loop playsinline>
     Your browser does not support the video tag.
   </video>
 </p>
 
 ### 📱 Mobile Ecosystem
+<p align="center">
+  <video src="assets/videos/mobile_demo.webm" width="250" controls muted autoplay loop playsinline>
+    Your browser does not support the video tag.
+  </video>
+</p>
 <p align="center">
   <img src="assets/screenshots/leopardo_employee-splash-preview.png" width="250" alt="Employee App">
   <img src="assets/screenshots/leopardo_manager-splash-preview.png" width="250" alt="Manager App">
@@ -49,7 +54,7 @@ Leopardo RH is a comprehensive **High-Performance Ecosystem** designed to bridge
 
 ### 🔐 Admin Cockpit
 <p align="center">
-  <video src="assets/videos/admin_demo.webm" width="800" controls muted autoplay loop>
+  <video src="assets/videos/admin_demo.webm" width="800" controls muted autoplay loop playsinline>
     Your browser does not support the video tag.
   </video>
 </p>
