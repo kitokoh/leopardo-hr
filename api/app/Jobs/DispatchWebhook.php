@@ -44,7 +44,6 @@ class DispatchWebhook implements ShouldQueue
         $jsonBody = json_encode($body, JSON_THROW_ON_ERROR);
         $timestamp = time();
         $signedPayload = "{$timestamp}.{$jsonBody}";
-        
         $signature = hash_hmac('sha256', $signedPayload, $this->endpoint->secret);
         $svixSignature = "v1={$signature},t={$timestamp}";
 

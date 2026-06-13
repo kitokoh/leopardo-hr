@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Shield, Key, Webhook, FileText, Plus, Trash2, Copy, Check } from 'lucide-react';
+import { Key, Webhook, FileText, Plus, Trash2, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 

@@ -79,7 +79,7 @@ class CompanyProvisioningService
                         'job_title' => 'Manager principal',
                     ],
                 ]);
-                
+
                 // P1.3: Apply sectorial template
                 $this->sectorTemplateService->applyTemplate($company);
             } finally {
