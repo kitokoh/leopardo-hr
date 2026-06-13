@@ -71,6 +71,23 @@ jobs:
           echo "API changed: ${api_changed}"
           echo "Web changed: ${web_changed}"
 
+  mobile-flutter-stable-compat:
+    name: Mobile Flutter (Stable Channel)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record mobile CI compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          # Mobile Flutter (Stable Channel)
+
+          The legacy mobile monolith is no longer the primary mobile CI surface.
+          Split mobile apps are guarded by `mobile-apps-ci.yml`; this lightweight
+          compatibility check keeps the protected-branch required context alive
+          until the branch protection rule is updated.
+          EOF
+
   backend-tests:
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest

@@ -34,6 +34,7 @@
 - API self-service : la trace CRM `company_requests` renseigne aussi les champs legacy `manager_name`, `manager_phone` et `notes` pour rester compatible avec les bases historiques.
 - API self-service : la deduction automatique du nom manager reste stable pour les emails simples (`founder@newtech.dz` -> `Founder Newtech.dz`).
 - CI : l'upload du resume qualite mobile legacy n'est plus bloquant quand `front/mobile/quality-summary.md` n'est pas produit par un run backend/coverage.
+- CI : le workflow principal publie de nouveau le contexte requis `Mobile Flutter (Stable Channel)` via un job de compatibilite leger, en attendant la mise a jour de la protection `main` vers `mobile-apps-ci.yml`.
 
 ## [4.16.250] - 2026-06-06
 
