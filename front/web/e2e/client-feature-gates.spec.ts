@@ -25,10 +25,27 @@ async function seedSession(page: Page, overrides: Record<string, unknown> = {}) 
   });
 
   await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+  const companyMetadata = { onboarding_completed: true };
+  const userToStore = {
+    ...baseUser,
+    ...overrides,
+    company: overrides.company
+      ? {
+          ...(overrides.company as object),
+          metadata: {
+            ...((overrides.company as any)?.metadata ?? {}),
+            ...companyMetadata,
+          },
+        }
+      : {
+          metadata: companyMetadata,
+        },
+  };
+
   await page.evaluate((user) => {
     window.localStorage.setItem('auth_token', 'feature-gate-token');
     window.localStorage.setItem('auth_user', JSON.stringify(user));
-  }, { ...baseUser, ...overrides });
+  }, userToStore);
 }
 
 async function analyticsEvents(page: Page) {

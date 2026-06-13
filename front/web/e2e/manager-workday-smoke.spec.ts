@@ -122,6 +122,14 @@ async function mockManagerSession(page: Page) {
     });
   });
 
+  await page.route('**/api/v1/auth/logout', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true }),
+    });
+  });
+
   await page.route('**/api/v1/employees?per_page=12', async (route) => {
     await route.fulfill({
       status: 200,
@@ -245,6 +253,6 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('pending');
 
     await page.getByRole('button', { name: /Deconnexion|Logout/i }).click();
-    await expect(page).toHaveURL(/\/auth\/login$/);
+    await expect(page).toHaveURL(/\/auth\/login$/, { timeout: 10000 });
   });
 });

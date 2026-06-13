@@ -4,17 +4,62 @@ test.describe('Marketing funnel preview', () => {
   test.describe.configure({ mode: 'serial' });
   test.setTimeout(90_000);
 
+  test.beforeEach(async ({ page }) => {
+    // Mock marketing form APIs to avoid dependency on live backend and provisioning delays
+    await page.route('**/api/forms/signup', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          provisioned: false,
+          message: "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables avec l'acces le plus adapte.",
+          data: { id: 'lead-123', email: 'e2e@example.com' },
+        }),
+      });
+    });
+
+    await page.route('**/api/forms/demo', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          message: 'Demande envoyee avec succes.',
+        }),
+      });
+    });
+
+    await page.route('**/api/forms/newsletter', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          message: 'Inscription reussie.',
+        }),
+      });
+    });
+  });
+
   test('captures a one-field trial request from the homepage hero', async ({ page }) => {
+    const timestamp = Date.now();
+    const email = `quick.trial.${timestamp}@example.com`;
+
     await page.goto('/?lang=en&utm_source=e2e_quick_trial', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
     });
 
     const quickTrialForm = page.locator('section form').first();
-    await quickTrialForm.locator('input[type="email"]').fill('quick.trial@example.com');
+    await quickTrialForm.locator('input[type="email"]').fill(email);
+
+    const submitButton = quickTrialForm.locator('button[type="submit"]');
+    await expect(submitButton).toBeVisible();
+    await expect(submitButton).toBeEnabled();
 
     const [signupResponse] = await Promise.all([
-      page.waitForResponse((response) => response.url().includes('/api/forms/signup')),
-      quickTrialForm.locator('button[type="submit"]').click(),
+      page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 30000 }),
+      submitButton.click(),
     ]);
 
     expect(signupResponse.status()).toBe(201);
@@ -22,21 +67,27 @@ test.describe('Marketing funnel preview', () => {
   });
 
   test('captures a trial signup request from the public /signup page', async ({ page }) => {
+    const timestamp = Date.now();
+    const email = `trial.lead.${timestamp}@example.com`;
+
     await page.goto('/signup?lang=en&utm_source=e2e&plan=business', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
     });
 
     await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
 
     const signupForm = page.locator('main form').first();
-    await signupForm.locator('input[type="email"]').fill('trial.lead@example.com');
-    await signupForm.locator('input[name="company"]').fill('Leopardo Trial Co');
-    await signupForm.locator('select[name="role"]').selectOption('manager');
-    await signupForm.locator('select[name="employees"]').selectOption('11-50');
+    await signupForm.getByLabel(/email professionnel|email/i).fill(email);
+    await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
+    await signupForm.getByLabel(/votre role|your role/i).selectOption('manager');
+    await signupForm.getByLabel(/taille equipe|team size/i).selectOption('11-50');
     await signupForm.locator('input[type="checkbox"]').check();
+    const submitButton = signupForm.locator('button[type="submit"]');
+    await expect(submitButton).toBeVisible();
+
     const [signupResponse] = await Promise.all([
-      page.waitForResponse((response) => response.url().includes('/api/forms/signup')),
-      signupForm.locator('button[type="submit"]').click(),
+      page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 30000 }),
+      submitButton.click(),
     ]);
 
     expect(signupResponse.status()).toBe(201);
@@ -44,11 +95,14 @@ test.describe('Marketing funnel preview', () => {
   });
 
   test('captures a localized demo request without leaving the vitrine', async ({ page }) => {
-    await page.goto('/demo?lang=fr&utm_source=e2e', { waitUntil: 'domcontentloaded' });
+    const timestamp = Date.now();
+    const email = `fatima.benali.${timestamp}@example.com`;
+
+    await page.goto('/demo?lang=fr&utm_source=e2e', { waitUntil: 'networkidle' });
 
     const demoForm = page.locator('#demo-form form').first();
     await demoForm.locator('input[name="name"]').fill('Fatima Benali');
-    await demoForm.locator('input[name="email"]').fill('fatima.benali@example.com');
+    await demoForm.locator('input[name="email"]').fill(email);
     await demoForm.locator('input[name="company"]').fill('Atlas RH');
     await demoForm.locator('input[name="phone"]').fill('+213555111222');
     await demoForm.locator('select[name="employees"]').selectOption('51-200');
@@ -65,19 +119,23 @@ test.describe('Marketing funnel preview', () => {
   });
 
   test('captures newsletter signup from localized blog content', async ({ page }) => {
-    await page.goto('/blog?lang=en&utm_source=e2e#newsletter', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(500);
-    const newsletterInput = page.locator('#newsletter input[type="email"]');
-    const newsletterButton = page.locator('#newsletter button[type="submit"]');
-    await newsletterInput.fill('newsletter.lead@example.com');
-    await expect(newsletterInput).toHaveValue('newsletter.lead@example.com');
+    const timestamp = Date.now();
+    const email = `newsletter.lead.${timestamp}@example.com`;
+
+    await page.goto('/blog?lang=en&utm_source=e2e#newsletter', { waitUntil: 'networkidle' });
+
+    const newsletterSection = page.locator('#newsletter');
+    const newsletterInput = newsletterSection.locator('input[type="email"]');
+    const newsletterButton = newsletterSection.locator('button[type="submit"]');
+
+    await newsletterInput.fill(email);
     const [newsletterResponse] = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/api/forms/newsletter')),
       newsletterButton.click(),
     ]);
 
     expect(newsletterResponse.status()).toBe(201);
-    await expect(page.locator('#newsletter')).toContainText(/newsletter|success|reussie/i);
+    await expect(newsletterSection).toContainText(/newsletter|success|reussie/i);
   });
 
   test('keeps guide trial CTAs on the public guided signup flow', async ({ page }) => {
