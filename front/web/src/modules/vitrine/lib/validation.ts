@@ -140,7 +140,7 @@ export function validatePassword(password: string): {
     errors.push("Le mot de passe doit contenir au moins un chiffre");
   }
   if (!/[^A-Za-z0-9]/.test(password)) {
-    errors.push("Le mot de passe doit contenir au moins un caractere special");
+    errors.push("Le mot de passe doit contenir au moins un caractère spécial");
   }
 
   return {
