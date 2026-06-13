@@ -1,58 +1,63 @@
-# ⚡ Quick Start Guide
+# Quick Start Guide — Leopardo RH
 
-Welcome to the Leopardo RH developer community! Follow this guide to get your local environment running in under 5 minutes.
+Welcome to Leopardo RH! This guide will help you get your environment set up and make your first API call in minutes.
 
-## 📋 Prerequisites
-- **Docker Desktop** (Recommended)
-- **Node.js 18+** & **NPM**
-- **PHP 8.4** & **Composer** (Optional if using Docker)
+## 🏃‍♂️ Fast Track (Docker)
 
-## 🚀 1. The One-Command Setup
+1.  **Clone the Repo**
+    ```bash
+    git clone https://github.com/kitokoh/leopardo-hr.git
+    cd leopardo-hr
+    ```
 
-Run the bootstrap script from the repository root to initialize environment files and install dependencies:
+2.  **Start Services**
+    ```bash
+    docker-compose up -d
+    ```
 
-```bash
-chmod +x ../dev-hub/scripts/bootstrap.sh
-./../dev-hub/scripts/bootstrap.sh
-```
-
-## 🐘 2. Start the Backend (API)
-
-We recommend using **Laravel Sail** for a consistent Docker-based experience:
-
-```bash
-cd api
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan migrate --seed
-```
+3.  **Seed Database**
+    ```bash
+    docker exec -it leopardo-api php artisan migrate --seed
+    ```
 
 Your API is now live at `http://localhost:8000`.
 
-## ⚛️ 3. Start the Frontend (Web)
+## 🛠 Manual Setup (PHP/Laravel)
 
-Launch the Next.js development server:
+If you prefer running Laravel directly:
 
-```bash
-cd web
-npm run dev
-```
+1.  **Install Dependencies**
+    ```bash
+    cd api
+    composer install
+    ```
 
-The dashboard is now live at `http://localhost:3000`.
+2.  **Environment Configuration**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
-## 🧪 4. Verify the Installation
+3.  **Run Migrations**
+    ```bash
+    php artisan migrate
+    ```
 
-Run the backend test suite to ensure everything is configured correctly:
+4.  **Serve**
+    ```bash
+    php artisan serve
+    ```
 
-```bash
-cd api
-./vendor/bin/sail artisan test
-```
+## 📱 Mobile App (Flutter)
 
-## 🛠 Next Steps
-- Read the [Architecture Overview](ARCHITECTURE.md).
-- Learn about [Multi-Tenancy Implementation](docs/architecture/MULTITENANCY.md).
-- Explore the [API Reference](docs/api/README.md).
+1.  Navigate to the mobile directory (e.g., `front/mobile`).
+2.  Run `flutter pub get`.
+3.  Launch with `flutter run`.
 
 ---
 
-Need help? Join our [Discord Community](https://discord.gg/leopardo-rh) or check the [Support Guide](SUPPORT.md).
+## 📚 Next Steps
+
+- Explore the **[API Reference](api/README.md)**.
+- Understand the **[System Design](architecture/SYSTEM_DESIGN.md)**.
+- Check the **[Contribution Guidelines](contributing/GUIDELINES.md)**.

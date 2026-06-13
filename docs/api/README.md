@@ -1,45 +1,53 @@
-# API Documentation Hub
+# API Reference — Leopardo RH
 
-Leopardo RH provides a multi-tenant REST API for the mobile apps, admin surfaces, kiosk and future partners.
+Leopardo RH provides a robust, RESTful API that powers all our official clients (Web, Mobile, Kiosk) and allows for third-party integrations.
 
-## Authentication
+## 🔑 Authentication
 
-All private API requests must be authenticated using Laravel Sanctum tokens.
+All API requests require a **Bearer Token** obtained via the login endpoint.
 
-- Header: `Authorization: Bearer <your_token>`
-- Tenant context: resolved from the authenticated token and tenant lookup.
+- **Base URL:** `https://gestionemployerbackend.onrender.com/api/v1`
+- **Format:** `application/json`
 
-## Core Endpoints
+```bash
+curl -X GET "https://api.leopardo-rh.com/api/v1/employees" \
+     -H "Authorization: Bearer {YOUR_TOKEN}" \
+     -H "Accept: application/json"
+```
 
-### Authentication
+## 🏗 API Specification
 
-- `POST /api/v1/auth/login`: authenticate and receive a token.
-- `POST /api/v1/auth/logout`: revoke the current token.
-- `GET /api/v1/auth/me`: retrieve current user profile.
+We use **OpenAPI 3.0** as our source of truth for API contracts.
 
-### Employee Management
+- 📄 **[OpenAPI YAML](../../openapi/openapi.yaml)** — View the full technical specification.
+- 🧪 **[Postman Collection](../../postman/leopardo_collection.json)** — *Coming Soon*
 
-- `GET /api/v1/employees`: list employees in your tenant.
-- `POST /api/v1/employees`: create a new employee record.
-- `GET /api/v1/employees/{id}`: view detailed employee data.
+## 📦 Core Endpoints
 
-### Attendance
+### 🏢 Multi-Tenant Context
+Every request is automatically scoped to the authenticated user's tenant (company). No manual `tenant_id` is required in the headers once authenticated.
 
-- `POST /api/v1/attendance/check-in`: register a new arrival.
-- `POST /api/v1/attendance/check-out`: register a departure.
-- `GET /api/v1/attendance/today`: real-time status for the current day.
+### 👤 Employee Management
+- `GET /employees` — List all employees.
+- `POST /employees` — Create a new employee record.
+- `GET /employees/{id}` — Retrieve detailed profile.
 
-## Integration Tools
+### 🕒 Attendance & Kiosk
+- `POST /attendance/check-in` — Register start of work (GPS/Biometric).
+- `POST /attendance/check-out` — Register end of work.
+- `GET /kiosks/roster` — Fetch daily roster for ZKTeco devices.
 
-- Public documentation: `/docs`
-- OpenAPI spec: `/docs/openapi.yaml`
-- API Explorer: `/api-explorer`
-- SDK examples: `dev-hub/sdk/`
+### 💰 Payroll & Finance
+- `GET /payroll/estimate` — Get AI-driven salary estimation.
+- `POST /payroll/generate` — Trigger monthly payroll batch.
 
-## Related Resources
+## 🚦 Rate Limiting & Versioning
 
-- [Architecture Overview](../architecture/C4_ARCHITECTURE.md)
-- [Security RBAC Matrix](../security/RBAC_ROUTE_MATRIX.md)
-- [Multi-Tenancy Guide](../architecture/MULTITENANCY.md)
+- **Version:** Current stable is `v1`.
+- **Limits:** 60 requests per minute per IP for public endpoints; higher limits for authenticated tenants.
 
-For partner integration guidance, use `docs/GUIDES/GUIDE_INTEGRATION_PARTENAIRES.md`.
+---
+
+*For detailed mobile-specific integration, see:*
+- [Mobile Setup Guide](../mobile/README.md)
+- [Web Implementation](../web/README.md)
