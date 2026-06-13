@@ -110,3 +110,102 @@
 | PA2-STR-004 | P2 | Marketplace architecture note | docs/API | modules/plugins, permissions, billing futur, webhooks |
 | PA2-STR-005 | P2 | IA-ready tool contracts | docs/API | actions metier exposees via permissions et audit, validation humaine pour actions sensibles |
 
+## Extension v1.1 - Pointage complet
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-ATT-001 | P0 | Modele backend pointage multi-evenements | API DB | evenements arrivee, pause, reprise, mission, deplacement, heure_supp, depart_final; audit et migration idempotente |
+| PA2-ATT-002 | P0 | Premier pointage ultra simple | API, mobile employee | premier clic du jour cree une arrivee normale sans popup ni question inutile |
+| PA2-ATT-003 | P0 | Deuxieme pointage intelligent | API, mobile employee | apres arrivee, choix fluide pause/reprise/depart/mission/heure_supp selon contexte |
+| PA2-ATT-004 | P0 | Details jour employee | mobile employee, API | tous les pointages, pauses, heures supp, temps travaille, anomalies et gains visibles |
+| PA2-ATT-005 | P0 | Vue manager jour employee | mobile manager, web manager | manager voit detail jour par employe sans fuite tenant |
+| PA2-ATT-006 | P1 | Regles horaires entreprise affectables | API, mobile manager, web manager | horaires, repos, pauses, conges, tolerances et heures supp assignables a employes |
+| PA2-ATT-007 | P1 | Cloture automatique journee | API jobs | journee oubliee cloturee selon regle, notification, correction possible |
+| PA2-ATT-008 | P1 | Timezone pointage correcte | API/mobile/web | stockage UTC, affichage timezone utilisateur/tenant, tests pays |
+| PA2-ATT-009 | P1 | Geofence pointage bienveillant | API/mobile | coordonnees/rayon entreprise, alerte hors zone, pointage non bloque par GPS indisponible |
+| PA2-ATT-010 | P1 | Kiosk synchronise avec multi-evenements | kiosk/API | punch kiosk alimente le meme modele evenementiel que mobile |
+| PA2-ATT-011 | P2 | Anomalies pointage exploitables | API/mobile/web | retard, absence, oubli depart, chevauchement, hors zone; workflows correction |
+| PA2-ATT-012 | P2 | Score regularite employee | API/mobile | indicateurs ponctualite et completion taches sans penalisation opaque |
+
+## Extension v1.1 - Pays, devises et regles locales
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-COUNTRY-001 | P0 | Catalogue pays backend etendu | API | DZ, MA, TN, FR, TR, CEMAC, CEDEAO, CA exposes via `CountryDefaults` |
+| PA2-COUNTRY-002 | P0 | Creation entreprise adaptee pays/langue | API, admin web, mobile admin, vitrine | choix pays/langue derive devise, timezone, regles et modele RH |
+| PA2-COUNTRY-003 | P0 | Devise runtime partout | mobile/web/API | DZD absent des affichages runtime hors fallback technique; devise vient API |
+| PA2-COUNTRY-004 | P1 | Regles Algerie solides | API | DZD, Africa/Algiers, jours repos, seuils heures supp et cycle paie pilotes |
+| PA2-COUNTRY-005 | P1 | Regles Maroc et Tunisie | API | MAD/TND, timezone, jours repos, feries placeholders, cycles supportes |
+| PA2-COUNTRY-006 | P1 | Regles France et Turquie | API | EUR/TRY, timezone, langue, seuils prudents et avertissement conformite |
+| PA2-COUNTRY-007 | P1 | Regles CEMAC | API | XAF, pays membres, timezone par defaut, extension sous-code pays |
+| PA2-COUNTRY-008 | P1 | Regles CEDEAO | API | XOF par defaut pour pays UEMOA, support extension monnaies locales |
+| PA2-COUNTRY-009 | P2 | Regles Canada par province | API | CAD, province optionnelle, timezone et placeholders overtime provinciaux |
+| PA2-COUNTRY-010 | P2 | Seeders HR models multi-pays | API seeders | modeles RH par pays sans casser demos existantes |
+| PA2-COUNTRY-011 | P2 | Tests pays et devise | API tests | cas DZ/FR/TR/CEMAC/CEDEAO/CA couverts |
+| PA2-COUNTRY-012 | P2 | Documentation limites legales | docs | indique que les regles sont configurables et doivent etre validees localement |
+
+## Extension v1.1 - Paie et paiements jusqu'au bout
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-PAY-007 | P0 | Ledger financier employee | API DB | avances, paiements, ajustements, soldes et documents relies a un journal auditable |
+| PA2-PAY-008 | P0 | Workflow avance double confirmation mobile | API/mobile | demande, validation, paiement declare, reception employee, notifications |
+| PA2-PAY-009 | P0 | Solde employee lisible | mobile employee/API | recu, reste, avances, prochaine paie, devise pays |
+| PA2-PAY-010 | P1 | Dashboard paie manager mobile-first | mobile manager/API | liste employes, du, avances, heures supp, solde final |
+| PA2-PAY-011 | P1 | Cycles paie par entreprise | API/mobile manager | journalier, hebdomadaire, mensuel configurables par regle entreprise |
+| PA2-PAY-012 | P1 | Precalcul paie nocturne | API jobs | jobs progressifs avant date de paiement, retries et logs |
+| PA2-PAY-013 | P1 | Paiement masse asynchrone | API/mobile manager/web manager | batch, resultats partiels, notification et audit |
+| PA2-PAY-014 | P1 | PDFs bordereaux hors requete | API jobs | recu/bordereau genere async, stocke, telechargeable |
+| PA2-PAY-015 | P2 | Confirmation employee et litiges | mobile/API | employee confirme reception ou ouvre reclamation |
+| PA2-PAY-016 | P2 | Signature numerique simple | API/mobile | consentement horodate, hash document, sans PKI prematuree |
+| PA2-PAY-017 | P2 | Export comptable pilote | API/web | CSV/Excel paiements avec devise, pays, periode |
+| PA2-PAY-018 | P2 | Tests finance anti regression | API tests | avance, paiement, solde, PDF, multi-tenant et devise |
+
+## Extension v1.1 - Discussions, annonces et canaux
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-COMM-001 | P0 | Inbox in-app commune | API/mobile/web | notifications et messages consultables, lu/non lu, tenant-scope |
+| PA2-COMM-002 | P0 | Discussion employee-manager | API/mobile | fil lie a tache, paie, pointage ou demande; pieces jointes limitees |
+| PA2-COMM-003 | P1 | Commentaires de tache | API/mobile manager/employee | create/read, auteur, horodatage, notification destinataire |
+| PA2-COMM-004 | P1 | Annonces entreprise | API/mobile/web manager | manager/RH envoie a entreprise/equipe/departement/employe |
+| PA2-COMM-005 | P1 | Annonces plateforme | API/admin web/mobile admin | superadmin diffuse maintenance, nouveaute, incident, action requise |
+| PA2-COMM-006 | P1 | Templates localisables | API/shared i18n | push/email/WhatsApp/SMS utilisent cles et variables controlees |
+| PA2-COMM-007 | P1 | Email provider production-ready | API jobs | provider abstrait, retry, audit, opt-out, bounce futur |
+| PA2-COMM-008 | P1 | WhatsApp opt-in et provider | API jobs | consentement, template, quotas, audit-only si secret absent |
+| PA2-COMM-009 | P1 | Preferences communication | mobile/web/API | canaux, quiet hours, opt-in WhatsApp/SMS, langue |
+| PA2-COMM-010 | P1 | Notification paiement intelligente | API jobs/mobile | message "traitement en cours" puis document pret, sans bloquer UI |
+| PA2-COMM-011 | P2 | Moderation annonces | admin/API | brouillon, planification, annulation, audit |
+| PA2-COMM-012 | P2 | Centre support client pilote | admin web/API | conversations client-platform, statut, priorite |
+| PA2-COMM-013 | P2 | Fallback polling robuste | mobile/web | push indisponible n'empeche pas reception inbox |
+| PA2-COMM-014 | P2 | Tests communication multi-canal | API tests | preferences, quotas, quiet hours, audit events |
+
+## Extension v1.1 - Verification apps et API
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-QA-001 | P0 | Smoke login 5 surfaces | CI/API/mobile/web/kiosk | employee, manager, platform admin, web client, admin web, kiosk valides |
+| PA2-QA-002 | P0 | Matrice boutons critiques | docs/tests | chaque bouton pointage/paie/client/admin/kiosk mappe vers route ou action locale |
+| PA2-QA-003 | P0 | Contrats API par profil | API tests | employee, manager, superadmin, kiosk; permissions et erreurs |
+| PA2-QA-004 | P1 | Tests charge k6 pointage | dev-hub/k6 | scenario 10/20/50/100 punchs, lance seulement via paths ou manuel |
+| PA2-QA-005 | P1 | Tests charge k6 paie | dev-hub/k6 | preview paie, batch paiement, notification async |
+| PA2-QA-006 | P1 | Observabilite Redis/jobs | API/admin | queue depth, failed jobs, last run, alertes visibles |
+| PA2-QA-007 | P1 | Audit CORS et cold-start | API/web/mobile | web vitrine et apps gerent Render cold-start et CORS proprement |
+| PA2-QA-008 | P2 | Lighthouse vitrine conversion | CI/manual | score et poids assets surveilles sans bloquer inutilement |
+| PA2-QA-009 | P2 | Accessibilite mobile lisibilite | mobile | contrastes, textes visibles, pas de bouton sans action |
+| PA2-QA-010 | P2 | Rapport release pilote | docs | checklist go/no-go par surface avec preuves |
+
+## Extension v1.1 - Automation et supervision
+
+| ID | Priorite | Ticket | Surface | Definition of Done |
+|---|---|---|---|---|
+| PA2-AUTO-001 | P0 | Import GitHub Project fiable | docs/scripts | CSV valide, ID uniques, colonnes compatibles Project |
+| PA2-AUTO-002 | P0 | Validation dependances tickets | dev-hub/tools | script refuse dependance inconnue ou cycle evident |
+| PA2-AUTO-003 | P1 | Generation issues depuis CSV | scripts/docs | dry-run, labels, milestone/release, owner optionnel |
+| PA2-AUTO-004 | P1 | Check PR avec ID PA2 | GitHub Actions | PR produit sans ID PA2 signalee sauf docs/chore explicite |
+| PA2-AUTO-005 | P1 | Rapport hebdo avancement | GitHub Actions/docs | liste merges, bloques, stale, prochains P0 |
+| PA2-AUTO-006 | P1 | Template PR PA2 | `.github` | surfaces, risques, tests, contrat API, screenshots si UI |
+| PA2-AUTO-007 | P2 | Dashboard readiness tickets | docs/admin | mapping tickets vers release pilote |
+| PA2-AUTO-008 | P2 | Regles agents juniors | `AGENTS.md`, docs | comment choisir un ticket, eviter duplication, demander review |
+| PA2-AUTO-009 | P2 | Nettoyage branches stale | docs/scripts | listing branches fusionnees/stale, suppression manuelle controlee |
+| PA2-AUTO-010 | P2 | Audit post-merge automatique | GitHub Actions | verifie changelog, matrice, OpenAPI, i18n selon fichiers touches |

@@ -6,6 +6,8 @@
 
 ### Added
 
+- Planification : extension PLAN_ACTION2 v1.1 a 130 tickets avec scopes pays/paie/pointage, communication/annonces/discussions et supervision GitHub Projects multi-agents.
+
 - API : ajout de `POST /api/v1/trial/signup` — endpoint public de provisioning self-service qui cree un tenant trial (30 jours) avec manager principal en < 30 secondes, sans intervention super-admin.
 - API : ajout de `SelfServiceTrialController` avec generation de mot de passe lisible, detection de doublon email, creation `CompanyRequest` pour tracabilite CRM, et fallback defensif search_path.
 - API : ajout de `StripeService` — integration Stripe Checkout (sessions, portail client) et webhooks (checkout.session.completed, invoice.paid, customer.subscription.updated/deleted) via API REST directe sans SDK.
@@ -38,6 +40,8 @@
 - API self-service : la deduction automatique du nom manager reste stable pour les emails simples (`founder@newtech.dz` -> `Founder Newtech.dz`).
 - CI : l'upload du resume qualite mobile legacy n'est plus bloquant quand `front/mobile/quality-summary.md` n'est pas produit par un run backend/coverage.
 - CI : le workflow principal publie de nouveau le contexte requis `Mobile Flutter (Stable Channel)` via un job de compatibilite leger, en attendant la mise a jour de la protection `main` vers `mobile-apps-ci.yml`.
+
+- Tests web : le smoke manager marque le tenant mock comme deja onboarde afin de tester la navigation dashboard/equipe/pointage/absences sans modal d'onboarding parasite.
 
 ## [4.16.250] - 2026-06-06
 
