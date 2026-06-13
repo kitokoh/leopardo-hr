@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useId } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 
@@ -27,7 +27,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
   },
   ref
 ) {
-  const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+  const reactId = useId();
+  const inputId = id || reactId;
 
   return (
     <div className="w-full">
