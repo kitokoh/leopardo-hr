@@ -24,6 +24,10 @@
 - `PILOTAGE.md` : reecrit completement pour refleter v4.16.250+ — 8 surfaces, 87 modeles, 93 controleurs, 25 workflows CI/CD, 72 plans livres, priorites P0-P3, cibles MRR.
 - Module billing routes : suppression des webhooks Chargily orphelins, ajout des routes Stripe Checkout et Customer Portal.
 
+### Fixed
+
+- API provisioning : les templates secteur creent/reutilisent maintenant un departement `Operations` avant de generer les postes lorsque `positions.department_id` est obligatoire, ce qui evite les 500 pendant la creation entreprise et le self-service trial.
+
 ## [4.16.250] - 2026-06-06
 
 ### Added 
