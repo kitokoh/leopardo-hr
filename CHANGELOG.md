@@ -39,6 +39,8 @@
 - CI : l'upload du resume qualite mobile legacy n'est plus bloquant quand `front/mobile/quality-summary.md` n'est pas produit par un run backend/coverage.
 - CI : le workflow principal publie de nouveau le contexte requis `Mobile Flutter (Stable Channel)` via un job de compatibilite leger, en attendant la mise a jour de la protection `main` vers `mobile-apps-ci.yml`.
 
+- Tests web : le smoke manager marque le tenant mock comme deja onboarde afin de tester la navigation dashboard/equipe/pointage/absences sans modal d'onboarding parasite.
+
 ## [4.16.250] - 2026-06-06
 
 ### Added 
