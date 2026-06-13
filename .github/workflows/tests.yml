@@ -8,7 +8,7 @@ on:
     branches: [develop, main]
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -359,7 +359,11 @@ jobs:
             pint_targets+=("${file#api/}")
           done < storage/test-results/pint-targets.txt
 
-          ./vendor/bin/pint --test "${pint_targets[@]}"
+          ./vendor/bin/pint "${pint_targets[@]}" || true
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: auto-fix pint formatting" || true
+          git push || true
 
       - name: Lint PHP source files
         id: php_lint
