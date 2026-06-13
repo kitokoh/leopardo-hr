@@ -2,6 +2,28 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org)
 
+## [4.16.251] - 2026-06-13
+
+### Added
+
+- API : ajout de `POST /api/v1/trial/signup` — endpoint public de provisioning self-service qui cree un tenant trial (30 jours) avec manager principal en < 30 secondes, sans intervention super-admin.
+- API : ajout de `SelfServiceTrialController` avec generation de mot de passe lisible, detection de doublon email, creation `CompanyRequest` pour tracabilite CRM, et fallback defensif search_path.
+- API : ajout de `StripeService` — integration Stripe Checkout (sessions, portail client) et webhooks (checkout.session.completed, invoice.paid, customer.subscription.updated/deleted) via API REST directe sans SDK.
+- API : ajout de `StripeWebhookController` — endpoint public `POST /api/v1/webhooks/stripe` avec verification signature HMAC-SHA256 et retry-safe (200 meme en cas d'erreur de traitement).
+- API : ajout des routes `POST /billing/checkout` et `GET /billing/portal` dans le module billing pour les managers principal.
+- API : ajout de la configuration Stripe dans `config/services.php` et `.env.example` (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_STARTER/BUSINESS/ENTERPRISE).
+- Vitrine : la route `POST /api/forms/signup` appelle desormais le backend `POST /api/v1/trial/signup` pour provisioner instantanement le tenant; en cas d'echec API, fallback vers le guided trial existant.
+- Vitrine : `SignupForm` affiche les credentials (email + mot de passe temporaire avec copier-coller) apres provisioning reussi, avec boutons "Se connecter" et "Telecharger l'app".
+
+### Changed
+
+- API : `BillingController` injecte desormais `StripeService` et retire `chargily` de la validation payment_method (Stripe seul pour le lancement).
+- Vitrine : pricing mis a jour — Starter 39€/mois (jusqu'a 50 employes), Business 119€/mois (jusqu'a 250 employes), essai 30 jours.
+- Vitrine : FAQ mise a jour pour refleter l'essai de 30 jours et la creation instantanee d'espace.
+- Vitrine : CTA du formulaire signup change de "Recevoir mon acces d'essai" a "Creer mon espace d'essai gratuit".
+- `PILOTAGE.md` : reecrit completement pour refleter v4.16.250+ — 8 surfaces, 87 modeles, 93 controleurs, 25 workflows CI/CD, 72 plans livres, priorites P0-P3, cibles MRR.
+- Module billing routes : suppression des webhooks Chargily orphelins, ajout des routes Stripe Checkout et Customer Portal.
+
 ## [4.16.250] - 2026-06-06
 
 ### Added

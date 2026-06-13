@@ -44,9 +44,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/billing/invoices', [BillingController::class, 'invoices']);
         Route::get('/billing/invoices/{id}', [BillingController::class, 'showInvoice'])->whereNumber('id');
         Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'invoicePdf'])->whereNumber('id');
+
+        // Stripe Checkout & Portal
+        Route::post('/billing/checkout', [BillingController::class, 'createCheckoutSession']);
+        Route::get('/billing/portal', [BillingController::class, 'customerPortal']);
     });
 });
 
-// ── Public webhook endpoints (no auth) ────────────────────────────────────────
-Route::post('/webhooks/stripe', [PaymentWebhookController::class, 'stripe']);
-Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);

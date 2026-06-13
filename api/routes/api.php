@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\V1\PlatformCountryDefaultsController;
 use App\Http\Controllers\Api\V1\PlatformMetricsOverviewController;
 use App\Http\Controllers\Api\V1\PlatformPlanController;
 use App\Http\Controllers\Api\V1\PrivacyController;
+use App\Http\Controllers\Api\V1\SelfServiceTrialController;
+use App\Http\Controllers\Api\V1\StripeWebhookController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +58,14 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/invitation/{token}', [OnboardingController::class, 'show']);
         Route::post('/invitation/{token}/activate', [OnboardingController::class, 'activate']);
     });
+
+    // Self-service trial provisioning (public, throttle strict)
+    Route::middleware(['throttle:5,15'])->group(function (): void {
+        Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
+    });
+
+    // Stripe webhook (public, verified by signature)
+    Route::post('/webhooks/stripe', StripeWebhookController::class);
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
