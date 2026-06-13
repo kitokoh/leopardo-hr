@@ -27,6 +27,8 @@
 ### Fixed
 
 - API provisioning : les templates secteur creent/reutilisent maintenant un departement `Operations` avant de generer les postes lorsque `positions.department_id` est obligatoire, ce qui evite les 500 pendant la creation entreprise et le self-service trial.
+- API self-service : la resolution des plans lit explicitement `public.plans` et restaure toujours le `search_path` apres la detection d'email tenant, afin d'eviter les 500 `relation plans does not exist`.
+- API billing : les webhooks Stripe acceptent les payloads sandbox/test lorsque le secret webhook est absent, traitent `invoice.paid`/`invoice.payment_failed` sur les invoices existantes, et conservent la route Chargily legacy.
 
 ## [4.16.250] - 2026-06-06
 

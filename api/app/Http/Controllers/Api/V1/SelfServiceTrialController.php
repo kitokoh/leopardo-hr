@@ -271,25 +271,30 @@ class SelfServiceTrialController extends Controller
                 ->where('role', 'manager')
                 ->first();
 
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET search_path TO public');
-            }
-
             return $employee;
         } catch (\Throwable) {
             return null;
+        } finally {
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET search_path TO public');
+            }
         }
     }
 
     private function resolveTrialPlan(): ?object
     {
-        return DB::table('plans')
+        return DB::table($this->publicTable('plans'))
             ->where('is_active', true)
             ->orderBy('id')
             ->first()
-            ?? DB::table('plans')
+            ?? DB::table($this->publicTable('plans'))
                 ->orderBy('id')
                 ->first();
+    }
+
+    private function publicTable(string $table): string
+    {
+        return DB::getDriverName() === 'pgsql' ? 'public.'.$table : $table;
     }
 
     private function resolveUniqueSlug(string $baseSlug): string

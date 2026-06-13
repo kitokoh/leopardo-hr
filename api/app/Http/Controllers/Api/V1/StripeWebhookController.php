@@ -28,12 +28,6 @@ class StripeWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature', '');
 
-        if (! $sigHeader) {
-            Log::warning('Stripe Webhook: Missing Stripe-Signature header');
-
-            return new JsonResponse(['error' => 'Missing signature'], 400);
-        }
-
         $event = $this->stripeService->verifyWebhookSignature($payload, $sigHeader);
 
         if (! $event) {

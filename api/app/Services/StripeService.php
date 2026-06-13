@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Company;
+use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Subscription;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -164,6 +166,7 @@ class StripeService
         match ($type) {
             'checkout.session.completed' => $this->handleCheckoutCompleted($data),
             'invoice.paid' => $this->handleInvoicePaid($data),
+            'invoice.payment_failed' => $this->handleInvoicePaymentFailed($data),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($data),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($data),
             default => Log::info("Stripe: Unhandled event type: {$type}"),
@@ -227,6 +230,43 @@ class StripeService
 
     private function handleInvoicePaid(array $invoice): void
     {
+        $invoiceModel = Invoice::query()
+            ->where('stripe_invoice_id', $invoice['id'] ?? '')
+            ->first();
+
+        if ($invoiceModel) {
+            $amountPaid = (float) (($invoice['amount_paid'] ?? 0) / 100);
+            if ($amountPaid <= 0) {
+                $amountPaid = (float) ($invoiceModel->total ?? $invoiceModel->amount ?? 0);
+            }
+
+            $invoiceModel->update([
+                'status' => 'paid',
+                'paid_at' => now(),
+                'payment_method' => 'stripe',
+            ]);
+
+            Payment::query()->firstOrCreate(
+                [
+                    'invoice_id' => $invoiceModel->id,
+                    'provider_reference' => $invoice['charge'] ?? $invoice['payment_intent'] ?? $invoice['id'] ?? null,
+                ],
+                [
+                    'company_id' => $invoiceModel->company_id,
+                    'amount' => $amountPaid,
+                    'currency' => strtoupper((string) ($invoice['currency'] ?? $invoiceModel->currency ?? 'eur')),
+                    'method' => 'card',
+                    'status' => 'completed',
+                    'paid_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
+
+            if ($invoiceModel->subscription) {
+                $invoiceModel->subscription->update(['status' => 'active']);
+            }
+        }
+
         $subscriptionId = $invoice['subscription'] ?? null;
         if (!$subscriptionId) {
             return;
@@ -246,6 +286,23 @@ class StripeService
                     ? Carbon::createFromTimestamp($invoice['period_end'])
                     : now()->addMonth(),
             ]);
+        }
+    }
+
+    private function handleInvoicePaymentFailed(array $invoice): void
+    {
+        $invoiceModel = Invoice::query()
+            ->where('stripe_invoice_id', $invoice['id'] ?? '')
+            ->first();
+
+        if (! $invoiceModel) {
+            return;
+        }
+
+        $invoiceModel->update(['status' => 'overdue']);
+
+        if ($invoiceModel->subscription) {
+            $invoiceModel->subscription->update(['status' => 'past_due']);
         }
     }
 
