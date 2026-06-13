@@ -1,6 +1,6 @@
 #  CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
-# Versioning : Semantic Versioning (semver.org)
+# Versioning : Semantic Versioning (semver.org) 
 
 ## [4.16.250] - 2026-06-06
 
