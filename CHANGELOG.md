@@ -6,6 +6,8 @@
 
 ### Added
 
+- Planification : extension PLAN_ACTION2 v1.1 a 130 tickets avec scopes pays/paie/pointage, communication/annonces/discussions et supervision GitHub Projects multi-agents.
+
 - API : ajout de `POST /api/v1/trial/signup` — endpoint public de provisioning self-service qui cree un tenant trial (30 jours) avec manager principal en < 30 secondes, sans intervention super-admin.
 - API : ajout de `SelfServiceTrialController` avec generation de mot de passe lisible, detection de doublon email, creation `CompanyRequest` pour tracabilite CRM, et fallback defensif search_path.
 - API : ajout de `StripeService` — integration Stripe Checkout (sessions, portail client) et webhooks (checkout.session.completed, invoice.paid, customer.subscription.updated/deleted) via API REST directe sans SDK.
