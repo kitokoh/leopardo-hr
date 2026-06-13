@@ -32,6 +32,7 @@
 - Tests backend : `SelfServiceTrialTest` utilise maintenant le refresh public/tenant du projet afin de couvrir le vrai schema `plans` + `companies`.
 - API self-service : si `public.plans` existe mais ne contient encore aucun plan actif, le provisioning cree un plan `Trial` defensif au lieu de retourner un 503 au prospect.
 - API self-service : la trace CRM `company_requests` renseigne aussi les champs legacy `manager_name`, `manager_phone` et `notes` pour rester compatible avec les bases historiques.
+- API self-service : la deduction automatique du nom manager reste stable pour les emails simples (`founder@newtech.dz` -> `Founder Newtech.dz`).
 
 ## [4.16.250] - 2026-06-06
 

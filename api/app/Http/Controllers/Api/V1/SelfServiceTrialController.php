@@ -86,18 +86,7 @@ class SelfServiceTrialController extends Controller
             ], 503);
         }
 
-        // Parse name from email or provided fields
-        $firstName = trim($validated['first_name'] ?? '');
-        $lastName = trim($validated['last_name'] ?? '');
-        if (!$firstName) {
-            $localPart = explode('@', $email)[0];
-            $nameParts = preg_split('/[._\-+]/', $localPart, 2) ?: ['Manager'];
-            $firstName = ucfirst($nameParts[0] ?? 'Manager');
-            $lastName = isset($nameParts[1]) ? ucfirst($nameParts[1]) : 'Principal';
-        }
-        if (!$lastName) {
-            $lastName = 'Principal';
-        }
+        [$firstName, $lastName] = $this->managerNameParts($validated, $email);
 
         // Generate temporary password
         $tempPassword = $this->generateReadablePassword();
@@ -110,9 +99,6 @@ class SelfServiceTrialController extends Controller
                 'sector' => $this->mapRoleToSector($validated['role'] ?? null),
                 'country' => $country,
                 'city' => 'Non précisé',
-                'manager_name' => $this->managerNameForCompanyRequest($validated, $email),
-                'manager_phone' => $validated['phone'] ?? null,
-                'notes' => 'Self-service trial signup.',
                 'email' => $email,
                 'phone' => $validated['phone'] ?? null,
                 'plan_id' => $trialPlan->id,
@@ -386,6 +372,9 @@ class SelfServiceTrialController extends Controller
                 'sector' => $this->mapRoleToSector($validated['role'] ?? null),
                 'country' => strtoupper(trim($validated['country'] ?? 'DZ')),
                 'city' => 'Non précisé',
+                'manager_name' => $this->managerNameForCompanyRequest($validated, $email),
+                'manager_phone' => $validated['phone'] ?? null,
+                'notes' => 'Self-service trial signup.',
                 'email' => $email,
                 'phone' => $validated['phone'] ?? null,
                 'description' => 'Self-service trial signup — source: '.($validated['source'] ?? 'direct'),
@@ -400,6 +389,34 @@ class SelfServiceTrialController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array{0: string, 1: string}
+     */
+    private function managerNameParts(array $validated, string $email): array
+    {
+        $firstName = trim((string) ($validated['first_name'] ?? ''));
+        $lastName = trim((string) ($validated['last_name'] ?? ''));
+
+        if ($firstName === '') {
+            [$localPart, $domain] = array_pad(explode('@', $email, 2), 2, null);
+            $nameParts = preg_split('/[._\-+]/', $localPart ?: 'manager', 2) ?: ['Manager'];
+            $firstName = ucfirst($nameParts[0] ?? 'Manager');
+
+            if ($lastName === '') {
+                $lastName = isset($nameParts[1]) && trim($nameParts[1]) !== ''
+                    ? ucfirst($nameParts[1])
+                    : ucfirst(strtolower($domain ?: 'principal'));
+            }
+        }
+
+        if ($lastName === '') {
+            $lastName = 'Principal';
+        }
+
+        return [$firstName, $lastName];
     }
 
     /**
