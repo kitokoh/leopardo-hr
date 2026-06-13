@@ -283,13 +283,47 @@ class SelfServiceTrialController extends Controller
 
     private function resolveTrialPlan(): ?object
     {
-        return DB::table($this->publicTable('plans'))
+        $plan = DB::table($this->publicTable('plans'))
             ->where('is_active', true)
             ->orderBy('id')
             ->first()
             ?? DB::table($this->publicTable('plans'))
                 ->orderBy('id')
                 ->first();
+
+        if ($plan) {
+            return $plan;
+        }
+
+        return $this->createFallbackTrialPlan();
+    }
+
+    private function createFallbackTrialPlan(): ?object
+    {
+        try {
+            $id = DB::table($this->publicTable('plans'))->insertGetId([
+                'name' => 'Trial',
+                'price_monthly' => 0,
+                'price_yearly' => 0,
+                'max_employees' => 50,
+                'features' => json_encode([
+                    'rh' => true,
+                    'tasks' => true,
+                    'attendance' => true,
+                    'mobile_apps' => true,
+                ], JSON_THROW_ON_ERROR),
+                'trial_days' => 30,
+                'is_active' => true,
+            ]);
+
+            return DB::table($this->publicTable('plans'))->where('id', $id)->first();
+        } catch (\Throwable $e) {
+            Log::warning('SelfServiceTrial: unable to create fallback trial plan', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     private function publicTable(string $table): string

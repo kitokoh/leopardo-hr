@@ -30,6 +30,7 @@
 - API self-service : la resolution des plans lit explicitement `public.plans` et restaure toujours le `search_path` apres la detection d'email tenant, afin d'eviter les 500 `relation plans does not exist`.
 - API billing : les webhooks Stripe acceptent les payloads sandbox/test lorsque le secret webhook est absent, traitent `invoice.paid`/`invoice.payment_failed` sur les invoices existantes, et conservent la route Chargily legacy.
 - Tests backend : `SelfServiceTrialTest` utilise maintenant le refresh public/tenant du projet afin de couvrir le vrai schema `plans` + `companies`.
+- API self-service : si `public.plans` existe mais ne contient encore aucun plan actif, le provisioning cree un plan `Trial` defensif au lieu de retourner un 503 au prospect.
 
 ## [4.16.250] - 2026-06-06
 
