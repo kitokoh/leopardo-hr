@@ -1,4 +1,4 @@
-# Diagramme de se9quence — Calcul de la Paie
+# Diagramme de séquence — Calcul de la Paie
 
 ```mermaid
 sequenceDiagram
@@ -42,7 +42,7 @@ sequenceDiagram
 
         Note over PS: brut_total =<br/>salaire_base + heurs_sup
 
-        Note over PS: Calcul deductions se9curite9 sociale<br/>(part salarie9e)
+        Note over PS: Calcul deductions sécurité sociale<br/>(part salarie9e)
 
         Note over PS: base_imposable =<br/>brut_total - cotisations_ss
 
@@ -87,13 +87,13 @@ sequenceDiagram
 
 ## Explication des interactions
 
-| E9tape | Interaction | De9tail |
+| Étape | Interaction | Détail |
 |--------|-------------|---------|
-| 1-2 | **Reque2te de validation de paie** | Le gestionnaire lance le calcul pour une liste d'employe9s, un mois et une anne9e donne9s. Les middleware RBAC et de limites de plan sont ve9rifie9s en premier lieu. |
+| 1-2 | **Requête de validation de paie** | Le gestionnaire lance le calcul pour une liste d'employe9s, un mois et une anne9e donne9s. Les middleware RBAC et de limites de plan sont vérifie9s en premier lieu. |
 | 3-4 | **Job asynchrone** | Le calcul e9tant potentiellement lourd, il est dispatche9 dans une queue Laravel. Le gestionnaire rec00oit un `job_id` pour interroger le statut via polling. |
-| 5a-b | **Configuration & mode9le RH** | Les re9glages de l'entreprise sont recupe9re9s depuis le cache Redis (cle9 `tenant:{uuid}:settings`). Les mode9les de cotisations et baremes IR sont issus du mode9le RH du pays. |
+| 5a-b | **Configuration & mode9le RH** | Les réglages de l'entreprise sont recupe9re9s depuis le cache Redis (cle9 `tenant:{uuid}:settings`). Les mode9les de cotisations et baremes IR sont issus du mode9le RH du pays. |
 | 5c-e | **Calcul du brut** | Le salaire de base est additionne9 aux heures supple9mentaires calcule9es e0 partir des `attendance_logs` du mois. |
-| 5f-h | **Deductions sociales et fiscales** | La se9curite9 sociale (part salarie9e) est de9duite du brut. L'imp00ft sur le revenu est calcule9 par tranches progressives. |
+| 5f-h | **Deductions sociales et fiscales** | La sécurité sociale (part salarie9e) est de9duite du brut. L'imp00ft sur le revenu est calcule9 par tranches progressives. |
 | 5i | **Pe9nalite9s de retard** | Les minutes de retard sont recupe9re9es depuis les pointages. La conversion en fuseau horaire de l'entreprise est obligatoire pour un calcul correct. |
 | 5j-k | **Avances & absences** | Les avances sur salaire actives sont de9duites du net. Les jours d'absence non re9mune9re9s sont e9galement de9duits. |
 | 5l-m | **Net e0 payer** | Le salaire net est calcule9 et stocke9 en base avec le statut `draft`. Le `amount_remaining` des avances est mis e0 jour. |

@@ -1,43 +1,49 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8 animate-fade-in">
     <!-- Header -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Administration Système</h1>
-          <p class="mt-1 text-sm text-gray-500">
-            Monitoring, configuration et automatisation de la plateforme
-          </p>
-        </div>
+    <div class="card overflow-hidden">
+      <div class="bg-slate-900 px-8 py-10 relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+        <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl -ml-24 -mb-24"></div>
 
-        <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-          <button
-            @click="runHealthCheck"
-            :disabled="isRunningHealthCheck"
-            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-          >
-            <HeartIcon class="h-4 w-4 mr-2" />
-            {{ isRunningHealthCheck ? 'Vérification...' : 'Health Check' }}
-          </button>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between relative z-10">
+          <div>
+            <h1 class="text-4xl font-black tracking-tight text-white uppercase">Administration Système</h1>
+            <p class="mt-2 text-slate-400 font-medium text-lg">
+              Monitoring, configuration et automatisation de la plateforme Leopardo RH.
+            </p>
+          </div>
 
-          <button
-            @click="toggleMaintenanceMode"
-            :class="[
-              'inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md',
-              systemStatus.maintenanceMode
-                ? 'border-red-300 text-red-700 bg-red-50 hover:bg-red-100'
-                : 'border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100'
-            ]"
-          >
-            <WrenchScrewdriverIcon class="h-4 w-4 mr-2" />
-            {{ systemStatus.maintenanceMode ? 'Désactiver maintenance' : 'Mode maintenance' }}
-          </button>
+          <div class="mt-6 sm:mt-0 flex flex-wrap gap-3">
+            <button
+              @click="runHealthCheck"
+              :disabled="isRunningHealthCheck"
+              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-white/10 hover:bg-white/20 transition-all border border-white/10"
+            >
+              <HeartIcon class="h-4 w-4 mr-2" :class="{ 'animate-pulse text-red-400': isRunningHealthCheck }" />
+              {{ isRunningHealthCheck ? 'Analyse...' : 'Health Check' }}
+            </button>
+
+            <button
+              @click="toggleMaintenanceMode"
+              :class="[
+                'inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all border shadow-lg',
+                systemStatus.maintenanceMode
+                  ? 'bg-red-600 text-white border-red-500 hover:bg-red-500'
+                  : 'bg-amber-500 text-white border-amber-400 hover:bg-amber-400'
+              ]"
+            >
+              <WrenchScrewdriverIcon class="h-4 w-4 mr-2" />
+              {{ systemStatus.maintenanceMode ? 'Sortir de Maintenance' : 'Maintenance' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- System Status Overview -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up">
       <SystemStatusCard
         title="Statut Global"
         :status="systemStatus.overall"
@@ -57,168 +63,134 @@
         icon="CloudIcon"
       />
       <SystemStatusCard
-        title="WebSocket"
+        title="Infrastructure"
         :status="systemStatus.websocket"
-        :details="systemStatus.websocketDetails"
-        icon="WifiIcon"
+        details="Render + Cloudflare"
+        icon="GlobeAltIcon"
       />
     </div>
 
-    <!-- Performance Metrics -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <!-- Real-time Metrics -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Métriques Temps Réel</h3>
-          <button
-            @click="refreshMetrics"
-            class="p-2 text-gray-400 hover:text-gray-500"
-          >
-            <ArrowPathIcon class="h-4 w-4" />
-          </button>
-        </div>
-        <RealTimeMetricsChart :data="performanceMetrics" />
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 animate-slide-up" style="animation-delay: 0.1s">
+      <!-- Performance Metrics -->
+      <div class="lg:col-span-8 space-y-8">
+        <section class="card">
+          <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Métriques Temps Réel</h3>
+            <button
+              @click="refreshMetrics"
+              class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <ArrowPathIcon class="h-5 w-5" />
+            </button>
+          </div>
+          <div class="p-6">
+            <RealTimeMetricsChart :data="performanceMetrics" />
+          </div>
+        </section>
+
+        <!-- API Testing Tools -->
+        <section class="card">
+          <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Outils de Test API</h3>
+            <button
+              @click="showApiTesterModal = true"
+              class="btn-secondary py-2"
+            >
+              <BeakerIcon class="h-4 w-4 mr-2" />
+              Nouveau test
+            </button>
+          </div>
+          <div class="p-6">
+            <ApiTestingTools
+              :tests="apiTests"
+              @run="runApiTest"
+              @edit="editApiTest"
+              @delete="deleteApiTest"
+            />
+          </div>
+        </section>
       </div>
 
-      <!-- Resource Usage -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Utilisation des Ressources</h3>
-        <ResourceUsageWidget :data="resourceUsage" />
-      </div>
-    </div>
+      <!-- Sidebar -->
+      <div class="lg:col-span-4 space-y-8">
+        <section class="card p-6">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-wider">Utilisation des Ressources</h3>
+          <ResourceUsageWidget :data="resourceUsage" />
+        </section>
 
-    <!-- Automation & Workflows -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <!-- Automated Tasks -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Tâches Automatisées</h3>
-          <button
-            @click="showCreateTaskModal = true"
-            class="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
-          >
-            + Nouvelle tâche
-          </button>
-        </div>
-        <AutomatedTasksList
-          :tasks="automatedTasks"
-          @toggle="toggleTask"
-          @edit="editTask"
-          @delete="deleteTask"
-        />
-      </div>
+        <!-- Security Monitoring -->
+        <section class="card">
+          <div class="border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Sécurité</h3>
+            <span
+              :class="[
+                'px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all duration-500 shadow-glass-sm',
+                securityStatus.level === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' :
+                securityStatus.level === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' :
+                'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/40'
+              ]"
+            >
+              {{ securityStatus.label }}
+            </span>
+          </div>
+          <div class="p-4">
+            <SecurityMonitoring
+              :alerts="securityAlerts"
+              :status="securityStatus"
+              @investigate="investigateAlert"
+              @dismiss="dismissSecurityAlert"
+            />
+          </div>
+        </section>
 
-      <!-- Backup Management -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Sauvegardes</h3>
-          <button
-            @click="createBackup"
-            :disabled="isCreatingBackup"
-            class="text-sm text-indigo-600 hover:text-indigo-500 font-medium disabled:opacity-50"
-          >
-            {{ isCreatingBackup ? 'Création...' : '+ Nouvelle sauvegarde' }}
-          </button>
-        </div>
-        <BackupManagement
-          :backups="backups"
-          @restore="restoreBackup"
-          @delete="deleteBackup"
-          @download="downloadBackup"
-        />
-      </div>
-
-      <!-- Security Monitoring -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-medium text-gray-900">Sécurité</h3>
-          <span
-            :class="[
-              'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-              securityStatus.level === 'high' ? 'bg-green-100 text-green-800' :
-              securityStatus.level === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-red-100 text-red-800'
-            ]"
-          >
-            {{ securityStatus.label }}
-          </span>
-        </div>
-        <SecurityMonitoring
-          :alerts="securityAlerts"
-          :status="securityStatus"
-          @investigate="investigateAlert"
-          @dismiss="dismissSecurityAlert"
-        />
+        <!-- Backup Management -->
+        <section class="card">
+          <div class="border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Sauvegardes</h3>
+            <button
+              @click="createBackup"
+              :disabled="isCreatingBackup"
+              class="text-xs font-black text-brand-600 hover:text-brand-700 uppercase tracking-widest disabled:opacity-50"
+            >
+              {{ isCreatingBackup ? 'Creation...' : 'Nouvelle' }}
+            </button>
+          </div>
+          <div class="p-2">
+            <BackupManagement
+              :backups="backups"
+              @restore="restoreBackup"
+              @delete="deleteBackup"
+              @download="downloadBackup"
+            />
+          </div>
+        </section>
       </div>
     </div>
 
     <!-- System Configuration -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Configuration Système</h3>
+    <div class="card">
+      <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Configuration Plateforme</h3>
         <div class="flex items-center space-x-3">
           <button
             @click="exportConfig"
-            class="text-sm text-gray-600 hover:text-gray-500"
+            class="text-xs font-bold text-slate-500 hover:text-slate-700 uppercase tracking-widest"
           >
-            Exporter config
+            Exporter JSON
           </button>
           <button
             @click="showImportModal = true"
-            class="text-sm text-indigo-600 hover:text-indigo-500"
+            class="text-xs font-bold text-brand-600 hover:text-brand-700 uppercase tracking-widest"
           >
-            Importer config
+            Importer
           </button>
         </div>
       </div>
-      <SystemConfiguration
-        :config="systemConfig"
-        @update="updateConfig"
-        @reset="resetConfig"
-      />
-    </div>
-
-    <!-- API Testing Tools -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Outils de Test API</h3>
-        <button
-          @click="showApiTesterModal = true"
-          class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-        >
-          <BeakerIcon class="h-4 w-4 mr-2" />
-          Nouveau test
-        </button>
-      </div>
-      <ApiTestingTools
-        :tests="apiTests"
-        @run="runApiTest"
-        @edit="editApiTest"
-        @delete="deleteApiTest"
-      />
-    </div>
-
-    <!-- Scaling & Load Balancing -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <!-- Auto Scaling -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Auto-Scaling</h3>
-        <AutoScalingManager
-          :config="scalingConfig"
-          :metrics="scalingMetrics"
-          @update-config="updateScalingConfig"
-          @manual-scale="manualScale"
-        />
-      </div>
-
-      <!-- Load Balancer -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Load Balancer</h3>
-        <LoadBalancerStatus
-          :nodes="loadBalancerNodes"
-          :traffic="trafficMetrics"
-          @toggle-node="toggleLoadBalancerNode"
-          @drain-node="drainNode"
+      <div class="p-6">
+        <SystemConfiguration
+          :config="systemConfig"
+          @update="updateConfig"
+          @reset="resetConfig"
         />
       </div>
     </div>
@@ -250,10 +222,6 @@ import {
   HeartIcon,
   WrenchScrewdriverIcon,
   ArrowPathIcon,
-  ServerIcon,
-  CircleStackIcon,
-  CloudIcon,
-  WifiIcon,
   BeakerIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
@@ -262,13 +230,10 @@ import { useToast } from 'vue-toastification'
 import SystemStatusCard from '@/components/system/SystemStatusCard.vue'
 import RealTimeMetricsChart from '@/components/system/RealTimeMetricsChart.vue'
 import ResourceUsageWidget from '@/components/system/ResourceUsageWidget.vue'
-import AutomatedTasksList from '@/components/system/AutomatedTasksList.vue'
 import BackupManagement from '@/components/system/BackupManagement.vue'
 import SecurityMonitoring from '@/components/system/SecurityMonitoring.vue'
 import SystemConfiguration from '@/components/system/SystemConfiguration.vue'
 import ApiTestingTools from '@/components/system/ApiTestingTools.vue'
-import AutoScalingManager from '@/components/system/AutoScalingManager.vue'
-import LoadBalancerStatus from '@/components/system/LoadBalancerStatus.vue'
 import CreateTaskModal from '@/components/system/CreateTaskModal.vue'
 import ImportConfigModal from '@/components/system/ImportConfigModal.vue'
 import ApiTesterModal from '@/components/system/ApiTesterModal.vue'
@@ -320,7 +285,7 @@ const apiTests = ref([])
 // Security status
 const securityStatus = reactive({
   level: 'high',
-  label: 'Sécurisé',
+  label: 'SÉCURISÉ',
   score: 95
 })
 

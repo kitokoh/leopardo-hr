@@ -1,6 +1,6 @@
 #  CHANGELOG - LEOPARDO RH 
 # Format : Keep a Changelog (keepachangelog.com)
-# Versioning : Semantic Versioning (semver.org)
+# Versioning : Semantic Versioning (semver.org) 
 
 ## [4.16.251] - 2026-06-13
 
@@ -26,7 +26,7 @@
 
 ## [4.16.250] - 2026-06-06
 
-### Added
+### Added 
 
 - Mobile manager/API : les horaires deviennent des regles entreprise enrichies avec pauses structurees, jours de repos, regles conges et notes internes.
 - API manager : ajout de `POST /api/v1/schedules/{schedule}/assign-employees` pour affecter une regle horaire a plusieurs employes du tenant courant avec garde anti-fuite inter-tenant.

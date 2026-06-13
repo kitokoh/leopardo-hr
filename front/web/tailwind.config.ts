@@ -9,6 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        brand: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+          950: '#042f2e',
+        },
         // Primary - Emerald
         emerald: {
           50: "#f0fdf4",
@@ -95,6 +108,11 @@ const config: Config = {
         "2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
         emerald: "0 20px 60px -15px rgba(16, 185, 129, 0.4)",
         cyan: "0 20px 60px -15px rgba(6, 182, 212, 0.4)",
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.1)',
+        'glass-sm': '0 4px 16px 0 rgba(0, 0, 0, 0.05)',
+        'glass-lg': '0 12px 48px 0 rgba(0, 0, 0, 0.15)',
+        'glass-inner': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.06)',
+        'premium': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       },
       animation: {
         "fade-in": "fadeIn 0.6s ease-out",

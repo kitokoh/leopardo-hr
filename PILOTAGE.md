@@ -1,6 +1,39 @@
-# 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.16.250 | 2026-06-13
-# CE FICHIER EST LA SOURCE DE VÉRITÉ OPÉRATIONNELLE DU PROJET
+﻿# 📑 PILOTAGE — LEOPARDO RH
+# PROGRAM_VERSION = 4.16.250 | 2026-06-06
+# CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
+# Statut des anciens fichiers : voir section "Gouvernance documentaire"
+
+> ⚠️ **Avertissement — divergence scope vs code livré**
+> La section « SCOPE MVP VERROUILLÉ » ci-dessous décrit le périmètre
+> initialement figé. Le code sur `main` **a dépassé ce périmètre** :
+> multitenancy mode `schema` activé, 6 sous-rôles manager (`principal`,
+> `rh`, `dept`, `comptable`, `superviseur`, `employee`), plusieurs pages
+> Blade, hébergement cible **Render** (voir `.github/workflows/deploy-main.yml`).
+> Tant que la décision produit n'est pas prise pour aligner ce document
+> sur la réalité, se référer à `docs/REFERENTIEL_PRODUIT/ROADMAP.md` + `docs/REFERENTIEL_PRODUIT/AUDIT_v2_v3_COMPLIANCE.md`
+> pour l'état réel. Voir aussi `docs/GESTION_PROJET/CORRECTIONS.md`.
+
+---
+
+## CONVENTION DE VERSIONING
+
+```
+VERSION  = 4.16.250  → Version globale du projet/pilotage (ce fichier fait foi)
+
+                              Doit rester synchrone avec :
+                                - CHANGELOG.md (dernière entrée)
+                                - api/config/app.php → 'version'
+                                - GET /api/v1/health → champ "version"
+DOC_VERSION      = propre   → Chaque doc technique garde sa version interne
+                              (ex: ERD v2.0, API v2.1, SQL v1.1)
+CODE_VERSION     = 0.1.0    → Version release applicative (Release MVP)
+
+Règle :
+- PROGRAM_VERSION est la SEULE version de référence pour l'état du projet
+- Les DOC_VERSION techniques ne remplacent JAMAIS PROGRAM_VERSION
+- CODE_VERSION sera gérée par git tag lors des releases
+- PROGRAM_VERSION change quand : scope modifié, gouvernance modifiée, phase changée
+```
 
 ---
 
