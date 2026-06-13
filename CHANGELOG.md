@@ -15,13 +15,15 @@
 - Vitrine : la route `POST /api/forms/signup` appelle desormais le backend `POST /api/v1/trial/signup` pour provisioner instantanement le tenant; en cas d'echec API, fallback vers le guided trial existant.
 - Vitrine : `SignupForm` affiche les credentials (email + mot de passe temporaire avec copier-coller) apres provisioning reussi, avec boutons "Se connecter" et "Telecharger l'app".
 - Planification : ajout de `docs/PLAN_ACTION2/`, un backlog atomique importable dans GitHub Projects pour piloter la prochaine phase produit, securite, stabilite, marketing, mobile, kiosk, API, finance, i18n et operations.
+- Vitrine : ajout de `LaunchOperatingSystemSection` pour vendre un lancement pilote en 7 jours avec resultats concrets par etape.
 
 ### Changed
 
 - API : `BillingController` injecte desormais `StripeService` et retire `chargily` de la validation payment_method (Stripe seul pour le lancement).
-- Vitrine : pricing mis a jour — Starter 39€/mois (jusqu'a 50 employes), Business 119€/mois (jusqu'a 250 employes), essai 30 jours.
+- Vitrine : pricing mis a jour avec les offres Pilot, Operations et Enterprise, essai 30 jours, puis tarification par employe actif pour les PME terrain.
 - Vitrine : FAQ mise a jour pour refleter l'essai de 30 jours et la creation instantanee d'espace.
 - Vitrine : CTA du formulaire signup change de "Recevoir mon acces d'essai" a "Creer mon espace d'essai gratuit".
+- Vitrine : le hero remplace les chiffres marketing inv�rifiables par des preuves produit concretes (3 apps mobiles, 2 apps web, essai 30 jours, pilote 7 jours) et repositionne Leopardo comme systeme operationnel terrain.
 - `PILOTAGE.md` : reecrit completement pour refleter v4.16.250+ — 8 surfaces, 87 modeles, 93 controleurs, 25 workflows CI/CD, 72 plans livres, priorites P0-P3, cibles MRR.
 - Module billing routes : suppression des webhooks Chargily orphelins, ajout des routes Stripe Checkout et Customer Portal.
 

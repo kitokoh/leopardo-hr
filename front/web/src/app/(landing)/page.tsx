@@ -19,6 +19,7 @@ import {
   MarketingReadinessSection,
   TrustedBrands,
   OperationalProofSection,
+  LaunchOperatingSystemSection,
 } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
@@ -35,6 +36,7 @@ export default function LandingPage() {
         <SocialProofMetrics locale={locale} />
         <TrustedBrands locale={locale} />
         <OperationalProofSection locale={locale} />
+        <LaunchOperatingSystemSection locale={locale} />
         <LegacyFeaturesSection />
         <ProductScreenshots locale={locale} />
         <MarketingReadinessSection locale={locale} />
