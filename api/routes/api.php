@@ -14,15 +14,19 @@ use App\Http\Controllers\Api\V1\MetricsController;
 use App\Http\Controllers\Api\V1\NotificationPreferenceController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\OnboardingController;
+use App\Http\Controllers\Api\V1\PaymentWebhookController;
 use App\Http\Controllers\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Api\V1\PlatformCompanySubscriptionController;
 use App\Http\Controllers\Api\V1\PlatformCountryDefaultsController;
+use App\Http\Controllers\Api\V1\PlatformCrmPipelineController;
 use App\Http\Controllers\Api\V1\PlatformMetricsOverviewController;
 use App\Http\Controllers\Api\V1\PlatformPlanController;
 use App\Http\Controllers\Api\V1\PrivacyController;
+use App\Http\Controllers\Api\V1\SelfServiceTrialController;
+use App\Http\Controllers\Api\V1\StripeWebhookController;
 use App\Http\Controllers\Api\V1\TranslationCatalogController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +60,15 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/invitation/{token}', [OnboardingController::class, 'show']);
         Route::post('/invitation/{token}/activate', [OnboardingController::class, 'activate']);
     });
+
+    // Self-service trial provisioning (public, throttle strict)
+    Route::middleware(['throttle:5,15'])->group(function (): void {
+        Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
+    });
+
+    // Stripe webhook (public, verified by signature)
+    Route::post('/webhooks/stripe', StripeWebhookController::class);
+    Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
@@ -144,5 +157,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
         Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
         Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
+
+        Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
     });
 });

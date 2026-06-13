@@ -153,7 +153,8 @@ import {
   LinkIcon,
   ArrowDownTrayIcon,
   ChartPieIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  FunnelIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -283,6 +284,12 @@ const navigation = computed(() => [
     path: '/support',
     icon: ChatBubbleLeftRightIcon,
     badge: dashboardStore.stats.supportTickets
+  },
+  {
+    name: 'crm-pipeline',
+    title: 'Pipeline CRM',
+    path: '/crm/pipeline',
+    icon: FunnelIcon
   },
   {
     name: 'system',
