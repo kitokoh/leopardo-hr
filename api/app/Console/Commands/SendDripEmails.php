@@ -60,7 +60,7 @@ class SendDripEmails extends Command
         // Since employees are in the tenant schema, we would need to switch tenant.
         // Let's just use the company's name for the managerName if we don't have it, or fake an employee object.
         $dummyManager = new Employee(['first_name' => 'Manager']);
-        
+
         Mail::to($companyEmail)->send(new TrialDripMail($company, $dummyManager, $type));
         $this->info("Sent {$type} email to {$companyEmail}");
     }
