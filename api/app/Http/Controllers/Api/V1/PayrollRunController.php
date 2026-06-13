@@ -14,6 +14,7 @@ use App\Http\Requests\Api\V1\Payroll\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PayrollRunController extends Controller
 {
@@ -190,7 +191,7 @@ class PayrollRunController extends Controller
         ]);
     }
 
-    public function export(Request $request, PayrollRun $payrollRun): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function export(Request $request, PayrollRun $payrollRun): StreamedResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -239,6 +240,6 @@ class PayrollRunController extends Controller
             }
 
             fclose($file);
-        }, "paie_" . $payrollRun->period_start . ".csv", $headers);
+        }, 'paie_' . $payrollRun->period_start . '.csv', $headers);
     }
 }

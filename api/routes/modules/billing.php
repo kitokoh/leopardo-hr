@@ -49,4 +49,3 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/billing/portal', [BillingController::class, 'customerPortal']);
     });
 });
-

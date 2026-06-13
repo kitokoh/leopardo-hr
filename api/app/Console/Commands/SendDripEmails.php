@@ -52,11 +52,11 @@ class SendDripEmails extends Command
         // To find the manager, we need to switch tenant scope or use the email directly if the company has the email.
         // Actually, the manager's email is often the company email, or we can just send it to the company email.
         $companyEmail = $company->email;
-        if (! $companyEmail) {
+        if (!$companyEmail) {
             return;
         }
 
-        // We can create a dummy Employee object just to pass the first_name if we can't easily query it, 
+        // We can create a dummy Employee object just to pass the first_name if we can't easily query it,
         // but it's better to fetch the principal manager.
         // Since employees are in the tenant schema, we would need to switch tenant.
         // Let's just use the company's name for the managerName if we don't have it, or fake an employee object.

@@ -76,7 +76,7 @@ class SelfServiceTrialController extends Controller
 
         // Resolve trial plan
         $trialPlan = $this->resolveTrialPlan();
-        if (! $trialPlan) {
+        if (!$trialPlan) {
             Log::error('SelfServiceTrial: No active plan found for trial provisioning.');
 
             return new JsonResponse([
@@ -89,13 +89,13 @@ class SelfServiceTrialController extends Controller
         // Parse name from email or provided fields
         $firstName = trim($validated['first_name'] ?? '');
         $lastName = trim($validated['last_name'] ?? '');
-        if (! $firstName) {
+        if (!$firstName) {
             $localPart = explode('@', $email)[0];
             $nameParts = preg_split('/[._\-+]/', $localPart, 2) ?: ['Manager'];
             $firstName = ucfirst($nameParts[0] ?? 'Manager');
             $lastName = isset($nameParts[1]) ? ucfirst($nameParts[1]) : 'Principal';
         }
-        if (! $lastName) {
+        if (!$lastName) {
             $lastName = 'Principal';
         }
 
@@ -295,7 +295,7 @@ class SelfServiceTrialController extends Controller
     private function resolveUniqueSlug(string $baseSlug): string
     {
         $slug = Str::slug($baseSlug);
-        if (! $slug) {
+        if (!$slug) {
             $slug = 'company-'.Str::random(6);
         }
         $candidate = $slug;

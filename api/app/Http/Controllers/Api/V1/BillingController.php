@@ -19,7 +19,8 @@ class BillingController extends Controller
 {
     public function __construct(
         private readonly StripeService $stripeService,
-    ) {}
+    ) {
+    }
 
     public function subscription(Request $request): JsonResponse
     {
@@ -187,7 +188,7 @@ class BillingController extends Controller
             'cancel_url' => 'required|url|max:500',
         ]);
 
-        if (!config('services.stripe.secret')) {
+        if (! config('services.stripe.secret')) {
             return new JsonResponse([
                 'error' => 'STRIPE_NOT_CONFIGURED',
                 'message' => 'Le paiement en ligne n\'est pas encore configuré.',

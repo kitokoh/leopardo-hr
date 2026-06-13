@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SectorTemplateService
 {
@@ -75,7 +76,7 @@ class SectorTemplateService
     private function sharedTableExists(string $table): bool
     {
         if (DB::getDriverName() !== 'pgsql') {
-            return \Illuminate\Support\Facades\Schema::hasTable($table);
+            return Schema::hasTable($table);
         }
 
         $result = DB::selectOne(

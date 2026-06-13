@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Models\Company;
 use App\Models\Subscription;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Stripe integration service for subscription management.
@@ -42,8 +45,8 @@ class StripeService
     public function createCheckoutSession(Company $company, string $plan, string $successUrl, string $cancelUrl): array
     {
         $priceId = $this->priceIds[$plan] ?? null;
-        if (! $priceId) {
-            throw new \InvalidArgumentException("Unknown plan: {$plan}");
+        if (!$priceId) {
+            throw new InvalidArgumentException("Unknown plan: {$plan}");
         }
 
         $response = Http::withToken($this->secretKey, 'Bearer')
@@ -65,13 +68,13 @@ class StripeService
                 'subscription_data[trial_period_days]' => 0,
             ]);
 
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             Log::error('Stripe: Failed to create checkout session', [
                 'status' => $response->status(),
                 'body' => $response->json(),
                 'company_id' => $company->id,
             ]);
-            throw new \RuntimeException('Failed to create Stripe checkout session.');
+            throw new RuntimeException('Failed to create Stripe checkout session.');
         }
 
         $data = $response->json();
@@ -94,12 +97,12 @@ class StripeService
                 'return_url' => $returnUrl,
             ]);
 
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             Log::error('Stripe: Failed to create portal session', [
                 'status' => $response->status(),
                 'customer' => $stripeCustomerId,
             ]);
-            throw new \RuntimeException('Failed to create Stripe portal session.');
+            throw new RuntimeException('Failed to create Stripe portal session.');
         }
 
         return $response->json('url');
@@ -112,7 +115,7 @@ class StripeService
      */
     public function verifyWebhookSignature(string $payload, string $sigHeader): ?array
     {
-        if (! $this->webhookSecret) {
+        if (!$this->webhookSecret) {
             Log::warning('Stripe: Webhook secret not configured, skipping verification.');
 
             return json_decode($payload, true);
@@ -127,7 +130,7 @@ class StripeService
         $timestamp = $elements['t'] ?? null;
         $signature = $elements['v1'] ?? null;
 
-        if (! $timestamp || ! $signature) {
+        if (!$timestamp || !$signature) {
             return null;
         }
 
@@ -174,7 +177,7 @@ class StripeService
         $subscriptionId = $session['subscription'] ?? null;
         $customerId = $session['customer'] ?? null;
 
-        if (! $companyId) {
+        if (!$companyId) {
             Log::warning('Stripe: checkout.session.completed without company_id', $session);
 
             return;
@@ -185,7 +188,7 @@ class StripeService
         }
 
         $company = Company::query()->find($companyId);
-        if (! $company) {
+        if (!$company) {
             Log::warning('Stripe: Company not found', ['company_id' => $companyId]);
 
             return;
@@ -225,7 +228,7 @@ class StripeService
     private function handleInvoicePaid(array $invoice): void
     {
         $subscriptionId = $invoice['subscription'] ?? null;
-        if (! $subscriptionId) {
+        if (!$subscriptionId) {
             return;
         }
 
@@ -237,10 +240,10 @@ class StripeService
             $subscription->update([
                 'status' => 'active',
                 'current_period_start' => isset($invoice['period_start'])
-                    ? \Carbon\Carbon::createFromTimestamp($invoice['period_start'])
+                    ? Carbon::createFromTimestamp($invoice['period_start'])
                     : now(),
                 'current_period_end' => isset($invoice['period_end'])
-                    ? \Carbon\Carbon::createFromTimestamp($invoice['period_end'])
+                    ? Carbon::createFromTimestamp($invoice['period_end'])
                     : now()->addMonth(),
             ]);
         }
@@ -252,7 +255,7 @@ class StripeService
             ->where('stripe_subscription_id', $subscription['id'] ?? '')
             ->first();
 
-        if (! $sub) {
+        if (!$sub) {
             return;
         }
 

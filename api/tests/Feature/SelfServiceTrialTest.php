@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Models\Employee;
-use App\Models\CompanyRequest;
 use App\Mail\TrialWelcomeMail;
 use App\Services\TenantManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,7 +36,7 @@ class SelfServiceTrialTest extends TestCase
                     'company' => ['id', 'name', 'slug'],
                     'manager' => ['email', 'first_name', 'last_name', 'temp_password'],
                     'trial' => ['days', 'ends_at'],
-                ]
+                ],
             ]);
 
         // Verify company created
