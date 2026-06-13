@@ -327,10 +327,23 @@ export default function LoginPage() {
   if (!mounted) return null;
 
   return (
-    <main className="min-h-screen bg-[#f6f7fb] px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl shadow-slate-200/70 lg:grid-cols-[0.95fr_1.05fr]">
-        <section className="relative hidden flex-col justify-between bg-slate-950 p-10 text-white lg:flex">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 px-4 py-6 text-slate-950 dark:text-white sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
+      </div>
+
+      {/* Grid Pattern overlay */}
+      <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#14b8a6 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
+
+      <div className="mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-6xl overflow-hidden rounded-[28px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-xl shadow-2xl shadow-slate-200/70 dark:shadow-black/50 lg:grid-cols-[0.95fr_1.05fr] relative z-10 animate-fade-in">
+        <section className="relative hidden flex-col justify-between bg-slate-950 p-10 text-white lg:flex overflow-hidden">
           <div className="absolute inset-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(45,212,191,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
+
+          {/* Internal section decoration */}
+          <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-500/20 rounded-full blur-3xl"></div>
+
           <div className="relative">
             <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200 transition hover:text-white">
               <ArrowRight className="h-4 w-4 rotate-180" aria-hidden="true" />
@@ -387,12 +400,14 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">{labels.login.clientSpace}</p>
-              <h2 className="text-3xl font-bold tracking-normal text-slate-950">{labels.login.title}</h2>
-              <p className="text-sm leading-6 text-slate-600">{labels.login.subtitle}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400">{labels.login.clientSpace}</p>
+              <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white uppercase italic">
+                {labels.login.title.split(' ')[0]} <span className="text-brand-600 not-italic font-black">{labels.login.title.split(' ').slice(1).join(' ')}</span>
+              </h2>
+              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{labels.login.subtitle}</p>
             </div>
 
-            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               {error ? (
                 <div
                   role="alert"
@@ -412,7 +427,7 @@ export default function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="block h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+                  className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-bold text-sm"
                   placeholder="manager@entreprise.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -420,7 +435,7 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-4">
-                <label htmlFor="password" className="block text-sm font-semibold text-slate-800">
+                <label htmlFor="password" className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                   {labels.login.password}
                 </label>
                 <div className="relative">
@@ -430,7 +445,7 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
                     required
-                    className="block h-12 w-full rounded-xl border border-slate-300 bg-white px-4 pr-12 text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+                    className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 px-4 pr-12 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 font-bold text-sm"
                     placeholder={labels.login.password}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -465,7 +480,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LockKeyhole className="h-4 w-4" aria-hidden="true" />}
                 {submitting ? labels.login.loading : labels.login.submit}
@@ -513,7 +528,8 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowDemoModal(true)}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 text-sm font-bold text-teal-900 transition hover:border-teal-300 hover:bg-teal-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-4 text-xs font-black uppercase tracking-widest text-emerald-600 transition hover:bg-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                aria-label="Connexion au compte test"
               >
                 <Sparkles className="h-4 w-4" aria-hidden="true" />
                 {labels.login.demoAccess}
