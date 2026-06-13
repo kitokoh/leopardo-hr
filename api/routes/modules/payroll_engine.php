@@ -74,6 +74,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payroll-runs/{payrollRun}/validate', [PayrollRunController::class, 'validateRun'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/cancel', [PayrollRunController::class, 'cancel'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/summary', [PayrollRunController::class, 'summary'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/export', [PayrollRunController::class, 'export'])->whereNumber('payrollRun');
 
         // Pay Slips (manager view)
         Route::get('/pay-slips', [PaySlipController::class, 'index']);

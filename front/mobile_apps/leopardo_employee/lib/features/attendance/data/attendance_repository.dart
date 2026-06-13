@@ -3,6 +3,8 @@ import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
+import 'package:hive/hive.dart';
 
 class AttendanceRepository {
   final ApiClient apiClient;
@@ -28,10 +30,7 @@ class AttendanceRepository {
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
-    final response = await apiClient.requestWithRetry(
-      '/attendance/check-in',
-      method: 'POST',
-      data: {
+      final payload = {
         'work_type': workType,
         'device_timezone': _deviceTimezoneContext(),
         if (gpsLat != null) 'gps_lat': gpsLat,
@@ -39,11 +38,29 @@ class AttendanceRepository {
         if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
         if (punchNote != null && punchNote.trim().isNotEmpty)
           'punch_note': punchNote.trim(),
-      },
-      maxRetriesOverride: 0,
-      timeoutOverride: _actionTimeout,
-    );
-    return AttendanceLog.fromJson(_dataMap(response.data));
+      };
+      
+      try {
+        final response = await apiClient.requestWithRetry(
+          '/attendance/check-in',
+          method: 'POST',
+          data: payload,
+          maxRetriesOverride: 0,
+          timeoutOverride: _actionTimeout,
+        );
+        return AttendanceLog.fromJson(_dataMap(response.data));
+      } catch (e) {
+        if (e is ApiException && (e.message.toLowerCase().contains('connexion') || e.message.toLowerCase().contains('internet'))) {
+          final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+          await box.add({'type': 'check-in', 'payload': payload, 'timestamp': DateTime.now().toIso8601String()});
+          return AttendanceLog(
+            id: 0, employeeId: 0, date: DateTime.now(), status: 'offline_sync_pending',
+            employeeName: 'Vous', sessionNumber: 1, workType: workType,
+            checkIn: DateTime.now(),
+          );
+        }
+        rethrow;
+      }
   }
 
   Future<AttendanceLog> checkOut({
@@ -53,10 +70,7 @@ class AttendanceRepository {
     double? gpsLng,
     double? gpsAccuracy,
   }) async {
-    final response = await apiClient.requestWithRetry(
-      '/attendance/check-out',
-      method: 'POST',
-      data: {
+      final payload = {
         'work_type': workType,
         'device_timezone': _deviceTimezoneContext(),
         if (gpsLat != null) 'gps_lat': gpsLat,
@@ -64,11 +78,29 @@ class AttendanceRepository {
         if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
         if (punchNote != null && punchNote.trim().isNotEmpty)
           'punch_note': punchNote.trim(),
-      },
-      maxRetriesOverride: 0,
-      timeoutOverride: _actionTimeout,
-    );
-    return AttendanceLog.fromJson(_dataMap(response.data));
+      };
+      
+      try {
+        final response = await apiClient.requestWithRetry(
+          '/attendance/check-out',
+          method: 'POST',
+          data: payload,
+          maxRetriesOverride: 0,
+          timeoutOverride: _actionTimeout,
+        );
+        return AttendanceLog.fromJson(_dataMap(response.data));
+      } catch (e) {
+        if (e is ApiException && (e.message.toLowerCase().contains('connexion') || e.message.toLowerCase().contains('internet'))) {
+          final box = await Hive.openBox<Map<dynamic, dynamic>>('offline_punches');
+          await box.add({'type': 'check-out', 'payload': payload, 'timestamp': DateTime.now().toIso8601String()});
+          return AttendanceLog(
+            id: 0, employeeId: 0, date: DateTime.now(), status: 'offline_sync_pending',
+            employeeName: 'Vous', sessionNumber: 1, workType: workType,
+            checkOut: DateTime.now(),
+          );
+        }
+        rethrow;
+      }
   }
 
   Future<AttendanceLog> updateAttendanceLog({

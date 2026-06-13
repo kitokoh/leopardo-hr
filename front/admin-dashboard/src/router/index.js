@@ -116,6 +116,15 @@ const routes = [
         }
       },
       {
+        path: '/crm/pipeline',
+        name: 'crm-pipeline',
+        component: () => import('@/views/crm/CrmPipelineView.vue'),
+        meta: {
+          title: 'Pipeline CRM',
+          icon: 'FunnelIcon'
+        }
+      },
+      {
         path: '/system',
         name: 'system',
         component: () => import('@/views/system/SystemView.vue'),

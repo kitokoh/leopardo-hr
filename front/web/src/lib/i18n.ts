@@ -18,6 +18,7 @@ export type StoredAuthUser = {
     timezone?: string | null;
     currency?: string | null;
     features?: Record<string, unknown> | null;
+    metadata?: Record<string, unknown> | null;
   } | null;
   plan?: {
     name?: string | null;
