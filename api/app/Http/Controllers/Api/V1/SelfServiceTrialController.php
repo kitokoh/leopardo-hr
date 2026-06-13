@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TrialWelcomeMail;
 use Illuminate\Support\Str;
 
 /**
@@ -144,6 +146,19 @@ class SelfServiceTrialController extends Controller
             'manager_email' => $email,
             'source' => $validated['source'] ?? 'self_service_trial',
         ]);
+
+        // Send welcome email with credentials
+        try {
+            Mail::to($email)->send(
+                new TrialWelcomeMail($result['company'], $result['manager'], $tempPassword)
+            );
+        } catch (\Throwable $e) {
+            Log::error('SelfServiceTrial: Failed to send welcome email', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+            // We don't fail the response, credentials are still shown in UI
+        }
 
         return new JsonResponse([
             'success' => true,
