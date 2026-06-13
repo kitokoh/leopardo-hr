@@ -529,7 +529,6 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setShowDemoModal(true)}
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-4 text-xs font-black uppercase tracking-widest text-emerald-600 transition hover:bg-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-                aria-label="Connexion au compte test"
               >
                 <Sparkles className="h-4 w-4" aria-hidden="true" />
                 {labels.login.demoAccess}
