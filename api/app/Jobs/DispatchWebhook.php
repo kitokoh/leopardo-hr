@@ -13,6 +13,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Throwable;
 
 class DispatchWebhook implements ShouldQueue
 {
@@ -41,15 +43,22 @@ class DispatchWebhook implements ShouldQueue
             'data' => $this->payload,
         ];
 
-        $signature = hash_hmac('sha256', json_encode($body, JSON_THROW_ON_ERROR), $this->endpoint->secret);
+        $jsonBody = json_encode($body, JSON_THROW_ON_ERROR);
+        $timestamp = time();
+        $signedPayload = "{$timestamp}.{$jsonBody}";
+        $signature = hash_hmac('sha256', $signedPayload, $this->endpoint->secret);
+        $svixSignature = "v1={$signature},t={$timestamp}";
 
         $start = microtime(true);
 
         try {
             $response = Http::timeout(10)
                 ->withHeaders([
-                    'X-Leopardo-Event' => $this->event,
-                    'X-Leopardo-Signature' => $signature,
+                    'Webhook-Id' => Str::uuid()->toString(),
+                    'Webhook-Timestamp' => (string) $timestamp,
+                    'Webhook-Signature' => $svixSignature,
+                    'X-Leopardo-Event' => $this->event, // Keep for legacy
+                    'X-Leopardo-Signature' => $signature, // Keep for legacy
                     'Content-Type' => 'application/json',
                 ])
                 ->post($this->endpoint->url, $body);
@@ -76,7 +85,7 @@ class DispatchWebhook implements ShouldQueue
                     $this->endpoint->update(['active' => false]);
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $durationMs = (int) ((microtime(true) - $start) * 1000);
 
             WebhookDelivery::create([

@@ -1,10 +1,22 @@
 'use client';
 
-import React, { useReducer } from 'react';
+import React, { useReducer, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { AlertCircle, Building2, CheckCircle, Mail, Phone, Sparkles, Users } from 'lucide-react';
+import {
+  AlertCircle,
+  Building2,
+  CheckCircle,
+  ClipboardCopy,
+  Download,
+  LogIn,
+  Mail,
+  Phone,
+  Rocket,
+  Sparkles,
+  Users,
+} from 'lucide-react';
 import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
 import { Card } from '@/modules/vitrine/components/common/Card';
@@ -42,6 +54,30 @@ export function SignupForm({
   const [formState, dispatch] = useReducer(createFormReducer(), initialFormState);
   const { trackSignup } = useAnalyticsForm();
   const role = watch('role');
+  const [provisionedData, setProvisionedData] = useState<{
+    manager?: { email: string; temp_password: string };
+    trial?: { days: number; ends_at: string };
+    company?: { name: string };
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyPassword = async (password: string) => {
+    try {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for insecure contexts
+      const textarea = document.createElement('textarea');
+      textarea.value = password;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const onSubmit = async (data: SignupFormData) => {
     dispatch({ type: 'SUBMIT_START' });
@@ -58,6 +94,11 @@ export function SignupForm({
           employees: data.employees,
         });
 
+        // Check if we got provisioned credentials
+        if (response.data?.manager?.temp_password) {
+          setProvisionedData(response.data);
+        }
+
         dispatch({
           type: 'SUBMIT_SUCCESS',
           payload: { message: response.message },
@@ -65,10 +106,6 @@ export function SignupForm({
 
         reset();
         onSuccess?.(data);
-
-        setTimeout(() => {
-          dispatch({ type: 'RESET' });
-        }, 8000);
       } else {
         dispatch({
           type: 'SUBMIT_ERROR',
@@ -110,7 +147,89 @@ export function SignupForm({
           d'essai le plus adapte sous 24h ouvrables.
         </p>
 
-        {formState.isSuccess && (
+        {formState.isSuccess && provisionedData?.manager && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="mb-6 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60 dark:border-emerald-800 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20"
+          >
+            <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
+              <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <h3 className="text-lg font-black text-emerald-900 dark:text-emerald-100">
+                Votre espace est pret !
+              </h3>
+            </div>
+
+            <div className="space-y-4 p-5">
+              <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800/60 dark:ring-slate-700">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Identifiants de connexion
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">Email</span>
+                    <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">
+                      {provisionedData.manager.email}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">Mot de passe</span>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-900 dark:bg-slate-700 dark:text-white">
+                        {provisionedData.manager.temp_password}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copyPassword(provisionedData.manager!.temp_password)}
+                        className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                        title="Copier le mot de passe"
+                      >
+                        <ClipboardCopy className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  {copied && (
+                    <p className="text-right text-xs font-medium text-emerald-600">Copie !</p>
+                  )}
+                </div>
+              </div>
+
+              {provisionedData.trial && (
+                <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+                  Essai gratuit de{' '}
+                  <span className="font-bold text-emerald-600">
+                    {provisionedData.trial.days} jours
+                  </span>{' '}
+                  — aucune carte bancaire requise.
+                </p>
+              )}
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <a
+                  href="https://gestionemployerbackend.onrender.com/api/v1/auth/login"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Se connecter
+                </a>
+                <a
+                  href="/download"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                >
+                  <Download className="h-4 w-4" />
+                  Telecharger l'app
+                </a>
+              </div>
+
+              <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+                Changez votre mot de passe des la premiere connexion.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {formState.isSuccess && !provisionedData?.manager && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -122,8 +241,7 @@ export function SignupForm({
                 {formState.message}
               </p>
               <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-200">
-                Votre demande est exploitable par l'equipe commerciale. Si les webhooks CRM/email
-                sont actifs, elle est aussi transmise automatiquement.
+                Notre equipe vous contactera sous 24h ouvrables avec vos acces d'essai.
               </p>
             </div>
           </motion.div>
@@ -251,12 +369,11 @@ export function SignupForm({
             loading={formState.isSubmitting}
             disabled={formState.isSubmitting || formState.isSuccess}
           >
-            {formState.isSubmitting ? "Envoi de la demande..." : "Recevoir mon acces d'essai"}
+            {formState.isSubmitting ? 'Creation de votre espace...' : 'Creer mon espace d\'essai gratuit'}
           </Button>
 
           <p className="rounded-xl bg-slate-50 px-4 py-3 text-center text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-            Aucun mot de passe n'est demande ici. Le compte d'essai est cree uniquement apres
-            validation commerciale ou provisioning platform admin.
+            Votre espace d'essai est cree instantanement. 30 jours gratuits, aucune carte bancaire requise.
           </p>
 
           <p className="text-center text-sm text-slate-600 dark:text-slate-400">

@@ -51,38 +51,38 @@ export const footerLinks = {
 export const pricingPlans = [
   {
     name: "Starter",
-    price: 29,
+    price: 39,
     currency: "EUR",
     period: "mois",
-    description: "Pour les petites équipes",
+    description: "Pour les petites equipes",
     features: [
-      "Jusqu'à 10 employés",
-      "Pointage numérique",
+      "Jusqu'a 50 employes",
+      "Pointage numerique + GPS",
       "Gestion des absences",
-      "Paie automatisée",
+      "Paie automatisee",
       "Support email",
     ],
     cta: {
-      text: "Essai gratuit",
+      text: "Essai gratuit 30 jours",
       href: "/signup?plan=starter",
     },
   },
   {
     name: "Business",
-    price: 79,
+    price: 119,
     currency: "EUR",
     period: "mois",
     description: "Pour les PME en croissance",
     features: [
-      "Jusqu'à 100 employés",
-      "Toutes les fonctionnalités Starter",
-      "Cabinet numérique",
-      "Marketing digital",
+      "Jusqu'a 250 employes",
+      "Toutes les fonctionnalites Starter",
+      "Cabinet numerique",
+      "Kiosque biometrique",
       "Support prioritaire",
-      "Intégrations avancées",
+      "Integrations avancees",
     ],
     cta: {
-      text: "Essai gratuit",
+      text: "Essai gratuit 30 jours",
       href: "/signup?plan=business",
     },
     highlighted: true,
@@ -136,7 +136,7 @@ export const faqItems = [
   {
     question: "Essai gratuit inclus?",
     answer:
-      "Oui, tous les plans incluent un essai gratuit de 14 jours sans carte bancaire requise.",
+      "Oui, tous les plans incluent un essai gratuit de 30 jours sans carte bancaire requise. Votre espace est cree instantanement.",
   },
   {
     question: "Contrat long terme?",

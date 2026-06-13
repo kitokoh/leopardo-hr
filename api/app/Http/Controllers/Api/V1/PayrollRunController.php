@@ -10,9 +10,11 @@ use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Services\Payroll\PayrollCalculator;
+use App\Http\Requests\Api\V1\Payroll\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PayrollRunController extends Controller
 {
@@ -39,7 +41,7 @@ class PayrollRunController extends Controller
         return PayrollRunResource::collection($runs)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StorePayrollRunRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -47,12 +49,7 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'period_start' => 'required|date',
-            'period_end' => 'required|date|after:period_start',
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN',
-            'notes' => 'nullable|string|max:2000',
-        ]);
+        $validated = $request->validated();
 
         $run = PayrollRun::create([
             'company_id' => $actor->company_id,
@@ -192,5 +189,57 @@ class PayrollRunController extends Controller
                 ]),
             ],
         ]);
+    }
+
+    public function export(Request $request, PayrollRun $payrollRun): StreamedResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->isManager() === false) {
+            abort(403);
+        }
+
+        $slips = $payrollRun->paySlips()->with('employee')->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="paie_' . $payrollRun->period_start . '.csv"',
+        ];
+
+        return response()->streamDownload(function () use ($slips) {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for Excel UTF-8 compatibility
+            fwrite($file, "\xEF\xBB\xBF");
+            
+            fputcsv($file, [
+                'Matricule',
+                'Nom',
+                'Prénom',
+                'Type Salaire',
+                'Salaire Brut',
+                'Déductions',
+                'Salaire Net',
+                'Coût Employeur'
+            ], ';');
+
+            foreach ($slips as $slip) {
+                fputcsv($file, [
+                    $slip->employee->matricule ?? '',
+                    $slip->employee->last_name ?? '',
+                    $slip->employee->first_name ?? '',
+                    $slip->employee->salary_type ?? '',
+                    number_format((float) $slip->gross_salary, 2, '.', ''),
+                    number_format((float) $slip->total_deductions, 2, '.', ''),
+                    number_format((float) $slip->net_salary, 2, '.', ''),
+                    number_format((float) $slip->total_cost, 2, '.', '')
+                ], ';');
+            }
+
+            fclose($file);
+        }, 'paie_' . $payrollRun->period_start . '.csv', $headers);
     }
 }

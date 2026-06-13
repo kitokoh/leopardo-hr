@@ -14,6 +14,7 @@ class CompanyProvisioningService
     public function __construct(
         private readonly UserInvitationService $invitationService,
         private readonly TenantManager $tenantManager,
+        private readonly SectorTemplateService $sectorTemplateService,
     ) {}
 
     /**
@@ -78,6 +79,9 @@ class CompanyProvisioningService
                         'job_title' => 'Manager principal',
                     ],
                 ]);
+
+                // P1.3: Apply sectorial template
+                $this->sectorTemplateService->applyTemplate($company);
             } finally {
                 $this->tenantManager->resetToPrevious();
             }

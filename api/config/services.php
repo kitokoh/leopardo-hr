@@ -36,4 +36,12 @@ return [
         'credentials' => env('FIREBASE_SERVICE_ACCOUNT_JSON'),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET_KEY'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'price_starter' => env('STRIPE_PRICE_STARTER'),
+        'price_business' => env('STRIPE_PRICE_BUSINESS'),
+        'price_enterprise' => env('STRIPE_PRICE_ENTERPRISE'),
+    ],
+
 ];

@@ -10,6 +10,7 @@ use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\Employee;
+use App\Services\ContractPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -351,7 +352,7 @@ class ContractController extends Controller
         return ContractResource::collection($contracts)->response();
     }
 
-    public function generatePdf(Request $request, Contract $contract): JsonResponse
+    public function generatePdf(Request $request, Contract $contract, ContractPdfGenerator $generator)
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -362,14 +363,11 @@ class ContractController extends Controller
             abort(403);
         }
 
-        $data = $contract->load(['employee:id,first_name,last_name,email', 'department:id,name', 'position:id,name', 'amendments'])->toArray();
+        $pdfContent = $generator->generate($contract);
 
-        return response()->json([
-            'data' => [
-                'contract' => $data,
-                'generated_at' => now()->toIso8601String(),
-                'message' => 'PDF data ready. Integrate with DomPDF/Snappy for file generation.',
-            ],
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="contract_'.$contract->id.'.pdf"',
         ]);
     }
 }
