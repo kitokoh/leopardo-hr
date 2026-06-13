@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;
 use App\Http\Controllers\Api\V1\PlatformCompanySubscriptionController;
+use App\Http\Controllers\Api\V1\PlatformCrmPipelineController;
 use App\Http\Controllers\Api\V1\PlatformCountryDefaultsController;
 use App\Http\Controllers\Api\V1\PlatformMetricsOverviewController;
 use App\Http\Controllers\Api\V1\PlatformPlanController;
@@ -154,5 +155,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/company-requests', [PlatformCompanyRequestController::class, 'index']);
         Route::get('/company-requests/{id}', [PlatformCompanyRequestController::class, 'show'])->whereNumber('id');
         Route::patch('/company-requests/{id}', [PlatformCompanyRequestController::class, 'updateStatus'])->whereNumber('id');
+        
+        Route::get('/crm/pipeline', PlatformCrmPipelineController::class);
     });
 });

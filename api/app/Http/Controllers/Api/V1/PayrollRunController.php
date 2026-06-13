@@ -39,7 +39,7 @@ class PayrollRunController extends Controller
         return PayrollRunResource::collection($runs)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(\App\Http\Requests\Api\V1\Payroll\StorePayrollRunRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -47,12 +47,7 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'period_start' => 'required|date',
-            'period_end' => 'required|date|after:period_start',
-            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN',
-            'notes' => 'nullable|string|max:2000',
-        ]);
+        $validated = $request->validated();
 
         $run = PayrollRun::create([
             'company_id' => $actor->company_id,
