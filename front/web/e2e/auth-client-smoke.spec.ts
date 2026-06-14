@@ -27,6 +27,9 @@ const managerUser = {
     language: 'fr',
     timezone: 'Africa/Algiers',
     currency: 'DZD',
+    metadata: {
+      onboarding_completed: true,
+    },
   },
 };
 

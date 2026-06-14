@@ -9,10 +9,10 @@
 - Planification : extension PLAN_ACTION2 v1.1 a 130 tickets avec scopes pays/paie/pointage, communication/annonces/discussions et supervision GitHub Projects multi-agents.
 - Outillage : ajout des scripts alidate-plan-action2.ps1, pick-plan-action2-task.ps1, sync-plan-action2-project.ps1 et du workflow PLAN_ACTION2 Project Sync pour valider, selectionner et synchroniser les tickets PA2 vers GitHub Projects.
 
-- API : ajout de `POST /api/v1/trial/signup` — endpoint public de provisioning self-service qui cree un tenant trial (30 jours) avec manager principal en < 30 secondes, sans intervention super-admin.
+- API : ajout de `POST /api/v1/trial/signup` â€” endpoint public de provisioning self-service qui cree un tenant trial (30 jours) avec manager principal en < 30 secondes, sans intervention super-admin.
 - API : ajout de `SelfServiceTrialController` avec generation de mot de passe lisible, detection de doublon email, creation `CompanyRequest` pour tracabilite CRM, et fallback defensif search_path.
-- API : ajout de `StripeService` — integration Stripe Checkout (sessions, portail client) et webhooks (checkout.session.completed, invoice.paid, customer.subscription.updated/deleted) via API REST directe sans SDK.
-- API : ajout de `StripeWebhookController` — endpoint public `POST /api/v1/webhooks/stripe` avec verification signature HMAC-SHA256 et retry-safe (200 meme en cas d'erreur de traitement).
+- API : ajout de `StripeService` â€” integration Stripe Checkout (sessions, portail client) et webhooks (checkout.session.completed, invoice.paid, customer.subscription.updated/deleted) via API REST directe sans SDK.
+- API : ajout de `StripeWebhookController` â€” endpoint public `POST /api/v1/webhooks/stripe` avec verification signature HMAC-SHA256 et retry-safe (200 meme en cas d'erreur de traitement).
 - API : ajout des routes `POST /billing/checkout` et `GET /billing/portal` dans le module billing pour les managers principal.
 - API : ajout de la configuration Stripe dans `config/services.php` et `.env.example` (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_STARTER/BUSINESS/ENTERPRISE).
 - Vitrine : la route `POST /api/forms/signup` appelle desormais le backend `POST /api/v1/trial/signup` pour provisioner instantanement le tenant; en cas d'echec API, fallback vers le guided trial existant.
@@ -26,8 +26,8 @@
 - Vitrine : pricing mis a jour avec les offres Pilot, Operations et Enterprise, essai 30 jours, puis tarification par employe actif pour les PME terrain.
 - Vitrine : FAQ mise a jour pour refleter l'essai de 30 jours et la creation instantanee d'espace.
 - Vitrine : CTA du formulaire signup change de "Recevoir mon acces d'essai" a "Creer mon espace d'essai gratuit".
-- Vitrine : le hero remplace les chiffres marketing inv�rifiables par des preuves produit concretes (3 apps mobiles, 2 apps web, essai 30 jours, pilote 7 jours) et repositionne Leopardo comme systeme operationnel terrain.
-- `PILOTAGE.md` : reecrit completement pour refleter v4.16.250+ — 8 surfaces, 87 modeles, 93 controleurs, 25 workflows CI/CD, 72 plans livres, priorites P0-P3, cibles MRR.
+- Vitrine : le hero remplace les chiffres marketing invérifiables par des preuves produit concretes (3 apps mobiles, 2 apps web, essai 30 jours, pilote 7 jours) et repositionne Leopardo comme systeme operationnel terrain.
+- `PILOTAGE.md` : reecrit completement pour refleter v4.16.250+ â€” 8 surfaces, 87 modeles, 93 controleurs, 25 workflows CI/CD, 72 plans livres, priorites P0-P3, cibles MRR.
 - Module billing routes : suppression des webhooks Chargily orphelins, ajout des routes Stripe Checkout et Customer Portal.
 
 ### Fixed
@@ -479,7 +479,7 @@
 ### Fixed
 
 - Plan 60 avances salaire : ajout de tests backend couvrant le workflow financier complet `manager-approve -> mark-paid -> confirm-received`, ainsi que les blocages si paiement ou confirmation sont faits trop tot.
-- Tests backend : le schema MVP de test et le fixture PostgreSQL incluent maintenant les colonnes de double validation des avances (`validation_status`, declaration paiement, confirmation employe), afin que les contrats Plan 60 soient réellement testables.
+- Tests backend : le schema MVP de test et le fixture PostgreSQL incluent maintenant les colonnes de double validation des avances (`validation_status`, declaration paiement, confirmation employe), afin que les contrats Plan 60 soient rÃ©ellement testables.
 
 ## [4.16.207] - 2026-06-01
 
@@ -574,14 +574,14 @@
 ## [Unreleased]
 
 ### Added
-- Plan 60: Double validation des avances salaire (migration, contrôleur, routes)
-- Plan 61: Service cycles de paie et solde employé (PayrollCycleService, PayrollCycleController)
-- Plan 62: Génération PDF bulletins de paie async (GeneratePaySlipPdfJob, queue `pdf`)
-- Plan 63: Architecture Redis Upstash — queues nommées (pdf, notifications, payroll, webhooks), QueueHealthCheck
-- Plan 64: Clôture automatique présences (AutoCloseAttendanceCommand, scheduler horaire)
+- Plan 60: Double validation des avances salaire (migration, contrÃ´leur, routes)
+- Plan 61: Service cycles de paie et solde employÃ© (PayrollCycleService, PayrollCycleController)
+- Plan 62: GÃ©nÃ©ration PDF bulletins de paie async (GeneratePaySlipPdfJob, queue `pdf`)
+- Plan 63: Architecture Redis Upstash â€” queues nommÃ©es (pdf, notifications, payroll, webhooks), QueueHealthCheck
+- Plan 64: ClÃ´ture automatique prÃ©sences (AutoCloseAttendanceCommand, scheduler horaire)
 - Plan 65: Paiement en masse (ProcessBulkPaymentJob, BulkPaymentController avec progression Redis)
-- Redis Upstash TLS configuré dans database.php et queue.php
-- README: section architecture complète (Render, Vercel, Cloudflare, Upstash, Firebase)
+- Redis Upstash TLS configurÃ© dans database.php et queue.php
+- README: section architecture complÃ¨te (Render, Vercel, Cloudflare, Upstash, Firebase)
 
 ### Changed
 - SalaryAdvance: nouveaux champs double validation (manager_approved_at, payment_declared_at, employee_confirmed_at, validation_status)
@@ -596,25 +596,25 @@
 
 ### Added
 
-- Mobile employee / manager / platform admin : ajout d'un `SplashScreen` natif Flutter (logo Leopardo + glow émeraude + barre de progression) affiché pendant `checkAuth()`. L'app ne reste plus sur un écran vide pendant le cold start Render.
+- Mobile employee / manager / platform admin : ajout d'un `SplashScreen` natif Flutter (logo Leopardo + glow Ã©meraude + barre de progression) affichÃ© pendant `checkAuth()`. L'app ne reste plus sur un Ã©cran vide pendant le cold start Render.
 
 ### Changed
 
-- Mobile employee / manager / platform admin : le router démarre sur `/splash` (ou `/platform/splash`) et redirige automatiquement vers `/welcome` (non connecté) ou `/` (connecté) dès que le bootstrap auth est terminé. Plus de cas où `isLoading=true` laisse l'utilisateur sur un écran blanc/logo figé.
+- Mobile employee / manager / platform admin : le router dÃ©marre sur `/splash` (ou `/platform/splash`) et redirige automatiquement vers `/welcome` (non connectÃ©) ou `/` (connectÃ©) dÃ¨s que le bootstrap auth est terminÃ©. Plus de cas oÃ¹ `isLoading=true` laisse l'utilisateur sur un Ã©cran blanc/logo figÃ©.
 
 ## [4.16.192] - 2026-05-31
 
 ### Changed
 
-- Mobile startup : `StartupGate` ne montre plus l'écran "Preparation de votre espace" pendant le bootstrap. L'app démarre directement sur fond neutre (< 300ms sur device normal) ; seule une erreur critique affiche un panneau de récupération.
-- Mobile employee / manager : refonte des écrans d'accueil (`WelcomeScreen`) — suppression du carousel storytelling ; accès direct aux CTA principaux (Se connecter / Demo) avec logo, tagline et grille de modules visibles d'emblée.
-- Mobile employee / manager : refonte des écrans de connexion (`LoginScreen`) — formulaire direct sans bloc hero verbeux, snackbar d'erreur floating, boutons aux bonnes tailles (52px principal), disposition compacte sur petits écrans (< 700px).
+- Mobile startup : `StartupGate` ne montre plus l'Ã©cran "Preparation de votre espace" pendant le bootstrap. L'app dÃ©marre directement sur fond neutre (< 300ms sur device normal) ; seule une erreur critique affiche un panneau de rÃ©cupÃ©ration.
+- Mobile employee / manager : refonte des Ã©crans d'accueil (`WelcomeScreen`) â€” suppression du carousel storytelling ; accÃ¨s direct aux CTA principaux (Se connecter / Demo) avec logo, tagline et grille de modules visibles d'emblÃ©e.
+- Mobile employee / manager : refonte des Ã©crans de connexion (`LoginScreen`) â€” formulaire direct sans bloc hero verbeux, snackbar d'erreur floating, boutons aux bonnes tailles (52px principal), disposition compacte sur petits Ã©crans (< 700px).
 
 ## [4.16.191] - 2026-05-31
 
 ### Fixed
 
-- Mobile employee/manager/platform admin : correction du blocage logo infini introduit par le timeout global de 8s dans `StartupGate`. Les ops critiques (`_openOfflineCache`, `_initializeLocales`) sont désormais exécutées sans timeout via `criticalInitializer` ; seul Google Sign-In (optionnel) est soumis à `optionalTimeout`. L'app ne peut plus rester bloquée sur l'écran de chargement à cause d'un timeout silencieux sur Hive ou les locales.
+- Mobile employee/manager/platform admin : correction du blocage logo infini introduit par le timeout global de 8s dans `StartupGate`. Les ops critiques (`_openOfflineCache`, `_initializeLocales`) sont dÃ©sormais exÃ©cutÃ©es sans timeout via `criticalInitializer` ; seul Google Sign-In (optionnel) est soumis Ã  `optionalTimeout`. L'app ne peut plus rester bloquÃ©e sur l'Ã©cran de chargement Ã  cause d'un timeout silencieux sur Hive ou les locales.
 
 ## [4.16.190] - 2026-05-29
 
@@ -652,7 +652,7 @@
 
 ### Changed
 
-- API notifications : compatibilite mobile renforcee avec le filtre `unread_only`, suppression scoppée utilisateur via `DELETE /api/v1/notifications/{notification}` et audit `communication_events`.
+- API notifications : compatibilite mobile renforcee avec le filtre `unread_only`, suppression scoppÃ©e utilisateur via `DELETE /api/v1/notifications/{notification}` et audit `communication_events`.
 - Mobile employee/manager : les listes notifications utilisent `requestWithRetry`, timeouts courts et parsing robuste des collections paginees Laravel pour eviter les spinners vides apres reveil Render.
 - Mobile manager : le module notifications consomme le filtre canonique `unread` et garde les actions lire/tout lire/supprimer sur les endpoints mobiles versionnes.
 
@@ -668,9 +668,9 @@
 
 ### Added
 
-- API : création de `SendPushNotificationJob` pour asynchroniser l'envoi de push sans bloquer la requête utilisateur.
-- API : intégration de Firebase HTTP v1 en natif dans `PushNotificationService` avec cache de 50 minutes pour le JWT OAuth 2.0.
-- Documentation : mise à jour des guides et du walkthrough pour l'intégration mobile HTTP v1.
+- API : crÃ©ation de `SendPushNotificationJob` pour asynchroniser l'envoi de push sans bloquer la requÃªte utilisateur.
+- API : intÃ©gration de Firebase HTTP v1 en natif dans `PushNotificationService` avec cache de 50 minutes pour le JWT OAuth 2.0.
+- Documentation : mise Ã  jour des guides et du walkthrough pour l'intÃ©gration mobile HTTP v1.
 
 - Mobile employee/manager : synchronisation automatique du token FCM avec `/api/v1/device-tokens` apres authentification ou refresh token Firebase.
 
@@ -1114,7 +1114,7 @@
 - Mobile : lot 25.4 demarre les decisions manager/RH sur absences et avances directement depuis les listes mobiles.
 - Mobile : routes repository ajoutees pour `PUT /absences/{id}/approve`, `PUT /absences/{id}/reject`, `PUT /salary-advances/{id}/approve` et `PUT /salary-advances/{id}/reject`.
 - Mobile : composant partage `MobileDecisionActions` et bottom sheet de commentaire pour les refus manager/RH.
-- Mobile : tests repository ajoutés pour verrouiller les routes de decision manager/RH.
+- Mobile : tests repository ajoutÃ©s pour verrouiller les routes de decision manager/RH.
 
 ## [4.16.140] - 2026-05-25
 
@@ -1122,7 +1122,7 @@
 
 - Mobile : workflows employe Plan 25.3 enrichis avec annulation des demandes d absence en attente via `DELETE /absences/{id}`.
 - Mobile : annulation des demandes d avance en attente via `DELETE /salary-advances/{id}`.
-- Mobile : tests repository ajoutés pour verrouiller les routes self-service d'annulation absence/avance.
+- Mobile : tests repository ajoutÃ©s pour verrouiller les routes self-service d'annulation absence/avance.
 
 ## [4.16.139] - 2026-05-25
 
@@ -1229,7 +1229,7 @@
 
 - Policies : 11 nouvelles classes Policy (AbsencePolicy, ContractPolicy, DepartmentPolicy, PositionPolicy, SchedulePolicy, SitePolicy, ApprovalRequestPolicy, LoanPolicy, ExpenseClaimPolicy, WebhookEndpointPolicy, InvoicePolicy) avec RBAC granulaire par role.
 - AuthServiceProvider : les 11 nouvelles policies sont enregistrees via Gate::policy() pour tous les modeles metier.
-- RBAC Route Matrix : section « Model Policies » ajoutee avec matrice complete viewAny/view/create/update/delete/approve par role.
+- RBAC Route Matrix : section Â« Model Policies Â» ajoutee avec matrice complete viewAny/view/create/update/delete/approve par role.
 ## [4.16.130] - 2026-05-24
 
 ### Added
@@ -1238,26 +1238,26 @@
 - FormRequests : 10 classes extraites (StoreDepartment, UpdateDepartment, StorePosition, UpdatePosition, StoreSchedule, UpdateSchedule, StoreSite, UpdateSite, StoreWebhookEndpoint, UpdateWebhookEndpoint) avec validation et authorize gates.
 - ApiError enum : catalogue centralise de ~40 codes erreur API avec traductions FR/EN/AR/TR, codes HTTP semantiques et methode `->response()`.
 - Traductions api_errors : fichiers i18n `lang/{en,fr,ar,tr}/api_errors.php` pour les messages erreur API.
-- Plan 23 : document `docs/PLAN_ACTION/23_PLAN_API_PRODUCTION_GRADE.md` — audit architecture + plan 8 iterations production-grade.
+- Plan 23 : document `docs/PLAN_ACTION/23_PLAN_API_PRODUCTION_GRADE.md` â€” audit architecture + plan 8 iterations production-grade.
 
 ### Changed
 
 - Controllers refactorises : AbsenceController, DepartmentController, PositionController, ScheduleController, SiteController, NotificationController, WebhookController, ApprovalController, ContractController utilisent desormais les API Resources au lieu de serialisations manuelles.
 - DB::transaction ajoutees : ContractController::renew, ApprovalController::approve/reject, NotificationController::markRead/markAllRead protegent les ecritures multi-tables.
-- FormRequests injectees dans les signatures store/update des controllers Department, Position, Schedule, Site, Webhook — la validation et l'autorisation quittent le corps du controller.
+- FormRequests injectees dans les signatures store/update des controllers Department, Position, Schedule, Site, Webhook â€” la validation et l'autorisation quittent le corps du controller.
 ## [4.16.129] - 2026-05-24
 
 ### Added
 
-- API : `EnsureApiManagerMiddleware` — RBAC paramétré par rôle (`api.manager`, `api.manager:principal,rh`) pour protéger les routes sensibles.
+- API : `EnsureApiManagerMiddleware` â€” RBAC paramÃ©trÃ© par rÃ´le (`api.manager`, `api.manager:principal,rh`) pour protÃ©ger les routes sensibles.
 - Routes : dashboard (managers only), exports (P/RH/FIN), billing (principal), payroll engine (P/FIN), hr_extended 3-tier RBAC.
-- Seeder : `DemoCompanySeeder` enrichi avec contrats, formations, recrutement, prêts et notes de frais pour faciliter les tests API.
-- API Explorer : boutons endpoints groupés par catégorie (auth, dashboard, self-service, paie, billing, plateforme).
-- Sécurité : matrice RBAC mise à jour dans `docs/security/RBAC_ROUTE_MATRIX.md` avec documentation `api.manager`.
+- Seeder : `DemoCompanySeeder` enrichi avec contrats, formations, recrutement, prÃªts et notes de frais pour faciliter les tests API.
+- API Explorer : boutons endpoints groupÃ©s par catÃ©gorie (auth, dashboard, self-service, paie, billing, plateforme).
+- SÃ©curitÃ© : matrice RBAC mise Ã  jour dans `docs/security/RBAC_ROUTE_MATRIX.md` avec documentation `api.manager`.
 
 ### Tests
 
-- Backend : `ApiManagerMiddlewareTest` couvre 5 scénarios (allow any manager, reject employee, allow specific roles, reject wrong role, reject unauthenticated).
+- Backend : `ApiManagerMiddlewareTest` couvre 5 scÃ©narios (allow any manager, reject employee, allow specific roles, reject wrong role, reject unauthenticated).
 
 ## [4.16.128] - 2026-05-23
 
@@ -1462,11 +1462,11 @@
 
 ### Added
 
-- Plan 18 : documentation `CLIENT_LOGIN_READINESS.md` ajoutée pour formaliser le parcours vitrine -> login -> dashboard, les variables d'environnement et les gardes Playwright.
+- Plan 18 : documentation `CLIENT_LOGIN_READINESS.md` ajoutÃ©e pour formaliser le parcours vitrine -> login -> dashboard, les variables d'environnement et les gardes Playwright.
 
 ### Changed
 
-- Web client : page `/auth/login` modernisée avec UX responsive, contexte securite, acces demo, lien support, redirection post-login par role et toggle afficher/masquer le mot de passe.
+- Web client : page `/auth/login` modernisÃ©e avec UX responsive, contexte securite, acces demo, lien support, redirection post-login par role et toggle afficher/masquer le mot de passe.
 - Client API web : les `401` du login ne declenchent plus de redirection globale afin d'afficher les erreurs d'identifiants sur la page login.
 
 ### Tests
@@ -1572,7 +1572,7 @@
 
 ### Changed
 
-- API : filtres et tris des listes frontends critiques sont maintenant valides par allowlist pour eviter les parametres libres non scalables ou risqués.
+- API : filtres et tris des listes frontends critiques sont maintenant valides par allowlist pour eviter les parametres libres non scalables ou risquÃ©s.
 
 ## [4.16.102] - 2026-05-22
 
@@ -1668,7 +1668,7 @@
 
 ## [4.16.94] - 2026-05-20
 
-### Changed — Plan 16 finalisation coverage
+### Changed â€” Plan 16 finalisation coverage
 
 - CI : seuil backend coverage par defaut releve de 55% a 56% dans `tests.yml` et `coverage-gate.yml`, aligne sur la mesure CI reelle de 56,14% du PR #510.
 - Docs : Plan 16 marque complet cote robustesse production, avec le palier 60% reporte au prochain lot de tests backend cible.
@@ -1676,49 +1676,49 @@
 
 ## [4.16.91] - 2026-05-19
 
-### Feat — Plan 16 Lot 16.2 : Release readiness + robustesse production
+### Feat â€” Plan 16 Lot 16.2 : Release readiness + robustesse production
 
 **Release readiness :**
-- Nouveau : rapport `RELEASE_READINESS_REPORT_2026-05-19.md` — score 91/100 (15/15 checks passes)
+- Nouveau : rapport `RELEASE_READINESS_REPORT_2026-05-19.md` â€” score 91/100 (15/15 checks passes)
 - Nouveau : inventaire secrets/variables cloud obligatoires (Render, Cloudflare, Vercel, Firebase, S3)
 - Nouveau : verification URLs publiques API/admin/vitrine
 
 **Robustesse production :**
-- Nouveau : `dev-hub/tools/smoke-post-deploy.sh` — smoke API post-deploy (health, auth, tenant, exports, OpenAPI)
-- Ameliore : `RUNBOOK_ROLLBACK.md` — ajout procedures rollback admin (Cloudflare Pages), vitrine (Vercel), mobile (Firebase/stores/feature flags)
-- Ameliore : `api.js` admin dashboard — breadcrumbs erreurs API avec support Sentry + messages contextuels endpoint/status + gestion 502/503/504
+- Nouveau : `dev-hub/tools/smoke-post-deploy.sh` â€” smoke API post-deploy (health, auth, tenant, exports, OpenAPI)
+- Ameliore : `RUNBOOK_ROLLBACK.md` â€” ajout procedures rollback admin (Cloudflare Pages), vitrine (Vercel), mobile (Firebase/stores/feature flags)
+- Ameliore : `api.js` admin dashboard â€” breadcrumbs erreurs API avec support Sentry + messages contextuels endpoint/status + gestion 502/503/504
 
 **Verification idempotence :**
-- Verifie : migrations `2026_05_18` (device_tokens, calendar_sync, zkteco_devices) toutes protegees par `hasTable()` — safe pour Render/PostgreSQL
+- Verifie : migrations `2026_05_18` (device_tokens, calendar_sync, zkteco_devices) toutes protegees par `hasTable()` â€” safe pour Render/PostgreSQL
 ## [4.16.92] - 2026-05-19
 
-### Feat — Plan 16 Lot 16.3 : Design vendeur et conversion vitrine
+### Feat â€” Plan 16 Lot 16.3 : Design vendeur et conversion vitrine
 
 **3 blocs preuves sociales reutilisables (FR/EN/TR/AR) :**
-- `SocialProofMetrics` — bandeau metriques clients (500+ entreprises, 50K+ employes, 99.9% SLA, 40% gain temps)
-- `TestimonialHighlight` — temoignage vedette grand format avec metrique impact (-40% temps admin)
-- `MiniCaseStudies` — 3 mini cas clients (TechAfrika DZ, Atlas Digital MA, SenLogistics SN) avec challenge/resultat
+- `SocialProofMetrics` â€” bandeau metriques clients (500+ entreprises, 50K+ employes, 99.9% SLA, 40% gain temps)
+- `TestimonialHighlight` â€” temoignage vedette grand format avec metrique impact (-40% temps admin)
+- `MiniCaseStudies` â€” 3 mini cas clients (TechAfrika DZ, Atlas Digital MA, SenLogistics SN) avec challenge/resultat
 
 **Screenshots produit :**
-- `ProductScreenshots` — mockups admin dashboard, app mobile, kiosque ZKTeco avec descriptions i18n et feature lists
+- `ProductScreenshots` â€” mockups admin dashboard, app mobile, kiosque ZKTeco avec descriptions i18n et feature lists
 
 **Integration landing page :**
 - Ajout des 4 composants dans la page d'accueil vitrine entre hero/features/pricing/testimonials
 - Tous les textes disponibles en FR/EN/TR/AR via le systeme de locale existant
 ## [4.16.93] - 2026-05-19
 
-### Feat — Plan 16 Lot 16.5 : GTM operationnel
+### Feat â€” Plan 16 Lot 16.5 : GTM operationnel
 
 **Scripts video demo :**
-- `demo_3min_paie_fr_script.md` — script 8 slides : paie multi-pays, exports bancaires SEPA/CPA, declarations sociales, bulletins mobile
-- `demo_3min_dashboard_manager_fr_script.md` — script 8 slides : KPI temps reel, conges, recrutement kanban, exports, Chat IA
+- `demo_3min_paie_fr_script.md` â€” script 8 slides : paie multi-pays, exports bancaires SEPA/CPA, declarations sociales, bulletins mobile
+- `demo_3min_dashboard_manager_fr_script.md` â€” script 8 slides : KPI temps reel, conges, recrutement kanban, exports, Chat IA
 
 **Templates email prospection :**
 - Sequence trial automatique (J1 bienvenue, J3 paie, J7 mi-parcours, J12 expiration)
 - 3 emails prospection froide (DRH PME, DG, follow-up J+5)
 
 **Page publique Integrations :**
-- `/integrations` — 12 integrations (ZKTeco, Stripe, Chargily, Google/Outlook Calendar, API REST, Webhooks, SSO, Sage, QuickBooks, Firebase, Slack/Teams)
+- `/integrations` â€” 12 integrations (ZKTeco, Stripe, Chargily, Google/Outlook Calendar, API REST, Webhooks, SSO, Sage, QuickBooks, Firebase, Slack/Teams)
 - Filtrage par categorie, badges disponible/bientot, i18n FR/EN
 
 **Pack revendeur :**
@@ -1728,35 +1728,35 @@
 
 ## [4.16.90] - 2026-05-12
 
-### Feat — Plan 14 Phase 2-6 : Solidification technique & commerciale
+### Feat â€” Plan 14 Phase 2-6 : Solidification technique & commerciale
 
 **Securite (Phase 2) :**
-- Nouveau : `TokenAutoRefreshMiddleware` — rotation automatique des tokens JWT via header `X-New-Token` quand le token approche l'expiration (fenetre configurable `sanctum.auto_refresh_window`)
+- Nouveau : `TokenAutoRefreshMiddleware` â€” rotation automatique des tokens JWT via header `X-New-Token` quand le token approche l'expiration (fenetre configurable `sanctum.auto_refresh_window`)
 
 **Integrations bancaires (Phase 4.1) :**
 - Nouveau : export virement CPA (Credit Populaire d'Algerie) pipe-delimited dans `BankExportGenerator`
 - Nouveau : export virement BNA (Banque Nationale d'Algerie) pipe-delimited dans `BankExportGenerator`
 
 **Declarations sociales (Phase 4.2) :**
-- Nouveau : export DSN simplifie France (Declaration Sociale Nominative) — `SocialDeclarationGenerator::generateDsnFr()` format S10/S20/S21/S44
+- Nouveau : export DSN simplifie France (Declaration Sociale Nominative) â€” `SocialDeclarationGenerator::generateDsnFr()` format S10/S20/S21/S44
 - Nouveau : route `POST /api/v1/social-declarations/dsn-fr` avec mapping types contrat CDI/CDD/interim/apprentissage
 
 **Notifications temps reel (Phase 5.1) :**
-- Nouveau : `NotificationStreamController` — endpoint SSE `GET /api/v1/notifications/stream` avec heartbeat, reconnect, et timeout 120s
-- Nouveau : composable `useNotificationStream.js` — client SSE auto-reconnect pour le dashboard admin
+- Nouveau : `NotificationStreamController` â€” endpoint SSE `GET /api/v1/notifications/stream` avec heartbeat, reconnect, et timeout 120s
+- Nouveau : composable `useNotificationStream.js` â€” client SSE auto-reconnect pour le dashboard admin
 
 **UX Admin (Phase 5.1) :**
-- Nouveau : `CommandPalette.vue` — palette de commandes Ctrl+K avec recherche pages/actions, navigation fleches, dark mode
-- Nouveau : `SkeletonLoader.vue` — composant skeleton avec 6 variantes (card, table, chart, kpi-grid, form, text) et support dark mode
+- Nouveau : `CommandPalette.vue` â€” palette de commandes Ctrl+K avec recherche pages/actions, navigation fleches, dark mode
+- Nouveau : `SkeletonLoader.vue` â€” composant skeleton avec 6 variantes (card, table, chart, kpi-grid, form, text) et support dark mode
 
 **Documentation commerciale (Phase 6.2) :**
-- Nouveau : `docs/commercial/DOSSIER_TECHNIQUE_APPELS_OFFRES.md` — dossier technique complet (architecture, securite, modules, SLA, CI/CD)
-- Nouveau : `docs/commercial/COMPARATIF_CONCURRENTS.md` — comparatif vs Sage HR, OrangeHRM, PaieNA, Kiwi HR
-- Nouveau : `docs/commercial/BENCHMARKS_PERFORMANCE.md` — benchmarks k6 (core, 100 VU, paie 500 emp, dashboard 10K)
+- Nouveau : `docs/commercial/DOSSIER_TECHNIQUE_APPELS_OFFRES.md` â€” dossier technique complet (architecture, securite, modules, SLA, CI/CD)
+- Nouveau : `docs/commercial/COMPARATIF_CONCURRENTS.md` â€” comparatif vs Sage HR, OrangeHRM, PaieNA, Kiwi HR
+- Nouveau : `docs/commercial/BENCHMARKS_PERFORMANCE.md` â€” benchmarks k6 (core, 100 VU, paie 500 emp, dashboard 10K)
 
 ## [4.16.82] - 2026-05-19
 
-### Fix — Consolidation connectivite API admin/kiosk
+### Fix â€” Consolidation connectivite API admin/kiosk
 
 - Fix : normalisation du `VITE_API_URL` admin pour supporter une base `/api/v1` sans doubler les chemins `/v1/*`.
 - Fix : exports admin telecharges via Axios authentifie au lieu de `window.open('/api/v1/...')` relatif au domaine du dashboard.
@@ -1772,7 +1772,7 @@
 
 ## [4.16.80] - 2026-05-18
 
-### Feat — Iteration 13: Architecture & Performance (D1, D2, D4, D5, B4, B6, D7)
+### Feat â€” Iteration 13: Architecture & Performance (D1, D2, D4, D5, B4, B6, D7)
 
 **Redis Cache (D1):**
 - New `TenantCacheService` with tenant-scoped keys (`tenant:{companyId}:{key}`), configurable TTL, pattern-based invalidation
@@ -1800,23 +1800,23 @@
 - Plan 15 now at **98.5%** (320/325 tasks DONE)
 - All implementable code items DONE; only non-code GTM tasks (J1-J14) and long-term DDD refactor (A5) remain
 
-### Docs — GTM Case Studies Template
+### Docs â€” GTM Case Studies Template
 
 - New `docs/GOTO_MARKET/public/case_studies/README.md` with template and 5 planned case studies
 
 ## [4.16.81] - 2026-05-19
 
-### Tests — Iteration 14: Test Coverage Hardening
+### Tests â€” Iteration 14: Test Coverage Hardening
 
 **New test suites (7 files, 30+ tests):**
-- `AuthRefreshTokenTest` — token rotation, old token invalidation, ability preservation
-- `TenantCacheServiceTest` — tenant-scoped caching, isolation, put/get/forget round trips
-- `SensitiveDataEncryptorTest` — encrypt/decrypt, idempotent double-encrypt, array batch
-- `CalendarSyncControllerTest` — auth, validation, provider enum
-- `DeviceTokenControllerTest` — auth, platform validation, manager-only send-test
-- `PlanningControllerTest` — RBAC on optimize/coverage endpoints
-- `ZktecoControllerTest` — device list auth, heartbeat, sync validation
-- `CotisationSimulationControllerTest` — auth, RBAC, input validation
+- `AuthRefreshTokenTest` â€” token rotation, old token invalidation, ability preservation
+- `TenantCacheServiceTest` â€” tenant-scoped caching, isolation, put/get/forget round trips
+- `SensitiveDataEncryptorTest` â€” encrypt/decrypt, idempotent double-encrypt, array batch
+- `CalendarSyncControllerTest` â€” auth, validation, provider enum
+- `DeviceTokenControllerTest` â€” auth, platform validation, manager-only send-test
+- `PlanningControllerTest` â€” RBAC on optimize/coverage endpoints
+- `ZktecoControllerTest` â€” device list auth, heartbeat, sync validation
+- `CotisationSimulationControllerTest` â€” auth, RBAC, input validation
 
 ## [4.16.79] - 2026-05-18
 
@@ -1826,13 +1826,13 @@
 
 ## [4.16.78] - 2026-05-18
 
-### Fix — PR #495 GTM / vitrine
+### Fix â€” PR #495 GTM / vitrine
 
 - Vitrine : compatibilite `CTASection` avec les contrats `title`/`description`/`primaryCta` utilises par les nouvelles pages GTM.
 - Gouvernance : ajout d'une trace changelog pour les nouvelles surfaces GTM avant merge.
 ## [4.16.77] - 2026-05-17
 
-### Feat — PR #488: API Integrations (G8, L6, L5, H1-H4)
+### Feat â€” PR #488: API Integrations (G8, L6, L5, H1-H4)
 
 **Push Notifications (G8):**
 - New `PushNotificationService` with FCM HTTP v1 support, batch sending (500 tokens/chunk), automatic token invalidation
@@ -1853,10 +1853,10 @@
 - Device-to-server endpoints (heartbeat, sync) operate without Sanctum auth
 
 **Kiosk Extensions (H1-H4):**
-- H1: `employeeInfo` — post-punch employee info (name, department, position, today attendance, leave balances)
-- H2: `announcements` — active company announcements with priority ordering
-- H3: `leaveBalance` — employee leave balance lookup by identifier
-- H4: `qrPunch` — QR code-based attendance punching (base64 JSON decode)
+- H1: `employeeInfo` â€” post-punch employee info (name, department, position, today attendance, leave balances)
+- H2: `announcements` â€” active company announcements with priority ordering
+- H3: `leaveBalance` â€” employee leave balance lookup by identifier
+- H4: `qrPunch` â€” QR code-based attendance punching (base64 JSON decode)
 - Migration: `kiosk_announcements` table
 
 **Infrastructure:**
@@ -1867,7 +1867,7 @@
 
 ## [4.16.76] - 2026-05-17
 
-### Fix — PR #487 consolidation backend gates
+### Fix â€” PR #487 consolidation backend gates
 
 - Fix : callbacks SSO publics compatibles UUID entreprise en supprimant la contrainte numerique de route.
 - Fix : configuration SSO sans `COALESCE(created_at, NOW())` dans un `INSERT`, incompatible PostgreSQL.
@@ -1879,65 +1879,65 @@
 
 ## [4.16.72] - 2026-05-17
 
-### Feat — Iteration 12 : E1/E2/E10/E11 completion, C14 planning optimization, WCAG corrections
+### Feat â€” Iteration 12 : E1/E2/E10/E11 completion, C14 planning optimization, WCAG corrections
 
-- Nouveau : onglet "Structures salariales" dans PayrollView (E1 complet — structures + runs + bulletins + export).
-- Nouveau : `MetricCard.vue` — composant partage avec tendance, formatage devise/pourcentage (E10).
-- Nouveau : `ReportsView.vue` — ecran rapports RH avec MetricCard KPIs et onglets (effectifs, absenteisme, turnover, heures supp., masse salariale) (E8).
+- Nouveau : onglet "Structures salariales" dans PayrollView (E1 complet â€” structures + runs + bulletins + export).
+- Nouveau : `MetricCard.vue` â€” composant partage avec tendance, formatage devise/pourcentage (E10).
+- Nouveau : `ReportsView.vue` â€” ecran rapports RH avec MetricCard KPIs et onglets (effectifs, absenteisme, turnover, heures supp., masse salariale) (E8).
 - Nouveau : routes `/reports` et navigation sidebar pour rapports RH et journal d'audit.
-- Nouveau : `PlanningOptimizer.php` — service IA optimisation planning hebdomadaire avec couverture departement, detection conflits, recommandations et score (C14).
-- Nouveau : `PlanningController.php` — endpoints `GET /v1/planning/weekly-optimization` et `GET /v1/planning/shift-rebalancing`.
-- Nouveau : `PlanningOptimizationTest.php` — tests Feature planning.
+- Nouveau : `PlanningOptimizer.php` â€” service IA optimisation planning hebdomadaire avec couverture departement, detection conflits, recommandations et score (C14).
+- Nouveau : `PlanningController.php` â€” endpoints `GET /v1/planning/weekly-optimization` et `GET /v1/planning/shift-rebalancing`.
+- Nouveau : `PlanningOptimizationTest.php` â€” tests Feature planning.
 - WCAG : `role="alert"` sur notifications toast, `aria-sort` sur DataTable triable, `type="search"` + `aria-label` sur champ recherche, `caption` sr-only optionnel.
 - Plan 15 : E1, E2, E10, E11, C14, F1-F6 passes en DONE.
 - Sidebar admin : ajout liens rapports RH et journal d'audit.
 ## [4.16.75] - 2026-05-17
 
-### Docs — Iteration FINALE : mise a jour documentation globale Plan 15
+### Docs â€” Iteration FINALE : mise a jour documentation globale Plan 15
 
-- Mise a jour : `AGENTS.md` — section "Iterations 7-11 Plan 15" avec 12 lecons operationnelles (predictions IA, SSO stub, WCAG, mobile existant, backlog).
-- Mise a jour : `15_PLAN_EXECUTION_CONSOLIDE.md` — synthese globale mise a jour avec pourcentages et declaration de cloture etendue iterations 1-11.
-- Mise a jour : date `AGENTS.md` → 2026-05-17.
+- Mise a jour : `AGENTS.md` â€” section "Iterations 7-11 Plan 15" avec 12 lecons operationnelles (predictions IA, SSO stub, WCAG, mobile existant, backlog).
+- Mise a jour : `15_PLAN_EXECUTION_CONSOLIDE.md` â€” synthese globale mise a jour avec pourcentages et declaration de cloture etendue iterations 1-11.
+- Mise a jour : date `AGENTS.md` â†’ 2026-05-17.
 - Bilan Plan 15 iterations 1-11 : 5 PRs (7-11), 15+ services/controllers, 30+ tests Feature, 3 audits (WCAG, RBAC, conformite), SSO stub, predictions IA, dashboard predictif.
 
 ## [4.16.73] - 2026-05-17
 
-### Feat — Iteration 10 : Predictions IA, dashboard predictif, mobile enrichments
+### Feat â€” Iteration 10 : Predictions IA, dashboard predictif, mobile enrichments
 
-- Nouveau : `App\AI\Predictions\TurnoverPredictor` — prediction du turnover par departement et employe, scoring facteurs de risque (anciennete, absences frequentes, departement a fort turnover).
-- Nouveau : `App\AI\Predictions\AbsenteeismPredictor` — prediction absenteisme avec saisonnalite, tendances departementales et recommandations IA.
-- Nouveau : `App\AI\Predictions\ProactiveNotificationService` — notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, [...]
-- Nouveau : `PredictionController` — endpoints `/api/v1/predictions/turnover`, `/absenteeism`, `/notifications` avec controle RBAC manager principal/RH.
-- Nouveau : `PredictionsView.vue` — dashboard predictif admin avec cartes turnover, absenteisme, notifications proactives, barres de risque departement.
+- Nouveau : `App\AI\Predictions\TurnoverPredictor` â€” prediction du turnover par departement et employe, scoring facteurs de risque (anciennete, absences frequentes, departement a fort turnover).
+- Nouveau : `App\AI\Predictions\AbsenteeismPredictor` â€” prediction absenteisme avec saisonnalite, tendances departementales et recommandations IA.
+- Nouveau : `App\AI\Predictions\ProactiveNotificationService` â€” notifications proactives IA (contrats expirants, periodes d'essai, anniversaires, approbations en retard, formations incompletes, [...]
+- Nouveau : `PredictionController` â€” endpoints `/api/v1/predictions/turnover`, `/absenteeism`, `/notifications` avec controle RBAC manager principal/RH.
+- Nouveau : `PredictionsView.vue` â€” dashboard predictif admin avec cartes turnover, absenteisme, notifications proactives, barres de risque departement.
 - Route admin : `/predictions` ajoutee au router (lazy import).
 - Mobile : enrichissement absences (provider `leaveBalancesProvider`, methode `getLeaveBalances` dans `AbsenceRepository`).
 - Verification : E6 FleetView (197 lignes, DONE), E7 ChatView (191 lignes, DONE), G2-G7 mobile (DONE), G9 carte vehicule (DONE).
-- Tests : `PredictionControllerTest` — 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
+- Tests : `PredictionControllerTest` â€” 6 tests Feature (RBAC + structure reponse turnover/absenteisme/notifications).
 - Plan 15 : C11, C12, C13, C15, E6, E7, G2-G7, G9 passes en DONE.
 - REGISTRE scenarios test API mis a jour.
 ## [4.16.74] - 2026-05-17
 
-### Feat — Iteration 11 : SSO SAML/OIDC stub + audit WCAG 2.1 AA
+### Feat â€” Iteration 11 : SSO SAML/OIDC stub + audit WCAG 2.1 AA
 
-- Nouveau : `App\Services\SSO\SSOService` — service SSO multi-protocole (SAML 2.0, OpenID Connect) avec configuration par entreprise, activation/desactivation et callbacks stub.
-- Nouveau : `App\Services\SSO\SSOProviderConfig` — DTO configuration SSO (entity_id, sso_url, slo_url, certificate, name_id_format).
-- Nouveau : `SSOController` — 6 endpoints : `GET /sso/providers` (public), `GET /sso/status`, `POST /sso/configure`, `DELETE /sso/disable` (RBAC principal), `POST /sso/saml/{id}/callback`, `GET [...]
-- Nouveau : migration `create_company_sso_configs_table` — table SSO config par entreprise (provider, config JSONB, is_active), idempotente.
-- Nouveau : `routes/modules/sso.php` — routes SSO separees (callbacks publics + gestion authentifiee).
-- Nouveau : `docs/security/WCAG_ACCESSIBILITY_AUDIT.md` — audit complet WCAG 2.1 AA (34 criteres, 23 conformes, 11 partiels, 0 non-conformes, score 68%).
-- Fix : `DashboardLayout.vue` — ajout lien "Aller au contenu principal" (WCAG 2.4.1) + `id="main-content"` sur `<main>`.
-- Fix : `web/src/app/layout.tsx` — ajout lien "Aller au contenu principal" (WCAG 2.4.1).
-- Tests : `SSOControllerTest` — 8 tests Feature (providers publics, RBAC status/configure/disable, validation provider, callback SAML).
+- Nouveau : `App\Services\SSO\SSOService` â€” service SSO multi-protocole (SAML 2.0, OpenID Connect) avec configuration par entreprise, activation/desactivation et callbacks stub.
+- Nouveau : `App\Services\SSO\SSOProviderConfig` â€” DTO configuration SSO (entity_id, sso_url, slo_url, certificate, name_id_format).
+- Nouveau : `SSOController` â€” 6 endpoints : `GET /sso/providers` (public), `GET /sso/status`, `POST /sso/configure`, `DELETE /sso/disable` (RBAC principal), `POST /sso/saml/{id}/callback`, `GET [...]
+- Nouveau : migration `create_company_sso_configs_table` â€” table SSO config par entreprise (provider, config JSONB, is_active), idempotente.
+- Nouveau : `routes/modules/sso.php` â€” routes SSO separees (callbacks publics + gestion authentifiee).
+- Nouveau : `docs/security/WCAG_ACCESSIBILITY_AUDIT.md` â€” audit complet WCAG 2.1 AA (34 criteres, 23 conformes, 11 partiels, 0 non-conformes, score 68%).
+- Fix : `DashboardLayout.vue` â€” ajout lien "Aller au contenu principal" (WCAG 2.4.1) + `id="main-content"` sur `<main>`.
+- Fix : `web/src/app/layout.tsx` â€” ajout lien "Aller au contenu principal" (WCAG 2.4.1).
+- Tests : `SSOControllerTest` â€” 8 tests Feature (providers publics, RBAC status/configure/disable, validation provider, callback SAML).
 - Plan 15 : K2 (SSO stub) et K4 (WCAG audit) passes en DONE.
 
 ## [4.16.71] - 2026-05-17
 
-### Feat — Iteration 9 : Audit UI, good first issues, release prep
+### Feat â€” Iteration 9 : Audit UI, good first issues, release prep
 
-- Nouveau : `AuditLogsView.vue` — journal d'audit admin avec filtres (action, type, recherche), export CSV, panneau detail slide-over avec diff avant/apres (old_values vs new_values).
+- Nouveau : `AuditLogsView.vue` â€” journal d'audit admin avec filtres (action, type, recherche), export CSV, panneau detail slide-over avec diff avant/apres (old_values vs new_values).
 - Nouveau : route `/audit` dans admin router (lazy import, code splitting conserve).
-- Nouveau : `GOOD_FIRST_ISSUES.md` — 10 issues documentees pour contributeurs debutants (validation IBAN, i18n arabe, dark mode, export PDF, tests health, etc.).
-- Nouveau : `RELEASE_v0.1.0.md` — notes de release pour la premiere version publique GitHub.
-- Confirme : E4 (recrutement pipeline Kanban) est DONE — 308 lignes avec KanbanBoard, 6 stages pipeline, avancer/retourner candidats, creation poste inline.
+- Nouveau : `GOOD_FIRST_ISSUES.md` â€” 10 issues documentees pour contributeurs debutants (validation IBAN, i18n arabe, dark mode, export PDF, tests health, etc.).
+- Nouveau : `RELEASE_v0.1.0.md` â€” notes de release pour la premiere version publique GitHub.
+- Confirme : E4 (recrutement pipeline Kanban) est DONE â€” 308 lignes avec KanbanBoard, 6 stages pipeline, avancer/retourner candidats, creation poste inline.
 - Plan 15 : E4, E9, I2, I5 passes en DONE.
 - SCENARIOS_TEST_API et REGISTRE mis a jour.
