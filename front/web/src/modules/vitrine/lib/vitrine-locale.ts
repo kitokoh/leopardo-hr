@@ -59,6 +59,19 @@ type LandingCopy = {
     success: string
     error: string
   }
+  problem: {
+    badge: string
+    title: string
+    subtitle: string
+    items: Array<{ title: string; description: string }>
+  }
+  solution: {
+    badge: string
+    title: string
+    subtitle: string
+    description: string
+    features: Array<{ title: string; description: string }>
+  }
   features: {
     badge: string
     title: string
@@ -141,11 +154,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     hero: {
       badge: 'OS mobile-first pour equipes terrain',
       badgeNew: 'Nouveau',
-      titleTop: 'Votre entreprise',
-      titleBottom: 'dans une seule app.',
-      subtitle: 'Leopardo transforme pointage, equipes, demandes, paie simple, documents et kiosk en un systeme operationnel quotidien.',
-      subtitleHighlight: 'Employee, Manager, Platform Admin',
-      subtitleTail: 'pour lancer un pilote terrain sans ERP lourd.',
+      titleTop: 'Pilotez votre entreprise',
+      titleBottom: 'avec une precision absolue.',
+      subtitle: 'Simplifiez vos RH, automatisez votre paie et connectez vos equipes terrain.',
+      subtitleHighlight: 'Leopardo est l\'OS tout-en-un',
+      subtitleTail: 'pour transformer vos operations quotidiennes sans la complexite d\'un ERP.',
       mobileBadge: 'Disponible sur mobile',
       downloadCta: 'Telecharger les apps',
       primaryCta: 'Essai gratuit 30 jours',
@@ -164,6 +177,29 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       legal: 'Email uniquement. Notre equipe prepare un essai adapte, sans mot de passe ni carte bancaire.',
       success: "Demande recue. L'equipe Leopardo vous contacte sous 24h ouvrables.",
       error: "Impossible d'envoyer la demande pour le moment.",
+    },
+    problem: {
+      badge: 'Le constat',
+      title: 'La gestion RH traditionnelle vous freine ?',
+      subtitle: 'Les feuilles de presence papier, les erreurs de paie et le manque de visibilite sur le terrain ralentissent votre croissance.',
+      items: [
+        { title: 'Pointage manuel et erreurs', description: 'Les oublis et les saisies manuelles coutent des heures precieuses chaque semaine.' },
+        { title: 'Opacite du terrain', description: 'Difficile de savoir qui est present et sur quelle tache en temps reel.' },
+        { title: 'Complexite de la paie', description: 'Le calcul des variables de paie est un casse-tete mensuel sujet aux erreurs.' },
+        { title: 'Documents eparpilles', description: 'Les contrats et justificatifs sont perdus dans des emails ou des classeurs.' },
+      ],
+    },
+    solution: {
+      badge: 'La solution Leopardo',
+      title: 'Un systeme d\'exploitation pour',
+      subtitle: 'vos operations terrain.',
+      description: 'Leopardo unifie tout votre flux operationnel dans une plateforme moderne, mobile-first et intuitive.',
+      features: [
+        { title: 'Pointage Biometrique & Mobile', description: 'Securisez les entrees avec ZKTeco, QR code ou GPS mobile.' },
+        { title: 'Automatisation de la Paie', description: 'Generez les variables de paie en un clic, sans risque d\'erreur.' },
+        { title: 'Visibilite en Temps Reel', description: 'Dashboards dynamiques pour une prise de decision immediate.' },
+        { title: 'Self-Service Employe', description: 'Donnez de l\'autonomie a vos equipes avec une application dediee.' },
+      ],
     },
     features: {
       badge: 'Fonctionnalites',
@@ -253,11 +289,11 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     hero: {
       badge: 'Mobile-first OS for field teams',
       badgeNew: 'New',
-      titleTop: 'Run your company',
-      titleBottom: 'from one app.',
-      subtitle: 'Leopardo turns attendance, teams, requests, simple payroll, documents and kiosk into a daily operating system.',
-      subtitleHighlight: 'Employee, Manager, Platform Admin',
-      subtitleTail: 'so you can launch a field pilot without a heavy ERP.',
+      titleTop: 'Run your business',
+      titleBottom: 'with absolute precision.',
+      subtitle: 'Simplify your HR, automate your payroll, and connect your field teams.',
+      subtitleHighlight: 'Leopardo is the all-in-one OS',
+      subtitleTail: 'to transform your daily operations without the complexity of a heavy ERP.',
       mobileBadge: 'Available on mobile',
       downloadCta: 'Download the apps',
       primaryCta: 'Start 30-day free trial',
@@ -276,6 +312,29 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       legal: 'Email only. Our team prepares the right trial access, no password or card required.',
       success: 'Request received. The Leopardo team will contact you within 24 business hours.',
       error: 'Unable to send the request right now.',
+    },
+    problem: {
+      badge: 'The Reality',
+      title: 'Tired of outdated HR management?',
+      subtitle: 'Paper timesheets, payroll errors, and lack of field visibility are holding your business back.',
+      items: [
+        { title: 'Manual Tracking Errors', description: 'Manual entries and forgotten clock-ins cost hours of administrative work every week.' },
+        { title: 'Field Opacity', description: 'It is hard to know who is present, where, and on what task in real-time.' },
+        { title: 'Payroll Complexity', description: 'Calculating monthly payroll variables is a manual headache prone to mistakes.' },
+        { title: 'Scattered Documents', description: 'Contracts and justifications are lost across emails, chats, and physical folders.' },
+      ],
+    },
+    solution: {
+      badge: 'The Leopardo Solution',
+      title: 'An operating system for',
+      subtitle: 'your field operations.',
+      description: 'Leopardo unifies your entire operational workflow into a modern, mobile-first, and intuitive platform.',
+      features: [
+        { title: 'Biometric & Mobile Clock-in', description: 'Secure entries with ZKTeco hardware, QR codes, or mobile GPS.' },
+        { title: 'Payroll Automation', description: 'Generate payroll variables in one click, eliminating manual error risks.' },
+        { title: 'Real-Time Visibility', description: 'Dynamic dashboards for immediate operational decision-making.' },
+        { title: 'Employee Self-Service', description: 'Empower your teams with a dedicated app for requests and documents.' },
+      ],
     },
     features: {
       badge: 'Features',
@@ -389,6 +448,29 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       success: 'Talep alindi. Leopardo ekibi 24 is saati icinde size ulasir.',
       error: 'Talep su anda gonderilemiyor.',
     },
+    problem: {
+      badge: 'Gercekler',
+      title: 'Eski usul IK yonetiminden yoruldunuz mu?',
+      subtitle: 'Kagit puantajlar, bordro hatalari ve saha gorunurlugu eksikligi buyumenizi engelliyor.',
+      items: [
+        { title: 'Manuel Takip Hatalari', description: 'Unutulan girisler ve manuel kayitlar her hafta saatlerce zaman kaybettirir.' },
+        { title: 'Saha Opasitesi', description: 'Kimin nerede, hangi gorevde oldugunu gercek zamanli bilmek zordur.' },
+        { title: 'Bordro Karmasasi', description: 'Bordro degiskenlerini hesaplamak hatalara acik, yorucu bir surectir.' },
+        { title: 'Daginik Belgeler', description: 'Sozlesmeler ve belgeler e-postalar veya klasorler arasinda kaybolur.' },
+      ],
+    },
+    solution: {
+      badge: 'Leopardo Cozumu',
+      title: 'Saha operasyonlariniz icin',
+      subtitle: 'bir isletim sistemi.',
+      description: 'Leopardo, tum operasyonel akisinizi modern, mobil oncelikli ve sezgisel bir platformda birlestirir.',
+      features: [
+        { title: 'Biyometrik ve Mobil Yoklama', description: 'ZKTeco, QR kod veya mobil GPS ile girisleri guvence altina alin.' },
+        { title: 'Bordro Otomasyonu', description: 'Bordro degiskenlerini tek tikla, hata riski olmadan olusturun.' },
+        { title: 'Gercek Zamanli Gorunurluk', description: 'Anlik karar verme icin dinamik yonetici panelleri.' },
+        { title: 'Calisan Oz-Hizmet', description: 'Ekiplerinize talepler ve belgeler icin ozel bir uygulama sunun.' },
+      ],
+    },
     features: {
       badge: 'Ozellikler',
       title: 'Ekibinizin ihtiyac duydugu',
@@ -500,6 +582,29 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       legal: 'البريد فقط. نجهز تجربة مناسبة بدون كلمة مرور أو بطاقة دفع.',
       success: 'تم استلام الطلب. سيتواصل معك فريق Leopardo خلال 24 ساعة عمل.',
       error: 'تعذر إرسال الطلب الآن.',
+    },
+    problem: {
+      badge: 'الواقع',
+      title: 'هل تعبت من إدارة الموارد البشرية التقليدية؟',
+      subtitle: 'تؤدي سجلات الحضور الورقية وأخطاء الرواتب ونقص الرؤية الميدانية إلى إبطاء نموك.',
+      items: [
+        { title: 'أخطاء التتبع اليدوي', description: 'تستغرق عمليات الإدخال اليدوي المنسية ساعات ثمينة كل أسبوع.' },
+        { title: 'عدم الوضوح الميداني', description: 'من الصعب معرفة من هو حاضر وفي أي مهمة في الوقت الفعلي.' },
+        { title: 'تعقيد الرواتب', description: 'يعد حساب متغيرات الرواتب شهرياً صداعاً عرضة للأخطاء.' },
+        { title: 'وثائق مبعثرة', description: 'تضيع العقود والمبررات في رسائل البريد الإلكتروني أو المجلدات.' },
+      ],
+    },
+    solution: {
+      badge: 'حل ليوباردو',
+      title: 'نظام تشغيل لعملياتك',
+      subtitle: 'الميدانية.',
+      description: 'يجمع ليوباردو تدفق عملك التشغيلي بالكامل في منصة حديثة وسهلة الاستخدام تركز على الجوال.',
+      features: [
+        { title: 'الحضور البيومتري والجوال', description: 'تأمين المداخل عبر ZKTeco أو QR code أو GPS الجوال.' },
+        { title: 'أتمتة الرواتب', description: 'إنشاء متغيرات الرواتب بنقرة واحدة، دون مخاطر الأخطاء.' },
+        { title: 'رؤية في الوقت الفعلي', description: 'لوحات تحكم ديناميكية لاتخاذ قرارات فورية.' },
+        { title: 'الخدمة الذاتية للموظف', description: 'امنح فرقك استقلالية من خلال تطبيق مخصص للطلبات والوثائق.' },
+      ],
     },
     features: {
       badge: 'الميزات',
