@@ -1,0 +1,92 @@
+name: PLAN_ACTION2 Project Sync
+
+on:
+  pull_request:
+    paths:
+      - "docs/PLAN_ACTION2/**"
+      - "dev-hub/tools/*plan-action2*.ps1"
+      - ".github/workflows/plan-action2-project.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/PLAN_ACTION2/**"
+      - "dev-hub/tools/*plan-action2*.ps1"
+      - ".github/workflows/plan-action2-project.yml"
+  workflow_dispatch:
+    inputs:
+      owner:
+        description: "GitHub Project owner login"
+        required: false
+        type: string
+      owner_type:
+        description: "Project owner type: user or organization"
+        required: false
+        default: "user"
+        type: choice
+        options:
+          - user
+          - organization
+      project_number:
+        description: "GitHub Project v2 number"
+        required: false
+        type: string
+      dry_run:
+        description: "Validate without creating draft items"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate PLAN_ACTION2 backlog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate CSV and dependencies
+        shell: pwsh
+        run: ./dev-hub/tools/validate-plan-action2.ps1
+
+  sync-project:
+    name: Sync GitHub Project draft items
+    needs: validate
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Sync PLAN_ACTION2 tickets
+        shell: pwsh
+        env:
+          PLAN_ACTION2_PROJECT_TOKEN: ${{ secrets.PLAN_ACTION2_PROJECT_TOKEN }}
+          DEFAULT_OWNER: ${{ vars.PLAN_ACTION2_PROJECT_OWNER }}
+          DEFAULT_OWNER_TYPE: ${{ vars.PLAN_ACTION2_PROJECT_OWNER_TYPE }}
+          DEFAULT_PROJECT_NUMBER: ${{ vars.PLAN_ACTION2_PROJECT_NUMBER }}
+        run: |
+          $owner = "${{ inputs.owner }}"
+          if ([string]::IsNullOrWhiteSpace($owner)) { $owner = $env:DEFAULT_OWNER }
+
+          $ownerType = "${{ inputs.owner_type }}"
+          if ([string]::IsNullOrWhiteSpace($ownerType)) { $ownerType = $env:DEFAULT_OWNER_TYPE }
+          if ([string]::IsNullOrWhiteSpace($ownerType)) { $ownerType = "user" }
+
+          $projectNumber = "${{ inputs.project_number }}"
+          if ([string]::IsNullOrWhiteSpace($projectNumber)) { $projectNumber = $env:DEFAULT_PROJECT_NUMBER }
+
+          if ([string]::IsNullOrWhiteSpace($owner) -or [string]::IsNullOrWhiteSpace($projectNumber) -or [string]::IsNullOrWhiteSpace($env:PLAN_ACTION2_PROJECT_TOKEN)) {
+            Write-Host "::notice::PLAN_ACTION2 project sync skipped. Configure vars PLAN_ACTION2_PROJECT_OWNER, PLAN_ACTION2_PROJECT_OWNER_TYPE, PLAN_ACTION2_PROJECT_NUMBER and secret PLAN_ACTION2_PROJECT_TOKEN."
+            exit 0
+          }
+
+          $args = @{
+            Owner = $owner
+            OwnerType = $ownerType
+            ProjectNumber = [int]$projectNumber
+          }
+          if ("${{ inputs.dry_run }}" -eq "true") {
+            $args.DryRun = $true
+          }
+
+          ./dev-hub/tools/sync-plan-action2-project.ps1 @args
+
