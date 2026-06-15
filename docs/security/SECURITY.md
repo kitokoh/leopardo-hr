@@ -1,45 +1,46 @@
 # Security Policy — Leopardo RH
 
-Leopardo RH is committed to the highest standards of data security and tenant isolation. As an enterprise HR platform, we handle sensitive personal and financial data, making security our top priority.
+At Leopardo RH, security is not a feature; it's our foundation. We follow industry best practices to ensure the confidentiality, integrity, and availability of your HR data.
 
-## 🛡️ Security Pillars
+## 🛡 Security Architecture
 
-### 1. Multi-Tenant Isolation
-Leopardo RH uses a hybrid isolation strategy to ensure data never leaks between companies:
-- **Logical Isolation (Shared Mode):** Strict Row-Level Security enforced via Laravel Global Scopes and `company_id` mandatory fields.
-- **Physical Isolation (Enterprise Mode):** Dedicated PostgreSQL schemas for every enterprise tenant. Isolation is enforced at the database level using `search_path`.
+### 1. Data Isolation
+-   **Hybrid Multi-Tenancy:** We offer both logical (column-based) and physical (schema-based) isolation.
+-   **Strict Scoping:** All database queries are automatically scoped by `company_id` at the infrastructure level.
 
-### 2. Data Encryption at Rest
-Sensitive employee information is encrypted using **AES-256-CBC** before being stored in the database:
-- **Encrypted Fields:** National ID, IBAN, Bank Account Number, Personal Contact Details.
-- **Implementation:** Automated via Laravel's `EncryptedCast`. Even in the event of a database breach, this data remains unreadable without the application key.
+### 2. Network Security
+-   **TLS Encryption:** All data in transit is encrypted using TLS 1.3.
+-   **WAF Protection:** Application-level firewall to prevent OWASP Top 10 attacks (SQLi, XSS, CSRF).
+-   **DDoS Mitigation:** Infrastructure provided by Cloudflare and Render.
 
-### 3. Authentication & Session Management
-- **Centralized Registry:** A global `user_lookups` table prevents email collisions and facilitates secure cross-tenant authentication routing.
-- **Opaque Tokens:** We use Laravel Sanctum with opaque tokens for mobile and web clients, avoiding the risks associated with stateless JWTs (e.g., difficult revocation).
-- **Session Revocation:** Administrators can instantly revoke sessions for specific devices or across the entire organization in case of compromise.
-- **MFA:** Multi-Factor Authentication is mandatory for all Super Admin accounts.
+### 3. Application Security
+-   **SAST/DAST:** Automated static and dynamic security testing in our CI/CD pipeline.
+-   **Dependency Scanning:** We use `dependabot` and `composer audit` to monitor for vulnerable packages.
+-   **Secrets Management:** Environment secrets are managed via GitHub Secrets and encrypted at the provider level.
 
-### 4. Infrastructure Security
-- **Secure Communication:** All data in transit is protected via TLS 1.3+.
-- **Rate Limiting:** Aggressive rate limiting is applied to authentication and sensitive endpoints to prevent brute-force and DoS attacks.
-- **Sanitization:** All inputs are strictly validated via Laravel FormRequests, and database queries are parameterized via Eloquent to prevent SQL injection.
+---
 
-## 🔍 Security Governance (Sentinel)
+## 🔒 Data Protection
 
-We maintain a dedicated security journal (`.jules/sentinel.md`) to track and mitigate architectural security gaps:
-- **Safe Schema Switching:** All PostgreSQL `search_path` operations use whitelisted and quoted identifiers.
-- **Global Uniqueness:** Email uniqueness is enforced globally across the platform to prevent identity hijacking.
+-   **Encryption at Rest:** Sensitive fields (National ID, Bank Details, Passwords) are encrypted using AES-256.
+-   **Anonymization:** Logging systems automatically redact PII (Personally Identifiable Information).
+-   **Backups:** Daily encrypted backups with a 30-day retention policy.
 
-## 🛡️ Role-Based Access Control (RBAC)
+---
 
-Leopardo RH implements a fine-grained RBAC system with 7 distinct levels:
-- **Super Admin:** Platform management and billing.
-- **Manager (Principal/HR/Dept/Comptable/Supervisor):** Specialized administrative access within a tenant.
-- **Employee:** Restricted access to personal records and attendance tools.
+## 🛠 Vulnerability Disclosure
 
-For a detailed permission matrix, see [RBAC System Documentation](docs/security/RBAC_SYSTEM.md).
+We welcome reports from security researchers. If you find a vulnerability, please:
+1.  **Do NOT** exploit it for any reason.
+2.  **Report it** privately to [security@leopardo-rh.com](mailto:security@leopardo-rh.com).
+3.  Give us **reasonable time** to investigate and fix the issue before public disclosure.
 
-## 🚀 Reporting Vulnerabilities
+---
 
-If you discover a security vulnerability, please do not open a public issue. Instead, send an email to `security@leopardo-rh.com`. We aim to respond to all reports within 24 hours.
+## 📜 Compliance
+-   **GDPR Ready:** Built with data privacy principles in mind.
+-   **ISO 27001 Roadmap:** Architecture designed to meet ISO 27001 control requirements.
+
+---
+
+For technical identity details, see [Auth System](AUTH_SYSTEM.md).
