@@ -1,65 +1,59 @@
-# Multi-Tenancy Strategy
+# Multi-Tenancy Strategy — Leopardo RH
 
-Leopardo RH uses a sophisticated hybrid multi-tenancy model to support thousands of small businesses while providing high-end isolation for enterprise customers.
+Leopardo RH is built from the ground up as a native multi-tenant SaaS. Our architecture ensures that customer data remains strictly isolated, whether you are a small startup or a large enterprise with strict compliance requirements.
 
-## 🚀 Hybrid Isolation Model
+## 🏗 The Hybrid Isolation Model
 
-| Feature | Shared Mode (Starter/Business) | Schema Mode (Enterprise) |
-|---------|-------------------------------|--------------------------|
-| **Isolation** | Logical (Row-level) | Physical (Schema-level) |
-| **Database** | Shared PostgreSQL Schema | Dedicated PostgreSQL Schema |
-| **Performance** | High (connection pooling) | Maximum (isolated indexes/buffers) |
-| **Scalability** | Easy to manage | Maximum isolation & regulatory compliance |
+We employ two levels of isolation based on client needs and subscription plans:
 
-## 🛠 Implementation Details
+### 1. Logical Isolation (Standard)
+-   **Storage:** All tenants share a common PostgreSQL schema (`shared_tenants`).
+-   **Isolation Mechanism:** Every table includes a `company_id` column.
+-   **Enforcement:** Global Query Scopes in Laravel automatically filter every query by the authenticated tenant's ID.
+-   **Best For:** SMEs looking for a cost-effective, high-performance HR solution.
 
-### The Tenant Middleware
-The `TenantMiddleware` is the brain of our tenancy system. It identifies the tenant from the authenticated user and configures the environment accordingly.
+### 2. Schema-Based Isolation (Enterprise)
+-   **Storage:** Each tenant has its own physical PostgreSQL schema (e.g., `tenant_abc_corp`).
+-   **Isolation Mechanism:** The application dynamically switches the database `search_path` at runtime.
+-   **Enforcement:** Managed by `TenantMiddleware` and `TenantManager`.
+-   **Best For:** Large enterprises, government bodies, and organizations requiring strict data residency or ISO 27001 compliance.
 
-```php
-// Identification flow
-$lookup = UserLookup::where('email', $user->email)->firstOrFail();
-$company = Company::findOrFail($lookup->company_id);
+---
 
-if ($company->tenancy_type === 'schema') {
-    // physical isolation
-    DB::statement("SET search_path TO {$company->schema_name}, public");
-} else {
-    // logical isolation
-    DB::statement("SET search_path TO shared_tenants, public");
-}
-```
+## 🛠 Runtime Tenant Resolution
 
-### Global Scopes (Shared Mode)
-For tenants in shared mode, we use a `BelongsToCompany` trait that automatically applies a global scope to all queries, ensuring data leakage is impossible.
+The platform identifies the tenant for every request using a multi-step resolution strategy:
+
+1.  **Subdomain/Domain:** (e.g., `client-a.leopardo-rh.com`).
+2.  **API Header:** `X-Tenant-ID` or `X-Company-ID`.
+3.  **User Context:** For authenticated requests, the tenant is derived from the user's `company_id`.
 
 ```php
-static::addGlobalScope('company', function (Builder $builder) {
-    if (app()->bound('current_company')) {
-        $builder->where('company_id', app('current_company')->id);
+// Internal Tenant Switching Logic
+public function switchToTenant(Company $company)
+{
+    if ($company->uses_dedicated_schema) {
+        DB::statement("SET search_path TO {$company->schema_name}, public");
+    } else {
+        Config::set('tenant.id', $company->id);
     }
-});
-```
-
-## 🔄 Live Migration (Shared to Schema)
-
-Leopardo RH supports zero-downtime upgrades from Shared to Enterprise mode. The `TenantMigrationService` handles:
-1. Snapshotting data.
-2. Creating a dedicated PostgreSQL schema.
-3. Migrating rows while stripping `company_id`.
-4. Updating the tenant lookup registry.
-5. Verifying data integrity.
-
-## 📊 Database Organization
-
-```text
-leopardo_db
-├── public              (System-wide: plans, companies, lookups)
-├── shared_tenants      (SME logical isolation)
-├── company_a1b2...     (Enterprise A physical isolation)
-└── company_c3d4...     (Enterprise B physical isolation)
+}
 ```
 
 ---
 
-For technical specifications, see [ERD Details](../dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md).
+## 🔒 Security & Data Privacy
+
+-   **Zero-Data-Leak Policy:** Our automated tests (see `FkChainTenantIsolationTest`) verify that no query can ever bypass the tenant scope.
+-   **Encryption at Rest:** Sensitive tenant data is encrypted using AES-256.
+-   **Audit Logs:** Every tenant has a dedicated audit trail of all administrative actions.
+
+---
+
+## 🚀 Scalability
+
+By supporting both models, Leopardo RH can scale to thousands of small tenants efficiently while providing the heavyweight isolation required for premium enterprise clients without changing a single line of business logic.
+
+---
+
+For technical setup, see [Deployment Guide](../deployment/DEPLOYMENT_GUIDE.md).
