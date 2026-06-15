@@ -8,9 +8,9 @@ use App\Http\Requests\Api\V1\Absence\RejectAbsenceRequest;
 use App\Http\Requests\Api\V1\Absence\StoreAbsenceRequest;
 use App\Http\Resources\Api\V1\AbsenceResource;
 use App\Models\Absence;
+use Illuminate\Http\JsonResponse;
 use App\Models\Employee;
 use App\Services\AbsenceService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
@@ -112,7 +112,7 @@ class AbsenceController extends Controller
         ]));
     }
 
-    public function approve(Request $request, Absence $absence): AbsenceResource
+    public function approve(Request $request, Absence $absence): AbsenceResource|JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -123,6 +123,13 @@ class AbsenceController extends Controller
 
         if (! $actor->isManager()) {
             abort(403);
+        }
+
+        if ($absence->isPendingApproval()) {
+            return response()->json([
+                'message' => 'This absence is under a multi-level approval workflow. Please use the approvals API.',
+                'approval_request_id' => $absence->approvalRequest?->id,
+            ], 422);
         }
 
         $absence = $this->absenceService->approve($absence, $actor);
@@ -133,7 +140,7 @@ class AbsenceController extends Controller
         ]));
     }
 
-    public function reject(RejectAbsenceRequest $request, Absence $absence): AbsenceResource
+    public function reject(RejectAbsenceRequest $request, Absence $absence): AbsenceResource|JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -144,6 +151,13 @@ class AbsenceController extends Controller
 
         if (! $actor->isManager()) {
             abort(403);
+        }
+
+        if ($absence->isPendingApproval()) {
+            return response()->json([
+                'message' => 'This absence is under a multi-level approval workflow. Please use the approvals API.',
+                'approval_request_id' => $absence->approvalRequest?->id,
+            ], 422);
         }
 
         $absence = $this->absenceService->reject($absence, $request->validated('rejected_reason'));

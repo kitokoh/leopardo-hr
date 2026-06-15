@@ -10,8 +10,10 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Models\Absence;
 use App\Models\AbsenceType;
+use App\Models\ApprovalWorkflow;
 use App\Models\Employee;
 use App\Models\LeaveBalanceLog;
+use App\Models\LeavePolicy;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -50,6 +52,22 @@ class AbsenceService
             'status' => 'pending',
             'reason' => $data['reason'] ?? null,
         ]);
+
+        $policy = LeavePolicy::where('company_id', $employee->company_id)
+            ->where('absence_type_id', $type->id)
+            ->where('active', true)
+            ->first();
+
+        if ($policy?->requires_approval) {
+            $hasWorkflow = ApprovalWorkflow::where('company_id', $employee->company_id)
+                ->where('model_type', Absence::class)
+                ->where('active', true)
+                ->exists();
+
+            if ($hasWorkflow) {
+                $absence->submitForApproval();
+            }
+        }
 
         AbsenceRequested::dispatch($absence);
 

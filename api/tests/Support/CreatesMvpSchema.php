@@ -375,6 +375,86 @@ trait CreatesMvpSchema
             $table->timestampTz('created_at')->nullable();
         });
 
+        Schema::create('leave_policies', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('absence_type_id');
+            $table->string('name', 150);
+            $table->string('accrual_type', 20)->default('yearly');
+            $table->decimal('accrual_amount', 6, 2)->default(0);
+            $table->decimal('max_balance', 6, 2)->nullable();
+            $table->boolean('carry_forward')->default(false);
+            $table->decimal('carry_forward_max', 6, 2)->nullable();
+            $table->unsignedSmallInteger('carry_forward_expiry_days')->nullable();
+            $table->boolean('requires_approval')->default(true);
+            $table->unsignedSmallInteger('approval_levels')->default(1);
+            $table->unsignedSmallInteger('min_notice_days')->default(0);
+            $table->unsignedSmallInteger('max_consecutive_days')->nullable();
+            $table->json('applicable_roles')->nullable();
+            $table->boolean('active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('leave_accruals', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id');
+            $table->unsignedBigInteger('leave_policy_id');
+            $table->decimal('amount', 6, 2);
+            $table->string('type', 30)->default('accrual');
+            $table->string('description', 255)->nullable();
+            $table->date('effective_date');
+            $table->unsignedInteger('created_by')->nullable();
+            $table->timestampTz('created_at')->useCurrent();
+        });
+
+        Schema::create('leave_balances', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id');
+            $table->unsignedInteger('absence_type_id');
+            $table->decimal('balance', 6, 2)->default(0);
+            $table->decimal('used', 6, 2)->default(0);
+            $table->decimal('pending', 6, 2)->default(0);
+            $table->unsignedSmallInteger('year');
+            $table->timestampTz('updated_at')->useCurrent();
+        });
+
+        Schema::create('approval_workflows', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->string('name', 150);
+            $table->string('model_type', 100);
+            $table->json('levels');
+            $table->decimal('auto_approve_below', 12, 2)->nullable();
+            $table->unsignedSmallInteger('escalation_hours')->nullable();
+            $table->boolean('active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('approval_requests', function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('company_id')->index();
+            $table->unsignedBigInteger('workflow_id');
+            $table->string('approvable_type', 100);
+            $table->unsignedBigInteger('approvable_id');
+            $table->unsignedInteger('requester_id');
+            $table->unsignedSmallInteger('current_level')->default(1);
+            $table->string('status', 20)->default('pending');
+            $table->timestamps();
+        });
+
+        Schema::create('approval_decisions', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('approval_request_id');
+            $table->unsignedSmallInteger('level');
+            $table->unsignedInteger('approver_id');
+            $table->string('decision', 20);
+            $table->text('comment')->nullable();
+            $table->timestampTz('decided_at')->nullable();
+            $table->timestampTz('created_at')->useCurrent();
+        });
+
         Schema::create('salary_advances', function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
