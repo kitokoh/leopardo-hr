@@ -50,69 +50,43 @@ graph TD
     Platform --> DB
 ```
 
-## 🛠 Tech Stack
+## 🧩 Modular Domain Design (DDD)
 
-- **Backend:** Laravel 11 + PHP 8.4
-- **Database:** PostgreSQL 16 (Multi-schema & Shared Isolation)
-- **Frontend:** Next.js 14+ (App Router, Tailwind CSS, Shadcn/UI)
-- **Mobile:** Flutter (iOS & Android)
-- **Infrastructure:** Render (Web Service), Neon.tech (Managed Postgres)
-- **Testing:** Pest PHP, Playwright (E2E), Flutter Test
+The backend is organized into autonomous modules, each following Domain-Driven Design (DDD) principles:
+
+- **Domain Layer:** Contains pure business logic, entities, value objects, and domain events.
+- **Application Layer:** Orchestrates use cases, commands, and queries.
+- **Infrastructure Layer:** Handles database persistence (Eloquent), external integrations, and file storage.
+- **Interface Layer:** Manages API controllers, DTOs, and resource transformations.
+
+### Domain Boundaries
+1.  **Identity & Access:** Multi-tenant authentication and RBAC.
+2.  **Core HRM:** Employee lifecycle and organizational structure.
+3.  **Attendance Engine:** Real-time tracking with geofencing and biometrics.
+4.  **Payroll Processor:** Multi-country compliant salary calculations.
+5.  **AI Insights:** LLM-driven forecasting and anomaly detection.
 
 ## 🌍 Multi-Tenancy Strategy
 
-Leopardo RH implements a hybrid multi-tenancy model to balance cost-efficiency for SMEs and strict isolation for Enterprise clients.
+Leopardo RH implements a **Hybrid Multi-Tenancy** model:
 
-- **Shared Mode (Standard):** Logical isolation using `company_id` and global scopes within a shared PostgreSQL schema.
-- **Schema Mode (Enterprise):** Physical isolation using dedicated PostgreSQL schemas per tenant.
+-   **Standard Isolation:** Logical isolation within the `shared_tenants` schema using `company_id`.
+-   **Enterprise Isolation:** Physical isolation using dedicated PostgreSQL schemas per tenant for maximum security and compliance.
 
-For deep dive into tenancy implementation, see [Multi-Tenancy Documentation](docs/architecture/MULTITENANCY.md).
+For detailed implementation, see [Multi-Tenancy Documentation](MULTITENANCY.md).
 
-## 🧩 Modular Domain Design
+## 🔄 Core Data Workflows
 
-The backend is organized into autonomous modules, each following the Domain-Driven Design (DDD) principles:
-
-- **Domain:** Pure business logic, entities, and value objects.
-- **Application:** Use cases, commands, queries, and DTOs.
-- **Infrastructure:** Eloquent models, repositories, and third-party integrations.
-- **Interfaces:** API Controllers, Web Controllers, and Resources.
-
-### Core Modules
-- **HR Module:** Employee lifecycle, contracts, and department hierarchy.
-- **Attendance Module:** Real-time check-in/out, GPS validation, and schedule management.
-- **Payroll Module:** Automated salary calculations, deductions, and banking exports.
-- **AI Vision:** Integration with ZKTeco devices and RTSP streams for biometric verification.
-
-## 🔄 Core Workflows
-
-### Multi-Tenant Authentication Flow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant App as Client (Web/Mobile)
-    participant API as Laravel API Gateway
-    participant UL as User Lookups (Public)
-    participant TenantDB as Tenant Schema
-
-    App->>API: POST /auth/login {email, password}
-    API->>UL: Find tenant for email
-    UL-->>API: {company_id, schema_name}
-    API->>API: SET search_path TO schema_name
-    API->>TenantDB: Validate employee credentials
-    TenantDB-->>API: Employee Profile
-    API-->>App: 200 OK + Sanctum Token
-```
-
-## 🔒 Security & Data Isolation
-
-- **Tenant Isolation:** Enforced at the middleware level using PostgreSQL `search_path`.
-- **RBAC:** Fine-grained role-based access control (Manager, HR, Finance, Supervisor, Employee).
-- **Encryption:** Sensitive data (IBAN, National ID) is encrypted at rest using AES-256.
+### Attendance Punch Workflow
+1.  **Capture:** Mobile (GPS) or Kiosk (Biometric).
+2.  **Validate:** Geofence check or template matching.
+3.  **Ingest:** API processes payload and writes to `attendance_logs`.
+4.  **Analyze:** Background jobs update daily summaries and flag anomalies.
+5.  **Report:** Real-time visibility in Manager and Platform Admin dashboards.
 
 ---
 
-For more details on specific components, refer to:
-- [API Reference](docs/api/README.md)
-- [Security Policy](SECURITY.md)
-- [Database Schema (ERD)](docs/dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md)
+For deeper dives, see:
+- [System Design & Modularity](SYSTEM_DESIGN.md)
+- [Multi-Tenancy Deep Dive](MULTITENANCY.md)
+- [API Reference](../api/API_REFERENCE.md)

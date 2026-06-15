@@ -1,27 +1,36 @@
-## 📝 Description
+## 📝 Pull Request Overview
 
-Please include a summary of the change and which issue is fixed. List any dependencies that are required for this change.
+**Issue Reference:** Fixes #
+**Category:** [Feature / Bug Fix / Documentation / Refactor]
 
-Fixes # (issue number)
+---
 
-## 🧪 How Has This Been Tested?
+## 🚀 Changes Description
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce.
+Please provide a clear and concise description of the changes introduced by this PR.
 
-- [ ] Unit Tests
-- [ ] Feature/Integration Tests
-- [ ] E2E / Manual Verification
+-   Item 1
+-   Item 2
 
-## 🚩 Checklist:
+---
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+## 🛡 Quality Checklist (Enterprise Standards)
 
-## 📷 Screenshots (if applicable)
-Add any visual proof of your changes here.
+-   [ ] **Code Quality:** My code follows the project's coding conventions (PSR-12, ESLint).
+-   [ ] **Testing:** I have added or updated tests for my changes.
+-   [ ] **Verification:** I have verified the changes locally (API, Web, or Mobile).
+-   [ ] **Documentation:** I have updated the relevant documentation hub files.
+-   [ ] **Security:** I have checked for potential security implications (RBAC, SQLi, XSS).
+-   [ ] **Breaking Changes:** This PR does not break existing functionality (or provides a migration path).
+
+---
+
+## 📸 Screenshots / Demos (if applicable)
+
+Please add screenshots or GIFs showing the changes in action.
+
+---
+
+## 🤝 Contributor Agreement
+
+By submitting this PR, I agree that my contributions are licensed under the **MIT License**.

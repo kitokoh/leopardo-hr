@@ -1,113 +1,39 @@
 # Contributing to Leopardo RH
 
-Merci de contribuer a Leopardo RH ! Ce guide explique comment participer au projet.
+First off, thank you for considering contributing to Leopardo RH! It's people like you who make Leopardo RH such a great tool for the HR community.
 
-## Prerequis
+## 🏛 Technical Standards
 
-- PHP 8.4+
-- Composer 2+
-- PostgreSQL 16+
-- Redis 7+ (optionnel, pour queues/cache)
-- Node.js 20+ (pour le frontend web)
-- Docker & Docker Compose (recommande)
+Leopardo RH is an **Enterprise-Grade** platform. We maintain high standards for code quality, security, and documentation.
 
-## Demarrage rapide
+-   **Backend:** PHP 8.4, Laravel 11, PSR-12, Pest PHP for testing.
+-   **Frontend:** Next.js 15, TypeScript, Tailwind CSS.
+-   **Mobile:** Flutter 3.x, Riverpod for state management.
+-   **Architecture:** Modular Monolith & Domain-Driven Design (DDD).
 
-```bash
-# Cloner le depot
-git clone https://github.com/kitokoh/leopardo-hr.git
-cd leopardo-hr
+---
 
-# Demarrer avec Docker Compose
-docker compose up -d
+## 🚀 How to Contribute
 
-# Ou sans Docker :
-cd api
-cp .env.example .env
-composer install
-php artisan key:generate
-php artisan migrate
-php artisan serve
-```
+1.  **Explore:** Read our [System Architecture](docs/architecture/ARCHITECTURE.md) to understand the project structure.
+2.  **Environment Setup:** Follow the [Development Guide](docs/deployment/DEPLOYMENT_GUIDE.md).
+3.  **Find an Issue:** Look for issues labeled `good first issue` or `enterprise-ready`.
+4.  **Branching:** Use descriptive branch names: `feat/xxx`, `fix/xxx`, `docs/xxx`.
+5.  **Quality Gate:** Ensure all tests pass (`php artisan test`) and linting is clean.
+6.  **Submit PR:** Use our [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md).
 
-Voir [DEVELOPMENT.md](DEVELOPMENT.md) pour les instructions detaillees.
+---
 
-## Workflow de contribution
+## 📜 Code of Conduct
 
-1. **Fork** le depot sur GitHub
-2. **Creer une branche** depuis `main` :
-   ```bash
-   git checkout -b feat/ma-feature
-   ```
-3. **Implementer** votre changement
-4. **Tester** localement :
-   ```bash
-   cd api && php artisan test
-   ```
-5. **Commit** avec un message clair :
-   ```bash
-   git commit -m "feat: description courte du changement"
-   ```
-6. **Push** et creer un **Pull Request** vers `main`
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## Conventions de commit
+---
 
-Nous suivons [Conventional Commits](https://www.conventionalcommits.org/) :
+## 📑 Detailed Guidelines
 
-- `feat:` — Nouvelle fonctionnalite
-- `fix:` — Correction de bug
-- `docs:` — Documentation
-- `test:` — Ajout/modification de tests
-- `refactor:` — Refactoring sans changement de comportement
-- `chore:` — Maintenance (CI, deps, etc.)
+For a deep dive into our coding conventions, testing strategies, and CI/CD workflows, please refer to the full **[Contribution Guidelines](docs/contributing/GUIDELINES.md)**.
 
-## Structure du projet
+---
 
-```
-api/                    # Backend Laravel (PHP)
-├── app/
-│   ├── Http/Controllers/Api/V1/   # Controleurs API
-│   ├── Models/                     # Modeles Eloquent
-│   ├── Services/                   # Services metier (DDD)
-│   ├── Policies/                   # RBAC Policies
-│   └── Events/                     # Domain Events
-├── tests/Feature/                  # Tests fonctionnels
-├── database/migrations/            # Migrations PostgreSQL
-└── routes/                         # Routes API
-
-front/                  # Frontends
-├── admin-dashboard/    # Dashboard admin (Next.js)
-├── web/                # Vitrine publique (Next.js)
-└── mobile/             # App mobile (Flutter)
-
-docs/                   # Documentation projet
-```
-
-## Regles de code
-
-- **PHP** : PSR-12, utiliser Laravel Pint (`./vendor/bin/pint`)
-- **TypeScript** : ESLint + Prettier
-- **Tests** : Chaque feature doit avoir des tests. Ne pas modifier les tests existants sans raison.
-- **Migrations** : Idempotentes sur PostgreSQL (voir [AGENTS.md](AGENTS.md))
-- **API** : Documenter les endpoints dans `SCENARIOS_TEST_API_GITHUB_ACTIONS.md`
-- **Changelog** : Ajouter une entree dans `CHANGELOG.md` pour chaque changement visible
-
-## Good First Issues
-
-Cherchez les issues taguees [`good first issue`](https://github.com/kitokoh/leopardo-hr/labels/good%20first%20issue) pour commencer. Ces issues sont specifiquement selectionnees pour les nouveaux contributeurs.
-
-## Signaler un bug
-
-Utilisez le template [Bug Report](https://github.com/kitokoh/leopardo-hr/issues/new?template=bug_report.md).
-
-## Proposer une fonctionnalite
-
-Utilisez le template [Feature Request](https://github.com/kitokoh/leopardo-hr/issues/new?template=feature_request.md).
-
-## Code de conduite
-
-Ce projet suit le [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). En participant, vous acceptez de respecter ces regles.
-
-## Licence
-
-En contribuant, vous acceptez que vos contributions soient sous la meme [licence MIT](LICENSE) que le projet.
+Made with Precision by the **Leopardo RH Engineering Team**.
