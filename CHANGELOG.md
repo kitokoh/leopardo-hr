@@ -19,6 +19,7 @@
 - Vitrine : `SignupForm` affiche les credentials (email + mot de passe temporaire avec copier-coller) apres provisioning reussi, avec boutons "Se connecter" et "Telecharger l'app".
 - Planification : ajout de `docs/PLAN_ACTION2/`, un backlog atomique importable dans GitHub Projects pour piloter la prochaine phase produit, securite, stabilite, marketing, mobile, kiosk, API, finance, i18n et operations.
 - Vitrine : ajout de `LaunchOperatingSystemSection` pour vendre un lancement pilote en 7 jours avec resultats concrets par etape.
+- Tests : ajout des tests unitaires pour `PushNotificationService` afin de securiser l'architecture des notifications push.
 
 ### Changed
 
