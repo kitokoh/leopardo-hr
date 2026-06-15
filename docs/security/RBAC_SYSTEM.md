@@ -1,57 +1,61 @@
-# Role-Based Access Control (RBAC) System
+# Role-Based Access Control (RBAC) — Leopardo RH
 
-Leopardo RH employs a strict, hierarchal RBAC system to ensure data privacy and operational efficiency within each tenant.
+Leopardo RH implements a granular RBAC system to ensure that users have exactly the permissions they need to perform their roles, and nothing more.
 
-## 👥 System Roles
+## 👥 User Roles
 
-| Role | Context | Primary Responsibility |
-|------|---------|------------------------|
-| **Super Admin** | Global | Platform governance, billing, and system health. |
-| **Manager Principal** | Tenant | Full administrative control over the company. |
-| **Manager HR** | Tenant | Employee lifecycle, absences, and documents. |
-| **Manager Dept** | Tenant | Managing employees within a specific department. |
-| **Manager Comptable** | Tenant | Payroll calculation and banking exports. |
-| **Superviseur** | Tenant | Real-time attendance and task management for a team. |
-| **Employee** | Tenant | Self-service: attendance, task updates, and payslips. |
+| Role | Description | Scope |
+| :--- | :--- | :--- |
+| **Platform Admin** | Super-admin for the entire SaaS platform. | Global (All Tenants) |
+| **Company Owner** | Full control over a single tenant. | Tenant-wide |
+| **HR Manager** | Manages employees, contracts, and payroll. | Tenant-wide |
+| **Department Manager**| Manages a specific department and its team. | Department-only |
+| **Employee** | Access to personal profile, attendance, and payslips. | Personal-only |
+| **Supervisor** | View-only access for reporting and monitoring. | Assigned-only |
 
-## 🔑 Permission Matrix (High Level)
+---
 
-| Module | Principal | HR | Dept | Finance | Supervisor | Employee |
-|--------|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Employees** | CRUD | CRUD | Read* | Read* | Read* | Self |
-| **Attendance** | Full | Full | Dept | No | Team | Self |
-| **Absences** | Approve | Approve | Dept | No | Team | Submit |
-| **Payroll** | Full | Read | No | Full | No | Self |
-| **Tasks** | Full | Full | Dept | No | Team | Self |
+## 🏗 Authorization Layer
 
-*\*Limited to non-sensitive fields.*
+We use a combination of **Laravel Policies** and **Middlewares** to enforce RBAC.
 
-## 🛠 Technical Implementation
+### 1. Gatekeepers (Middlewares)
+-   `auth:sanctum`: Ensures the user is authenticated.
+-   `tenant`: Ensures the user is operating within their own data isolation.
+-   `role:manager`: Restricts access to management features.
 
-RBAC is enforced at multiple layers:
+### 2. Business Rules (Policies)
+Laravel Policies handle complex, record-level authorization.
 
-1. **Route Middleware:** Initial checks for `role` and `manager_role`.
-2. **Eloquent Policies:** Fine-grained authorization logic for specific models and actions.
-3. **Global Scopes:** Automatic data filtering (e.g., a Department Manager only sees employees where `department_id` matches their own).
-
-### Policy Example
+**Example: Absence Approval**
 ```php
-public function view(Employee $user, Employee $target)
+public function approve(User $user, Absence $absence)
 {
-    if ($user->isManagerPrincipal() || $user->isManagerHR()) {
-        return true;
-    }
-
-    if ($user->isManagerDept()) {
-        return $user->department_id === $target->department_id;
-    }
-
-    return $user->id === $target->id;
+    // Managers can only approve absences for their own team
+    return $user->id === $absence->employee->manager_id
+        || $user->hasRole('hr');
 }
 ```
 
 ---
 
-For more details on security patterns, see [SECURITY.md](../../SECURITY.md).
+## 🛣 Route Access Matrix (Simplified)
 
-The route-level audit matrix lives in [RBAC_ROUTE_MATRIX.md](RBAC_ROUTE_MATRIX.md) and must be updated whenever route guards or allowed roles change.
+| Endpoint | Employee | Dept Manager | HR Manager | Platform Admin |
+| :--- | :---: | :---: | :---: | :---: |
+| `GET /me/profile` | ✅ | ✅ | ✅ | ❌ |
+| `POST /attendance/punch`| ✅ | ✅ | ✅ | ❌ |
+| `GET /team/attendance` | ❌ | ✅ | ✅ | ❌ |
+| `POST /payroll/calculate`| ❌ | ❌ | ✅ | ❌ |
+| `GET /platform/billing` | ❌ | ❌ | ❌ | ✅ |
+
+---
+
+## 🔒 Security Principles
+-   **Principle of Least Privilege:** Default access is "Deny All."
+-   **Context-Aware:** Permissions change based on the tenant and department context.
+-   **Auditable:** All permission changes are recorded in the system audit log.
+
+---
+
+For more security details, see [Security Policy](SECURITY.md).

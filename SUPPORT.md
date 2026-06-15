@@ -1,34 +1,40 @@
-# Community Support — Leopardo RH
+# Support Guide — Leopardo RH
 
-We are committed to providing a great experience for all users and contributors of Leopardo RH. Depending on your needs, there are several ways to get support.
+We are committed to providing the best support for developers, enterprises, and contributors using the Leopardo RH platform.
 
-## 📚 Self-Service Support
+## 🛠 Technical Support
 
-Before reaching out, please check our documentation:
-- **[Documentation Hub](docs/README.md)**
-- **[Quick Start Guide](docs/QUICKSTART.md)**
-- **[API Reference](docs/api/README.md)**
+### 1. Documentation First
+Before reaching out, please explore our **[Documentation Hub](README.md#documentation-hub)**. Most technical questions regarding architecture, multi-tenancy, and deployment are covered there.
 
-## 🐛 Bug Reports & Feature Requests
-
-For technical issues, please use our GitHub Issue Tracker:
-- **[Open a Bug Report](https://github.com/kitokoh/leopardo-hr/issues/new?template=bug_report.md)**
-- **[Suggest a Feature](https://github.com/kitokoh/leopardo-hr/issues/new?template=feature_request.md)**
-
-## 💬 Community Chat
-
-Join our Discord server to chat with other developers and the core team:
-- **[Discord Server](https://discord.gg/leopardo-rh)**
-
-## 💼 Enterprise & Professional Support
-
-For organizations requiring SLA-backed support, custom integrations, or private training:
-- **Email:** [support@leopardo-rh.com](mailto:support@leopardo-rh.com)
-- **Website:** [https://leopardo-rh.com/enterprise](https://leopardo-rh.com/enterprise)
-
-## 🛡 Security Issues
-
-If you discover a security vulnerability, please do NOT open a public issue. Follow our **[Security Policy](SECURITY.md)** for instructions on how to report it privately.
+### 2. GitHub Issues
+For technical bugs, feature requests, or developer discussions, please use our [GitHub Issues](https://github.com/kitokoh/leopardo-hr/issues).
+- Use the **Bug Report** template for reproducible issues.
+- Use the **Feature Request** template for new ideas.
 
 ---
-*Thank you for being part of the Leopardo RH community!*
+
+## 🏢 Enterprise & Commercial Support
+
+If you are a SaaS client, an investor, or an enterprise looking for managed hosting and premium support:
+
+-   **Priority Support:** [support@leopardo-rh.com](mailto:support@leopardo-rh.com)
+-   **Sales & Partnerships:** [partners@leopardo-rh.com](mailto:partners@leopardo-rh.com)
+-   **Investor Relations:** [investors@leopardo-rh.com](mailto:investors@leopardo-rh.com)
+
+---
+
+## 🛡 Security Reports
+
+If you discover a security vulnerability, please do **NOT** open a public issue. Follow our [Security Policy](docs/security/SECURITY.md) and contact us at [security@leopardo-rh.com](mailto:security@leopardo-rh.com).
+
+---
+
+## 💬 Community Channels
+
+-   **Discord:** [Join our Developer Community](https://discord.gg/leopardo-rh)
+-   **Twitter/X:** [@LeopardoRH](https://x.com/LeopardoRH)
+
+---
+
+Thank you for being part of the Leopardo RH ecosystem!
