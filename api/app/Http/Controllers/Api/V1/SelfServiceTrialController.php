@@ -28,6 +28,7 @@ class SelfServiceTrialController extends Controller
 {
     public function __construct(
         private readonly TenantManager $tenantManager,
+        private readonly \App\Services\PartnerService $partnerService,
     ) {}
 
     /**
@@ -49,6 +50,7 @@ class SelfServiceTrialController extends Controller
             'phone' => ['nullable', 'string', 'max:40'],
             'plan' => ['nullable', 'string', 'max:80'],
             'source' => ['nullable', 'string', 'max:120'],
+            'referral_code' => ['nullable', 'string', 'max:50'],
         ]);
 
         $email = strtolower(trim($validated['email']));
@@ -111,6 +113,7 @@ class SelfServiceTrialController extends Controller
                 'manager_phone' => $validated['phone'] ?? null,
                 'temp_password' => $tempPassword,
                 'employees_range' => $validated['employees'] ?? null,
+                'referral_code' => $validated['referral_code'] ?? null,
             ]);
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Provisioning failed', [
@@ -210,7 +213,14 @@ class SelfServiceTrialController extends Controller
                 ],
             ]);
 
-            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+            // Attribution du partenaire si code présent
+            if (!empty($payload['referral_code'])) {
+                $this->partnerService->attributeCompanyToPartner($company, $payload['referral_code']);
+            }
+
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+            }
             $this->tenantManager->setTenant($company);
 
             try {

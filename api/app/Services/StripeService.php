@@ -246,7 +246,7 @@ class StripeService
                 'payment_method' => 'stripe',
             ]);
 
-            Payment::query()->firstOrCreate(
+            $payment = Payment::query()->firstOrCreate(
                 [
                     'invoice_id' => $invoiceModel->id,
                     'provider_reference' => $invoice['charge'] ?? $invoice['payment_intent'] ?? $invoice['id'] ?? null,
@@ -261,6 +261,17 @@ class StripeService
                     'created_at' => now(),
                 ]
             );
+
+            // GROWTH MODULE: Enregistrement de la commission
+            try {
+                $partnerService = app(\App\Services\PartnerService::class);
+                $partnerService->recordCommissionForPayment($payment);
+            } catch (\Throwable $e) {
+                Log::warning('PartnerService: Failed to record commission', [
+                    'payment_id' => $payment->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
 
             if ($invoiceModel->subscription) {
                 $invoiceModel->subscription->update(['status' => 'active']);

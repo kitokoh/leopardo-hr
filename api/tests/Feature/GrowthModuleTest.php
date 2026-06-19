@@ -1,0 +1,247 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Commission;
+use App\Models\Company;
+use App\Models\Invoice;
+use App\Models\Partner;
+use App\Models\Payment;
+use App\Models\User;
+use App\Services\PartnerService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class GrowthModuleTest extends TestCase
+{
+    use \Tests\Support\CreatesMvpSchema;
+
+    private PartnerService $partnerService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpMvpSchema();
+        $this->partnerService = app(PartnerService::class);
+    }
+
+    public function test_can_attribute_company_to_partner()
+    {
+        $user = User::factory()->create(['email' => 'partner@example.com']);
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'PARTNER123',
+            'default_commission_rate' => 1000,
+        ]);
+
+        $company = Company::factory()->create([
+            'email' => 'client@example.com',
+            'referrer_partner_id' => null,
+        ]);
+
+        $result = $this->partnerService->attributeCompanyToPartner($company, 'PARTNER123');
+
+        $this->assertTrue($result);
+        $this->assertEquals($partner->id, $company->fresh()->referrer_partner_id);
+    }
+
+    public function test_prevents_self_referral()
+    {
+        $user = User::factory()->create(['email' => 'partner@example.com']);
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'PARTNER123',
+        ]);
+
+        $company = Company::factory()->create([
+            'email' => 'partner@example.com', // Same as partner
+            'referrer_partner_id' => null,
+        ]);
+
+        $result = $this->partnerService->attributeCompanyToPartner($company, 'PARTNER123');
+
+        $this->assertFalse($result);
+        $this->assertNull($company->fresh()->referrer_partner_id);
+    }
+
+    public function test_records_commission_on_payment()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'PARTNER123',
+            'default_commission_rate' => 1500, // 15%
+        ]);
+
+        $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
+
+        $invoice = Invoice::create([
+            'company_id' => $company->id,
+            'number' => 'INV-001',
+            'amount' => 100.00,
+            'tax_amount' => 0,
+            'total' => 100.00,
+            'status' => 'paid',
+            'due_date' => now(),
+        ]);
+
+        $payment = Payment::create([
+            'invoice_id' => $invoice->id,
+            'company_id' => $company->id,
+            'amount' => 100.00,
+            'currency' => 'DZD',
+            'status' => 'completed',
+            'paid_at' => now(),
+        ]);
+
+        $commission = $this->partnerService->recordCommissionForPayment($payment);
+
+        $this->assertNotNull($commission);
+        $this->assertEquals(1500, $commission->amount); // 15% of 100.00 (10000 cents) = 1500 cents
+        $this->assertEquals(1500, $commission->applied_rate);
+        $this->assertEquals('pending', $commission->status);
+    }
+
+    public function test_approves_commissions_after_delay()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'P1']);
+
+        $oldCommission = Commission::create([
+            'partner_id' => $partner->id,
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'payment_id' => 1,
+            'amount' => 1000,
+            'applied_rate' => 1000,
+            'status' => 'pending',
+            'created_at' => now()->subDays(15),
+        ]);
+
+        $recentCommission = Commission::create([
+            'partner_id' => $partner->id,
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'payment_id' => 2,
+            'amount' => 1000,
+            'applied_rate' => 1000,
+            'status' => 'pending',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $count = $this->partnerService->approvePendingCommissions();
+
+        $this->assertEquals(1, $count);
+        $this->assertEquals('approved', $oldCommission->fresh()->status);
+        $this->assertEquals('pending', $recentCommission->fresh()->status);
+    }
+
+    public function test_cancels_commission_on_refund()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'P1']);
+
+        $payment = Payment::create([
+            'invoice_id' => 1,
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'amount' => 100,
+            'status' => 'completed',
+        ]);
+
+        $commission = Commission::create([
+            'partner_id' => $partner->id,
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'payment_id' => $payment->id,
+            'amount' => 1000,
+            'applied_rate' => 1000,
+            'status' => 'pending',
+        ]);
+
+        $payment->status = 'refunded';
+        $this->partnerService->handlePaymentRefunded($payment);
+
+        $this->assertEquals('cancelled', $commission->fresh()->status);
+    }
+
+    public function test_reassign_partner_with_audit_log()
+    {
+        $admin = User::factory()->create();
+        $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1']);
+        $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P2']);
+
+        $company = Company::factory()->create(['referrer_partner_id' => $partner1->id]);
+
+        $this->partnerService->reassignCompanyPartner($company, $partner2->id, $admin->id, 'Commercial transfer');
+
+        $this->assertEquals($partner2->id, $company->fresh()->referrer_partner_id);
+        $this->assertDatabaseHas('partner_audit_logs', [
+            'admin_id' => $admin->id,
+            'auditable_type' => Company::class,
+            'auditable_id' => $company->id,
+            'event' => 'partner_reassignment',
+            'reason' => 'Commercial transfer',
+        ]);
+    }
+
+    public function test_update_partner_rate_with_audit_log()
+    {
+        $admin = User::factory()->create();
+        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1', 'default_commission_rate' => 1000]);
+
+        $this->partnerService->updatePartnerRate($partner, 2000, $admin->id, 'Tier upgrade');
+
+        $this->assertEquals(2000, $partner->fresh()->default_commission_rate);
+        $this->assertDatabaseHas('partner_audit_logs', [
+            'admin_id' => $admin->id,
+            'auditable_type' => Partner::class,
+            'auditable_id' => (string) $partner->id,
+            'event' => 'rate_adjustment',
+            'reason' => 'Tier upgrade',
+        ]);
+    }
+
+    public function test_update_commission_status_with_audit_log()
+    {
+        $admin = User::factory()->create();
+        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1']);
+        $commission = Commission::create([
+            'partner_id' => $partner->id,
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'payment_id' => 1,
+            'amount' => 1000,
+            'applied_rate' => 1000,
+            'status' => 'pending',
+        ]);
+
+        $this->partnerService->updateCommissionStatus($commission, 'paid', $admin->id, 'Monthly payout');
+
+        $this->assertEquals('paid', $commission->fresh()->status);
+        $this->assertNotNull($commission->fresh()->paid_at);
+        $this->assertDatabaseHas('partner_audit_logs', [
+            'admin_id' => $admin->id,
+            'auditable_type' => Commission::class,
+            'auditable_id' => (string) $commission->id,
+            'event' => 'commission_status_change',
+            'reason' => 'Monthly payout',
+        ]);
+    }
+
+    public function test_self_service_trial_attributes_partner()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'GROWTH2026',
+        ]);
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@test.com',
+            'company' => 'Test Growth Co',
+            'referral_code' => 'GROWTH2026',
+        ]);
+
+        $response->assertStatus(201);
+        $companyId = $response->json('data.company.id');
+        $company = Company::find($companyId);
+
+        $this->assertEquals($partner->id, $company->referrer_partner_id);
+    }
+}
