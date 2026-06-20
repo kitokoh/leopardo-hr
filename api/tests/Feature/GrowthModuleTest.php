@@ -23,6 +23,7 @@ class GrowthModuleTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
         $this->partnerService = app(PartnerService::class);
+        $this->commissionService = app(\App\Services\CommissionService::class);
     }
 
     public function test_can_attribute_company_to_partner()
@@ -94,7 +95,7 @@ class GrowthModuleTest extends TestCase
             'paid_at' => now(),
         ]);
 
-        $commission = $this->partnerService->recordCommissionForPayment($payment);
+        $commission = $this->commissionService->recordCommissionForPayment($payment);
 
         $this->assertNotNull($commission);
         $this->assertEquals(1500, $commission->amount); // 15% of 100.00 (10000 cents) = 1500 cents
@@ -243,5 +244,60 @@ class GrowthModuleTest extends TestCase
         $company = Company::find($companyId);
 
         $this->assertEquals($partner->id, $company->referrer_partner_id);
+    }
+
+    public function test_partner_cannot_access_other_partners_stats()
+    {
+        $user1 = User::factory()->create();
+        $partner1 = Partner::create(['user_id' => $user1->id, 'referral_code' => 'P1']);
+
+        $user2 = User::factory()->create();
+        $partner2 = Partner::create(['user_id' => $user2->id, 'referral_code' => 'P2']);
+
+        // Authenticate as Partner 1 using the correct guard
+        $this->actingAs($user1, 'user_api');
+
+        $response = $this->getJson('/api/v1/partner/stats');
+        $response->assertStatus(200);
+        $this->assertEquals(0, $response->json('stats.total_conversions'));
+    }
+
+    public function test_anti_auto_referral_on_company_created_event()
+    {
+        $user = User::factory()->create(['email' => 'partner@test.com']);
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'P1',
+            'status' => 'active'
+        ]);
+
+        // Mock the cookie
+        $this->withCookie('leopardo_referrer_id', (string) $partner->id);
+
+        $company = Company::factory()->create([
+            'email' => 'partner@test.com' // Same as partner email
+        ]);
+
+        event(new \App\Events\CompanyCreated($company));
+
+        $this->assertNull($company->fresh()->referrer_partner_id);
+    }
+
+    public function test_manual_referral_code_takes_precedence_over_cookie()
+    {
+        $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'MANUAL', 'status' => 'active']);
+        $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'COOKIE', 'status' => 'active']);
+
+        // Set cookie for partner 2
+        $this->withCookie('leopardo_referrer_id', (string) $partner2->id);
+
+        // Pre-attribute to partner 1 (manual code simulation in Controller)
+        $company = Company::factory()->create(['referrer_partner_id' => $partner1->id]);
+
+        // Trigger the listener
+        event(new \App\Events\CompanyCreated($company));
+
+        // Should still be partner 1
+        $this->assertEquals($partner1->id, $company->fresh()->referrer_partner_id);
     }
 }

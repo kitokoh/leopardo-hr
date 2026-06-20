@@ -249,6 +249,15 @@ const routes = [
           title: 'Journal d\'audit',
           icon: 'ShieldCheckIcon'
         }
+      },
+      {
+        path: '/growth',
+        name: 'growth',
+        component: () => import('@/views/growth/GrowthDashboardView.vue'),
+        meta: {
+          title: 'Administration Growth',
+          icon: 'ArrowTrendingUpIcon'
+        }
       }
     ]
   },

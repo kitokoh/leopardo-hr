@@ -129,6 +129,9 @@ class SelfServiceTrialController extends Controller
             ], 500);
         }
 
+        // Growth Module: Dispatch CompanyCreated event for partner linking
+        event(new \App\Events\CompanyCreated($result['company']));
+
         // Create a CompanyRequest entry for CRM tracking
         $this->createCompanyRequestRecord($validated, $result['company'], $email);
 

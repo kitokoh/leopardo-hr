@@ -35,38 +35,6 @@ class PartnerService
         return $company->save();
     }
 
-    /**
-     * Calcule et enregistre une commission pour un paiement reçu.
-     */
-    public function recordCommissionForPayment(Payment $payment): ?Commission
-    {
-        if ($payment->status !== 'completed') {
-            return null;
-        }
-
-        $company = Company::find($payment->company_id);
-        if (!$company || !$company->referrer_partner_id) {
-            return null;
-        }
-
-        $partner = Partner::find($company->referrer_partner_id);
-        if (!$partner || $partner->status !== 'active') {
-            return null;
-        }
-
-        $rate = $partner->default_commission_rate;
-        $commissionAmount = (int) round(($payment->amount * 100 * $rate) / 10000);
-
-        return Commission::create([
-            'partner_id' => $partner->id,
-            'company_id' => $company->id,
-            'payment_id' => $payment->id,
-            'amount' => $commissionAmount,
-            'currency' => $payment->currency,
-            'applied_rate' => $rate,
-            'status' => 'pending',
-        ]);
-    }
 
     /**
      * Approuve les commissions en attente après le délai de 14 jours.

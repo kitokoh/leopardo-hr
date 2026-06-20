@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use App\Models\PartnerLink;
+use App\Models\PartnerClick;
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class PartnerLinkMiddleware
+{
+    /**
+     * Handle an incoming request.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        if ($request->is('p/*')) {
+            $code = $request->segment(2);
+
+            $link = PartnerLink::where('code', $code)
+                ->where('is_active', true)
+                ->first();
+
+            if ($link) {
+                // Record click
+                PartnerClick::create([
+                    'partner_link_id' => $link->id,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'referrer_url' => $request->header('referer'),
+                ]);
+
+                // Store cookie for 30 days
+                return redirect('/signup')->withCookie(cookie(
+                    'leopardo_referrer_id',
+                    $link->partner_id,
+                    60 * 24 * 30,
+                    '/',
+                    null,
+                    true, // secure
+                    true  // httpOnly
+                ));
+            }
+
+            return redirect('/signup');
+        }
+
+        return $next($request);
+    }
+}

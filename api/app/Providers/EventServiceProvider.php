@@ -11,8 +11,12 @@ use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
+use App\Events\CompanyCreated;
 use App\Events\PayrollValidated;
+use App\Events\SubscriptionPaid;
 use App\Listeners\AuditLogger;
+use App\Listeners\LinkPartnerToNewCompany;
+use App\Listeners\ProcessCommissionOnPayment;
 use App\Listeners\WebhookListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -28,5 +32,7 @@ class EventServiceProvider extends ServiceProvider
         AbsenceApproved::class => [AuditLogger::class, WebhookListener::class],
         AbsenceRejected::class => [AuditLogger::class, WebhookListener::class],
         PayrollValidated::class => [AuditLogger::class, WebhookListener::class],
+        CompanyCreated::class => [LinkPartnerToNewCompany::class],
+        SubscriptionPaid::class => [ProcessCommissionOnPayment::class],
     ];
 }

@@ -169,6 +169,7 @@ class StripeService
             'invoice.payment_failed' => $this->handleInvoicePaymentFailed($data),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($data),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($data),
+            'charge.refunded' => $this->handleChargeRefunded($data),
             default => Log::info("Stripe: Unhandled event type: {$type}"),
         };
     }
@@ -248,10 +249,10 @@ class StripeService
 
             $payment = Payment::query()->firstOrCreate(
                 [
-                    'invoice_id' => $invoiceModel->id,
                     'provider_reference' => $invoice['charge'] ?? $invoice['payment_intent'] ?? $invoice['id'] ?? null,
                 ],
                 [
+                    'invoice_id' => $invoiceModel->id,
                     'company_id' => $invoiceModel->company_id,
                     'amount' => $amountPaid,
                     'currency' => strtoupper((string) ($invoice['currency'] ?? $invoiceModel->currency ?? 'eur')),
@@ -262,16 +263,8 @@ class StripeService
                 ]
             );
 
-            // GROWTH MODULE: Enregistrement de la commission
-            try {
-                $partnerService = app(\App\Services\PartnerService::class);
-                $partnerService->recordCommissionForPayment($payment);
-            } catch (\Throwable $e) {
-                Log::warning('PartnerService: Failed to record commission', [
-                    'payment_id' => $payment->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+            // GROWTH MODULE: Dispatch SubscriptionPaid event
+            event(new \App\Events\SubscriptionPaid($payment));
 
             if ($invoiceModel->subscription) {
                 $invoiceModel->subscription->update(['status' => 'active']);
@@ -361,6 +354,30 @@ class StripeService
                 'company_id' => $sub->company_id,
                 'stripe_subscription_id' => $subscription['id'],
             ]);
+        }
+    }
+
+    /**
+     * Handle payment refund from Stripe.
+     */
+    private function handleChargeRefunded(array $charge): void
+    {
+        $payment = Payment::where('provider_reference', $charge['payment_intent'] ?? $charge['id'])
+            ->first();
+
+        if ($payment) {
+            $payment->update(['status' => 'refunded']);
+
+            // GROWTH MODULE: Cancel pending commissions
+            try {
+                $partnerService = app(\App\Services\PartnerService::class);
+                $partnerService->handlePaymentRefunded($payment);
+            } catch (\Throwable $e) {
+                Log::warning('PartnerService: Failed to handle refund', [
+                    'payment_id' => $payment->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 }
