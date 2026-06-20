@@ -61,6 +61,26 @@ class GrowthAdminController extends Controller
     }
 
     /**
+     * Update payout request status with audit.
+     */
+    public function updatePayoutStatus(Request $request, \App\Models\PartnerPayoutRequest $payout): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:paid,rejected',
+            'notes' => 'nullable|string',
+        ]);
+
+        $this->partnerService->updatePayoutStatus(
+            $payout,
+            $validated['status'],
+            Auth::id(),
+            $validated['notes'] ?? 'Status updated by admin.'
+        );
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
      * Approve or Reject an application.
      */
     public function updateApplicationStatus(Request $request, Partner $partner): JsonResponse

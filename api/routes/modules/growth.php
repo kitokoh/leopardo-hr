@@ -19,5 +19,6 @@ Route::middleware(['auth:super_admin_api'])->prefix('platform/growth')->group(fu
     Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
     Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);
     Route::get('/payouts', [GrowthAdminController::class, 'payouts']);
+    Route::patch('/payouts/{payout}', [GrowthAdminController::class, 'updatePayoutStatus']);
     Route::get('/history', [GrowthAdminController::class, 'history']);
 });

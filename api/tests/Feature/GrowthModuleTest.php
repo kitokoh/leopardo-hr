@@ -351,11 +351,55 @@ class GrowthModuleTest extends TestCase
         ]);
 
         // 1. Request too much
-        $this->expectException(\Exception::class);
-        $this->partnerService->requestPayout($partner, 15000, 'EUR');
+        try {
+            $this->partnerService->requestPayout($partner, 15000, 'EUR');
+            $this->fail("Should have thrown DomainException for balance");
+        } catch (\App\Exceptions\DomainException $e) {
+            $this->assertEquals("INSUFFICIENT_BALANCE", $e->errorCode());
+        }
 
         // 2. Request below threshold
-        $this->expectException(\Exception::class);
-        $this->partnerService->requestPayout($partner, 1000, 'EUR');
+        try {
+            $this->partnerService->requestPayout($partner, 1000, 'EUR');
+            $this->fail("Should have thrown DomainException for threshold");
+        } catch (\App\Exceptions\DomainException $e) {
+            $this->assertEquals("BELOW_PAYOUT_THRESHOLD", $e->errorCode());
+        }
+    }
+
+    public function test_payout_status_change_is_audited()
+    {
+        $admin = User::factory()->create();
+        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1']);
+        $payout = \App\Models\PartnerPayoutRequest::create([
+            'partner_id' => $partner->id,
+            'amount' => 5000,
+            'currency' => 'EUR',
+            'status' => 'pending'
+        ]);
+
+        $this->partnerService->updatePayoutStatus($payout, 'paid', $admin->id, 'Bank transfer sent');
+
+        $this->assertEquals('paid', $payout->fresh()->status);
+        $this->assertDatabaseHas('partner_audit_logs', [
+            'admin_id' => $admin->id,
+            'event' => 'payout_status_change',
+            'reason' => 'Bank transfer sent',
+        ]);
+    }
+
+    public function test_partner_approval_is_audited()
+    {
+        $admin = User::factory()->create();
+        $user = User::factory()->create();
+        $partner = $this->partnerService->apply($user->id, ['type' => 'agency']);
+
+        $this->partnerService->approve($partner, $admin->id);
+
+        $this->assertEquals('approved', $partner->fresh()->application_status);
+        $this->assertDatabaseHas('partner_audit_logs', [
+            'admin_id' => $admin->id,
+            'event' => 'application_approved',
+        ]);
     }
 }

@@ -37,12 +37,21 @@ class PartnerService
      */
     public function approve(Partner $partner, int $adminId): void
     {
-        $this->reassignCompanyPartner($partner->referredCompanies()->first() ?? new \App\Models\Company(), $partner->id, $adminId, 'Application Approved'); // Fake usage of reassign logic to follow audit pattern
+        DB::transaction(function () use ($partner, $adminId) {
+            $partner->update([
+                'application_status' => 'approved',
+                'status' => 'active',
+            ]);
 
-        $partner->update([
-            'application_status' => 'approved',
-            'status' => 'active',
-        ]);
+            PartnerAuditLog::create([
+                'admin_id' => $adminId,
+                'auditable_type' => Partner::class,
+                'auditable_id' => (string) $partner->id,
+                'event' => 'application_approved',
+                'new_values' => ['status' => 'active', 'application_status' => 'approved'],
+                'reason' => 'Partner application approved by admin.',
+            ]);
+        });
     }
 
     /**
@@ -108,11 +117,11 @@ class PartnerService
         $available = $totalEarned - $totalRequested;
 
         if ($amountCents > $available) {
-            throw new \Exception("Solde insuffisant.");
+            throw new \App\Exceptions\DomainException("Solde insuffisant.", 422, "INSUFFICIENT_BALANCE");
         }
 
         if ($amountCents < $partner->payout_threshold) {
-            throw new \Exception("Le montant est inférieur au seuil de paiement.");
+            throw new \App\Exceptions\DomainException("Montant sous le seuil.", 422, "BELOW_PAYOUT_THRESHOLD");
         }
 
         return \App\Models\PartnerPayoutRequest::create([
@@ -121,6 +130,32 @@ class PartnerService
             'currency' => $currency,
             'status' => 'pending',
         ]);
+    }
+
+    /**
+     * Met à jour le statut d'une demande de paiement avec Audit Trail.
+     */
+    public function updatePayoutStatus(\App\Models\PartnerPayoutRequest $payout, string $newStatus, int $adminId, string $reason): void
+    {
+        $oldStatus = $payout->status;
+
+        DB::transaction(function () use ($payout, $newStatus, $adminId, $reason, $oldStatus) {
+            $payout->update([
+                'status' => $newStatus,
+                'processed_at' => now(),
+                'admin_notes' => $reason,
+            ]);
+
+            PartnerAuditLog::create([
+                'admin_id' => $adminId,
+                'auditable_type' => \App\Models\PartnerPayoutRequest::class,
+                'auditable_id' => (string) $payout->id,
+                'event' => 'payout_status_change',
+                'old_values' => ['status' => $oldStatus],
+                'new_values' => ['status' => $newStatus],
+                'reason' => $reason,
+            ]);
+        });
     }
 
     /**
