@@ -37,6 +37,14 @@ class LinkPartnerToNewCompany
         $event->company->referrer_partner_id = $partner->id;
         $event->company->save();
 
+        \App\Models\PartnerReferral::updateOrCreate(
+            ['company_id' => $event->company->id],
+            [
+                'partner_id' => $partner->id,
+                'referred_at' => now(),
+            ]
+        );
+
         Log::info("Company {$event->company->id} linked to partner {$partner->id}");
     }
 }

@@ -125,6 +125,33 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        Schema::create('partner_referrals', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_id');
+            $table->uuid('company_id');
+            $table->timestamp('referred_at')->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('partner_links', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_id');
+            $table->string('code');
+            $table->string('name')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('partner_clicks', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_link_id');
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->string('referrer_url')->nullable();
+            $table->timestamp('clicked_at')->nullable();
+        });
+
         Schema::create('partner_audit_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('admin_id');

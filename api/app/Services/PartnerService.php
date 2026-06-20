@@ -74,7 +74,17 @@ class PartnerService
         }
 
         $company->referrer_partner_id = $partner->id;
-        return $company->save();
+        $company->save();
+
+        \App\Models\PartnerReferral::updateOrCreate(
+            ['company_id' => $company->id],
+            [
+                'partner_id' => $partner->id,
+                'referred_at' => now(),
+            ]
+        );
+
+        return true;
     }
 
 
@@ -153,6 +163,27 @@ class PartnerService
                 'event' => 'payout_status_change',
                 'old_values' => ['status' => $oldStatus],
                 'new_values' => ['status' => $newStatus],
+                'reason' => $reason,
+            ]);
+        });
+    }
+
+    /**
+     * Met à jour les coordonnées de paiement avec Audit Trail.
+     */
+    public function updatePaymentDetails(Partner $partner, string $details, int $adminId, string $reason): void
+    {
+        $encryptor = app(\App\Services\Security\SensitiveDataEncryptor::class);
+        $encrypted = $encryptor->encrypt($details);
+
+        DB::transaction(function () use ($partner, $encrypted, $adminId, $reason) {
+            $partner->update(['payment_details' => $encrypted]);
+
+            PartnerAuditLog::create([
+                'admin_id' => $adminId,
+                'auditable_type' => Partner::class,
+                'auditable_id' => (string) $partner->id,
+                'event' => 'payment_details_updated',
                 'reason' => $reason,
             ]);
         });

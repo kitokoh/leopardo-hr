@@ -402,4 +402,42 @@ class GrowthModuleTest extends TestCase
             'event' => 'application_approved',
         ]);
     }
+
+    public function test_commission_period_limit_of_12_months()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'P1', 'status' => 'active']);
+        $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
+
+        // Referral created 13 months ago
+        \App\Models\PartnerReferral::create([
+            'partner_id' => $partner->id,
+            'company_id' => $company->id,
+            'referred_at' => now()->subMonths(13),
+        ]);
+
+        $payment = Payment::create([
+            'invoice_id' => 1,
+            'company_id' => $company->id,
+            'amount' => 100,
+            'status' => 'completed',
+        ]);
+
+        $commission = $this->commissionService->recordCommissionForPayment($payment);
+
+        $this->assertNull($commission, "Should not record commission after 12 months");
+    }
+
+    public function test_suspended_partner_cannot_receive_new_clicks()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'SUSPENDED', 'status' => 'suspended']);
+        $link = \App\Models\PartnerLink::create(['partner_id' => $partner->id, 'code' => 'SUSPENDED', 'is_active' => true]);
+
+        $response = $this->get('/p/SUSPENDED');
+
+        // Middleware should redirect to signup but without setting the cookie
+        $response->assertRedirect('/signup');
+        $response->assertCookieMissing('leopardo_referrer_id');
+    }
 }

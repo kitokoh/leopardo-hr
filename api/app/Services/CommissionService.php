@@ -19,6 +19,11 @@ class CommissionService
             return null;
         }
 
+        // Idempotency: Check if commission already exists for this payment
+        if (Commission::where('payment_id', $payment->id)->exists()) {
+            return null;
+        }
+
         $company = Company::find($payment->company_id);
         if (!$company || !$company->referrer_partner_id) {
             return null;
@@ -26,6 +31,13 @@ class CommissionService
 
         $partner = Partner::find($company->referrer_partner_id);
         if (!$partner || $partner->status !== 'active') {
+            return null;
+        }
+
+        // 12-month commission limit rule
+        $referral = \App\Models\PartnerReferral::where('company_id', $company->id)->first();
+        if ($referral && $referral->referred_at->diffInMonths(now()) >= 12) {
+            Log::info("Commission period (12 months) expired for company {$company->id}");
             return null;
         }
 

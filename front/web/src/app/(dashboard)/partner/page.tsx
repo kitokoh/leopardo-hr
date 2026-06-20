@@ -1,42 +1,50 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
 
 export default function PartnerDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('not_applied'); // 'not_applied', 'pending', 'approved'
+  const [status, setStatus] = useState('loading'); // 'not_applied', 'pending', 'approved', 'loading'
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await apiFetch('/partner/stats');
+      const payload = await response.json();
+
+      // If the API returns success, we are an approved partner
+      setData(payload);
+      setStatus('approved');
+    } catch (error) {
+      if (error.code === 'NOT_A_PARTNER') {
+        setStatus('not_applied');
+      } else {
+        console.error("Failed to fetch partner stats", error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Simulation: En production, on appelle /api/v1/partner/stats
-        // Si 403 NOT_A_PARTNER, on reste en 'not_applied'
-        const response = {
-          status: 'approved',
-          stats: {
-            total_conversions: 15,
-            total_earned: 67500,
-            pending_approval: 12000,
-            approved_upcoming: 4500,
-          },
-          recent_companies: [
-            { id: '1', name: 'Atlas Digital', created_at: '2026-06-12', status: 'active', commission: 4500 },
-          ]
-        };
-        setData(response);
-        setStatus(response.status);
-      } catch (error) {
-        setStatus('not_applied');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-slate-500">Chargement de votre espace...</div>;
+  const handleApply = async (type) => {
+    try {
+      await apiFetch('/partner/apply', {
+        method: 'POST',
+        body: JSON.stringify({ type })
+      });
+      setStatus('pending');
+    } catch (error) {
+      alert("Erreur lors de la candidature : " + error.message);
+    }
+  };
+
+  if (status === 'loading') return <div className="p-8 text-center text-slate-500 font-medium">Chargement de votre espace...</div>;
 
   if (status === 'not_applied') {
     return (
@@ -50,12 +58,20 @@ export default function PartnerDashboard() {
             Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez.
             Jusqu'à 20% de commission récurrente.
           </p>
-          <button
-            onClick={() => setStatus('pending')}
-            className="bg-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-teal-700 transition-all hover:scale-105"
-          >
-            Déposer ma candidature
-          </button>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => handleApply('individual')}
+              className="bg-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-teal-700 transition-all"
+            >
+              Postuler en tant qu'Individuel
+            </button>
+            <button
+              onClick={() => handleApply('agency')}
+              className="bg-white border border-teal-600 text-teal-600 px-8 py-4 rounded-2xl font-bold hover:bg-teal-50 transition-all"
+            >
+              Postuler en tant qu'Agence
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -65,8 +81,11 @@ export default function PartnerDashboard() {
     return (
       <div className="p-8 max-w-2xl mx-auto text-center">
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-amber-100 dark:border-amber-900/30 shadow-sm">
+          <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+             <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-12 0 9 9 0 0112 0z" /></svg>
+          </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Candidature en cours</h2>
-          <p className="text-slate-500">Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email sous 48h.</p>
+          <p className="text-slate-500">Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé.</p>
         </div>
       </div>
     );
@@ -95,25 +114,36 @@ export default function PartnerDashboard() {
         <div className="lg:col-span-2">
           <section className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-semibold tracking-tight">Entreprises Référées Récentes</h2>
+              <h2 className="text-lg font-semibold tracking-tight">Dernières Commissions</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-slate-50 dark:bg-slate-900/50">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Entreprise</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Tenant ID</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Date</th>
-                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Commission</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Statut</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Montant</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                  {data?.recent_companies.map(company => (
-                    <tr key={company.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
-                      <td className="px-6 py-4 text-sm font-medium">{company.name}</td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{new Date(company.created_at).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 text-sm font-semibold">{(company.commission / 100).toFixed(2)} €</td>
+                  {data?.recent_commissions?.map(comm => (
+                    <tr key={comm.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
+                      <td className="px-6 py-4 text-sm font-medium font-mono">{comm.company_id.substring(0, 8)}...</td>
+                      <td className="px-6 py-4 text-sm text-slate-500">{new Date(comm.created_at).toLocaleDateString()}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
+                          comm.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {comm.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold">{(comm.amount / 100).toFixed(2)} €</td>
                     </tr>
                   ))}
+                  {(!data?.recent_commissions || data.recent_commissions.length === 0) && (
+                    <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500 italic">Aucune commission enregistrée.</td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -125,21 +155,25 @@ export default function PartnerDashboard() {
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest mb-4">Paiement</h3>
             <div className="space-y-4">
               <p className="text-xs text-slate-500 leading-relaxed">
-                Vos commissions sont payées mensuellement une fois le seuil de 50.00 € atteint.
+                Vos commissions sont payées une fois le seuil atteint.
+                Vérifiez que vos coordonnées bancaires sont à jour.
               </p>
-              <button className="w-full py-3 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
+              <button
+                onClick={() => alert("Fonctionnalité en cours de déploiement.")}
+                className="w-full py-3 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"
+              >
                 Demander un virement
               </button>
             </div>
           </section>
 
           <section className="bg-teal-600 p-6 rounded-3xl text-white shadow-lg shadow-teal-500/20">
-            <h3 className="text-sm font-bold uppercase tracking-widest mb-4 opacity-80">Votre lien unique</h3>
-            <div className="bg-white/10 rounded-xl p-3 mb-4 font-mono text-sm break-all">
-              https://leopardo-rh.com/p/PART-123
+            <h3 className="text-sm font-bold uppercase tracking-widest mb-4 opacity-80">Lien de parrainage</h3>
+            <div className="bg-white/10 rounded-xl p-3 mb-4 font-mono text-xs break-all">
+              https://leopardo-rh.com/p/DEFAULT
             </div>
             <button className="w-full py-2 bg-white text-teal-700 rounded-xl font-bold text-sm hover:bg-teal-50 transition-colors">
-              Copier le lien
+              Copier mon lien
             </button>
           </section>
         </div>
@@ -152,7 +186,7 @@ function MetricCard({ label, value, color }) {
   return (
     <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
       <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</h3>
-      <p className={`text-2xl font-black mt-2 ${color}`}>{value}</p>
+      <p className={`text-2xl font-black mt-2 ${color}`}>{value ?? '0'}</p>
     </div>
   );
 }

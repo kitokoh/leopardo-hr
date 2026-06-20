@@ -25,9 +25,15 @@ class PartnerLinkMiddleware
 
             $code = $request->segment(2);
 
-            $link = PartnerLink::where('code', $code)
+            $link = PartnerLink::with('partner')
+                ->where('code', $code)
                 ->where('is_active', true)
                 ->first();
+
+            // Block if partner is suspended
+            if ($link && $link->partner->status !== 'active') {
+                return redirect('/signup');
+            }
 
             if ($link) {
                 // Record click
