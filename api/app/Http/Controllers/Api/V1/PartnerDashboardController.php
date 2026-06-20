@@ -71,16 +71,28 @@ class PartnerDashboardController extends Controller
             return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
         }
 
-        $commissions = Commission::where('partner_id', $partner->id)->get();
+        // Optimized with SQL aggregations instead of memory loading
+        $stats = Commission::where('partner_id', $partner->id)
+            ->selectRaw("
+                SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as total_earned,
+                SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) as pending_approval,
+                SUM(CASE WHEN status = 'approved' THEN amount ELSE 0 END) as approved_upcoming
+            ")
+            ->first();
+
+        $recentCommissions = Commission::where('partner_id', $partner->id)
+            ->latest()
+            ->take(10)
+            ->get();
 
         return new JsonResponse([
             'stats' => [
                 'total_conversions' => $partner->referredCompanies()->count(),
-                'total_earned' => $commissions->where('status', 'paid')->sum('amount'),
-                'pending_approval' => $commissions->where('status', 'pending')->sum('amount'),
-                'approved_upcoming' => $commissions->where('status', 'approved')->sum('amount'),
+                'total_earned' => (int) ($stats->total_earned ?? 0),
+                'pending_approval' => (int) ($stats->pending_approval ?? 0),
+                'approved_upcoming' => (int) ($stats->approved_upcoming ?? 0),
             ],
-            'recent_commissions' => $commissions->take(10),
+            'recent_commissions' => $recentCommissions,
         ]);
     }
 

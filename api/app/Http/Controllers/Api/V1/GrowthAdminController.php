@@ -92,7 +92,7 @@ class GrowthAdminController extends Controller
         if ($validated['status'] === 'approved') {
             $this->partnerService->approve($partner, Auth::id());
         } else {
-            $partner->update(['application_status' => 'rejected']);
+            $this->partnerService->reject($partner, Auth::id(), $request->input('reason', 'Application rejected by admin.'));
         }
 
         return new JsonResponse(['success' => true]);

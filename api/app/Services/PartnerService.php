@@ -55,6 +55,28 @@ class PartnerService
     }
 
     /**
+     * Rejette un partenaire.
+     */
+    public function reject(Partner $partner, int $adminId, string $reason): void
+    {
+        DB::transaction(function () use ($partner, $adminId, $reason) {
+            $partner->update([
+                'application_status' => 'rejected',
+                'status' => 'suspended',
+            ]);
+
+            PartnerAuditLog::create([
+                'admin_id' => $adminId,
+                'auditable_type' => Partner::class,
+                'auditable_id' => (string) $partner->id,
+                'event' => 'application_rejected',
+                'new_values' => ['status' => 'suspended', 'application_status' => 'rejected'],
+                'reason' => $reason,
+            ]);
+        });
+    }
+
+    /**
      * Attribue un partenaire à une entreprise (Tenant).
      */
     public function attributeCompanyToPartner(Company $company, string $referralCode): bool
