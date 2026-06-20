@@ -16,6 +16,13 @@ class PartnerLinkMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->is('p/*')) {
+            // Check for cookie consent if policy requires it
+            // For now, we assume consent is handled by the landing page or a common flag.
+            // If consent is explicitly 'rejected', we don't drop the cookie.
+            if ($request->cookie('leopardo_cookie_consent') === 'rejected') {
+                return redirect('/signup');
+            }
+
             $code = $request->segment(2);
 
             $link = PartnerLink::where('code', $code)

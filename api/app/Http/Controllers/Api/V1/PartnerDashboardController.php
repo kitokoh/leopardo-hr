@@ -11,6 +11,54 @@ use Illuminate\Support\Facades\Auth;
 
 class PartnerDashboardController extends Controller
 {
+    public function __construct(private \App\Services\PartnerService $partnerService)
+    {}
+
+    /**
+     * Appliquer pour devenir partenaire.
+     */
+    public function apply(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        if (Partner::where('user_id', $user->id)->exists()) {
+            return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
+        }
+
+        $validated = $request->validate([
+            'type' => 'required|in:individual,agency,accountant',
+            'payment_details' => 'nullable|string',
+        ]);
+
+        $partner = $this->partnerService->apply($user->id, $validated);
+
+        return new JsonResponse(['data' => $partner], 201);
+    }
+
+    /**
+     * Demander un paiement.
+     */
+    public function requestPayout(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        $partner = Partner::where('user_id', $user->id)->first();
+
+        if (!$partner) {
+            return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|integer|min:100',
+            'currency' => 'required|string|size:3',
+        ]);
+
+        try {
+            $payout = $this->partnerService->requestPayout($partner, $validated['amount'], $validated['currency']);
+            return new JsonResponse(['data' => $payout], 201);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 422);
+        }
+    }
+
     /**
      * Get statistics for the authenticated partner.
      */

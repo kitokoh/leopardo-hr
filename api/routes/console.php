@@ -116,6 +116,9 @@ Schedule::command('growth:approve-commissions')
     ->daily()
     ->at('04:00');
 
+Schedule::command('growth:archive-clicks --days=90')
+    ->weekly();
+
 Artisan::command('super-admin:reset-password {email} {password}', function (string $email, string $password) {
     DB::statement('SET search_path TO public');
 

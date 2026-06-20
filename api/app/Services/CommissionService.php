@@ -29,30 +29,39 @@ class CommissionService
             return null;
         }
 
-        // Snapshot of the rate
+        // Base HT calculation: deduct taxes if partner tax_rate is set
+        $paymentAmountInCents = (int) round((float) $payment->amount * 100);
+        $taxRate = $partner->tax_rate; // bps
+        $netAmountInCents = (int) floor(($paymentAmountInCents * 10000) / (10000 + $taxRate));
+
+        // Snapshot of the commission rate
         $rate = $partner->default_commission_rate;
 
-        // Ensure we work with cents (Payment amount is decimal string/float in Core RH)
-        $paymentAmountInCents = (int) round((float) $payment->amount * 100);
-
-        // Amount in cents: (Payment Amount Cents * Rate bps) / 10000 (bps conversion)
-        $commissionAmount = (int) floor(($paymentAmountInCents * $rate) / 10000);
+        // Commission Amount based on Net (HT)
+        $commissionAmount = (int) floor(($netAmountInCents * $rate) / 10000);
 
         if ($commissionAmount <= 0) {
             return null;
         }
 
+        // Exchange rate snapshot (Fake 1.0 if same currency for MVP)
+        $exchangeRate = 1.0;
+
         $commission = Commission::create([
             'partner_id' => $partner->id,
             'company_id' => $company->id,
             'payment_id' => $payment->id,
-            'amount' => $commissionAmount,
+            'amount' => $commissionAmount, // Total to pay to partner
+            'net_amount' => $netAmountInCents, // HT Base
             'currency' => $payment->currency,
             'applied_rate' => $rate,
+            'exchange_rate' => $exchangeRate,
+            'original_amount' => $paymentAmountInCents,
+            'original_currency' => $payment->currency,
             'status' => 'pending',
         ]);
 
-        Log::info("Commission recorded: {$commission->id} for partner {$partner->id}");
+        Log::info("Commission recorded: {$commission->id} for partner {$partner->id} (HT base: {$netAmountInCents})");
 
         return $commission;
     }

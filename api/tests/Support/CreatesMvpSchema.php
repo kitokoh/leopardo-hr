@@ -86,7 +86,12 @@ trait CreatesMvpSchema
             $table->foreignId('user_id');
             $table->string('referral_code')->unique();
             $table->integer('default_commission_rate')->default(1000);
+            $table->integer('tax_rate')->default(0);
             $table->string('status')->default('active');
+            $table->string('application_status')->default('pending');
+            $table->text('payment_details')->nullable();
+            $table->integer('payout_threshold')->default(5000);
+            $table->string('payout_cycle')->default('monthly');
             $table->string('type')->default('individual');
             $table->timestamps();
         });
@@ -97,11 +102,26 @@ trait CreatesMvpSchema
             $table->uuid('company_id');
             $table->unsignedBigInteger('payment_id');
             $table->integer('amount');
+            $table->integer('net_amount')->nullable();
             $table->string('currency', 3)->default('DZD');
             $table->integer('applied_rate');
+            $table->decimal('exchange_rate', 15, 8)->default(1.0);
+            $table->integer('original_amount')->nullable();
+            $table->string('original_currency', 3)->nullable();
             $table->string('status')->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('paid_at')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('partner_payout_requests', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('partner_id');
+            $table->integer('amount');
+            $table->string('currency', 3);
+            $table->string('status')->default('pending');
+            $table->text('admin_notes')->nullable();
+            $table->timestamp('processed_at')->nullable();
             $table->timestamps();
         });
 

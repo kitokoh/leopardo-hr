@@ -49,6 +49,36 @@ class GrowthAdminController extends Controller
     }
 
     /**
+     * List payout requests.
+     */
+    public function payouts(): JsonResponse
+    {
+        $requests = \App\Models\PartnerPayoutRequest::with('partner.user')
+            ->latest()
+            ->get();
+
+        return new JsonResponse(['data' => $requests]);
+    }
+
+    /**
+     * Approve or Reject an application.
+     */
+    public function updateApplicationStatus(Request $request, Partner $partner): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        if ($validated['status'] === 'approved') {
+            $this->partnerService->approve($partner, Auth::id());
+        } else {
+            $partner->update(['application_status' => 'rejected']);
+        }
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
      * List recent commissions and audits.
      */
     public function history(): JsonResponse

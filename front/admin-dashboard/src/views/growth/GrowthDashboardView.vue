@@ -7,52 +7,63 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-      <div v-for="metric in metrics" :key="metric.label" class="glass-card p-6">
-        <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wider">{{ metric.label }}</h3>
-        <p class="text-2xl font-bold text-slate-900 mt-1">{{ metric.value }}</p>
-      </div>
+    <div class="flex gap-4 mb-8">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        @click="currentTab = tab.id"
+        :class="[
+          'px-4 py-2 rounded-xl font-bold transition-all text-sm uppercase tracking-tight',
+          currentTab === tab.id ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/20' : 'bg-white text-slate-500 hover:bg-slate-50'
+        ]"
+      >
+        {{ tab.label }}
+      </button>
     </div>
 
-    <div class="glass-card overflow-hidden">
-      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h2 class="text-lg font-semibold text-slate-900">Gestion des Partenaires</h2>
-      </div>
-      <div class="overflow-x-auto">
+    <div v-if="currentTab === 'partners'" class="space-y-6">
+      <!-- Partenaires (Table existante enrichie) -->
+      <div class="glass-card overflow-hidden">
         <table class="w-full text-left">
           <thead class="bg-slate-50">
             <tr>
               <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Partenaire</th>
-              <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Taux (%)</th>
-              <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Référés</th>
-              <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Dernière Audit</th>
+              <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Taux HT (%)</th>
+              <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Coordonnées</th>
+              <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Statut App.</th>
               <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-200">
+          <tbody class="divide-y divide-slate-200 bg-white">
             <tr v-for="partner in partners" :key="partner.id">
               <td class="px-6 py-4">
-                <div class="font-medium text-slate-900">{{ partner.user.first_name }} {{ partner.user.last_name }}</div>
-                <div class="text-xs text-slate-500">{{ partner.user.email }}</div>
+                <div class="font-bold text-slate-900">{{ partner.user.first_name }} {{ partner.user.last_name }}</div>
+                <div class="text-xs text-slate-500 font-medium">{{ partner.user.email }}</div>
+              </td>
+              <td class="px-6 py-4 text-sm font-black text-teal-600">
+                {{ partner.default_commission_rate / 100 }}%
               </td>
               <td class="px-6 py-4">
-                <div class="flex items-center gap-2">
-                  <span class="font-semibold">{{ partner.default_commission_rate / 100 }}%</span>
-                  <button @click="editRate(partner)" class="text-slate-400 hover:text-teal-600">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                  </button>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm">{{ partner.referred_companies_count }}</td>
-              <td class="px-6 py-4 text-xs text-slate-500">
-                {{ partner.last_audit || 'Aucune modification' }}
+                 <button class="text-xs font-bold text-slate-600 underline">Voir IBAN (Décripté)</button>
               </td>
               <td class="px-6 py-4">
-                <button class="text-teal-600 hover:text-teal-800 font-medium">Historique</button>
+                <span :class="partner.appStatusClass" class="px-2.5 py-1 text-xs font-black rounded-full uppercase tracking-tighter">
+                  {{ partner.application_status }}
+                </span>
+              </td>
+              <td class="px-6 py-4 flex gap-2">
+                <button v-if="partner.application_status === 'pending'" class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-bold">Approuver</button>
+                <button class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase">Détails</button>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <div v-if="currentTab === 'payouts'" class="space-y-6">
+      <div class="glass-card p-6 text-center text-slate-500 font-medium italic">
+        Module de validation des paiements : 12 demandes en attente.
       </div>
     </div>
   </div>
@@ -61,40 +72,31 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const metrics = ref([
-  { label: 'Partenaires', value: '...' },
-  { label: 'Total Commissions', value: '...' },
-  { label: 'Audit Logs (30j)', value: '...' },
-  { label: 'Alertes Fraude', value: '0' },
-]);
+const currentTab = ref('partners');
+const tabs = [
+  { id: 'partners', label: 'Partenaires' },
+  { id: 'payouts', label: 'Demandes de Paiement' },
+  { id: 'audit', label: 'Logs d\'Audit' },
+];
 
 const partners = ref([]);
 
-onMounted(async () => {
-  // Simulation d'appel à /api/v1/platform/growth/partners
+onMounted(() => {
   partners.value = [
     {
       id: 1,
       user: { first_name: 'Jean', last_name: 'Partenaire', email: 'jean@partner.com' },
       default_commission_rate: 1500,
-      referred_companies_count: 8,
-      last_audit: 'Taux mis à jour par Admin (12/06)'
+      application_status: 'pending',
+      appStatusClass: 'bg-amber-100 text-amber-700'
+    },
+    {
+      id: 2,
+      user: { first_name: 'Sarah', last_name: 'Growth', email: 'sarah@agency.com' },
+      default_commission_rate: 2000,
+      application_status: 'approved',
+      appStatusClass: 'bg-emerald-100 text-emerald-700'
     }
   ];
-
-  metrics.value[0].value = partners.value.length;
-  metrics.value[1].value = '12,450 €';
-  metrics.value[2].value = '42';
 });
-
-const editRate = (partner) => {
-  const newRate = prompt(`Nouveau taux pour ${partner.user.first_name} (en %) :`, partner.default_commission_rate / 100);
-  if (newRate) {
-    const reason = prompt("Raison du changement (Audit obligatoire) :");
-    if (reason) {
-      console.log(`Appel API PATCH /platform/growth/partners/${partner.id}/rate`, { rate: newRate * 100, reason });
-      alert("Demande d'audit transmise au backend.");
-    }
-  }
-};
 </script>

@@ -26,8 +26,13 @@ class Partner extends Model
         'user_id',
         'referral_code',
         'default_commission_rate',
+        'tax_rate',
         'status',
         'type',
+        'application_status',
+        'payment_details',
+        'payout_threshold',
+        'payout_cycle',
     ];
 
     /** @return BelongsTo<User, $this> */

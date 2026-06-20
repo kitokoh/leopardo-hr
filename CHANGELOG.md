@@ -2,18 +2,24 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.16.253] - 2026-06-20
+
+### Added
+
+- Growth Module Hardening : Renforcement de la sécurité, de la précision financière et des workflows opérationnels.
+- Workflow Partenaire : Ajout du cycle de candidature (Postuler → En attente → Approuvé/Refusé).
+- Finance : Support du calcul de commission sur base HT (tax_rate configurable par partenaire).
+- Finance : Gestion des demandes de paiement (Payouts) avec seuil minimal (threshold) et vérification du solde.
+- Sécurité : Chiffrement des coordonnées bancaires des partenaires via `SensitiveDataEncryptor`.
+- Performance : Commande d'archivage automatique des clics de tracking (`growth:archive-clicks`).
+- Conformité : Intégration du consentement cookie dans le middleware de parrainage.
+- Administration : Nouveau cockpit admin multi-onglets (Partenaires, Payouts, Audits).
+
 ## [4.16.252] - 2026-06-19
 
 ### Added
 
-- Growth Module : Implémentation du système de parrainage et de commissions (Partner & Referral System).
-- API : ajout des modèles `Partner`, `Commission` et `PartnerAuditLog`.
-- API : intégration du parrainage dans le provisioning self-service via `referral_code`.
-- API : automatisation du calcul des commissions lors des paiements Stripe (via Webhook).
-- API : ajout de la commande planifiée `growth:approve-commissions` pour valider les gains après 14 jours.
-- API : implémentation de la "Règle d'Audit Immutable" pour toute modification administrative (taux, attribution, statut).
-- Tests : ajout de `GrowthModuleTest` couvrant l'attribution, le cycle de vie financier et la sécurité (anti-auto-référencement).
-- Outillage : ajout de `UserFactory` pour faciliter les tests d'identité globale.
+- Growth Module : Implémentation initiale du système de parrainage et de commissions.
 
 ## [4.16.251] - 2026-06-13
 

@@ -300,4 +300,62 @@ class GrowthModuleTest extends TestCase
         // Should still be partner 1
         $this->assertEquals($partner1->id, $company->fresh()->referrer_partner_id);
     }
+
+    public function test_commission_calculation_on_ht_base()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'HT_TEST',
+            'default_commission_rate' => 1000, // 10%
+            'tax_rate' => 2000, // 20% TVA
+        ]);
+
+        $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
+
+        $payment = Payment::create([
+            'invoice_id' => 1,
+            'company_id' => $company->id,
+            'amount' => 120.00, // 100 HT + 20 TVA
+            'currency' => 'EUR',
+            'status' => 'completed',
+        ]);
+
+        $commission = $this->commissionService->recordCommissionForPayment($payment);
+
+        $this->assertNotNull($commission);
+        // Payment: 120.00 TTC (12000 cents)
+        // HT base = 12000 / 1.2 = 10000 cents
+        // Commission = 10% of 10000 = 1000 cents (10.00 EUR)
+        $this->assertEquals(1000, $commission->amount);
+        $this->assertEquals(10000, $commission->net_amount);
+    }
+
+    public function test_payout_request_validation()
+    {
+        $user = User::factory()->create();
+        $partner = Partner::create([
+            'user_id' => $user->id,
+            'referral_code' => 'P1',
+            'payout_threshold' => 5000, // 50.00
+        ]);
+
+        // Mock 100.00 earned
+        Commission::create([
+            'partner_id' => $partner->id,
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'payment_id' => 1,
+            'amount' => 10000,
+            'applied_rate' => 1000,
+            'status' => 'approved',
+        ]);
+
+        // 1. Request too much
+        $this->expectException(\Exception::class);
+        $this->partnerService->requestPayout($partner, 15000, 'EUR');
+
+        // 2. Request below threshold
+        $this->expectException(\Exception::class);
+        $this->partnerService->requestPayout($partner, 1000, 'EUR');
+    }
 }

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 // Espace Partenaire (Web Client)
 // Note: Utilise le guard user_api car le profil partenaire est lié au User global, pas à un Employee d'un tenant.
 Route::middleware(['auth:user_api'])->prefix('partner')->group(function () {
+    Route::post('/apply', [PartnerDashboardController::class, 'apply']);
+    Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
     Route::get('/stats', [PartnerDashboardController::class, 'stats']);
     Route::get('/companies', [PartnerDashboardController::class, 'referredCompanies']);
 });
@@ -15,5 +17,7 @@ Route::middleware(['auth:user_api'])->prefix('partner')->group(function () {
 Route::middleware(['auth:super_admin_api'])->prefix('platform/growth')->group(function () {
     Route::get('/partners', [GrowthAdminController::class, 'partners']);
     Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
+    Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);
+    Route::get('/payouts', [GrowthAdminController::class, 'payouts']);
     Route::get('/history', [GrowthAdminController::class, 'history']);
 });
