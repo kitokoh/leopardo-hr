@@ -48,6 +48,7 @@ trait CreatesMvpSchema
             $table->string('email');
             $table->string('phone')->nullable();
             $table->unsignedInteger('plan_id')->nullable();
+            $table->unsignedBigInteger('referrer_partner_id')->nullable();
             $table->string('schema_name', 63);
             $table->string('tenancy_type', 20)->default('shared');
             $table->string('status', 20)->default('active');
@@ -65,6 +66,103 @@ trait CreatesMvpSchema
                 $table->json('metadata')->default('{}');
             }
             $table->timestamps();
+        });
+
+        Schema::create('users', function (Blueprint $table): void {
+            $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email')->unique();
+            $table->string('password_hash')->nullable();
+            $table->string('provider')->default('local');
+            $table->string('preferred_language')->default('fr');
+            $table->string('status')->default('active');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('partners', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id');
+            $table->string('referral_code')->unique();
+            $table->integer('default_commission_rate')->default(1000);
+            $table->integer('tax_rate')->default(0);
+            $table->string('status')->default('active');
+            $table->string('application_status')->default('pending');
+            $table->text('payment_details')->nullable();
+            $table->integer('payout_threshold')->default(5000);
+            $table->string('payout_cycle')->default('monthly');
+            $table->string('type')->default('individual');
+            $table->timestamps();
+        });
+
+        Schema::create('commissions', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_id');
+            $table->uuid('company_id');
+            $table->unsignedBigInteger('payment_id');
+            $table->integer('amount');
+            $table->integer('net_amount')->nullable();
+            $table->string('currency', 3)->default('DZD');
+            $table->integer('applied_rate');
+            $table->decimal('exchange_rate', 15, 8)->default(1.0);
+            $table->integer('original_amount')->nullable();
+            $table->string('original_currency', 3)->nullable();
+            $table->string('status')->default('pending');
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('paid_at')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('partner_payout_requests', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('partner_id');
+            $table->integer('amount');
+            $table->string('currency', 3);
+            $table->string('status')->default('pending');
+            $table->text('admin_notes')->nullable();
+            $table->timestamp('processed_at')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('partner_referrals', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_id');
+            $table->uuid('company_id');
+            $table->timestamp('referred_at')->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('partner_links', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_id');
+            $table->string('code');
+            $table->string('name')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('partner_clicks', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('partner_link_id');
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->string('referrer_url')->nullable();
+            $table->timestamp('clicked_at')->nullable();
+        });
+
+        Schema::create('partner_audit_logs', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('admin_id');
+            $table->string('auditable_type');
+            $table->string('auditable_id'); // String for UUID support
+            $table->string('event');
+            $table->json('old_values')->nullable();
+            $table->json('new_values')->nullable();
+            $table->text('reason')->nullable();
+            $table->string('ip_address', 45)->nullable();
+            $table->timestamp('created_at')->nullable();
         });
 
         Schema::create('languages', function (Blueprint $table): void {
@@ -703,7 +801,12 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.user_lookups CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.personal_access_tokens CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.languages CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.partner_referrals CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.commissions CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.partner_payout_requests CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.partners CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.users CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
         DB::statement('DROP TABLE IF EXISTS shared_tenants.features CASCADE');
     }

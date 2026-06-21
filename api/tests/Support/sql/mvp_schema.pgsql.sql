@@ -3,7 +3,12 @@ DROP TABLE IF EXISTS public.super_admins CASCADE;
 DROP TABLE IF EXISTS public.user_lookups CASCADE;
 DROP TABLE IF EXISTS public.personal_access_tokens CASCADE;
 DROP TABLE IF EXISTS public.languages CASCADE;
+DROP TABLE IF EXISTS public.partner_referrals CASCADE;
+DROP TABLE IF EXISTS public.commissions CASCADE;
+DROP TABLE IF EXISTS public.partner_payout_requests CASCADE;
+DROP TABLE IF EXISTS public.partners CASCADE;
 DROP TABLE IF EXISTS public.companies CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
 DROP TABLE IF EXISTS public.plans CASCADE;
 DROP TABLE IF EXISTS shared_tenants.evaluations CASCADE;
 DROP TABLE IF EXISTS shared_tenants.features CASCADE;
@@ -40,6 +45,30 @@ CREATE TABLE public.plans (
     is_active boolean NOT NULL DEFAULT true
 );
 
+-- Growth module: users (required by partners)
+CREATE TABLE public.users (
+    id bigserial PRIMARY KEY,
+    first_name varchar(100) NOT NULL DEFAULT '',
+    last_name varchar(100) NOT NULL DEFAULT '',
+    email varchar(255) NOT NULL,
+    password_hash varchar(255) NULL,
+    phone varchar(30) NULL,
+    google_id varchar(255) NULL,
+    avatar_url varchar(500) NULL,
+    provider varchar(30) NOT NULL DEFAULT 'local',
+    preferred_language char(2) NOT NULL DEFAULT 'fr',
+    status varchar(20) NOT NULL DEFAULT 'active',
+    email_verified_at timestamptz NULL,
+    last_login_at timestamptz NULL,
+    failed_login_attempts smallint NOT NULL DEFAULT 0,
+    locked_until timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE UNIQUE INDEX users_email_unique ON public.users (email);
+
+
 CREATE TABLE public.companies (
     id uuid PRIMARY KEY,
     name varchar(255) NOT NULL,
@@ -51,6 +80,7 @@ CREATE TABLE public.companies (
     email varchar(255) NOT NULL,
     phone varchar(255) NULL,
     plan_id integer NULL,
+    referrer_partner_id bigint NULL,
     schema_name varchar(63) NOT NULL,
     tenancy_type varchar(20) NOT NULL DEFAULT 'shared',
     status varchar(20) NOT NULL DEFAULT 'active',
@@ -68,6 +98,66 @@ CREATE TABLE public.companies (
 
 CREATE UNIQUE INDEX companies_slug_unique ON public.companies (slug);
 CREATE UNIQUE INDEX companies_email_unique ON public.companies (email);
+
+-- Growth module tables
+CREATE TABLE public.partners (
+    id bigserial PRIMARY KEY,
+    user_id bigint NOT NULL,
+    referral_code varchar(255) NOT NULL,
+    default_commission_rate integer NOT NULL DEFAULT 1000,
+    tax_rate integer NOT NULL DEFAULT 0,
+    status varchar(30) NOT NULL DEFAULT 'active',
+    application_status varchar(30) NOT NULL DEFAULT 'pending',
+    payment_details text NULL,
+    payout_threshold integer NOT NULL DEFAULT 5000,
+    payout_cycle varchar(30) NOT NULL DEFAULT 'monthly',
+    type varchar(30) NOT NULL DEFAULT 'individual',
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE UNIQUE INDEX partners_referral_code_unique ON public.partners (referral_code);
+
+CREATE TABLE public.commissions (
+    id bigserial PRIMARY KEY,
+    partner_id bigint NOT NULL,
+    company_id uuid NOT NULL,
+    payment_id bigint NOT NULL,
+    amount integer NOT NULL,
+    net_amount integer NULL,
+    currency char(3) NOT NULL DEFAULT 'DZD',
+    applied_rate integer NOT NULL,
+    exchange_rate numeric(15, 8) NOT NULL DEFAULT 1.0,
+    original_amount integer NULL,
+    original_currency char(3) NULL,
+    status varchar(30) NOT NULL DEFAULT 'pending',
+    approved_at timestamptz NULL,
+    paid_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE TABLE public.partner_payout_requests (
+    id bigserial PRIMARY KEY,
+    partner_id bigint NOT NULL,
+    amount integer NOT NULL,
+    currency char(3) NOT NULL,
+    status varchar(30) NOT NULL DEFAULT 'pending',
+    admin_notes text NULL,
+    processed_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE TABLE public.partner_referrals (
+    id bigserial PRIMARY KEY,
+    partner_id bigint NOT NULL,
+    company_id uuid NOT NULL,
+    referred_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
 
 CREATE TABLE public.languages (
     code char(2) PRIMARY KEY,

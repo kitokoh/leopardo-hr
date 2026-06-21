@@ -9,6 +9,7 @@ export type ClientModuleKey =
   | 'payroll'
   | 'training'
   | 'reports'
+  | 'partner'
   | 'billing'
   | 'integrations';
 
@@ -111,6 +112,16 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['reports', 'analytics'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Rapports avances',
+  },
+  {
+    key: 'partner',
+    href: '/partner',
+    label: 'Programme Partenaire',
+    group: 'general',
+    capabilityKeys: ['is_partner'],
+    featureKeys: ['growth_module'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'Programme Partenaire',
   },
   {
     key: 'billing',

@@ -49,6 +49,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
+        $middleware->web(append: [
+            \App\Http\Middleware\PartnerLinkMiddleware::class,
+        ]);
+
         $middleware->alias([
             'tenant' => TenantMiddleware::class,
             'manager' => EnsureManagerMiddleware::class,
