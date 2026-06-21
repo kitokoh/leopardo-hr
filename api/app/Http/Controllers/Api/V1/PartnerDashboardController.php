@@ -14,7 +14,11 @@ class PartnerDashboardController extends Controller
     public function __construct(private \App\Services\PartnerService $partnerService)
     {}
 
-<<<<<<< HEAD
+    /**
+     * Résout l'utilisateur global (User) depuis un Employee Sanctum ou un User direct.
+     * Nécessaire car le module Growth stocke les partenaires dans public.partners
+     * liés à public.users, alors que l'auth Sanctum identifie un Employee tenant.
+     */
     private function resolveGlobalUser($authUser): \App\Models\User
     {
         if ($authUser instanceof \App\Models\User) {
@@ -26,8 +30,8 @@ class PartnerDashboardController extends Controller
                 ['email' => $authUser->email],
                 [
                     'first_name' => $authUser->first_name,
-                    'last_name' => $authUser->last_name,
-                    'status' => 'active',
+                    'last_name'  => $authUser->last_name,
+                    'status'     => 'active',
                 ]
             );
         }
@@ -35,33 +39,22 @@ class PartnerDashboardController extends Controller
         abort(401, 'Unauthorized user type.');
     }
 
-=======
->>>>>>> origin/main
     /**
      * Appliquer pour devenir partenaire.
      */
     public function apply(Request $request): JsonResponse
     {
-<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         if (Partner::where('user_id', $globalUser->id)->exists()) {
-=======
-        $user = Auth::user();
-        if (Partner::where('user_id', $user->id)->exists()) {
->>>>>>> origin/main
             return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
         }
 
         $validated = $request->validate([
-            'type' => 'required|in:individual,agency,accountant',
+            'type'            => 'required|in:individual,agency,accountant',
             'payment_details' => 'nullable|string',
         ]);
 
-<<<<<<< HEAD
         $partner = $this->partnerService->apply($globalUser->id, $validated);
-=======
-        $partner = $this->partnerService->apply($user->id, $validated);
->>>>>>> origin/main
 
         return new JsonResponse(['data' => $partner], 201);
     }
@@ -71,20 +64,15 @@ class PartnerDashboardController extends Controller
      */
     public function requestPayout(Request $request): JsonResponse
     {
-<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
-=======
-        $user = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
->>>>>>> origin/main
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
         }
 
         $validated = $request->validate([
-            'amount' => 'required|integer|min:100',
+            'amount'   => 'required|integer|min:100',
             'currency' => 'required|string|size:3',
         ]);
 
@@ -101,13 +89,8 @@ class PartnerDashboardController extends Controller
      */
     public function stats(): JsonResponse
     {
-<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
-=======
-        $user = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
->>>>>>> origin/main
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
@@ -130,8 +113,8 @@ class PartnerDashboardController extends Controller
         return new JsonResponse([
             'stats' => [
                 'total_conversions' => $partner->referredCompanies()->count(),
-                'total_earned' => (int) ($stats->total_earned ?? 0),
-                'pending_approval' => (int) ($stats->pending_approval ?? 0),
+                'total_earned'      => (int) ($stats->total_earned ?? 0),
+                'pending_approval'  => (int) ($stats->pending_approval ?? 0),
                 'approved_upcoming' => (int) ($stats->approved_upcoming ?? 0),
             ],
             'recent_commissions' => $recentCommissions,
@@ -143,13 +126,8 @@ class PartnerDashboardController extends Controller
      */
     public function referredCompanies(): JsonResponse
     {
-<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
-=======
-        $user = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
->>>>>>> origin/main
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
