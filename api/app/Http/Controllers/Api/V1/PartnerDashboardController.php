@@ -14,6 +14,7 @@ class PartnerDashboardController extends Controller
     public function __construct(private \App\Services\PartnerService $partnerService)
     {}
 
+<<<<<<< HEAD
     private function resolveGlobalUser($authUser): \App\Models\User
     {
         if ($authUser instanceof \App\Models\User) {
@@ -34,13 +35,20 @@ class PartnerDashboardController extends Controller
         abort(401, 'Unauthorized user type.');
     }
 
+=======
+>>>>>>> origin/main
     /**
      * Appliquer pour devenir partenaire.
      */
     public function apply(Request $request): JsonResponse
     {
+<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         if (Partner::where('user_id', $globalUser->id)->exists()) {
+=======
+        $user = Auth::user();
+        if (Partner::where('user_id', $user->id)->exists()) {
+>>>>>>> origin/main
             return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
         }
 
@@ -49,7 +57,11 @@ class PartnerDashboardController extends Controller
             'payment_details' => 'nullable|string',
         ]);
 
+<<<<<<< HEAD
         $partner = $this->partnerService->apply($globalUser->id, $validated);
+=======
+        $partner = $this->partnerService->apply($user->id, $validated);
+>>>>>>> origin/main
 
         return new JsonResponse(['data' => $partner], 201);
     }
@@ -59,8 +71,13 @@ class PartnerDashboardController extends Controller
      */
     public function requestPayout(Request $request): JsonResponse
     {
+<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
+=======
+        $user = Auth::user();
+        $partner = Partner::where('user_id', $user->id)->first();
+>>>>>>> origin/main
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
@@ -84,8 +101,13 @@ class PartnerDashboardController extends Controller
      */
     public function stats(): JsonResponse
     {
+<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
+=======
+        $user = Auth::user();
+        $partner = Partner::where('user_id', $user->id)->first();
+>>>>>>> origin/main
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
@@ -121,8 +143,13 @@ class PartnerDashboardController extends Controller
      */
     public function referredCompanies(): JsonResponse
     {
+<<<<<<< HEAD
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
+=======
+        $user = Auth::user();
+        $partner = Partner::where('user_id', $user->id)->first();
+>>>>>>> origin/main
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
