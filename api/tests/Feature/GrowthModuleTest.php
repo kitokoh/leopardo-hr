@@ -271,14 +271,17 @@ class GrowthModuleTest extends TestCase
 
     public function test_partner_cannot_access_other_partners_stats()
     {
-        $user1 = User::factory()->create();
+        $company = \App\Models\Company::factory()->create();
+        $employee1 = \App\Models\Employee::factory()->create(['company_id' => $company->id]);
+
+        $user1 = User::factory()->create(['email' => $employee1->email]);
         $partner1 = Partner::create(['user_id' => $user1->id, 'referral_code' => $this->uniqueCode('U1')]);
 
         $user2 = User::factory()->create();
         $partner2 = Partner::create(['user_id' => $user2->id, 'referral_code' => $this->uniqueCode('U2')]);
 
-        // Authenticate as Partner 1 using the correct guard
-        $this->actingAs($user1, 'user_api');
+        // Authenticate as Employee using the sanctum guard
+        $this->actingAs($employee1, 'sanctum');
 
         $response = $this->getJson('/api/v1/partner/stats');
         $response->assertStatus(200);
