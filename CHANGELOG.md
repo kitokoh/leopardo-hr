@@ -4,6 +4,19 @@
 
 ## [4.16.255] - 2026-06-21
 
+### Added
+
+- Vitrine : Ajout du plan **Free** dans `pricing.ts` et `PricingSection` — accès gratuit avec feature set limité pour élargir le tunnel d'acquisition.
+- Vitrine : Intégration de **Google OAuth** sur `/auth/login` — bouton "Continuer avec Google" avec provider `google` branché sur le flux NextAuth existant.
+- Vitrine : Nouveau **checkout flow modernisé** — pages `/checkout` et `/checkout/success` avec sélection de plan, récapitulatif et confirmation post-paiement.
+- Vitrine : Route API `/api/billing/checkout` (Next.js Route Handler) pour créer une session Stripe Checkout côté serveur.
+- Vitrine : Composant `StickyMobileCTA` — CTA flottant mobile visible après 400px de scroll, localisé FR/EN/TR/AR.
+- Vitrine Phase-3 : Remplacement des composants `Legacy*` par les nouvelles sections premium (`HeroSection`, `FAQSection`, `CTASection`, `TestimonialsSection`, `FeaturesSection`) dans `landing/page.tsx`.
+
+### Fixed
+
+- Vitrine : Export de `QuickTrialEmailForm` depuis `HeroSection.tsx` pour permettre son usage dans le test E2E Playwright marketing-funnel.
+- CI : Correction du test Playwright `marketing-funnel.spec.ts` — le formulaire hero email-trial (`section form input[type="email"]`) est désormais dans le DOM via `LegacyHeroSection → HeroSection` qui inclut `QuickTrialEmailForm`.
 ### Fixed
 
 - Growth Module : Correction des marqueurs de conflit Git résiduels dans `routes/modules/growth.php`, `PartnerDashboardController.php`, `CommissionService.php` et `front/web/src/app/(dashboard)/partner/page.tsx` — les fichiers contenaient des `<<<<<<< HEAD` non résolus causant un `ParseError` au boot Laravel (`php artisan package:discover`).

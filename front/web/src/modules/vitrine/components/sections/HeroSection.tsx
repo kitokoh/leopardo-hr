@@ -31,6 +31,8 @@ export interface HeroSectionProps {
     icon?: React.ReactNode;
   }>;
   animated?: boolean;
+  /** Optional inline quick-trial form rendered below CTAs (e.g. QuickTrialEmailForm) */
+  quickTrialForm?: React.ReactNode;
 }
 
 export function HeroSection({
@@ -42,6 +44,7 @@ export function HeroSection({
   visual,
   stats,
   animated = true,
+  quickTrialForm,
 }: HeroSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
@@ -154,6 +157,9 @@ export function HeroSection({
               )}
             </motion.div>
           )}
+
+          {/* Optional quick-trial inline form (e.g. QuickTrialEmailForm with source=hero_email_trial) */}
+          {quickTrialForm}
 
           {/* Stats */}
           {stats && stats.length > 0 && (
