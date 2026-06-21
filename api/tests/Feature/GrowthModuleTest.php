@@ -88,6 +88,7 @@ class GrowthModuleTest extends TestCase
             'user_id' => $user->id,
             'referral_code' => $code,
             'default_commission_rate' => 1500, // 15%
+            'status' => 'active',
         ]);
 
         $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
@@ -328,6 +329,7 @@ class GrowthModuleTest extends TestCase
             'referral_code' => $this->uniqueCode('HT'),
             'default_commission_rate' => 1000, // 10%
             'tax_rate' => 2000, // 20% TVA
+            'status' => 'active',
         ]);
 
         $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
