@@ -31,6 +31,7 @@ import { getFeatures } from '@/modules/vitrine/data/features';
 import { getFaqItems } from '@/modules/vitrine/data/faq';
 import { getTestimonials } from '@/modules/vitrine/data/testimonials';
 import { StickyMobileCTA } from '@/components/StickyMobileCTA';
+import { QuickTrialEmailForm } from '@/modules/vitrine/components/HeroSection';
 
 const STAT_ICONS = [TrendingUp, Users, Zap, Star] as const;
 
@@ -79,6 +80,9 @@ export default function LandingPage() {
             };
           })}
           animated
+          quickTrialForm={
+            <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
+          }
         />
 
         {/* ─── PROBLEM / SOLUTION ─── */}
