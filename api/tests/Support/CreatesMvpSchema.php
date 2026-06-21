@@ -801,7 +801,12 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.user_lookups CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.personal_access_tokens CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.languages CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.partner_referrals CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.commissions CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.partner_payout_requests CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.partners CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.users CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
         DB::statement('DROP TABLE IF EXISTS shared_tenants.features CASCADE');
     }
