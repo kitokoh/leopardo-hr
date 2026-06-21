@@ -10,6 +10,7 @@
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExportController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\RoleAssignmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -38,5 +39,24 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/export/contracts', [ExportController::class, 'contracts']);
         Route::get('/export/vehicles', [ExportController::class, 'vehicles']);
         Route::get('/export/history', [ExportController::class, 'history']);
+    });
+
+    // Dashboard data filtered by manager_role
+    Route::middleware('api.manager:principal')->group(function (): void {
+        Route::get('/dashboard/admin', [DashboardController::class, 'adminSummary']);
+        Route::get('/company/team-roles', [RoleAssignmentController::class, 'teamRoles']);
+        Route::post('/employees/{employee}/assign-role', [RoleAssignmentController::class, 'assign']);
+    });
+
+    Route::middleware('api.manager:rh,principal')->group(function (): void {
+        Route::get('/dashboard/rh', [DashboardController::class, 'rhSummary']);
+    });
+
+    Route::middleware('api.manager:comptable,principal')->group(function (): void {
+        Route::get('/dashboard/comptable', [DashboardController::class, 'comptableSummary']);
+    });
+
+    Route::middleware('api.manager:marketing,principal')->group(function (): void {
+        Route::get('/dashboard/marketing', [DashboardController::class, 'marketingSummary']);
     });
 });
