@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowRight,
+  CheckCircle,
   Chrome,
   Eye,
   EyeOff,
@@ -324,6 +325,10 @@ export default function LoginPage() {
     void performLogin(demoEmail, demoPassword, 'Web Demo');
   }, [performLogin]);
 
+  const searchParams = useSearchParams();
+  const registered = searchParams.get('registered') === 'true';
+  const registeredPlan = searchParams.get('plan');
+
   if (!mounted) return null;
 
   return (
@@ -408,6 +413,14 @@ export default function LoginPage() {
             </div>
 
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+              {registered && (
+                <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  {registeredPlan === 'free'
+                    ? 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.'
+                    : 'Inscription reçue ! Connectez-vous pour continuer.'}
+                </div>
+              )}
               {error ? (
                 <div
                   role="alert"
