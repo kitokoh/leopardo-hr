@@ -32,21 +32,28 @@ class GrowthModuleTest extends TestCase
         parent::tearDown();
     }
 
+    /** Generate a unique referral code per test invocation to avoid unique constraint collisions */
+    private function uniqueCode(string $prefix = 'CODE'): string
+    {
+        return $prefix . '_' . uniqid();
+    }
+
     public function test_can_attribute_company_to_partner()
     {
-        $user = User::factory()->create(['email' => 'partner@example.com']);
+        $code = $this->uniqueCode('PARTNER');
+        $user = User::factory()->create(['email' => 'partner_attr_' . uniqid() . '@example.com']);
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'PARTNER123',
+            'referral_code' => $code,
             'default_commission_rate' => 1000,
         ]);
 
         $company = Company::factory()->create([
-            'email' => 'client@example.com',
+            'email' => 'client_attr_' . uniqid() . '@example.com',
             'referrer_partner_id' => null,
         ]);
 
-        $result = $this->partnerService->attributeCompanyToPartner($company, 'PARTNER123');
+        $result = $this->partnerService->attributeCompanyToPartner($company, $code);
 
         $this->assertTrue($result);
         $this->assertEquals($partner->id, $company->fresh()->referrer_partner_id);
@@ -54,18 +61,20 @@ class GrowthModuleTest extends TestCase
 
     public function test_prevents_self_referral()
     {
-        $user = User::factory()->create(['email' => 'partner@example.com']);
+        $code = $this->uniqueCode('SELF');
+        $email = 'self_referral_' . uniqid() . '@example.com';
+        $user = User::factory()->create(['email' => $email]);
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'PARTNER123',
+            'referral_code' => $code,
         ]);
 
         $company = Company::factory()->create([
-            'email' => 'partner@example.com', // Same as partner
+            'email' => $email, // Same as partner
             'referrer_partner_id' => null,
         ]);
 
-        $result = $this->partnerService->attributeCompanyToPartner($company, 'PARTNER123');
+        $result = $this->partnerService->attributeCompanyToPartner($company, $code);
 
         $this->assertFalse($result);
         $this->assertNull($company->fresh()->referrer_partner_id);
@@ -73,10 +82,11 @@ class GrowthModuleTest extends TestCase
 
     public function test_records_commission_on_payment()
     {
+        $code = $this->uniqueCode('COMM');
         $user = User::factory()->create();
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'PARTNER123',
+            'referral_code' => $code,
             'default_commission_rate' => 1500, // 15%
         ]);
 
@@ -84,7 +94,7 @@ class GrowthModuleTest extends TestCase
 
         $invoice = Invoice::create([
             'company_id' => $company->id,
-            'number' => 'INV-001',
+            'number' => 'INV-' . uniqid(),
             'amount' => 100.00,
             'tax_amount' => 0,
             'total' => 100.00,
@@ -111,8 +121,9 @@ class GrowthModuleTest extends TestCase
 
     public function test_approves_commissions_after_delay()
     {
+        $code = $this->uniqueCode('APPR');
         $user = User::factory()->create();
-        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'P1']);
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $code]);
 
         $oldCommission = Commission::create([
             'partner_id' => $partner->id,
@@ -143,8 +154,9 @@ class GrowthModuleTest extends TestCase
 
     public function test_cancels_commission_on_refund()
     {
+        $code = $this->uniqueCode('RFND');
         $user = User::factory()->create();
-        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'P1']);
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $code]);
 
         $payment = Payment::create([
             'invoice_id' => 1,
@@ -171,8 +183,8 @@ class GrowthModuleTest extends TestCase
     public function test_reassign_partner_with_audit_log()
     {
         $admin = User::factory()->create();
-        $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1']);
-        $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P2']);
+        $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('P1')]);
+        $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('P2')]);
 
         $company = Company::factory()->create(['referrer_partner_id' => $partner1->id]);
 
@@ -191,7 +203,7 @@ class GrowthModuleTest extends TestCase
     public function test_update_partner_rate_with_audit_log()
     {
         $admin = User::factory()->create();
-        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1', 'default_commission_rate' => 1000]);
+        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('RATE'), 'default_commission_rate' => 1000]);
 
         $this->partnerService->updatePartnerRate($partner, 2000, $admin->id, 'Tier upgrade');
 
@@ -208,7 +220,7 @@ class GrowthModuleTest extends TestCase
     public function test_update_commission_status_with_audit_log()
     {
         $admin = User::factory()->create();
-        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1']);
+        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('CSA')]);
         $commission = Commission::create([
             'partner_id' => $partner->id,
             'company_id' => '00000000-0000-0000-0000-000000000001',
@@ -236,13 +248,13 @@ class GrowthModuleTest extends TestCase
         $user = User::factory()->create();
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'GROWTH2026',
+            'referral_code' => 'GROWTH2026_' . uniqid(),
         ]);
 
         $response = $this->postJson('/api/v1/trial/signup', [
-            'email' => 'founder@test.com',
-            'company' => 'Test Growth Co',
-            'referral_code' => 'GROWTH2026',
+            'email' => 'founder_' . uniqid() . '@test.com',
+            'company' => 'Test Growth Co ' . uniqid(),
+            'referral_code' => $partner->referral_code,
         ]);
 
         $response->assertStatus(201);
@@ -255,10 +267,10 @@ class GrowthModuleTest extends TestCase
     public function test_partner_cannot_access_other_partners_stats()
     {
         $user1 = User::factory()->create();
-        $partner1 = Partner::create(['user_id' => $user1->id, 'referral_code' => 'P1']);
+        $partner1 = Partner::create(['user_id' => $user1->id, 'referral_code' => $this->uniqueCode('U1')]);
 
         $user2 = User::factory()->create();
-        $partner2 = Partner::create(['user_id' => $user2->id, 'referral_code' => 'P2']);
+        $partner2 = Partner::create(['user_id' => $user2->id, 'referral_code' => $this->uniqueCode('U2')]);
 
         // Authenticate as Partner 1 using the correct guard
         $this->actingAs($user1, 'user_api');
@@ -270,10 +282,11 @@ class GrowthModuleTest extends TestCase
 
     public function test_anti_auto_referral_on_company_created_event()
     {
-        $user = User::factory()->create(['email' => 'partner@test.com']);
+        $email = 'partner_event_' . uniqid() . '@test.com';
+        $user = User::factory()->create(['email' => $email]);
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'P1',
+            'referral_code' => $this->uniqueCode('EVT'),
             'status' => 'active'
         ]);
 
@@ -281,7 +294,7 @@ class GrowthModuleTest extends TestCase
         $this->withCookie('leopardo_referrer_id', (string) $partner->id);
 
         $company = Company::factory()->create([
-            'email' => 'partner@test.com' // Same as partner email
+            'email' => $email // Same as partner email
         ]);
 
         event(new \App\Events\CompanyCreated($company));
@@ -291,8 +304,8 @@ class GrowthModuleTest extends TestCase
 
     public function test_manual_referral_code_takes_precedence_over_cookie()
     {
-        $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'MANUAL', 'status' => 'active']);
-        $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'COOKIE', 'status' => 'active']);
+        $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('MANUAL'), 'status' => 'active']);
+        $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('COOKIE'), 'status' => 'active']);
 
         // Set cookie for partner 2
         $this->withCookie('leopardo_referrer_id', (string) $partner2->id);
@@ -312,7 +325,7 @@ class GrowthModuleTest extends TestCase
         $user = User::factory()->create();
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'HT_TEST',
+            'referral_code' => $this->uniqueCode('HT'),
             'default_commission_rate' => 1000, // 10%
             'tax_rate' => 2000, // 20% TVA
         ]);
@@ -342,7 +355,7 @@ class GrowthModuleTest extends TestCase
         $user = User::factory()->create();
         $partner = Partner::create([
             'user_id' => $user->id,
-            'referral_code' => 'P1',
+            'referral_code' => $this->uniqueCode('POUT'),
             'payout_threshold' => 5000, // 50.00
         ]);
 
@@ -376,7 +389,7 @@ class GrowthModuleTest extends TestCase
     public function test_payout_status_change_is_audited()
     {
         $admin = User::factory()->create();
-        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => 'P1']);
+        $partner = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('AUD')]);
         $payout = \App\Models\PartnerPayoutRequest::create([
             'partner_id' => $partner->id,
             'amount' => 5000,
@@ -412,7 +425,7 @@ class GrowthModuleTest extends TestCase
     public function test_commission_period_limit_of_12_months()
     {
         $user = User::factory()->create();
-        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'P1', 'status' => 'active']);
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $this->uniqueCode('12M'), 'status' => 'active']);
         $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
 
         // Referral created 13 months ago
@@ -436,11 +449,12 @@ class GrowthModuleTest extends TestCase
 
     public function test_suspended_partner_cannot_receive_new_clicks()
     {
+        $code = $this->uniqueCode('SUSP');
         $user = User::factory()->create();
-        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => 'SUSPENDED', 'status' => 'suspended']);
-        $link = \App\Models\PartnerLink::create(['partner_id' => $partner->id, 'code' => 'SUSPENDED', 'is_active' => true]);
+        $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $code, 'status' => 'suspended']);
+        $link = \App\Models\PartnerLink::create(['partner_id' => $partner->id, 'code' => $code, 'is_active' => true]);
 
-        $response = $this->get('/p/SUSPENDED');
+        $response = $this->get('/p/' . $code);
 
         // Middleware should redirect to signup but without setting the cookie
         $response->assertRedirect('/signup');
