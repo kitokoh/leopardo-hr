@@ -40,6 +40,8 @@ export default function PartnerDashboard() {
         setStatus('not_applied');
       } else {
         console.error("Failed to fetch partner stats", error);
+        // Show not applied or an error state instead of hanging forever
+        setStatus('not_applied');
       }
     } finally {
       setLoading(false);

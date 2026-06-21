@@ -16,48 +16,49 @@ class CommissionService
     public function recordCommissionForPayment(Payment $payment): ?Commission
     {
         if ($payment->status !== 'completed') {
-            return null;
+            throw new \RuntimeException('Failed A');
         }
 
         // Idempotency: Check if commission already exists for this payment
         if (Commission::where('payment_id', $payment->id)->exists()) {
-            return null;
+            throw new \RuntimeException('Failed B: payment_id ' . $payment->id);
         }
 
         $company = Company::find($payment->company_id);
         if (!$company || !$company->referrer_partner_id) {
-            return null;
+            throw new \RuntimeException('Failed C: no company or no referrer_partner_id. Company: ' . json_encode($company));
         }
 
         $partner = Partner::find($company->referrer_partner_id);
         if (!$partner || $partner->status !== 'active') {
-            return null;
+            throw new \RuntimeException('Failed D: no partner or not active. Partner: ' . json_encode($partner));
         }
 
         // 12-month commission limit rule
         $referral = \App\Models\PartnerReferral::where('company_id', $company->id)->first();
         if ($referral && $referral->referred_at->diffInMonths(now()) >= 12) {
-            Log::info("Commission period (12 months) expired for company {$company->id}");
-            return null;
+            throw new \RuntimeException('Failed E: 12-month limit');
         }
 
-        // Base HT calculation: deduct taxes if partner tax_rate is set
-        $paymentAmountInCents = (int) round((float) $payment->amount * 100);
-        $taxRate = $partner->tax_rate; // bps
-        $netAmountInCents = (int) floor(($paymentAmountInCents * 10000) / (10000 + $taxRate));
-
-        // Snapshot of the commission rate
+        $taxRate = $partner->tax_rate;
         $rate = $partner->default_commission_rate;
 
-        // Commission Amount based on Net (HT)
+        // amount is e.g. 120.00. We want net HT. If tax_rate is 2000 (20%), net = amount / 1.2
+        $taxMultiplier = 1 + ($taxRate / 10000);
+        $netAmount = (float) $payment->amount / $taxMultiplier;
+
+        // Commission is calculated on HT amount in cents
+        $netAmountInCents = (int) round($netAmount * 100);
         $commissionAmount = (int) floor(($netAmountInCents * $rate) / 10000);
 
         if ($commissionAmount <= 0) {
-            return null;
+            throw new \RuntimeException('Failed F: commissionAmount <= 0');
         }
 
         // Exchange rate snapshot (Fake 1.0 if same currency for MVP)
         $exchangeRate = 1.0;
+
+        $paymentAmountInCents = (int) round((float) $payment->amount * 100);
 
         $commission = Commission::create([
             'partner_id' => $partner->id,

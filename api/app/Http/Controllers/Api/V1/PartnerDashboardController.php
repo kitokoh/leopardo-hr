@@ -14,13 +14,33 @@ class PartnerDashboardController extends Controller
     public function __construct(private \App\Services\PartnerService $partnerService)
     {}
 
+    private function resolveGlobalUser($authUser): \App\Models\User
+    {
+        if ($authUser instanceof \App\Models\User) {
+            return $authUser;
+        }
+
+        if ($authUser instanceof \App\Models\Employee) {
+            return \App\Models\User::firstOrCreate(
+                ['email' => $authUser->email],
+                [
+                    'first_name' => $authUser->first_name,
+                    'last_name' => $authUser->last_name,
+                    'status' => 'active',
+                ]
+            );
+        }
+
+        abort(401, 'Unauthorized user type.');
+    }
+
     /**
      * Appliquer pour devenir partenaire.
      */
     public function apply(Request $request): JsonResponse
     {
-        $user = Auth::user();
-        if (Partner::where('user_id', $user->id)->exists()) {
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        if (Partner::where('user_id', $globalUser->id)->exists()) {
             return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
         }
 
@@ -29,7 +49,7 @@ class PartnerDashboardController extends Controller
             'payment_details' => 'nullable|string',
         ]);
 
-        $partner = $this->partnerService->apply($user->id, $validated);
+        $partner = $this->partnerService->apply($globalUser->id, $validated);
 
         return new JsonResponse(['data' => $partner], 201);
     }
@@ -39,8 +59,8 @@ class PartnerDashboardController extends Controller
      */
     public function requestPayout(Request $request): JsonResponse
     {
-        $user = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
@@ -64,8 +84,8 @@ class PartnerDashboardController extends Controller
      */
     public function stats(): JsonResponse
     {
-        $user = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
@@ -101,8 +121,8 @@ class PartnerDashboardController extends Controller
      */
     public function referredCompanies(): JsonResponse
     {
-        $user = Auth::user();
-        $partner = Partner::where('user_id', $user->id)->first();
+        $globalUser = $this->resolveGlobalUser(Auth::user());
+        $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (!$partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
