@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Navbar,
-  LegacyHeroSection,
-  LegacyFeaturesSection,
+  HeroSection,
+  FeaturesSection,
   DemoSection,
-  LegacyPricingSection,
-  LegacyTestimonialsSection,
-  LegacyFaqSection,
-  LegacyCTASection,
+  PricingSection,
+  TestimonialsSection,
+  FAQSection,
+  CTASection,
   Footer,
   useScrollReveal,
   SocialProofMetrics,
@@ -26,15 +25,21 @@ import {
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(false);
-  useScrollReveal();
   const { locale, copy } = useVitrineLocale();
+  useScrollReveal();
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-500">
+      <Navbar />
       <main id="main-content">
-        <LegacyHeroSection />
+        <HeroSection
+          headline={copy.hero.titleTop + ' ' + copy.hero.titleBottom}
+          subheadline={copy.hero.subtitle}
+          badge={{ text: copy.hero.badge, label: copy.hero.badgeNew }}
+          ctaPrimary={{ text: copy.hero.primaryCta, href: '/signup' }}
+          ctaSecondary={{ text: copy.hero.secondaryCta, href: '/demo' }}
+          stats={copy.hero.stats.map((stat) => ({ ...stat, icon: undefined }))}
+        />
 
         <ProblemSection
           badge={{ text: copy.problem.badge }}
@@ -55,7 +60,13 @@ export default function LandingPage() {
         <SocialProofMetrics locale={locale} />
         <OperationalProofSection locale={locale} />
 
-        <LegacyFeaturesSection />
+        <FeaturesSection
+          title={copy.features.title}
+          subtitle={copy.features.titleHighlight}
+          badge={{ text: copy.features.badge }}
+          features={[]}
+          columns={3}
+        />
 
         <ProductScreenshots locale={locale} />
         <LaunchOperatingSystemSection locale={locale} />
@@ -64,12 +75,36 @@ export default function LandingPage() {
         <DemoSection />
 
         <TestimonialHighlight locale={locale} />
-        <LegacyTestimonialsSection />
+        <TestimonialsSection
+          title={copy.testimonials.title}
+          subtitle={copy.testimonials.titleHighlight}
+          badge={{ text: copy.testimonials.badge }}
+          testimonials={[]}
+          columns={2}
+        />
         <MiniCaseStudies locale={locale} />
 
-        <LegacyPricingSection />
-        <LegacyFaqSection />
-        <LegacyCTASection />
+        <PricingSection
+          title={copy.pricing.title}
+          subtitle={copy.pricing.titleHighlight}
+          badge={{ text: copy.pricing.badge }}
+          plans={[]}
+          showToggle
+        />
+        <FAQSection
+          title={copy.faq.title}
+          subtitle={copy.faq.titleHighlight}
+          badge={{ text: copy.faq.badge }}
+          items={[]}
+        />
+        <CTASection
+          headline={`${copy.cta.title} ${copy.cta.titleHighlight}`}
+          subheadline={copy.cta.subtitle}
+          badge={{ text: copy.cta.badge }}
+          ctaPrimary={{ text: copy.cta.primary, href: '/signup' }}
+          ctaSecondary={{ text: copy.cta.secondary, href: '/demo' }}
+          background="gradient"
+        />
       </main>
       <Footer />
     </div>
