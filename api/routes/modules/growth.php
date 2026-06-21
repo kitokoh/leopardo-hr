@@ -5,8 +5,8 @@ use App\Http\Controllers\Api\V1\GrowthAdminController;
 use Illuminate\Support\Facades\Route;
 
 // Espace Partenaire (Web Client)
-// Note: Utilise le guard user_api car le profil partenaire est lié au User global, pas à un Employee d'un tenant.
-Route::middleware(['auth:user_api'])->prefix('partner')->group(function () {
+// Access via the main dashboard requires the sanctum guard (Employee token).
+Route::middleware(['auth:sanctum'])->prefix('partner')->group(function () {
     Route::post('/apply', [PartnerDashboardController::class, 'apply']);
     Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
     Route::get('/stats', [PartnerDashboardController::class, 'stats']);
