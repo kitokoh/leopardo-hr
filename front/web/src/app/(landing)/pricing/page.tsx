@@ -24,6 +24,7 @@ import {
   Building2,
   Rocket,
   Crown,
+  Gift,
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────
@@ -31,6 +32,7 @@ import {
 ───────────────────────────────────────────── */
 type ComparisonFeature = {
   name: string;
+  free: boolean | string;
   starter: boolean | string;
   business: boolean | string;
   enterprise: boolean | string;
@@ -65,8 +67,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     hero: {
       badge: 'Tarification transparente',
       headline: 'Des tarifs pensés pour les équipes terrain',
-      subheadline: '30 jours pour tester pointage, paie, absences et workflows RH avant tout engagement. Sans carte bancaire.',
-      primary: 'Démarrer 30 jours gratuits',
+      subheadline: 'Commencez gratuitement — sans carte bancaire — et passez à un plan payant quand vous êtes prêt.',
+      primary: 'Commencer gratuitement',
       secondary: 'Parler à un expert',
     },
     plans: {
@@ -83,7 +85,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'Sans engagement sur l\'offre pilote',
+        'Plan gratuit sans CB',
         'Support inclus dès le premier jour',
         'Données hébergées en Europe',
         'Résiliation à tout moment',
@@ -98,45 +100,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Gestion RH',
           features: [
-            { name: 'Pointage web & mobile', starter: true, business: true, enterprise: true },
-            { name: 'Absences & congés', starter: true, business: true, enterprise: true },
-            { name: 'Calendrier partagé', starter: true, business: true, enterprise: true },
-            { name: 'Onboarding guidé', starter: true, business: true, enterprise: true },
-            { name: 'Évaluations & performance', starter: false, business: true, enterprise: true },
-            { name: 'Organigramme dynamique', starter: false, business: true, enterprise: true },
+            { name: 'Pointage web & mobile', free: 'Web seulement', starter: true, business: true, enterprise: true },
+            { name: 'Absences & congés', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Calendrier partagé', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Onboarding guidé', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Évaluations & performance', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Organigramme dynamique', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', starter: true, business: true, enterprise: true },
-            { name: 'Bulletins de paie PDF', starter: true, business: true, enterprise: true },
-            { name: 'Exports comptables', starter: false, business: true, enterprise: true },
-            { name: 'Avances sur salaire', starter: false, business: true, enterprise: true },
-            { name: 'Multi-pays & multi-devises', starter: false, business: false, enterprise: true },
-            { name: 'Conformité légale avancée', starter: false, business: false, enterprise: true },
+            { name: 'Calcul automatisé de la paie', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Terrain & mobile',
           features: [
-            { name: 'App mobile Employee', starter: true, business: true, enterprise: true },
-            { name: 'App mobile Manager', starter: true, business: true, enterprise: true },
-            { name: 'Mode hors-ligne', starter: true, business: true, enterprise: true },
-            { name: 'Intégration ZKTeco biométrie', starter: false, business: true, enterprise: true },
-            { name: 'Kiosque RH dédié', starter: false, business: true, enterprise: true },
-            { name: 'GPS & géofencing', starter: false, business: true, enterprise: true },
+            { name: 'App mobile Employee', free: true, starter: true, business: true, enterprise: true },
+            { name: 'App mobile Manager', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Mode hors-ligne', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Intégration ZKTeco biométrie', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Kiosque RH dédié', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & géofencing', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Sécurité & intégrations',
           features: [
-            { name: 'Coffre-fort documentaire', starter: false, business: true, enterprise: true },
-            { name: 'API REST & Webhooks', starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', starter: false, business: false, enterprise: true },
-            { name: 'Audit trail immuable', starter: false, business: false, enterprise: true },
-            { name: 'Schéma PostgreSQL isolé', starter: false, business: false, enterprise: true },
-            { name: 'SLA dédié & support prioritaire', starter: false, business: false, enterprise: true },
+            { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
+            { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -148,14 +150,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'Tous',
       categories: ['Facturation', 'Essai', 'Support', 'Sécurité', 'Technique'],
       items: [
+        { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
         { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
         { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 30 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
-        { id: 'support', question: 'Quel support est disponible ?', answer: 'Starter : email sous 48h. Business : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
+        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Starter : email sous 48h. Business : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
-        { id: 'api', question: 'L\'API est-elle disponible sur le plan Starter ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Business. Sur Starter, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
+        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Business. Sur Free et Starter, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
       ],
     },
     cta: {
@@ -170,8 +173,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     hero: {
       badge: 'Transparent pricing',
       headline: 'Pricing built for field HR teams',
-      subheadline: '30 days to test attendance, payroll, leave and HR workflows before committing. No credit card.',
-      primary: 'Start 30-day free trial',
+      subheadline: 'Start for free — no credit card — and upgrade when you are ready.',
+      primary: 'Start for free',
       secondary: 'Talk to an expert',
     },
     plans: {
@@ -188,7 +191,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'No commitment on pilot plan',
+        'Free plan — no credit card',
         'Support included from day one',
         'Data hosted in Europe',
         'Cancel anytime',
@@ -203,45 +206,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'HR management',
           features: [
-            { name: 'Web & mobile attendance', starter: true, business: true, enterprise: true },
-            { name: 'Absences & leave', starter: true, business: true, enterprise: true },
-            { name: 'Shared calendar', starter: true, business: true, enterprise: true },
-            { name: 'Guided onboarding', starter: true, business: true, enterprise: true },
-            { name: 'Reviews & performance', starter: false, business: true, enterprise: true },
-            { name: 'Dynamic org chart', starter: false, business: true, enterprise: true },
+            { name: 'Web & mobile attendance', free: 'Web only', starter: true, business: true, enterprise: true },
+            { name: 'Absences & leave', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Shared calendar', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Guided onboarding', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Reviews & performance', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dynamic org chart', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Payroll & finance',
           features: [
-            { name: 'Automated payroll', starter: true, business: true, enterprise: true },
-            { name: 'PDF pay slips', starter: true, business: true, enterprise: true },
-            { name: 'Accounting exports', starter: false, business: true, enterprise: true },
-            { name: 'Salary advances', starter: false, business: true, enterprise: true },
-            { name: 'Multi-country & currency', starter: false, business: false, enterprise: true },
-            { name: 'Advanced legal compliance', starter: false, business: false, enterprise: true },
+            { name: 'Automated payroll', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Multi-country & currency', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Advanced legal compliance', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Field & mobile',
           features: [
-            { name: 'Employee mobile app', starter: true, business: true, enterprise: true },
-            { name: 'Manager mobile app', starter: true, business: true, enterprise: true },
-            { name: 'Offline mode', starter: true, business: true, enterprise: true },
-            { name: 'ZKTeco biometrics', starter: false, business: true, enterprise: true },
-            { name: 'Dedicated HR kiosk', starter: false, business: true, enterprise: true },
-            { name: 'GPS & geofencing', starter: false, business: true, enterprise: true },
+            { name: 'Employee mobile app', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Manager mobile app', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Offline mode', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ZKTeco biometrics', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dedicated HR kiosk', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & geofencing', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Security & integrations',
           features: [
-            { name: 'Document vault', starter: false, business: true, enterprise: true },
-            { name: 'REST API & Webhooks', starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', starter: false, business: false, enterprise: true },
-            { name: 'Immutable audit trail', starter: false, business: false, enterprise: true },
-            { name: 'Isolated PostgreSQL schema', starter: false, business: false, enterprise: true },
-            { name: 'Dedicated SLA & support', starter: false, business: false, enterprise: true },
+            { name: 'Document vault', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API & Webhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Immutable audit trail', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Isolated PostgreSQL schema', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Dedicated SLA & support', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -253,14 +256,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'All',
       categories: ['Billing', 'Trial', 'Support', 'Security', 'Technical'],
       items: [
+        { id: 'free-plan', question: 'Is the Free plan really free?', answer: 'Yes, 100% free. No credit card ever required. Immediate access for up to 5 employees. Upgrade to a paid plan anytime.', category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
         { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
-        { id: 'free-trial', question: 'Is the trial really free?', answer: 'Yes. 30 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 30 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
         { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 30 more days. No automatic billing without your consent.', category: 'Trial' },
-        { id: 'support', question: 'What support is available?', answer: 'Starter: email within 48h. Business: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
+        { id: 'support', question: 'What support is available?', answer: 'Free: community. Starter: email within 48h. Business: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
-        { id: 'api', question: 'Is the API available on Starter?', answer: 'REST API and webhooks are available from the Business plan. On Starter you can export data as CSV/Excel.', category: 'Technical' },
+        { id: 'api', question: 'Is the API available on the Free plan?', answer: 'REST API and webhooks are available from the Business plan. On Free / Starter you can export data as CSV/Excel.', category: 'Technical' },
       ],
     },
     cta: {
@@ -275,8 +279,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     hero: {
       badge: 'Şeffaf fiyatlandırma',
       headline: 'Saha HR ekipleri için fiyatlandırma',
-      subheadline: '30 gün boyunca yoklama, bordro, izinler ve HR iş akışlarını deneyin. Kredi kartı gerektirmez.',
-      primary: '30 günlük ücretsiz deneme',
+      subheadline: 'Ücretsiz başlayın — kredi kartı gerekmez — hazır olduğunuzda yükseltin.',
+      primary: 'Ücretsiz başla',
       secondary: 'Uzmanla konuş',
     },
     plans: {
@@ -293,7 +297,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'Pilot planda taahhüt yok',
+        'Ücretsiz plan — kredi kartı yok',
         'İlk günden destek dahil',
         'Avrupa\'da barındırılan veriler',
         'İstediğiniz zaman iptal',
@@ -308,45 +312,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'İK Yönetimi',
           features: [
-            { name: 'Web & mobil devam takibi', starter: true, business: true, enterprise: true },
-            { name: 'Devamsızlık & izin', starter: true, business: true, enterprise: true },
-            { name: 'Paylaşılan takvim', starter: true, business: true, enterprise: true },
-            { name: 'Rehberli işe alım', starter: true, business: true, enterprise: true },
-            { name: 'Değerlendirme & performans', starter: false, business: true, enterprise: true },
-            { name: 'Dinamik organizasyon şeması', starter: false, business: true, enterprise: true },
+            { name: 'Web & mobil devam takibi', free: 'Yalnızca web', starter: true, business: true, enterprise: true },
+            { name: 'Devamsızlık & izin', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Paylaşılan takvim', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Rehberli işe alım', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Değerlendirme & performans', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dinamik organizasyon şeması', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', starter: true, business: true, enterprise: true },
-            { name: 'PDF bordro dökümü', starter: true, business: true, enterprise: true },
-            { name: 'Muhasebe dışa aktarımı', starter: false, business: true, enterprise: true },
-            { name: 'Maaş avansı', starter: false, business: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', starter: false, business: false, enterprise: true },
-            { name: 'Gelişmiş yasal uyumluluk', starter: false, business: false, enterprise: true },
+            { name: 'Otomatik bordro hesabı', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Saha & Mobil',
           features: [
-            { name: 'Çalışan mobil uygulaması', starter: true, business: true, enterprise: true },
-            { name: 'Yönetici mobil uygulaması', starter: true, business: true, enterprise: true },
-            { name: 'Çevrimdışı mod', starter: true, business: true, enterprise: true },
-            { name: 'ZKTeco biyometri entegrasyonu', starter: false, business: true, enterprise: true },
-            { name: 'Özel HR kiosk', starter: false, business: true, enterprise: true },
-            { name: 'GPS & coğrafi sınır', starter: false, business: true, enterprise: true },
+            { name: 'Çalışan mobil uygulaması', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Yönetici mobil uygulaması', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Çevrimdışı mod', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ZKTeco biyometri entegrasyonu', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Özel HR kiosk', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & coğrafi sınır', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Güvenlik & Entegrasyonlar',
           features: [
-            { name: 'Belge kasası', starter: false, business: true, enterprise: true },
-            { name: 'REST API & Webhook', starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', starter: false, business: false, enterprise: true },
-            { name: 'Değiştirilemez denetim kaydı', starter: false, business: false, enterprise: true },
-            { name: 'İzole PostgreSQL şeması', starter: false, business: false, enterprise: true },
-            { name: 'Özel SLA & destek', starter: false, business: false, enterprise: true },
+            { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
+            { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -358,14 +362,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'Tümü',
       categories: ['Faturalama', 'Deneme', 'Destek', 'Güvenlik', 'Teknik'],
       items: [
+        { id: 'free-plan', question: 'Free plan gerçekten ücretsiz mi?', answer: 'Evet, %100 ücretsiz. Hiçbir zaman kredi kartı gerekmez. 5 çalışana kadar anında erişim. İstediğiniz zaman ücretli plana geçin.', category: 'Deneme' },
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
         { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
-        { id: 'free-trial', question: 'Deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
         { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 30 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
-        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Starter: 48 saatte e-posta. Business: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
+        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Starter: 48 saatte e-posta. Business: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
         { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
-        { id: 'api', question: 'Starter\'da API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Business planından itibaren kullanılabilir. Starter\'da verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
+        { id: 'api', question: 'Free planda API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Business planından itibaren kullanılabilir. Free ve Starter\'da verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
       ],
     },
     cta: {
@@ -380,8 +385,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     hero: {
       badge: 'تسعير شفاف',
       headline: 'أسعار مصممة لفرق الموارد البشرية الميدانية',
-      subheadline: '30 يومًا لاختبار الحضور والرواتب والإجازات وسير العمل قبل الاشتراك. بدون بطاقة ائتمان.',
-      primary: 'ابدأ 30 يومًا مجانًا',
+      subheadline: 'ابدأ مجانًا — بدون بطاقة ائتمان — وانتقل إلى خطة مدفوعة متى كنت مستعدًا.',
+      primary: 'ابدأ مجانًا',
       secondary: 'تحدث مع خبير',
     },
     plans: {
@@ -398,7 +403,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'بدون التزام في خطة التجربة',
+        'خطة مجانية بلا بطاقة ائتمان',
         'دعم مشمول من اليوم الأول',
         'بيانات مستضافة في أوروبا',
         'إلغاء في أي وقت',
@@ -413,45 +418,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'إدارة الموارد البشرية',
           features: [
-            { name: 'تتبع الحضور ويب وموبايل', starter: true, business: true, enterprise: true },
-            { name: 'الغياب والإجازات', starter: true, business: true, enterprise: true },
-            { name: 'تقويم مشترك', starter: true, business: true, enterprise: true },
-            { name: 'إعداد موجّه', starter: true, business: true, enterprise: true },
-            { name: 'التقييمات والأداء', starter: false, business: true, enterprise: true },
-            { name: 'هيكل تنظيمي ديناميكي', starter: false, business: true, enterprise: true },
+            { name: 'تتبع الحضور ويب وموبايل', free: 'ويب فقط', starter: true, business: true, enterprise: true },
+            { name: 'الغياب والإجازات', free: true, starter: true, business: true, enterprise: true },
+            { name: 'تقويم مشترك', free: false, starter: true, business: true, enterprise: true },
+            { name: 'إعداد موجّه', free: false, starter: true, business: true, enterprise: true },
+            { name: 'التقييمات والأداء', free: false, starter: false, business: true, enterprise: true },
+            { name: 'هيكل تنظيمي ديناميكي', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'الرواتب والمالية',
           features: [
-            { name: 'حساب رواتب آلي', starter: true, business: true, enterprise: true },
-            { name: 'قسائم رواتب PDF', starter: true, business: true, enterprise: true },
-            { name: 'تصدير محاسبي', starter: false, business: true, enterprise: true },
-            { name: 'سلف الرواتب', starter: false, business: true, enterprise: true },
-            { name: 'متعدد الدول والعملات', starter: false, business: false, enterprise: true },
-            { name: 'امتثال قانوني متقدم', starter: false, business: false, enterprise: true },
+            { name: 'حساب رواتب آلي', free: false, starter: true, business: true, enterprise: true },
+            { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
+            { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
+            { name: 'متعدد الدول والعملات', free: false, starter: false, business: false, enterprise: true },
+            { name: 'امتثال قانوني متقدم', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'الميدان والموبايل',
           features: [
-            { name: 'تطبيق موبايل للموظفين', starter: true, business: true, enterprise: true },
-            { name: 'تطبيق موبايل للمديرين', starter: true, business: true, enterprise: true },
-            { name: 'وضع عدم الاتصال', starter: true, business: true, enterprise: true },
-            { name: 'تكامل بصمة ZKTeco', starter: false, business: true, enterprise: true },
-            { name: 'كشك HR مخصص', starter: false, business: true, enterprise: true },
-            { name: 'GPS وتحديد المناطق', starter: false, business: true, enterprise: true },
+            { name: 'تطبيق موبايل للموظفين', free: true, starter: true, business: true, enterprise: true },
+            { name: 'تطبيق موبايل للمديرين', free: false, starter: true, business: true, enterprise: true },
+            { name: 'وضع عدم الاتصال', free: false, starter: true, business: true, enterprise: true },
+            { name: 'تكامل بصمة ZKTeco', free: false, starter: false, business: true, enterprise: true },
+            { name: 'كشك HR مخصص', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS وتحديد المناطق', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'الأمان والتكاملات',
           features: [
-            { name: 'خزنة المستندات', starter: false, business: true, enterprise: true },
-            { name: 'REST API وWebhooks', starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', starter: false, business: false, enterprise: true },
-            { name: 'سجل تدقيق غير قابل للتغيير', starter: false, business: false, enterprise: true },
-            { name: 'مخطط PostgreSQL معزول', starter: false, business: false, enterprise: true },
-            { name: 'SLA مخصص ودعم أولوي', starter: false, business: false, enterprise: true },
+            { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
+            { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -463,14 +468,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'الكل',
       categories: ['الفوترة', 'التجربة', 'الدعم', 'الأمان', 'التقني'],
       items: [
+        { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
         { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
         { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 30 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
-        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Starter: بريد إلكتروني خلال 48 ساعة. Business: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
+        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Starter: بريد إلكتروني خلال 48 ساعة. Business: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
-        { id: 'api', question: 'هل API متاح في خطة Starter؟', answer: 'REST API والـ Webhooks متاحة من خطة Business. في Starter يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
+        { id: 'api', question: 'هل API متاح في خطة Free؟', answer: 'REST API والـ Webhooks متاحة من خطة Business. في Free وStarter يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
       ],
     },
     cta: {
@@ -486,8 +492,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
 /* ─────────────────────────────────────────────
    PLAN ICONS
 ───────────────────────────────────────────── */
-const planIcons = [Rocket, Crown, Building2] as const;
+const planIcons = [Gift, Rocket, Crown, Building2] as const;
 const planIconColors = [
+  'text-slate-500',
   'text-blue-500',
   'text-emerald-500',
   'text-violet-500',
@@ -579,12 +586,24 @@ function FaqAccordionItem({ item, isOpen, onToggle }: {
 }
 
 /* ─────────────────────────────────────────────
+   HELPER: get comparison feature value by plan name
+───────────────────────────────────────────── */
+function getFeatureValue(feature: ComparisonFeature, planName: string): boolean | string {
+  const lower = planName.toLowerCase();
+  if (lower === 'free') return feature.free;
+  if (lower === 'pilot' || lower === 'starter') return feature.starter;
+  if (lower === 'operations' || lower === 'business') return feature.business;
+  if (lower === 'enterprise' || lower === 'scale') return feature.enterprise;
+  return false;
+}
+
+/* ─────────────────────────────────────────────
    PAGE
 ───────────────────────────────────────────── */
 export default function PricingPage() {
   const [isDark, setIsDark] = useState(false);
   const [isAnnual, setIsAnnual] = useState(true);
-  const [openFaqId, setOpenFaqId] = useState<string | null>('free-trial');
+  const [openFaqId, setOpenFaqId] = useState<string | null>('free-plan');
   const [faqCategory, setFaqCategory] = useState<string | null>(null);
 
   const { locale, direction } = useVitrineLocale();
@@ -597,9 +616,13 @@ export default function PricingPage() {
   }
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
+    // Free plan → direct account creation, no payment
+    if (plan.price === '0') return '/checkout?plan=free';
+    // Enterprise → contact
     if (!showsCurrency(plan.price)) return '/contact?type=enterprise';
-    if (plan.popular) return '/signup?plan=business';
-    return '/signup?plan=starter';
+    // Paid plans → checkout with payment
+    if (plan.popular) return '/checkout?plan=business';
+    return '/checkout?plan=starter';
   }
 
   const filteredFaq = faqCategory
@@ -657,7 +680,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/signup"
+              href="/checkout?plan=free"
               className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -747,13 +770,14 @@ export default function PricingPage() {
             </AnimatePresence>
           </div>
 
-          {/* Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Cards — 4 plans in a responsive grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {plans.map((plan, index) => {
               const Icon = planIcons[index % planIcons.length];
               const iconColor = planIconColors[index % planIconColors.length];
               const displayPrice = isAnnual ? plan.annualPrice : plan.price;
-              const hasNumericPrice = showsCurrency(displayPrice);
+              const isFree = plan.price === '0';
+              const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
               const ctaHref = getPlanHref(plan);
 
               return (
@@ -767,11 +791,13 @@ export default function PricingPage() {
                   className={`relative rounded-3xl ${
                     plan.popular
                       ? 'bg-gradient-to-b from-emerald-400 via-emerald-500 to-cyan-600 p-px shadow-2xl shadow-emerald-500/25'
-                      : 'bg-slate-200/70 dark:bg-slate-800/70 p-px'
+                      : isFree
+                        ? 'bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 p-px'
+                        : 'bg-slate-200/70 dark:bg-slate-800/70 p-px'
                   }`}
                 >
                   <div className="relative h-full rounded-[23px] bg-white dark:bg-slate-950 flex flex-col p-8">
-                    {/* Popular badge */}
+                    {/* Plan badge */}
                     {plan.popular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
@@ -780,10 +806,18 @@ export default function PricingPage() {
                         </div>
                       </div>
                     )}
+                    {isFree && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                          <Gift className="w-3 h-3" />
+                          100% Gratuit
+                        </div>
+                      </div>
+                    )}
 
                     {/* Plan header */}
                     <div className="mb-8">
-                      <div className={`inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4 bg-slate-100 dark:bg-slate-800/80`}>
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4 bg-slate-100 dark:bg-slate-800/80">
                         <Icon className={`w-6 h-6 ${iconColor}`} />
                       </div>
                       <h3 className="text-xl font-black text-slate-900 dark:text-white mb-1">{plan.name}</h3>
@@ -793,14 +827,28 @@ export default function PricingPage() {
                     {/* Price */}
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1.5">
-                        {hasNumericPrice && (
-                          <span className="text-lg font-bold text-slate-500 dark:text-slate-400">EUR</span>
+                        {isFree ? (
+                          <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                            Gratuit
+                          </span>
+                        ) : hasNumericPrice ? (
+                          <>
+                            <span className="text-lg font-bold text-slate-500 dark:text-slate-400">EUR</span>
+                            <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                              {displayPrice}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-4xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                            {displayPrice}
+                          </span>
                         )}
-                        <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                          {displayPrice}
-                        </span>
                       </div>
-                      {hasNumericPrice && (
+                      {isFree ? (
+                        <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
+                          Sans carte bancaire · Pour toujours
+                        </p>
+                      ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
                           <p className="text-sm text-slate-500">
                             {isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly}
@@ -813,7 +861,7 @@ export default function PricingPage() {
                             </p>
                           )}
                         </div>
-                      )}
+                      ) : null}
                       {plan.priceNote && (
                         <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
                           {plan.priceNote}
@@ -829,7 +877,7 @@ export default function PricingPage() {
                     <ul className="flex-1 space-y-3 mb-8">
                       {plan.features.map((feature, fi) => (
                         <li key={fi} className="flex items-start gap-3">
-                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : isFree ? 'text-slate-500' : 'text-slate-400 dark:text-slate-500'}`} />
                           <span className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{feature}</span>
                         </li>
                       ))}
@@ -841,9 +889,11 @@ export default function PricingPage() {
                       className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
                         plan.popular
                           ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
-                          : hasNumericPrice
-                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 hover:scale-[1.01] active:scale-[0.98]'
-                            : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700 shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                          : isFree
+                            ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-800 hover:to-black hover:scale-[1.01] active:scale-[0.98] shadow-md'
+                            : hasNumericPrice
+                              ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 hover:scale-[1.01] active:scale-[0.98]'
+                              : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700 shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                       }`}
                     >
                       {plan.cta}
@@ -888,14 +938,15 @@ export default function PricingPage() {
           </div>
 
           <div className="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50">
-            <table className="w-full min-w-[640px]">
+            <table className="w-full min-w-[720px]">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-900">
-                  <th className="text-left py-5 px-6 font-bold text-slate-900 dark:text-white text-sm w-[40%]">
+                  <th className="text-left py-5 px-6 font-bold text-slate-900 dark:text-white text-sm w-[32%]">
                     {copy.comparison.featureColumn}
                   </th>
                   {plans.map((plan, i) => {
                     const Icon = planIcons[i % planIcons.length];
+                    const isFree = plan.price === '0';
                     return (
                       <th
                         key={plan.name}
@@ -913,6 +964,11 @@ export default function PricingPage() {
                               ★ top
                             </span>
                           )}
+                          {isFree && (
+                            <span className="text-[9px] px-2 py-0.5 bg-slate-600 text-white rounded-full font-black uppercase tracking-wider">
+                              gratuit
+                            </span>
+                          )}
                         </div>
                       </th>
                     );
@@ -924,10 +980,7 @@ export default function PricingPage() {
                   <Fragment key={cat.category}>
                     {/* Category row */}
                     <tr className={catIdx % 2 === 0 ? 'bg-slate-50/70 dark:bg-slate-900/30' : 'bg-emerald-50/30 dark:bg-emerald-950/10'}>
-                      <td
-                        colSpan={4}
-                        className="py-3 px-6"
-                      >
+                      <td colSpan={plans.length + 1} className="py-3 px-6">
                         <span className="text-xs font-black uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
                           {cat.category}
                         </span>
@@ -946,15 +999,17 @@ export default function PricingPage() {
                         <td className="py-4 px-6 text-sm text-slate-700 dark:text-slate-300 font-medium">
                           {feature.name}
                         </td>
-                        <td className="py-4 px-4 text-center">
-                          <AvailabilityMark value={feature.starter} popular={false} />
-                        </td>
-                        <td className="py-4 px-4 text-center bg-emerald-50/40 dark:bg-emerald-950/10">
-                          <AvailabilityMark value={feature.business} popular={true} />
-                        </td>
-                        <td className="py-4 px-4 text-center">
-                          <AvailabilityMark value={feature.enterprise} popular={false} />
-                        </td>
+                        {plans.map((plan) => (
+                          <td
+                            key={plan.name}
+                            className={`py-4 px-4 text-center ${plan.popular ? 'bg-emerald-50/40 dark:bg-emerald-950/10' : ''}`}
+                          >
+                            <AvailabilityMark
+                              value={getFeatureValue(feature, plan.name)}
+                              popular={plan.popular}
+                            />
+                          </td>
+                        ))}
                       </motion.tr>
                     ))}
                   </Fragment>
@@ -962,21 +1017,29 @@ export default function PricingPage() {
                 {/* CTA row */}
                 <tr className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
                   <td className="py-6 px-6" />
-                  {plans.map((plan) => (
-                    <td key={plan.name} className={`py-6 px-4 text-center ${plan.popular ? 'bg-emerald-50/40 dark:bg-emerald-950/10' : ''}`}>
-                      <Link
-                        href={getPlanHref(plan)}
-                        className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ${
-                          plan.popular
-                            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                            : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
-                        }`}
-                      >
-                        {plan.cta}
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </td>
-                  ))}
+                  {plans.map((plan) => {
+                    const isFree = plan.price === '0';
+                    const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(plan.price);
+                    return (
+                      <td key={plan.name} className={`py-6 px-4 text-center ${plan.popular ? 'bg-emerald-50/40 dark:bg-emerald-950/10' : ''}`}>
+                        <Link
+                          href={getPlanHref(plan)}
+                          className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ${
+                            plan.popular
+                              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                              : isFree
+                                ? 'bg-slate-700 text-white hover:bg-slate-800'
+                                : hasNumericPrice
+                                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
+                                  : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700'
+                          }`}
+                        >
+                          {plan.cta}
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </td>
+                    );
+                  })}
                 </tr>
               </tbody>
             </table>
@@ -1112,7 +1175,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/signup"
+              href="/checkout?plan=free"
               className="group relative px-10 py-4 bg-white text-emerald-600 font-black rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] text-base"
             >
               <span className="relative z-10 flex items-center gap-2.5">
