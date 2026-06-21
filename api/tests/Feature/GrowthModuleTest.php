@@ -91,7 +91,9 @@ class GrowthModuleTest extends TestCase
             'status' => 'active',
         ]);
 
-        $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
+        $company = Company::factory()->create();
+        $company->referrer_partner_id = $partner->id;
+        $company->save();
 
         $invoice = Invoice::create([
             'company_id' => $company->id,
@@ -187,7 +189,9 @@ class GrowthModuleTest extends TestCase
         $partner1 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('P1')]);
         $partner2 = Partner::create(['user_id' => User::factory()->create()->id, 'referral_code' => $this->uniqueCode('P2')]);
 
-        $company = Company::factory()->create(['referrer_partner_id' => $partner1->id]);
+        $company = Company::factory()->create();
+        $company->referrer_partner_id = $partner1->id;
+        $company->save();
 
         $this->partnerService->reassignCompanyPartner($company, $partner2->id, $admin->id, 'Commercial transfer');
 
@@ -312,7 +316,9 @@ class GrowthModuleTest extends TestCase
         $this->withCookie('leopardo_referrer_id', (string) $partner2->id);
 
         // Pre-attribute to partner 1 (manual code simulation in Controller)
-        $company = Company::factory()->create(['referrer_partner_id' => $partner1->id]);
+        $company = Company::factory()->create();
+        $company->referrer_partner_id = $partner1->id;
+        $company->save();
 
         // Trigger the listener
         event(new \App\Events\CompanyCreated($company));
@@ -332,7 +338,9 @@ class GrowthModuleTest extends TestCase
             'status' => 'active',
         ]);
 
-        $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
+        $company = Company::factory()->create();
+        $company->referrer_partner_id = $partner->id;
+        $company->save();
 
         $payment = Payment::create([
             'invoice_id' => random_int(100000, 999990),
@@ -429,7 +437,9 @@ class GrowthModuleTest extends TestCase
     {
         $user = User::factory()->create();
         $partner = Partner::create(['user_id' => $user->id, 'referral_code' => $this->uniqueCode('12M'), 'status' => 'active']);
-        $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
+        $company = Company::factory()->create();
+        $company->referrer_partner_id = $partner->id;
+        $company->save();
 
         // Referral created 13 months ago
         \App\Models\PartnerReferral::create([
