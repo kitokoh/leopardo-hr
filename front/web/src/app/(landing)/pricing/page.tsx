@@ -598,8 +598,8 @@ export default function PricingPage() {
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
     if (!showsCurrency(plan.price)) return '/contact?type=enterprise';
-    if (plan.popular) return '/signup?plan=business';
-    return '/signup?plan=starter';
+    const planKey = plan.popular ? 'business' : 'starter';
+    return `/checkout?plan=${planKey}&billing=${isAnnual ? 'annual' : 'monthly'}`;
   }
 
   const filteredFaq = faqCategory
@@ -657,7 +657,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/signup"
+              href={`/checkout?plan=business&billing=${isAnnual ? 'annual' : 'monthly'}`}
               className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -1112,7 +1112,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/signup"
+              href={`/checkout?plan=business&billing=${isAnnual ? 'annual' : 'monthly'}`}
               className="group relative px-10 py-4 bg-white text-emerald-600 font-black rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] text-base"
             >
               <span className="relative z-10 flex items-center gap-2.5">

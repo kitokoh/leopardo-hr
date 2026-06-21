@@ -11,8 +11,14 @@ function showsCurrency(price: string) {
   return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض'].includes(price)
 }
 
-function getPlanCtaHref(price: string) {
-  return showsCurrency(price) ? '/signup' : '/demo'
+function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
+  if (!showsCurrency(price)) return '/contact?type=enterprise'
+  const billing = isAnnual ? 'annual' : 'monthly'
+  // Map plan name to plan key
+  const planKey = (planName ?? '').toLowerCase().includes('operations') ? 'business'
+    : (planName ?? '').toLowerCase().includes('scale') ? 'enterprise'
+    : 'starter'
+  return `/checkout?plan=${planKey}&billing=${billing}`
 }
 
 const savingsLabel: Record<string, string> = {
@@ -150,7 +156,7 @@ export function PricingSection() {
                   </ul>
 
                   <Link
-                    href={getPlanCtaHref(displayPrice)}
+                    href={getPlanCtaHref(displayPrice, plan.name, isAnnual)}
                     className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 ${
                       plan.popular
                         ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
