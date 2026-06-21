@@ -335,7 +335,7 @@ class GrowthModuleTest extends TestCase
         $company = Company::factory()->create(['referrer_partner_id' => $partner->id]);
 
         $payment = Payment::create([
-            'invoice_id' => 1,
+            'invoice_id' => random_int(100000, 999990),
             'company_id' => $company->id,
             'amount' => 120.00, // 100 HT + 20 TVA
             'currency' => 'EUR',
@@ -361,11 +361,12 @@ class GrowthModuleTest extends TestCase
             'payout_threshold' => 5000, // 50.00
         ]);
 
-        // Mock 100.00 earned
+        // Mock 100.00 earned – use a high payment_id that cannot collide with
+        // auto-incremented Payment IDs created in other tests.
         Commission::create([
             'partner_id' => $partner->id,
             'company_id' => '00000000-0000-0000-0000-000000000001',
-            'payment_id' => 1,
+            'payment_id' => 999999,
             'amount' => 10000,
             'applied_rate' => 1000,
             'status' => 'approved',
@@ -438,7 +439,7 @@ class GrowthModuleTest extends TestCase
         ]);
 
         $payment = Payment::create([
-            'invoice_id' => 1,
+            'invoice_id' => random_int(100000, 999990),
             'company_id' => $company->id,
             'amount' => 100,
             'status' => 'completed',

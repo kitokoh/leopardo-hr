@@ -16,32 +16,28 @@ class CommissionService
     public function recordCommissionForPayment(Payment $payment): ?Commission
     {
         if ($payment->status !== 'completed') {
-            throw new \RuntimeException('Failed A');
             return null;
         }
 
         // Idempotency: Check if commission already exists for this payment
         if (Commission::where('payment_id', $payment->id)->exists()) {
-            throw new \RuntimeException('Failed B: payment_id ' . $payment->id);
             return null;
         }
 
         $company = Company::find($payment->company_id);
         if (!$company || !$company->referrer_partner_id) {
-            throw new \RuntimeException('Failed C: no company or referrer_partner_id');
             return null;
         }
 
         $partner = Partner::find($company->referrer_partner_id);
         if (!$partner || $partner->status !== 'active') {
-            throw new \RuntimeException('Failed D: no partner or not active. Partner: ' . json_encode($partner));
             return null;
         }
 
         // 12-month commission limit rule
         $referral = \App\Models\PartnerReferral::where('company_id', $company->id)->first();
         if ($referral && $referral->referred_at->diffInMonths(now()) >= 12) {
-            throw new \RuntimeException('Failed E: 12-month limit');
+            Log::info("Commission period (12 months) expired for company {$company->id}");
             return null;
         }
 
@@ -57,7 +53,6 @@ class CommissionService
         $commissionAmount = (int) floor(($netAmountInCents * $rate) / 10000);
 
         if ($commissionAmount <= 0) {
-            throw new \RuntimeException("Failed F: commissionAmount <= 0. amount: {$payment->amount}, taxRate: {$taxRate}, net: {$netAmountInCents}, rate: {$rate}");
             return null;
         }
 
