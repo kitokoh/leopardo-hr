@@ -3,8 +3,26 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api-client';
 
+type Commission = {
+  id: string;
+  company_id: string;
+  created_at: string;
+  status: string;
+  amount: number;
+};
+
+type PartnerData = {
+  stats: {
+    total_conversions: number;
+    total_earned: number;
+    pending_approval: number;
+    approved_upcoming: number;
+  };
+  recent_commissions: Commission[];
+};
+
 export default function PartnerDashboard() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<PartnerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('loading'); // 'not_applied', 'pending', 'approved', 'loading'
 
@@ -104,10 +122,10 @@ export default function PartnerDashboard() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <MetricCard label="Conversions" value={data?.stats.total_conversions} color="text-teal-600" />
-        <MetricCard label="Gains Totaux" value={(data?.stats.total_earned / 100).toFixed(2) + ' €'} color="text-emerald-600" />
-        <MetricCard label="En attente" value={(data?.stats.pending_approval / 100).toFixed(2) + ' €'} color="text-amber-600" />
-        <MetricCard label="Solde Retirable" value={(data?.stats.approved_upcoming / 100).toFixed(2) + ' €'} color="text-blue-600" />
+        <MetricCard label="Conversions" value={data?.stats?.total_conversions || 0} color="text-teal-600" />
+        <MetricCard label="Gains Totaux" value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' €'} color="text-emerald-600" />
+        <MetricCard label="En attente" value={((data?.stats?.pending_approval || 0) / 100).toFixed(2) + ' €'} color="text-amber-600" />
+        <MetricCard label="Solde Retirable" value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' €'} color="text-blue-600" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -142,7 +160,7 @@ export default function PartnerDashboard() {
                     </tr>
                   ))}
                   {(!data?.recent_commissions || data.recent_commissions.length === 0) && (
-                    <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500 italic">Aucune commission enregistrée.</td></tr>
+                    <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-500 italic">Aucune commission enregistrée.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -182,7 +200,7 @@ export default function PartnerDashboard() {
   );
 }
 
-function MetricCard({ label, value, color }) {
+function MetricCard({ label, value, color }: { label: string; value: string | number | undefined; color: string }) {
   return (
     <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
       <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</h3>
