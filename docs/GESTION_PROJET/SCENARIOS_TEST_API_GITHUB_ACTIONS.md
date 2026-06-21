@@ -1086,3 +1086,11 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - GET /api/v1/growth/referral : point d'entree tracking des clics via code affilié.
 - L'acces aux ressources partenaires refuse les candidatures en attente.
 - Les ecritures de statistiques de clic et de cookie restent tolerantes aux blocs ad-blocker.
+
+#### Module Growth - Correction Auth v4.16.255
+- POST /api/v1/partner/apply : accessible via token Sanctum Employee (guard uth:sanctum) — esolveGlobalUser() cree l'entree User dans public.users si elle n'existe pas encore pour l'employe authentifie.
+- GET /api/v1/partner/stats : retourne les stats de commission uniquement si le token Employee correspond a un enregistrement Partner actif dans public.partners. Retourne 403 NOT_A_PARTNER sinon.
+- POST /api/v1/partner/payout : demande de paiement liee au partner resolu depuis le token Employee Sanctum.
+- GET /api/v1/partner/companies : liste les entreprises parrainees par le partner resolu.
+- Refus attendus : 401 si token absent, 403 NOT_A_PARTNER si employe non enregistre comme partenaire, 400 ALREADY_EXISTS si double candidature.
+- Contrats couverts : GrowthModuleTest, FrontendApiContractTest.
