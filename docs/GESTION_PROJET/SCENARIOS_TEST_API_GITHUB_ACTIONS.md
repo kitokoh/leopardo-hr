@@ -1077,3 +1077,12 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `GET /api/v1/platform/country-defaults` : super-admin authentifie, retourne la liste canonique des pays supportes avec `country`, `label`, `language`, `currency`, `timezone`.
 - `POST /api/v1/platform/companies` : le payload mobile minimal peut envoyer seulement `country`; le backend derive langue, devise et timezone via `CountryDefaults`.
 - Les tests doivent couvrir au minimum `SN/XOF`, `CM/XAF`, `TR/TRY` et verifier qu'un nouveau pays ne retombe pas silencieusement sur `DZD`.
+
+#### Module Growth - Partenariat & Parrainage
+- GET /api/v1/partners/profile : retourne le profil partenaire pour l'employe authentifie.
+- POST /api/v1/partners/profile : soumet une candidature partenaire.
+- GET /api/v1/partners/commissions : liste les commissions d'un partenaire actif.
+- GET /api/v1/partners/links : gere les liens de parrainage (liste, creation, desactivation).
+- GET /api/v1/growth/referral : point d'entree tracking des clics via code affilié.
+- L'acces aux ressources partenaires refuse les candidatures en attente.
+- Les ecritures de statistiques de clic et de cookie restent tolerantes aux blocs ad-blocker.
