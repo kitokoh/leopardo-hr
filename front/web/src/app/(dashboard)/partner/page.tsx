@@ -32,7 +32,7 @@ export default function PartnerDashboard() {
     fetchData();
   }, []);
 
-  const handleApply = async (type) => {
+  const handleApply = async (type: string) => {
     try {
       await apiFetch('/partner/apply', {
         method: 'POST',
