@@ -72,7 +72,7 @@ function deriveCompanyFromEmail(email: string): string {
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
-function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy: QuickTrialCopy }) {
+export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy: QuickTrialCopy }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
