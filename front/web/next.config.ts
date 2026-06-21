@@ -112,9 +112,14 @@ const nextConfig: NextConfig = {
     pagesBufferLength: 5,
   },
 
+  // Security: remove X-Powered-By header
+  poweredByHeader: false,
+
   // Experimental features for performance
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    optimizeCss: true,
+    scrollRestoration: true,
   },
 };
 
