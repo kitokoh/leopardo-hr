@@ -40,7 +40,7 @@ export default function PartnerDashboard() {
       });
       setStatus('pending');
     } catch (error) {
-      alert("Erreur lors de la candidature : " + error.message);
+      alert("Erreur lors de la candidature : " + (error as Error).message);
     }
   };
 
