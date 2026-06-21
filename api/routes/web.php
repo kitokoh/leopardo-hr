@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Capture de lien partenaire (Middleware gère la redirection et le cookie)
+Route::get('/p/{code}', function () {
+    return redirect('/signup');
+})->name('partner.link');
+
 Route::get('/docs', function () {
     return view('docs.openapi');
 })->name('docs.openapi');

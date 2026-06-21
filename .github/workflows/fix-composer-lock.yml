@@ -3,7 +3,7 @@ name: Fix — Regenerate composer.lock
 on:
   workflow_dispatch:
   push:
-    branches: [ fix/composer-predis-lock-and-mobile-nav ]
+    branches: [ feat/growth-module-6687823184469251636 ]
     paths:
       - 'api/composer.json'
 
@@ -26,10 +26,10 @@ jobs:
           extensions: pdo, pdo_pgsql, pdo_sqlite, sqlite3, bcmath, mbstring, xml, zip, gd
           tools: composer:v2
 
-      - name: Regenerate lock for predis
+      - name: Regenerate lock for security dependencies
         working-directory: ./api
         run: |
-          composer update predis/predis --no-interaction --prefer-dist
+          composer update guzzlehttp/psr7 phpseclib/phpseclib guzzlehttp/guzzle --no-interaction --prefer-dist
 
       - name: Commit updated composer.lock
         run: |
@@ -39,6 +39,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nothing to commit"
           else
-            git commit -m "fix(ci): regenerate composer.lock with predis/predis ^2.3 [skip ci]"
+            git commit -m "fix(ci): regenerate composer.lock for security dependencies [skip ci]"
             git push
           fi
