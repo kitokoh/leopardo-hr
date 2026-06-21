@@ -17,8 +17,8 @@ export default function PartnerDashboard() {
       // If the API returns success, we are an approved partner
       setData(payload);
       setStatus('approved');
-    } catch (error) {
-      if (error.code === 'NOT_A_PARTNER') {
+    } catch (error: any) {
+      if (error?.code === 'NOT_A_PARTNER' || error?.response?.data?.code === 'NOT_A_PARTNER') {
         setStatus('not_applied');
       } else {
         console.error("Failed to fetch partner stats", error);
