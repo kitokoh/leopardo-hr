@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.16.255] - 2026-06-21
+
+### Fixed
+
+- Growth Module : Correction des marqueurs de conflit Git résiduels dans `routes/modules/growth.php`, `PartnerDashboardController.php`, `CommissionService.php` et `front/web/src/app/(dashboard)/partner/page.tsx` — les fichiers contenaient des `<<<<<<< HEAD` non résolus causant un `ParseError` au boot Laravel (`php artisan package:discover`).
+- Growth Module Auth : Le middleware des routes `/partner/*` utilise désormais `auth:sanctum` (token Employee) au lieu de `auth:user_api`. Le contrôleur `PartnerDashboardController` résout l'utilisateur global (`public.users`) via `resolveGlobalUser()` — compatible avec les tokens Sanctum Employee émis par l'app web et mobile.
+- Growth Module Frontend : La page `partner/page.tsx` affiche maintenant l'état `not_applied` en cas d'erreur réseau au lieu de rester bloquée sur "Chargement de votre espace".
+- CommissionService : Suppression des exceptions de debug temporaires (`throw new RuntimeException('Failed X')`) remplacées par des retours `null` propres conformes à la logique production.
+
 ## [4.16.254] - 2026-06-21
 
 ### Fixed
