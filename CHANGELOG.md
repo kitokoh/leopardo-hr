@@ -2,8 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org) 
 
-## [4.16.253] - 2026-06-20
+## [4.16.254] - 2026-06-21
 
+### Fixed
+
+- Growth Module CI : Correction de `GrowthModuleTest` — ajout de `tearDown()` appelant `tearDownMvpSchema()` pour eviter les violations de contrainte unique entre tests.
+- Growth Module CI : Ajout de la colonne `referrer_partner_id bigint NULL` dans le fixture PostgreSQL `mvp_schema.pgsql.sql` (manquante dans le schema de test, causant des echecs `column not found`).
+- Growth Module CI : Correction PHPStan dans `PartnerLinkMiddleware` — operateur null-safe sur `$link->partner?->status`, cast `(string)` sur `$link->partner_id`, et typage explicite `@var Response` sur le retour de `$next($request)`.
+- Governance : Mise a jour de `SCENARIOS_TEST_API_GITHUB_ACTIONS.md` et `REGISTRE_SCENARIOS_TESTS.md` avec les scenarios Growth Module (partenariat et parrainage).
+
+## [4.16.253] - 2026-06-20
 ### Added
 
 - Growth Module Hardening : Renforcement de la sécurité, de la précision financière et des workflows opérationnels.

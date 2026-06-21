@@ -31,7 +31,7 @@ class PartnerLinkMiddleware
                 ->first();
 
             // Block if partner is suspended
-            if ($link && $link->partner->status !== 'active') {
+            if ($link && $link->partner?->status !== 'active') {
                 return redirect('/signup');
             }
 
@@ -47,7 +47,7 @@ class PartnerLinkMiddleware
                 // Store cookie for 30 days
                 return redirect('/signup')->withCookie(cookie(
                     'leopardo_referrer_id',
-                    $link->partner_id,
+                    (string) $link->partner_id,
                     60 * 24 * 30,
                     '/',
                     null,
@@ -59,6 +59,9 @@ class PartnerLinkMiddleware
             return redirect('/signup');
         }
 
-        return $next($request);
+        /** @var Response $response */
+        $response = $next($request);
+
+        return $response;
     }
 }

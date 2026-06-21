@@ -9,7 +9,7 @@ use App\Models\Partner;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\PartnerService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use Tests\TestCase;
 
 class GrowthModuleTest extends TestCase
@@ -24,6 +24,12 @@ class GrowthModuleTest extends TestCase
         $this->setUpMvpSchema();
         $this->partnerService = app(PartnerService::class);
         $this->commissionService = app(\App\Services\CommissionService::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
     }
 
     public function test_can_attribute_company_to_partner()

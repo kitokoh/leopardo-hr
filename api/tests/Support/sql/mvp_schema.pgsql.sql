@@ -51,6 +51,7 @@ CREATE TABLE public.companies (
     email varchar(255) NOT NULL,
     phone varchar(255) NULL,
     plan_id integer NULL,
+    referrer_partner_id bigint NULL,
     schema_name varchar(63) NOT NULL,
     tenancy_type varchar(20) NOT NULL DEFAULT 'shared',
     status varchar(20) NOT NULL DEFAULT 'active',
