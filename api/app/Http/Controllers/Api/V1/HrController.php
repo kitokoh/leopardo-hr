@@ -125,7 +125,7 @@ class HrController extends Controller
             'last_name'       => 'required|string|max:100',
             'email'           => 'required|email|max:255|unique:employees,email',
             'personal_phone'  => 'nullable|string|max:20',
-            'gender'          => ['required', Rule::in(['male', 'female', 'other'])],
+            'gender'          => ['required', Rule::in(['M', 'F'])],
             'date_of_birth'   => 'required|date|before:today',
             'contract_type'   => ['required', Rule::in(['cdi', 'cdd', 'freelance', 'intern', 'part_time'])],
             'contract_start'  => 'required|date',
