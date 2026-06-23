@@ -79,9 +79,9 @@ class EnsureAppContextMiddleware
         // Verify the user's role matches the app they claim to use
         $allowedRoles = self::APP_ROLE_MAP[$appContext];
 
-        $userRole = method_exists($employee, 'isManager') && $employee->isManager()
+        $userRole = (string) (method_exists($employee, 'isManager') && $employee->isManager()
             ? ($employee->manager_role ?? 'manager')
-            : 'employee';
+            : 'employee');
 
         if (! in_array($userRole, $allowedRoles, true)) {
             return response()->json([
