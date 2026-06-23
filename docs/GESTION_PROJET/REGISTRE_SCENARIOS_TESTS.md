@@ -1,7 +1,7 @@
 # REGISTRE DES SCENARIOS DE TESTS
 
 ## Objectif 
-
+  
 Fournir une source de verite unique  pour savoir:
 
 - quelles surfaces fonctionnelles doivent etre testees

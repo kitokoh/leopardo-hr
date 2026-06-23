@@ -76,6 +76,10 @@ class EmployeeResource extends JsonResource
             'features' => FeatureFlag::for($company),
             'mobile_experience' => app(MobileExperienceService::class)->for($employee),
             'suggested_home_route' => $this->homeRoute(),
+            'app_links' => \App\Services\RoleInvitationService::getAppDownloadLink(
+                $this->role,
+                $this->manager_role ?? 'employee'
+            ),
             'company' => $company ? [
                 'id' => $company->id,
                 'name' => $company->name,
