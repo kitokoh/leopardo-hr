@@ -131,6 +131,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/integrations.php';
     require __DIR__.'/modules/growth.php';
 
+    // Multi-App dedicated route modules
+    require __DIR__.'/modules/hr_app.php';
+
     // IA Module — routes separees /api/ai/*
     require __DIR__.'/ai.php';
 
