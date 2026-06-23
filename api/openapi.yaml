@@ -10278,7 +10278,7 @@ components:
           enum: ["employee", "manager"]
         manager_role:
           type: string
-          enum: ["principal", "rh", "dept", "comptable", "superviseur"]
+          enum: ["principal", "rh", "dept", "comptable", "superviseur", "marketing"]
         phone:
           type: string
         personal_email:
@@ -10364,7 +10364,7 @@ components:
           enum: ["employee", "manager"]
         manager_role:
           type: string
-          enum: ["principal", "rh", "dept", "comptable", "superviseur"]
+          enum: ["principal", "rh", "dept", "comptable", "superviseur", "marketing"]
         status:
           type: string
           enum: ["active", "suspended"]

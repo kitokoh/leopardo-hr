@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api\V1;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Services\Cache\TenantCacheService;
@@ -172,6 +172,51 @@ class DashboardController extends Controller
                 'total_active_employees' => $totalEmployees,
             ],
         ]);
+    }
+
+    /**
+     * Admin company summary — principals only (full view).
+     */
+    public function adminSummary(Request $request): JsonResponse
+    {
+        $employee = $request->user();
+        $summary = $this->summary($request);
+        $summaryData = json_decode($summary->getContent(), true);
+
+        // Enrich with role counts
+        $roleCounts = Employee::where('company_id', $employee->company_id)
+            ->where('status', '!=', 'archived')
+            ->selectRaw('role, manager_role, COUNT(*) as count')
+            ->groupBy('role', 'manager_role')
+            ->get();
+
+        $summaryData['data']['role_counts'] = $roleCounts;
+
+        return response()->json($summaryData);
+    }
+
+    /**
+     * RH summary — rh managers only.
+     */
+    public function rhSummary(Request $request): JsonResponse
+    {
+        return $this->summary($request); // For now same as summary — can be filtered
+    }
+
+    /**
+     * Comptable summary — comptable managers only.
+     */
+    public function comptableSummary(Request $request): JsonResponse
+    {
+        return $this->summary($request);
+    }
+
+    /**
+     * Marketing summary — marketing managers only.
+     */
+    public function marketingSummary(Request $request): JsonResponse
+    {
+        return $this->summary($request);
     }
 
     /**
