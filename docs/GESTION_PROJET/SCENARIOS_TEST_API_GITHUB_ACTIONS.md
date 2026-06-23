@@ -1087,6 +1087,20 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - L'acces aux ressources partenaires refuse les candidatures en attente.
 - Les ecritures de statistiques de clic et de cookie restent tolerantes aux blocs ad-blocker.
 
+#### Phase 2 — Architecture Multi-App RBAC (v4.17.0)
+
+- `GET /api/v1/hr/dashboard` : accessible RH (`manager_role=rh`) et principal. Retourne stats employes actifs, invitations en attente, nouveaux du mois.
+- `GET /api/v1/hr/me` : profil RH avec `app=rh`, `role_label=Responsable RH`.
+- `GET /api/v1/hr/team-overview` : vue compacte de l'equipe avec departements et postes.
+- `GET /api/v1/hr/employees` : liste paginee/filtree des employes (search, status, contract_type).
+- `POST /api/v1/hr/employees` : creation d'employe par RH — `role` force a `employee`, `manager_role` force a `null` meme si envoye dans le payload.
+- `GET /api/v1/hr/employees/{id}` / `PATCH /api/v1/hr/employees/{id}` : lecture et modification employe par RH, sans possibilite de changer `role` ou `manager_role`.
+- Acces refuse (403 MANAGER_REQUIRED) si `role=employee` tente d'acceder a `/hr/**`.
+- Acces refuse (403 INSUFFICIENT_ROLE) si `manager_role=marketing` tente d'acceder a `/hr/**`.
+- `EnsureAppContextMiddleware` (alias `app.context`) : valide header `X-App-Context` optionnel. Retourne 400 si contexte inconnu, 403 si role incompatible avec le contexte declare.
+- `GET /api/v1/auth/me` : champ `mobile_experience.app` retourne `{id, name, deep_link_scheme}` selon le role — `principal` => manager, `rh` => rh, `employee` => employee.
+- `mobile_experience.modules` differencie les modules selon le role : principal voit `role_management`, rh voit `hr_employees` + `hr_team_overview`, employee voit self-service uniquement.
+
 #### Module Growth - Correction Auth v4.16.255
 - POST /api/v1/partner/apply : accessible via token Sanctum Employee (guard uth:sanctum)  
 esolveGlobalUser() cree l'entree User dans public.users si elle n'existe pas encore pour l'employe authentifie.
