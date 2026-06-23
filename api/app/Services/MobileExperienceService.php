@@ -34,10 +34,33 @@ class MobileExperienceService
     public function for(Employee $employee): array
     {
         return [
-            'stage' => $this->stageFor($employee),
-            'modules' => $this->modulesFor($employee),
+            'stage'         => $this->stageFor($employee),
+            'app'           => $this->appContextFor($employee),
+            'modules'       => $this->modulesFor($employee),
             'quick_actions' => $this->quickActionsFor($employee),
         ];
+    }
+
+    /**
+     * Identify which mobile app this employee should be using.
+     * This is used by the frontend to redirect to the right app on first login.
+     *
+     * @return array{id: string, name: string, deep_link_scheme: string}
+     */
+    private function appContextFor(Employee $employee): array
+    {
+        if (! $employee->isManager()) {
+            return ['id' => 'employee', 'name' => 'Leopardo Employee', 'deep_link_scheme' => 'leopardo-employee'];
+        }
+
+        return match($employee->manager_role) {
+            'principal'  => ['id' => 'manager',   'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+            'rh'         => ['id' => 'rh',         'name' => 'Leopardo RH',        'deep_link_scheme' => 'leopardo-rh'],
+            'comptable'  => ['id' => 'comptable',  'name' => 'Leopardo Comptable', 'deep_link_scheme' => 'leopardo-comptable'],
+            'marketing'  => ['id' => 'marketing',  'name' => 'Leopardo Marketing', 'deep_link_scheme' => 'leopardo-marketing'],
+            'dept'       => ['id' => 'dept',       'name' => 'Leopardo Dept',      'deep_link_scheme' => 'leopardo-dept'],
+            default      => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+        };
     }
 
     private function stageFor(Employee $employee): string
@@ -118,13 +141,22 @@ class MobileExperienceService
             ),
         ];
 
-        if ($employee->hasManagerRole('principal', 'rh') || $employee->isPrincipal() || $employee->isHr()) {
+        if ($employee->isPrincipal()) {
+            // Principal (Manager app) — full access + role management
             $modules[] = $this->module(
                 key: 'team',
                 title: 'Equipe',
                 description: 'Piloter les employes, invitations et vues manager.',
                 domain: 'rh',
                 route: '/team',
+                status: 'active',
+            );
+            $modules[] = $this->module(
+                key: 'role_management',
+                title: 'Gestion des roles',
+                description: 'Nommer un RH, comptable, marketing ou chef de departement.',
+                domain: 'rh',
+                route: '/company/team-roles',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -149,6 +181,48 @@ class MobileExperienceService
                 description: 'Adapter le nom affiche, le logo et les couleurs de l espace client.',
                 domain: 'rh',
                 route: '/company/branding',
+                status: 'active',
+            );
+            $modules[] = $this->module(
+                key: 'dashboard_admin',
+                title: 'Tableau de bord admin',
+                description: 'Vue complete avec comptage des roles et activite.',
+                domain: 'rh',
+                route: '/dashboard/admin',
+                status: 'active',
+            );
+        } elseif ($employee->isHr()) {
+            // RH app — employee management, no role assignment
+            $modules[] = $this->module(
+                key: 'hr_employees',
+                title: 'Employes',
+                description: 'Ajouter, modifier et suivre les employes de l entreprise.',
+                domain: 'rh',
+                route: '/hr/employees',
+                status: 'active',
+            );
+            $modules[] = $this->module(
+                key: 'hr_team_overview',
+                title: 'Vue equipe',
+                description: 'Apercu rapide de toute l equipe et des contrats.',
+                domain: 'rh',
+                route: '/hr/team-overview',
+                status: 'active',
+            );
+            $modules[] = $this->module(
+                key: 'schedules',
+                title: 'Horaires',
+                description: 'Definir pauses, tolerances et heures supplementaires.',
+                domain: 'rh',
+                route: '/schedules',
+                status: 'active',
+            );
+            $modules[] = $this->module(
+                key: 'invitations',
+                title: 'Invitations',
+                description: 'Envoyer et suivre les invitations employes.',
+                domain: 'rh',
+                route: '/invitations',
                 status: 'active',
             );
         }
@@ -230,7 +304,8 @@ class MobileExperienceService
             ),
         ];
 
-        if ($employee->hasManagerRole('principal', 'rh') || $employee->isPrincipal() || $employee->isHr()) {
+        if ($employee->isPrincipal()) {
+            // Manager app quick actions
             array_splice($actions, 2, 0, [
                 $this->quickAction(
                     key: 'team',
@@ -241,12 +316,12 @@ class MobileExperienceService
                     route: '/team',
                 ),
                 $this->quickAction(
-                    key: 'schedules',
-                    title: 'Horaires',
-                    description: 'Ajuster les regles de temps.',
+                    key: 'role_management',
+                    title: 'Roles',
+                    description: 'Nommer RH, comptable, marketing.',
                     domain: 'rh',
-                    icon: 'schedule',
-                    route: '/schedules',
+                    icon: 'manage_accounts',
+                    route: '/company/team-roles',
                 ),
                 $this->quickAction(
                     key: 'tasks',
@@ -255,6 +330,34 @@ class MobileExperienceService
                     domain: 'rh',
                     icon: 'task_alt',
                     route: '/tasks',
+                ),
+            ]);
+        } elseif ($employee->isHr()) {
+            // RH app quick actions
+            array_splice($actions, 1, 0, [
+                $this->quickAction(
+                    key: 'add_employee',
+                    title: 'Ajouter employe',
+                    description: 'Creer un nouvel employe.',
+                    domain: 'rh',
+                    icon: 'person_add',
+                    route: '/hr/employees/new',
+                ),
+                $this->quickAction(
+                    key: 'team_overview',
+                    title: 'Equipe',
+                    description: 'Vue rapide de l equipe.',
+                    domain: 'rh',
+                    icon: 'groups',
+                    route: '/hr/team-overview',
+                ),
+                $this->quickAction(
+                    key: 'absences',
+                    title: 'Absences',
+                    description: 'Valider les demandes d absence.',
+                    domain: 'rh',
+                    icon: 'event_busy',
+                    route: '/absences',
                 ),
             ]);
         }
