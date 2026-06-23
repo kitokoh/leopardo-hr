@@ -6,6 +6,7 @@ use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
+use App\Http\Middleware\EnsureAppContextMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
@@ -61,6 +62,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
+            'app.context' => EnsureAppContextMiddleware::class,
             'token.refresh' => TokenAutoRefreshMiddleware::class,
         ]);
     })

@@ -3,6 +3,26 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [4.16.255] - 2026-06-21 
+## [4.17.0] - 2026-06-23
+
+### Added
+
+- **Architecture multi-app** : Nouvelle architecture RBAC multi-application. L'API supporte désormais plusieurs apps mobiles distinctes selon le `manager_role` de l'employé.
+- **App Mobile RH** : Routes dédiées `/api/v1/hr/**` accessibles uniquement aux `manager_role: rh` (et `principal` par héritage).
+  - `GET /hr/me` — profil RH avec contexte app
+  - `GET /hr/dashboard` — stats RH (employés actifs, invitations en attente, nouveaux du mois)
+  - `GET /hr/team-overview` — vue compacte de l'équipe
+  - `GET /hr/employees` — liste paginée et filtrable
+  - `POST /hr/employees` — ajouter un employé (role=employee forcé, sans assignation de manager_role)
+  - `GET /hr/employees/{id}` — détail employé
+  - `PATCH /hr/employees/{id}` — modifier employé (sans toucher aux rôles)
+- **HrController** : Nouveau contrôleur dédié à l'app RH avec logique d'isolation stricte (le RH ne peut pas créer de managers).
+- **EnsureAppContextMiddleware** : Middleware optionnel `app.context` — valide la cohérence entre le header `X-App-Context` et le rôle de l'utilisateur. Utilisé pour l'audit et la sécurité cross-app.
+- **MobileExperienceService amélioré** : Modules et quick_actions différenciés par rôle — le `principal` voit la gestion des rôles, le `rh` voit les outils RH, l'employé voit le self-service. Nouveau champ `app` dans la réponse indique quelle app mobile l'employé devrait utiliser.
+- **Documentation** : `docs/architecture/MULTI_APP_ARCHITECTURE.md` — cartographie complète des apps, rôles, règles d'assignation et routes par app.
+- **Tests** : `HrAppRoutesTest` — couverture des routes HR app (accès RH, refus employé standard, refus marketing manager, isolation ajout employé sans escalade de rôle).
+
+## [4.16.255] - 2026-06-21
 
 ### Added
 
