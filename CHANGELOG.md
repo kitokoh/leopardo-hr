@@ -2,7 +2,7 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org) 
 
-## [4.16.255] - 2026-06-21 
+## [4.16.255] - 2026-06-21   
 ## [4.17.0] - 2026-06-23
 
 ### Added
