@@ -125,6 +125,14 @@ type LandingCopy = {
     description: string
     sections: Array<{ title: string; links: string[] }>
     rights: string
+    newsletter: {
+      title: string
+      description: string
+      placeholder: string
+      button: string
+      success: string
+      error: string
+    }
   }
 }
 
@@ -269,6 +277,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
       ],
       rights: 'Tous droits reserves.',
+      newsletter: {
+        title: 'Newsletter',
+        description: 'Recevez nos conseils RH et mises à jour produit.',
+        placeholder: 'votre@email.com',
+        button: 'S\'abonner',
+        success: 'Inscription réussie !',
+        error: 'Erreur. Veuillez réessayer.',
+      },
     },
   },
   en: {
@@ -404,6 +420,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
       ],
       rights: 'All rights reserved.',
+      newsletter: {
+        title: 'Newsletter',
+        description: 'Get our HR tips and product updates.',
+        placeholder: 'your@email.com',
+        button: 'Subscribe',
+        success: 'Successfully subscribed!',
+        error: 'Error. Please try again.',
+      },
     },
   },
   tr: {
@@ -539,6 +563,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
       ],
       rights: 'Tum haklari saklidir.',
+      newsletter: {
+        title: 'Bülten',
+        description: 'İK ipuçlarımızı ve ürün güncellemelerimizi alın.',
+        placeholder: 'eposta@adresiniz.com',
+        button: 'Abone ol',
+        success: 'Başarıyla abone oldunuz!',
+        error: 'Hata. Lütfen tekrar deneyin.',
+      },
     },
   },
   ar: {
@@ -674,6 +706,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
       ],
       rights: 'جميع الحقوق محفوظة.',
+      newsletter: {
+        title: 'النشرة الإخبارية',
+        description: 'احصل على نصائح الموارد البشرية وتحديثات المنتج.',
+        placeholder: 'بريدك@الإلكتروني.com',
+        button: 'اشتراك',
+        success: 'تم الاشتراك بنجاح!',
+        error: 'خطأ. يرجى المحاولة مرة أخرى.',
+      },
     },
   },
 }
