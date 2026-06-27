@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/theme/mobile_experience_icons.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 
 class ModulesHubScreen extends ConsumerWidget {
@@ -69,6 +69,18 @@ class ModulesHubScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 12),
+            MobileListCard(
+              icon: Icons.palette_outlined,
+              iconColor: AppColors.rh,
+              title: 'Identite entreprise',
+              subtitle: 'Logo, couleurs et nom affiche pour votre espace.',
+              trailing: const Icon(
+                Icons.chevron_right_rounded,
+                color: MobileSurface.secondary,
+              ),
+              onTap: () => context.push('/company/branding'),
             ),
             const SizedBox(height: 24),
             Text(

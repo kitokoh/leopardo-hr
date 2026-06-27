@@ -5,45 +5,45 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
-import 'package:leopardo_manager/core/providers/core_providers.dart';
+import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
-import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
-import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
-import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
-import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
-import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
-import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
-import 'package:leopardo_manager/features/home/screens/home_screen.dart';
-import 'package:leopardo_manager/features/modules/screens/modules_screen.dart';
-import 'package:leopardo_manager/features/home/screens/modules_hub_screen.dart';
-import 'package:leopardo_manager/features/absences/screens/absence_list_screen.dart';
-import 'package:leopardo_manager/features/salary_advances/screens/salary_advance_list_screen.dart';
-import 'package:leopardo_manager/features/payrolls/screens/payroll_list_screen.dart';
-import 'package:leopardo_manager/features/notifications/screens/notification_list_screen.dart';
-import 'package:leopardo_manager/features/evaluations/screens/evaluation_list_screen.dart';
-import 'package:leopardo_manager/features/cabinet/screens/cabinet_screen.dart';
-import 'package:leopardo_manager/features/settings/screens/settings_screen.dart';
-import 'package:leopardo_manager/features/team/screens/team_screen.dart';
-import 'package:leopardo_manager/features/user_auth/screens/user_register_screen.dart';
-import 'package:leopardo_manager/features/user_auth/screens/user_login_screen.dart';
-import 'package:leopardo_manager/features/user_auth/screens/user_home_screen.dart';
-import 'package:leopardo_manager/features/user_auth/screens/company_request_screen.dart';
-import 'package:leopardo_manager/features/contracts/screens/contract_screen.dart';
-import 'package:leopardo_manager/features/training/screens/training_screen.dart';
-import 'package:leopardo_manager/features/expenses/screens/expense_list_screen.dart';
-import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:leopardo_manager/features/ai_voice/screens/ai_voice_screen.dart';
-import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
-import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
-import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.dart';
-import 'package:leopardo_manager/features/organigramme/screens/organigramme_screen.dart';
-import 'package:leopardo_manager/features/manager/screens/manager_attendance_monitoring_screen.dart';
-import 'package:leopardo_manager/features/manager/screens/manager_placeholder_screen.dart';
-import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
-import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
-import 'package:leopardo_manager/features/company_branding/screens/company_branding_screen.dart';
-import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
+import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_hr/features/auth/screens/login_screen.dart';
+import 'package:leopardo_hr/features/auth/screens/register_screen.dart';
+import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
+import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
+import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
+import 'package:leopardo_hr/features/home/screens/home_screen.dart';
+import 'package:leopardo_hr/features/modules/screens/modules_screen.dart';
+import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
+import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
+import 'package:leopardo_hr/features/salary_advances/screens/salary_advance_list_screen.dart';
+import 'package:leopardo_hr/features/payrolls/screens/payroll_list_screen.dart';
+import 'package:leopardo_hr/features/notifications/screens/notification_list_screen.dart';
+import 'package:leopardo_hr/features/evaluations/screens/evaluation_list_screen.dart';
+import 'package:leopardo_hr/features/cabinet/screens/cabinet_screen.dart';
+import 'package:leopardo_hr/features/settings/screens/settings_screen.dart';
+import 'package:leopardo_hr/features/team/screens/team_screen.dart';
+import 'package:leopardo_hr/features/user_auth/screens/user_register_screen.dart';
+import 'package:leopardo_hr/features/user_auth/screens/user_login_screen.dart';
+import 'package:leopardo_hr/features/user_auth/screens/user_home_screen.dart';
+import 'package:leopardo_hr/features/user_auth/screens/company_request_screen.dart';
+import 'package:leopardo_hr/features/contracts/screens/contract_screen.dart';
+import 'package:leopardo_hr/features/training/screens/training_screen.dart';
+import 'package:leopardo_hr/features/expenses/screens/expense_list_screen.dart';
+import 'package:leopardo_hr/features/ai_chat/screens/ai_chat_screen.dart';
+import 'package:leopardo_hr/features/ai_voice/screens/ai_voice_screen.dart';
+import 'package:leopardo_hr/features/vehicle_position/screens/vehicle_map_screen.dart';
+import 'package:leopardo_hr/features/approvals/screens/approval_screen.dart';
+import 'package:leopardo_hr/features/onboarding/screens/onboarding_screen.dart';
+import 'package:leopardo_hr/features/organigramme/screens/organigramme_screen.dart';
+import 'package:leopardo_hr/features/manager/screens/manager_attendance_monitoring_screen.dart';
+import 'package:leopardo_hr/features/manager/screens/manager_placeholder_screen.dart';
+import 'package:leopardo_hr/features/schedules/screens/schedule_list_screen.dart';
+import 'package:leopardo_hr/features/tasks/screens/task_list_screen.dart';
+import 'package:leopardo_hr/features/company_branding/screens/company_branding_screen.dart';
+import 'package:leopardo_hr/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -81,8 +81,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && onPublic) return '/';
-      if (isAuth && ( !authState.employee!.isManager || authState.employee!.isHr ) && !onPublic) {
-        // Redirection si l'utilisateur n'est pas un Manager pur dans l'app Manager
+      if (isAuth && !authState.employee!.isHr && !onPublic) {
+        // Redirection si l'utilisateur n'est pas RH dans l'app RH
         return '/welcome';
       }
 
@@ -112,6 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SalaryAdvanceListScreen(),
       ),
       GoRoute(
+        path: '/payrolls',
         builder: (context, state) => const PayrollListScreen(),
       ),
       GoRoute(
@@ -144,9 +145,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ModulesScreen(),
       ),
       GoRoute(
+        path: '/cabinet',
         builder: (context, state) => const CabinetScreen(),
       ),
       GoRoute(
+        path: '/cabinet/folder/:folderId',
         builder: (context, state) {
           final folderId = int.parse(state.pathParameters['folderId']!);
           final folderName = state.extra as String?;
@@ -174,12 +177,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CompanyRequestScreen(),
       ),
       GoRoute(
+        path: '/contracts',
         builder: (context, state) => const ContractScreen(),
       ),
       GoRoute(
+        path: '/training',
         builder: (context, state) => const TrainingScreen(),
       ),
       GoRoute(
+        path: '/expenses',
         builder: (context, state) => const ExpenseListScreen(),
       ),
       GoRoute(
@@ -211,6 +217,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ScheduleListScreen(),
       ),
       GoRoute(
+        path: '/company/branding',
         builder: (context, state) => const CompanyBrandingScreen(),
       ),
       GoRoute(

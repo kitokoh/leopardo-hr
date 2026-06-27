@@ -1,0 +1,56 @@
+{
+  "data": [
+    {
+      "id": 551,
+      "type": "absence_approved",
+      "title": "Absence approuvée ✅",
+      "body": "Votre demande de congé du 01/06 au 15/06 a été approuvée par Hamid Directeur.",
+      "data": { "absence_id": 801 },
+      "is_read": false,
+      "created_at": "2026-04-10T11:00:00Z"
+    },
+    {
+      "id": 552,
+      "type": "task_assigned",
+      "title": "Nouvelle tâche assignée 📋",
+      "body": "Hamid Directeur vous a assigné : \"Finaliser le module mobile de pointage\" — Urgente, échéance 15/05.",
+      "data": { "task_id": 901 },
+      "is_read": false,
+      "created_at": "2026-04-09T14:30:00Z"
+    },
+    {
+      "id": 553,
+      "type": "payslip_available",
+      "title": "Bulletin de paie disponible 💰",
+      "body": "Votre bulletin de paie d'Avril 2026 est prêt. Net à payer : 60 750 DZD.",
+      "data": { "payroll_id": 406 },
+      "is_read": true,
+      "created_at": "2026-04-28T10:05:00Z"
+    },
+    {
+      "id": 554,
+      "type": "advance_approved",
+      "title": "Avance approuvée ✅",
+      "body": "Votre demande d'avance de 15 000 DZD a été approuvée. Remboursement : 5 000 DZD/mois.",
+      "data": { "advance_id": 301 },
+      "is_read": true,
+      "created_at": "2026-03-15T10:30:00Z"
+    },
+    {
+      "id": 555,
+      "type": "task_commented",
+      "title": "Nouveau commentaire sur votre tâche 💬",
+      "body": "Hamid Directeur a commenté : \"Pensez à couvrir les tranches d'IR spécifiques à l'Algérie\"",
+      "data": { "task_id": 902, "comment_id": 55 },
+      "is_read": true,
+      "created_at": "2026-04-10T14:30:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 15,
+    "total": 5
+  },
+  "_unread_count": 2
+}
