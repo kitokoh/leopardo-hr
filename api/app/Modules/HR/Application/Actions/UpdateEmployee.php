@@ -2,10 +2,18 @@
 
 namespace App\Modules\HR\Application\Actions;
 
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
+use App\Modules\HR\Domain\Models\Employee;
+use App\Modules\HR\Infrastructure\Services\EmployeeService;
+
 class UpdateEmployee
 {
-    public function execute(): void
+    public function __construct(
+        private readonly EmployeeService $employeeService,
+    ) {}
+
+    public function execute(Employee $actor, Employee $employee, UpdateEmployeeDTO $dto): Employee
     {
-        // TODO: implement UpdateEmployee action
+        return $this->employeeService->update($actor, $employee, $dto);
     }
 }

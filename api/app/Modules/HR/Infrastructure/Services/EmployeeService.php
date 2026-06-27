@@ -2,8 +2,8 @@
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\DTOs\CreateEmployeeDTO;
-use App\DTOs\UpdateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Models\Employee;
