@@ -1,0 +1,91 @@
+name: Architecture Quality
+
+on:
+  pull_request:
+    branches: [main, feat/clean-architecture, feat/modules-migration]
+  push:
+    branches: [main]
+
+jobs:
+  phpstan-modules:
+    name: PHPStan — Modules Architecture
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install dependencies
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run PHPStan on modules
+        working-directory: api
+        run: vendor/bin/phpstan analyse --configuration=phpstan-modules.neon --memory-limit=1G --no-progress
+
+  module-structure-check:
+    name: Module Structure Validator
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check module structure
+        run: |
+          echo "Checking Clean Architecture module structure..."
+          ERRORS=0
+          for MODULE in HR Payroll Attendance Planning Recruitment Cabinet Fleet Billing; do
+            BASE="api/app/Modules/$MODULE"
+            for LAYER in Application Domain Infrastructure Interfaces Providers; do
+              if [ ! -d "$BASE/$LAYER" ]; then
+                echo "❌ Missing: $BASE/$LAYER"
+                ERRORS=$((ERRORS + 1))
+              fi
+            done
+          done
+
+          # Core structure
+          for LAYER in Auth Tenant; do
+            if [ ! -d "api/app/Core/$LAYER" ]; then
+              echo "❌ Missing: api/app/Core/$LAYER"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+
+          if [ $ERRORS -gt 0 ]; then
+            echo ""
+            echo "Found $ERRORS structure violations."
+            exit 1
+          fi
+          echo "✅ All module structures valid."
+
+  frontend-lint:
+    name: Frontend — ESLint + TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: front/web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: front/web
+        run: npm ci
+
+      - name: TypeScript check
+        working-directory: front/web
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        working-directory: front/web
+        run: npx eslint src --ext .ts,.tsx --max-warnings 0
