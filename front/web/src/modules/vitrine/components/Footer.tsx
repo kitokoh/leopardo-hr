@@ -3,6 +3,12 @@
 import Link from 'next/link'
 import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+
+const SOCIAL_LINKS = [
+  { label: 'X', href: 'https://x.com/leopardo_hr', title: 'X (Twitter)' },
+  { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
+  { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
+]
 import { NewsletterForm } from './NewsletterForm'
 
 function getFooterHref(sectionIndex: number, linkIndex: number): string {
@@ -55,13 +61,16 @@ export function Footer() {
             </Link>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mb-6">{copy.footer.description}</p>
             <div className="flex items-center gap-4">
-              {['X', 'Li', 'Gh'].map((social) => (
+              {SOCIAL_LINKS.map((social) => (
                 <Link
-                  key={social}
-                  href="#"
+                  key={social.label}
+                  href={social.href}
+                  title={social.title}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500 hover:bg-emerald-100 hover:text-emerald-600 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
                 >
-                  {social}
+                  {social.label}
                 </Link>
               ))}
             </div>
