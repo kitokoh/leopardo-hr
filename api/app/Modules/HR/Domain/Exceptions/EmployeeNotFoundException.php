@@ -2,12 +2,17 @@
 
 namespace App\Modules\HR\Domain\Exceptions;
 
-use RuntimeException;
+use App\Exceptions\DomainException;
 
-class EmployeeNotFoundException extends RuntimeException
+class EmployeeNotFoundException extends DomainException
 {
-    public function __construct(int|string $id)
+    public function __construct(string $id)
     {
-        parent::__construct("Employee not found: {$id}");
+        parent::__construct("Employee [{$id}] not found.", 404);
+    }
+
+    public function errorCode(): string
+    {
+        return 'EMPLOYEE_NOT_FOUND';
     }
 }
