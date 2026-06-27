@@ -2,7 +2,7 @@
 
 namespace App\Modules\Payroll\Application\Actions;
 
-use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
 
 class ExportPaySlip

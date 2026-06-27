@@ -2,7 +2,8 @@
 
 namespace App\Modules\Payroll\Application\Actions;
 
-use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Models\Employee;
+use App\Models\Payroll;
 use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 
 class GeneratePayroll
@@ -11,8 +12,11 @@ class GeneratePayroll
         private readonly PayrollService $payrollService,
     ) {}
 
-    public function handle(string $companyId, string $period): PayrollRun
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function handle(Employee $manager, array $data): Payroll
     {
-        return $this->payrollService->generateForPeriod($companyId, $period);
+        return $this->payrollService->create($manager, $data);
     }
 }

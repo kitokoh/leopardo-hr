@@ -3,6 +3,16 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [4.16.255] - 2026-06-21   
+## [4.17.1] - 2026-06-27
+
+### Fixed
+
+- **Architecture de l'API** : Refactorisation de la couche Application pour assurer la cohérence fonctionnelle de la nouvelle architecture modulaire.
+  - Correction de 11 actions (`ProcessCheckIn`, `ProcessCheckOut`, `SyncZKTeco`, `CreateSubscription`, `ProcessWebhook`, `ShareDocument`, `UploadDocument`, `GeneratePayroll`, `ValidatePayroll`, `ExportPaySlip`, `ApproveLeave`, `RejectLeave`) qui appelaient des méthodes de service inexistantes ou avec des signatures incorrectes.
+  - Correction du namespace de `CheckInDTO` dans le module Attendance pour éviter les conflits et assurer l'autonomie du module.
+  - Mise à jour de `AttendanceService` (module) pour utiliser le DTO du module au lieu du DTO legacy.
+  - Alignement des types de retour et de paramètres des actions avec les services d'infrastructure réels (modèles legacy vs modèles de module).
+
 ## [4.17.0] - 2026-06-23  
 
 ### Added 

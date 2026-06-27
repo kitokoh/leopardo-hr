@@ -2,8 +2,9 @@
 
 namespace App\Modules\Planning\Application\Actions;
 
-use App\Modules\Planning\Domain\Exceptions\AbsenceNotPendingException;
-use App\Modules\Planning\Domain\Models\Absence;
+use App\Exceptions\AbsenceNotPendingException;
+use App\Models\Absence;
+use App\Models\Employee;
 use App\Modules\Planning\Infrastructure\Services\AbsenceService;
 
 class ApproveLeave
@@ -15,14 +16,11 @@ class ApproveLeave
     /**
      * @throws AbsenceNotPendingException
      */
-    public function handle(string $absenceId, string $approvedById): Absence
+    public function handle(string $absenceId, Employee $approver): Absence
     {
+        /** @var Absence $absence */
         $absence = Absence::query()->findOrFail($absenceId);
 
-        if ($absence->status !== 'pending') {
-            throw new AbsenceNotPendingException($absenceId);
-        }
-
-        return $this->absenceService->approve($absence, $approvedById);
+        return $this->absenceService->approve($absence, $approver);
     }
 }

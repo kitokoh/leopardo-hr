@@ -2,6 +2,8 @@
 
 namespace App\Modules\Attendance\Application\Actions;
 
+use App\Models\ZktecoDevice;
+use App\Models\ZktecoSyncLog;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
 
 class SyncZKTeco
@@ -10,8 +12,10 @@ class SyncZKTeco
         private readonly ZktecoIntegrationService $zktecoService,
     ) {}
 
-    public function handle(string $deviceId): int
+    public function handle(string $deviceId): ZktecoSyncLog
     {
-        return $this->zktecoService->syncDevice($deviceId);
+        $device = ZktecoDevice::query()->findOrFail($deviceId);
+
+        return $this->zktecoService->pushUsers($device);
     }
 }

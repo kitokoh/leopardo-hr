@@ -2,9 +2,9 @@
 
 namespace App\Modules\Attendance\Application\Actions;
 
+use App\Models\AttendanceLog;
+use App\Models\Employee;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
-use App\Modules\Attendance\Domain\Exceptions\AlreadyCheckedInException;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 
 class ProcessCheckIn
@@ -13,11 +13,8 @@ class ProcessCheckIn
         private readonly AttendanceService $attendanceService,
     ) {}
 
-    /**
-     * @throws AlreadyCheckedInException
-     */
-    public function handle(CheckInDTO $dto): AttendanceLog
+    public function handle(Employee $employee, CheckInDTO $dto): AttendanceLog
     {
-        return $this->attendanceService->checkIn($dto);
+        return $this->attendanceService->checkIn($employee, $dto);
     }
 }

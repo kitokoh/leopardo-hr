@@ -2,7 +2,7 @@
 
 namespace App\Modules\Billing\Application\Actions;
 
-use App\Modules\Billing\Domain\Models\Subscription;
+use App\Models\Company;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
 
 class CreateSubscription
@@ -11,8 +11,11 @@ class CreateSubscription
         private readonly StripeService $stripeService,
     ) {}
 
-    public function handle(string $companyId, string $planId, ?string $paymentMethodId = null): Subscription
+    /**
+     * @return array{url: string, session_id: string}
+     */
+    public function handle(Company $company, string $plan, string $successUrl, string $cancelUrl): array
     {
-        return $this->stripeService->createSubscription($companyId, $planId, $paymentMethodId);
+        return $this->stripeService->createCheckoutSession($company, $plan, $successUrl, $cancelUrl);
     }
 }

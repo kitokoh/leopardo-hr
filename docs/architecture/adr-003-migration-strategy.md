@@ -3,6 +3,15 @@
 **Date** : 2026-06-27
 **Statut** : Accepted
 
+## Audit de l'Application Layer (Juin 2026)
+
+Un audit de la couche application a révélé plusieurs incohérences critiques dans les actions (`Application/Actions`) :
+- **Appels de méthodes inexistantes** : Plusieurs actions appelaient des méthodes sur les services d'infrastructure qui n'existaient pas ou avaient des noms différents (ex: `SyncZKTeco` appelait `syncDevice` au lieu de `pushUsers`).
+- **Incohérences de signatures** : Les paramètres passés par les actions ne correspondaient pas aux signatures réelles des services (arguments manquants, types incorrects).
+- **Mélange de types (Models/DTOs)** : Utilisation de modèles/DTOs de modules là où les services d'infrastructure (copies de legacy) attendent des types `App\Models` ou `App\DTOs`.
+
+**Correction apportée** : 11 actions ont été refactorisées pour être fonctionnellement correctes et alignées avec les contrats de services réels. Le namespace du `CheckInDTO` a également été corrigé pour assurer la cohérence interne du module Attendance.
+
 ## Contexte
 
 On ne peut pas migrer 100 000 lignes de code en un seul déploiement sans risque.

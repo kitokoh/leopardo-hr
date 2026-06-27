@@ -2,8 +2,8 @@
 
 namespace App\Modules\Attendance\Application\Actions;
 
-use App\Modules\Attendance\Domain\Exceptions\MissingCheckInException;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Models\AttendanceLog;
+use App\Models\Employee;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
 
 class ProcessCheckOut
@@ -12,11 +12,8 @@ class ProcessCheckOut
         private readonly AttendanceService $attendanceService,
     ) {}
 
-    /**
-     * @throws MissingCheckInException
-     */
-    public function handle(string $employeeId): AttendanceLog
+    public function handle(Employee $employee): AttendanceLog
     {
-        return $this->attendanceService->checkOut($employeeId);
+        return $this->attendanceService->checkOut($employee);
     }
 }

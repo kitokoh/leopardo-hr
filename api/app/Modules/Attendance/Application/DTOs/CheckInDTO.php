@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs;
+namespace App\Modules\Attendance\Application\DTOs;
 
 use App\Http\Requests\Api\V1\Attendance\CheckInRequest;
 use App\Http\Requests\Api\V1\Attendance\CheckOutRequest;

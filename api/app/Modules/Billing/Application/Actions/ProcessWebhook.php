@@ -10,8 +10,8 @@ class ProcessWebhook
         private readonly WebhookDispatcher $dispatcher,
     ) {}
 
-    public function handle(string $provider, string $payload, array $headers = []): void
+    public function handle(string $companyId, string $event, array $payload): void
     {
-        $this->dispatcher->dispatch($provider, $payload, $headers);
+        $this->dispatcher->dispatch($companyId, $event, $payload);
     }
 }

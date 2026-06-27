@@ -2,8 +2,9 @@
 
 namespace App\Modules\Payroll\Application\Actions;
 
-use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
-use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Exceptions\PayrollAlreadyValidatedException;
+use App\Models\Employee;
+use App\Models\Payroll;
 use App\Modules\Payroll\Infrastructure\Services\PayrollService;
 
 class ValidatePayroll
@@ -15,8 +16,8 @@ class ValidatePayroll
     /**
      * @throws PayrollAlreadyValidatedException
      */
-    public function handle(PayrollRun $payrollRun): PayrollRun
+    public function handle(Payroll $payroll, Employee $validator): Payroll
     {
-        return $this->payrollService->validate($payrollRun);
+        return $this->payrollService->validate($payroll, $validator);
     }
 }

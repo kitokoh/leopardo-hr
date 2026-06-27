@@ -2,8 +2,9 @@
 
 namespace App\Modules\Cabinet\Application\Actions;
 
-use App\Modules\Cabinet\Domain\Models\CabinetDocument;
-use App\Modules\Cabinet\Domain\Models\CabinetShare;
+use App\Models\CabinetDocument;
+use App\Models\CabinetShare;
+use App\Models\Employee;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 
 class ShareDocument
@@ -12,10 +13,13 @@ class ShareDocument
         private readonly CabinetService $cabinetService,
     ) {}
 
-    public function handle(string $documentId, string $sharedWithId, string $permission = 'view'): CabinetShare
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function handle(Employee $owner, int $documentId, array $data): CabinetShare
     {
-        $document = CabinetDocument::query()->findOrFail($documentId);
+        CabinetDocument::query()->findOrFail($documentId);
 
-        return $this->cabinetService->shareDocument($document, $sharedWithId, $permission);
+        return $this->cabinetService->share($owner, 'document', $documentId, $data);
     }
 }

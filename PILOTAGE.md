@@ -1,5 +1,5 @@
 ﻿# 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.16.253 | 2026-06-20
+# PROGRAM_VERSION = 4.17.1 | 2026-06-27
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
@@ -18,7 +18,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.16.250  → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.17.1  → Version globale du projet/pilotage (ce fichier fait foi)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
@@ -47,7 +47,7 @@ Règle :
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-06-20
+Date MAJ       : 2026-06-27
 Version        : 4.16.253
 Phase active   : LOT P0 — Conversion commerciale (premier client payant)
 Dernière release: 2026-06-06 (Plans 01-72 tous livrés)
