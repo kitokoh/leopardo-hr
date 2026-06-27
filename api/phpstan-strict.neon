@@ -1,0 +1,11 @@
+includes:
+    - phpstan.neon
+
+parameters:
+    level: 8
+    checkMissingIterableValueType: true
+
+    paths:
+        - api/app/Core
+        - api/app/Modules
+        - api/app/Shared
