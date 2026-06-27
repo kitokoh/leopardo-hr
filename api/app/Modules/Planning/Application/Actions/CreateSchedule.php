@@ -2,11 +2,12 @@
 
 namespace App\Modules\Planning\Application\Actions;
 
+use App\Modules\Planning\Domain\Models\Schedule;
+
 class CreateSchedule
 {
-    public function handle(): void
+    public function handle(array $data): Schedule
     {
-        // TODO: implement
+        return Schedule::query()->create($data);
     }
 }
-

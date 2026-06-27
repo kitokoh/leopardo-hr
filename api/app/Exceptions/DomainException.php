@@ -8,8 +8,8 @@ class DomainException extends RuntimeException
 {
     public function __construct(
         string $message,
-        private readonly int $statusCode,
-        private readonly string $errorCode
+        private readonly int $statusCode = 500,
+        private readonly string $errorCode = ''
     ) {
         parent::__construct($message);
     }
