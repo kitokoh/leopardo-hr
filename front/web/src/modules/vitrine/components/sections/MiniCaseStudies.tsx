@@ -16,12 +16,12 @@ type MiniCase = {
 
 const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; cases: MiniCase[] }> = {
   fr: {
-    badge: 'Cas clients',
+    badge: 'Profils types',
     title: 'Des resultats',
     titleHighlight: 'concrets',
     cases: [
       {
-        company: 'TechAfrika',
+        company: 'IT & Services · 350 emp.',
         country: 'Algerie',
         sector: 'IT & Services',
         employees: '350',
@@ -30,7 +30,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇩🇿',
       },
       {
-        company: 'Atlas Digital',
+        company: 'Marketing Digital · 120 emp.',
         country: 'Maroc',
         sector: 'Marketing digital',
         employees: '120',
@@ -39,7 +39,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇲🇦',
       },
       {
-        company: 'SenLogistics',
+        company: 'Transport & Logistique · 200 emp.',
         country: 'Senegal',
         sector: 'Transport & Logistique',
         employees: '200',
@@ -50,12 +50,12 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
     ],
   },
   en: {
-    badge: 'Case studies',
+    badge: 'Use cases',
     title: 'Real',
     titleHighlight: 'results',
     cases: [
       {
-        company: 'TechAfrika',
+        company: 'IT & Services · 350 emp.',
         country: 'Algeria',
         sector: 'IT & Services',
         employees: '350',
@@ -64,7 +64,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇩🇿',
       },
       {
-        company: 'Atlas Digital',
+        company: 'Digital Marketing · 120 emp.',
         country: 'Morocco',
         sector: 'Digital marketing',
         employees: '120',
@@ -73,7 +73,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇲🇦',
       },
       {
-        company: 'SenLogistics',
+        company: 'Transport & Logistics · 200 emp.',
         country: 'Senegal',
         sector: 'Transport & Logistics',
         employees: '200',
@@ -84,12 +84,12 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
     ],
   },
   tr: {
-    badge: 'Musteri hikayeleri',
+    badge: 'Kullanım senaryoları',
     title: 'Gercek',
     titleHighlight: 'sonuclar',
     cases: [
       {
-        company: 'TechAfrika',
+        company: 'BT Hizmetleri · 350 çal.',
         country: 'Cezayir',
         sector: 'BT ve Hizmetler',
         employees: '350',
@@ -98,7 +98,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇩🇿',
       },
       {
-        company: 'Atlas Digital',
+        company: 'Dijital Pazarlama · 120 çal.',
         country: 'Fas',
         sector: 'Dijital pazarlama',
         employees: '120',
@@ -107,7 +107,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇲🇦',
       },
       {
-        company: 'SenLogistics',
+        company: 'Taşımacılık · 200 çal.',
         country: 'Senegal',
         sector: 'Ulasim ve Lojistik',
         employees: '200',
@@ -118,12 +118,12 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
     ],
   },
   ar: {
-    badge: 'قصص العملاء',
+    badge: 'سيناريوهات الاستخدام',
     title: 'نتائج',
     titleHighlight: 'ملموسة',
     cases: [
       {
-        company: 'TechAfrika',
+        company: 'تكنولوجيا المعلومات · 350 موظف',
         country: 'الجزائر',
         sector: 'تكنولوجيا المعلومات',
         employees: '350',
@@ -132,7 +132,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇩🇿',
       },
       {
-        company: 'Atlas Digital',
+        company: 'التسويق الرقمي · 120 موظف',
         country: 'المغرب',
         sector: 'تسويق رقمي',
         employees: '120',
@@ -141,7 +141,7 @@ const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHigh
         flag: '🇲🇦',
       },
       {
-        company: 'SenLogistics',
+        company: 'النقل واللوجستيك · 200 موظف',
         country: 'السنغال',
         sector: 'نقل ولوجستيك',
         employees: '200',
