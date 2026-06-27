@@ -1,24 +1,33 @@
-# Architecture Documentation Hub
+# Architecture — Leopardo HR API
 
-This directory contains in-depth documentation regarding the technical design and architectural principles of Leopardo RH.
+## Vue d'ensemble
 
-## 🧭 Navigating the Architecture
+L'API Leopardo HR suit une **Clean Architecture modulaire** basée sur le pattern
+Domain-Driven Design (DDD) avec des modules plug-and-play.
 
-| Component | Description |
-|-----------|-------------|
-| 🏗 **[General Architecture](../../ARCHITECTURE.md)** | Overview of the tech stack and high-level design. |
-| 🌍 **[Multi-Tenancy](MULTITENANCY.md)** | Details on shared vs. physical isolation strategies. |
-| 📊 **[Diagrams](DIAGRAMS.md)** | Visual representations of request flows and DB topology. |
-| 🔒 **[RBAC System](../security/RBAC_SYSTEM.md)** | Role-based access control and permission matrix. |
-| 🗄 **[Database Schema (ERD)](../dossierdeConception/04_architecture_erd/03_ERD_COMPLET.md)** | Full entity-relationship diagram and field specs. |
+## Structure globale
 
-## 📐 Design Principles
+```
+api/app/
+├── Core/          # Socle transversal (Auth, Tenant)
+├── Modules/       # Modules métier indépendants
+├── Shared/        # Utilitaires cross-modules
+└── [Legacy]       # Ancienne structure flat (en cours de migration)
+```
 
-1. **Modular Monolith:** We keep everything in one repo for simplicity but enforce strict domain boundaries.
-2. **PostgreSQL Search Path:** We leverage native DB features for tenant isolation instead of complex application-level filters where possible.
-3. **API-First:** Every feature is built as an API endpoint first, then consumed by Web and Mobile clients.
-4. **Encryption by Default:** Sensitive PII is always encrypted at rest.
+## Documents
 
----
+| Document | Description |
+|---|---|
+| [ADR-001](adr-001-clean-architecture.md) | Pourquoi Clean Architecture |
+| [ADR-002](adr-002-auth-in-core.md) | Pourquoi Auth est dans Core |
+| [ADR-003](adr-003-migration-strategy.md) | Stratégie de migration progressive |
+| [module-creation-guide.md](module-creation-guide.md) | Créer un nouveau module en 5 min |
+| [namespace-map.md](namespace-map.md) | Mapping ancien → nouveau namespace |
 
-For development instructions, please refer to the [Quick Start Guide](../../QUICKSTART.md).
+## Principes fondamentaux
+
+1. **Les modules ne s'importent jamais entre eux** — communication via `Shared/Events`
+2. **Core est sacré** — aucun module ne modifie `app/Core/`
+3. **Les originaux survivent** — pendant la migration, les anciens fichiers restent fonctionnels
+4. **Stub d'abord** — tout nouveau module part de `api/stubs/module-template/`
