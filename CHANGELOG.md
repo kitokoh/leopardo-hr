@@ -5,7 +5,7 @@
 ## [4.16.255] - 2026-06-21   
 ## [4.17.0] - 2026-06-23 
 
-### Added
+### Added 
 
 - **Architecture multi-app** : Nouvelle architecture RBAC multi-application. L'API supporte désormais plusieurs apps mobiles distinctes selon le `manager_role` de l'employé.
 - **App Mobile RH** : Routes dédiées `/api/v1/hr/**` accessibles uniquement aux `manager_role: rh` (et `principal` par héritage).
