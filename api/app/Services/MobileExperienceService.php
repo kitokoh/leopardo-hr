@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur

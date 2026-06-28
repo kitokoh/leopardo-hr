@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
-import 'package:leopardo_manager/features/auth/data/auth_repository.dart';
+import 'package:leopardo_hr/features/auth/data/auth_repository.dart';
 import 'package:leopardo_core/models/employee.dart';
 
 import '../../helpers/mobile_test_harness.dart';

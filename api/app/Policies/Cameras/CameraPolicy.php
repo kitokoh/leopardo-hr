@@ -2,7 +2,7 @@
 
 namespace App\Policies\Cameras;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Cameras\Domain\CameraPermission;

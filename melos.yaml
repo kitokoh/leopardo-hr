@@ -1,0 +1,83 @@
+name: leopardo-hr
+repository: https://github.com/kitokoh/leopardo-hr
+
+packages:
+  - front/mobile_apps/leopardo_core
+  - front/mobile_apps/leopardo_employee
+  - front/mobile_apps/leopardo_manager
+  - front/mobile_apps/leopardo_platform_admin
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  # ── Analysis ───────────────────────────────────────────────
+  analyze:
+    run: dart analyze
+    description: Run Dart analyzer on all packages
+    exec:
+      concurrency: 4
+
+  format:
+    run: dart format . --set-exit-if-changed
+    description: Check formatting in all packages
+    exec:
+      concurrency: 4
+
+  format:fix:
+    run: dart format .
+    description: Auto-fix formatting in all packages
+    exec:
+      concurrency: 4
+
+  # ── Tests ─────────────────────────────────────────────────
+  test:
+    run: flutter test --reporter=expanded
+    description: Run unit + widget tests
+    exec:
+      concurrency: 2
+    packageFilters:
+      dirExists: test
+
+  test:coverage:
+    run: flutter test --coverage
+    description: Run tests with coverage
+    exec:
+      concurrency: 1
+    packageFilters:
+      dirExists: test
+
+  # ── Build ─────────────────────────────────────────────────
+  build:android:
+    run: flutter build apk --release
+    description: Build Android APK
+    exec:
+      concurrency: 1
+    packageFilters:
+      ignore:
+        - leopardo_core   # Core is a library, not an app
+
+  build:ios:
+    run: flutter build ipa --release --no-codesign
+    description: Build iOS (no signing for CI)
+    exec:
+      concurrency: 1
+    packageFilters:
+      ignore:
+        - leopardo_core
+
+  # ── Codegen ───────────────────────────────────────────────
+  gen:
+    run: dart run build_runner build --delete-conflicting-outputs
+    description: Run build_runner code generation
+    exec:
+      concurrency: 1
+
+  l10n:
+    run: flutter gen-l10n
+    description: Generate localisation files
+    exec:
+      concurrency: 4
+    packageFilters:
+      dirExists: lib/l10n

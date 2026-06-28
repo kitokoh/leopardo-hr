@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\AI\Workflows;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

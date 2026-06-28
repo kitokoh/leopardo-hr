@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

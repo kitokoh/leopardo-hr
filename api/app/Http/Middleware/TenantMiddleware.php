@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\TenantManager;
 use Closure;
 use Illuminate\Http\JsonResponse;

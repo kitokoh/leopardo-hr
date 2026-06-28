@@ -3,7 +3,7 @@
 namespace App\Http\Resources\Api\V1;
 
 use App\Models\AttendanceLog;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\EstimationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

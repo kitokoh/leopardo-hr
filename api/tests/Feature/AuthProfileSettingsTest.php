@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\CabinetDocument;
 use App\Models\CabinetFolder;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Language;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;

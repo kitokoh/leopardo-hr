@@ -9,7 +9,7 @@ use App\AI\IntentEngine;
 use App\AI\Orchestrator;
 use App\AI\PendingActionStore;
 use App\Http\Controllers\Controller;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

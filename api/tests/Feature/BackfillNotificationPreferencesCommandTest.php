@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\NotificationPreference;
 use Illuminate\Support\Facades\Artisan;
 use Tests\Support\CreatesMvpSchema;

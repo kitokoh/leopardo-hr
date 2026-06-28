@@ -3,7 +3,7 @@
 namespace Tests\Feature\Security;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Evaluation;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;

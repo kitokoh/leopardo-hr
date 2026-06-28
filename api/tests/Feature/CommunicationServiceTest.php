@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\CommunicationEvent;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Notification;
 use App\Models\NotificationPreference;
 use App\Services\Communication\CommunicationService;

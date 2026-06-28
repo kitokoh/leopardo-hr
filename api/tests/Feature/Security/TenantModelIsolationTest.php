@@ -9,7 +9,7 @@ use App\Models\AttendanceLog;
 use App\Models\BiometricEnrollmentRequest;
 use App\Models\Company;
 use App\Models\Department;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Evaluation;
 use App\Models\Notification;
 use App\Models\Payroll;

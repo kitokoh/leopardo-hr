@@ -3,7 +3,7 @@
 namespace App\Services\Communication\Providers;
 
 use App\Contracts\Communication\MessageProviderInterface;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Log;
 
 class AuditMessageProvider implements MessageProviderInterface

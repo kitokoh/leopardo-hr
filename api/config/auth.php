@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SuperAdmin;
-use App\Models\User;
+use App\Core\Auth\Domain\Models\User;
 
 return [
 

@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Modules\Payroll\Interfaces\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\TaxSlabResource;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Models\TaxSlab;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class TaxSlabController extends Controller
+{
+    public function index(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $query = TaxSlab::query();
+
+        if ($request->filled('country_code')) {
+            $query->forCountry($request->input('country_code'));
+        }
+
+        return TaxSlabResource::collection($query->orderBy('country_code')->orderBy('min_amount')->get())->response();
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'country_code' => 'required|string|size:2|in:DZ,MA,TN,FR,TR,SN',
+            'name' => 'required|string|max:150',
+            'min_amount' => 'required|numeric|min:0',
+            'max_amount' => 'nullable|numeric|min:0',
+            'rate' => 'required|numeric|min:0|max:100',
+            'fixed_deduction' => 'nullable|numeric|min:0',
+            'effective_from' => 'required|date',
+            'effective_to' => 'nullable|date|after:effective_from',
+        ]);
+
+        $slab = TaxSlab::create([
+            'company_id' => $actor->company_id,
+            'country_code' => $validated['country_code'],
+            'name' => $validated['name'],
+            'min_amount' => $validated['min_amount'],
+            'max_amount' => $validated['max_amount'] ?? null,
+            'rate' => $validated['rate'],
+            'fixed_deduction' => $validated['fixed_deduction'] ?? 0,
+            'effective_from' => $validated['effective_from'],
+            'effective_to' => $validated['effective_to'] ?? null,
+        ]);
+
+        return (new TaxSlabResource($slab))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function update(Request $request, TaxSlab $taxSlab): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:150',
+            'min_amount' => 'sometimes|numeric|min:0',
+            'max_amount' => 'nullable|numeric|min:0',
+            'rate' => 'sometimes|numeric|min:0|max:100',
+            'fixed_deduction' => 'sometimes|numeric|min:0',
+            'effective_from' => 'sometimes|date',
+            'effective_to' => 'nullable|date',
+        ]);
+
+        $taxSlab->update($validated);
+
+        return (new TaxSlabResource($taxSlab->refresh()))->response();
+    }
+
+    public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $taxSlab->delete();
+
+        return response()->json(['message' => 'Tax slab deleted successfully.']);
+    }
+}

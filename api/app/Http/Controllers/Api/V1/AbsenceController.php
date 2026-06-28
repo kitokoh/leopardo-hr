@@ -8,7 +8,7 @@ use App\Http\Requests\Api\V1\Absence\RejectAbsenceRequest;
 use App\Http\Requests\Api\V1\Absence\StoreAbsenceRequest;
 use App\Http\Resources\Api\V1\AbsenceResource;
 use App\Models\Absence;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

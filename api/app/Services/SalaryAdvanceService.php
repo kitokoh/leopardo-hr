@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\SalaryAdvanceNotPendingException;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SalaryAdvance;
 use Illuminate\Support\Carbon;
 

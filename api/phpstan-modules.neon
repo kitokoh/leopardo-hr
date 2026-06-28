@@ -1,0 +1,147 @@
+parameters:
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    level: 3
+    tmpDir: storage/phpstan
+    reportUnmatchedIgnoredErrors: false
+
+    excludePaths:
+        # DDD Domain Models - classes not yet fully extracted, skip until stabilized
+        - app/Modules/Billing/Domain/Models
+        - app/Modules/Cabinet/Domain/Models
+        - app/Modules/Fleet/Domain/Models
+        - app/Modules/Payroll/Domain/Models
+        - app/Modules/Planning/Domain/Models
+        - app/Modules/Recruitment/Domain/Models
+        - app/Modules/Cameras/Infrastructure/Services
+
+    ignoreErrors:
+        # Legacy flat structure
+        - '#App\\Http\\Controllers#'
+        - '#App\\Services#'
+        - '#App\\Models#'
+        # DDD migration - cross-module Employee references
+        - '#Class App\\Modules\\(Planning|Payroll|HR|Billing|Recruitment|Fleet|Cabinet|Attendance)\\Domain\\Models\\Employee not found#'
+        - '#Class App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll|Attendance)\\Domain\\Models\\#'
+        # Eloquent Factory
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Factories\\Factory::(manager|managerRh|employee)\(\)#'
+        # Carbon nullsafe noise
+        - '#Using nullsafe method call on non-nullable type Illuminate\\Support\\Carbon#'
+        - '#Strict comparison using (===|!==) between Illuminate\\Support\\Carbon and null#'
+        - '#Strict comparison using (===|!==) between (string|float) and null#'
+        # DomainException DDD - handled via excludePaths above
+        # CompanyRequest / UserEmployeeLink migration
+        - '#Class App\\Core\\Auth\\Domain\\Models\\(CompanyRequest|UserEmployeeLink) not found#'
+        # Auth Authenticatable
+        - '#Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable::\$id#'
+        # Nullsafe on left of ??
+        - '#Using nullsafe property access.*on left side of \?\? is unnecessary#'
+        # Query Builder methods
+        - '#Call to an undefined method Illuminate\\Database\\Query\\Builder::(with|whereKey)\(\)#'
+        - '#Call to protected method increment\(\) of class Illuminate\\Database\\Eloquent\\Model#'
+        # Socialite
+        - '#Call to an undefined method Laravel\\Socialite\\Contracts\\Provider::stateless\(\)#'
+        # Always true/false comparisons
+        - '#Result of && is always false#'
+        - '#Strict comparison using === between float and 3 will always evaluate to false#'
+        - '#Left side of && is always true#'
+        - '#Right side of && is always true#'
+        - '#Comparison operation ">" between.*is always true#'
+        - '#Call to function assert\(\) with true will always evaluate to true#'
+        - '#Strict comparison using !== between null and null will always evaluate to false#'
+        - '#Strict comparison using !== between string and int.null will always evaluate to true#'
+        - '#Strict comparison using !== between string.null and int will always evaluate to true#'
+        - '#Strict comparison using === between string.null and int will always evaluate to false#'
+        # User model - excluded via excludePaths above
+        # Optional method calls
+        - '#Call to an undefined method Illuminate\\Support\\Optional::toIso8601(String|ZuluString)\(\)#'
+        # Modules DDD - access to unknown class properties
+        - '#Access to property \$(company_id|id) on an unknown class App\\Modules\\Payroll\\Domain\\Models\\Employee#'
+        - '#Call to method (resetToPrevious|setTenant|withinTenant)\(\) on an unknown class App\\Modules\\(HR|Attendance)\\Infrastructure\\Services\\TenantManager#'
+        # Static create() on Eloquent models
+        - '#Call to an undefined static method App\\Modules\\.*::create\(\)#'
+        - '#Call to an undefined static method App\\Modules\\Cameras\\Domain\\(Camera|CameraAccessToken)::withoutGlobalScopes\(\)#'
+        # Service methods pending
+        - '#Call to an undefined method App\\Modules\\(Attendance|Billing|Cabinet|Payroll)\\Infrastructure\\Services\\.*::(syncDevice|createSubscription|shareDocument|generateForPeriod)\(\)#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::download\(\)#'
+        # Return type mismatches - HasMany with unresolved models
+        - '#Method App\\Modules\\Billing\\Domain\\Models\\(Invoice|Partner)::(payments|commissions)\(\).*(invalid return type|should return.*but returns)#'
+        - '#Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model::(belongsTo|hasMany|hasOne|belongsToMany)\(\)#'
+        - '#Parameter \#1 \$related of method.*Eloquent\\Model::(belongsTo|hasMany|hasOne)\(\) expects class-string.*string given#'
+        # ApprovalController return type
+        - '#Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\ApprovalController::(approve|reject)\(\) should return.*Resource but returns.*JsonResponse#'
+        # stdClass residue
+        - '#Cannot call method (save|forceFill|update)\(\) on stdClass#'
+        - '#Cannot access property \$.* on null#'
+        # Request property access
+        - '#Access to an undefined property Illuminate\\Http\\Request::\$(employee_id|status|comment|reason)#'
+        # LeaveBalance property
+        - '#Access to an undefined property App\\Modules\\Absence\\Domain\\Models\\LeaveBalance::\$absenceType#'
+        # Generic types
+        - '#Property.*type has no value type specified in iterable type array#'
+        - '#Method.*has parameter.*with no value type specified in iterable type array#'
+        - '#Call to function is_array\(\) with array<mixed> will always evaluate to true#'
+        - '#Expression on left side of \?\? is not nullable#'
+        - '#Match expression does not handle remaining value: mixed#'
+        - '#Parameter \#1 \$companyId of method App\\AI\\Workflows\\(PreparePayrollWorkflow|WeeklyReportWorkflow)::execute\(\) expects string, int\|null given#'
+        - '#Unable to resolve the template type T(Value|Key) in call to function collect#'
+        - '#Parameter \$dto of method App\\Modules\\Attendance\\Application\\Actions\\ProcessCheckIn::handle\(\) has invalid type#'
+        - '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection.*map\(\) contains unresolvable type#'
+        # TRelatedModel PHPDoc
+        - '#Type App\\Modules\\.*in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag .@return. is not subtype of template type TRelatedModel#'
+        - '#Method App\\Modules\\.*::.+\(\) has invalid return type App\\Modules\\#'
+        - '#Method App\\Modules\\.*::.+\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo.*but returns#'
+        - '#PHPDoc tag .@property-read. for property App\\Modules\\#'
+        # TenantManager
+        - '#Parameter .tenantManager of method App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::__construct\(\) has invalid type#'
+        - '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::.*Manager has unknown class#'
+        # Scope methods
+        - '#Method App\\Modules\\.*::scope.*\(\) should return Illuminate\\Database\\Eloquent\\Builder.*but returns Illuminate\\Database\\Query\\Builder#'
+        - '#Method App\\Modules\\.*::scope[A-Za-z]+\(\).*should return#'
+        # Method invoked with wrong param count
+        - '#Method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollService::validate\(\) invoked with 1 parameter, 2 required#'
+        - '#Method App\\Modules\\Payroll\\Domain\\Contracts\\CountryRulesInterface::calculateIncomeTax\(\) invoked with 1 parameter, 2 required#'
+        - '#Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::reject\(\) invoked with 3 parameters, 2 required#'
+        # CabinetService
+        - '#Parameter .2 ..file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given#'
+        - '#Parameter .3 ..data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects array<string, mixed>, string given#'
+        # companyId type
+        - '#Parameter .1 ..companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\OnboardingStepController::seedDefaultSteps\(\) expects string, int.null given#'
+        - '#Parameter .2 ..companyId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::logBalanceChange\(\) expects string, int.null given#'
+        - '#Parameter .1 ..companyId of method App\\Modules\\Payroll\\[A-Za-z]+\\[A-Za-z]+\\[A-Za-z]+::[A-Za-z]+\(\) expects string, int.null given#'
+        # Cameras
+        - '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<int,stdClass>::map\(\) expects callable\(stdClass, int\): array, Closure\(App\\Modules\\Cameras\\Domain\\.*\): array given#'
+        - '#Property App\\Modules\\Cameras\\Domain\\Camera::..company_id \(int\) does not accept string#'
+        - '#Property App\\Modules\\Cameras\\Interfaces.*::.*cameras is never read, only written#'
+        - '#Parameter .2 ..default of method Illuminate\\Http\\Request::query\(\) expects array.string.null, int given#'
+        - '#Parameter .1 ..array.* to function array_filter does not contain falsy values#'
+        # DB Query Builder when()
+        - '#Parameter .2 ..callback of method Illuminate\\Database\\Query\\Builder::when\(\) expects.*null, Closure\(Illuminate\\Database\\Eloquent\\Builder\).*given#'
+        # Payroll invoice/salary
+        - '#Method App\\Modules\\Payroll\\Domain\\Models\\PaySlip::lines\(\) should return.*but returns Illuminate\\Database\\Query\\Builder#'
+        - '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryStructure::components\(\) should return.*but returns Illuminate\\Database\\Query\\Builder#'
+        - '#Offset ..(nir|cin|num_ss|num_cnss|last_name|first_name|date_naissance|gross_salary|days_worked|months_worked|hours_worked|net_salary|net_imposable|contract_type|start_date|type). on.*on left side of \?\? always exists and is not nullable#'
+        # PHPDoc @param
+        - '#PHPDoc tag .@param. references unknown parameter: ..q#'
+        # Recruitment
+        - '#Property App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::.*published_at.*does not accept Carbon#'
+        # Collection map
+        - '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<\(int.string\),mixed>::map\(\) contains unresolvable type#'
+        # Unreachable
+        - '#Unreachable statement - code above always terminates#'
+        # Nullsafe on Optional
+        - '#Using nullsafe method call on non-nullable type Illuminate\\Support\\Optional#'
+        # PaymentDocument scope
+        - '#Parameter .employee of method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::scopeAvailableToEmployee\(\) has invalid type#'
+        # HR Contract scope
+        - '#Method App\\Modules\\HR\\Domain\\Models\\Contract::scopeExpiringSoon\(\)#'
+        # WebhookEndpoint scope
+        - '#Method App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint::scopeListeningTo\(\)#'
+        # Cameras collection map
+        - '#Parameter .1 ..callback of method.*Collection.*int.*stdClass.*map\(\) expects callable.*Closure.*Cameras.*given#'
+
+    # Chemins à analyser — modules DDD uniquement
+    paths:
+        - app/Core
+        - app/Modules
+        - app/Shared

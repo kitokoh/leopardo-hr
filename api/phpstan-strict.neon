@@ -1,0 +1,10 @@
+includes:
+    - phpstan.neon
+
+parameters:
+    level: 8
+
+    paths:
+        - app/Core
+        - app/Modules
+        - app/Shared

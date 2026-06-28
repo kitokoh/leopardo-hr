@@ -1,11 +1,43 @@
 #  CHANGELOG - LEOPARDO RH 
-# Format : Keep a Changelog (keepachangelog.com)
+# Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
-## [4.16.255] - 2026-06-21 
+## [4.17.2] - 2026-06-28
+
+### Changed
+
+- **Architecture — Auth migré vers Clean Architecture (DDD)** :
+  - Contrôleurs Auth déplacés de `App\Http\Controllers\Api\V1` vers `App\Core\Auth\Interfaces\Api\V1` (AuthController, PlatformAuthController, UserAuthController).
+  - Services Auth déplacés de `App\Services` vers `App\Core\Auth\Infrastructure\Services` (AuthService, UserAuthService).
+  - Modèles `Employee` et `User` déplacés de `App\Models` vers `App\Core\Auth\Domain\Models`.
+  - 389+ fichiers mis à jour pour les nouveaux namespaces (contrôleurs, services, tests, seeders, factories).
+  - `config/auth.php` mis à jour pour pointer vers les nouveaux modèles Core.
+  - `routes/modules/user.php` mis à jour pour le nouveau UserAuthController.
+  - `newFactory()` ajouté aux modèles pour garantir la résolution des factories depuis le nouveau namespace.
+  - Exceptions dupliquées supprimées dans `Core/Auth/Domain/Exceptions` (les originaux dans `App\Exceptions` font foi).
+  - `phpstan-baseline.neon` mis à jour pour les nouveaux namespaces.
+  - `declare(strict_types=1)` ajouté à tous les fichiers Core/Auth.
+  - Services Auth passés en `readonly class` (PHP 8.2+).
+
+### Removed
+
+- Anciens fichiers dupliqués supprimés : `app/Http/Controllers/Api/V1/AuthController.php`, `PlatformAuthController.php`, `UserAuthController.php`, `app/Services/AuthService.php`, `UserAuthService.php`, `app/Models/Employee.php`, `app/Models/User.php`.
+
+## [4.17.1] - 2026-06-28
+
+### Fixed
+
+- **PHPStan — Modules Architecture** : Résolution de 91 erreurs dans les modules `Payroll` et `Planning`.
+  - `SocialDeclarationGenerator` : Suppression des opérateurs `??` inutiles sur les offsets de tableaux garantis par PHPDoc (`employee`, `metadata`).
+  - `ClientEvent` (Planning/Domain/Models) : Ajout des imports manquants pour `Company` et `Employee`.
+  - `AbsenceService` (Planning/Infrastructure) : Signature de `logBalanceChange()` accepte désormais `int|string|null` pour `$companyId` au lieu de `string` uniquement.
+
+## [4.16.255] - 2026-06-21   
+## [4.17.0] - 2026-06-23  
+## [4.16.255] - 2026-06-21
 ## [4.17.0] - 2026-06-23
 
-### Added
+### Added 
 
 - **Architecture multi-app** : Nouvelle architecture RBAC multi-application. L'API supporte désormais plusieurs apps mobiles distinctes selon le `manager_role` de l'employé.
 - **App Mobile RH** : Routes dédiées `/api/v1/hr/**` accessibles uniquement aux `manager_role: rh` (et `principal` par héritage).
@@ -39,7 +71,11 @@
 - CI : Correction du test Playwright `marketing-funnel.spec.ts` — le formulaire hero email-trial (`section form input[type="email"]`) est désormais dans le DOM via `LegacyHeroSection → HeroSection` qui inclut `QuickTrialEmailForm`.
 ### Fixed
 
-- Growth Module : Correction des marqueurs de conflit Git résiduels dans `routes/modules/growth.php`, `PartnerDashboardController.php`, `CommissionService.php` et `front/web/src/app/(dashboard)/partner/page.tsx` — les fichiers contenaient des `<<<<<<< HEAD` non résolus causant un `ParseError` au boot Laravel (`php artisan package:discover`).
+- Vitrine : Export de `QuickTrialEmailForm` depuis `HeroSection.tsx` pour permettre son usage dans le test E2E Playwright marketing-funnel.
+- CI : Correction du test Playwright `marketing-funnel.spec.ts` — le formulaire hero email-trial (`section form input[type="email"]`) est désormais dans le DOM via `LegacyHeroSection → HeroSection` qui inclut `QuickTrialEmailForm`.
+### Fixed
+
+- Growth Module : Correction des marqueurs de conflit Git résiduels dans `routes/modules/growth.php`, `PartnerDashboardController.php`, `CommissionService.php` et `front/web/src/app/(dashboard)/partner/page.tsx` — les fichiers contenaient des  non résolus causant un `ParseError` au boot Laravel (`php artisan package:discover`).
 - Growth Module Auth : Le middleware des routes `/partner/*` utilise désormais `auth:sanctum` (token Employee) au lieu de `auth:user_api`. Le contrôleur `PartnerDashboardController` résout l'utilisateur global (`public.users`) via `resolveGlobalUser()` — compatible avec les tokens Sanctum Employee émis par l'app web et mobile.
 - Growth Module Frontend : La page `partner/page.tsx` affiche maintenant l'état `not_applied` en cas d'erreur réseau au lieu de rester bloquée sur "Chargement de votre espace".
 - CommissionService : Suppression des exceptions de debug temporaires (`throw new RuntimeException('Failed X')`) remplacées par des retours `null` propres conformes à la logique production.
@@ -642,6 +678,7 @@
 - Mobile core : `SecureStorage`, `AppPreferences` et `TranslationCatalogCache` tolerent une box Hive `offlineCache` pas encore ouverte via fallback memoire, ce qui evite les crashs/ANR pendant les premiers frames.
 
 ## [Unreleased]
+- fix(ci): skip mobile hr firebase upload if secrets are missing
 
 ### Added
 - Plan 60: Double validation des avances salaire (migration, contrÃ´leur, routes)

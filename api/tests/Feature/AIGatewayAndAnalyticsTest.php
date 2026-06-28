@@ -7,7 +7,7 @@ use App\AI\LLMClient;
 use App\Models\AIConversation;
 use App\Models\AIToolRegistryEntry;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;

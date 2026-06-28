@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_manager/features/absences/providers/absence_provider.dart';
-import 'package:leopardo_manager/features/absences/screens/absence_list_screen.dart';
-import 'package:leopardo_manager/features/salary_advances/providers/salary_advance_provider.dart';
-import 'package:leopardo_manager/features/salary_advances/screens/salary_advance_list_screen.dart';
+import 'package:leopardo_hr/features/absences/providers/absence_provider.dart';
+import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
+import 'package:leopardo_hr/features/salary_advances/providers/salary_advance_provider.dart';
+import 'package:leopardo_hr/features/salary_advances/screens/salary_advance_list_screen.dart';
 import 'package:leopardo_core/models/absence.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 
