@@ -4,10 +4,6 @@ includes:
 parameters:
     level: 6
 
-    # Interdire les imports cross-modules
-    # (les modules ne peuvent pas s'importer mutuellement)
-    checkMissingIterableValueType: false
-
     ignoreErrors:
         # Legacy flat structure — tolérée pendant la migration
         - '#App\\Http\\Controllers#'
