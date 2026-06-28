@@ -1,67 +1,82 @@
-# GitHub Actions Workflows
+# CI/CD Workflows — Leopardo HR
 
-Ce dossier contient les workflows CI/CD actifs de Leopardo RH.
+## Cartographie des workflows
 
-## Workflows actifs
+### 🔁 Reusable workflows (préfixe `_`)
+Ces workflows sont appelés par d'autres — ne pas déclencher directement.
 
-### `tests.yml` - Backend, mobile et gouvernance
+| Fichier | Rôle |
+|---|---|
+| `_setup-php.yml` | PHP 8.4 + PostgreSQL 16 + Redis 7 + Composer cache |
+| `_setup-flutter.yml` | Flutter + Melos bootstrap |
 
-Ce workflow centralise :
+---
 
-- backend PostgreSQL + Redis
-- audit Composer
-- qualité PHP (Pint, syntaxe, PHPStan/Larastan)
-- couverture backend visible via Clover + artifact HTML
-- qualité mobile Flutter avec couverture et seuil
-- gouvernance documentaire
-- rapport CI unifié
+### ✅ Workflows principaux (déclenchés sur PR/push)
 
-### `web-ci.yml` - Admin dashboard
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `tests.yml` | PR → main/develop + push | Tests backend (PHPUnit/Pest) + mobile Flutter |
+| `coverage-gate.yml` | PR → api/** | Seuil de couverture PHP (60%) |
+| `backend-jobs-ci.yml` | PR → Jobs/Listeners | Tests des Jobs/Queues Laravel |
+| `web-ci.yml` | PR → front/admin-dashboard | Lint + test + E2E Vue.js |
+| `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
+| `mobile-apps-ci.yml` | PR → front/mobile | Build + tests Flutter |
+| `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
+| `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
+| `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |
+| `secret-scan.yml` | Push | Détection de secrets commités |
+| `dependabot.yml` | Automatique | Mises à jour dépendances |
 
-Ce workflow remplace les anciens `build.yml`, `lint.yml` et `test.yml`.
+---
 
-Il ne s'exécute que sur :
+### 🚀 Workflows de déploiement
 
-- `admin-dashboard/**`
-- `.github/workflows/web-ci.yml`
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `deploy-main.yml` | Push → main | Déploiement production (Render) |
+| `deploy-staging.yml` | Push → staging | Déploiement staging |
+| `e2e-staging.yml` | Après deploy-staging | Tests E2E post-déploiement |
+| `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
+| `release.yml` | Tags v*.*.* | Création de release GitHub |
 
-Jobs inclus :
+---
 
-- `web-lint`
-- `web-build`
-- `web-e2e-playwright`
+### 🔍 Workflows de qualité / observabilité
 
-Artefacts utiles :
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `phpstan-baseline.yml` | Manuel | Régénère phpstan-baseline.neon |
+| `lighthouse.yml` | Manuel + schedule | Audit Lighthouse (perf, a11y, SEO) |
+| `owasp-zap.yml` | Manuel | Scan OWASP ZAP (sécurité API) |
+| `k6-load-smoke.yml` | Manuel | Load test k6 |
+| `i18n-enterprise.yml` | PR → shared/i18n | Validation et sync traductions |
+| `database-backup.yml` | Schedule | Backup PostgreSQL |
 
-- rapport HTML Playwright
-- `test-results/junit.xml`
-- traces Playwright au premier retry
-- videos Playwright retenues en echec
+---
 
-### `secret-scan.yml` - Scan de secrets
+### 🛠️ Workflows de maintenance
 
-Scan TruffleHog sur push et pull request pour bloquer les secrets verifiés ou inconnus avant merge.
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `fix-composer-lock.yml` | Manuel | Régénère composer.lock |
+| `plan-action2-project.yml` | PR → docs/PLAN_ACTION2 | Sync GitHub Projects |
 
-### `codeql.yml`
+---
 
-Analyse statique de securite GitHub CodeQL.
+### Workflows smoke (Manuel)
 
-### `deploy-main.yml`
+| Fichier | Rôle |
+|---|---|
+| `launch-api-profile-smoke.yml` | Smoke test API profil prod |
+| `launch-observability-smoke.yml` | Health check toutes les URLs prod |
 
-Pipeline de deploiement principal.
+---
 
-Le deploiement automatique ne part que si :
+## Règles de contribution CI
 
-- `Tests - Leopardo RH` est vert sur le SHA de `main`
-- `Web CI - Leopardo Admin` est aussi vert si le SHA touche `admin-dashboard/**`
-- les workflows requis sont bien conclus sur le meme SHA
-
-### `lighthouse.yml`
-
-Workflow de performance web conserve en declenchement manuel pour eviter le bruit CI.
-
-## Notes importantes
-
-- Le frontend versionne dans ce depot est `admin-dashboard/`, pas `web/`.
-- Le statut externe `Vercel` peut etre rouge sans que les GitHub Actions utiles soient en echec.
-- Les workflows doivent rester limites par `paths:` quand cela permet d'eviter des executions inutiles.
+1. **Ne pas dupliquer la config PHP/Flutter** — utiliser `_setup-php.yml` et `_setup-flutter.yml`
+2. **Nommer clairement** : `<scope>-<action>.yml` (ex: `api-lint.yml`, `mobile-test.yml`)
+3. **path filters** obligatoires sur les PRs pour éviter de déclencher tout sur chaque push
+4. **`concurrency`** obligatoire avec `cancel-in-progress: true`
+5. **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`** requis sur tous les workflows actifs

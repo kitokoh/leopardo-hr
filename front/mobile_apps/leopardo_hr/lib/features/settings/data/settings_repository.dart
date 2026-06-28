@@ -1,0 +1,169 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
+import 'package:leopardo_core/core/storage/app_preferences.dart';
+import 'package:leopardo_core/models/employee.dart';
+import 'package:leopardo_core/models/notification_preferences.dart';
+import 'package:leopardo_hr/features/settings/data/biometric_enrollment.dart';
+
+class SettingsRepository {
+  SettingsRepository(this._apiClient, this._preferences);
+
+  final ApiClient _apiClient;
+  final AppPreferences _preferences;
+
+  static const _actionTimeout = Duration(seconds: 12);
+  static const _readTimeout = Duration(seconds: 10);
+  static const _uploadTimeout = Duration(seconds: 30);
+
+  Future<Employee> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) async {
+    final response = await _apiClient.requestWithRetry(
+      '/auth/profile',
+      method: 'PATCH',
+      data: {
+        'first_name': firstName.trim(),
+        'last_name': lastName.trim(),
+        'email': email.trim(),
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+
+    return Employee.fromJson(extractDataMap(response.data));
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmation,
+  }) async {
+    await _apiClient.requestWithRetry(
+      '/auth/change-password',
+      method: 'POST',
+      data: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'new_password_confirmation': confirmation,
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+  }
+
+  Future<NotificationPreferences> loadNotificationPreferences() async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/notification-preferences',
+      timeoutOverride: const Duration(seconds: 12),
+    );
+
+    return NotificationPreferences.fromJson(
+      ((response.data ?? const <String, dynamic>{})['data'] as Map)
+          .cast<String, dynamic>(),
+    );
+  }
+
+  Future<NotificationPreferences> saveNotificationPreferences(
+    NotificationPreferences preferences,
+  ) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/notification-preferences',
+      method: 'PATCH',
+      data: preferences.toJson(),
+      timeoutOverride: const Duration(seconds: 12),
+    );
+
+    return NotificationPreferences.fromJson(
+      ((response.data ?? const <String, dynamic>{})['data'] as Map)
+          .cast<String, dynamic>(),
+    );
+  }
+
+  Future<LocalBiometricSettings> loadLocalBiometricSettings() async {
+    return LocalBiometricSettings(
+      biometricEnabled: _preferences.biometricEnabled,
+      fingerprintEnabled: _preferences.fingerprintEnabled,
+      faceEnabled: _preferences.faceEnabled,
+      attendanceConsent: _preferences.attendanceConsent,
+      biometricNote: _preferences.biometricNote,
+    );
+  }
+
+  Future<void> saveLocalBiometricSettings(LocalBiometricSettings settings) {
+    return _preferences.saveBiometricSettings(
+      biometricEnabled: settings.biometricEnabled,
+      fingerprintEnabled: settings.fingerprintEnabled,
+      faceEnabled: settings.faceEnabled,
+      attendanceConsent: settings.attendanceConsent,
+      biometricNote: settings.biometricNote,
+    );
+  }
+
+  Future<BiometricEnrollment?> loadBiometricEnrollment() async {
+    final response = await _apiClient.requestWithRetry(
+      '/auth/biometric-enrollment',
+      timeoutOverride: _readTimeout,
+    );
+    final data = extractDataMap(response.data);
+    if (data.isEmpty) {
+      return null;
+    }
+
+    return BiometricEnrollment.fromJson(data);
+  }
+
+  Future<BiometricEnrollment> submitBiometricEnrollment({
+    required bool requestedFaceEnabled,
+    required bool requestedFingerprintEnabled,
+    required String employeeNote,
+    String? requestedFingerprintDeviceId,
+    File? faceImage,
+  }) async {
+    final formData = FormData.fromMap({
+      'requested_face_enabled': requestedFaceEnabled ? '1' : '0',
+      'requested_fingerprint_enabled': requestedFingerprintEnabled ? '1' : '0',
+      'employee_note': employeeNote.trim(),
+      if (requestedFingerprintDeviceId != null &&
+          requestedFingerprintDeviceId.trim().isNotEmpty)
+        'requested_fingerprint_device_id': requestedFingerprintDeviceId.trim(),
+      if (faceImage != null)
+        'face_image': await MultipartFile.fromFile(
+          faceImage.path,
+          filename:
+              faceImage.uri.pathSegments.isNotEmpty
+                  ? faceImage.uri.pathSegments.last
+                  : 'face.jpg',
+        ),
+    });
+
+    final response = await _apiClient.requestWithRetry(
+      '/auth/biometric-enrollment',
+      method: 'POST',
+      data: formData,
+      maxRetriesOverride: 0,
+      timeoutOverride: _uploadTimeout,
+    );
+    return BiometricEnrollment.fromJson(extractDataMap(response.data));
+  }
+}
+
+class LocalBiometricSettings {
+  const LocalBiometricSettings({
+    required this.biometricEnabled,
+    required this.fingerprintEnabled,
+    required this.faceEnabled,
+    required this.attendanceConsent,
+    required this.biometricNote,
+  });
+
+  final bool biometricEnabled;
+  final bool fingerprintEnabled;
+  final bool faceEnabled;
+  final bool attendanceConsent;
+  final String biometricNote;
+}

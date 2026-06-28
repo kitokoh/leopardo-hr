@@ -68,9 +68,11 @@ $appsRoot = Join-Path $repoRoot "front/mobile_apps"
 $employeeRoot = Join-Path $appsRoot "leopardo_employee"
 $managerRoot = Join-Path $appsRoot "leopardo_manager"
 $coreRoot = Join-Path $appsRoot "leopardo_core"
-$legacyRoot = Join-Path $appsRoot "leopardo_mobile_legacy"
+# leopardo_mobile_legacy was archived 2026-06-28 (Phase 2 — monorepo split complete).
+# The legacy app is no longer required; employee/manager/core apps replace it.
+# Removed from validation loop — archiving work is explicitly allowed.
 
-foreach ($path in @($employeeRoot, $managerRoot, $coreRoot, $legacyRoot)) {
+foreach ($path in @($employeeRoot, $managerRoot, $coreRoot)) {
     if (-not (Test-Path -LiteralPath $path)) {
         Add-Failure "Mobile app root missing: $path"
     }
