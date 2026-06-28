@@ -81,6 +81,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && onPublic) return '/';
+      if (isAuth && ( !authState.employee!.isManager || authState.employee!.isHr ) && !onPublic) {
+        // Redirection si l'utilisateur n'est pas un Manager pur dans l'app Manager
+        return '/welcome';
+      }
+
       return null;
     },
     routes: [
@@ -107,7 +112,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SalaryAdvanceListScreen(),
       ),
       GoRoute(
-        path: '/payrolls',
         builder: (context, state) => const PayrollListScreen(),
       ),
       GoRoute(
@@ -140,11 +144,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ModulesScreen(),
       ),
       GoRoute(
-        path: '/cabinet',
         builder: (context, state) => const CabinetScreen(),
       ),
       GoRoute(
-        path: '/cabinet/folder/:folderId',
         builder: (context, state) {
           final folderId = int.parse(state.pathParameters['folderId']!);
           final folderName = state.extra as String?;
@@ -172,15 +174,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CompanyRequestScreen(),
       ),
       GoRoute(
-        path: '/contracts',
         builder: (context, state) => const ContractScreen(),
       ),
       GoRoute(
-        path: '/training',
         builder: (context, state) => const TrainingScreen(),
       ),
       GoRoute(
-        path: '/expenses',
         builder: (context, state) => const ExpenseListScreen(),
       ),
       GoRoute(
@@ -212,7 +211,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ScheduleListScreen(),
       ),
       GoRoute(
-        path: '/company/branding',
         builder: (context, state) => const CompanyBrandingScreen(),
       ),
       GoRoute(
