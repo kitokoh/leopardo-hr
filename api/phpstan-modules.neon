@@ -6,15 +6,15 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     excludePaths:
-        - app/Core/Auth/Domain/Exceptions
-        - app/Core/Auth/Domain/Models/User.php
-        - app/Modules/Billing/Domain/Models
-        - app/Modules/Cabinet/Domain/Models
-        - app/Modules/Fleet/Domain/Models
-        - app/Modules/Payroll/Domain/Models
-        - app/Modules/Planning/Domain/Models
-        - app/Modules/Recruitment/Domain/Models
-        - app/Modules/Cameras/Infrastructure/Services
+        - app/Core/Auth/Domain/Exceptions (?)
+        - app/Core/Auth/Domain/Models/User.php (?)
+        - app/Modules/Billing/Domain/Models (?)
+        - app/Modules/Cabinet/Domain/Models (?)
+        - app/Modules/Fleet/Domain/Models (?)
+        - app/Modules/Payroll/Domain/Models (?)
+        - app/Modules/Planning/Domain/Models (?)
+        - app/Modules/Recruitment/Domain/Models (?)
+        - app/Modules/Cameras/Infrastructure/Services (?)
 
     ignoreErrors:
         - '#App\\Http\\Controllers#'
