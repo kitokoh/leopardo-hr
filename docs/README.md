@@ -1,34 +1,115 @@
-# 📚 Documentation Hub — Leopardo RH
+# Documentation — Leopardo HR
 
-Welcome to the official documentation hub for the Leopardo RH platform. This center provides everything you need to understand, deploy, and contribute to our enterprise-grade HR SaaS.
+Index de la documentation technique et stratégique du projet.
 
-## 🏗 Core Architecture & System Design
-- 🏛 **[System Design](architecture/SYSTEM_DESIGN.md)** — High-level technical overview of the platform.
-- 🌍 **[Multi-Tenancy Engine](architecture/MULTITENANCY.md)** — Deep dive into our schema-based data isolation.
-- 🧩 **[Modular Domains](architecture/README.md)** — Breakdown of HR, Payroll, and Attendance modules.
-
-## 🤖 AI & Intelligent Features
-- 🧠 **[AI Architecture](ai/README.md)** — How we use LLMs for anomaly detection and analytics.
-- 📊 **[Workforce Insights](ai/README.md#ai-capabilities)** — Predictive modeling for HR decision-making.
-
-## 🌐 API & Integration
-- 🔑 **[API Reference](api/README.md)** — RESTful API documentation and authentication.
-- 📄 **[OpenAPI Specification](../openapi/openapi.yaml)** — Raw technical contract for developers.
-
-## 🚀 Deployment & Operations
-- 🛠 **[Quick Start Guide](QUICKSTART.md)** — Get running locally in minutes.
-- 🏗 **[Deployment Guide](deployment/DEPLOYMENT_GUIDE.md)** — Production-ready infrastructure setup.
-- 🛡 **[Security Policy](security/SECURITY.md)** — Data protection and compliance standards.
-
-## 📱 Platform Clients
-- 📱 **[Mobile Apps](mobile/README.md)** — Flutter Native suite for Employees and Managers.
-- 💻 **[Admin Dashboard](admin/README.md)** — Next.js enterprise control center.
-- 🏪 **[Kiosk Mode](kiosk/README.md)** — ZKTeco biometric device integration.
-
-## 🤝 Contribution & Community
-- ✍️ **[Contributing Guidelines](contributing/GUIDELINES.md)** — Coding standards and PR process.
-- 🗺 **[Public Roadmap](ROADMAP.md)** — Our vision for the future of HR tech.
-- 🛡 **[Code of Conduct](../CODE_OF_CONDUCT.md)** — Community standards and professional behavior.
+> Pour la structure globale du monorepo, voir [`ARCHITECTURE.md`](../ARCHITECTURE.md) à la racine.
 
 ---
-*For real-time support, join our [Discord Community](https://discord.gg/leopardo-rh).*
+
+## 🚀 Démarrage rapide
+
+| Doc | Contenu |
+|---|---|
+| [`QUICKSTART.md`](QUICKSTART.md) | Setup local en 5 minutes |
+| [`DEMARRAGE_RAPIDE.md`](DEMARRAGE_RAPIDE.md) | Guide de démarrage détaillé |
+| [`../DEVELOPMENT.md`](../DEVELOPMENT.md) | Conventions de développement |
+| [`../MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Commandes melos, turbo, npm workspaces |
+
+---
+
+## 🏗️ Architecture
+
+| Doc | Contenu |
+|---|---|
+| [`../ARCHITECTURE.md`](../ARCHITECTURE.md) | Vue d'ensemble monorepo + règles DDD |
+| [`architecture/`](architecture/) | ADRs et décisions d'architecture |
+| [`dossierdeConception/`](dossierdeConception/) | Dossier de conception complet |
+| [`infra/`](infra/) | État infrastructure et alignement |
+
+---
+
+## 🔧 Backend
+
+| Doc | Contenu |
+|---|---|
+| [`api/`](api/) | Documentation API REST |
+| [`../openapi/openapi.yaml`](../openapi/openapi.yaml) | Spec OpenAPI 3.x |
+| [`modules/`](modules/) | Documentation par module métier |
+| [`../api/MULTILANG.md`](../api/MULTILANG.md) | Multilinguisme backend |
+
+---
+
+## 📱 Mobile
+
+| Doc | Contenu |
+|---|---|
+| [`mobile/`](mobile/) | Documentation mobile (Flutter) |
+| [`../MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Usage Melos |
+
+---
+
+## 🌐 Web
+
+| Doc | Contenu |
+|---|---|
+| [`web/`](web/) | Documentation frontend web |
+| [`web/vitrine/`](web/vitrine/) | Historique d'implémentation vitrine (phases 1-7) |
+
+---
+
+## 🔐 Sécurité & Qualité
+
+| Doc | Contenu |
+|---|---|
+| [`security/`](security/) | Politiques de sécurité |
+| [`testing/`](testing/) | Stratégie de tests |
+| [`../api/README.md`](../api/README.md) | Setup backend et tests |
+
+---
+
+## 🚢 Déploiement
+
+| Doc | Contenu |
+|---|---|
+| [`DEPLOYMENT_PRODUCTION.md`](DEPLOYMENT_PRODUCTION.md) | Déploiement production (Render) |
+| [`DEPLOYMENT_STAGING.md`](DEPLOYMENT_STAGING.md) | Déploiement staging |
+| [`MONITORING_SETUP.md`](MONITORING_SETUP.md) | Setup monitoring et alertes |
+| [`ALERTS_CONFIGURATION.md`](ALERTS_CONFIGURATION.md) | Configuration des alertes |
+| [`RELEASE_PROCESS.md`](RELEASE_PROCESS.md) | Processus de release |
+| [`deployment/`](deployment/) | Docs de déploiement détaillées |
+
+---
+
+## 📊 Produit & Stratégie
+
+| Doc | Contenu |
+|---|---|
+| [`REFERENTIEL_PRODUIT/`](REFERENTIEL_PRODUIT/) | Référentiel produit |
+| [`PILOTAGE.md`](PILOTAGE.md) | Pilotage projet (filières actives) |
+| [`GOTO_MARKET/`](GOTO_MARKET/) | Stratégie go-to-market |
+| [`LEOPARDO_STRATEGIC_ANALYSIS.md`](LEOPARDO_STRATEGIC_ANALYSIS.md) | Analyse stratégique |
+
+---
+
+## 📝 Historique & Archive
+
+| Doc | Contenu |
+|---|---|
+| [`PROMPTS_EXECUTION/`](PROMPTS_EXECUTION/) | Archive des prompts d'exécution AI (v2 legacy, v3 actif) |
+| [`PLAN_ACTION/`](PLAN_ACTION/) | Plans d'action passés |
+| [`PLAN_ACTION2/`](PLAN_ACTION2/) | Plans d'action post-audit 2026 |
+| [`notes/`](notes/) | Notes et archives |
+
+> ⚠️ Les dossiers `PROMPTS_EXECUTION/` et `PLAN_ACTION*/` sont des archives de référence.
+> Ne pas les modifier. Consulter `PILOTAGE.md` pour les filières actives.
+
+---
+
+## 🤝 Contribution
+
+| Doc | Contenu |
+|---|---|
+| [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | Guide de contribution |
+| [`../CONVENTIONS.md`](../CONVENTIONS.md) | Conventions de code |
+| [`../CODEOWNERS`](../CODEOWNERS) | Owners par zone du code |
+| [`contributing/`](contributing/) | Guides de contribution détaillés |
