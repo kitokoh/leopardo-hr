@@ -1,32 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Routes RH — modules 1-7 complets.
  * APV L.08 — Un module = un route group Laravel.
+ *
+ * Namespaces migrés vers App\Modules\* (nouvelle architecture modulaire).
+ * Controllers non encore migrés (temporaires, depuis App\Http\Controllers\Api\V1) :
+ *   - MeController         → TODO: créer Modules\HR\Interfaces\Api\V1\Controllers\MeController
+ *   - SiteController       → TODO: créer Modules\HR\Interfaces\Api\V1\Controllers\SiteController
+ *   - NotificationStreamController → TODO: Modules\Notification\Interfaces\Api\V1\Controllers\
  */
 
-use App\Http\Controllers\Api\V1\AbsenceController;
-use App\Http\Controllers\Api\V1\AttendanceController;
-use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
-use App\Http\Controllers\Api\V1\DepartmentController;
-use App\Http\Controllers\Api\V1\EmployeeController;
-use App\Http\Controllers\Api\V1\EmployeeImportController;
+// ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
+use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
+use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingQrController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\SalaryAdvanceController;
+use App\Modules\Planning\Interfaces\Api\V1\AbsenceController;
+use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
+use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
+use App\Modules\Planning\Interfaces\Api\V1\TaskController;
+
+// ── Controllers non encore migrés (ancienne archi — TODO) ─────────────────────
 use App\Http\Controllers\Api\V1\EstimationController;
-use App\Http\Controllers\Api\V1\EvaluationController;
-use App\Http\Controllers\Api\V1\InvitationController;
-use App\Http\Controllers\Api\V1\KioskController;
 use App\Http\Controllers\Api\V1\MeController;
-use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\NotificationStreamController;
-use App\Http\Controllers\Api\V1\OnboardingQrController;
-use App\Http\Controllers\Api\V1\PayrollController;
-use App\Http\Controllers\Api\V1\PayrollCycleController;
-use App\Http\Controllers\Api\V1\PositionController;
-use App\Http\Controllers\Api\V1\ProjectController;
-use App\Http\Controllers\Api\V1\SalaryAdvanceController;
-use App\Http\Controllers\Api\V1\ScheduleController;
 use App\Http\Controllers\Api\V1\SiteController;
-use App\Http\Controllers\Api\V1\TaskController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -145,7 +157,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
-    Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
+    Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']); // TODO: migrer
 
     // ── Module 7 — Projects & Tasks ───────────────────────────────────────────
     Route::get('/projects', [ProjectController::class, 'index']);
