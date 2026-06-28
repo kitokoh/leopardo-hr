@@ -2,6 +2,14 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.4] - 2026-06-28
+
+### Fixed
+
+- **Auth — Employee implements HasApiTokens** : `Employee` déclare maintenant explicitement `implements HasApiTokensContract` pour résoudre le `TypeError` dans `LogoutAction` et `RefreshTokenAction` lors de l'appel à `execute()` avec un `Employee`.
+- **Modules\HR\UserInvitationService — import TenantManager** : Ajout du `use App\Services\TenantManager` manquant qui causait un `BindingResolutionException` à l'injection de dépendance.
+- **Recruitment\RecruitmentService — PHPStan CarbonInterface** : `published_at` est maintenant assigné via `Carbon::instance(now())` pour satisfaire le type `Carbon|null` déclaré sur `JobPosting::$published_at`.
+
 ## [4.17.3] - 2026-06-28
 
 ### Changed
