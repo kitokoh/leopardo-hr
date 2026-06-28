@@ -3,7 +3,7 @@
 namespace App\Modules\HR\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Core\Auth\Domain\Models\UserInvitation;
+use App\Models\UserInvitation;
 use App\Services\UserInvitationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

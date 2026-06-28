@@ -237,7 +237,8 @@ class OnboardingQrController extends Controller
 
     private function resolveUserFromEmployee(Employee $employee): User
     {
-        return User::firstOrCreate(
+        /** @var User $user */
+        $user = User::firstOrCreate(
             ['email' => $employee->email],
             [
                 'first_name' => $employee->first_name ?: 'Employe',
@@ -249,6 +250,8 @@ class OnboardingQrController extends Controller
                 'status' => $employee->status ?? 'active',
             ]
         );
+
+        return $user;
     }
 
     private function stringOrNull(mixed $value): ?string

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /home/runner/work/leopardo-hr/leopardo-hr/api/app/Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/home/runner/work/leopardo-hr/leopardo-hr/api/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Services</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ContractPdfGenerator.php.html#10">App\Services\ContractPdfGenerator</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureService.php.html#9">App\Services\FeatureService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#14">App\Services\PayrollService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#10">App\Services\SalaryAdvanceService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserAuthService.php.html#10">App\Services\UserAuthService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#14">App\Services\ZktecoIntegrationService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#15">App\Services\CabinetService</a></td><td class="text-right">7%</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#19">App\Services\Payroll\PayrollCalculator</a></td><td class="text-right">7%</td></tr>
+       <tr><td><a href="CommissionService.php.html#11">App\Services\CommissionService</a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="PartnerService.php.html#13">App\Services\PartnerService</a></td><td class="text-right">27%</td></tr>
+       <tr><td><a href="StripeService.php.html#22">App\Services\StripeService</a></td><td class="text-right">33%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#15">App\Services\Cache\TenantCacheService</a></td><td class="text-right">47%</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#12">App\Services\PushNotificationService</a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="PaySlipPdfGenerator.php.html#12">App\Services\PaySlipPdfGenerator</a></td><td class="text-right">58%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#20">App\Services\PayrollCycleService</a></td><td class="text-right">58%</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#11">App\Services\OnboardingQrService</a></td><td class="text-right">58%</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#11">App\Services\SSO\SSOService</a></td><td class="text-right">61%</td></tr>
+       <tr><td><a href="AttendanceGeofenceService.php.html#9">App\Services\AttendanceGeofenceService</a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#22">App\Services\FeatureRegistry</a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#8">App\Services\SuperAdminService</a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#14">App\Services\AnnotationReader</a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#15">App\Services\ReflectionService</a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#19">App\Services\FeatureDetector</a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="BiometricEnrollmentService.php.html#10">App\Services\BiometricEnrollmentService</a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#10">App\Services\BankExportGenerator</a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#19">App\Services\Communication\CommunicationService</a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="WebhookDispatcher.php.html#10">App\Services\WebhookDispatcher</a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="DataAccessAuditLogger.php.html#13">App\Services\DataAccessAuditLogger</a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#18">App\Services\CalendarSyncService</a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/AbstractCountryRules.php.html#7">App\Services\Payroll\CountryRules\AbstractCountryRules</a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="KioskAttendanceService.php.html#11">App\Services\KioskAttendanceService</a></td><td class="text-right">89%</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#9">App\Services\SectorTemplateService</a></td><td class="text-right">89%</td></tr>
+       <tr><td><a href="Communication/NotificationPreferenceProvisioner.php.html#9">App\Services\Communication\NotificationPreferenceProvisioner</a></td><td class="text-right">89%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="PayrollService.php.html#14">App\Services\PayrollService</a></td><td class="text-right">1260</td></tr>
+       <tr><td><a href="StripeService.php.html#22">App\Services\StripeService</a></td><td class="text-right">745</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#14">App\Services\ZktecoIntegrationService</a></td><td class="text-right">462</td></tr>
+       <tr><td><a href="CabinetService.php.html#15">App\Services\CabinetService</a></td><td class="text-right">446</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#19">App\Services\Payroll\PayrollCalculator</a></td><td class="text-right">444</td></tr>
+       <tr><td><a href="UserAuthService.php.html#10">App\Services\UserAuthService</a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#20">App\Services\PayrollCycleService</a></td><td class="text-right">224</td></tr>
+       <tr><td><a href="PartnerService.php.html#13">App\Services\PartnerService</a></td><td class="text-right">175</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#10">App\Services\SalaryAdvanceService</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#12">App\Services\PushNotificationService</a></td><td class="text-right">89</td></tr>
+       <tr><td><a href="CommissionService.php.html#11">App\Services\CommissionService</a></td><td class="text-right">87</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#19">App\Services\Communication\CommunicationService</a></td><td class="text-right">73</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#19">App\Services\FeatureDetector</a></td><td class="text-right">70</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#15">App\Services\Cache\TenantCacheService</a></td><td class="text-right">65</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#22">App\Services\FeatureRegistry</a></td><td class="text-right">48</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#10">App\Services\BankExportGenerator</a></td><td class="text-right">44</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#11">App\Services\OnboardingQrService</a></td><td class="text-right">43</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#14">App\Services\AnnotationReader</a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="FeatureService.php.html#9">App\Services\FeatureService</a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="ReflectionService.php.html#15">App\Services\ReflectionService</a></td><td class="text-right">38</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#18">App\Services\CalendarSyncService</a></td><td class="text-right">32</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#9">App\Services\SectorTemplateService</a></td><td class="text-right">26</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#8">App\Services\SuperAdminService</a></td><td class="text-right">25</td></tr>
+       <tr><td><a href="Communication/NotificationPreferenceProvisioner.php.html#9">App\Services\Communication\NotificationPreferenceProvisioner</a></td><td class="text-right">23</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#11">App\Services\SSO\SSOService</a></td><td class="text-right">22</td></tr>
+       <tr><td><a href="AttendanceGeofenceService.php.html#9">App\Services\AttendanceGeofenceService</a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="KioskAttendanceService.php.html#11">App\Services\KioskAttendanceService</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Payroll/CountryRules/AbstractCountryRules.php.html#7">App\Services\Payroll\CountryRules\AbstractCountryRules</a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="BiometricEnrollmentService.php.html#10">App\Services\BiometricEnrollmentService</a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="DataAccessAuditLogger.php.html#13">App\Services\DataAccessAuditLogger</a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="PaySlipPdfGenerator.php.html#12">App\Services\PaySlipPdfGenerator</a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="WebhookDispatcher.php.html#10">App\Services\WebhookDispatcher</a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AnnotationReader.php.html#163"><abbr title="App\Services\AnnotationReader::parseParamTag">parseParamTag</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#181"><abbr title="App\Services\AnnotationReader::parseResponseTag">parseResponseTag</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AttendanceMonthlyReportService.php.html#119"><abbr title="App\Services\AttendanceMonthlyReportService::toPdf">toPdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#12"><abbr title="App\Services\BankExportGenerator::generate">generate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BiometricEnrollmentService.php.html#72"><abbr title="App\Services\BiometricEnrollmentService::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#22"><abbr title="App\Services\CabinetService::createFolder">createFolder</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#37"><abbr title="App\Services\CabinetService::updateFolder">updateFolder</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#60"><abbr title="App\Services\CabinetService::deleteFolder">deleteFolder</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#71"><abbr title="App\Services\CabinetService::uploadDocument">uploadDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#93"><abbr title="App\Services\CabinetService::updateDocument">updateDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#113"><abbr title="App\Services\CabinetService::deleteDocument">deleteDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#119"><abbr title="App\Services\CabinetService::moveDocument">moveDocument</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#132"><abbr title="App\Services\CabinetService::share">share</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#152"><abbr title="App\Services\CabinetService::revokeShare">revokeShare</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#175"><abbr title="App\Services\CabinetService::legacyCompanyKey">legacyCompanyKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#186"><abbr title="App\Services\CabinetService::deleteFolderDocumentFiles">deleteFolderDocumentFiles</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CabinetService.php.html#197"><abbr title="App\Services\CabinetService::sendShareEmail">sendShareEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#41"><abbr title="App\Services\Cache\TenantCacheService::forgetPattern">forgetPattern</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#49"><abbr title="App\Services\Cache\TenantCacheService::forgetMany">forgetMany</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#56"><abbr title="App\Services\Cache\TenantCacheService::flush">flush</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#75"><abbr title="App\Services\Cache\TenantCacheService::rememberEmployees">rememberEmployees</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#90"><abbr title="App\Services\Cache\TenantCacheService::rememberAttendanceReport">rememberAttendanceReport</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#105"><abbr title="App\Services\Cache\TenantCacheService::invalidateManagerDigest">invalidateManagerDigest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#110"><abbr title="App\Services\Cache\TenantCacheService::invalidateAttendanceReports">invalidateAttendanceReports</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPdfGenerator.php.html#12"><abbr title="App\Services\ContractPdfGenerator::generate">generate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#322"><abbr title="App\Services\FeatureDetector::inferPermissions">inferPermissions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#340"><abbr title="App\Services\FeatureDetector::inferUIType">inferUIType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#239"><abbr title="App\Services\FeatureRegistry::getFeaturesByApiVersion">getFeaturesByApiVersion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureService.php.html#11"><abbr title="App\Services\FeatureService::active">active</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureService.php.html#28"><abbr title="App\Services\FeatureService::limit">limit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureService.php.html#45"><abbr title="App\Services\FeatureService::getCompanyPlan">getCompanyPlan</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#48"><abbr title="App\Services\OnboardingQrService::companyOnboardingPayload">companyOnboardingPayload</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#90"><abbr title="App\Services\OnboardingQrService::decodeCompanyOnboarding">decodeCompanyOnboarding</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#109"><abbr title="App\Services\PartnerService::handlePaymentRefunded">handlePaymentRefunded</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#119"><abbr title="App\Services\PartnerService::requestPayout">requestPayout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#148"><abbr title="App\Services\PartnerService::updatePayoutStatus">updatePayoutStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#174"><abbr title="App\Services\PartnerService::updatePaymentDetails">updatePaymentDetails</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#195"><abbr title="App\Services\PartnerService::reassignCompanyPartner">reassignCompanyPartner</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#218"><abbr title="App\Services\PartnerService::updatePartnerRate">updatePartnerRate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerService.php.html#241"><abbr title="App\Services\PartnerService::updateCommissionStatus">updateCommissionStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PaySlipPdfGenerator.php.html#54"><abbr title="App\Services\PaySlipPdfGenerator::generateForRun">generateForRun</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/AlgeriaPayrollRules.php.html#12"><abbr title="App\Services\Payroll\CountryRules\AlgeriaPayrollRules::currency">currency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/AlgeriaPayrollRules.php.html#17"><abbr title="App\Services\Payroll\CountryRules\AlgeriaPayrollRules::minimumWage">minimumWage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/FrancePayrollRules.php.html#12"><abbr title="App\Services\Payroll\CountryRules\FrancePayrollRules::currency">currency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/FrancePayrollRules.php.html#17"><abbr title="App\Services\Payroll\CountryRules\FrancePayrollRules::minimumWage">minimumWage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/MoroccoPayrollRules.php.html#12"><abbr title="App\Services\Payroll\CountryRules\MoroccoPayrollRules::currency">currency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/MoroccoPayrollRules.php.html#17"><abbr title="App\Services\Payroll\CountryRules\MoroccoPayrollRules::minimumWage">minimumWage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/SenegalPayrollRules.php.html#12"><abbr title="App\Services\Payroll\CountryRules\SenegalPayrollRules::currency">currency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/SenegalPayrollRules.php.html#17"><abbr title="App\Services\Payroll\CountryRules\SenegalPayrollRules::minimumWage">minimumWage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/TunisiaPayrollRules.php.html#12"><abbr title="App\Services\Payroll\CountryRules\TunisiaPayrollRules::currency">currency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/TunisiaPayrollRules.php.html#17"><abbr title="App\Services\Payroll\CountryRules\TunisiaPayrollRules::minimumWage">minimumWage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/TurkeyPayrollRules.php.html#12"><abbr title="App\Services\Payroll\CountryRules\TurkeyPayrollRules::currency">currency</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/TurkeyPayrollRules.php.html#17"><abbr title="App\Services\Payroll\CountryRules\TurkeyPayrollRules::minimumWage">minimumWage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#47"><abbr title="App\Services\Payroll\PayrollCalculator::getRules">getRules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#56"><abbr title="App\Services\Payroll\PayrollCalculator::calculateRun">calculateRun</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#111"><abbr title="App\Services\Payroll\PayrollCalculator::calculateSlip">calculateSlip</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#231"><abbr title="App\Services\Payroll\PayrollCalculator::computeComponentAmount">computeComponentAmount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#236"><abbr title="App\Services\PayrollCycleService::closeCycle">closeCycle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#365"><abbr title="App\Services\PayrollCycleService::weeklyPeriod">weeklyPeriod</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#377"><abbr title="App\Services\PayrollCycleService::dailyPeriod">dailyPeriod</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#17"><abbr title="App\Services\PayrollService::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#48"><abbr title="App\Services\PayrollService::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#65"><abbr title="App\Services\PayrollService::validate">validate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#95"><abbr title="App\Services\PayrollService::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#104"><abbr title="App\Services\PayrollService::computeNet">computeNet</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#121"><abbr title="App\Services\PayrollService::normalizePayrollData">normalizePayrollData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#151"><abbr title="App\Services\PayrollService::toFloat">toFloat</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#156"><abbr title="App\Services\PayrollService::toInt">toInt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#164"><abbr title="App\Services\PayrollService::toLineItems">toLineItems</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#191"><abbr title="App\Services\PayrollService::sumLineItems">sumLineItems</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollService.php.html#206"><abbr title="App\Services\PayrollService::stringKeyedArray">stringKeyedArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#59"><abbr title="App\Services\PushNotificationService::sendToCompany">sendToCompany</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#96"><abbr title="App\Services\SSO\SSOService::handleSAMLResponse">handleSAMLResponse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#121"><abbr title="App\Services\SSO\SSOService::handleOIDCCallback">handleOIDCCallback</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#12"><abbr title="App\Services\SalaryAdvanceService::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#24"><abbr title="App\Services\SalaryAdvanceService::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#39"><abbr title="App\Services\SalaryAdvanceService::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#50"><abbr title="App\Services\SalaryAdvanceService::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#61"><abbr title="App\Services\SalaryAdvanceService::buildPlan">buildPlan</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="StripeService.php.html#47"><abbr title="App\Services\StripeService::createCheckoutSession">createCheckoutSession</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="StripeService.php.html#93"><abbr title="App\Services\StripeService::createPortalSession">createPortalSession</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="StripeService.php.html#177"><abbr title="App\Services\StripeService::handleCheckoutCompleted">handleCheckoutCompleted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="StripeService.php.html#313"><abbr title="App\Services\StripeService::handleSubscriptionUpdated">handleSubscriptionUpdated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="StripeService.php.html#363"><abbr title="App\Services\StripeService::handleChargeRefunded">handleChargeRefunded</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserAuthService.php.html#15"><abbr title="App\Services\UserAuthService::register">register</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserAuthService.php.html#32"><abbr title="App\Services\UserAuthService::login">login</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserAuthService.php.html#66"><abbr title="App\Services\UserAuthService::googleSignIn">googleSignIn</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UserAuthService.php.html#104"><abbr title="App\Services\UserAuthService::issueToken">issueToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#16"><abbr title="App\Services\ZktecoIntegrationService::registerDevice">registerDevice</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#36"><abbr title="App\Services\ZktecoIntegrationService::heartbeat">heartbeat</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#46"><abbr title="App\Services\ZktecoIntegrationService::pullAttendance">pullAttendance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#134"><abbr title="App\Services\ZktecoIntegrationService::pushUsers">pushUsers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#159"><abbr title="App\Services\ZktecoIntegrationService::getSyncHistory">getSyncHistory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#167"><abbr title="App\Services\ZktecoIntegrationService::resolveAction">resolveAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#152"><abbr title="App\Services\PayrollCycleService::safeEmployeeBalance">safeEmployeeBalance</abbr></a></td><td class="text-right">2%</td></tr>
+       <tr><td><a href="CommissionService.php.html#16"><abbr title="App\Services\CommissionService::recordCommissionForPayment">recordCommissionForPayment</abbr></a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#132"><abbr title="App\Services\PushNotificationService::getAccessToken">getAccessToken</abbr></a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="StripeService.php.html#118"><abbr title="App\Services\StripeService::verifyWebhookSignature">verifyWebhookSignature</abbr></a></td><td class="text-right">15%</td></tr>
+       <tr><td><a href="PartnerService.php.html#60"><abbr title="App\Services\PartnerService::attributeCompanyToPartner">attributeCompanyToPartner</abbr></a></td><td class="text-right">38%</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#95"><abbr title="App\Services\Communication\CommunicationService::template">template</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#304"><abbr title="App\Services\PayrollCycleService::fallbackGrossDue">fallbackGrossDue</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#158"><abbr title="App\Services\ReflectionService::getMethodVisibility">getMethodVisibility</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#160"><abbr title="App\Services\FeatureRegistry::removeFeature">removeFeature</abbr></a></td><td class="text-right">41%</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#165"><abbr title="App\Services\CalendarSyncService::pushEventToProvider">pushEventToProvider</abbr></a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#293"><abbr title="App\Services\Communication\CommunicationService::providerFor">providerFor</abbr></a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#124"><abbr title="App\Services\ReflectionService::getClassAttributes">getClassAttributes</abbr></a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#236"><abbr title="App\Services\Communication\CommunicationService::sendExternalChannel">sendExternalChannel</abbr></a></td><td class="text-right">43%</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#30"><abbr title="App\Services\BankExportGenerator::fileExtension">fileExtension</abbr></a></td><td class="text-right">44%</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#43"><abbr title="App\Services\BankExportGenerator::mimeType">mimeType</abbr></a></td><td class="text-right">44%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#273"><abbr title="App\Services\PayrollCycleService::resolveCompany">resolveCompany</abbr></a></td><td class="text-right">44%</td></tr>
+       <tr><td><a href="SocialDeclarationGenerator.php.html#219"><abbr title="App\Services\SocialDeclarationGenerator::mapContractTypeDsn">mapContractTypeDsn</abbr></a></td><td class="text-right">44%</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#54"><abbr title="App\Services\SuperAdminService::getQrCodeUrl">getQrCodeUrl</abbr></a></td><td class="text-right">44%</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#42"><abbr title="App\Services\FeatureRegistry::registerFeature">registerFeature</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#293"><abbr title="App\Services\PayrollCycleService::companySetting">companySetting</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#16"><abbr title="App\Services\SSO\SSOService::getCompanySSO">getCompanySSO</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="AttendanceGeofenceService.php.html#68"><abbr title="App\Services\AttendanceGeofenceService::resolveTarget">resolveTarget</abbr></a></td><td class="text-right">56%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#173"><abbr title="App\Services\FeatureDetector::detectChanges">detectChanges</abbr></a></td><td class="text-right">56%</td></tr>
+       <tr><td><a href="AttendanceMonthlyReportService.php.html#174"><abbr title="App\Services\AttendanceMonthlyReportService::estimatedHourlyRate">estimatedHourlyRate</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#117"><abbr title="App\Services\FeatureRegistry::updateFeature">updateFeature</abbr></a></td><td class="text-right">64%</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#202"><abbr title="App\Services\BankExportGenerator::csvEscape">csvEscape</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="DataAccessAuditLogger.php.html#42"><abbr title="App\Services\DataAccessAuditLogger::truncateUserAgent">truncateUserAgent</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#445"><abbr title="App\Services\FeatureDetector::extractApiVersionFromUri">extractApiVersionFromUri</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#206"><abbr title="App\Services\ReflectionService::isApiController">isApiController</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#13"><abbr title="App\Services\SuperAdminService::generateSecret">generateSecret</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#25"><abbr title="App\Services\SuperAdminService::verifyCode">verifyCode</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#70"><abbr title="App\Services\SuperAdminService::google2fa">google2fa</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#82"><abbr title="App\Services\FeatureDetector::extractMetadata">extractMetadata</abbr></a></td><td class="text-right">68%</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#286"><abbr title="App\Services\FeatureRegistry::synchronize">synchronize</abbr></a></td><td class="text-right">68%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#30"><abbr title="App\Services\FeatureDetector::detectNewFeatures">detectNewFeatures</abbr></a></td><td class="text-right">69%</td></tr>
+       <tr><td><a href="StripeService.php.html#232"><abbr title="App\Services\StripeService::handleInvoicePaid">handleInvoicePaid</abbr></a></td><td class="text-right">69%</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#278"><abbr title="App\Services\Communication\CommunicationService::sendEmail">sendEmail</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="CompanyProvisioningService.php.html#105"><abbr title="App\Services\CompanyProvisioningService::resolveUniqueSlug">resolveUniqueSlug</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#25"><abbr title="App\Services\PayrollCycleService::getCurrentCycle">getCurrentCycle</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="StripeService.php.html#161"><abbr title="App\Services\StripeService::handleEvent">handleEvent</abbr></a></td><td class="text-right">72%</td></tr>
+       <tr><td><a href="AuthService.php.html#143"><abbr title="App\Services\AuthService::lookupTableExists">lookupTableExists</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="Communication/NotificationPreferenceProvisioner.php.html#29"><abbr title="App\Services\Communication\NotificationPreferenceProvisioner::backfill">backfill</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="EstimationService.php.html#301"><abbr title="App\Services\EstimationService::hrModelTemplatesTableExists">hrModelTemplatesTableExists</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#265"><abbr title="App\Services\FeatureDetector::isValidFeature">isValidFeature</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#100"><abbr title="App\Services\ReflectionService::getPublicMethods">getPublicMethods</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#109"><abbr title="App\Services\OnboardingQrService::verify">verify</abbr></a></td><td class="text-right">76%</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#150"><abbr title="App\Services\Communication\CommunicationService::shouldSkipForQuietHours">shouldSkipForQuietHours</abbr></a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="AttendanceGeofenceService.php.html#14"><abbr title="App\Services\AttendanceGeofenceService::evaluate">evaluate</abbr></a></td><td class="text-right">79%</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#153"><abbr title="App\Services\OnboardingQrService::base64UrlDecode">base64UrlDecode</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#333"><abbr title="App\Services\PayrollCycleService::cycleAdvances">cycleAdvances</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="PlatformCompanyHealthService.php.html#281"><abbr title="App\Services\PlatformCompanyHealthService::riskLevel">riskLevel</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#203"><abbr title="App\Services\PushNotificationService::handleFailedTokens">handleFailedTokens</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#117"><abbr title="App\Services\PayrollCycleService::getMobileSummary">getMobileSummary</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#117"><abbr title="App\Services\AnnotationReader::parseMethodAttributes">parseMethodAttributes</abbr></a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#232"><abbr title="App\Services\FeatureDetector::isApiRoute">isApiRoute</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="PlatformCompanyHealthService.php.html#331"><abbr title="App\Services\PlatformCompanyHealthService::withTenantSearchPath">withTenantSearchPath</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#25"><abbr title="App\Services\ReflectionService::analyzeClass">analyzeClass</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="WebhookDispatcher.php.html#12"><abbr title="App\Services\WebhookDispatcher::dispatch">dispatch</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#56"><abbr title="App\Services\AnnotationReader::parseDocComment">parseDocComment</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="AttendanceService.php.html#261"><abbr title="App\Services\AttendanceService::recalculateLog">recalculateLog</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="KioskAttendanceService.php.html#18"><abbr title="App\Services\KioskAttendanceService::punch">punch</abbr></a></td><td class="text-right">84%</td></tr>
+       <tr><td><a href="AttendanceService.php.html#150"><abbr title="App\Services\AttendanceService::importExternalPunch">importExternalPunch</abbr></a></td><td class="text-right">84%</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#45"><abbr title="App\Services\CalendarSyncService::syncLeaves">syncLeaves</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#100"><abbr title="App\Services\CalendarSyncService::syncTraining">syncTraining</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="AbsenceService.php.html#165"><abbr title="App\Services\AbsenceService::hasDateConflict">hasDateConflict</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="ReflectionService.php.html#53"><abbr title="App\Services\ReflectionService::analyzeMethod">analyzeMethod</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#76"><abbr title="App\Services\PushNotificationService::sendToTokens">sendToTokens</abbr></a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#81"><abbr title="App\Services\SectorTemplateService::resolveDefaultDepartmentId">resolveDefaultDepartmentId</abbr></a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="Payroll/CountryRules/AbstractCountryRules.php.html#15"><abbr title="App\Services\Payroll\CountryRules\AbstractCountryRules::calculateProgressiveTax">calculateProgressiveTax</abbr></a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#41"><abbr title="App\Services\SectorTemplateService::seedPositions">seedPositions</abbr></a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="EmployeeService.php.html#200"><abbr title="App\Services\EmployeeService::arrayValue">arrayValue</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#44"><abbr title="App\Services\PushNotificationService::sendToEmployee">sendToEmployee</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#124"><abbr title="App\Services\SectorTemplateService::sharedTableExists">sharedTableExists</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#143"><abbr title="App\Services\SectorTemplateService::sharedColumnExists">sharedColumnExists</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="StripeService.php.html#296"><abbr title="App\Services\StripeService::handleInvoicePaymentFailed">handleInvoicePaymentFailed</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="AuthService.php.html#191"><abbr title="App\Services\AuthService::findEmployeeInTenantSchemas">findEmployeeInTenantSchemas</abbr></a></td><td class="text-right">88%</td></tr>
+       <tr><td><a href="DataAccessAuditLogger.php.html#18"><abbr title="App\Services\DataAccessAuditLogger::record">record</abbr></a></td><td class="text-right">88%</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#46"><abbr title="App\Services\SSO\SSOService::configureSSO">configureSSO</abbr></a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ZktecoIntegrationService.php.html#46"><abbr title="App\Services\ZktecoIntegrationService::pullAttendance">pullAttendance</abbr></a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#111"><abbr title="App\Services\Payroll\PayrollCalculator::calculateSlip">calculateSlip</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="UserAuthService.php.html#32"><abbr title="App\Services\UserAuthService::login">login</abbr></a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="CommissionService.php.html#16"><abbr title="App\Services\CommissionService::recordCommissionForPayment">recordCommissionForPayment</abbr></a></td><td class="text-right">87</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#12"><abbr title="App\Services\BankExportGenerator::generate">generate</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#132"><abbr title="App\Services\PushNotificationService::getAccessToken">getAccessToken</abbr></a></td><td class="text-right">57</td></tr>
+       <tr><td><a href="PayrollService.php.html#121"><abbr title="App\Services\PayrollService::normalizePayrollData">normalizePayrollData</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="StripeService.php.html#313"><abbr title="App\Services\StripeService::handleSubscriptionUpdated">handleSubscriptionUpdated</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#304"><abbr title="App\Services\PayrollCycleService::fallbackGrossDue">fallbackGrossDue</abbr></a></td><td class="text-right">43</td></tr>
+       <tr><td><a href="PayrollService.php.html#65"><abbr title="App\Services\PayrollService::validate">validate</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="PayrollService.php.html#164"><abbr title="App\Services\PayrollService::toLineItems">toLineItems</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="ZktecoIntegrationService.php.html#167"><abbr title="App\Services\ZktecoIntegrationService::resolveAction">resolveAction</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="StripeService.php.html#118"><abbr title="App\Services\StripeService::verifyWebhookSignature">verifyWebhookSignature</abbr></a></td><td class="text-right">37</td></tr>
+       <tr><td><a href="CabinetService.php.html#37"><abbr title="App\Services\CabinetService::updateFolder">updateFolder</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="PartnerService.php.html#241"><abbr title="App\Services\PartnerService::updateCommissionStatus">updateCommissionStatus</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#231"><abbr title="App\Services\Payroll\PayrollCalculator::computeComponentAmount">computeComponentAmount</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#152"><abbr title="App\Services\PayrollCycleService::safeEmployeeBalance">safeEmployeeBalance</abbr></a></td><td class="text-right">28</td></tr>
+       <tr><td><a href="CabinetService.php.html#93"><abbr title="App\Services\CabinetService::updateDocument">updateDocument</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="StripeService.php.html#177"><abbr title="App\Services\StripeService::handleCheckoutCompleted">handleCheckoutCompleted</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="UserAuthService.php.html#66"><abbr title="App\Services\UserAuthService::googleSignIn">googleSignIn</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#30"><abbr title="App\Services\BankExportGenerator::fileExtension">fileExtension</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#43"><abbr title="App\Services\BankExportGenerator::mimeType">mimeType</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="SocialDeclarationGenerator.php.html#219"><abbr title="App\Services\SocialDeclarationGenerator::mapContractTypeDsn">mapContractTypeDsn</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#150"><abbr title="App\Services\Communication\CommunicationService::shouldSkipForQuietHours">shouldSkipForQuietHours</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#56"><abbr title="App\Services\AnnotationReader::parseDocComment">parseDocComment</abbr></a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="AttendanceGeofenceService.php.html#68"><abbr title="App\Services\AttendanceGeofenceService::resolveTarget">resolveTarget</abbr></a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="Communication/NotificationPreferenceProvisioner.php.html#29"><abbr title="App\Services\Communication\NotificationPreferenceProvisioner::backfill">backfill</abbr></a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="AttendanceService.php.html#261"><abbr title="App\Services\AttendanceService::recalculateLog">recalculateLog</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#236"><abbr title="App\Services\Communication\CommunicationService::sendExternalChannel">sendExternalChannel</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#163"><abbr title="App\Services\AnnotationReader::parseParamTag">parseParamTag</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="CabinetService.php.html#132"><abbr title="App\Services\CabinetService::share">share</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PartnerService.php.html#119"><abbr title="App\Services\PartnerService::requestPayout">requestPayout</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#56"><abbr title="App\Services\Payroll\PayrollCalculator::calculateRun">calculateRun</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="PayrollService.php.html#206"><abbr title="App\Services\PayrollService::stringKeyedArray">stringKeyedArray</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#96"><abbr title="App\Services\SSO\SSOService::handleSAMLResponse">handleSAMLResponse</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#121"><abbr title="App\Services\SSO\SSOService::handleOIDCCallback">handleOIDCCallback</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#61"><abbr title="App\Services\SalaryAdvanceService::buildPlan">buildPlan</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="StripeService.php.html#47"><abbr title="App\Services\StripeService::createCheckoutSession">createCheckoutSession</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="StripeService.php.html#363"><abbr title="App\Services\StripeService::handleChargeRefunded">handleChargeRefunded</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AttendanceService.php.html#150"><abbr title="App\Services\AttendanceService::importExternalPunch">importExternalPunch</abbr></a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#41"><abbr title="App\Services\SectorTemplateService::seedPositions">seedPositions</abbr></a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#109"><abbr title="App\Services\OnboardingQrService::verify">verify</abbr></a></td><td class="text-right">10</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#286"><abbr title="App\Services\FeatureRegistry::synchronize">synchronize</abbr></a></td><td class="text-right">10</td></tr>
+       <tr><td><a href="StripeService.php.html#232"><abbr title="App\Services\StripeService::handleInvoicePaid">handleInvoicePaid</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="StripeService.php.html#161"><abbr title="App\Services\StripeService::handleEvent">handleEvent</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#273"><abbr title="App\Services\PayrollCycleService::resolveCompany">resolveCompany</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="AuthService.php.html#191"><abbr title="App\Services\AuthService::findEmployeeInTenantSchemas">findEmployeeInTenantSchemas</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#173"><abbr title="App\Services\FeatureDetector::detectChanges">detectChanges</abbr></a></td><td class="text-right">8</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#76"><abbr title="App\Services\PushNotificationService::sendToTokens">sendToTokens</abbr></a></td><td class="text-right">8</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#265"><abbr title="App\Services\FeatureDetector::isValidFeature">isValidFeature</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#95"><abbr title="App\Services\Communication\CommunicationService::template">template</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#25"><abbr title="App\Services\SuperAdminService::verifyCode">verifyCode</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Payroll/CountryRules/AbstractCountryRules.php.html#15"><abbr title="App\Services\Payroll\CountryRules\AbstractCountryRules::calculateProgressiveTax">calculateProgressiveTax</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#30"><abbr title="App\Services\FeatureDetector::detectNewFeatures">detectNewFeatures</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#165"><abbr title="App\Services\CalendarSyncService::pushEventToProvider">pushEventToProvider</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#117"><abbr title="App\Services\AnnotationReader::parseMethodAttributes">parseMethodAttributes</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AnnotationReader.php.html#181"><abbr title="App\Services\AnnotationReader::parseResponseTag">parseResponseTag</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CabinetService.php.html#175"><abbr title="App\Services\CabinetService::legacyCompanyKey">legacyCompanyKey</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#49"><abbr title="App\Services\Cache\TenantCacheService::forgetMany">forgetMany</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Cache/TenantCacheService.php.html#56"><abbr title="App\Services\Cache\TenantCacheService::flush">flush</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="FeatureService.php.html#11"><abbr title="App\Services\FeatureService::active">active</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="FeatureService.php.html#28"><abbr title="App\Services\FeatureService::limit">limit</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="FeatureService.php.html#45"><abbr title="App\Services\FeatureService::getCompanyPlan">getCompanyPlan</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PaySlipPdfGenerator.php.html#54"><abbr title="App\Services\PaySlipPdfGenerator::generateForRun">generateForRun</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Payroll/PayrollCalculator.php.html#47"><abbr title="App\Services\Payroll\PayrollCalculator::getRules">getRules</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#293"><abbr title="App\Services\PayrollCycleService::companySetting">companySetting</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollService.php.html#17"><abbr title="App\Services\PayrollService::create">create</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollService.php.html#48"><abbr title="App\Services\PayrollService::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollService.php.html#95"><abbr title="App\Services\PayrollService::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollService.php.html#151"><abbr title="App\Services\PayrollService::toFloat">toFloat</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollService.php.html#156"><abbr title="App\Services\PayrollService::toInt">toInt</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollService.php.html#191"><abbr title="App\Services\PayrollService::sumLineItems">sumLineItems</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#59"><abbr title="App\Services\PushNotificationService::sendToCompany">sendToCompany</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#24"><abbr title="App\Services\SalaryAdvanceService::approve">approve</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#39"><abbr title="App\Services\SalaryAdvanceService::reject">reject</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SalaryAdvanceService.php.html#50"><abbr title="App\Services\SalaryAdvanceService::cancel">cancel</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="StripeService.php.html#93"><abbr title="App\Services\StripeService::createPortalSession">createPortalSession</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ReflectionService.php.html#206"><abbr title="App\Services\ReflectionService::isApiController">isApiController</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#25"><abbr title="App\Services\PayrollCycleService::getCurrentCycle">getCurrentCycle</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="KioskAttendanceService.php.html#18"><abbr title="App\Services\KioskAttendanceService::punch">punch</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#45"><abbr title="App\Services\CalendarSyncService::syncLeaves">syncLeaves</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="CalendarSyncService.php.html#100"><abbr title="App\Services\CalendarSyncService::syncTraining">syncTraining</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#81"><abbr title="App\Services\SectorTemplateService::resolveDefaultDepartmentId">resolveDefaultDepartmentId</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="PartnerService.php.html#60"><abbr title="App\Services\PartnerService::attributeCompanyToPartner">attributeCompanyToPartner</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="ReflectionService.php.html#158"><abbr title="App\Services\ReflectionService::getMethodVisibility">getMethodVisibility</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#160"><abbr title="App\Services\FeatureRegistry::removeFeature">removeFeature</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="BankExportGenerator.php.html#202"><abbr title="App\Services\BankExportGenerator::csvEscape">csvEscape</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="ReflectionService.php.html#100"><abbr title="App\Services\ReflectionService::getPublicMethods">getPublicMethods</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="AttendanceGeofenceService.php.html#14"><abbr title="App\Services\AttendanceGeofenceService::evaluate">evaluate</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="PlatformCompanyHealthService.php.html#281"><abbr title="App\Services\PlatformCompanyHealthService::riskLevel">riskLevel</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#42"><abbr title="App\Services\FeatureRegistry::registerFeature">registerFeature</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#232"><abbr title="App\Services\FeatureDetector::isApiRoute">isApiRoute</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="ReflectionService.php.html#53"><abbr title="App\Services\ReflectionService::analyzeMethod">analyzeMethod</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="EmployeeService.php.html#200"><abbr title="App\Services\EmployeeService::arrayValue">arrayValue</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#16"><abbr title="App\Services\SSO\SSOService::getCompanySSO">getCompanySSO</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="AttendanceMonthlyReportService.php.html#174"><abbr title="App\Services\AttendanceMonthlyReportService::estimatedHourlyRate">estimatedHourlyRate</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="FeatureRegistry.php.html#117"><abbr title="App\Services\FeatureRegistry::updateFeature">updateFeature</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#278"><abbr title="App\Services\Communication\CommunicationService::sendEmail">sendEmail</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#333"><abbr title="App\Services\PayrollCycleService::cycleAdvances">cycleAdvances</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="PayrollCycleService.php.html#117"><abbr title="App\Services\PayrollCycleService::getMobileSummary">getMobileSummary</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="ReflectionService.php.html#25"><abbr title="App\Services\ReflectionService::analyzeClass">analyzeClass</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="StripeService.php.html#296"><abbr title="App\Services\StripeService::handleInvoicePaymentFailed">handleInvoicePaymentFailed</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Communication/CommunicationService.php.html#293"><abbr title="App\Services\Communication\CommunicationService::providerFor">providerFor</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="ReflectionService.php.html#124"><abbr title="App\Services\ReflectionService::getClassAttributes">getClassAttributes</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#54"><abbr title="App\Services\SuperAdminService::getQrCodeUrl">getQrCodeUrl</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="DataAccessAuditLogger.php.html#42"><abbr title="App\Services\DataAccessAuditLogger::truncateUserAgent">truncateUserAgent</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#445"><abbr title="App\Services\FeatureDetector::extractApiVersionFromUri">extractApiVersionFromUri</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#13"><abbr title="App\Services\SuperAdminService::generateSecret">generateSecret</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SuperAdminService.php.html#70"><abbr title="App\Services\SuperAdminService::google2fa">google2fa</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="FeatureDetector.php.html#82"><abbr title="App\Services\FeatureDetector::extractMetadata">extractMetadata</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="CompanyProvisioningService.php.html#105"><abbr title="App\Services\CompanyProvisioningService::resolveUniqueSlug">resolveUniqueSlug</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="AuthService.php.html#143"><abbr title="App\Services\AuthService::lookupTableExists">lookupTableExists</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="EstimationService.php.html#301"><abbr title="App\Services\EstimationService::hrModelTemplatesTableExists">hrModelTemplatesTableExists</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="OnboardingQrService.php.html#153"><abbr title="App\Services\OnboardingQrService::base64UrlDecode">base64UrlDecode</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#203"><abbr title="App\Services\PushNotificationService::handleFailedTokens">handleFailedTokens</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="PlatformCompanyHealthService.php.html#331"><abbr title="App\Services\PlatformCompanyHealthService::withTenantSearchPath">withTenantSearchPath</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="WebhookDispatcher.php.html#12"><abbr title="App\Services\WebhookDispatcher::dispatch">dispatch</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="AbsenceService.php.html#165"><abbr title="App\Services\AbsenceService::hasDateConflict">hasDateConflict</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="DataAccessAuditLogger.php.html#18"><abbr title="App\Services\DataAccessAuditLogger::record">record</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="PushNotificationService.php.html#44"><abbr title="App\Services\PushNotificationService::sendToEmployee">sendToEmployee</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SSO/SSOService.php.html#46"><abbr title="App\Services\SSO\SSOService::configureSSO">configureSSO</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#124"><abbr title="App\Services\SectorTemplateService::sharedTableExists">sharedTableExists</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SectorTemplateService.php.html#143"><abbr title="App\Services\SectorTemplateService::sharedColumnExists">sharedColumnExists</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.12</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.22</a> and <a href="https://phpunit.de/">PHPUnit 11.5.50</a> at Sat Jun 20 21:34:42 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([6,3,0,1,1,1,4,1,3,13,17,7], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([94,3,1,0,1,13,5,13,12,30,25,213], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[98.01980198019803,22,"<a href=\"AbsenceService.php.html#18\">App\\Services\\AbsenceService<\/a>"],[80.76923076923077,34,"<a href=\"AnnotationReader.php.html#14\">App\\Services\\AnnotationReader<\/a>"],[98.55072463768117,31,"<a href=\"AttendanceAnomalyService.php.html#10\">App\\Services\\AttendanceAnomalyService<\/a>"],[71.66666666666667,14,"<a href=\"AttendanceGeofenceService.php.html#9\">App\\Services\\AttendanceGeofenceService<\/a>"],[92.5,18,"<a href=\"AttendanceMonthlyReportService.php.html#13\">App\\Services\\AttendanceMonthlyReportService<\/a>"],[91.10169491525424,48,"<a href=\"AttendanceService.php.html#16\">App\\Services\\AttendanceService<\/a>"],[90.5511811023622,54,"<a href=\"AuthService.php.html#16\">App\\Services\\AuthService<\/a>"],[82.73381294964028,37,"<a href=\"BankExportGenerator.php.html#10\">App\\Services\\BankExportGenerator<\/a>"],[82.35294117647058,4,"<a href=\"BiometricEnrollmentService.php.html#10\">App\\Services\\BiometricEnrollmentService<\/a>"],[7.142857142857142,23,"<a href=\"CabinetService.php.html#15\">App\\Services\\CabinetService<\/a>"],[47.368421052631575,18,"<a href=\"Cache\/TenantCacheService.php.html#15\">App\\Services\\Cache\\TenantCacheService<\/a>"],[86.3905325443787,30,"<a href=\"CalendarSyncService.php.html#18\">App\\Services\\CalendarSyncService<\/a>"],[8.108108108108109,10,"<a href=\"CommissionService.php.html#11\">App\\Services\\CommissionService<\/a>"],[82.78145695364239,57,"<a href=\"Communication\/CommunicationService.php.html#19\">App\\Services\\Communication\\CommunicationService<\/a>"],[89.70588235294117,23,"<a href=\"Communication\/NotificationPreferenceProvisioner.php.html#9\">App\\Services\\Communication\\NotificationPreferenceProvisioner<\/a>"],[100,1,"<a href=\"Communication\/Providers\/AuditMessageProvider.php.html#9\">App\\Services\\Communication\\Providers\\AuditMessageProvider<\/a>"],[97.26027397260275,4,"<a href=\"CompanyProvisioningService.php.html#12\">App\\Services\\CompanyProvisioningService<\/a>"],[0,1,"<a href=\"ContractPdfGenerator.php.html#10\">App\\Services\\ContractPdfGenerator<\/a>"],[85.71428571428571,4,"<a href=\"DataAccessAuditLogger.php.html#13\">App\\Services\\DataAccessAuditLogger<\/a>"],[96.3302752293578,45,"<a href=\"EmployeeService.php.html#15\">App\\Services\\EmployeeService<\/a>"],[96.92307692307692,37,"<a href=\"EstimationService.php.html#12\">App\\Services\\EstimationService<\/a>"],[81.62544169611307,53,"<a href=\"FeatureDetector.php.html#19\">App\\Services\\FeatureDetector<\/a>"],[100,4,"<a href=\"FeatureFlag.php.html#15\">App\\Services\\FeatureFlag<\/a>"],[78.57142857142857,36,"<a href=\"FeatureRegistry.php.html#22\">App\\Services\\FeatureRegistry<\/a>"],[0,6,"<a href=\"FeatureService.php.html#9\">App\\Services\\FeatureService<\/a>"],[89.0909090909091,12,"<a href=\"KioskAttendanceService.php.html#11\">App\\Services\\KioskAttendanceService<\/a>"],[100,14,"<a href=\"MobileExperienceService.php.html#11\">App\\Services\\MobileExperienceService<\/a>"],[58.97435897435898,19,"<a href=\"OnboardingQrService.php.html#11\">App\\Services\\OnboardingQrService<\/a>"],[27.083333333333332,20,"<a href=\"PartnerService.php.html#13\">App\\Services\\PartnerService<\/a>"],[58.333333333333336,3,"<a href=\"PaySlipPdfGenerator.php.html#12\">App\\Services\\PaySlipPdfGenerator<\/a>"],[86.66666666666667,7,"<a href=\"Payroll\/CountryRules\/AbstractCountryRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\AbstractCountryRules<\/a>"],[91.66666666666666,7,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#5\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules<\/a>"],[91.66666666666666,7,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#5\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules<\/a>"],[93.75,10,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#5\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules<\/a>"],[91.30434782608695,7,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#5\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules<\/a>"],[90.47619047619048,7,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#5\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules<\/a>"],[91.30434782608695,7,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#5\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules<\/a>"],[7.28476821192053,23,"<a href=\"Payroll\/PayrollCalculator.php.html#19\">App\\Services\\Payroll\\PayrollCalculator<\/a>"],[58.82352941176471,50,"<a href=\"PayrollCycleService.php.html#20\">App\\Services\\PayrollCycleService<\/a>"],[0,35,"<a href=\"PayrollService.php.html#14\">App\\Services\\PayrollService<\/a>"],[98.50746268656717,37,"<a href=\"PlatformCompanyHealthService.php.html#11\">App\\Services\\PlatformCompanyHealthService<\/a>"],[57.14285714285714,28,"<a href=\"PushNotificationService.php.html#12\">App\\Services\\PushNotificationService<\/a>"],[81.11111111111111,32,"<a href=\"ReflectionService.php.html#15\">App\\Services\\ReflectionService<\/a>"],[100,5,"<a href=\"SSO\/SSOProviderConfig.php.html#7\">App\\Services\\SSO\\SSOProviderConfig<\/a>"],[61.1764705882353,13,"<a href=\"SSO\/SSOService.php.html#11\">App\\Services\\SSO\\SSOService<\/a>"],[0,10,"<a href=\"SalaryAdvanceService.php.html#10\">App\\Services\\SalaryAdvanceService<\/a>"],[89.47368421052632,26,"<a href=\"SectorTemplateService.php.html#9\">App\\Services\\SectorTemplateService<\/a>"],[100,13,"<a href=\"Security\/SensitiveDataEncryptor.php.html#9\">App\\Services\\Security\\SensitiveDataEncryptor<\/a>"],[96.37681159420289,17,"<a href=\"SocialDeclarationGenerator.php.html#9\">App\\Services\\SocialDeclarationGenerator<\/a>"],[33.7962962962963,49,"<a href=\"StripeService.php.html#22\">App\\Services\\StripeService<\/a>"],[78.94736842105263,21,"<a href=\"SuperAdminService.php.html#8\">App\\Services\\SuperAdminService<\/a>"],[96.55172413793103,11,"<a href=\"TenantManager.php.html#9\">App\\Services\\TenantManager<\/a>"],[100,22,"<a href=\"Tracking\/TraccarService.php.html#8\">App\\Services\\Tracking\\TraccarService<\/a>"],[0,15,"<a href=\"UserAuthService.php.html#10\">App\\Services\\UserAuthService<\/a>"],[100,3,"<a href=\"UserInvitationService.php.html#14\">App\\Services\\UserInvitationService<\/a>"],[83.33333333333334,2,"<a href=\"WebhookDispatcher.php.html#10\">App\\Services\\WebhookDispatcher<\/a>"],[0,21,"<a href=\"ZktecoIntegrationService.php.html#14\">App\\Services\\ZktecoIntegrationService<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[95.83333333333334,5,"<a href=\"AbsenceService.php.html#20\">App\\Services\\AbsenceService::create<\/a>"],[100,5,"<a href=\"AbsenceService.php.html#59\">App\\Services\\AbsenceService::approve<\/a>"],[100,5,"<a href=\"AbsenceService.php.html#106\">App\\Services\\AbsenceService::reject<\/a>"],[100,2,"<a href=\"AbsenceService.php.html#145\">App\\Services\\AbsenceService::cancel<\/a>"],[100,2,"<a href=\"AbsenceService.php.html#156\">App\\Services\\AbsenceService::currentBalance<\/a>"],[85.71428571428571,2,"<a href=\"AbsenceService.php.html#165\">App\\Services\\AbsenceService::hasDateConflict<\/a>"],[100,1,"<a href=\"AbsenceService.php.html#179\">App\\Services\\AbsenceService::logBalanceChange<\/a>"],[100,3,"<a href=\"AnnotationReader.php.html#19\">App\\Services\\AnnotationReader::extractMethodAnnotations<\/a>"],[83.78378378378379,15,"<a href=\"AnnotationReader.php.html#56\">App\\Services\\AnnotationReader::parseDocComment<\/a>"],[82.75862068965517,6,"<a href=\"AnnotationReader.php.html#117\">App\\Services\\AnnotationReader::parseMethodAttributes<\/a>"],[0,3,"<a href=\"AnnotationReader.php.html#163\">App\\Services\\AnnotationReader::parseParamTag<\/a>"],[0,2,"<a href=\"AnnotationReader.php.html#181\">App\\Services\\AnnotationReader::parseResponseTag<\/a>"],[100,2,"<a href=\"AnnotationReader.php.html#197\">App\\Services\\AnnotationReader::generateTitleFromMethod<\/a>"],[100,2,"<a href=\"AnnotationReader.php.html#223\">App\\Services\\AnnotationReader::generateDescriptionFromMethod<\/a>"],[100,1,"<a href=\"AnnotationReader.php.html#245\">App\\Services\\AnnotationReader::extractResourceName<\/a>"],[100,1,"<a href=\"AttendanceAnomalyService.php.html#16\">App\\Services\\AttendanceAnomalyService::summarize<\/a>"],[100,2,"<a href=\"AttendanceAnomalyService.php.html#89\">App\\Services\\AttendanceAnomalyService::lateArrivals<\/a>"],[100,2,"<a href=\"AttendanceAnomalyService.php.html#104\">App\\Services\\AttendanceAnomalyService::missingCheckOuts<\/a>"],[100,2,"<a href=\"AttendanceAnomalyService.php.html#116\">App\\Services\\AttendanceAnomalyService::manualCorrections<\/a>"],[100,2,"<a href=\"AttendanceAnomalyService.php.html#128\">App\\Services\\AttendanceAnomalyService::excessiveOvertime<\/a>"],[92.85714285714286,5,"<a href=\"AttendanceAnomalyService.php.html#143\">App\\Services\\AttendanceAnomalyService::rapidDevicePunches<\/a>"],[100,1,"<a href=\"AttendanceAnomalyService.php.html#185\">App\\Services\\AttendanceAnomalyService::repeatedExactCheckIns<\/a>"],[96,5,"<a href=\"AttendanceAnomalyService.php.html#207\">App\\Services\\AttendanceAnomalyService::outOfGeofencePunches<\/a>"],[100,1,"<a href=\"AttendanceAnomalyService.php.html#243\">App\\Services\\AttendanceAnomalyService::distanceMeters<\/a>"],[100,1,"<a href=\"AttendanceAnomalyService.php.html#259\">App\\Services\\AttendanceAnomalyService::item<\/a>"],[100,9,"<a href=\"AttendanceAnomalyService.php.html#285\">App\\Services\\AttendanceAnomalyService::recommendedAction<\/a>"],[79.3103448275862,4,"<a href=\"AttendanceGeofenceService.php.html#14\">App\\Services\\AttendanceGeofenceService::evaluate<\/a>"],[100,1,"<a href=\"AttendanceGeofenceService.php.html#53\">App\\Services\\AttendanceGeofenceService::distanceMeters<\/a>"],[56.00000000000001,9,"<a href=\"AttendanceGeofenceService.php.html#68\">App\\Services\\AttendanceGeofenceService::resolveTarget<\/a>"],[100,3,"<a href=\"AttendanceMonthlyReportService.php.html#15\">App\\Services\\AttendanceMonthlyReportService::build<\/a>"],[96.15384615384616,4,"<a href=\"AttendanceMonthlyReportService.php.html#82\">App\\Services\\AttendanceMonthlyReportService::toCsv<\/a>"],[0,1,"<a href=\"AttendanceMonthlyReportService.php.html#119\">App\\Services\\AttendanceMonthlyReportService::toPdf<\/a>"],[100,3,"<a href=\"AttendanceMonthlyReportService.php.html#130\">App\\Services\\AttendanceMonthlyReportService::employeeRow<\/a>"],[100,2,"<a href=\"AttendanceMonthlyReportService.php.html#152\">App\\Services\\AttendanceMonthlyReportService::estimatedGrossAmount<\/a>"],[100,2,"<a href=\"AttendanceMonthlyReportService.php.html#163\">App\\Services\\AttendanceMonthlyReportService::estimatedOvertimeAmount<\/a>"],[60,3,"<a href=\"AttendanceMonthlyReportService.php.html#174\">App\\Services\\AttendanceMonthlyReportService::estimatedHourlyRate<\/a>"],[100,1,"<a href=\"AttendanceService.php.html#21\">App\\Services\\AttendanceService::__construct<\/a>"],[100,4,"<a href=\"AttendanceService.php.html#23\">App\\Services\\AttendanceService::checkIn<\/a>"],[93.87755102040816,9,"<a href=\"AttendanceService.php.html#81\">App\\Services\\AttendanceService::checkOut<\/a>"],[84.70588235294117,11,"<a href=\"AttendanceService.php.html#150\">App\\Services\\AttendanceService::importExternalPunch<\/a>"],[83.87096774193549,12,"<a href=\"AttendanceService.php.html#261\">App\\Services\\AttendanceService::recalculateLog<\/a>"],[100,1,"<a href=\"AttendanceService.php.html#309\">App\\Services\\AttendanceService::resolveSchedule<\/a>"],[100,1,"<a href=\"AttendanceService.php.html#314\">App\\Services\\AttendanceService::nextSessionNumber<\/a>"],[100,4,"<a href=\"AttendanceService.php.html#324\">App\\Services\\AttendanceService::breakMinutesForLog<\/a>"],[100,3,"<a href=\"AttendanceService.php.html#337\">App\\Services\\AttendanceService::normalizeDto<\/a>"],[100,2,"<a href=\"AttendanceService.php.html#354\">App\\Services\\AttendanceService::buildPunchMeta<\/a>"],[90.27777777777779,29,"<a href=\"AuthService.php.html#21\">App\\Services\\AuthService::login<\/a>"],[100,2,"<a href=\"AuthService.php.html#138\">App\\Services\\AuthService::lookupTable<\/a>"],[75,2,"<a href=\"AuthService.php.html#143\">App\\Services\\AuthService::lookupTableExists<\/a>"],[100,1,"<a href=\"AuthService.php.html#154\">App\\Services\\AuthService::supportsLoginLocking<\/a>"],[91.66666666666666,5,"<a href=\"AuthService.php.html#165\">App\\Services\\AuthService::resolveCompanyForEmployee<\/a>"],[88,9,"<a href=\"AuthService.php.html#191\">App\\Services\\AuthService::findEmployeeInTenantSchemas<\/a>"],[100,1,"<a href=\"AuthService.php.html#238\">App\\Services\\AuthService::tenantEmployeesTableExists<\/a>"],[100,2,"<a href=\"AuthService.php.html#245\">App\\Services\\AuthService::currentSearchPath<\/a>"],[100,1,"<a href=\"AuthService.php.html#252\">App\\Services\\AuthService::setTenantSearchPath<\/a>"],[100,1,"<a href=\"AuthService.php.html#260\">App\\Services\\AuthService::formatSearchPath<\/a>"],[100,1,"<a href=\"AuthService.php.html#265\">App\\Services\\AuthService::isSafeSchemaName<\/a>"],[0,8,"<a href=\"BankExportGenerator.php.html#12\">App\\Services\\BankExportGenerator::generate<\/a>"],[44.44444444444444,8,"<a href=\"BankExportGenerator.php.html#30\">App\\Services\\BankExportGenerator::fileExtension<\/a>"],[44.44444444444444,8,"<a href=\"BankExportGenerator.php.html#43\">App\\Services\\BankExportGenerator::mimeType<\/a>"],[100,2,"<a href=\"BankExportGenerator.php.html#56\">App\\Services\\BankExportGenerator::generateSepaXml<\/a>"],[100,2,"<a href=\"BankExportGenerator.php.html#105\">App\\Services\\BankExportGenerator::generateCcpAlgerie<\/a>"],[100,2,"<a href=\"BankExportGenerator.php.html#127\">App\\Services\\BankExportGenerator::generateCsvGeneric<\/a>"],[100,2,"<a href=\"BankExportGenerator.php.html#151\">App\\Services\\BankExportGenerator::generateCpaBna<\/a>"],[100,1,"<a href=\"BankExportGenerator.php.html#197\">App\\Services\\BankExportGenerator::xmlEscape<\/a>"],[66.66666666666666,4,"<a href=\"BankExportGenerator.php.html#202\">App\\Services\\BankExportGenerator::csvEscape<\/a>"],[96,2,"<a href=\"BiometricEnrollmentService.php.html#12\">App\\Services\\BiometricEnrollmentService::submit<\/a>"],[100,1,"<a href=\"BiometricEnrollmentService.php.html#46\">App\\Services\\BiometricEnrollmentService::approve<\/a>"],[0,1,"<a href=\"BiometricEnrollmentService.php.html#72\">App\\Services\\BiometricEnrollmentService::reject<\/a>"],[0,1,"<a href=\"CabinetService.php.html#22\">App\\Services\\CabinetService::createFolder<\/a>"],[0,5,"<a href=\"CabinetService.php.html#37\">App\\Services\\CabinetService::updateFolder<\/a>"],[0,1,"<a href=\"CabinetService.php.html#60\">App\\Services\\CabinetService::deleteFolder<\/a>"],[0,1,"<a href=\"CabinetService.php.html#71\">App\\Services\\CabinetService::uploadDocument<\/a>"],[0,4,"<a href=\"CabinetService.php.html#93\">App\\Services\\CabinetService::updateDocument<\/a>"],[0,1,"<a href=\"CabinetService.php.html#113\">App\\Services\\CabinetService::deleteDocument<\/a>"],[0,1,"<a href=\"CabinetService.php.html#119\">App\\Services\\CabinetService::moveDocument<\/a>"],[0,3,"<a href=\"CabinetService.php.html#132\">App\\Services\\CabinetService::share<\/a>"],[0,1,"<a href=\"CabinetService.php.html#152\">App\\Services\\CabinetService::revokeShare<\/a>"],[100,1,"<a href=\"CabinetService.php.html#162\">App\\Services\\CabinetService::storageStats<\/a>"],[0,2,"<a href=\"CabinetService.php.html#175\">App\\Services\\CabinetService::legacyCompanyKey<\/a>"],[0,1,"<a href=\"CabinetService.php.html#186\">App\\Services\\CabinetService::deleteFolderDocumentFiles<\/a>"],[0,1,"<a href=\"CabinetService.php.html#197\">App\\Services\\CabinetService::sendShareEmail<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#27\">App\\Services\\Cache\\TenantCacheService::remember<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#32\">App\\Services\\Cache\\TenantCacheService::forget<\/a>"],[0,1,"<a href=\"Cache\/TenantCacheService.php.html#41\">App\\Services\\Cache\\TenantCacheService::forgetPattern<\/a>"],[0,2,"<a href=\"Cache\/TenantCacheService.php.html#49\">App\\Services\\Cache\\TenantCacheService::forgetMany<\/a>"],[0,2,"<a href=\"Cache\/TenantCacheService.php.html#56\">App\\Services\\Cache\\TenantCacheService::flush<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#65\">App\\Services\\Cache\\TenantCacheService::get<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#70\">App\\Services\\Cache\\TenantCacheService::put<\/a>"],[0,1,"<a href=\"Cache\/TenantCacheService.php.html#75\">App\\Services\\Cache\\TenantCacheService::rememberEmployees<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#80\">App\\Services\\Cache\\TenantCacheService::rememberManagerDigest<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#85\">App\\Services\\Cache\\TenantCacheService::rememberSchedules<\/a>"],[0,1,"<a href=\"Cache\/TenantCacheService.php.html#90\">App\\Services\\Cache\\TenantCacheService::rememberAttendanceReport<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#95\">App\\Services\\Cache\\TenantCacheService::invalidateEmployees<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#100\">App\\Services\\Cache\\TenantCacheService::invalidateSchedules<\/a>"],[0,1,"<a href=\"Cache\/TenantCacheService.php.html#105\">App\\Services\\Cache\\TenantCacheService::invalidateManagerDigest<\/a>"],[0,1,"<a href=\"Cache\/TenantCacheService.php.html#110\">App\\Services\\Cache\\TenantCacheService::invalidateAttendanceReports<\/a>"],[100,1,"<a href=\"Cache\/TenantCacheService.php.html#115\">App\\Services\\Cache\\TenantCacheService::tenantKey<\/a>"],[100,2,"<a href=\"CalendarSyncService.php.html#20\">App\\Services\\CalendarSyncService::connect<\/a>"],[100,1,"<a href=\"CalendarSyncService.php.html#37\">App\\Services\\CalendarSyncService::disconnect<\/a>"],[85,5,"<a href=\"CalendarSyncService.php.html#45\">App\\Services\\CalendarSyncService::syncLeaves<\/a>"],[85,5,"<a href=\"CalendarSyncService.php.html#100\">App\\Services\\CalendarSyncService::syncTraining<\/a>"],[100,1,"<a href=\"CalendarSyncService.php.html#155\">App\\Services\\CalendarSyncService::getEvents<\/a>"],[42.857142857142854,4,"<a href=\"CalendarSyncService.php.html#165\">App\\Services\\CalendarSyncService::pushEventToProvider<\/a>"],[96,7,"<a href=\"CalendarSyncService.php.html#191\">App\\Services\\CalendarSyncService::pushToGoogle<\/a>"],[92.5925925925926,5,"<a href=\"CalendarSyncService.php.html#231\">App\\Services\\CalendarSyncService::pushToOutlook<\/a>"],[8.108108108108109,10,"<a href=\"CommissionService.php.html#16\">App\\Services\\CommissionService::recordCommissionForPayment<\/a>"],[100,1,"<a href=\"Communication\/CommunicationService.php.html#21\">App\\Services\\Communication\\CommunicationService::__construct<\/a>"],[100,6,"<a href=\"Communication\/CommunicationService.php.html#31\">App\\Services\\Communication\\CommunicationService::notifyEmployee<\/a>"],[40,4,"<a href=\"Communication\/CommunicationService.php.html#95\">App\\Services\\Communication\\CommunicationService::template<\/a>"],[100,1,"<a href=\"Communication\/CommunicationService.php.html#113\">App\\Services\\Communication\\CommunicationService::preferencesFor<\/a>"],[100,6,"<a href=\"Communication\/CommunicationService.php.html#122\">App\\Services\\Communication\\CommunicationService::normalizeChannels<\/a>"],[100,3,"<a href=\"Communication\/CommunicationService.php.html#136\">App\\Services\\Communication\\CommunicationService::allows<\/a>"],[78.26086956521739,16,"<a href=\"Communication\/CommunicationService.php.html#150\">App\\Services\\Communication\\CommunicationService::shouldSkipForQuietHours<\/a>"],[100,2,"<a href=\"Communication\/CommunicationService.php.html#194\">App\\Services\\Communication\\CommunicationService::quotaExceeded<\/a>"],[100,5,"<a href=\"Communication\/CommunicationService.php.html#218\">App\\Services\\Communication\\CommunicationService::sanitizeMetadata<\/a>"],[43.75,6,"<a href=\"Communication\/CommunicationService.php.html#236\">App\\Services\\Communication\\CommunicationService::sendExternalChannel<\/a>"],[100,1,"<a href=\"Communication\/CommunicationService.php.html#271\">App\\Services\\Communication\\CommunicationService::sendPush<\/a>"],[71.42857142857143,3,"<a href=\"Communication\/CommunicationService.php.html#278\">App\\Services\\Communication\\CommunicationService::sendEmail<\/a>"],[42.857142857142854,2,"<a href=\"Communication\/CommunicationService.php.html#293\">App\\Services\\Communication\\CommunicationService::providerFor<\/a>"],[100,1,"<a href=\"Communication\/CommunicationService.php.html#310\">App\\Services\\Communication\\CommunicationService::recordEvent<\/a>"],[100,3,"<a href=\"Communication\/NotificationPreferenceProvisioner.php.html#11\">App\\Services\\Communication\\NotificationPreferenceProvisioner::ensureForEmployee<\/a>"],[75,12,"<a href=\"Communication\/NotificationPreferenceProvisioner.php.html#29\">App\\Services\\Communication\\NotificationPreferenceProvisioner::backfill<\/a>"],[100,5,"<a href=\"Communication\/NotificationPreferenceProvisioner.php.html#76\">App\\Services\\Communication\\NotificationPreferenceProvisioner::applyDefaults<\/a>"],[100,3,"<a href=\"Communication\/NotificationPreferenceProvisioner.php.html#107\">App\\Services\\Communication\\NotificationPreferenceProvisioner::defaultsFor<\/a>"],[100,1,"<a href=\"Communication\/Providers\/AuditMessageProvider.php.html#14\">App\\Services\\Communication\\Providers\\AuditMessageProvider::send<\/a>"],[100,1,"<a href=\"CompanyProvisioningService.php.html#14\">App\\Services\\CompanyProvisioningService::__construct<\/a>"],[100,1,"<a href=\"CompanyProvisioningService.php.html#23\">App\\Services\\CompanyProvisioningService::provisionSharedCompany<\/a>"],[71.42857142857143,2,"<a href=\"CompanyProvisioningService.php.html#105\">App\\Services\\CompanyProvisioningService::resolveUniqueSlug<\/a>"],[0,1,"<a href=\"ContractPdfGenerator.php.html#12\">App\\Services\\ContractPdfGenerator::generate<\/a>"],[88.88888888888889,2,"<a href=\"DataAccessAuditLogger.php.html#18\">App\\Services\\DataAccessAuditLogger::record<\/a>"],[66.66666666666666,2,"<a href=\"DataAccessAuditLogger.php.html#42\">App\\Services\\DataAccessAuditLogger::truncateUserAgent<\/a>"],[100,1,"<a href=\"EmployeeService.php.html#17\">App\\Services\\EmployeeService::__construct<\/a>"],[97.05882352941177,13,"<a href=\"EmployeeService.php.html#22\">App\\Services\\EmployeeService::create<\/a>"],[93.93939393939394,10,"<a href=\"EmployeeService.php.html#78\">App\\Services\\EmployeeService::update<\/a>"],[100,2,"<a href=\"EmployeeService.php.html#137\">App\\Services\\EmployeeService::archive<\/a>"],[100,7,"<a href=\"EmployeeService.php.html#153\">App\\Services\\EmployeeService::applyBiometricConsent<\/a>"],[100,5,"<a href=\"EmployeeService.php.html#173\">App\\Services\\EmployeeService::normalizeExtraData<\/a>"],[87.5,4,"<a href=\"EmployeeService.php.html#200\">App\\Services\\EmployeeService::arrayValue<\/a>"],[100,3,"<a href=\"EmployeeService.php.html#222\">App\\Services\\EmployeeService::stringValue<\/a>"],[91.66666666666666,2,"<a href=\"EstimationService.php.html#20\">App\\Services\\EstimationService::dailySummary<\/a>"],[98.27586206896551,3,"<a href=\"EstimationService.php.html#40\">App\\Services\\EstimationService::quickEstimate<\/a>"],[100,2,"<a href=\"EstimationService.php.html#114\">App\\Services\\EstimationService::dailySummaryFromLog<\/a>"],[97.10144927536231,8,"<a href=\"EstimationService.php.html#127\">App\\Services\\EstimationService::dailySummaryFromLogs<\/a>"],[93.75,4,"<a href=\"EstimationService.php.html#218\">App\\Services\\EstimationService::resolveRates<\/a>"],[100,7,"<a href=\"EstimationService.php.html#242\">App\\Services\\EstimationService::countWorkingDaysInclusive<\/a>"],[100,3,"<a href=\"EstimationService.php.html#266\">App\\Services\\EstimationService::countWeekdaysInclusive<\/a>"],[100,6,"<a href=\"EstimationService.php.html#280\">App\\Services\\EstimationService::resolveEmployeeDeductionRate<\/a>"],[75,2,"<a href=\"EstimationService.php.html#301\">App\\Services\\EstimationService::hrModelTemplatesTableExists<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#21\">App\\Services\\FeatureDetector::__construct<\/a>"],[69.23076923076923,6,"<a href=\"FeatureDetector.php.html#30\">App\\Services\\FeatureDetector::detectNewFeatures<\/a>"],[68.18181818181817,2,"<a href=\"FeatureDetector.php.html#82\">App\\Services\\FeatureDetector::extractMetadata<\/a>"],[92.5925925925926,7,"<a href=\"FeatureDetector.php.html#119\">App\\Services\\FeatureDetector::scanRoutes<\/a>"],[56.666666666666664,6,"<a href=\"FeatureDetector.php.html#173\">App\\Services\\FeatureDetector::detectChanges<\/a>"],[83.33333333333334,4,"<a href=\"FeatureDetector.php.html#232\">App\\Services\\FeatureDetector::isApiRoute<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#251\">App\\Services\\FeatureDetector::generateFeatureKey<\/a>"],[75,7,"<a href=\"FeatureDetector.php.html#265\">App\\Services\\FeatureDetector::isValidFeature<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#291\">App\\Services\\FeatureDetector::buildFeatureData<\/a>"],[0,1,"<a href=\"FeatureDetector.php.html#322\">App\\Services\\FeatureDetector::inferPermissions<\/a>"],[0,1,"<a href=\"FeatureDetector.php.html#340\">App\\Services\\FeatureDetector::inferUIType<\/a>"],[100,3,"<a href=\"FeatureDetector.php.html#358\">App\\Services\\FeatureDetector::extractParameters<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#387\">App\\Services\\FeatureDetector::inferResponseSchema<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#416\">App\\Services\\FeatureDetector::mapPhpTypeToApiType<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#434\">App\\Services\\FeatureDetector::extractResourceName<\/a>"],[66.66666666666666,2,"<a href=\"FeatureDetector.php.html#445\">App\\Services\\FeatureDetector::extractApiVersionFromUri<\/a>"],[100,1,"<a href=\"FeatureDetector.php.html#458\">App\\Services\\FeatureDetector::findRouteByEndpoint<\/a>"],[100,3,"<a href=\"FeatureDetector.php.html#470\">App\\Services\\FeatureDetector::hasMetadataChanged<\/a>"],[100,2,"<a href=\"FeatureDetector.php.html#494\">App\\Services\\FeatureDetector::generateFormSchema<\/a>"],[100,2,"<a href=\"FeatureDetector.php.html#535\">App\\Services\\FeatureDetector::generateListSchema<\/a>"],[100,2,"<a href=\"FeatureFlag.php.html#21\">App\\Services\\FeatureFlag::enabled<\/a>"],[100,2,"<a href=\"FeatureFlag.php.html#34\">App\\Services\\FeatureFlag::for<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#34\">App\\Services\\FeatureRegistry::__construct<\/a>"],[50,3,"<a href=\"FeatureRegistry.php.html#42\">App\\Services\\FeatureRegistry::registerFeature<\/a>"],[100,2,"<a href=\"FeatureRegistry.php.html#80\">App\\Services\\FeatureRegistry::getFeatures<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#105\">App\\Services\\FeatureRegistry::getFeature<\/a>"],[64,3,"<a href=\"FeatureRegistry.php.html#117\">App\\Services\\FeatureRegistry::updateFeature<\/a>"],[41.17647058823529,3,"<a href=\"FeatureRegistry.php.html#160\">App\\Services\\FeatureRegistry::removeFeature<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#194\">App\\Services\\FeatureRegistry::getManifest<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#223\">App\\Services\\FeatureRegistry::getCompatibleFeatures<\/a>"],[0,1,"<a href=\"FeatureRegistry.php.html#239\">App\\Services\\FeatureRegistry::getFeaturesByApiVersion<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#247\">App\\Services\\FeatureRegistry::hasFeature<\/a>"],[100,4,"<a href=\"FeatureRegistry.php.html#255\">App\\Services\\FeatureRegistry::invalidateCache<\/a>"],[68.29268292682927,8,"<a href=\"FeatureRegistry.php.html#286\">App\\Services\\FeatureRegistry::synchronize<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#356\">App\\Services\\FeatureRegistry::getStatistics<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#392\">App\\Services\\FeatureRegistry::buildCacheKey<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#400\">App\\Services\\FeatureRegistry::getCurrentApiVersion<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#408\">App\\Services\\FeatureRegistry::getMinimumMobileVersion<\/a>"],[100,2,"<a href=\"FeatureRegistry.php.html#416\">App\\Services\\FeatureRegistry::getLastSynchronizationTime<\/a>"],[100,1,"<a href=\"FeatureRegistry.php.html#426\">App\\Services\\FeatureRegistry::getCacheStatus<\/a>"],[0,2,"<a href=\"FeatureService.php.html#11\">App\\Services\\FeatureService::active<\/a>"],[0,2,"<a href=\"FeatureService.php.html#28\">App\\Services\\FeatureService::limit<\/a>"],[0,2,"<a href=\"FeatureService.php.html#45\">App\\Services\\FeatureService::getCompanyPlan<\/a>"],[100,1,"<a href=\"KioskAttendanceService.php.html#13\">App\\Services\\KioskAttendanceService::__construct<\/a>"],[84.21052631578947,5,"<a href=\"KioskAttendanceService.php.html#18\">App\\Services\\KioskAttendanceService::punch<\/a>"],[91.42857142857143,6,"<a href=\"KioskAttendanceService.php.html#49\">App\\Services\\KioskAttendanceService::syncPunches<\/a>"],[100,1,"<a href=\"MobileExperienceService.php.html#34\">App\\Services\\MobileExperienceService::for<\/a>"],[100,3,"<a href=\"MobileExperienceService.php.html#43\">App\\Services\\MobileExperienceService::stageFor<\/a>"],[100,4,"<a href=\"MobileExperienceService.php.html#60\">App\\Services\\MobileExperienceService::modulesFor<\/a>"],[100,4,"<a href=\"MobileExperienceService.php.html#196\">App\\Services\\MobileExperienceService::quickActionsFor<\/a>"],[100,1,"<a href=\"MobileExperienceService.php.html#284\">App\\Services\\MobileExperienceService::module<\/a>"],[100,1,"<a href=\"MobileExperienceService.php.html#305\">App\\Services\\MobileExperienceService::quickAction<\/a>"],[100,1,"<a href=\"OnboardingQrService.php.html#18\">App\\Services\\OnboardingQrService::employeeProfilePayload<\/a>"],[0,1,"<a href=\"OnboardingQrService.php.html#48\">App\\Services\\OnboardingQrService::companyOnboardingPayload<\/a>"],[100,1,"<a href=\"OnboardingQrService.php.html#82\">App\\Services\\OnboardingQrService::decodeEmployeeProfile<\/a>"],[0,1,"<a href=\"OnboardingQrService.php.html#90\">App\\Services\\OnboardingQrService::decodeCompanyOnboarding<\/a>"],[100,1,"<a href=\"OnboardingQrService.php.html#98\">App\\Services\\OnboardingQrService::sign<\/a>"],[76.47058823529412,9,"<a href=\"OnboardingQrService.php.html#109\">App\\Services\\OnboardingQrService::verify<\/a>"],[100,2,"<a href=\"OnboardingQrService.php.html#141\">App\\Services\\OnboardingQrService::signingKey<\/a>"],[100,1,"<a href=\"OnboardingQrService.php.html#148\">App\\Services\\OnboardingQrService::base64UrlEncode<\/a>"],[80,2,"<a href=\"OnboardingQrService.php.html#153\">App\\Services\\OnboardingQrService::base64UrlDecode<\/a>"],[91.66666666666666,2,"<a href=\"PartnerService.php.html#18\">App\\Services\\PartnerService::apply<\/a>"],[100,1,"<a href=\"PartnerService.php.html#38\">App\\Services\\PartnerService::approve<\/a>"],[38.88888888888889,3,"<a href=\"PartnerService.php.html#60\">App\\Services\\PartnerService::attributeCompanyToPartner<\/a>"],[100,1,"<a href=\"PartnerService.php.html#94\">App\\Services\\PartnerService::approvePendingCommissions<\/a>"],[0,1,"<a href=\"PartnerService.php.html#109\">App\\Services\\PartnerService::handlePaymentRefunded<\/a>"],[0,3,"<a href=\"PartnerService.php.html#119\">App\\Services\\PartnerService::requestPayout<\/a>"],[0,1,"<a href=\"PartnerService.php.html#148\">App\\Services\\PartnerService::updatePayoutStatus<\/a>"],[0,1,"<a href=\"PartnerService.php.html#174\">App\\Services\\PartnerService::updatePaymentDetails<\/a>"],[0,1,"<a href=\"PartnerService.php.html#195\">App\\Services\\PartnerService::reassignCompanyPartner<\/a>"],[0,1,"<a href=\"PartnerService.php.html#218\">App\\Services\\PartnerService::updatePartnerRate<\/a>"],[0,5,"<a href=\"PartnerService.php.html#241\">App\\Services\\PartnerService::updateCommissionStatus<\/a>"],[100,1,"<a href=\"PaySlipPdfGenerator.php.html#32\">App\\Services\\PaySlipPdfGenerator::generate<\/a>"],[0,2,"<a href=\"PaySlipPdfGenerator.php.html#54\">App\\Services\\PaySlipPdfGenerator::generateForRun<\/a>"],[86.66666666666667,7,"<a href=\"Payroll\/CountryRules\/AbstractCountryRules.php.html#15\">App\\Services\\Payroll\\CountryRules\\AbstractCountryRules::calculateProgressiveTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::countryCode<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#12\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::currency<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#17\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::minimumWage<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#22\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::socialContributions<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#30\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::taxSlabs<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#42\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::calculateIncomeTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/AlgeriaPayrollRules.php.html#53\">App\\Services\\Payroll\\CountryRules\\AlgeriaPayrollRules::calculateSocialCharges<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::countryCode<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#12\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::currency<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#17\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::minimumWage<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#22\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::socialContributions<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#32\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::taxSlabs<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#43\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::calculateIncomeTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/FrancePayrollRules.php.html#51\">App\\Services\\Payroll\\CountryRules\\FrancePayrollRules::calculateSocialCharges<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::countryCode<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#12\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::currency<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#17\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::minimumWage<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#22\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::socialContributions<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#32\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::taxSlabs<\/a>"],[100,4,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#44\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::calculateIncomeTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/MoroccoPayrollRules.php.html#62\">App\\Services\\Payroll\\CountryRules\\MoroccoPayrollRules::calculateSocialCharges<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::countryCode<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#12\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::currency<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#17\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::minimumWage<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#22\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::socialContributions<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#31\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::taxSlabs<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#43\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::calculateIncomeTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/SenegalPayrollRules.php.html#51\">App\\Services\\Payroll\\CountryRules\\SenegalPayrollRules::calculateSocialCharges<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::countryCode<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#12\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::currency<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#17\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::minimumWage<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#22\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::socialContributions<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#30\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::taxSlabs<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#41\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::calculateIncomeTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TunisiaPayrollRules.php.html#49\">App\\Services\\Payroll\\CountryRules\\TunisiaPayrollRules::calculateSocialCharges<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#7\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::countryCode<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#12\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::currency<\/a>"],[0,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#17\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::minimumWage<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#22\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::socialContributions<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#32\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::taxSlabs<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#43\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::calculateIncomeTax<\/a>"],[100,1,"<a href=\"Payroll\/CountryRules\/TurkeyPayrollRules.php.html#51\">App\\Services\\Payroll\\CountryRules\\TurkeyPayrollRules::calculateSocialCharges<\/a>"],[91.66666666666666,3,"<a href=\"Payroll\/PayrollCalculator.php.html#27\">App\\Services\\Payroll\\PayrollCalculator::__construct<\/a>"],[0,2,"<a href=\"Payroll\/PayrollCalculator.php.html#47\">App\\Services\\Payroll\\PayrollCalculator::getRules<\/a>"],[0,3,"<a href=\"Payroll\/PayrollCalculator.php.html#56\">App\\Services\\Payroll\\PayrollCalculator::calculateRun<\/a>"],[0,10,"<a href=\"Payroll\/PayrollCalculator.php.html#111\">App\\Services\\Payroll\\PayrollCalculator::calculateSlip<\/a>"],[0,5,"<a href=\"Payroll\/PayrollCalculator.php.html#231\">App\\Services\\Payroll\\PayrollCalculator::computeComponentAmount<\/a>"],[71.42857142857143,5,"<a href=\"PayrollCycleService.php.html#25\">App\\Services\\PayrollCycleService::getCurrentCycle<\/a>"],[97.91666666666666,5,"<a href=\"PayrollCycleService.php.html#50\">App\\Services\\PayrollCycleService::getEmployeeBalance<\/a>"],[80.76923076923077,3,"<a href=\"PayrollCycleService.php.html#117\">App\\Services\\PayrollCycleService::getMobileSummary<\/a>"],[2.2222222222222223,5,"<a href=\"PayrollCycleService.php.html#152\">App\\Services\\PayrollCycleService::safeEmployeeBalance<\/a>"],[100,1,"<a href=\"PayrollCycleService.php.html#213\">App\\Services\\PayrollCycleService::employeeSummaryColumns<\/a>"],[0,1,"<a href=\"PayrollCycleService.php.html#236\">App\\Services\\PayrollCycleService::closeCycle<\/a>"],[91.66666666666666,3,"<a href=\"PayrollCycleService.php.html#252\">App\\Services\\PayrollCycleService::payrollSettings<\/a>"],[44.44444444444444,5,"<a href=\"PayrollCycleService.php.html#273\">App\\Services\\PayrollCycleService::resolveCompany<\/a>"],[50,4,"<a href=\"PayrollCycleService.php.html#293\">App\\Services\\PayrollCycleService::companySetting<\/a>"],[40,12,"<a href=\"PayrollCycleService.php.html#304\">App\\Services\\PayrollCycleService::fallbackGrossDue<\/a>"],[80,3,"<a href=\"PayrollCycleService.php.html#333\">App\\Services\\PayrollCycleService::cycleAdvances<\/a>"],[100,1,"<a href=\"PayrollCycleService.php.html#355\">App\\Services\\PayrollCycleService::monthlyPeriod<\/a>"],[0,1,"<a href=\"PayrollCycleService.php.html#365\">App\\Services\\PayrollCycleService::weeklyPeriod<\/a>"],[0,1,"<a href=\"PayrollCycleService.php.html#377\">App\\Services\\PayrollCycleService::dailyPeriod<\/a>"],[0,2,"<a href=\"PayrollService.php.html#17\">App\\Services\\PayrollService::create<\/a>"],[0,2,"<a href=\"PayrollService.php.html#48\">App\\Services\\PayrollService::update<\/a>"],[0,6,"<a href=\"PayrollService.php.html#65\">App\\Services\\PayrollService::validate<\/a>"],[0,2,"<a href=\"PayrollService.php.html#95\">App\\Services\\PayrollService::delete<\/a>"],[0,1,"<a href=\"PayrollService.php.html#104\">App\\Services\\PayrollService::computeNet<\/a>"],[0,7,"<a href=\"PayrollService.php.html#121\">App\\Services\\PayrollService::normalizePayrollData<\/a>"],[0,2,"<a href=\"PayrollService.php.html#151\">App\\Services\\PayrollService::toFloat<\/a>"],[0,2,"<a href=\"PayrollService.php.html#156\">App\\Services\\PayrollService::toInt<\/a>"],[0,6,"<a href=\"PayrollService.php.html#164\">App\\Services\\PayrollService::toLineItems<\/a>"],[0,2,"<a href=\"PayrollService.php.html#191\">App\\Services\\PayrollService::sumLineItems<\/a>"],[0,3,"<a href=\"PayrollService.php.html#206\">App\\Services\\PayrollService::stringKeyedArray<\/a>"],[100,1,"<a href=\"PlatformCompanyHealthService.php.html#13\">App\\Services\\PlatformCompanyHealthService::__construct<\/a>"],[100,1,"<a href=\"PlatformCompanyHealthService.php.html#20\">App\\Services\\PlatformCompanyHealthService::portfolio<\/a>"],[100,1,"<a href=\"PlatformCompanyHealthService.php.html#66\">App\\Services\\PlatformCompanyHealthService::build<\/a>"],[100,1,"<a href=\"PlatformCompanyHealthService.php.html#117\">App\\Services\\PlatformCompanyHealthService::employees<\/a>"],[100,3,"<a href=\"PlatformCompanyHealthService.php.html#145\">App\\Services\\PlatformCompanyHealthService::attendance<\/a>"],[100,3,"<a href=\"PlatformCompanyHealthService.php.html#174\">App\\Services\\PlatformCompanyHealthService::onboarding<\/a>"],[100,1,"<a href=\"PlatformCompanyHealthService.php.html#201\">App\\Services\\PlatformCompanyHealthService::anomalies<\/a>"],[100,3,"<a href=\"PlatformCompanyHealthService.php.html#220\">App\\Services\\PlatformCompanyHealthService::plan<\/a>"],[100,5,"<a href=\"PlatformCompanyHealthService.php.html#235\">App\\Services\\PlatformCompanyHealthService::subscription<\/a>"],[100,5,"<a href=\"PlatformCompanyHealthService.php.html#259\">App\\Services\\PlatformCompanyHealthService::score<\/a>"],[80,4,"<a href=\"PlatformCompanyHealthService.php.html#281\">App\\Services\\PlatformCompanyHealthService::riskLevel<\/a>"],[92.85714285714286,7,"<a href=\"PlatformCompanyHealthService.php.html#301\">App\\Services\\PlatformCompanyHealthService::nextActions<\/a>"],[83.33333333333334,2,"<a href=\"PlatformCompanyHealthService.php.html#331\">App\\Services\\PlatformCompanyHealthService::withTenantSearchPath<\/a>"],[100,2,"<a href=\"PushNotificationService.php.html#14\">App\\Services\\PushNotificationService::registerToken<\/a>"],[100,1,"<a href=\"PushNotificationService.php.html#36\">App\\Services\\PushNotificationService::removeToken<\/a>"],[87.5,2,"<a href=\"PushNotificationService.php.html#44\">App\\Services\\PushNotificationService::sendToEmployee<\/a>"],[0,2,"<a href=\"PushNotificationService.php.html#59\">App\\Services\\PushNotificationService::sendToCompany<\/a>"],[86.11111111111111,8,"<a href=\"PushNotificationService.php.html#76\">App\\Services\\PushNotificationService::sendToTokens<\/a>"],[8.108108108108109,8,"<a href=\"PushNotificationService.php.html#132\">App\\Services\\PushNotificationService::getAccessToken<\/a>"],[100,3,"<a href=\"PushNotificationService.php.html#193\">App\\Services\\PushNotificationService::formatDataForFcm<\/a>"],[80,2,"<a href=\"PushNotificationService.php.html#203\">App\\Services\\PushNotificationService::handleFailedTokens<\/a>"],[83.33333333333334,3,"<a href=\"ReflectionService.php.html#25\">App\\Services\\ReflectionService::analyzeClass<\/a>"],[85.71428571428571,4,"<a href=\"ReflectionService.php.html#53\">App\\Services\\ReflectionService::analyzeMethod<\/a>"],[100,4,"<a href=\"ReflectionService.php.html#77\">App\\Services\\ReflectionService::getMethodParameters<\/a>"],[75,4,"<a href=\"ReflectionService.php.html#100\">App\\Services\\ReflectionService::getPublicMethods<\/a>"],[42.857142857142854,2,"<a href=\"ReflectionService.php.html#124\">App\\Services\\ReflectionService::getClassAttributes<\/a>"],[100,2,"<a href=\"ReflectionService.php.html#141\">App\\Services\\ReflectionService::getMethodAttributes<\/a>"],[40,3,"<a href=\"ReflectionService.php.html#158\">App\\Services\\ReflectionService::getMethodVisibility<\/a>"],[100,5,"<a href=\"ReflectionService.php.html#174\">App\\Services\\ReflectionService::generateMethodSignature<\/a>"],[66.66666666666666,5,"<a href=\"ReflectionService.php.html#206\">App\\Services\\ReflectionService::isApiController<\/a>"],[100,1,"<a href=\"SSO\/SSOProviderConfig.php.html#12\">App\\Services\\SSO\\SSOProviderConfig::__construct<\/a>"],[100,3,"<a href=\"SSO\/SSOProviderConfig.php.html#25\">App\\Services\\SSO\\SSOProviderConfig::fromArray<\/a>"],[100,1,"<a href=\"SSO\/SSOProviderConfig.php.html#41\">App\\Services\\SSO\\SSOProviderConfig::toArray<\/a>"],[52.63157894736842,3,"<a href=\"SSO\/SSOService.php.html#16\">App\\Services\\SSO\\SSOService::getCompanySSO<\/a>"],[88.88888888888889,2,"<a href=\"SSO\/SSOService.php.html#46\">App\\Services\\SSO\\SSOService::configureSSO<\/a>"],[100,1,"<a href=\"SSO\/SSOService.php.html#84\">App\\Services\\SSO\\SSOService::disableSSO<\/a>"],[0,3,"<a href=\"SSO\/SSOService.php.html#96\">App\\Services\\SSO\\SSOService::handleSAMLResponse<\/a>"],[0,3,"<a href=\"SSO\/SSOService.php.html#121\">App\\Services\\SSO\\SSOService::handleOIDCCallback<\/a>"],[100,1,"<a href=\"SSO\/SSOService.php.html#143\">App\\Services\\SSO\\SSOService::getSupportedProviders<\/a>"],[0,1,"<a href=\"SalaryAdvanceService.php.html#12\">App\\Services\\SalaryAdvanceService::create<\/a>"],[0,2,"<a href=\"SalaryAdvanceService.php.html#24\">App\\Services\\SalaryAdvanceService::approve<\/a>"],[0,2,"<a href=\"SalaryAdvanceService.php.html#39\">App\\Services\\SalaryAdvanceService::reject<\/a>"],[0,2,"<a href=\"SalaryAdvanceService.php.html#50\">App\\Services\\SalaryAdvanceService::cancel<\/a>"],[0,3,"<a href=\"SalaryAdvanceService.php.html#61\">App\\Services\\SalaryAdvanceService::buildPlan<\/a>"],[100,1,"<a href=\"SectorTemplateService.php.html#15\">App\\Services\\SectorTemplateService::applyTemplate<\/a>"],[100,3,"<a href=\"SectorTemplateService.php.html#23\">App\\Services\\SectorTemplateService::seedAbsenceTypes<\/a>"],[86.95652173913044,11,"<a href=\"SectorTemplateService.php.html#41\">App\\Services\\SectorTemplateService::seedPositions<\/a>"],[86.36363636363636,5,"<a href=\"SectorTemplateService.php.html#81\">App\\Services\\SectorTemplateService::resolveDefaultDepartmentId<\/a>"],[100,2,"<a href=\"SectorTemplateService.php.html#119\">App\\Services\\SectorTemplateService::tenantTable<\/a>"],[87.5,2,"<a href=\"SectorTemplateService.php.html#124\">App\\Services\\SectorTemplateService::sharedTableExists<\/a>"],[87.5,2,"<a href=\"SectorTemplateService.php.html#143\">App\\Services\\SectorTemplateService::sharedColumnExists<\/a>"],[100,2,"<a href=\"Security\/SensitiveDataEncryptor.php.html#13\">App\\Services\\Security\\SensitiveDataEncryptor::encrypt<\/a>"],[100,2,"<a href=\"Security\/SensitiveDataEncryptor.php.html#22\">App\\Services\\Security\\SensitiveDataEncryptor::decrypt<\/a>"],[100,1,"<a href=\"Security\/SensitiveDataEncryptor.php.html#33\">App\\Services\\Security\\SensitiveDataEncryptor::isEncrypted<\/a>"],[100,4,"<a href=\"Security\/SensitiveDataEncryptor.php.html#38\">App\\Services\\Security\\SensitiveDataEncryptor::encryptArray<\/a>"],[100,4,"<a href=\"Security\/SensitiveDataEncryptor.php.html#49\">App\\Services\\Security\\SensitiveDataEncryptor::decryptArray<\/a>"],[100,2,"<a href=\"SocialDeclarationGenerator.php.html#16\">App\\Services\\SocialDeclarationGenerator::generateCnasDz<\/a>"],[100,2,"<a href=\"SocialDeclarationGenerator.php.html#80\">App\\Services\\SocialDeclarationGenerator::generateCnssMa<\/a>"],[100,3,"<a href=\"SocialDeclarationGenerator.php.html#140\">App\\Services\\SocialDeclarationGenerator::generateDsnFr<\/a>"],[44.44444444444444,8,"<a href=\"SocialDeclarationGenerator.php.html#219\">App\\Services\\SocialDeclarationGenerator::mapContractTypeDsn<\/a>"],[100,1,"<a href=\"SocialDeclarationGenerator.php.html#232\">App\\Services\\SocialDeclarationGenerator::sanitizeDsn<\/a>"],[100,1,"<a href=\"SocialDeclarationGenerator.php.html#237\">App\\Services\\SocialDeclarationGenerator::sanitize<\/a>"],[100,1,"<a href=\"StripeService.php.html#31\">App\\Services\\StripeService::__construct<\/a>"],[0,3,"<a href=\"StripeService.php.html#47\">App\\Services\\StripeService::createCheckoutSession<\/a>"],[0,2,"<a href=\"StripeService.php.html#93\">App\\Services\\StripeService::createPortalSession<\/a>"],[15,7,"<a href=\"StripeService.php.html#118\">App\\Services\\StripeService::verifyWebhookSignature<\/a>"],[72.72727272727273,8,"<a href=\"StripeService.php.html#161\">App\\Services\\StripeService::handleEvent<\/a>"],[0,4,"<a href=\"StripeService.php.html#177\">App\\Services\\StripeService::handleCheckoutCompleted<\/a>"],[69.56521739130434,8,"<a href=\"StripeService.php.html#232\">App\\Services\\StripeService::handleInvoicePaid<\/a>"],[87.5,3,"<a href=\"StripeService.php.html#296\">App\\Services\\StripeService::handleInvoicePaymentFailed<\/a>"],[0,7,"<a href=\"StripeService.php.html#313\">App\\Services\\StripeService::handleSubscriptionUpdated<\/a>"],[100,3,"<a href=\"StripeService.php.html#334\">App\\Services\\StripeService::handleSubscriptionDeleted<\/a>"],[0,3,"<a href=\"StripeService.php.html#363\">App\\Services\\StripeService::handleChargeRefunded<\/a>"],[66.66666666666666,2,"<a href=\"SuperAdminService.php.html#13\">App\\Services\\SuperAdminService::generateSecret<\/a>"],[66.66666666666666,6,"<a href=\"SuperAdminService.php.html#25\">App\\Services\\SuperAdminService::verifyCode<\/a>"],[44.44444444444444,2,"<a href=\"SuperAdminService.php.html#54\">App\\Services\\SuperAdminService::getQrCodeUrl<\/a>"],[66.66666666666666,2,"<a href=\"SuperAdminService.php.html#70\">App\\Services\\SuperAdminService::google2fa<\/a>"],[100,1,"<a href=\"SuperAdminService.php.html#79\">App\\Services\\SuperAdminService::totpAt<\/a>"],[100,3,"<a href=\"SuperAdminService.php.html#92\">App\\Services\\SuperAdminService::base32Encode<\/a>"],[92.3076923076923,5,"<a href=\"SuperAdminService.php.html#110\">App\\Services\\SuperAdminService::base32Decode<\/a>"],[100,3,"<a href=\"TenantManager.php.html#18\">App\\Services\\TenantManager::setTenant<\/a>"],[100,2,"<a href=\"TenantManager.php.html#37\">App\\Services\\TenantManager::resetToPrevious<\/a>"],[92.3076923076923,4,"<a href=\"TenantManager.php.html#50\">App\\Services\\TenantManager::withinTenant<\/a>"],[100,2,"<a href=\"TenantManager.php.html#76\">App\\Services\\TenantManager::restoreCompanyContext<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#14\">App\\Services\\Tracking\\TraccarService::__construct<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#28\">App\\Services\\Tracking\\TraccarService::getDevices<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#36\">App\\Services\\Tracking\\TraccarService::createDevice<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#48\">App\\Services\\Tracking\\TraccarService::updateDevice<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#53\">App\\Services\\Tracking\\TraccarService::deleteDevice<\/a>"],[100,3,"<a href=\"Tracking\/TraccarService.php.html#61\">App\\Services\\Tracking\\TraccarService::getPositions<\/a>"],[100,2,"<a href=\"Tracking\/TraccarService.php.html#78\">App\\Services\\Tracking\\TraccarService::getLastPosition<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#88\">App\\Services\\Tracking\\TraccarService::getTrips<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#100\">App\\Services\\Tracking\\TraccarService::getGeofences<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#108\">App\\Services\\Tracking\\TraccarService::createGeofence<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#116\">App\\Services\\Tracking\\TraccarService::linkGeofenceToDevice<\/a>"],[100,3,"<a href=\"Tracking\/TraccarService.php.html#127\">App\\Services\\Tracking\\TraccarService::getEvents<\/a>"],[100,2,"<a href=\"Tracking\/TraccarService.php.html#145\">App\\Services\\Tracking\\TraccarService::get<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#162\">App\\Services\\Tracking\\TraccarService::post<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#175\">App\\Services\\Tracking\\TraccarService::put<\/a>"],[100,1,"<a href=\"Tracking\/TraccarService.php.html#184\">App\\Services\\Tracking\\TraccarService::delete<\/a>"],[0,1,"<a href=\"UserAuthService.php.html#15\">App\\Services\\UserAuthService::register<\/a>"],[0,9,"<a href=\"UserAuthService.php.html#32\">App\\Services\\UserAuthService::login<\/a>"],[0,4,"<a href=\"UserAuthService.php.html#66\">App\\Services\\UserAuthService::googleSignIn<\/a>"],[0,1,"<a href=\"UserAuthService.php.html#104\">App\\Services\\UserAuthService::issueToken<\/a>"],[100,1,"<a href=\"UserInvitationService.php.html#16\">App\\Services\\UserInvitationService::__construct<\/a>"],[100,1,"<a href=\"UserInvitationService.php.html#18\">App\\Services\\UserInvitationService::createAndSend<\/a>"],[100,1,"<a href=\"UserInvitationService.php.html#62\">App\\Services\\UserInvitationService::accept<\/a>"],[83.33333333333334,2,"<a href=\"WebhookDispatcher.php.html#12\">App\\Services\\WebhookDispatcher::dispatch<\/a>"],[0,1,"<a href=\"ZktecoIntegrationService.php.html#16\">App\\Services\\ZktecoIntegrationService::registerDevice<\/a>"],[0,1,"<a href=\"ZktecoIntegrationService.php.html#36\">App\\Services\\ZktecoIntegrationService::heartbeat<\/a>"],[0,11,"<a href=\"ZktecoIntegrationService.php.html#46\">App\\Services\\ZktecoIntegrationService::pullAttendance<\/a>"],[0,1,"<a href=\"ZktecoIntegrationService.php.html#134\">App\\Services\\ZktecoIntegrationService::pushUsers<\/a>"],[0,1,"<a href=\"ZktecoIntegrationService.php.html#159\">App\\Services\\ZktecoIntegrationService::getSyncHistory<\/a>"],[0,6,"<a href=\"ZktecoIntegrationService.php.html#167\">App\\Services\\ZktecoIntegrationService::resolveAction<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

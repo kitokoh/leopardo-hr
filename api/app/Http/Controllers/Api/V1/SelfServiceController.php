@@ -7,7 +7,7 @@ use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Models\Contract;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Domain\Models\EmployeeLoan;
+use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
 use App\Models\TrainingEnrollment;
 use Illuminate\Http\JsonResponse;

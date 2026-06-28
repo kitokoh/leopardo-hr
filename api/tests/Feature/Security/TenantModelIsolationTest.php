@@ -19,7 +19,7 @@ use App\Models\SalaryAdvance;
 use App\Models\Schedule;
 use App\Models\Site;
 use App\Models\Task;
-use App\Core\Auth\Domain\Models\UserInvitation;
+use App\Models\UserInvitation;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;

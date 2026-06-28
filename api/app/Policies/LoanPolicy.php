@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Domain\Models\EmployeeLoan;
+use App\Models\EmployeeLoan;
 
 class LoanPolicy
 {

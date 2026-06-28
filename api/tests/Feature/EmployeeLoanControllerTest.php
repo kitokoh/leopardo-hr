@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Domain\Models\EmployeeLoan;
+use App\Models\EmployeeLoan;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;

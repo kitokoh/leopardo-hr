@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /home/runner/work/leopardo-hr/leopardo-hr/api/app/Policies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/home/runner/work/leopardo-hr/leopardo-hr/api/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Policies</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AbsencePolicy.php.html#10">App\Policies\AbsencePolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#10">App\Policies\ApprovalRequestPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BillingPolicy.php.html#9">App\Policies\BillingPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CommissionPolicy.php.html#10">App\Policies\CommissionPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#10">App\Policies\ContractPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#10">App\Policies\DepartmentPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#10">App\Policies\ExpenseClaimPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExportPolicy.php.html#9">App\Policies\ExportPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureFlagPolicy.php.html#9">App\Policies\FeatureFlagPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#10">App\Policies\InvoicePolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#10">App\Policies\LoanPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingPolicy.php.html#9">App\Policies\OnboardingPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerPolicy.php.html#9">App\Policies\PartnerPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#11">App\Policies\PayrollPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#10">App\Policies\PositionPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#11">App\Policies\RecruitmentPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#10">App\Policies\SchedulePolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SitePolicy.php.html#10">App\Policies\SitePolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#10">App\Policies\TrainingPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#10">App\Policies\VehiclePolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#10">App\Policies\WebhookEndpointPolicy</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#10">App\Policies\Cameras\CameraPolicy</a></td><td class="text-right">74%</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#8">App\Policies\EvaluationPolicy</a></td><td class="text-right">76%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="PayrollPolicy.php.html#11">App\Policies\PayrollPolicy</a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#10">App\Policies\ContractPolicy</a></td><td class="text-right">182</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#10">App\Policies\AbsencePolicy</a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#10">App\Policies\ExpenseClaimPolicy</a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#10">App\Policies\ApprovalRequestPolicy</a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#10">App\Policies\LoanPolicy</a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#11">App\Policies\RecruitmentPolicy</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#10">App\Policies\TrainingPolicy</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#10">App\Policies\VehiclePolicy</a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#10">App\Policies\WebhookEndpointPolicy</a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#10">App\Policies\DepartmentPolicy</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#10">App\Policies\PositionPolicy</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#10">App\Policies\SchedulePolicy</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="SitePolicy.php.html#10">App\Policies\SitePolicy</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#10">App\Policies\InvoicePolicy</a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#10">App\Policies\Cameras\CameraPolicy</a></td><td class="text-right">32</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#8">App\Policies\EvaluationPolicy</a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="CommissionPolicy.php.html#10">App\Policies\CommissionPolicy</a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AbsencePolicy.php.html#12"><abbr title="App\Policies\AbsencePolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#17"><abbr title="App\Policies\AbsencePolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#26"><abbr title="App\Policies\AbsencePolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#31"><abbr title="App\Policies\AbsencePolicy::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#36"><abbr title="App\Policies\AbsencePolicy::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#41"><abbr title="App\Policies\AbsencePolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#12"><abbr title="App\Policies\ApprovalRequestPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#17"><abbr title="App\Policies\ApprovalRequestPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#26"><abbr title="App\Policies\ApprovalRequestPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#31"><abbr title="App\Policies\ApprovalRequestPolicy::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#38"><abbr title="App\Policies\ApprovalRequestPolicy::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BillingPolicy.php.html#11"><abbr title="App\Policies\BillingPolicy::viewSubscription">viewSubscription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BillingPolicy.php.html#16"><abbr title="App\Policies\BillingPolicy::manageSubscription">manageSubscription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BillingPolicy.php.html#21"><abbr title="App\Policies\BillingPolicy::viewInvoices">viewInvoices</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BillingPolicy.php.html#26"><abbr title="App\Policies\BillingPolicy::downloadInvoice">downloadInvoice</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#53"><abbr title="App\Policies\Cameras\CameraPolicy::testRtsp">testRtsp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#58"><abbr title="App\Policies\Cameras\CameraPolicy::issueStreamToken">issueStreamToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#83"><abbr title="App\Policies\Cameras\CameraPolicy::viewLogs">viewLogs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#88"><abbr title="App\Policies\Cameras\CameraPolicy::managePermissions">managePermissions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CommissionPolicy.php.html#17"><abbr title="App\Policies\CommissionPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#12"><abbr title="App\Policies\ContractPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#17"><abbr title="App\Policies\ContractPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#26"><abbr title="App\Policies\ContractPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#31"><abbr title="App\Policies\ContractPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#37"><abbr title="App\Policies\ContractPolicy::activate">activate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#43"><abbr title="App\Policies\ContractPolicy::terminate">terminate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#49"><abbr title="App\Policies\ContractPolicy::renew">renew</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#12"><abbr title="App\Policies\DepartmentPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#17"><abbr title="App\Policies\DepartmentPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#22"><abbr title="App\Policies\DepartmentPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#27"><abbr title="App\Policies\DepartmentPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#32"><abbr title="App\Policies\DepartmentPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#10"><abbr title="App\Policies\EvaluationPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#24"><abbr title="App\Policies\EvaluationPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#12"><abbr title="App\Policies\ExpenseClaimPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#17"><abbr title="App\Policies\ExpenseClaimPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#26"><abbr title="App\Policies\ExpenseClaimPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#31"><abbr title="App\Policies\ExpenseClaimPolicy::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#37"><abbr title="App\Policies\ExpenseClaimPolicy::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#43"><abbr title="App\Policies\ExpenseClaimPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExportPolicy.php.html#11"><abbr title="App\Policies\ExportPolicy::export">export</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExportPolicy.php.html#16"><abbr title="App\Policies\ExportPolicy::viewHistory">viewHistory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExportPolicy.php.html#21"><abbr title="App\Policies\ExportPolicy::download">download</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureFlagPolicy.php.html#11"><abbr title="App\Policies\FeatureFlagPolicy::viewMatrix">viewMatrix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureFlagPolicy.php.html#16"><abbr title="App\Policies\FeatureFlagPolicy::manageMatrix">manageMatrix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureFlagPolicy.php.html#21"><abbr title="App\Policies\FeatureFlagPolicy::checkFeature">checkFeature</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#12"><abbr title="App\Policies\InvoicePolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#17"><abbr title="App\Policies\InvoicePolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#23"><abbr title="App\Policies\InvoicePolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#28"><abbr title="App\Policies\InvoicePolicy::pay">pay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#12"><abbr title="App\Policies\LoanPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#17"><abbr title="App\Policies\LoanPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#26"><abbr title="App\Policies\LoanPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#31"><abbr title="App\Policies\LoanPolicy::approve">approve</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#37"><abbr title="App\Policies\LoanPolicy::reject">reject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#43"><abbr title="App\Policies\LoanPolicy::disburse">disburse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingPolicy.php.html#11"><abbr title="App\Policies\OnboardingPolicy::viewChecklist">viewChecklist</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingPolicy.php.html#16"><abbr title="App\Policies\OnboardingPolicy::completeStep">completeStep</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingPolicy.php.html#21"><abbr title="App\Policies\OnboardingPolicy::skipStep">skipStep</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OnboardingPolicy.php.html#26"><abbr title="App\Policies\OnboardingPolicy::manageSteps">manageSteps</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerPolicy.php.html#16"><abbr title="App\Policies\PartnerPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PartnerPolicy.php.html#24"><abbr title="App\Policies\PartnerPolicy::manage">manage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#13"><abbr title="App\Policies\PayrollPolicy::viewRuns">viewRuns</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#18"><abbr title="App\Policies\PayrollPolicy::createRun">createRun</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#23"><abbr title="App\Policies\PayrollPolicy::calculateRun">calculateRun</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#28"><abbr title="App\Policies\PayrollPolicy::validateRun">validateRun</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#33"><abbr title="App\Policies\PayrollPolicy::cancelRun">cancelRun</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#38"><abbr title="App\Policies\PayrollPolicy::viewSlip">viewSlip</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#47"><abbr title="App\Policies\PayrollPolicy::downloadPdf">downloadPdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#52"><abbr title="App\Policies\PayrollPolicy::sendSlips">sendSlips</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#57"><abbr title="App\Policies\PayrollPolicy::generateBankExport">generateBankExport</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#12"><abbr title="App\Policies\PositionPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#17"><abbr title="App\Policies\PositionPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#22"><abbr title="App\Policies\PositionPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#27"><abbr title="App\Policies\PositionPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#32"><abbr title="App\Policies\PositionPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#13"><abbr title="App\Policies\RecruitmentPolicy::viewJobs">viewJobs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#18"><abbr title="App\Policies\RecruitmentPolicy::createJob">createJob</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#23"><abbr title="App\Policies\RecruitmentPolicy::updateJob">updateJob</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#28"><abbr title="App\Policies\RecruitmentPolicy::deleteJob">deleteJob</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#33"><abbr title="App\Policies\RecruitmentPolicy::viewApplicants">viewApplicants</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#38"><abbr title="App\Policies\RecruitmentPolicy::manageApplicant">manageApplicant</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#43"><abbr title="App\Policies\RecruitmentPolicy::scheduleInterview">scheduleInterview</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#12"><abbr title="App\Policies\SchedulePolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#17"><abbr title="App\Policies\SchedulePolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#22"><abbr title="App\Policies\SchedulePolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#27"><abbr title="App\Policies\SchedulePolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#32"><abbr title="App\Policies\SchedulePolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SitePolicy.php.html#12"><abbr title="App\Policies\SitePolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SitePolicy.php.html#17"><abbr title="App\Policies\SitePolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SitePolicy.php.html#22"><abbr title="App\Policies\SitePolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SitePolicy.php.html#27"><abbr title="App\Policies\SitePolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SitePolicy.php.html#32"><abbr title="App\Policies\SitePolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#12"><abbr title="App\Policies\TrainingPolicy::viewCourses">viewCourses</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#17"><abbr title="App\Policies\TrainingPolicy::createCourse">createCourse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#22"><abbr title="App\Policies\TrainingPolicy::updateCourse">updateCourse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#27"><abbr title="App\Policies\TrainingPolicy::deleteCourse">deleteCourse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#32"><abbr title="App\Policies\TrainingPolicy::manageSessions">manageSessions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#37"><abbr title="App\Policies\TrainingPolicy::enrollSelf">enrollSelf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#42"><abbr title="App\Policies\TrainingPolicy::enrollOthers">enrollOthers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#47"><abbr title="App\Policies\TrainingPolicy::viewEnrollments">viewEnrollments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#12"><abbr title="App\Policies\VehiclePolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#17"><abbr title="App\Policies\VehiclePolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#22"><abbr title="App\Policies\VehiclePolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#27"><abbr title="App\Policies\VehiclePolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#32"><abbr title="App\Policies\VehiclePolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#37"><abbr title="App\Policies\VehiclePolicy::assignDriver">assignDriver</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#12"><abbr title="App\Policies\WebhookEndpointPolicy::viewAny">viewAny</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#17"><abbr title="App\Policies\WebhookEndpointPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#23"><abbr title="App\Policies\WebhookEndpointPolicy::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#28"><abbr title="App\Policies\WebhookEndpointPolicy::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#34"><abbr title="App\Policies\WebhookEndpointPolicy::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#17"><abbr title="App\Policies\Cameras\CameraPolicy::view">view</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#47"><abbr title="App\Policies\EvaluationPolicy::submit">submit</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#56"><abbr title="App\Policies\EvaluationPolicy::acknowledge">acknowledge</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#35"><abbr title="App\Policies\Cameras\CameraPolicy::update">update</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#63"><abbr title="App\Policies\Cameras\CameraPolicy::shareAccess">shareAccess</abbr></a></td><td class="text-right">80%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="PayrollPolicy.php.html#38"><abbr title="App\Policies\PayrollPolicy::viewSlip">viewSlip</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#17"><abbr title="App\Policies\AbsencePolicy::view">view</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#41"><abbr title="App\Policies\AbsencePolicy::delete">delete</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#17"><abbr title="App\Policies\ApprovalRequestPolicy::view">view</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#31"><abbr title="App\Policies\ApprovalRequestPolicy::approve">approve</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ApprovalRequestPolicy.php.html#38"><abbr title="App\Policies\ApprovalRequestPolicy::reject">reject</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#17"><abbr title="App\Policies\ContractPolicy::view">view</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#17"><abbr title="App\Policies\ExpenseClaimPolicy::view">view</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#43"><abbr title="App\Policies\ExpenseClaimPolicy::delete">delete</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#17"><abbr title="App\Policies\LoanPolicy::view">view</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#31"><abbr title="App\Policies\AbsencePolicy::approve">approve</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="AbsencePolicy.php.html#36"><abbr title="App\Policies\AbsencePolicy::reject">reject</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CommissionPolicy.php.html#17"><abbr title="App\Policies\CommissionPolicy::view">view</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#31"><abbr title="App\Policies\ContractPolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#37"><abbr title="App\Policies\ContractPolicy::activate">activate</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#43"><abbr title="App\Policies\ContractPolicy::terminate">terminate</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ContractPolicy.php.html#49"><abbr title="App\Policies\ContractPolicy::renew">renew</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#27"><abbr title="App\Policies\DepartmentPolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DepartmentPolicy.php.html#32"><abbr title="App\Policies\DepartmentPolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#31"><abbr title="App\Policies\ExpenseClaimPolicy::approve">approve</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ExpenseClaimPolicy.php.html#37"><abbr title="App\Policies\ExpenseClaimPolicy::reject">reject</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#17"><abbr title="App\Policies\InvoicePolicy::view">view</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="InvoicePolicy.php.html#28"><abbr title="App\Policies\InvoicePolicy::pay">pay</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#31"><abbr title="App\Policies\LoanPolicy::approve">approve</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#37"><abbr title="App\Policies\LoanPolicy::reject">reject</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="LoanPolicy.php.html#43"><abbr title="App\Policies\LoanPolicy::disburse">disburse</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#23"><abbr title="App\Policies\PayrollPolicy::calculateRun">calculateRun</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#28"><abbr title="App\Policies\PayrollPolicy::validateRun">validateRun</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#33"><abbr title="App\Policies\PayrollPolicy::cancelRun">cancelRun</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#52"><abbr title="App\Policies\PayrollPolicy::sendSlips">sendSlips</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PayrollPolicy.php.html#57"><abbr title="App\Policies\PayrollPolicy::generateBankExport">generateBankExport</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#27"><abbr title="App\Policies\PositionPolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="PositionPolicy.php.html#32"><abbr title="App\Policies\PositionPolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#23"><abbr title="App\Policies\RecruitmentPolicy::updateJob">updateJob</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#28"><abbr title="App\Policies\RecruitmentPolicy::deleteJob">deleteJob</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecruitmentPolicy.php.html#33"><abbr title="App\Policies\RecruitmentPolicy::viewApplicants">viewApplicants</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#27"><abbr title="App\Policies\SchedulePolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SchedulePolicy.php.html#32"><abbr title="App\Policies\SchedulePolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SitePolicy.php.html#27"><abbr title="App\Policies\SitePolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SitePolicy.php.html#32"><abbr title="App\Policies\SitePolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#22"><abbr title="App\Policies\TrainingPolicy::updateCourse">updateCourse</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TrainingPolicy.php.html#27"><abbr title="App\Policies\TrainingPolicy::deleteCourse">deleteCourse</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#17"><abbr title="App\Policies\VehiclePolicy::view">view</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#27"><abbr title="App\Policies\VehiclePolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#32"><abbr title="App\Policies\VehiclePolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="VehiclePolicy.php.html#37"><abbr title="App\Policies\VehiclePolicy::assignDriver">assignDriver</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#17"><abbr title="App\Policies\WebhookEndpointPolicy::view">view</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#28"><abbr title="App\Policies\WebhookEndpointPolicy::update">update</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="WebhookEndpointPolicy.php.html#34"><abbr title="App\Policies\WebhookEndpointPolicy::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#17"><abbr title="App\Policies\Cameras\CameraPolicy::view">view</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#35"><abbr title="App\Policies\Cameras\CameraPolicy::update">update</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Cameras/CameraPolicy.php.html#63"><abbr title="App\Policies\Cameras\CameraPolicy::shareAccess">shareAccess</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#47"><abbr title="App\Policies\EvaluationPolicy::submit">submit</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="EvaluationPolicy.php.html#56"><abbr title="App\Policies\EvaluationPolicy::acknowledge">acknowledge</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.12</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.22</a> and <a href="https://phpunit.de/">PHPUnit 11.5.50</a> at Sat Jun 20 21:34:42 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([21,0,0,0,0,0,0,0,2,0,0,2], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([112,0,0,0,0,0,0,3,0,2,0,19], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,12,"<a href=\"AbsencePolicy.php.html#10\">App\\Policies\\AbsencePolicy<\/a>"],[0,11,"<a href=\"ApprovalRequestPolicy.php.html#10\">App\\Policies\\ApprovalRequestPolicy<\/a>"],[100,8,"<a href=\"AttendancePolicy.php.html#8\">App\\Policies\\AttendancePolicy<\/a>"],[0,4,"<a href=\"BillingPolicy.php.html#9\">App\\Policies\\BillingPolicy<\/a>"],[74.19354838709677,23,"<a href=\"Cameras\/CameraPolicy.php.html#10\">App\\Policies\\Cameras\\CameraPolicy<\/a>"],[0,2,"<a href=\"CommissionPolicy.php.html#10\">App\\Policies\\CommissionPolicy<\/a>"],[0,13,"<a href=\"ContractPolicy.php.html#10\">App\\Policies\\ContractPolicy<\/a>"],[0,7,"<a href=\"DepartmentPolicy.php.html#10\">App\\Policies\\DepartmentPolicy<\/a>"],[100,9,"<a href=\"EmployeePolicy.php.html#7\">App\\Policies\\EmployeePolicy<\/a>"],[76.47058823529412,13,"<a href=\"EvaluationPolicy.php.html#8\">App\\Policies\\EvaluationPolicy<\/a>"],[0,12,"<a href=\"ExpenseClaimPolicy.php.html#10\">App\\Policies\\ExpenseClaimPolicy<\/a>"],[0,3,"<a href=\"ExportPolicy.php.html#9\">App\\Policies\\ExportPolicy<\/a>"],[0,3,"<a href=\"FeatureFlagPolicy.php.html#9\">App\\Policies\\FeatureFlagPolicy<\/a>"],[0,6,"<a href=\"InvoicePolicy.php.html#10\">App\\Policies\\InvoicePolicy<\/a>"],[0,11,"<a href=\"LoanPolicy.php.html#10\">App\\Policies\\LoanPolicy<\/a>"],[0,4,"<a href=\"OnboardingPolicy.php.html#9\">App\\Policies\\OnboardingPolicy<\/a>"],[0,2,"<a href=\"PartnerPolicy.php.html#9\">App\\Policies\\PartnerPolicy<\/a>"],[0,17,"<a href=\"PayrollPolicy.php.html#11\">App\\Policies\\PayrollPolicy<\/a>"],[0,7,"<a href=\"PositionPolicy.php.html#10\">App\\Policies\\PositionPolicy<\/a>"],[0,10,"<a href=\"RecruitmentPolicy.php.html#11\">App\\Policies\\RecruitmentPolicy<\/a>"],[0,7,"<a href=\"SchedulePolicy.php.html#10\">App\\Policies\\SchedulePolicy<\/a>"],[0,7,"<a href=\"SitePolicy.php.html#10\">App\\Policies\\SitePolicy<\/a>"],[0,10,"<a href=\"TrainingPolicy.php.html#10\">App\\Policies\\TrainingPolicy<\/a>"],[0,10,"<a href=\"VehiclePolicy.php.html#10\">App\\Policies\\VehiclePolicy<\/a>"],[0,8,"<a href=\"WebhookEndpointPolicy.php.html#10\">App\\Policies\\WebhookEndpointPolicy<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"AbsencePolicy.php.html#12\">App\\Policies\\AbsencePolicy::viewAny<\/a>"],[0,3,"<a href=\"AbsencePolicy.php.html#17\">App\\Policies\\AbsencePolicy::view<\/a>"],[0,1,"<a href=\"AbsencePolicy.php.html#26\">App\\Policies\\AbsencePolicy::create<\/a>"],[0,2,"<a href=\"AbsencePolicy.php.html#31\">App\\Policies\\AbsencePolicy::approve<\/a>"],[0,2,"<a href=\"AbsencePolicy.php.html#36\">App\\Policies\\AbsencePolicy::reject<\/a>"],[0,3,"<a href=\"AbsencePolicy.php.html#41\">App\\Policies\\AbsencePolicy::delete<\/a>"],[0,1,"<a href=\"ApprovalRequestPolicy.php.html#12\">App\\Policies\\ApprovalRequestPolicy::viewAny<\/a>"],[0,3,"<a href=\"ApprovalRequestPolicy.php.html#17\">App\\Policies\\ApprovalRequestPolicy::view<\/a>"],[0,1,"<a href=\"ApprovalRequestPolicy.php.html#26\">App\\Policies\\ApprovalRequestPolicy::create<\/a>"],[0,3,"<a href=\"ApprovalRequestPolicy.php.html#31\">App\\Policies\\ApprovalRequestPolicy::approve<\/a>"],[0,3,"<a href=\"ApprovalRequestPolicy.php.html#38\">App\\Policies\\ApprovalRequestPolicy::reject<\/a>"],[100,2,"<a href=\"AttendancePolicy.php.html#10\">App\\Policies\\AttendancePolicy::checkIn<\/a>"],[100,2,"<a href=\"AttendancePolicy.php.html#15\">App\\Policies\\AttendancePolicy::checkOut<\/a>"],[100,1,"<a href=\"AttendancePolicy.php.html#20\">App\\Policies\\AttendancePolicy::viewAny<\/a>"],[100,2,"<a href=\"AttendancePolicy.php.html#25\">App\\Policies\\AttendancePolicy::viewForEmployee<\/a>"],[100,1,"<a href=\"AttendancePolicy.php.html#30\">App\\Policies\\AttendancePolicy::update<\/a>"],[0,1,"<a href=\"BillingPolicy.php.html#11\">App\\Policies\\BillingPolicy::viewSubscription<\/a>"],[0,1,"<a href=\"BillingPolicy.php.html#16\">App\\Policies\\BillingPolicy::manageSubscription<\/a>"],[0,1,"<a href=\"BillingPolicy.php.html#21\">App\\Policies\\BillingPolicy::viewInvoices<\/a>"],[0,1,"<a href=\"BillingPolicy.php.html#26\">App\\Policies\\BillingPolicy::downloadInvoice<\/a>"],[100,1,"<a href=\"Cameras\/CameraPolicy.php.html#12\">App\\Policies\\Cameras\\CameraPolicy::viewAny<\/a>"],[60,4,"<a href=\"Cameras\/CameraPolicy.php.html#17\">App\\Policies\\Cameras\\CameraPolicy::view<\/a>"],[100,1,"<a href=\"Cameras\/CameraPolicy.php.html#30\">App\\Policies\\Cameras\\CameraPolicy::create<\/a>"],[80,4,"<a href=\"Cameras\/CameraPolicy.php.html#35\">App\\Policies\\Cameras\\CameraPolicy::update<\/a>"],[100,2,"<a href=\"Cameras\/CameraPolicy.php.html#48\">App\\Policies\\Cameras\\CameraPolicy::delete<\/a>"],[0,1,"<a href=\"Cameras\/CameraPolicy.php.html#53\">App\\Policies\\Cameras\\CameraPolicy::testRtsp<\/a>"],[0,1,"<a href=\"Cameras\/CameraPolicy.php.html#58\">App\\Policies\\Cameras\\CameraPolicy::issueStreamToken<\/a>"],[80,4,"<a href=\"Cameras\/CameraPolicy.php.html#63\">App\\Policies\\Cameras\\CameraPolicy::shareAccess<\/a>"],[100,2,"<a href=\"Cameras\/CameraPolicy.php.html#76\">App\\Policies\\Cameras\\CameraPolicy::revokeAccess<\/a>"],[0,1,"<a href=\"Cameras\/CameraPolicy.php.html#83\">App\\Policies\\Cameras\\CameraPolicy::viewLogs<\/a>"],[0,1,"<a href=\"Cameras\/CameraPolicy.php.html#88\">App\\Policies\\Cameras\\CameraPolicy::managePermissions<\/a>"],[100,1,"<a href=\"Cameras\/CameraPolicy.php.html#93\">App\\Policies\\Cameras\\CameraPolicy::activePermission<\/a>"],[0,2,"<a href=\"CommissionPolicy.php.html#17\">App\\Policies\\CommissionPolicy::view<\/a>"],[0,1,"<a href=\"ContractPolicy.php.html#12\">App\\Policies\\ContractPolicy::viewAny<\/a>"],[0,3,"<a href=\"ContractPolicy.php.html#17\">App\\Policies\\ContractPolicy::view<\/a>"],[0,1,"<a href=\"ContractPolicy.php.html#26\">App\\Policies\\ContractPolicy::create<\/a>"],[0,2,"<a href=\"ContractPolicy.php.html#31\">App\\Policies\\ContractPolicy::update<\/a>"],[0,2,"<a href=\"ContractPolicy.php.html#37\">App\\Policies\\ContractPolicy::activate<\/a>"],[0,2,"<a href=\"ContractPolicy.php.html#43\">App\\Policies\\ContractPolicy::terminate<\/a>"],[0,2,"<a href=\"ContractPolicy.php.html#49\">App\\Policies\\ContractPolicy::renew<\/a>"],[0,1,"<a href=\"DepartmentPolicy.php.html#12\">App\\Policies\\DepartmentPolicy::viewAny<\/a>"],[0,1,"<a href=\"DepartmentPolicy.php.html#17\">App\\Policies\\DepartmentPolicy::view<\/a>"],[0,1,"<a href=\"DepartmentPolicy.php.html#22\">App\\Policies\\DepartmentPolicy::create<\/a>"],[0,2,"<a href=\"DepartmentPolicy.php.html#27\">App\\Policies\\DepartmentPolicy::update<\/a>"],[0,2,"<a href=\"DepartmentPolicy.php.html#32\">App\\Policies\\DepartmentPolicy::delete<\/a>"],[100,1,"<a href=\"EmployeePolicy.php.html#9\">App\\Policies\\EmployeePolicy::viewAny<\/a>"],[100,2,"<a href=\"EmployeePolicy.php.html#14\">App\\Policies\\EmployeePolicy::view<\/a>"],[100,1,"<a href=\"EmployeePolicy.php.html#19\">App\\Policies\\EmployeePolicy::create<\/a>"],[100,2,"<a href=\"EmployeePolicy.php.html#24\">App\\Policies\\EmployeePolicy::update<\/a>"],[100,2,"<a href=\"EmployeePolicy.php.html#33\">App\\Policies\\EmployeePolicy::archive<\/a>"],[100,1,"<a href=\"EmployeePolicy.php.html#42\">App\\Policies\\EmployeePolicy::manageInvitations<\/a>"],[0,1,"<a href=\"EvaluationPolicy.php.html#10\">App\\Policies\\EvaluationPolicy::viewAny<\/a>"],[100,3,"<a href=\"EvaluationPolicy.php.html#15\">App\\Policies\\EvaluationPolicy::view<\/a>"],[0,1,"<a href=\"EvaluationPolicy.php.html#24\">App\\Policies\\EvaluationPolicy::create<\/a>"],[100,2,"<a href=\"EvaluationPolicy.php.html#29\">App\\Policies\\EvaluationPolicy::update<\/a>"],[100,2,"<a href=\"EvaluationPolicy.php.html#38\">App\\Policies\\EvaluationPolicy::delete<\/a>"],[66.66666666666666,2,"<a href=\"EvaluationPolicy.php.html#47\">App\\Policies\\EvaluationPolicy::submit<\/a>"],[66.66666666666666,2,"<a href=\"EvaluationPolicy.php.html#56\">App\\Policies\\EvaluationPolicy::acknowledge<\/a>"],[0,1,"<a href=\"ExpenseClaimPolicy.php.html#12\">App\\Policies\\ExpenseClaimPolicy::viewAny<\/a>"],[0,3,"<a href=\"ExpenseClaimPolicy.php.html#17\">App\\Policies\\ExpenseClaimPolicy::view<\/a>"],[0,1,"<a href=\"ExpenseClaimPolicy.php.html#26\">App\\Policies\\ExpenseClaimPolicy::create<\/a>"],[0,2,"<a href=\"ExpenseClaimPolicy.php.html#31\">App\\Policies\\ExpenseClaimPolicy::approve<\/a>"],[0,2,"<a href=\"ExpenseClaimPolicy.php.html#37\">App\\Policies\\ExpenseClaimPolicy::reject<\/a>"],[0,3,"<a href=\"ExpenseClaimPolicy.php.html#43\">App\\Policies\\ExpenseClaimPolicy::delete<\/a>"],[0,1,"<a href=\"ExportPolicy.php.html#11\">App\\Policies\\ExportPolicy::export<\/a>"],[0,1,"<a href=\"ExportPolicy.php.html#16\">App\\Policies\\ExportPolicy::viewHistory<\/a>"],[0,1,"<a href=\"ExportPolicy.php.html#21\">App\\Policies\\ExportPolicy::download<\/a>"],[0,1,"<a href=\"FeatureFlagPolicy.php.html#11\">App\\Policies\\FeatureFlagPolicy::viewMatrix<\/a>"],[0,1,"<a href=\"FeatureFlagPolicy.php.html#16\">App\\Policies\\FeatureFlagPolicy::manageMatrix<\/a>"],[0,1,"<a href=\"FeatureFlagPolicy.php.html#21\">App\\Policies\\FeatureFlagPolicy::checkFeature<\/a>"],[0,1,"<a href=\"InvoicePolicy.php.html#12\">App\\Policies\\InvoicePolicy::viewAny<\/a>"],[0,2,"<a href=\"InvoicePolicy.php.html#17\">App\\Policies\\InvoicePolicy::view<\/a>"],[0,1,"<a href=\"InvoicePolicy.php.html#23\">App\\Policies\\InvoicePolicy::create<\/a>"],[0,2,"<a href=\"InvoicePolicy.php.html#28\">App\\Policies\\InvoicePolicy::pay<\/a>"],[0,1,"<a href=\"LoanPolicy.php.html#12\">App\\Policies\\LoanPolicy::viewAny<\/a>"],[0,3,"<a href=\"LoanPolicy.php.html#17\">App\\Policies\\LoanPolicy::view<\/a>"],[0,1,"<a href=\"LoanPolicy.php.html#26\">App\\Policies\\LoanPolicy::create<\/a>"],[0,2,"<a href=\"LoanPolicy.php.html#31\">App\\Policies\\LoanPolicy::approve<\/a>"],[0,2,"<a href=\"LoanPolicy.php.html#37\">App\\Policies\\LoanPolicy::reject<\/a>"],[0,2,"<a href=\"LoanPolicy.php.html#43\">App\\Policies\\LoanPolicy::disburse<\/a>"],[0,1,"<a href=\"OnboardingPolicy.php.html#11\">App\\Policies\\OnboardingPolicy::viewChecklist<\/a>"],[0,1,"<a href=\"OnboardingPolicy.php.html#16\">App\\Policies\\OnboardingPolicy::completeStep<\/a>"],[0,1,"<a href=\"OnboardingPolicy.php.html#21\">App\\Policies\\OnboardingPolicy::skipStep<\/a>"],[0,1,"<a href=\"OnboardingPolicy.php.html#26\">App\\Policies\\OnboardingPolicy::manageSteps<\/a>"],[0,1,"<a href=\"PartnerPolicy.php.html#16\">App\\Policies\\PartnerPolicy::view<\/a>"],[0,1,"<a href=\"PartnerPolicy.php.html#24\">App\\Policies\\PartnerPolicy::manage<\/a>"],[0,1,"<a href=\"PayrollPolicy.php.html#13\">App\\Policies\\PayrollPolicy::viewRuns<\/a>"],[0,1,"<a href=\"PayrollPolicy.php.html#18\">App\\Policies\\PayrollPolicy::createRun<\/a>"],[0,2,"<a href=\"PayrollPolicy.php.html#23\">App\\Policies\\PayrollPolicy::calculateRun<\/a>"],[0,2,"<a href=\"PayrollPolicy.php.html#28\">App\\Policies\\PayrollPolicy::validateRun<\/a>"],[0,2,"<a href=\"PayrollPolicy.php.html#33\">App\\Policies\\PayrollPolicy::cancelRun<\/a>"],[0,4,"<a href=\"PayrollPolicy.php.html#38\">App\\Policies\\PayrollPolicy::viewSlip<\/a>"],[0,1,"<a href=\"PayrollPolicy.php.html#47\">App\\Policies\\PayrollPolicy::downloadPdf<\/a>"],[0,2,"<a href=\"PayrollPolicy.php.html#52\">App\\Policies\\PayrollPolicy::sendSlips<\/a>"],[0,2,"<a href=\"PayrollPolicy.php.html#57\">App\\Policies\\PayrollPolicy::generateBankExport<\/a>"],[0,1,"<a href=\"PositionPolicy.php.html#12\">App\\Policies\\PositionPolicy::viewAny<\/a>"],[0,1,"<a href=\"PositionPolicy.php.html#17\">App\\Policies\\PositionPolicy::view<\/a>"],[0,1,"<a href=\"PositionPolicy.php.html#22\">App\\Policies\\PositionPolicy::create<\/a>"],[0,2,"<a href=\"PositionPolicy.php.html#27\">App\\Policies\\PositionPolicy::update<\/a>"],[0,2,"<a href=\"PositionPolicy.php.html#32\">App\\Policies\\PositionPolicy::delete<\/a>"],[0,1,"<a href=\"RecruitmentPolicy.php.html#13\">App\\Policies\\RecruitmentPolicy::viewJobs<\/a>"],[0,1,"<a href=\"RecruitmentPolicy.php.html#18\">App\\Policies\\RecruitmentPolicy::createJob<\/a>"],[0,2,"<a href=\"RecruitmentPolicy.php.html#23\">App\\Policies\\RecruitmentPolicy::updateJob<\/a>"],[0,2,"<a href=\"RecruitmentPolicy.php.html#28\">App\\Policies\\RecruitmentPolicy::deleteJob<\/a>"],[0,2,"<a href=\"RecruitmentPolicy.php.html#33\">App\\Policies\\RecruitmentPolicy::viewApplicants<\/a>"],[0,1,"<a href=\"RecruitmentPolicy.php.html#38\">App\\Policies\\RecruitmentPolicy::manageApplicant<\/a>"],[0,1,"<a href=\"RecruitmentPolicy.php.html#43\">App\\Policies\\RecruitmentPolicy::scheduleInterview<\/a>"],[0,1,"<a href=\"SchedulePolicy.php.html#12\">App\\Policies\\SchedulePolicy::viewAny<\/a>"],[0,1,"<a href=\"SchedulePolicy.php.html#17\">App\\Policies\\SchedulePolicy::view<\/a>"],[0,1,"<a href=\"SchedulePolicy.php.html#22\">App\\Policies\\SchedulePolicy::create<\/a>"],[0,2,"<a href=\"SchedulePolicy.php.html#27\">App\\Policies\\SchedulePolicy::update<\/a>"],[0,2,"<a href=\"SchedulePolicy.php.html#32\">App\\Policies\\SchedulePolicy::delete<\/a>"],[0,1,"<a href=\"SitePolicy.php.html#12\">App\\Policies\\SitePolicy::viewAny<\/a>"],[0,1,"<a href=\"SitePolicy.php.html#17\">App\\Policies\\SitePolicy::view<\/a>"],[0,1,"<a href=\"SitePolicy.php.html#22\">App\\Policies\\SitePolicy::create<\/a>"],[0,2,"<a href=\"SitePolicy.php.html#27\">App\\Policies\\SitePolicy::update<\/a>"],[0,2,"<a href=\"SitePolicy.php.html#32\">App\\Policies\\SitePolicy::delete<\/a>"],[0,1,"<a href=\"TrainingPolicy.php.html#12\">App\\Policies\\TrainingPolicy::viewCourses<\/a>"],[0,1,"<a href=\"TrainingPolicy.php.html#17\">App\\Policies\\TrainingPolicy::createCourse<\/a>"],[0,2,"<a href=\"TrainingPolicy.php.html#22\">App\\Policies\\TrainingPolicy::updateCourse<\/a>"],[0,2,"<a href=\"TrainingPolicy.php.html#27\">App\\Policies\\TrainingPolicy::deleteCourse<\/a>"],[0,1,"<a href=\"TrainingPolicy.php.html#32\">App\\Policies\\TrainingPolicy::manageSessions<\/a>"],[0,1,"<a href=\"TrainingPolicy.php.html#37\">App\\Policies\\TrainingPolicy::enrollSelf<\/a>"],[0,1,"<a href=\"TrainingPolicy.php.html#42\">App\\Policies\\TrainingPolicy::enrollOthers<\/a>"],[0,1,"<a href=\"TrainingPolicy.php.html#47\">App\\Policies\\TrainingPolicy::viewEnrollments<\/a>"],[0,1,"<a href=\"VehiclePolicy.php.html#12\">App\\Policies\\VehiclePolicy::viewAny<\/a>"],[0,2,"<a href=\"VehiclePolicy.php.html#17\">App\\Policies\\VehiclePolicy::view<\/a>"],[0,1,"<a href=\"VehiclePolicy.php.html#22\">App\\Policies\\VehiclePolicy::create<\/a>"],[0,2,"<a href=\"VehiclePolicy.php.html#27\">App\\Policies\\VehiclePolicy::update<\/a>"],[0,2,"<a href=\"VehiclePolicy.php.html#32\">App\\Policies\\VehiclePolicy::delete<\/a>"],[0,2,"<a href=\"VehiclePolicy.php.html#37\">App\\Policies\\VehiclePolicy::assignDriver<\/a>"],[0,1,"<a href=\"WebhookEndpointPolicy.php.html#12\">App\\Policies\\WebhookEndpointPolicy::viewAny<\/a>"],[0,2,"<a href=\"WebhookEndpointPolicy.php.html#17\">App\\Policies\\WebhookEndpointPolicy::view<\/a>"],[0,1,"<a href=\"WebhookEndpointPolicy.php.html#23\">App\\Policies\\WebhookEndpointPolicy::create<\/a>"],[0,2,"<a href=\"WebhookEndpointPolicy.php.html#28\">App\\Policies\\WebhookEndpointPolicy::update<\/a>"],[0,2,"<a href=\"WebhookEndpointPolicy.php.html#34\">App\\Policies\\WebhookEndpointPolicy::delete<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

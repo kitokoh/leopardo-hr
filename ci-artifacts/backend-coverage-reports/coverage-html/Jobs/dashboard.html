@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /home/runner/work/leopardo-hr/leopardo-hr/api/app/Jobs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/home/runner/work/leopardo-hr/leopardo-hr/api/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Jobs</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DispatchCommunicationJob.php.html#14">App\Jobs\DispatchCommunicationJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DispatchWebhook.php.html#19">App\Jobs\DispatchWebhook</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#27">App\Jobs\GeneratePaySlipPdfJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessBulkPaymentJob.php.html#31">App\Jobs\ProcessBulkPaymentJob</a></td><td class="text-right">2%</td></tr>
+       <tr><td><a href="ProcessPayrollBatchJob.php.html#16">App\Jobs\ProcessPayrollBatchJob</a></td><td class="text-right">16%</td></tr>
+       <tr><td><a href="SendBulkNotificationsJob.php.html#16">App\Jobs\SendBulkNotificationsJob</a></td><td class="text-right">23%</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#21">App\Jobs\GeneratePaymentDocumentJob</a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="WarmPaySlipPdfPathsForPayrollRunJob.php.html#18">App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob</a></td><td class="text-right">89%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#27">App\Jobs\GeneratePaySlipPdfJob</a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="ProcessBulkPaymentJob.php.html#31">App\Jobs\ProcessBulkPaymentJob</a></td><td class="text-right">39</td></tr>
+       <tr><td><a href="DispatchCommunicationJob.php.html#14">App\Jobs\DispatchCommunicationJob</a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="DispatchWebhook.php.html#19">App\Jobs\DispatchWebhook</a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="ProcessPayrollBatchJob.php.html#16">App\Jobs\ProcessPayrollBatchJob</a></td><td class="text-right">19</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#21">App\Jobs\GeneratePaymentDocumentJob</a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="SendBulkNotificationsJob.php.html#16">App\Jobs\SendBulkNotificationsJob</a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="WarmPaySlipPdfPathsForPayrollRunJob.php.html#18">App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob</a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DispatchCommunicationJob.php.html#25"><abbr title="App\Jobs\DispatchCommunicationJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DispatchCommunicationJob.php.html#35"><abbr title="App\Jobs\DispatchCommunicationJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DispatchWebhook.php.html#30"><abbr title="App\Jobs\DispatchWebhook::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DispatchWebhook.php.html#38"><abbr title="App\Jobs\DispatchWebhook::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#38"><abbr title="App\Jobs\GeneratePaySlipPdfJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#45"><abbr title="App\Jobs\GeneratePaySlipPdfJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#115"><abbr title="App\Jobs\GeneratePaySlipPdfJob::notifyEmployee">notifyEmployee</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#94"><abbr title="App\Jobs\GeneratePaymentDocumentJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessBulkPaymentJob.php.html#49"><abbr title="App\Jobs\ProcessBulkPaymentJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessBulkPaymentJob.php.html#114"><abbr title="App\Jobs\ProcessBulkPaymentJob::updateProgress">updateProgress</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessPayrollBatchJob.php.html#34"><abbr title="App\Jobs\ProcessPayrollBatchJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendBulkNotificationsJob.php.html#36"><abbr title="App\Jobs\SendBulkNotificationsJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#124"><abbr title="App\Jobs\GeneratePaymentDocumentJob::filename">filename</abbr></a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#37"><abbr title="App\Jobs\GeneratePaymentDocumentJob::handle">handle</abbr></a></td><td class="text-right">74%</td></tr>
+       <tr><td><a href="WarmPaySlipPdfPathsForPayrollRunJob.php.html#27"><abbr title="App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob::handle">handle</abbr></a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#45"><abbr title="App\Jobs\GeneratePaySlipPdfJob::handle">handle</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="DispatchCommunicationJob.php.html#35"><abbr title="App\Jobs\DispatchCommunicationJob::handle">handle</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="DispatchWebhook.php.html#38"><abbr title="App\Jobs\DispatchWebhook::handle">handle</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="ProcessBulkPaymentJob.php.html#49"><abbr title="App\Jobs\ProcessBulkPaymentJob::handle">handle</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessPayrollBatchJob.php.html#34"><abbr title="App\Jobs\ProcessPayrollBatchJob::handle">handle</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#124"><abbr title="App\Jobs\GeneratePaymentDocumentJob::filename">filename</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="GeneratePaySlipPdfJob.php.html#115"><abbr title="App\Jobs\GeneratePaySlipPdfJob::notifyEmployee">notifyEmployee</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessBulkPaymentJob.php.html#114"><abbr title="App\Jobs\ProcessBulkPaymentJob::updateProgress">updateProgress</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendBulkNotificationsJob.php.html#36"><abbr title="App\Jobs\SendBulkNotificationsJob::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="GeneratePaymentDocumentJob.php.html#37"><abbr title="App\Jobs\GeneratePaymentDocumentJob::handle">handle</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="WarmPaySlipPdfPathsForPayrollRunJob.php.html#27"><abbr title="App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob::handle">handle</abbr></a></td><td class="text-right">5</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.12</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.22</a> and <a href="https://phpunit.de/">PHPUnit 11.5.50</a> at Sat Jun 20 21:34:42 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../_js/d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([3,1,1,1,0,0,0,0,0,2,0,1], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([12,0,0,0,0,0,1,0,1,1,1,11], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,5,"<a href=\"DispatchCommunicationJob.php.html#14\">App\\Jobs\\DispatchCommunicationJob<\/a>"],[0,5,"<a href=\"DispatchWebhook.php.html#19\">App\\Jobs\\DispatchWebhook<\/a>"],[0,8,"<a href=\"GeneratePaySlipPdfJob.php.html#27\">App\\Jobs\\GeneratePaySlipPdfJob<\/a>"],[81.72043010752688,17,"<a href=\"GeneratePaymentDocumentJob.php.html#21\">App\\Jobs\\GeneratePaymentDocumentJob<\/a>"],[2,6,"<a href=\"ProcessBulkPaymentJob.php.html#31\">App\\Jobs\\ProcessBulkPaymentJob<\/a>"],[16.129032258064516,5,"<a href=\"ProcessPayrollBatchJob.php.html#16\">App\\Jobs\\ProcessPayrollBatchJob<\/a>"],[23.809523809523807,4,"<a href=\"SendBulkNotificationsJob.php.html#16\">App\\Jobs\\SendBulkNotificationsJob<\/a>"],[100,3,"<a href=\"SendPushNotificationJob.php.html#13\">App\\Jobs\\SendPushNotificationJob<\/a>"],[89.47368421052632,6,"<a href=\"WarmPaySlipPdfPathsForPayrollRunJob.php.html#18\">App\\Jobs\\WarmPaySlipPdfPathsForPayrollRunJob<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"DispatchCommunicationJob.php.html#25\">App\\Jobs\\DispatchCommunicationJob::__construct<\/a>"],[0,4,"<a href=\"DispatchCommunicationJob.php.html#35\">App\\Jobs\\DispatchCommunicationJob::handle<\/a>"],[0,1,"<a href=\"DispatchWebhook.php.html#30\">App\\Jobs\\DispatchWebhook::__construct<\/a>"],[0,4,"<a href=\"DispatchWebhook.php.html#38\">App\\Jobs\\DispatchWebhook::handle<\/a>"],[0,1,"<a href=\"GeneratePaySlipPdfJob.php.html#38\">App\\Jobs\\GeneratePaySlipPdfJob::__construct<\/a>"],[0,5,"<a href=\"GeneratePaySlipPdfJob.php.html#45\">App\\Jobs\\GeneratePaySlipPdfJob::handle<\/a>"],[0,2,"<a href=\"GeneratePaySlipPdfJob.php.html#115\">App\\Jobs\\GeneratePaySlipPdfJob::notifyEmployee<\/a>"],[100,1,"<a href=\"GeneratePaymentDocumentJob.php.html#32\">App\\Jobs\\GeneratePaymentDocumentJob::__construct<\/a>"],[74.28571428571429,5,"<a href=\"GeneratePaymentDocumentJob.php.html#37\">App\\Jobs\\GeneratePaymentDocumentJob::handle<\/a>"],[0,1,"<a href=\"GeneratePaymentDocumentJob.php.html#94\">App\\Jobs\\GeneratePaymentDocumentJob::tags<\/a>"],[93.33333333333333,3,"<a href=\"GeneratePaymentDocumentJob.php.html#102\">App\\Jobs\\GeneratePaymentDocumentJob::renderPdf<\/a>"],[57.14285714285714,5,"<a href=\"GeneratePaymentDocumentJob.php.html#124\">App\\Jobs\\GeneratePaymentDocumentJob::filename<\/a>"],[100,1,"<a href=\"GeneratePaymentDocumentJob.php.html#136\">App\\Jobs\\GeneratePaymentDocumentJob::dispatchForSalaryAdvance<\/a>"],[100,1,"<a href=\"GeneratePaymentDocumentJob.php.html#157\">App\\Jobs\\GeneratePaymentDocumentJob::dispatchForPaySlip<\/a>"],[100,1,"<a href=\"ProcessBulkPaymentJob.php.html#42\">App\\Jobs\\ProcessBulkPaymentJob::__construct<\/a>"],[0,3,"<a href=\"ProcessBulkPaymentJob.php.html#49\">App\\Jobs\\ProcessBulkPaymentJob::handle<\/a>"],[0,2,"<a href=\"ProcessBulkPaymentJob.php.html#114\">App\\Jobs\\ProcessBulkPaymentJob::updateProgress<\/a>"],[100,1,"<a href=\"ProcessPayrollBatchJob.php.html#27\">App\\Jobs\\ProcessPayrollBatchJob::__construct<\/a>"],[0,3,"<a href=\"ProcessPayrollBatchJob.php.html#34\">App\\Jobs\\ProcessPayrollBatchJob::handle<\/a>"],[100,1,"<a href=\"ProcessPayrollBatchJob.php.html#75\">App\\Jobs\\ProcessPayrollBatchJob::tags<\/a>"],[100,1,"<a href=\"SendBulkNotificationsJob.php.html#27\">App\\Jobs\\SendBulkNotificationsJob::__construct<\/a>"],[0,2,"<a href=\"SendBulkNotificationsJob.php.html#36\">App\\Jobs\\SendBulkNotificationsJob::handle<\/a>"],[100,1,"<a href=\"SendBulkNotificationsJob.php.html#61\">App\\Jobs\\SendBulkNotificationsJob::tags<\/a>"],[100,1,"<a href=\"SendPushNotificationJob.php.html#19\">App\\Jobs\\SendPushNotificationJob::__construct<\/a>"],[100,2,"<a href=\"SendPushNotificationJob.php.html#28\">App\\Jobs\\SendPushNotificationJob::handle<\/a>"],[100,1,"<a href=\"WarmPaySlipPdfPathsForPayrollRunJob.php.html#25\">App\\Jobs\\WarmPaySlipPdfPathsForPayrollRunJob::__construct<\/a>"],[88.88888888888889,5,"<a href=\"WarmPaySlipPdfPathsForPayrollRunJob.php.html#27\">App\\Jobs\\WarmPaySlipPdfPathsForPayrollRunJob::handle<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

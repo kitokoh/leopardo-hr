@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /home/runner/work/leopardo-hr/leopardo-hr/api/app/Console/Commands</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../../_css/nv.d3.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/home/runner/work/leopardo-hr/leopardo-hr/api/app</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Console</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Commands</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertExpiringContracts.php.html#11">App\Console\Commands\AlertExpiringContracts</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApproveCommissionsCommand.php.html#8">App\Console\Commands\ApproveCommissionsCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ArchiveGrowthClicksCommand.php.html#8">App\Console\Commands\ArchiveGrowthClicksCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CheckOverdueInvoices.php.html#11">App\Console\Commands\CheckOverdueInvoices</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CheckTrialExpiring.php.html#11">App\Console\Commands\CheckTrialExpiring</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#13">App\Console\Commands\DemoFeatureRegistryCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#11">App\Console\Commands\DetectFeaturesCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateMonthlyInvoices.php.html#13">App\Console\Commands\GenerateMonthlyInvoices</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LeaveCarryForward.php.html#14">App\Console\Commands\LeaveCarryForward</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitorSlowQueries.php.html#19">App\Console\Commands\MonitorSlowQueries</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#18">App\Console\Commands\QueueHealthCheck</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDripEmails.php.html#11">App\Console\Commands\SendDripEmails</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#9">App\Console\Commands\TestFeatureDetectorCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccrueLeaveBalances.php.html#15">App\Console\Commands\AccrueLeaveBalances</a></td><td class="text-right">30%</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#13">App\Console\Commands\FeatureRegistryCommand</a></td><td class="text-right">70%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#13">App\Console\Commands\DemoFeatureRegistryCommand</a></td><td class="text-right">1722</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#9">App\Console\Commands\TestFeatureDetectorCommand</a></td><td class="text-right">342</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#11">App\Console\Commands\DetectFeaturesCommand</a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="LeaveCarryForward.php.html#14">App\Console\Commands\LeaveCarryForward</a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="SendDripEmails.php.html#11">App\Console\Commands\SendDripEmails</a></td><td class="text-right">90</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#13">App\Console\Commands\FeatureRegistryCommand</a></td><td class="text-right">82</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#18">App\Console\Commands\QueueHealthCheck</a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="MonitorSlowQueries.php.html#19">App\Console\Commands\MonitorSlowQueries</a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="AccrueLeaveBalances.php.html#15">App\Console\Commands\AccrueLeaveBalances</a></td><td class="text-right">29</td></tr>
+       <tr><td><a href="AlertExpiringContracts.php.html#11">App\Console\Commands\AlertExpiringContracts</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="GenerateMonthlyInvoices.php.html#13">App\Console\Commands\GenerateMonthlyInvoices</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="CheckOverdueInvoices.php.html#11">App\Console\Commands\CheckOverdueInvoices</a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CheckTrialExpiring.php.html#11">App\Console\Commands\CheckTrialExpiring</a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AlertExpiringContracts.php.html#17"><abbr title="App\Console\Commands\AlertExpiringContracts::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ApproveCommissionsCommand.php.html#27"><abbr title="App\Console\Commands\ApproveCommissionsCommand::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ArchiveGrowthClicksCommand.php.html#27"><abbr title="App\Console\Commands\ArchiveGrowthClicksCommand::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CheckOverdueInvoices.php.html#17"><abbr title="App\Console\Commands\CheckOverdueInvoices::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CheckTrialExpiring.php.html#17"><abbr title="App\Console\Commands\CheckTrialExpiring::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#21"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#57"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::resetDemoData">resetDemoData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#67"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::createDemoFeatures">createDemoFeatures</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#79"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::displayStatistics">displayStatistics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#104"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testFeatureRetrieval">testFeatureRetrieval</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#120"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testMobileCompatibility">testMobileCompatibility</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#138"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::generateAndDisplayManifest">generateAndDisplayManifest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#165"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testSynchronization">testSynchronization</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#187"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testCaching">testCaching</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#216"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::demoFeatures">demoFeatures</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#349"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::manifestFeatureRow">manifestFeatureRow</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#360"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::optionBool">optionBool</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#365"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::optionString">optionString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#381"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::statInt">statInt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#392"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::statArray">statArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#402"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::stringValue">stringValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#412"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::stringList">stringList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#421"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::boolLabel">boolLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#19"><abbr title="App\Console\Commands\DetectFeaturesCommand::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#72"><abbr title="App\Console\Commands\DetectFeaturesCommand::routeRow">routeRow</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#86"><abbr title="App\Console\Commands\DetectFeaturesCommand::featureRow">featureRow</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#99"><abbr title="App\Console\Commands\DetectFeaturesCommand::displayChanges">displayChanges</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#114"><abbr title="App\Console\Commands\DetectFeaturesCommand::optionBool">optionBool</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#122"><abbr title="App\Console\Commands\DetectFeaturesCommand::stringValue">stringValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#132"><abbr title="App\Console\Commands\DetectFeaturesCommand::stringList">stringList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#52"><abbr title="App\Console\Commands\FeatureRegistryCommand::handleSync">handleSync</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#213"><abbr title="App\Console\Commands\FeatureRegistryCommand::jsonLine">jsonLine</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateMonthlyInvoices.php.html#25"><abbr title="App\Console\Commands\GenerateMonthlyInvoices::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LeaveCarryForward.php.html#20"><abbr title="App\Console\Commands\LeaveCarryForward::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LeaveCarryForward.php.html#88"><abbr title="App\Console\Commands\LeaveCarryForward::expireOldCarryForwards">expireOldCarryForwards</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MonitorSlowQueries.php.html#27"><abbr title="App\Console\Commands\MonitorSlowQueries::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#27"><abbr title="App\Console\Commands\QueueHealthCheck::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#88"><abbr title="App\Console\Commands\QueueHealthCheck::outputResult">outputResult</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#93"><abbr title="App\Console\Commands\QueueHealthCheck::failedJobsCount">failedJobsCount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDripEmails.php.html#17"><abbr title="App\Console\Commands\SendDripEmails::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDripEmails.php.html#49"><abbr title="App\Console\Commands\SendDripEmails::sendEmail">sendEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#15"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#44"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::displayFeatures">displayFeatures</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#57"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::displayEmployeeMetadata">displayEmployeeMetadata</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#72"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::displayChanges">displayChanges</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#91"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::featureRow">featureRow</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#105"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::limit">limit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#115"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::stringValue">stringValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#125"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::stringList">stringList</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#134"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::boolLabel">boolLabel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccrueLeaveBalances.php.html#21"><abbr title="App\Console\Commands\AccrueLeaveBalances::handle">handle</abbr></a></td><td class="text-right">30%</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#29"><abbr title="App\Console\Commands\FeatureRegistryCommand::handle">handle</abbr></a></td><td class="text-right">46%</td></tr>
+       <tr><td><a href="AutoCloseAttendanceCommand.php.html#103"><abbr title="App\Console\Commands\AutoCloseAttendanceCommand::resolveCompany">resolveCompany</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#73"><abbr title="App\Console\Commands\FeatureRegistryCommand::handleList">handleList</abbr></a></td><td class="text-right">68%</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#109"><abbr title="App\Console\Commands\FeatureRegistryCommand::handleStats">handleStats</abbr></a></td><td class="text-right">89%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="SendDripEmails.php.html#17"><abbr title="App\Console\Commands\SendDripEmails::handle">handle</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#19"><abbr title="App\Console\Commands\DetectFeaturesCommand::handle">handle</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="LeaveCarryForward.php.html#88"><abbr title="App\Console\Commands\LeaveCarryForward::expireOldCarryForwards">expireOldCarryForwards</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#365"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::optionString">optionString</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="LeaveCarryForward.php.html#20"><abbr title="App\Console\Commands\LeaveCarryForward::handle">handle</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="MonitorSlowQueries.php.html#27"><abbr title="App\Console\Commands\MonitorSlowQueries::handle">handle</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#27"><abbr title="App\Console\Commands\QueueHealthCheck::handle">handle</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="AccrueLeaveBalances.php.html#21"><abbr title="App\Console\Commands\AccrueLeaveBalances::handle">handle</abbr></a></td><td class="text-right">29</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#138"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::generateAndDisplayManifest">generateAndDisplayManifest</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#29"><abbr title="App\Console\Commands\FeatureRegistryCommand::handle">handle</abbr></a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="AlertExpiringContracts.php.html#17"><abbr title="App\Console\Commands\AlertExpiringContracts::handle">handle</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#79"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::displayStatistics">displayStatistics</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#120"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testMobileCompatibility">testMobileCompatibility</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#165"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testSynchronization">testSynchronization</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#187"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testCaching">testCaching</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#99"><abbr title="App\Console\Commands\DetectFeaturesCommand::displayChanges">displayChanges</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#52"><abbr title="App\Console\Commands\FeatureRegistryCommand::handleSync">handleSync</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="GenerateMonthlyInvoices.php.html#25"><abbr title="App\Console\Commands\GenerateMonthlyInvoices::handle">handle</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#72"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::displayChanges">displayChanges</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#109"><abbr title="App\Console\Commands\FeatureRegistryCommand::handleStats">handleStats</abbr></a></td><td class="text-right">8</td></tr>
+       <tr><td><a href="CheckOverdueInvoices.php.html#17"><abbr title="App\Console\Commands\CheckOverdueInvoices::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="CheckTrialExpiring.php.html#17"><abbr title="App\Console\Commands\CheckTrialExpiring::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#21"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#67"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::createDemoFeatures">createDemoFeatures</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#104"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::testFeatureRetrieval">testFeatureRetrieval</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#381"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::statInt">statInt</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#392"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::statArray">statArray</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#402"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::stringValue">stringValue</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#412"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::stringList">stringList</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DemoFeatureRegistryCommand.php.html#421"><abbr title="App\Console\Commands\DemoFeatureRegistryCommand::boolLabel">boolLabel</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#86"><abbr title="App\Console\Commands\DetectFeaturesCommand::featureRow">featureRow</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#122"><abbr title="App\Console\Commands\DetectFeaturesCommand::stringValue">stringValue</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="DetectFeaturesCommand.php.html#132"><abbr title="App\Console\Commands\DetectFeaturesCommand::stringList">stringList</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#213"><abbr title="App\Console\Commands\FeatureRegistryCommand::jsonLine">jsonLine</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="QueueHealthCheck.php.html#93"><abbr title="App\Console\Commands\QueueHealthCheck::failedJobsCount">failedJobsCount</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendDripEmails.php.html#49"><abbr title="App\Console\Commands\SendDripEmails::sendEmail">sendEmail</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#15"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#44"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::displayFeatures">displayFeatures</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#91"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::featureRow">featureRow</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#105"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::limit">limit</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#115"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::stringValue">stringValue</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#125"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::stringList">stringList</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestFeatureDetectorCommand.php.html#134"><abbr title="App\Console\Commands\TestFeatureDetectorCommand::boolLabel">boolLabel</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="FeatureRegistryCommand.php.html#73"><abbr title="App\Console\Commands\FeatureRegistryCommand::handleList">handleList</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="AutoCloseAttendanceCommand.php.html#103"><abbr title="App\Console\Commands\AutoCloseAttendanceCommand::resolveCompany">resolveCompany</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.12</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.22</a> and <a href="https://phpunit.de/">PHPUnit 11.5.50</a> at Sat Jun 20 21:34:42 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/jquery.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../../_js/d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="../../_js/nv.d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([13,0,0,0,1,0,0,0,1,0,1,2], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([50,0,0,0,1,1,0,2,0,1,1,12], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[30,8,"<a href=\"AccrueLeaveBalances.php.html#15\">App\\Console\\Commands\\AccrueLeaveBalances<\/a>"],[0,3,"<a href=\"AlertExpiringContracts.php.html#11\">App\\Console\\Commands\\AlertExpiringContracts<\/a>"],[0,1,"<a href=\"ApproveCommissionsCommand.php.html#8\">App\\Console\\Commands\\ApproveCommissionsCommand<\/a>"],[0,1,"<a href=\"ArchiveGrowthClicksCommand.php.html#8\">App\\Console\\Commands\\ArchiveGrowthClicksCommand<\/a>"],[91.17647058823529,11,"<a href=\"AutoCloseAttendanceCommand.php.html#13\">App\\Console\\Commands\\AutoCloseAttendanceCommand<\/a>"],[100,3,"<a href=\"BackfillNotificationPreferences.php.html#9\">App\\Console\\Commands\\BackfillNotificationPreferences<\/a>"],[0,2,"<a href=\"CheckOverdueInvoices.php.html#11\">App\\Console\\Commands\\CheckOverdueInvoices<\/a>"],[0,2,"<a href=\"CheckTrialExpiring.php.html#11\">App\\Console\\Commands\\CheckTrialExpiring<\/a>"],[0,41,"<a href=\"DemoFeatureRegistryCommand.php.html#13\">App\\Console\\Commands\\DemoFeatureRegistryCommand<\/a>"],[0,17,"<a href=\"DetectFeaturesCommand.php.html#11\">App\\Console\\Commands\\DetectFeaturesCommand<\/a>"],[70.87378640776699,41,"<a href=\"FeatureRegistryCommand.php.html#13\">App\\Console\\Commands\\FeatureRegistryCommand<\/a>"],[0,3,"<a href=\"GenerateMonthlyInvoices.php.html#13\">App\\Console\\Commands\\GenerateMonthlyInvoices<\/a>"],[0,11,"<a href=\"LeaveCarryForward.php.html#14\">App\\Console\\Commands\\LeaveCarryForward<\/a>"],[100,6,"<a href=\"MakeModuleCommand.php.html#10\">App\\Console\\Commands\\MakeModuleCommand<\/a>"],[0,5,"<a href=\"MonitorSlowQueries.php.html#19\">App\\Console\\Commands\\MonitorSlowQueries<\/a>"],[0,8,"<a href=\"QueueHealthCheck.php.html#18\">App\\Console\\Commands\\QueueHealthCheck<\/a>"],[0,9,"<a href=\"SendDripEmails.php.html#11\">App\\Console\\Commands\\SendDripEmails<\/a>"],[0,18,"<a href=\"TestFeatureDetectorCommand.php.html#9\">App\\Console\\Commands\\TestFeatureDetectorCommand<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[30,8,"<a href=\"AccrueLeaveBalances.php.html#21\">App\\Console\\Commands\\AccrueLeaveBalances::handle<\/a>"],[0,3,"<a href=\"AlertExpiringContracts.php.html#17\">App\\Console\\Commands\\AlertExpiringContracts::handle<\/a>"],[0,1,"<a href=\"ApproveCommissionsCommand.php.html#27\">App\\Console\\Commands\\ApproveCommissionsCommand::handle<\/a>"],[0,1,"<a href=\"ArchiveGrowthClicksCommand.php.html#27\">App\\Console\\Commands\\ArchiveGrowthClicksCommand::handle<\/a>"],[91.07142857142857,6,"<a href=\"AutoCloseAttendanceCommand.php.html#21\">App\\Console\\Commands\\AutoCloseAttendanceCommand::handle<\/a>"],[66.66666666666666,2,"<a href=\"AutoCloseAttendanceCommand.php.html#103\">App\\Console\\Commands\\AutoCloseAttendanceCommand::resolveCompany<\/a>"],[100,3,"<a href=\"AutoCloseAttendanceCommand.php.html#115\">App\\Console\\Commands\\AutoCloseAttendanceCommand::resolvePolicy<\/a>"],[100,3,"<a href=\"BackfillNotificationPreferences.php.html#17\">App\\Console\\Commands\\BackfillNotificationPreferences::handle<\/a>"],[0,2,"<a href=\"CheckOverdueInvoices.php.html#17\">App\\Console\\Commands\\CheckOverdueInvoices::handle<\/a>"],[0,2,"<a href=\"CheckTrialExpiring.php.html#17\">App\\Console\\Commands\\CheckTrialExpiring::handle<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#21\">App\\Console\\Commands\\DemoFeatureRegistryCommand::handle<\/a>"],[0,1,"<a href=\"DemoFeatureRegistryCommand.php.html#57\">App\\Console\\Commands\\DemoFeatureRegistryCommand::resetDemoData<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#67\">App\\Console\\Commands\\DemoFeatureRegistryCommand::createDemoFeatures<\/a>"],[0,3,"<a href=\"DemoFeatureRegistryCommand.php.html#79\">App\\Console\\Commands\\DemoFeatureRegistryCommand::displayStatistics<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#104\">App\\Console\\Commands\\DemoFeatureRegistryCommand::testFeatureRetrieval<\/a>"],[0,3,"<a href=\"DemoFeatureRegistryCommand.php.html#120\">App\\Console\\Commands\\DemoFeatureRegistryCommand::testMobileCompatibility<\/a>"],[0,4,"<a href=\"DemoFeatureRegistryCommand.php.html#138\">App\\Console\\Commands\\DemoFeatureRegistryCommand::generateAndDisplayManifest<\/a>"],[0,3,"<a href=\"DemoFeatureRegistryCommand.php.html#165\">App\\Console\\Commands\\DemoFeatureRegistryCommand::testSynchronization<\/a>"],[0,3,"<a href=\"DemoFeatureRegistryCommand.php.html#187\">App\\Console\\Commands\\DemoFeatureRegistryCommand::testCaching<\/a>"],[0,1,"<a href=\"DemoFeatureRegistryCommand.php.html#216\">App\\Console\\Commands\\DemoFeatureRegistryCommand::demoFeatures<\/a>"],[0,1,"<a href=\"DemoFeatureRegistryCommand.php.html#349\">App\\Console\\Commands\\DemoFeatureRegistryCommand::manifestFeatureRow<\/a>"],[0,1,"<a href=\"DemoFeatureRegistryCommand.php.html#360\">App\\Console\\Commands\\DemoFeatureRegistryCommand::optionBool<\/a>"],[0,5,"<a href=\"DemoFeatureRegistryCommand.php.html#365\">App\\Console\\Commands\\DemoFeatureRegistryCommand::optionString<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#381\">App\\Console\\Commands\\DemoFeatureRegistryCommand::statInt<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#392\">App\\Console\\Commands\\DemoFeatureRegistryCommand::statArray<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#402\">App\\Console\\Commands\\DemoFeatureRegistryCommand::stringValue<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#412\">App\\Console\\Commands\\DemoFeatureRegistryCommand::stringList<\/a>"],[0,2,"<a href=\"DemoFeatureRegistryCommand.php.html#421\">App\\Console\\Commands\\DemoFeatureRegistryCommand::boolLabel<\/a>"],[0,6,"<a href=\"DetectFeaturesCommand.php.html#19\">App\\Console\\Commands\\DetectFeaturesCommand::handle<\/a>"],[0,1,"<a href=\"DetectFeaturesCommand.php.html#72\">App\\Console\\Commands\\DetectFeaturesCommand::routeRow<\/a>"],[0,2,"<a href=\"DetectFeaturesCommand.php.html#86\">App\\Console\\Commands\\DetectFeaturesCommand::featureRow<\/a>"],[0,3,"<a href=\"DetectFeaturesCommand.php.html#99\">App\\Console\\Commands\\DetectFeaturesCommand::displayChanges<\/a>"],[0,1,"<a href=\"DetectFeaturesCommand.php.html#114\">App\\Console\\Commands\\DetectFeaturesCommand::optionBool<\/a>"],[0,2,"<a href=\"DetectFeaturesCommand.php.html#122\">App\\Console\\Commands\\DetectFeaturesCommand::stringValue<\/a>"],[0,2,"<a href=\"DetectFeaturesCommand.php.html#132\">App\\Console\\Commands\\DetectFeaturesCommand::stringList<\/a>"],[46.666666666666664,7,"<a href=\"FeatureRegistryCommand.php.html#29\">App\\Console\\Commands\\FeatureRegistryCommand::handle<\/a>"],[0,3,"<a href=\"FeatureRegistryCommand.php.html#52\">App\\Console\\Commands\\FeatureRegistryCommand::handleSync<\/a>"],[68.42105263157895,5,"<a href=\"FeatureRegistryCommand.php.html#73\">App\\Console\\Commands\\FeatureRegistryCommand::handleList<\/a>"],[89.65517241379311,8,"<a href=\"FeatureRegistryCommand.php.html#109\">App\\Console\\Commands\\FeatureRegistryCommand::handleStats<\/a>"],[100,1,"<a href=\"FeatureRegistryCommand.php.html#159\">App\\Console\\Commands\\FeatureRegistryCommand::featureRow<\/a>"],[100,1,"<a href=\"FeatureRegistryCommand.php.html#171\">App\\Console\\Commands\\FeatureRegistryCommand::handleClearCache<\/a>"],[100,1,"<a href=\"FeatureRegistryCommand.php.html#182\">App\\Console\\Commands\\FeatureRegistryCommand::handleUnknownAction<\/a>"],[100,2,"<a href=\"FeatureRegistryCommand.php.html#190\">App\\Console\\Commands\\FeatureRegistryCommand::argumentString<\/a>"],[100,5,"<a href=\"FeatureRegistryCommand.php.html#197\">App\\Console\\Commands\\FeatureRegistryCommand::optionString<\/a>"],[0,2,"<a href=\"FeatureRegistryCommand.php.html#213\">App\\Console\\Commands\\FeatureRegistryCommand::jsonLine<\/a>"],[100,2,"<a href=\"FeatureRegistryCommand.php.html#223\">App\\Console\\Commands\\FeatureRegistryCommand::statInt<\/a>"],[100,2,"<a href=\"FeatureRegistryCommand.php.html#234\">App\\Console\\Commands\\FeatureRegistryCommand::statArray<\/a>"],[100,2,"<a href=\"FeatureRegistryCommand.php.html#241\">App\\Console\\Commands\\FeatureRegistryCommand::boolLabel<\/a>"],[0,3,"<a href=\"GenerateMonthlyInvoices.php.html#25\">App\\Console\\Commands\\GenerateMonthlyInvoices::handle<\/a>"],[0,5,"<a href=\"LeaveCarryForward.php.html#20\">App\\Console\\Commands\\LeaveCarryForward::handle<\/a>"],[0,6,"<a href=\"LeaveCarryForward.php.html#88\">App\\Console\\Commands\\LeaveCarryForward::expireOldCarryForwards<\/a>"],[100,5,"<a href=\"MakeModuleCommand.php.html#34\">App\\Console\\Commands\\MakeModuleCommand::handle<\/a>"],[100,1,"<a href=\"MakeModuleCommand.php.html#75\">App\\Console\\Commands\\MakeModuleCommand::routeStub<\/a>"],[0,5,"<a href=\"MonitorSlowQueries.php.html#27\">App\\Console\\Commands\\MonitorSlowQueries::handle<\/a>"],[0,5,"<a href=\"QueueHealthCheck.php.html#27\">App\\Console\\Commands\\QueueHealthCheck::handle<\/a>"],[0,1,"<a href=\"QueueHealthCheck.php.html#88\">App\\Console\\Commands\\QueueHealthCheck::outputResult<\/a>"],[0,2,"<a href=\"QueueHealthCheck.php.html#93\">App\\Console\\Commands\\QueueHealthCheck::failedJobsCount<\/a>"],[0,7,"<a href=\"SendDripEmails.php.html#17\">App\\Console\\Commands\\SendDripEmails::handle<\/a>"],[0,2,"<a href=\"SendDripEmails.php.html#49\">App\\Console\\Commands\\SendDripEmails::sendEmail<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#15\">App\\Console\\Commands\\TestFeatureDetectorCommand::handle<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#44\">App\\Console\\Commands\\TestFeatureDetectorCommand::displayFeatures<\/a>"],[0,1,"<a href=\"TestFeatureDetectorCommand.php.html#57\">App\\Console\\Commands\\TestFeatureDetectorCommand::displayEmployeeMetadata<\/a>"],[0,3,"<a href=\"TestFeatureDetectorCommand.php.html#72\">App\\Console\\Commands\\TestFeatureDetectorCommand::displayChanges<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#91\">App\\Console\\Commands\\TestFeatureDetectorCommand::featureRow<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#105\">App\\Console\\Commands\\TestFeatureDetectorCommand::limit<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#115\">App\\Console\\Commands\\TestFeatureDetectorCommand::stringValue<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#125\">App\\Console\\Commands\\TestFeatureDetectorCommand::stringList<\/a>"],[0,2,"<a href=\"TestFeatureDetectorCommand.php.html#134\">App\\Console\\Commands\\TestFeatureDetectorCommand::boolLabel<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

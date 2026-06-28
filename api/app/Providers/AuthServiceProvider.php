@@ -9,7 +9,7 @@ use App\Models\AttendanceLog;
 use App\Models\Contract;
 use App\Models\Department;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Auth\Domain\Models\EmployeeLoan;
+use App\Models\EmployeeLoan;
 use App\Models\Evaluation;
 use App\Models\ExpenseClaim;
 use App\Models\Invoice;
