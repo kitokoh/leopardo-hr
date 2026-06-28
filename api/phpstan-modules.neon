@@ -60,6 +60,9 @@ parameters:
         - '#has invalid return type App\\Core\\Auth\\Domain\\Models\\(CompanyRequest|UserEmployeeLink)#'
         - '#Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model::hasMany\(\)#'
         - '#Parameter \#1 \$related of method.*hasMany\(\) expects class-string.*string given#'
+        - '#generics.notSubtype#'
+        - message: '#in PHPDoc tag .@return. is not subtype of template type TRelatedModel#'
+          path: app/Core/Auth/Domain/Models/User.php
         # Optional method calls
         - '#Call to an undefined method Illuminate\\Support\\Optional::toIso8601(String|ZuluString)\(\)#'
         # Modules DDD - access to unknown class properties
