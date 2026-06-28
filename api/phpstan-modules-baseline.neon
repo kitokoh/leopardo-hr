@@ -186,7 +186,7 @@ parameters:
             message: '#Match expression does not handle remaining value: mixed#'
             path: app/Modules
         -
-            message: '#Parameter #1 \$companyId of method App\\AI\\Workflows\\(PreparePayrollWorkflow|WeeklyReportWorkflow)::execute\(\) expects string, int\|null given#'
+            message: '#Parameter \#1 \$companyId of method App\\AI\\Workflows\\(PreparePayrollWorkflow|WeeklyReportWorkflow)::execute\(\) expects string, int\|null given#'
         -
             message: '#Unable to resolve the template type TValue in call to function collect#'
         -
