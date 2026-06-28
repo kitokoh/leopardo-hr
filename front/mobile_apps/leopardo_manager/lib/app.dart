@@ -112,6 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SalaryAdvanceListScreen(),
       ),
       GoRoute(
+        path: '/payrolls',
         builder: (context, state) => const PayrollListScreen(),
       ),
       GoRoute(
@@ -211,6 +212,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ScheduleListScreen(),
       ),
       GoRoute(
+        path: '/company/branding',
         builder: (context, state) => const CompanyBrandingScreen(),
       ),
       GoRoute(
