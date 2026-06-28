@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Company;
 use App\Models\CompanyRequest;
-use App\Models\Employee;
-use App\Models\User;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
 use App\Rules\GlobalEmailUnique;
 use App\Services\EmployeeService;
 use App\Services\OnboardingQrService;
@@ -237,7 +237,8 @@ class OnboardingQrController extends Controller
 
     private function resolveUserFromEmployee(Employee $employee): User
     {
-        return User::firstOrCreate(
+        /** @var User $user */
+        $user = User::firstOrCreate(
             ['email' => $employee->email],
             [
                 'first_name' => $employee->first_name ?: 'Employe',
@@ -249,6 +250,8 @@ class OnboardingQrController extends Controller
                 'status' => $employee->status ?? 'active',
             ]
         );
+
+        return $user;
     }
 
     private function stringOrNull(mixed $value): ?string

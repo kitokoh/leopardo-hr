@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaskCommentResource;
 use App\Http\Resources\Api\V1\TaskResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Task;
 use App\Models\TaskComment;
 use Illuminate\Http\JsonResponse;

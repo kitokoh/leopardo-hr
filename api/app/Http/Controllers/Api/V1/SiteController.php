@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Site\StoreSiteRequest;
 use App\Http\Requests\Api\V1\Site\UpdateSiteRequest;
 use App\Http\Resources\Api\V1\SiteResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Site;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\FeatureManifestController;
-use App\Http\Controllers\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
 use App\Http\Controllers\Api\V1\ClientEventController;
 use App\Http\Controllers\Api\V1\CommunicationAnalyticsController;
@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\V1\NotificationPreferenceController;
 use App\Http\Controllers\Api\V1\OnboardingChecklistController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PaymentWebhookController;
-use App\Http\Controllers\Api\V1\PlatformAuthController;
+use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyFeatureController;
 use App\Http\Controllers\Api\V1\PlatformCompanyHealthController;
 use App\Http\Controllers\Api\V1\PlatformCompanyRequestController;

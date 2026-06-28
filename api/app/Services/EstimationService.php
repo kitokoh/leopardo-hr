@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\AttendanceLog;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;

@@ -8,7 +8,7 @@ use App\Http\Requests\Api\V1\SalaryAdvance\SalaryAdvanceIndexRequest;
 use App\Http\Requests\Api\V1\SalaryAdvance\StoreSalaryAdvanceRequest;
 use App\Http\Resources\Api\V1\SalaryAdvanceResource;
 use App\Jobs\GeneratePaymentDocumentJob;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SalaryAdvance;
 use App\Services\SalaryAdvanceService;
 use Illuminate\Http\JsonResponse;

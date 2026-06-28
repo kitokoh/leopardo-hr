@@ -8,7 +8,7 @@ use App\Models\Absence;
 use App\Models\AbsenceType;
 use App\Models\CalendarEvent;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\CalendarSyncService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;

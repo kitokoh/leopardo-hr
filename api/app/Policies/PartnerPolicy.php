@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Partner;
-use App\Models\User;
+use App\Core\Auth\Domain\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PartnerPolicy

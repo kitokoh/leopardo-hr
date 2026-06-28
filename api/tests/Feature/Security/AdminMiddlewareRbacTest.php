@@ -3,7 +3,7 @@
 namespace Tests\Feature\Security;
 
 use App\Http\Middleware\AdminMiddleware;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;

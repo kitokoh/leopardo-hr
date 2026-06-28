@@ -9,7 +9,7 @@ use App\Http\Resources\Api\V1\LeaveAccrualResource;
 use App\Http\Resources\Api\V1\LeaveBalanceResource;
 use App\Http\Resources\Api\V1\LeavePolicyResource;
 use App\Models\AbsenceType;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\LeaveAccrual;
 use App\Models\LeaveBalance;
 use App\Models\LeavePolicy;

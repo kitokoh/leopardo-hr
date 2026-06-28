@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\CompanyRequest;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\CompanyProvisioningService;
 use App\Services\TenantManager;
 use App\Support\CountryDefaults;

@@ -3,7 +3,7 @@
 namespace App\Modules\HR\Application\Actions;
 
 use App\Modules\HR\Domain\Exceptions\EmployeeNotFoundException;
-use App\Modules\HR\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
 
 class TerminateEmployee

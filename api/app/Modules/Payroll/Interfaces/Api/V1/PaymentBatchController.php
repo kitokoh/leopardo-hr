@@ -4,7 +4,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\GeneratePaymentDocumentJob;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PaymentBatch;
 use App\Models\PaymentConfirmation;
 use App\Models\PaymentItem;

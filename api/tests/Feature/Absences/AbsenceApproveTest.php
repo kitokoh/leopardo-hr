@@ -5,7 +5,7 @@ namespace Tests\Feature\Absences;
 use App\Models\Absence;
 use App\Models\AbsenceType;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\LeaveBalanceLog;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Hash;

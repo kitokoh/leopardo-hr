@@ -4,6 +4,8 @@
 
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
 
+Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers l'architecture DDD dans Core/Auth terminee.
+
 ## Perimetre
 
 - API publique

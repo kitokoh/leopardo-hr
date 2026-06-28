@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Api\V1\SalaryAdvance;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

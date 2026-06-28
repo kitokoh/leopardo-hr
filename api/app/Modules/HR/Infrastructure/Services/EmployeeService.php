@@ -6,7 +6,7 @@ use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\Cache\TenantCacheService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;

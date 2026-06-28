@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

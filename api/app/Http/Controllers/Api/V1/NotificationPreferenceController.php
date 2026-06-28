@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationPreferenceResource;
 use App\Models\CommunicationEvent;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\Communication\NotificationPreferenceProvisioner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

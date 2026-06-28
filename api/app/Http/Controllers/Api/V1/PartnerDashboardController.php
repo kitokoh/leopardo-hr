@@ -19,14 +19,14 @@ class PartnerDashboardController extends Controller
      * Nécessaire car le module Growth stocke les partenaires dans public.partners
      * liés à public.users, alors que l'auth Sanctum identifie un Employee tenant.
      */
-    private function resolveGlobalUser($authUser): \App\Models\User
+    private function resolveGlobalUser($authUser): \App\Core\Auth\Domain\Models\User
     {
-        if ($authUser instanceof \App\Models\User) {
+        if ($authUser instanceof \App\Core\Auth\Domain\Models\User) {
             return $authUser;
         }
 
-        if ($authUser instanceof \App\Models\Employee) {
-            return \App\Models\User::firstOrCreate(
+        if ($authUser instanceof \App\Core\Auth\Domain\Models\Employee) {
+            return \App\Core\Auth\Domain\Models\User::firstOrCreate(
                 ['email' => $authUser->email],
                 [
                     'first_name' => $authUser->first_name,

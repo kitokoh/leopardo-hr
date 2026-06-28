@@ -2,7 +2,7 @@
 
 namespace App\Services\Communication;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\NotificationPreference;
 use Illuminate\Support\Facades\Schema;
 
