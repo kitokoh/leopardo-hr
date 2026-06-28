@@ -104,21 +104,23 @@ Shared ← (consommé par tout le monde, ne dépend de rien)
 
 ## Migration en cours (ancienne → nouvelle archi)
 
-### TODO restants dans les routes
+### Controllers routes — migration complète ✅
 
-**routes/modules/rh.php :**
-- [ ] `MeController` → créer `Modules\HR\Interfaces\Api\V1\Controllers\MeController`
-- [ ] `EstimationController` → déplacer vers `Modules\Payroll\Interfaces\Api\V1\`
-- [ ] `NotificationStreamController` → `Modules\Notification\Interfaces\Api\V1\Controllers\`
-- [ ] `SiteController` → créer `Modules\HR\Interfaces\Api\V1\Controllers\SiteController`
+Tous les `use App\Http\Controllers\Api\V1\*` ont été remplacés dans les fichiers de routes.
 
-**routes/modules/hr_extended.php :**
-- [ ] `AdvancedReportController` → `Modules\HR\Interfaces\Api\V1\Controllers\`
-- [ ] `AuditLogController` → `Modules\HR\Interfaces\Api\V1\Controllers\`
-- [ ] `EmployeeLoanController` → `Modules\Payroll\Interfaces\Api\V1\`
-- [ ] `PredictionController` → `Modules\HR\Interfaces\Api\V1\Controllers\`
+| Controller | Nouveau namespace |
+|-----------|------------------|
+| `MeController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
+| `SiteController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
+| `EstimationController` | `Modules\Payroll\Interfaces\Api\V1\` |
+| `NotificationStreamController` | `Modules\Notification\Interfaces\Api\V1\Controllers\` |
+| `AdvancedReportController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
+| `AuditLogController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
+| `EmployeeLoanController` | `Modules\Payroll\Interfaces\Api\V1\` |
+| `PredictionController` | `Modules\HR\Interfaces\Api\V1\Controllers\` |
 
-**Autres :**
+### TODO restants
+
 - [ ] Vider `app/Models/` des modèles déjà migrés dans `Modules/*/Domain/Models/`
 - [ ] Vider `app/Services/` des services déjà migrés dans `Modules/*/Infrastructure/Services/`
 - [ ] Peupler `app/Shared/` et supprimer les doublons `app/DTOs/`, `app/Enums/`, `app/Traits/`

@@ -34,11 +34,10 @@ use App\Modules\Planning\Interfaces\Api\V1\LeavePolicyController;
 use App\Modules\Recruitment\Interfaces\Api\V1\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\RecruitmentController;
 
-// ── Controllers non encore migrés vers Modules (ancienne archi — TODO) ─────────
-use App\Http\Controllers\Api\V1\AdvancedReportController;
-use App\Http\Controllers\Api\V1\AuditLogController;
-use App\Http\Controllers\Api\V1\EmployeeLoanController;
-use App\Http\Controllers\Api\V1\PredictionController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
+use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -165,7 +164,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
             Route::get('/payroll-summary', [HrReportController::class, 'payrollSummary']);
             Route::get('/overtime', [HrReportController::class, 'overtime']);
 
-            // Advanced Reports — TODO: migrer AdvancedReportController vers Modules\HR
+            // Advanced Reports
             Route::get('/recruitment-pipeline', [AdvancedReportController::class, 'recruitmentPipeline']);
             Route::get('/training-completion', [AdvancedReportController::class, 'trainingCompletion']);
             Route::get('/loan-summary', [AdvancedReportController::class, 'loanSummary']);
@@ -181,12 +180,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::put('/webhooks/{webhookEndpoint}', [WebhookController::class, 'update']);
         Route::delete('/webhooks/{webhookEndpoint}', [WebhookController::class, 'destroy']);
 
-        // ── Audit Trail — TODO: migrer AuditLogController vers Modules\HR ─
+        // ── Audit Trail
         Route::get('/audit-logs', [AuditLogController::class, 'index']);
         Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv']);
         Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show']);
 
-        // ── IA Predictions — TODO: migrer PredictionController vers Modules\HR
+        // ── IA Predictions
         Route::prefix('predictions')->group(function (): void {
             Route::get('/turnover', [PredictionController::class, 'turnover']);
             Route::get('/absenteeism', [PredictionController::class, 'absenteeism']);

@@ -33,11 +33,10 @@ use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
 use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
 use App\Modules\Planning\Interfaces\Api\V1\TaskController;
 
-// ── Controllers non encore migrés (ancienne archi — TODO) ─────────────────────
-use App\Http\Controllers\Api\V1\EstimationController;
-use App\Http\Controllers\Api\V1\MeController;
-use App\Http\Controllers\Api\V1\NotificationStreamController;
-use App\Http\Controllers\Api\V1\SiteController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\MeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
+use App\Modules\Payroll\Interfaces\Api\V1\EstimationController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -157,7 +156,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
-    Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']); // TODO: migrer
+    Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
 
     // ── Module 7 — Projects & Tasks ───────────────────────────────────────────
     Route::get('/projects', [ProjectController::class, 'index']);
