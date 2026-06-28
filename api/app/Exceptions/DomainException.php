@@ -11,7 +11,7 @@ class DomainException extends RuntimeException
         private readonly int $statusCode = 500,
         private readonly string $errorCode = ''
     ) {
-        parent::__construct($message);
+        parent::__construct($message, $statusCode);
     }
 
     public function statusCode(): int
