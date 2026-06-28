@@ -360,7 +360,7 @@ parameters:
         -
             message: '#Parameter .tenantManager of method App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\[A-Za-z]+::__construct\(\) has invalid type#'
         -
-            message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\[A-Za-z]+::\\$[a-z]+Manager has unknown class#'
+            message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\[A-Za-z]+::\\\\$[a-z]+Manager has unknown class#'
 
         # ── Payroll ──────────────────────────────────────────────────────────
         -
@@ -394,9 +394,9 @@ parameters:
         -
             message: '#Parameter .1 ..callback of method.*Collection.*int.*stdClass.*map\(\) expects callable.*Closure.*Cameras.*given#'
         -
-            message: '#Property App\\Modules\\Cameras\\Domain\\Camera::\\$company_id does not accept string#'
+            message: '#Property App\\Modules\\Cameras\\Domain\\Camera::\\\\$company_id does not accept string#'
         -
-            message: '#Property App\\Modules\\Cameras\\Interfaces.*::\\$cameras is never read, only written#'
+            message: '#Property App\\Modules\\Cameras\\Interfaces.*::\\\\$cameras is never read, only written#'
         -
             message: '#Parameter .2 ..default of method Illuminate\\Http\\Request::query\(\) expects.*int given#'
             path: app/Modules/Cameras
