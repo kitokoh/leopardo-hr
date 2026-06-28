@@ -30,6 +30,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $locked_until
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class User extends Authenticatable
 {

@@ -82,6 +82,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Company|null $company
  * @property-read Department|null $department
  * @property-read Position|null $position
+ * @property-read Schedule|null $schedule
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Employee extends Authenticatable
 {
