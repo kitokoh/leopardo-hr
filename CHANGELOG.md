@@ -657,6 +657,7 @@
 - Mobile core : `SecureStorage`, `AppPreferences` et `TranslationCatalogCache` tolerent une box Hive `offlineCache` pas encore ouverte via fallback memoire, ce qui evite les crashs/ANR pendant les premiers frames.
 
 ## [Unreleased]
+- fix(ci): skip mobile hr firebase upload if secrets are missing
 
 ### Added
 - Plan 60: Double validation des avances salaire (migration, contrÃ´leur, routes)
