@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
-import 'package:leopardo_core/models/attendance_log.dart';
 
 class OfflineSyncService {
   final ApiClient apiClient;
