@@ -2,17 +2,17 @@
   "name": "leopardo-hr-monorepo",
   "version": "0.0.0",
   "private": true,
-  "description": "Leopardo HR — monorepo root scripts",
+  "description": "Leopardo HR — monorepo root convenience scripts (no npm workspaces, each sub-project manages its own lockfile)",
   "scripts": {
-    "web:dev":       "npm run dev      --workspace=front/web",
-    "web:build":     "npm run build    --workspace=front/web",
-    "web:test":      "npm run test     --workspace=front/web",
-    "web:lint":      "npm run lint     --workspace=front/web",
-    "web:e2e":       "npm run test:e2e --workspace=front/web",
+    "web:dev":       "npm run dev      --prefix front/web",
+    "web:build":     "npm run build    --prefix front/web",
+    "web:test":      "npm run test     --prefix front/web",
+    "web:lint":      "npm run lint     --prefix front/web",
+    "web:e2e":       "npm run test:e2e --prefix front/web",
 
-    "admin:dev":     "npm run dev      --workspace=front/admin-dashboard",
-    "admin:build":   "npm run build    --workspace=front/admin-dashboard",
-    "admin:lint":    "npm run lint     --workspace=front/admin-dashboard",
+    "admin:dev":     "npm run dev      --prefix front/admin-dashboard",
+    "admin:build":   "npm run build    --prefix front/admin-dashboard",
+    "admin:lint":    "npm run lint     --prefix front/admin-dashboard",
 
     "mobile:bootstrap": "melos bootstrap",
     "mobile:analyze":   "melos run analyze",
@@ -25,10 +25,6 @@
     "test":    "npm run web:test",
     "build":   "npm run web:build && npm run admin:build"
   },
-  "workspaces": [
-    "front/web",
-    "front/admin-dashboard"
-  ],
   "engines": {
     "node": ">=20.0.0",
     "npm":  ">=10.0.0"
