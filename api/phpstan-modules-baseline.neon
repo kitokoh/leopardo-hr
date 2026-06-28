@@ -328,191 +328,94 @@ parameters:
         # Collection map unresolvable type
         -
             message: '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<\(int.string\),mixed>::map\(\) contains unresolvable type#'
+
+        # ── PHPDoc @param $q unknown parameter (scope methods with Builder $q) ──
+        -
+            message: '#PHPDoc tag @param references unknown parameter: \$q#'
             path: app/Modules
 
-        # ── Billing — Partner/PartnerReferral missing Company/User types ─────
+        # ── Billing ─────────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\Partner::user\(\).*invalid return type#'
+            message: '#Type App\\Modules\\Billing\\Domain\\Models\\(User|Company|Commission|Payment|Partner|PartnerReferral|WebhookEndpoint) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\Partner::user\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\Partner::referredCompanies\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\Partner::referredCompanies\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\PartnerReferral::company\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\PartnerReferral::company\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint::scopeListeningTo\(\).*should return.*but returns#'
+            message: '#Method App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint::scopeListeningTo\(\)#'
 
-        # ── Cabinet — Employee missing ───────────────────────────────────────
+        # ── Cabinet ─────────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\Cabinet\\Domain\\Models\\CabinetDocument::employee\(\).*invalid return type#'
+            message: '#Type App\\Modules\\Cabinet\\Domain\\Models\\(Employee|CabinetDocument|CabinetFolder|CabinetShare|CabinetFile) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
-            message: '#Method App\\Modules\\Cabinet\\Domain\\Models\\CabinetDocument::employee\(\).*should return.*but returns#'
+            message: '#Parameter .2 ..file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given#'
         -
-            message: '#Method App\\Modules\\Cabinet\\Domain\\Models\\CabinetFolder::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Cabinet\\Domain\\Models\\CabinetFolder::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Cabinet\\Domain\\Models\\CabinetShare::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Cabinet\\Domain\\Models\\CabinetShare::employee\(\).*should return.*but returns#'
-        -
-            message: '#PHPDoc tag.*CabinetShare.*employee.*unknown class#'
+            message: '#Parameter .3 ..data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects array<string, mixed>, string given#'
 
-        # ── Fleet — Employee missing ─────────────────────────────────────────
+        # ── Fleet ────────────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\Vehicle::assignedDriver\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\Vehicle::assignedDriver\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\VehicleAlert::acknowledgedByUser\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\VehicleAlert::acknowledgedByUser\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\VehicleAssignment::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\VehicleAssignment::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\VehicleTrip::driver\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Fleet\\Domain\\Models\\VehicleTrip::driver\(\).*should return.*but returns#'
+            message: '#Type App\\Modules\\Fleet\\Domain\\Models\\(Employee|Vehicle|VehicleAlert|VehicleAssignment|VehicleTrip) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
 
-        # ── HR ───────────────────────────────────────────────────────────────
+        # ── HR ────────────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\HR\\Domain\\Models\\Contract::scopeExpiringSoon\(\).*should return.*but returns#'
+            message: '#Method App\\Modules\\HR\\Domain\\Models\\Contract::scopeExpiringSoon\(\)#'
+        -
+            message: '#Parameter .1 ..companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\OnboardingStepController::seedDefaultSteps\(\) expects string, int.null given#'
+        -
+            message: '#Parameter .tenantManager of method App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\[A-Za-z]+::__construct\(\) has invalid type#'
+        -
+            message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\[A-Za-z]+::\\$[a-z]+Manager has unknown class#'
 
-        # ── Payroll — Employee/Invoice/SalaryComponent missing ───────────────
+        # ── Payroll ──────────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\EmployeeLoan::employee\(\).*invalid return type#'
+            message: '#Type App\\Modules\\Payroll\\Domain\\Models\\(Employee|Invoice|SalaryComponent|SalaryStructure|EmployeeLoan|PaySlip|Payment|PaymentDocument|PaymentItem|Payroll|PayrollRun|SalaryAdvance) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\EmployeeLoan::employee\(\).*should return.*but returns#'
+            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\[A-Za-z]+::scope[A-Za-z]+\(\).*should return#'
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\EmployeeLoan::approver\(\).*invalid return type#'
+            message: '#Method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollService::validate\(\) invoked with 1 parameter, 2 required#'
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\EmployeeLoan::approver\(\).*should return.*but returns#'
+            message: '#Method App\\Modules\\Payroll\\Domain\\Contracts\\CountryRulesInterface::calculateIncomeTax\(\) invoked with 1 parameter, 2 required#'
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\EmployeeLoan::scopeActive\(\).*should return.*but returns#'
+            message: '#Parameter .2 ..companyId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::logBalanceChange\(\) expects string, int.null given#'
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaySlip::employee\(\).*invalid return type#'
+            message: '#Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::reject\(\) invoked with 3 parameters, 2 required#'
         -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaySlip::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaySlip::lines\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\Payment::invoice\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\Payment::invoice\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::requester\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::requester\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaymentItem::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PaymentItem::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\Payroll::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\Payroll::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\Payroll::validator\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\Payroll::validator\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PayrollRun::validatedBy\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\PayrollRun::validatedBy\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance::approver\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance::approver\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryStructure::components\(\).*should return.*but returns#'
-        -
-            message: '#PHPDoc tag.*Payroll::.*employee.*unknown class#'
-        -
-            message: '#Parameter.*scopeAvailableToEmployee.*invalid type.*Employee#'
+            message: '#Parameter .1 ..companyId of method App\\Modules\\Payroll\\[A-Za-z]+\\[A-Za-z]+\\[A-Za-z]+::[A-Za-z]+\(\) expects string, int.null given#'
 
-        # ── Planning — Employee/Company missing ──────────────────────────────
+        # ── Planning ─────────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Absence::(employee|approver)\(\).*invalid return type#'
+            message: '#Type App\\Modules\\Planning\\Domain\\Models\\(Employee|User|Company|Absence|ClientEvent|ExpenseClaim|LeaveAccrual|LeaveBalance|LeaveBalanceLog|Project|Task|TaskComment) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Absence::(employee|approver)\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\ClientEvent::(employee|company|creator)\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\ClientEvent::(employee|company|creator)\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\ExpenseClaim::(employee|approver)\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\ExpenseClaim::(employee|approver)\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\LeaveAccrual::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\LeaveAccrual::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\LeaveBalance::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\LeaveBalance::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\LeaveBalanceLog::employee\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\LeaveBalanceLog::employee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Project::creator\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Project::creator\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Task::creator\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Task::creator\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\Task::scopeForEmployee\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\TaskComment::author\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Planning\\Domain\\Models\\TaskComment::author\(\).*should return.*but returns#'
-        -
-            message: '#PHPDoc tag.*ClientEvent.*employee.*unknown class#'
-        -
-            message: '#PHPDoc tag.*ClientEvent.*company.*unknown class#'
+            message: '#Method App\\Modules\\Planning\\Domain\\Models\\[A-Za-z]+::scope[A-Za-z]+\(\).*should return#'
 
-        # ── Recruitment — Employee/Department/Position missing ───────────────
+        # ── Recruitment ──────────────────────────────────────────────────────
         -
-            message: '#Method App\\Modules\\Recruitment\\Domain\\Models\\Interview::interviewer\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Recruitment\\Domain\\Models\\Interview::interviewer\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::department\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::department\(\).*should return.*but returns#'
-        -
-            message: '#Method App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::position\(\).*invalid return type#'
-        -
-            message: '#Method App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::position\(\).*should return.*but returns#'
+            message: '#Type App\\Modules\\Recruitment\\Domain\\Models\\(Employee|Department|Position|Interview|JobPosting|Application) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
             message: '#Property App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::.*published_at.*does not accept Carbon#'
 
-        # ── Misc — bruit de typage statique ─────────────────────────────────
+        # ── Cameras ──────────────────────────────────────────────────────────
         -
-            message: '#Strict comparison using !== between string and int\|null will always evaluate to true#'
+            message: '#Parameter .1 ..callback of method.*Collection.*int.*stdClass.*map\(\) expects callable.*Closure.*Cameras.*given#'
+        -
+            message: '#Property App\\Modules\\Cameras\\Domain\\Camera::\\$company_id does not accept string#'
+        -
+            message: '#Property App\\Modules\\Cameras\\Interfaces.*::\\$cameras is never read, only written#'
+        -
+            message: '#Parameter .2 ..default of method Illuminate\\Http\\Request::query\(\) expects.*int given#'
+            path: app/Modules/Cameras
+        -
+            message: '#Parameter .1 ..array.* to function array_filter does not contain falsy values#'
+            path: app/Modules
+
+        # ── Misc Query types ─────────────────────────────────────────────────
+        -
+            message: '#Parameter .2 ..callback of method.*Query\\Builder::when\(\) expects.*Closure.*Eloquent.*given#'
             path: app/Modules
         -
-            message: '#Strict comparison using !== between string\|null and int will always evaluate to true#'
+            message: '#Strict comparison using !== between string and int.null will always evaluate to true#'
             path: app/Modules
         -
-            message: '#Strict comparison using === between string\|null and int will always evaluate to false#'
+            message: '#Strict comparison using !== between string.null and int will always evaluate to true#'
+            path: app/Modules
+        -
+            message: '#Strict comparison using === between string.null and int will always evaluate to false#'
             path: app/Modules
         -
             message: '#Strict comparison using !== between null and null will always evaluate to false#'
@@ -523,45 +426,3 @@ parameters:
         -
             message: '#Unreachable statement - code above always terminates#'
             path: app/Modules
-        -
-            message: '#Using nullsafe method call on non-nullable type Illuminate\\Support\\Optional#'
-            path: app/Modules
-        -
-            message: '#Offset .*(nir|cin|num_ss|num_cnss|last_name|first_name|date_naissance|gross_salary|days_worked|months_worked|hours_worked|net_salary|net_imposable|contract_type|start_date|type).* on .* on left side of .* always exists#'
-            path: app/Modules
-        -
-            message: '#Parameter .1 ..array.* to function array_filter does not contain falsy values#'
-            path: app/Modules
-        -
-            message: '#Parameter .2 ..callback of method.*Query\\Builder::when\(\) expects.*Closure.*Eloquent.*given#'
-            path: app/Modules
-        -
-            message: '#Method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollService::validate\(\) invoked with 1 parameter, 2 required#'
-        -
-            message: '#Method App\\Modules\\Payroll\\Domain\\Contracts\\CountryRulesInterface::calculateIncomeTax\(\) invoked with 1 parameter, 2 required#'
-        -
-            message: '#Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::reject\(\) invoked with 3 parameters, 2 required#'
-        -
-            message: '#Parameter .1 ..companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\OnboardingStepController::seedDefaultSteps\(\) expects string, int.null given#'
-        -
-            message: '#Parameter .2 ..companyId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::logBalanceChange\(\) expects string, int.null given#'
-        -
-            message: '#Parameter .tenantManager of method App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::__construct\(\) has invalid type.*TenantManager#'
-        -
-            message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::.*tenantManager has unknown class.*TenantManager#'
-        -
-            message: '#Parameter .2 ..file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects#'
-        -
-            message: '#Parameter .3 ..data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects#'
-        -
-            message: '#PHPDoc tag .@param. references unknown parameter: .q#'
-            path: app/Modules
-        -
-            message: '#Property App\\Modules\\Cameras\\Domain\\Camera::.*company_id.*does not accept string#'
-        -
-            message: '#Property App\\Modules\\Cameras\\Interfaces.*PublicCameraViewerController::.*cameras is never read, only written#'
-        -
-            message: '#Parameter .1 ..callback of method.*Collection.*int.*stdClass.*map\(\) expects callable.*Closure.*Cameras.*given#'
-        -
-            message: '#Parameter .2 ..default of method Illuminate\\Http\\Request::query\(\) expects.*int given#'
-            path: app/Modules/Cameras
