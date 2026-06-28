@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
-import 'package:leopardo_manager/features/home/screens/home_screen.dart';
+import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_hr/features/home/screens/home_screen.dart';
 
 import '../helpers/mobile_test_harness.dart';
 

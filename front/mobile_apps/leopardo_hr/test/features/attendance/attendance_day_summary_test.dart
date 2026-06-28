@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
+import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
-import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
+import 'package:leopardo_hr/features/attendance/data/attendance_repository.dart';
+import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
 
 void main() {
   test('uses stable month key for attendance history refreshes', () {
