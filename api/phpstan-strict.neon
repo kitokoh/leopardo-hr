@@ -3,9 +3,8 @@ includes:
 
 parameters:
     level: 8
-    checkMissingIterableValueType: true
 
     paths:
-        - api/app/Core
-        - api/app/Modules
-        - api/app/Shared
+        - app/Core
+        - app/Modules
+        - app/Shared
