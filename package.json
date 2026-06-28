@@ -1,0 +1,39 @@
+{
+  "name": "leopardo-hr-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Leopardo HR — monorepo root scripts",
+  "scripts": {
+    "web:dev":       "npm run dev      --workspace=front/web",
+    "web:build":     "npm run build    --workspace=front/web",
+    "web:test":      "npm run test     --workspace=front/web",
+    "web:lint":      "npm run lint     --workspace=front/web",
+    "web:e2e":       "npm run test:e2e --workspace=front/web",
+
+    "admin:dev":     "npm run dev      --workspace=front/admin-dashboard",
+    "admin:build":   "npm run build    --workspace=front/admin-dashboard",
+    "admin:lint":    "npm run lint     --workspace=front/admin-dashboard",
+
+    "mobile:bootstrap": "melos bootstrap",
+    "mobile:analyze":   "melos run analyze",
+    "mobile:format":    "melos run format:fix",
+    "mobile:test":      "melos run test",
+    "mobile:gen":       "melos run gen",
+    "mobile:l10n":      "melos run l10n",
+
+    "lint":    "npm run web:lint && npm run admin:lint",
+    "test":    "npm run web:test",
+    "build":   "npm run web:build && npm run admin:build"
+  },
+  "workspaces": [
+    "front/web",
+    "front/admin-dashboard"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "npm":  ">=10.0.0"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
+}
