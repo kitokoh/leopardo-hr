@@ -1,0 +1,89 @@
+name: _setup-php (reusable)
+
+# Reusable workflow — PHP + PostgreSQL + Redis setup for backend jobs.
+# Call with:
+#   uses: ./.github/workflows/_setup-php.yml
+#   with:
+#     php-version: '8.4'
+#     coverage: 'none'  # or 'pcov'
+
+on:
+  workflow_call:
+    inputs:
+      php-version:
+        type: string
+        default: '8.4'
+        description: PHP version
+      coverage:
+        type: string
+        default: 'none'
+        description: Coverage driver (none | pcov | xdebug)
+      working-directory:
+        type: string
+        default: './api'
+        description: Backend working directory
+
+    outputs:
+      composer-cache-dir:
+        description: Resolved Composer cache directory
+        value: ${{ jobs.setup.outputs.composer-cache-dir }}
+
+jobs:
+  setup:
+    name: PHP ${{ inputs.php-version }} Setup
+    runs-on: ubuntu-latest
+    outputs:
+      composer-cache-dir: ${{ steps.composer-cache.outputs.dir }}
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP ${{ inputs.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.php-version }}
+          extensions: pdo, pdo_pgsql, bcmath, mbstring, xml, zip, gd, redis, pcntl
+          coverage: ${{ inputs.coverage }}
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+        working-directory: ${{ inputs.working-directory }}
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ inputs.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-${{ inputs.php-version }}-
+
+      - name: Prepare environment
+        run: cp .env.testing .env
+        working-directory: ${{ inputs.working-directory }}
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        working-directory: ${{ inputs.working-directory }}

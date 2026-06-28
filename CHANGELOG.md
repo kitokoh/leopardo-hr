@@ -13,6 +13,8 @@
 
 ## [4.16.255] - 2026-06-21   
 ## [4.17.0] - 2026-06-23  
+## [4.16.255] - 2026-06-21
+## [4.17.0] - 2026-06-23
 
 ### Added 
 
@@ -42,6 +44,10 @@
 - Vitrine : Composant `StickyMobileCTA` — CTA flottant mobile visible après 400px de scroll, localisé FR/EN/TR/AR.
 - Vitrine Phase-3 : Remplacement des composants `Legacy*` par les nouvelles sections premium (`HeroSection`, `FAQSection`, `CTASection`, `TestimonialsSection`, `FeaturesSection`) dans `landing/page.tsx`.
 
+### Fixed
+
+- Vitrine : Export de `QuickTrialEmailForm` depuis `HeroSection.tsx` pour permettre son usage dans le test E2E Playwright marketing-funnel.
+- CI : Correction du test Playwright `marketing-funnel.spec.ts` — le formulaire hero email-trial (`section form input[type="email"]`) est désormais dans le DOM via `LegacyHeroSection → HeroSection` qui inclut `QuickTrialEmailForm`.
 ### Fixed
 
 - Vitrine : Export de `QuickTrialEmailForm` depuis `HeroSection.tsx` pour permettre son usage dans le test E2E Playwright marketing-funnel.
