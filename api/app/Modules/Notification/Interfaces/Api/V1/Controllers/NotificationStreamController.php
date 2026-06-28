@@ -36,7 +36,7 @@ class NotificationStreamController extends Controller
                     break;
                 }
 
-                /** @var Employee&\Illuminate\Notifications\Notifiable|null $employee */
+                /** @var (Employee&\Illuminate\Notifications\Notifiable)|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->where('id', $userId)
                     ->where('company_id', $companyId)
