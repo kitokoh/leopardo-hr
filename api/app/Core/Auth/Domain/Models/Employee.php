@@ -24,6 +24,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Laravel\Sanctum\Contracts\HasApiTokens as HasApiTokensContract;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -86,7 +87,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Schedule|null $schedule
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class Employee extends Authenticatable
+class Employee extends Authenticatable implements HasApiTokensContract
 {
     use BelongsToCompany;
     use HasApiTokens;
