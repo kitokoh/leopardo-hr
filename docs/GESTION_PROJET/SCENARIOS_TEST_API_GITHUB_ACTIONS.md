@@ -1109,3 +1109,30 @@ esolveGlobalUser() cree l'entree User dans public.users si elle n'existe pas enc
 - GET /api/v1/partner/companies : liste les entreprises parrainees par le partner resolu.
 - Refus attendus : 401 si token absent, 403 NOT_A_PARTNER si employe non enregistre comme partenaire, 400 ALREADY_EXISTS si double candidature.
 - Contrats couverts : GrowthModuleTest, FrontendApiContractTest.
+
+#### Phase 2 DDD — Modules Absence, Expense, Notification (v4.17.1)
+
+**Module Absence**
+- `POST /api/v1/modules/absences` : demande d'absence — valide DTO RequestAbsenceDTO (employee_id, type_id, start_date, end_date, reason). Retourne 422 si dates en conflit (AbsenceDateConflictException) ou solde insuffisant (InsufficientLeaveBalanceException).
+- `PATCH /api/v1/modules/absences/{id}/approve` : approbation manager — retourne 409 si l'absence n'est plus en statut PENDING (AbsenceNotPendingException).
+- `PATCH /api/v1/modules/absences/{id}/reject` : rejet manager — meme garde AbsenceNotPendingException.
+- `GET /api/v1/modules/leave-policies` : liste des politiques de conges. Accessible manager + RH.
+- Isolation tenant : toutes les operations sont scopées par company_id du token.
+- Tests couverts : AbsenceServiceTest (DTO, exceptions, approve guard).
+
+**Module Expense**
+- `POST /api/v1/modules/expenses` : creation note de frais — valide CreateExpenseDTO (employee_id, amount, category, expense_date). Retourne 422 si montant invalide.
+- `PATCH /api/v1/modules/expenses/{id}/submit` : soumission pour approbation — retourne 409 si statut != DRAFT (ExpenseNotDraftException).
+- `GET /api/v1/modules/expenses` : liste des notes de frais de l'employe authentifie.
+- Tests couverts : ExpenseServiceTest (DTO defaults, exception status codes).
+
+**Module Notification**
+- `POST /api/v1/modules/notifications/send` : envoi notification interne — valide destinataire, canal (in_app, push, email), message.
+- `PATCH /api/v1/modules/notifications/read` : marque notifications comme lues (bulk par tableau d'ids).
+- `GET /api/v1/modules/notifications` : liste paginee des notifications de l'utilisateur.
+- Tests couverts : NotificationTest (action class instantiation smoke).
+
+**Notes gouvernance Phase 2**
+- Les 3 modules DDD suivent la structure Clean Architecture : Application/Actions, Domain/Models+Exceptions, Infrastructure/Services, Interfaces/Api/V1/Controllers, Providers.
+- Les routes sont enregistrees via AbsenceServiceProvider, ExpenseServiceProvider, NotificationServiceProvider.
+- leopardo_mobile_legacy archive le 2026-06-28 : les apps employee, manager et core remplacent l'application legacy. La validation CI Plan 28 est mise a jour en consequence.
