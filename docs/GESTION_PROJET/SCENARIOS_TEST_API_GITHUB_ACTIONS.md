@@ -1138,3 +1138,15 @@ esolveGlobalUser() cree l'entree User dans public.users si elle n'existe pas enc
 - Les 3 modules DDD suivent la structure Clean Architecture : Application/Actions, Domain/Models+Exceptions, Infrastructure/Services, Interfaces/Api/V1/Controllers, Providers.
 - Les routes sont enregistrees via AbsenceServiceProvider, ExpenseServiceProvider, NotificationServiceProvider.
 - leopardo_mobile_legacy archive le 2026-06-28 : les apps employee, manager et core remplacent l'application legacy. La validation CI Plan 28 est mise a jour en consequence.
+
+
+## Phase 3 — Migration complète des routes vers les modules DDD (v4.16.256)
+
+Les 8 derniers contrôleurs ont été migrés vers leurs modules métier respectifs :
+- `MeController`, `SiteController`, `AdvancedReportController`, `AuditLogController`, `PredictionController` → `App\Modules\HR\Interfaces\Api\V1\Controllers\`
+- `EstimationController`, `EmployeeLoanController` → `App\Modules\Payroll\Interfaces\Api\V1\`
+- `NotificationStreamController` → `App\Modules\Notification\Interfaces\Api\V1\Controllers\`
+
+Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimés.
+
+**Scenarios couverts** : FrontendApiContractTest, backend feature tests existants.

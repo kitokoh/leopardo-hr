@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Position\StorePositionRequest;

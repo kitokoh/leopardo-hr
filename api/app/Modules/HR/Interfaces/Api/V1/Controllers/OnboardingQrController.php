@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\DTOs\CreateEmployeeDTO;
 use App\Http\Controllers\Controller;

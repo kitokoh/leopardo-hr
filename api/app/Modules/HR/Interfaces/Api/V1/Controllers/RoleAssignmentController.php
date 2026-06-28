@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Mail\RoleAssignmentMail;
@@ -100,7 +100,7 @@ class RoleAssignmentController extends Controller
                 'manager_role' => $e->manager_role,
                 'role_label'   => $e->manager_role
                     ? RoleInvitationService::getRoleLabel($e->manager_role)
-                    : ($e->isManager() ? 'Manager' : 'Employé'),
+                    : ($e->isManager() ? 'Manager' : 'EmployÃ©'),
                 'status'       => $e->status,
                 'photo_path'   => $e->photo_path,
             ]),
