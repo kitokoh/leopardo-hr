@@ -33,7 +33,20 @@ jobs:
           cd front/mobile_apps/leopardo_hr
           flutter build apk --release --dart-define=API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1
 
+      - name: Validate Firebase secrets
+        run: |
+          if [ -z "${FIREBASE_APP_ID_HR}" ] || [ -z "${FIREBASE_TOKEN}" ]; then
+            echo "Missing GitHub secret: FIREBASE_APP_ID_HR or FIREBASE_TOKEN. Skipping Firebase upload."
+            echo "SHOULD_UPLOAD=false" >> "$GITHUB_ENV"
+          else
+            echo "SHOULD_UPLOAD=true" >> "$GITHUB_ENV"
+          fi
+        env:
+          FIREBASE_APP_ID_HR: ${{ secrets.FIREBASE_APP_ID_HR }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
       - name: Upload to Firebase Distribution
+        if: env.SHOULD_UPLOAD == 'true'
         uses: w9jds/firebase-action@master
         with:
           args: appdistribution:distribute front/mobile_apps/leopardo_hr/build/app/outputs/flutter-apk/app-release.apk --app ${{ secrets.FIREBASE_APP_ID_HR }} --groups "testers"
