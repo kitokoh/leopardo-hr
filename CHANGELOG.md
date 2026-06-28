@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.1] - 2026-06-28
+
+### Fixed
+
+- **PHPStan — Modules Architecture** : Résolution de 91 erreurs dans les modules `Payroll` et `Planning`.
+  - `SocialDeclarationGenerator` : Suppression des opérateurs `??` inutiles sur les offsets de tableaux garantis par PHPDoc (`employee`, `metadata`).
+  - `ClientEvent` (Planning/Domain/Models) : Ajout des imports manquants pour `Company` et `Employee`.
+  - `AbsenceService` (Planning/Infrastructure) : Signature de `logBalanceChange()` accepte désormais `int|string|null` pour `$companyId` au lieu de `string` uniquement.
+
 ## [4.16.255] - 2026-06-21   
 ## [4.17.0] - 2026-06-23  
 

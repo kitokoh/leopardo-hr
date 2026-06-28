@@ -49,12 +49,12 @@ class SocialDeclarationGenerator
             $lines[] = implode('|', [
                 'LIGNE',
                 str_pad((string) $seq, 6, '0', STR_PAD_LEFT),
-                $this->sanitize($emp['num_ss'] ?? ''),
-                mb_strtoupper($this->sanitize($emp['last_name'] ?? '')),
-                mb_strtoupper($this->sanitize($emp['first_name'] ?? '')),
-                $emp['date_naissance'] ?? '',
+                $this->sanitize($emp['num_ss']),
+                mb_strtoupper($this->sanitize($emp['last_name'])),
+                mb_strtoupper($this->sanitize($emp['first_name'])),
+                $emp['date_naissance'],
                 number_format($gross, 2, '.', ''),
-                (string) ($emp['months_worked'] ?? 3),
+                (string) $emp['months_worked'],
                 number_format($contribEmployee, 2, '.', ''),
                 number_format($contribEmployer, 2, '.', ''),
             ]);
@@ -102,7 +102,7 @@ class SocialDeclarationGenerator
 
         foreach ($employees as $emp) {
             $gross = round($emp['gross_salary'], 2);
-            $days = $emp['days_worked'] ?? 78;
+            $days = $emp['days_worked'];
 
             $totalGross += $gross;
             $totalDays += $days;
@@ -110,10 +110,10 @@ class SocialDeclarationGenerator
             $lines[] = implode(';', [
                 'SALARIE',
                 str_pad((string) $seq, 6, '0', STR_PAD_LEFT),
-                $this->sanitize($emp['num_cnss'] ?? ''),
-                mb_strtoupper($this->sanitize($emp['last_name'] ?? '')),
-                mb_strtoupper($this->sanitize($emp['first_name'] ?? '')),
-                $this->sanitize($emp['cin'] ?? ''),
+                $this->sanitize($emp['num_cnss']),
+                mb_strtoupper($this->sanitize($emp['last_name'])),
+                mb_strtoupper($this->sanitize($emp['first_name'])),
+                $this->sanitize($emp['cin']),
                 number_format($gross, 2, '.', ''),
                 (string) $days,
             ]);
@@ -164,16 +164,16 @@ class SocialDeclarationGenerator
 
         // S21 — Individus
         foreach ($employees as $emp) {
-            $nir = $emp['nir'] ?? '';
-            $lastName = mb_strtoupper($emp['last_name'] ?? '');
-            $firstName = mb_strtoupper($emp['first_name'] ?? '');
-            $dateNaissance = $emp['date_naissance'] ?? '';
-            $contractType = $this->mapContractTypeDsn($emp['contract_type'] ?? 'CDI');
-            $startDate = $emp['start_date'] ?? '';
-            $gross = (float) ($emp['gross_salary'] ?? 0);
-            $netImposable = (float) ($emp['net_imposable'] ?? $emp['net_salary'] ?? 0);
-            $hours = (float) ($emp['hours_worked'] ?? 151.67);
-            $netSalary = (float) ($emp['net_salary'] ?? 0);
+            $nir = $emp['nir'];
+            $lastName = mb_strtoupper($emp['last_name']);
+            $firstName = mb_strtoupper($emp['first_name']);
+            $dateNaissance = $emp['date_naissance'];
+            $contractType = $this->mapContractTypeDsn($emp['contract_type']);
+            $startDate = $emp['start_date'];
+            $gross = (float) $emp['gross_salary'];
+            $netImposable = (float) $emp['net_imposable'];
+            $hours = (float) $emp['hours_worked'];
+            $netSalary = (float) $emp['net_salary'];
 
             $nirClean = $this->sanitizeDsn($nir);
             $lastNameClean = $this->sanitizeDsn($lastName);
