@@ -112,6 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SalaryAdvanceListScreen(),
       ),
       GoRoute(
+        path: '/payrolls',
         builder: (context, state) => const PayrollListScreen(),
       ),
       GoRoute(
@@ -144,6 +145,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ModulesScreen(),
       ),
       GoRoute(
+        path: '/cabinet',
         builder: (context, state) => const CabinetScreen(),
       ),
       GoRoute(
@@ -175,12 +177,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CompanyRequestScreen(),
       ),
       GoRoute(
+        path: '/contracts',
         builder: (context, state) => const ContractScreen(),
       ),
       GoRoute(
+        path: '/training',
         builder: (context, state) => const TrainingScreen(),
       ),
       GoRoute(
+        path: '/expenses',
         builder: (context, state) => const ExpenseListScreen(),
       ),
       GoRoute(
@@ -212,6 +217,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ScheduleListScreen(),
       ),
       GoRoute(
+        path: '/company/branding',
         builder: (context, state) => const CompanyBrandingScreen(),
       ),
       GoRoute(
