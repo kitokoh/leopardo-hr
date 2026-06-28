@@ -7,7 +7,7 @@ use App\Http\Requests\Api\V1\Cabinet\ShareRequest;
 use App\Models\CabinetDocument;
 use App\Models\CabinetFolder;
 use App\Models\CabinetShare;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

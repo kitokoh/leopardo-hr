@@ -9,7 +9,7 @@ use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
 use App\Models\Applicant;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Interview;
 use App\Models\JobPosting;
 use Illuminate\Http\JsonResponse;

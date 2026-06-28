@@ -14,7 +14,7 @@ use App\Http\Resources\Api\V1\AttendanceLogResource;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
 use App\Models\AttendanceCorrectionRequest;
 use App\Models\AttendanceLog;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\AttendanceAnomalyService;
 use App\Services\AttendanceMonthlyReportService;
 use App\Services\AttendanceService;

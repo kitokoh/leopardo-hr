@@ -7,7 +7,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Payment;
-use App\Models\User;
+use App\Core\Auth\Domain\Models\User;
 use App\Services\PartnerService;
 
 use Tests\TestCase;
@@ -272,7 +272,7 @@ class GrowthModuleTest extends TestCase
     public function test_partner_cannot_access_other_partners_stats()
     {
         $company = \App\Models\Company::factory()->create();
-        $employee1 = \App\Models\Employee::factory()->create(['company_id' => $company->id]);
+        $employee1 = \App\Core\Auth\Domain\Models\Employee::factory()->create(['company_id' => $company->id]);
 
         $user1 = User::factory()->create(['email' => $employee1->email]);
         $partner1 = Partner::create(['user_id' => $user1->id, 'referral_code' => $this->uniqueCode('U1')]);

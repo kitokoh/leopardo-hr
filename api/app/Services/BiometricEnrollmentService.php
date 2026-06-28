@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\BiometricEnrollmentRequest;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 

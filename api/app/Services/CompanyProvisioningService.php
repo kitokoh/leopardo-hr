@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SuperAdmin;
 use App\Support\CountryDefaults;
 use Illuminate\Support\Facades\DB;

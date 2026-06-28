@@ -3,7 +3,7 @@
 namespace Tests\Feature\Estimation;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;

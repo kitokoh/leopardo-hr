@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Models\Contract;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
 use App\Models\TrainingEnrollment;

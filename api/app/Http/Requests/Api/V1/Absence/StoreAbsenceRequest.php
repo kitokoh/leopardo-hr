@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Api\V1\Absence;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

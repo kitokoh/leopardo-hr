@@ -6,7 +6,7 @@ namespace Tests\Feature\Contracts;
 
 use App\Models\AttendanceKiosk;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\KioskAnnouncement;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;

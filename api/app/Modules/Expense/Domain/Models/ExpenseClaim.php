@@ -40,7 +40,7 @@ class ExpenseClaim extends Model
 
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Employee::class);
+        return $this->belongsTo(\App\Core\Auth\Domain\Models\Employee::class);
     }
 
     public function items(): HasMany

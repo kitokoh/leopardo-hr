@@ -7,7 +7,7 @@ use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
 use App\Models\Applicant;
 use App\Models\AttendanceLog;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Evaluation;
 use App\Models\FeaturePlanMatrix;
 use App\Models\Invoice;

@@ -7,7 +7,7 @@ namespace Tests\Feature\Contracts;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;

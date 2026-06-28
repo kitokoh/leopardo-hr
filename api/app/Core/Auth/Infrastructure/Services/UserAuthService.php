@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Infrastructure\Services;
 
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Models\User;
+use App\Core\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class UserAuthService
+readonly class UserAuthService
 {
     /**
      * @return array{user: User, token: string, token_type: string}
@@ -70,6 +72,7 @@ class UserAuthService
         $user = User::where('google_id', $googleId)->first();
 
         if (! $user) {
+            /** @var User|null $user */
             $user = User::where('email', $email)->first();
         }
 
@@ -81,6 +84,7 @@ class UserAuthService
             ]);
         } else {
             $isNew = true;
+            /** @var User $user */
             $user = User::create([
                 'first_name' => $firstName,
                 'last_name' => $lastName,

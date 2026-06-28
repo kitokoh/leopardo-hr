@@ -5,7 +5,7 @@ namespace App\Services\Communication;
 use App\Contracts\Communication\MessageProviderInterface;
 use App\Jobs\SendPushNotificationJob;
 use App\Models\CommunicationEvent;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Notification;
 use App\Models\NotificationPreference;
 use App\Services\Communication\Providers\AuditMessageProvider;

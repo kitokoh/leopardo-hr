@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\UserAuthService;
+use App\Core\Auth\Domain\Models\User;
+use App\Core\Auth\Infrastructure\Services\UserAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

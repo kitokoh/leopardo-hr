@@ -6,7 +6,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaymentDocumentResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PaymentDocument;
 use App\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;

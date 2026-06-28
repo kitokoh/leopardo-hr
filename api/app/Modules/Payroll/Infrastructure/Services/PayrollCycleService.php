@@ -6,7 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Models\Company;
 use App\Models\CompanySetting;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use App\Models\SalaryAdvance;

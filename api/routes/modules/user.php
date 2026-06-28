@@ -8,7 +8,7 @@
  */
 
 use App\Http\Controllers\Api\V1\CompanyRequestController;
-use App\Http\Controllers\Api\V1\UserAuthController;
+use App\Core\Auth\Interfaces\Api\V1\UserAuthController;
 use App\Http\Controllers\Api\V1\UserEmployeeLinkController;
 use Illuminate\Support\Facades\Route;
 

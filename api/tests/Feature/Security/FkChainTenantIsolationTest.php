@@ -6,7 +6,7 @@ use App\Models\ApprovalDecision;
 use App\Models\ApprovalRequest;
 use App\Models\ApprovalWorkflow;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\ExpenseClaim;
 use App\Models\ExpenseItem;
 use App\Models\PayrollRun;

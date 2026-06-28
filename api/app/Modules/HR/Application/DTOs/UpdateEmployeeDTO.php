@@ -3,7 +3,7 @@
 namespace App\Modules\HR\Application\DTOs;
 
 use App\Http\Requests\Api\V1\UpdateEmployeeRequest;
-use App\Http\Requests\Api\V1\UpdateProfileRequest;
+use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
 use Illuminate\Http\Request;
 
 final readonly class UpdateEmployeeDTO

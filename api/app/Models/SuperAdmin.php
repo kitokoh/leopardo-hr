@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Auth\Domain\Models\User;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;

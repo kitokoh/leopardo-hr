@@ -3,7 +3,7 @@
 namespace App\AI;
 
 use App\AI\DTOs\AIRequest;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Log;
 
 class AgentRunner

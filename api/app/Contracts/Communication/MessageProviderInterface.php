@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Communication;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 
 interface MessageProviderInterface
 {
