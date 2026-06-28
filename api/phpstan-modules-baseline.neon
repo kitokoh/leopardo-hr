@@ -197,8 +197,7 @@ parameters:
             message: '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection.*map\(\) contains unresolvable type#'
 
         # ── Baseline Phase 2+ extension (2026-06-28) ────────────────────────
-        # Modules Fleet/Planning/Recruitment/Billing/Payroll/Cabinet — classes Employee/Company/Department/Position
-        # non trouvées car elles sont dans des modules DDD en cours de séparation
+        # Classes Employee/Company/Department/Position non trouvées dans modules DDD
         -
             message: '#Class App\\Modules\\Planning\\Domain\\Models\\(Employee|Company) not found#'
         -
@@ -208,27 +207,27 @@ parameters:
 
         # Method return type mismatches — modèles non résolus dans BelongsTo/HasMany
         -
-            message: '#Method App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll)\\Domain\\Models\\.*::.+\(\) has invalid return type App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll)\\Domain\\Models\\#'
+            message: '#Method App\\Modules\\(Planning|Fleet|Recruitment|Cabinet)\\Domain\\Models\\.*::.+\(\) has invalid return type App\\Modules\\#'
         -
-            message: '#Method App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll)\\Domain\\Models\\.*::.+\(\) should return Illuminate\\Database\\Eloquent\\Relations\\(BelongsTo|HasMany)<App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll)\\Domain\\Models\\.*> but returns#'
+            message: '#Method App\\Modules\\(Planning|Fleet|Recruitment|Cabinet)\\Domain\\Models\\.*::.+\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo.*but returns#'
         -
-            message: '#Type App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll)\\Domain\\Models\\.* in generic type Illuminate\\Database\\Eloquent\\Relations\\(BelongsTo|HasMany)<.*> in PHPDoc tag `@return` is not subtype of template type TRelatedModel#'
+            message: '#Type App\\Modules\\(Planning|Fleet|Recruitment|Billing|Cabinet|Payroll)\\Domain\\Models\\.* in generic type Illuminate\\Database\\Eloquent\\Relations\\(BelongsTo|HasMany)<.*> in PHPDoc tag .@return. is not subtype of template type TRelatedModel#'
         -
-            message: '#PHPDoc tag `@property-read` for property App\\Modules\\(Planning|Fleet|Cabinet|Payroll)\\Domain\\Models\\.*::# '
+            message: '#PHPDoc tag .@property-read. for property App\\Modules\\(Planning|Fleet|Cabinet|Payroll)\\Domain\\Models\\#'
         -
-            message: '#Parameter \$employee of method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::scopeAvailableToEmployee\(\) has invalid type App\\Modules\\Payroll\\Domain\\Models\\Employee#'
+            message: '#Parameter .employee of method App\\Modules\\Payroll\\Domain\\Models\\PaymentDocument::scopeAvailableToEmployee\(\) has invalid type#'
 
         # TenantManager classes inconnues dans Attendance et HR
         -
-            message: '#Parameter \$tenantManager of method App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::__construct\(\) has invalid type App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\TenantManager#'
+            message: '#Parameter .tenantManager of method App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::__construct\(\) has invalid type App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\TenantManager#'
         -
-            message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::\$tenantManager has unknown class App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\TenantManager as its type#'
+            message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\.*::..tenantManager has unknown class App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\TenantManager#'
 
-        # Scope methods returning DB Query Builder au lieu d''Eloquent Builder
+        # Scope methods returning DB Query Builder au lieu d'Eloquent Builder
         -
             message: '#Method App\\Modules\\(Planning|Payroll|HR|Billing|Fleet)\\Domain\\Models\\.*::scope.*\(\) should return Illuminate\\Database\\Eloquent\\Builder.*but returns Illuminate\\Database\\Query\\Builder#'
 
-        # Method invoked with wrong parameter count — APIs en cours de stabilisation
+        # Method invoked with wrong parameter count — APIs en stabilisation
         -
             message: '#Method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollService::validate\(\) invoked with 1 parameter, 2 required#'
         -
@@ -236,36 +235,34 @@ parameters:
         -
             message: '#Method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::reject\(\) invoked with 3 parameters, 2 required#'
 
-        # CabinetService uploadDocument — params en cours de correction
+        # CabinetService uploadDocument
         -
-            message: '#Parameter \#2 \$file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given#'
+            message: '#Parameter .2 ..file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given#'
         -
-            message: '#Parameter \#3 \$data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects array<string, mixed>, string given#'
+            message: '#Parameter .3 ..data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects array<string, mixed>, string given#'
 
-        # Planning AbsenceService logBalanceChange companyId type
+        # HR OnboardingStepController et Planning AbsenceService companyId type
         -
-            message: '#Parameter \#2 \$companyId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::logBalanceChange\(\) expects string, int\|null given#'
-
-        # HR OnboardingStepController seedDefaultSteps companyId type
+            message: '#Parameter .1 ..companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\OnboardingStepController::seedDefaultSteps\(\) expects string, int.null given#'
         -
-            message: '#Parameter \#1 \$companyId of method App\\Modules\\HR\\Interfaces\\Api\\V1\\OnboardingStepController::seedDefaultSteps\(\) expects string, int\|null given#'
+            message: '#Parameter .2 ..companyId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::logBalanceChange\(\) expects string, int.null given#'
 
         # Cameras — type issues dans stdClass collections et Camera properties
         -
-            message: '#Parameter \#1 \$callback of method Illuminate\\Support\\Collection<int,stdClass>::map\(\) expects callable\(stdClass, int\): array, Closure\(App\\Modules\\Cameras\\Domain\\.*\): array given#'
+            message: '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<int,stdClass>::map\(\) expects callable\(stdClass, int\): array, Closure\(App\\Modules\\Cameras\\Domain\\.*\): array given#'
         -
-            message: '#Property App\\Modules\\Cameras\\Domain\\Camera::\$company_id \(int\) does not accept string#'
+            message: '#Property App\\Modules\\Cameras\\Domain\\Camera::..company_id \(int\) does not accept string#'
         -
-            message: '#Property App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\PublicCameraViewerController::\$cameras is never read, only written#'
+            message: '#Property App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\PublicCameraViewerController::..cameras is never read, only written#'
         -
-            message: '#Parameter \#2 \$default of method Illuminate\\Http\\Request::query\(\) expects array\|string\|null, int given#'
+            message: '#Parameter .2 ..default of method Illuminate\\Http\\Request::query\(\) expects array.string.null, int given#'
             path: app/Modules/Cameras
 
         # Billing — Partner model missing Company/User/Commission
         -
             message: '#Class App\\Modules\\Billing\\Domain\\Models\\(Company|User|Commission|Payment) not found#'
 
-        # Payroll — Invoice not found
+        # Payroll — Invoice/SalaryComponent/PaySlipLine not found
         -
             message: '#Class App\\Modules\\Payroll\\Domain\\Models\\(Invoice|SalaryComponent|PaySlipLine) not found#'
         -
@@ -273,15 +270,15 @@ parameters:
         -
             message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryStructure::components\(\) should return.*but returns Illuminate\\Database\\Query\\Builder#'
 
-        # Offset always exists — typage fort des arrays Payroll DéclarationDocument
+        # Offset always exists — typage fort des arrays Payroll
         -
-            message: '#Offset ''(nir|cin|num_ss|num_cnss|last_name|first_name|date_naissance|gross_salary|days_worked|months_worked|hours_worked|net_salary|net_imposable|contract_type|start_date)'' on array\{.*\} on left side of \?\? always exists and is not nullable#'
+            message: '#Offset ..(nir|cin|num_ss|num_cnss|last_name|first_name|date_naissance|gross_salary|days_worked|months_worked|hours_worked|net_salary|net_imposable|contract_type|start_date). on array\{.*\} on left side of \?\? always exists and is not nullable#'
         -
-            message: '#Offset ''(type|net_salary)'' on.*on left side of \?\? always exists and is not nullable#'
+            message: '#Offset ..(type|net_salary). on.*on left side of \?\? always exists and is not nullable#'
 
-        # PHPDoc @param $q — paramètre de scope non documenté
+        # PHPDoc @param $q
         -
-            message: '#PHPDoc tag `@param` references unknown parameter: \$q#'
+            message: '#PHPDoc tag .@param. references unknown parameter: ..q#'
             path: app/Modules
 
         # Billing WebhookEndpoint scopeListeningTo
@@ -290,9 +287,9 @@ parameters:
 
         # Recruitment JobPosting published_at — Carbon vs CarbonInterface
         -
-            message: '#Property App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::\$published_at.*does not accept Carbon\\CarbonInterface#'
+            message: '#Property App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::..published_at.*does not accept Carbon\\CarbonInterface#'
 
-        # Right/Left side of && always true/false — bruit de typage statique
+        # Boolean comparison noise — bruit de typage statique
         -
             message: '#Right side of && is always true#'
             path: app/Modules
@@ -300,30 +297,35 @@ parameters:
             message: '#Strict comparison using !== between null and null will always evaluate to false#'
             path: app/Modules
         -
-            message: '#Strict comparison using !== between string and int\|null will always evaluate to true#'
+            message: '#Strict comparison using !== between string and int.null will always evaluate to true#'
             path: app/Modules
         -
-            message: '#Strict comparison using !== between string\|null and int will always evaluate to true#'
+            message: '#Strict comparison using !== between string.null and int will always evaluate to true#'
             path: app/Modules
         -
-            message: '#Strict comparison using === between string\|null and int will always evaluate to false#'
+            message: '#Strict comparison using === between string.null and int will always evaluate to false#'
             path: app/Modules
 
         # array_filter — tableau déjà typé sans valeurs falsy
         -
-            message: '#Parameter \#1 \$array \(array\{''required''.*\}\) to function array_filter does not contain falsy values#'
+            message: '#Parameter .1 ..array.*to function array_filter does not contain falsy values#'
 
         # DB Query Builder when() callback type mismatch
         -
-            message: '#Parameter \#2 \$callback of method Illuminate\\Database\\Query\\Builder::when\(\) expects.*null, Closure\(Illuminate\\Database\\Eloquent\\Builder\).*given#'
+            message: '#Parameter .2 ..callback of method Illuminate\\Database\\Query\\Builder::when\(\) expects.*null, Closure\(Illuminate\\Database\\Eloquent\\Builder\).*given#'
             path: app/Modules
 
-        # Unreachable statement — code après terminaison
+        # Unreachable statement
         -
             message: '#Unreachable statement - code above always terminates#'
             path: app/Modules
 
-        # Collection map unresolvable type (générique)
+        # Using nullsafe on Optional
         -
-            message: '#Parameter \#1 \$callback of method Illuminate\\Support\\Collection<\(int\|string\),mixed>::map\(\) contains unresolvable type#'
+            message: '#Using nullsafe method call on non-nullable type Illuminate\\Support\\Optional#'
+            path: app/Modules
+
+        # Collection map unresolvable type
+        -
+            message: '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<\(int.string\),mixed>::map\(\) contains unresolvable type#'
             path: app/Modules
