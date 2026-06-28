@@ -7,7 +7,7 @@ use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Services\AuthService;
+use App\Core\Auth\Infrastructure\Services\AuthService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
