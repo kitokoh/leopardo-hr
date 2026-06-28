@@ -1,8 +1,0 @@
-- Composer validate: success
-- Composer install: success
-- Pint: failure
-- PHP syntax lint: skipped
-- PHPStan/Larastan: skipped
-- PHPStan findings captured: 0
-- PHPStan scope: full backend scope
-- Baseline support: api/phpstan.neon + api/phpstan-baseline.neon
