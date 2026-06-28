@@ -5,6 +5,7 @@ namespace App\Modules\Recruitment\Infrastructure\Services;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
+use Illuminate\Support\Carbon;
 
 class RecruitmentService
 {
@@ -14,7 +15,7 @@ class RecruitmentService
     public function publishJob(JobPosting $jobPosting): JobPosting
     {
         $jobPosting->status = 'published';
-        $jobPosting->published_at = now();
+        $jobPosting->published_at = Carbon::instance(now());
         $jobPosting->save();
 
         return $jobPosting;
