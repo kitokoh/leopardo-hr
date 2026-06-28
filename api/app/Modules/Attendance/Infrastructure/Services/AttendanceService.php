@@ -9,7 +9,7 @@ use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
 use App\Models\AttendanceLog;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Schedule;
 use Illuminate\Support\Carbon;
 

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;

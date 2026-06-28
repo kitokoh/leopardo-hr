@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Absence;
 use App\Models\AttendanceLog;
 use App\Models\Contract;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Payroll;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

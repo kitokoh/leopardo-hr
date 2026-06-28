@@ -7,7 +7,7 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 use App\Models\Absence;
 use App\Models\CalendarConnection;
 use App\Models\CalendarEvent;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;

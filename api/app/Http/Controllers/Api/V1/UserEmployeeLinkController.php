@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Employee;
-use App\Models\User;
-use App\Models\UserEmployeeLink;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
+use App\Core\Auth\Domain\Models\UserEmployeeLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

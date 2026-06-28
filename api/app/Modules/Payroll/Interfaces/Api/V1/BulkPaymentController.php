@@ -6,7 +6,7 @@ namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessBulkPaymentJob;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

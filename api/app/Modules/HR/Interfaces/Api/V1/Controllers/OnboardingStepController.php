@@ -4,7 +4,7 @@ namespace App\Modules\HR\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\OnboardingStepResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\OnboardingStep;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;

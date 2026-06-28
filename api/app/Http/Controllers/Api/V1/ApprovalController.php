@@ -10,7 +10,7 @@ use App\Http\Resources\Api\V1\ApprovalWorkflowResource;
 use App\Models\ApprovalDecision;
 use App\Models\ApprovalRequest;
 use App\Models\ApprovalWorkflow;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Infrastructure\Services;
 
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Models\User;
+use App\Core\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class UserAuthService
+readonly class UserAuthService
 {
     /**
      * @return array{user: User, token: string, token_type: string}

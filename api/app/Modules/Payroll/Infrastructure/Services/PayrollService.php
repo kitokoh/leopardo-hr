@@ -5,7 +5,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Events\PayrollValidated;
 use App\Exceptions\PayrollAlreadyValidatedException;
 use App\Exceptions\PayrollPeriodConflictException;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Payroll;
 use App\Models\SalaryAdvance;
 use Illuminate\Support\Carbon;

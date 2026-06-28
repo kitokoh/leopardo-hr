@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Database\Seeders\DemoCompanyOnceSeeder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;

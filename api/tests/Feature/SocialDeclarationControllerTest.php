@@ -6,7 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\AttendanceLog;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\PaySlip;
 use Illuminate\Support\Carbon;

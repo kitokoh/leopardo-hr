@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\DTOs\UpdateEmployeeDTO;
@@ -10,9 +12,9 @@ use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Requests\Api\V1\StoreRegistrationRequest;
 use App\Http\Requests\Api\V1\UpdateProfileRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Language;
-use App\Services\AuthService;
+use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

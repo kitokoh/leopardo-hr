@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendanceKiosk;
 use App\Models\BiometricEnrollmentRequest;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\BiometricEnrollmentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;

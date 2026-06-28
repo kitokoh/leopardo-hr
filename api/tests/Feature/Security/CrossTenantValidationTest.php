@@ -4,7 +4,7 @@ namespace Tests\Feature\Security;
 
 use App\Models\AbsenceType;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;

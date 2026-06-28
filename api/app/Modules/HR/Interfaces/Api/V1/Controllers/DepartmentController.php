@@ -7,7 +7,7 @@ use App\Http\Requests\Api\V1\Department\StoreDepartmentRequest;
 use App\Http\Requests\Api\V1\Department\UpdateDepartmentRequest;
 use App\Http\Resources\Api\V1\DepartmentResource;
 use App\Models\Department;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

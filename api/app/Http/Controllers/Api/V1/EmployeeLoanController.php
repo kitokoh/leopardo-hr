@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
-use App\Models\Employee;
-use App\Models\EmployeeLoan;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\EmployeeLoan;
 use App\Models\LoanRepayment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

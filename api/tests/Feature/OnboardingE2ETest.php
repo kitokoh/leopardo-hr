@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\Mail\UserInvitationMail;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\SuperAdmin;
-use App\Models\UserInvitation;
+use App\Core\Auth\Domain\Models\UserInvitation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;

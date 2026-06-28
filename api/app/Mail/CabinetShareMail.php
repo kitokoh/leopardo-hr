@@ -5,7 +5,7 @@ namespace App\Mail;
 use App\Models\CabinetDocument;
 use App\Models\CabinetFolder;
 use App\Models\CabinetShare;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

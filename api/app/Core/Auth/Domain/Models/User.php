@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Domain\Models;
 
 use App\Models\CompanyRequest;
 use App\Models\UserEmployeeLink;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
@@ -34,6 +37,15 @@ class User extends Authenticatable
     use HasApiTokens;
 
     protected $table = 'users';
+
+    /**
+     * Resolve the factory for this model explicitly since it lives
+     * outside the default App\Models namespace.
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
 
     protected $fillable = [
         'first_name',

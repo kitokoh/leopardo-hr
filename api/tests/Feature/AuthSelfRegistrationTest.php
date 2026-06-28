@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;

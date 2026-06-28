@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\LeaveAccrual;
 use App\Models\LeaveBalance;
 use App\Models\LeavePolicy;

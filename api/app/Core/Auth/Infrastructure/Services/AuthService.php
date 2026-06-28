@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Infrastructure\Services;
 
 use App\Exceptions\AccountLockedException;
@@ -8,12 +10,12 @@ use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
-class AuthService
+readonly class AuthService
 {
     /**
      * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}

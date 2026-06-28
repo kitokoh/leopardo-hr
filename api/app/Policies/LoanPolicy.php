@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Employee;
-use App\Models\EmployeeLoan;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\EmployeeLoan;
 
 class LoanPolicy
 {

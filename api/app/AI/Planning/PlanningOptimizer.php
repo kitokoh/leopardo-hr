@@ -7,7 +7,7 @@ namespace App\AI\Planning;
 use App\Models\Absence;
 use App\Models\Contract;
 use App\Models\Department;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\Department;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 
 class DepartmentPolicy
 {

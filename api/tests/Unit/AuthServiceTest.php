@@ -6,7 +6,7 @@ use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\AuthService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
