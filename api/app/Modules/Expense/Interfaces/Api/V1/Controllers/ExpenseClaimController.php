@@ -5,78 +5,138 @@ declare(strict_types=1);
 namespace App\Modules\Expense\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Expense\Application\Actions\CreateExpenseClaim;
-use App\Modules\Expense\Application\Actions\SubmitExpenseClaim;
-use App\Modules\Expense\Application\DTOs\CreateExpenseDTO;
-use App\Modules\Expense\Domain\Models\ExpenseClaim;
-use App\Modules\Expense\Infrastructure\Services\ExpenseService;
+use App\Http\Resources\Api\V1\ExpenseClaimResource;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Models\ExpenseClaim;
+use App\Models\ExpenseItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExpenseClaimController extends Controller
 {
-    public function __construct(
-        private readonly CreateExpenseClaim $createExpenseClaim,
-        private readonly SubmitExpenseClaim $submitExpenseClaim,
-        private readonly ExpenseService     $expenseService,
-    ) {}
-
     public function index(Request $request): JsonResponse
     {
-        $claims = ExpenseClaim::query()
-            ->with('items')
-            ->when($request->employee_id, fn ($q) => $q->where('employee_id', $request->employee_id))
-            ->when($request->status, fn ($q) => $q->where('status', $request->status))
-            ->latest()
-            ->paginate(20);
+        /** @var Employee $actor */
+        $actor = $request->user();
 
-        return response()->json($claims);
+        $query = ExpenseClaim::query()
+            ->where('company_id', $actor->company_id)
+            ->with('employee:id,first_name,last_name');
+
+        if (! $actor->isManager()) {
+            $query->where('employee_id', $actor->id);
+        } elseif ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->integer('employee_id'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        return ExpenseClaimResource::collection(
+            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+        )->response();
     }
 
     public function store(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $validated = $request->validate([
-            'employee_id'       => 'required|integer|exists:employees,id',
-            'title'             => 'required|string|max:255',
-            'description'       => 'nullable|string',
-            'currency'          => 'nullable|string|size:3',
-            'items'             => 'required|array|min:1',
-            'items.*.category'  => 'required|string|max:100',
-            'items.*.description' => 'nullable|string',
-            'items.*.amount'    => 'required|numeric|min:0.01',
-            'items.*.expense_date' => 'required|date',
+            'title'               => 'required|string|max:200',
+            'description'         => 'nullable|string',
+            'items'               => 'required|array|min:1',
+            'items.*.category'    => 'required|in:transport,meals,accommodation,office,communication,other',
+            'items.*.description' => 'required|string|max:255',
+            'items.*.amount'      => 'required|numeric|min:0.01',
+            'items.*.date'        => 'required|date',
         ]);
 
-        $claim = $this->createExpenseClaim->handle(CreateExpenseDTO::fromArray($validated));
+        $claim = DB::transaction(function () use ($actor, $validated) {
+            $totalAmount = collect($validated['items'])->sum('amount');
 
-        return response()->json($claim, 201);
+            $claim = ExpenseClaim::create([
+                'company_id'   => $actor->company_id,
+                'employee_id'  => $actor->id,
+                'title'        => $validated['title'],
+                'description'  => $validated['description'] ?? null,
+                'status'       => 'draft',
+                'total_amount' => $totalAmount,
+                'currency'     => 'DZD',
+            ]);
+
+            foreach ($validated['items'] as $item) {
+                ExpenseItem::create([
+                    'expense_claim_id' => $claim->id,
+                    'category'         => $item['category'],
+                    'description'      => $item['description'],
+                    'amount'           => $item['amount'],
+                    'date'             => $item['date'],
+                ]);
+            }
+
+            return $claim->fresh(['items']);
+        });
+
+        return response()->json(['data' => (new ExpenseClaimResource($claim))->resolve($request)], 201);
     }
 
-    public function show(ExpenseClaim $expenseClaim): JsonResponse
+    public function show(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
-        return response()->json($expenseClaim->load('items'));
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        abort_unless(
+            $expenseClaim->company_id === $actor->company_id &&
+            ($actor->isManager() || $expenseClaim->employee_id === $actor->id),
+            404
+        );
+
+        return response()->json(['data' => (new ExpenseClaimResource($expenseClaim->load('items')))->resolve($request)]);
     }
 
-    public function submit(ExpenseClaim $expenseClaim): JsonResponse
+    public function submit(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
-        $claim = $this->submitExpenseClaim->handle($expenseClaim);
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($expenseClaim->company_id === $actor->company_id && $expenseClaim->employee_id === $actor->id, 403);
+        abort_if($expenseClaim->status !== 'draft', 422);
 
-        return response()->json($claim);
+        $expenseClaim->update(['status' => 'submitted', 'submitted_at' => now()]);
+
+        return response()->json(['data' => (new ExpenseClaimResource($expenseClaim->fresh()))->resolve($request)]);
     }
 
     public function approve(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
-        $claim = $this->expenseService->approve($expenseClaim, (int) $request->user()->id);
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($expenseClaim->company_id === $actor->company_id && $actor->isManager(), 403);
 
-        return response()->json($claim);
+        $expenseClaim->update([
+            'status'      => 'approved',
+            'approved_by' => (string) $actor->id,
+            'approved_at' => now(),
+        ]);
+
+        return response()->json(['data' => (new ExpenseClaimResource($expenseClaim->fresh()))->resolve($request)]);
     }
 
     public function reject(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($expenseClaim->company_id === $actor->company_id && $actor->isManager(), 403);
+
         $request->validate(['reason' => 'required|string|max:500']);
 
-        $claim = $this->expenseService->reject($expenseClaim, (int) $request->user()->id, $request->reason);
+        $expenseClaim->update([
+            'status'           => 'rejected',
+            'rejection_reason' => $request->input('reason'),
+        ]);
 
-        return response()->json($claim);
+        return response()->json(['data' => (new ExpenseClaimResource($expenseClaim->fresh()))->resolve($request)]);
     }
 }
