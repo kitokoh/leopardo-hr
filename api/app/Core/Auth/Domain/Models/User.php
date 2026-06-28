@@ -2,6 +2,8 @@
 
 namespace App\Core\Auth\Domain\Models;
 
+use App\Models\CompanyRequest;
+use App\Models\UserEmployeeLink;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
