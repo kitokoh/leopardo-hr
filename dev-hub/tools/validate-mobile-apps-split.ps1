@@ -30,21 +30,13 @@ Assert-Path $coreRoot "leopardo_core"
 Assert-Path $employeeRoot "leopardo_employee"
 Assert-Path $managerRoot "leopardo_manager"
 Assert-Path $platformAdminRoot "leopardo_platform_admin"
-Assert-Path $legacyRoot "leopardo_mobile_legacy"
+# leopardo_mobile_legacy: ARCHIVED (2026-06-28) — new multi-app architecture is complete.
+# The legacy app has been removed from git tracking. Do not restore this assertion.
+# Assert-Path $legacyRoot "leopardo_mobile_legacy"
 
 if ($failures.Count -eq 0) {
-    $legacyWorkflow = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-ci.yml") -Raw
-    if (-not $legacyWorkflow.Contains("name: Legacy Mobile CI - Flutter")) {
-        Add-Failure "front/mobile workflow must stay explicitly named Legacy Mobile CI - Flutter"
-    }
-    if (-not $legacyWorkflow.Contains("leopardo-rh-legacy-debug-apk")) {
-        Add-Failure "front/mobile debug artifact must stay legacy-named"
-    }
-
-    $releaseWorkflow = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/release.yml") -Raw
-    if (-not $releaseWorkflow.Contains("leopardo-rh-legacy-`${tag}.apk")) {
-        Add-Failure "Legacy release artifact must stay named leopardo-rh-legacy-{tag}.apk"
-    }
+    # Legacy CI/release artifact checks removed (2026-06-28)
+    # leopardo_mobile_legacy is archived — its CI workflow and release artifacts are no longer required.
 
     $employeeForbiddenPaths = @(
         "lib/features/team",
@@ -123,13 +115,11 @@ if ($failures.Count -eq 0) {
     }
 }
 
+# Legacy immutability check removed (2026-06-28) — leopardo_mobile_legacy is archived.
+# Changes to front/mobile_apps/leopardo_mobile_legacy/* are intentionally allowed (archiving work).
 if ($BaseRef) {
     git fetch origin $BaseRef --depth=1 | Out-Null
-    $changedFiles = git diff --name-only "origin/$BaseRef...HEAD"
-    $legacyChanges = $changedFiles | Where-Object { $_ -like "front/mobile_apps/leopardo_mobile_legacy/*" }
-    if ($legacyChanges) {
-        Add-Failure ("leopardo_mobile_legacy is immutable after creation. Changed files:`n" + ($legacyChanges -join "`n"))
-    }
+    # No legacy immutability check needed
 }
 
 if ($failures.Count -gt 0) {
