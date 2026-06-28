@@ -1,0 +1,41 @@
+name: _setup-flutter (reusable)
+
+# Reusable workflow — Flutter + Melos bootstrap for mobile CI jobs.
+# Call with:
+#   uses: ./.github/workflows/_setup-flutter.yml
+#   with:
+#     flutter-version: 'stable'
+
+on:
+  workflow_call:
+    inputs:
+      flutter-version:
+        type: string
+        default: 'stable'
+        description: Flutter channel or version (stable | beta | 3.x.y)
+      working-directory:
+        type: string
+        default: '.'
+        description: Monorepo root (where melos.yaml lives)
+
+jobs:
+  bootstrap:
+    name: Flutter ${{ inputs.flutter-version }} Bootstrap
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ inputs.flutter-version }}
+          channel: stable
+          cache: true
+
+      - name: Install Melos
+        run: dart pub global activate melos
+
+      - name: Bootstrap (melos + pub get)
+        run: melos bootstrap
+        working-directory: ${{ inputs.working-directory }}
