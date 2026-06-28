@@ -43,6 +43,7 @@ readonly class AuthService
                     $employeeSchema = $lookupSchema;
                 }
 
+                /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->with('company')
                     ->where('company_id', $lookup->company_id)
@@ -59,6 +60,7 @@ readonly class AuthService
             }
 
             if (! $employee) {
+                /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->with('company')
                     ->where('email', $email)
@@ -217,6 +219,7 @@ readonly class AuthService
 
                 $this->setTenantSearchPath((string) $schema);
 
+                /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->with('company')
                     ->where('email', $email)

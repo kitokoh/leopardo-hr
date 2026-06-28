@@ -72,6 +72,7 @@ readonly class UserAuthService
         $user = User::where('google_id', $googleId)->first();
 
         if (! $user) {
+            /** @var User|null $user */
             $user = User::where('email', $email)->first();
         }
 
@@ -83,6 +84,7 @@ readonly class UserAuthService
             ]);
         } else {
             $isNew = true;
+            /** @var User $user */
             $user = User::create([
                 'first_name' => $firstName,
                 'last_name' => $lastName,
