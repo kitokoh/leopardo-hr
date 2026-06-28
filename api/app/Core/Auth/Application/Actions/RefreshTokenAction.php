@@ -21,6 +21,7 @@ final class RefreshTokenAction
      */
     public function execute(HasApiTokens $user): array
     {
+        /** @var \Laravel\Sanctum\PersonalAccessToken $currentToken */
         $currentToken = $user->currentAccessToken();
 
         $expirationMinutes = (int) config('sanctum.expiration', 0);

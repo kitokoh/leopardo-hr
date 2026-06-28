@@ -18,7 +18,7 @@ final class ChangePasswordAction
     public function execute(Employee $employee, string $currentPassword, string $newPassword): void
     {
         if (! Hash::check($currentPassword, $employee->password_hash)) {
-            throw new class extends DomainException {
+            throw new class('Mot de passe actuel incorrect') extends DomainException {
                 public function errorCode(): string { return 'INVALID_CURRENT_PASSWORD'; }
                 public function statusCode(): int   { return 422; }
             };

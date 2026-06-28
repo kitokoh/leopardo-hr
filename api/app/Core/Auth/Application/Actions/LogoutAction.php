@@ -13,6 +13,7 @@ final class LogoutAction
 {
     public function execute(HasApiTokens $user): void
     {
+        /** @var \Laravel\Sanctum\PersonalAccessToken $token */
         $token = $user->currentAccessToken();
         if ($token) {
             $token->delete();
