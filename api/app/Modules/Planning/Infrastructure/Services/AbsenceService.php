@@ -176,7 +176,7 @@ class AbsenceService
         return $query->exists();
     }
 
-    private function logBalanceChange(int $employeeId, string $companyId, float $delta, string $reason, int $referenceId, float $balanceAfter): LeaveBalanceLog
+    private function logBalanceChange(int $employeeId, int|string|null $companyId, float $delta, string $reason, int $referenceId, float $balanceAfter): LeaveBalanceLog
     {
         return LeaveBalanceLog::create([
             'company_id' => $companyId,
