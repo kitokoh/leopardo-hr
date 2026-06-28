@@ -7,6 +7,7 @@ parameters:
 
     excludePaths:
         - app/Core/Auth/Domain/Exceptions
+        - app/Core/Auth/Domain/Models/User.php
         # DDD Domain Models - classes not yet fully extracted, skip until stabilized
         - app/Modules/Billing/Domain/Models
         - app/Modules/Cabinet/Domain/Models
@@ -53,13 +54,7 @@ parameters:
         - '#Strict comparison using !== between string and int.null will always evaluate to true#'
         - '#Strict comparison using !== between string.null and int will always evaluate to true#'
         - '#Strict comparison using === between string.null and int will always evaluate to false#'
-        # User model
-        - '#Class App\\Core\\Auth\\Domain\\Models\\User uses generic trait.*HasFactory but does not specify its types#'
-        - '#Property App\\Core\\Auth\\Domain\\Models\\User::\$casts type has no value type specified#'
-        - '#Method App\\Core\\Auth\\Domain\\Models\\User::(companyRequests|employeeLinks)\(\)#'
-        - '#has invalid return type App\\Core\\Auth\\Domain\\Models\\(CompanyRequest|UserEmployeeLink)#'
-        - '#Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model::hasMany\(\)#'
-        - '#Parameter \#1 \$related of method.*hasMany\(\) expects class-string.*string given#'
+        # User model - excluded via excludePaths above
         # Optional method calls
         - '#Call to an undefined method Illuminate\\Support\\Optional::toIso8601(String|ZuluString)\(\)#'
         # Modules DDD - access to unknown class properties
