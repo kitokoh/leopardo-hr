@@ -12,6 +12,6 @@ parameters:
 
     # Chemins à analyser en priorité
     paths:
-        - api/app/Core
-        - api/app/Modules
-        - api/app/Shared
+        - app/Core
+        - app/Modules
+        - app/Shared
