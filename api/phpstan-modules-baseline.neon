@@ -1,9 +1,9 @@
-parameters:
+﻿parameters:
     ignoreErrors:
-        # ── Baseline Phase 1-2 (2026-06-28) ─────────────────────────────────────
+        # ΓöÇΓöÇ Baseline Phase 1-2 (2026-06-28) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         # Erreurs existantes dans app/Core Auth en cours de migration DDD
         # Ces erreurs proviennent du code legacy + migration progressive ; elles
-        # seront résorbées au fur et à mesure que les modules DDD se stabilisent.
+        # seront r├⌐sorb├⌐es au fur et ├á mesure que les modules DDD se stabilisent.
 
         # Auth Core exceptions
         -
@@ -60,7 +60,7 @@ parameters:
             message: '#Parameter \#1 \$related of method.*hasMany\(\) expects class-string.*string given#'
             path: app/Core/Auth/Domain/Models/User.php
 
-        # Carbon nullsafe / comparison — bruit de migration de types
+        # Carbon nullsafe / comparison ΓÇö bruit de migration de types
         -
             message: '#Strict comparison using === between Illuminate\\Support\\Carbon and null will always evaluate to false#'
         -
@@ -70,13 +70,13 @@ parameters:
         -
             message: '#Strict comparison using !== between float and null will always evaluate to true#'
 
-        # Optional method calls — bruit de migration nullables
+        # Optional method calls ΓÇö bruit de migration nullables
         -
             message: '#Call to an undefined method Illuminate\\Support\\Optional::toIso8601String\(\)#'
         -
             message: '#Call to an undefined method Illuminate\\Support\\Optional::toIso8601ZuluString\(\)#'
 
-        # Modules DDD — classes en cours de migration (pas encore extractées)
+        # Modules DDD ΓÇö classes en cours de migration (pas encore extract├⌐es)
         -
             message: '#Class App\\Modules\\(Planning|Payroll|HR|Billing|Recruitment|Fleet|Cabinet)\\Domain\\Models\\Employee not found#'
         -
@@ -88,7 +88,7 @@ parameters:
         -
             message: '#Class App\\Modules\\Recruitment\\Domain\\Models\\(Department|Position) not found#'
 
-        # Modules DDD — access to unknown class properties
+        # Modules DDD ΓÇö access to unknown class properties
         -
             message: '#Access to property \$company_id on an unknown class App\\Modules\\Payroll\\Domain\\Models\\Employee#'
         -
@@ -100,13 +100,13 @@ parameters:
         -
             message: '#Call to method withinTenant\(\) on an unknown class App\\Modules\\Attendance\\Infrastructure\\Services\\TenantManager#'
 
-        # Modules DDD — create() static call pattern (Eloquent models sans type stub)
+        # Modules DDD ΓÇö create() static call pattern (Eloquent models sans type stub)
         -
             message: '#Call to an undefined static method App\\Modules\\.*::create\(\)#'
         -
             message: '#Call to an undefined static method App\\Modules\\Cameras\\Domain\\(Camera|CameraAccessToken)::withoutGlobalScopes\(\)#'
 
-        # Modules DDD — service methods pending implementation
+        # Modules DDD ΓÇö service methods pending implementation
         -
             message: '#Call to an undefined method App\\Modules\\Attendance\\Infrastructure\\Services\\ZktecoIntegrationService::syncDevice\(\)#'
         -
@@ -118,7 +118,7 @@ parameters:
         -
             message: '#Call to an undefined method Illuminate\\Contracts\\Filesystem\\Filesystem::download\(\)#'
 
-        # Modules DDD — return type mismatches (relations HasMany avec modèles non trouvés)
+        # Modules DDD ΓÇö return type mismatches (relations HasMany avec mod├¿les non trouv├⌐s)
         -
             message: '#Method App\\Modules\\Billing\\Domain\\Models\\Invoice::payments\(\).*invalid return type#'
         -
@@ -134,11 +134,11 @@ parameters:
             message: '#Parameter \#1 \$related of method.*Eloquent\\Model::(belongsTo|hasMany|hasOne)\(\) expects class-string.*string given#'
             path: app/Modules
 
-        # Modules DDD — Approval controller return type
+        # Modules DDD ΓÇö Approval controller return type
         -
             message: '#Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\ApprovalController::(approve|reject)\(\) should return.*Resource but returns.*JsonResponse#'
 
-        # stdClass — résidu de requêtes DB raw pendant la migration
+        # stdClass ΓÇö r├⌐sidu de requ├¬tes DB raw pendant la migration
         -
             message: '#Cannot call method (save|forceFill|update)\(\) on stdClass#'
             path: app/Modules
@@ -146,16 +146,16 @@ parameters:
             message: '#Cannot access property \$.* on null#'
             path: app/Modules
 
-        # Modules — Request property access (pas de FormRequest encore)
+        # Modules ΓÇö Request property access (pas de FormRequest encore)
         -
             message: '#Access to an undefined property Illuminate\\Http\\Request::\$(employee_id|status|comment|reason)#'
             path: app/Modules
 
-        # Modules — LeaveBalance property
+        # Modules ΓÇö LeaveBalance property
         -
             message: '#Access to an undefined property App\\Modules\\Absence\\Domain\\Models\\LeaveBalance::\$absenceType#'
 
-        # Types génériques
+        # Types g├⌐n├⌐riques
         -
             message: '#Property.*type has no value type specified in iterable type array#'
             path: app/Modules
@@ -196,8 +196,8 @@ parameters:
         -
             message: '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection.*map\(\) contains unresolvable type#'
 
-        # ── Baseline Phase 2+ extension (2026-06-28) ────────────────────────
-        # Classes Employee/Company/Department/Position non trouvées dans modules DDD
+        # ΓöÇΓöÇ Baseline Phase 2+ extension (2026-06-28) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        # Classes Employee/Company/Department/Position non trouv├⌐es dans modules DDD
         -
             message: '#Class App\\Modules\\Planning\\Domain\\Models\\(Employee|Company) not found#'
         -
@@ -205,7 +205,7 @@ parameters:
         -
             message: '#Class App\\Modules\\Recruitment\\Domain\\Models\\(Employee|Department|Position) not found#'
 
-        # Method return type mismatches — modèles non résolus dans BelongsTo/HasMany
+        # Method return type mismatches ΓÇö mod├¿les non r├⌐solus dans BelongsTo/HasMany
         -
             message: '#Method App\\Modules\\(Planning|Fleet|Recruitment|Cabinet)\\Domain\\Models\\.*::.+\(\) has invalid return type App\\Modules\\#'
         -
@@ -227,7 +227,7 @@ parameters:
         -
             message: '#Method App\\Modules\\(Planning|Payroll|HR|Billing|Fleet)\\Domain\\Models\\.*::scope.*\(\) should return Illuminate\\Database\\Eloquent\\Builder.*but returns Illuminate\\Database\\Query\\Builder#'
 
-        # Method invoked with wrong parameter count — APIs en stabilisation
+        # Method invoked with wrong parameter count ΓÇö APIs en stabilisation
         -
             message: '#Method App\\Modules\\Payroll\\Infrastructure\\Services\\PayrollService::validate\(\) invoked with 1 parameter, 2 required#'
         -
@@ -247,7 +247,7 @@ parameters:
         -
             message: '#Parameter .2 ..companyId of method App\\Modules\\Planning\\Infrastructure\\Services\\AbsenceService::logBalanceChange\(\) expects string, int.null given#'
 
-        # Cameras — type issues dans stdClass collections et Camera properties
+        # Cameras ΓÇö type issues dans stdClass collections et Camera properties
         -
             message: '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<int,stdClass>::map\(\) expects callable\(stdClass, int\): array, Closure\(App\\Modules\\Cameras\\Domain\\.*\): array given#'
         -
@@ -258,11 +258,11 @@ parameters:
             message: '#Parameter .2 ..default of method Illuminate\\Http\\Request::query\(\) expects array.string.null, int given#'
             path: app/Modules/Cameras
 
-        # Billing — Partner model missing Company/User/Commission
+        # Billing ΓÇö Partner model missing Company/User/Commission
         -
             message: '#Class App\\Modules\\Billing\\Domain\\Models\\(Company|User|Commission|Payment) not found#'
 
-        # Payroll — Invoice/SalaryComponent/PaySlipLine not found
+        # Payroll ΓÇö Invoice/SalaryComponent/PaySlipLine not found
         -
             message: '#Class App\\Modules\\Payroll\\Domain\\Models\\(Invoice|SalaryComponent|PaySlipLine) not found#'
         -
@@ -270,7 +270,7 @@ parameters:
         -
             message: '#Method App\\Modules\\Payroll\\Domain\\Models\\SalaryStructure::components\(\) should return.*but returns Illuminate\\Database\\Query\\Builder#'
 
-        # Offset always exists — typage fort des arrays Payroll
+        # Offset always exists ΓÇö typage fort des arrays Payroll
         -
             message: '#Offset ..(nir|cin|num_ss|num_cnss|last_name|first_name|date_naissance|gross_salary|days_worked|months_worked|hours_worked|net_salary|net_imposable|contract_type|start_date). on array\{.*\} on left side of \?\? always exists and is not nullable#'
         -
@@ -285,11 +285,11 @@ parameters:
         -
             message: '#Method App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint::scopeListeningTo\(\) should return.*but returns Illuminate\\Database\\Query\\Builder#'
 
-        # Recruitment JobPosting published_at — Carbon vs CarbonInterface
+        # Recruitment JobPosting published_at ΓÇö Carbon vs CarbonInterface
         -
             message: '#Property App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::..published_at.*does not accept Carbon\\CarbonInterface#'
 
-        # Boolean comparison noise — bruit de typage statique
+        # Boolean comparison noise ΓÇö bruit de typage statique
         -
             message: '#Right side of && is always true#'
             path: app/Modules
@@ -306,7 +306,7 @@ parameters:
             message: '#Strict comparison using === between string.null and int will always evaluate to false#'
             path: app/Modules
 
-        # array_filter — tableau déjà typé sans valeurs falsy
+        # array_filter ΓÇö tableau d├⌐j├á typ├⌐ sans valeurs falsy
         -
             message: '#Parameter .1 ..array.*to function array_filter does not contain falsy values#'
 
@@ -328,13 +328,13 @@ parameters:
         # Collection map unresolvable type
         -
             message: '#Parameter .1 ..callback of method Illuminate\\Support\\Collection<\(int.string\),mixed>::map\(\) contains unresolvable type#'
-        # ── Billing ─────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Billing ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Type App\\Modules\\Billing\\Domain\\Models\\(User|Company|Commission|Payment|Partner|PartnerReferral|WebhookEndpoint) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
             message: '#Method App\\Modules\\Billing\\Domain\\Models\\WebhookEndpoint::scopeListeningTo\(\)#'
 
-        # ── Cabinet ─────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Cabinet ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Type App\\Modules\\Cabinet\\Domain\\Models\\(Employee|CabinetDocument|CabinetFolder|CabinetShare|CabinetFile) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
@@ -342,11 +342,11 @@ parameters:
         -
             message: '#Parameter .3 ..data of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService::uploadDocument\(\) expects array<string, mixed>, string given#'
 
-        # ── Fleet ────────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Fleet ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Type App\\Modules\\Fleet\\Domain\\Models\\(Employee|Vehicle|VehicleAlert|VehicleAssignment|VehicleTrip) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
 
-        # ── HR ────────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ HR ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Method App\\Modules\\HR\\Domain\\Models\\Contract::scopeExpiringSoon\(\)#'
         -
@@ -356,7 +356,7 @@ parameters:
         -
             message: '#Property App\\Modules\\(Attendance|HR)\\Infrastructure\\Services\\[A-Za-z]+::.*Manager has unknown class#'
 
-        # ── Payroll ──────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Payroll ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Type App\\Modules\\Payroll\\Domain\\Models\\(Employee|Invoice|SalaryComponent|SalaryStructure|EmployeeLoan|PaySlip|Payment|PaymentDocument|PaymentItem|Payroll|PayrollRun|SalaryAdvance) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
@@ -372,19 +372,19 @@ parameters:
         -
             message: '#Parameter .1 ..companyId of method App\\Modules\\Payroll\\[A-Za-z]+\\[A-Za-z]+\\[A-Za-z]+::[A-Za-z]+\(\) expects string, int.null given#'
 
-        # ── Planning ─────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Planning ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Type App\\Modules\\Planning\\Domain\\Models\\(Employee|User|Company|Absence|ClientEvent|ExpenseClaim|LeaveAccrual|LeaveBalance|LeaveBalanceLog|Project|Task|TaskComment) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
             message: '#Method App\\Modules\\Planning\\Domain\\Models\\[A-Za-z]+::scope[A-Za-z]+\(\).*should return#'
 
-        # ── Recruitment ──────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Recruitment ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Type App\\Modules\\Recruitment\\Domain\\Models\\(Employee|Department|Position|Interview|JobPosting|Application) in generic type Illuminate\\Database\\Eloquent\\Relations\\[A-Za-z]+<.*> in PHPDoc tag @return is not subtype of template type TRelatedModel#'
         -
             message: '#Property App\\Modules\\Recruitment\\Domain\\Models\\JobPosting::.*published_at.*does not accept Carbon#'
 
-        # ── Cameras ──────────────────────────────────────────────────────────
+        # ΓöÇΓöÇ Cameras ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Parameter .1 ..callback of method.*Collection.*int.*stdClass.*map\(\) expects callable.*Closure.*Cameras.*given#'
         -
@@ -398,7 +398,7 @@ parameters:
             message: '#Parameter .1 ..array.* to function array_filter does not contain falsy values#'
             path: app/Modules
 
-        # ── Misc Query types ─────────────────────────────────────────────────
+        # ΓöÇΓöÇ Misc Query types ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         -
             message: '#Parameter .2 ..callback of method.*Query\\Builder::when\(\) expects.*Closure.*Eloquent.*given#'
             path: app/Modules
