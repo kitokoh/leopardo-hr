@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TrainingCourseResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Http\Resources\Api\V1\TrainingSessionResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\TrainingCourse;
 use App\Models\TrainingEnrollment;
 use App\Models\TrainingSession;

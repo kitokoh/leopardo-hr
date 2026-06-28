@@ -7,7 +7,7 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceKiosk;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\KioskAttendanceService;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;

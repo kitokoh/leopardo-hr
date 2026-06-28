@@ -1,0 +1,5 @@
+api/app/Http/Middleware/PartnerLinkMiddleware.php
+api/routes/api.php
+api/routes/console.php
+api/routes/modules/growth.php
+api/routes/web.php

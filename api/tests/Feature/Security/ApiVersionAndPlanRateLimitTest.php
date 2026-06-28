@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Security;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;

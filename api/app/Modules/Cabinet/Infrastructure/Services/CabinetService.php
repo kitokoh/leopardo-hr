@@ -6,7 +6,7 @@ use App\Mail\CabinetShareMail;
 use App\Models\CabinetDocument;
 use App\Models\CabinetFolder;
 use App\Models\CabinetShare;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;

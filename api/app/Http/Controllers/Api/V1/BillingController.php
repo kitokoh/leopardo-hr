@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\InvoiceResource;
 use App\Http\Resources\Api\V1\SubscriptionResource;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Invoice;
 use App\Models\Subscription;
 use App\Services\StripeService;

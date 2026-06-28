@@ -10,7 +10,7 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Models\Absence;
 use App\Models\AbsenceType;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\LeaveBalanceLog;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

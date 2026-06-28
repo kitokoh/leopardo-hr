@@ -14,7 +14,7 @@ use App\Models\Absence;
 use App\Models\AbsenceType;
 use App\Models\AIToolRegistryEntry;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use stdClass;
 use Tests\Support\CreatesMvpSchema;

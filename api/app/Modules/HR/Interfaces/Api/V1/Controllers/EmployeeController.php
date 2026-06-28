@@ -14,7 +14,7 @@ use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Models\Absence;
 use App\Models\AttendanceLog;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\DataAccessAuditLogger;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use Illuminate\Database\Eloquent\Builder;

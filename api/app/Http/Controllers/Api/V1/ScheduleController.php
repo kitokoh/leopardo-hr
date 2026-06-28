@@ -7,7 +7,7 @@ use App\Http\Requests\Api\V1\Schedule\AssignScheduleEmployeesRequest;
 use App\Http\Requests\Api\V1\Schedule\StoreScheduleRequest;
 use App\Http\Requests\Api\V1\Schedule\UpdateScheduleRequest;
 use App\Http\Resources\Api\V1\ScheduleResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Schedule;
 use App\Services\Cache\TenantCacheService;
 use Illuminate\Http\JsonResponse;

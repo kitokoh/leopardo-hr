@@ -2,6 +2,27 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.2] - 2026-06-28
+
+### Changed
+
+- **Architecture — Auth migré vers Clean Architecture (DDD)** :
+  - Contrôleurs Auth déplacés de `App\Http\Controllers\Api\V1` vers `App\Core\Auth\Interfaces\Api\V1` (AuthController, PlatformAuthController, UserAuthController).
+  - Services Auth déplacés de `App\Services` vers `App\Core\Auth\Infrastructure\Services` (AuthService, UserAuthService).
+  - Modèles `Employee` et `User` déplacés de `App\Models` vers `App\Core\Auth\Domain\Models`.
+  - 389+ fichiers mis à jour pour les nouveaux namespaces (contrôleurs, services, tests, seeders, factories).
+  - `config/auth.php` mis à jour pour pointer vers les nouveaux modèles Core.
+  - `routes/modules/user.php` mis à jour pour le nouveau UserAuthController.
+  - `newFactory()` ajouté aux modèles pour garantir la résolution des factories depuis le nouveau namespace.
+  - Exceptions dupliquées supprimées dans `Core/Auth/Domain/Exceptions` (les originaux dans `App\Exceptions` font foi).
+  - `phpstan-baseline.neon` mis à jour pour les nouveaux namespaces.
+  - `declare(strict_types=1)` ajouté à tous les fichiers Core/Auth.
+  - Services Auth passés en `readonly class` (PHP 8.2+).
+
+### Removed
+
+- Anciens fichiers dupliqués supprimés : `app/Http/Controllers/Api/V1/AuthController.php`, `PlatformAuthController.php`, `UserAuthController.php`, `app/Services/AuthService.php`, `UserAuthService.php`, `app/Models/Employee.php`, `app/Models/User.php`.
+
 ## [4.17.1] - 2026-06-28
 
 ### Fixed

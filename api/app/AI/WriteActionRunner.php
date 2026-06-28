@@ -6,7 +6,7 @@ namespace App\AI;
 
 use App\Models\Absence;
 use App\Models\AbsenceType;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 
 class WriteActionRunner

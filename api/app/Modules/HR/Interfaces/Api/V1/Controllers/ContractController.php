@@ -9,7 +9,7 @@ use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\ContractPdfGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

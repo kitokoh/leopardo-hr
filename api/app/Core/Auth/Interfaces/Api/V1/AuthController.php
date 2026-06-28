@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\DTOs\UpdateEmployeeDTO;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\ChangePasswordRequest;
-use App\Http\Requests\Api\V1\LoginRequest;
-use App\Http\Requests\Api\V1\StoreRegistrationRequest;
-use App\Http\Requests\Api\V1\UpdateProfileRequest;
+use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
+use App\Core\Auth\Interfaces\Requests\LoginRequest;
+use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
+use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Language;
-use App\Services\AuthService;
+use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,6 +49,7 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
+        /** @var Employee $employee */
         $employee = Employee::create([
             'first_name' => $request->validated('first_name'),
             'last_name' => $request->validated('last_name'),
@@ -189,9 +192,11 @@ class AuthController extends Controller
             return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
         }
 
+        /** @var Employee|null $employee */
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
+            /** @var Employee $employee */
             $employee = Employee::create([
                 'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',
@@ -226,9 +231,11 @@ class AuthController extends Controller
             return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
         }
 
+        /** @var Employee|null $employee */
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
+            /** @var Employee $employee */
             $employee = Employee::create([
                 'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',

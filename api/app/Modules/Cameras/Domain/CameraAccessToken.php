@@ -2,7 +2,7 @@
 
 namespace App\Modules\Cameras\Domain;
 
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

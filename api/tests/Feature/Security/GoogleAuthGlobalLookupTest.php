@@ -3,7 +3,7 @@
 namespace Tests\Feature\Security;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Socialite\Facades\Socialite;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;

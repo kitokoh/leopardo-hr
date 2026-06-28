@@ -8,7 +8,7 @@ use App\AI\DTOs\AIResponse;
 use App\AI\DTOs\ToolCall;
 use App\AI\DTOs\ToolResult;
 use App\Models\Department;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 
 class IntentEngine
 {

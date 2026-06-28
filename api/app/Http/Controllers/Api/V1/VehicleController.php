@@ -8,7 +8,7 @@ use App\Http\Resources\Api\V1\VehicleAssignmentResource;
 use App\Http\Resources\Api\V1\VehicleMaintenanceResource;
 use App\Http\Resources\Api\V1\VehicleResource;
 use App\Http\Resources\Api\V1\VehicleTripResource;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Vehicle;
 use App\Services\Tracking\TraccarService;
 use Illuminate\Http\JsonResponse;

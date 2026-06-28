@@ -6,8 +6,6 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     excludePaths:
-        - app/Core/Auth/Domain/Exceptions
-        - app/Core/Auth/Domain/Models/User.php
         # DDD Domain Models - classes not yet fully extracted, skip until stabilized
         - app/Modules/Billing/Domain/Models
         - app/Modules/Cabinet/Domain/Models

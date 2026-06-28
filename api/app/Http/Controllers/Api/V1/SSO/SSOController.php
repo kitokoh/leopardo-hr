@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\SSO;
 
 use App\Http\Controllers\Controller;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Services\SSO\SSOService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

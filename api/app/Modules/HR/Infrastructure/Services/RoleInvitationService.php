@@ -3,7 +3,7 @@
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 
 class RoleInvitationService
 {

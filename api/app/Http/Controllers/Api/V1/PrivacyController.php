@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Absence;
 use App\Models\AttendanceLog;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Models\ExpenseClaim;
 use App\Models\PaySlip;
 use App\Models\PrivacyRequest;

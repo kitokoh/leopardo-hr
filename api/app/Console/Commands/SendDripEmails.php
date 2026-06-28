@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\TrialDripMail;
 use App\Models\Company;
-use App\Models\Employee;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
