@@ -5,66 +5,120 @@ declare(strict_types=1);
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Notification\Application\Actions\MarkNotificationsRead;
-use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Http\Resources\Api\V1\NotificationResource;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
-    public function __construct(
-        private readonly MarkNotificationsRead $markRead,
-    ) {}
-
     /**
-     * List notifications for the authenticated user.
+     * List notifications for the authenticated employee.
      */
     public function index(Request $request): JsonResponse
     {
-        $notifications = AppNotification::query()
-            ->where('user_id', $request->user()->id)
-            ->when($request->boolean('unread_only'), fn ($q) => $q->where('read', false))
-            ->latest()
-            ->paginate(30);
+        /** @var Employee $user */
+        $user = $request->user();
 
-        $unreadCount = AppNotification::query()
-            ->where('user_id', $request->user()->id)
-            ->where('read', false)
+        $validated = $request->validate([
+            'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
+            'type'        => ['nullable', 'string', 'max:80'],
+            'unread_only' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
+            'sort_dir'    => ['nullable', 'in:asc,desc'],
+        ]);
+
+        $query = Notification::query()
+            ->where('company_id', $user->company_id)
+            ->where('employee_id', $user->id);
+
+        if (($validated['type'] ?? '') !== '') {
+            $query->where('type', $validated['type']);
+        }
+        if ($request->has('unread_only') && $request->boolean('unread_only')) {
+            $query->where('is_read', false);
+        }
+
+        $notifications = $query
+            ->orderBy('created_at', (string) ($validated['sort_dir'] ?? 'desc'))
+            ->orderByDesc('id')
+            ->paginate((int) ($validated['per_page'] ?? 20));
+
+        $unreadCount = Notification::query()
+            ->where('company_id', $user->company_id)
+            ->where('employee_id', $user->id)
+            ->where('is_read', false)
             ->count();
 
+        return NotificationResource::collection($notifications)
+            ->additional(['meta' => ['unread_count' => $unreadCount]])
+            ->response();
+    }
+
+    /**
+     * Mark a single notification as read (PUT /notifications/{id}/read).
+     */
+    public function markRead(Request $request, string $id): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $notification = DB::transaction(function () use ($user, $id) {
+            /** @var Notification $notification */
+            $notification = Notification::query()
+                ->where('company_id', $user->company_id)
+                ->where('employee_id', $user->id)
+                ->where('id', $id)
+                ->firstOrFail();
+
+            $notification->markAsRead();
+
+            return $notification->fresh();
+        });
+
         return response()->json([
-            'data'         => $notifications,
-            'unread_count' => $unreadCount,
+            'data' => (new NotificationResource($notification))->resolve($request),
         ]);
     }
 
     /**
-     * Mark one or all notifications as read.
+     * Mark all unread notifications as read (PUT /notifications/read-all).
      */
-    public function markRead(Request $request): JsonResponse
+    public function markAllRead(Request $request): JsonResponse
     {
-        $request->validate([
-            'ids' => 'nullable|array',
-            'ids.*' => 'integer',
-        ]);
+        /** @var Employee $user */
+        $user = $request->user();
 
-        $count = $this->markRead->handle(
-            (int) $request->user()->id,
-            $request->ids ?? null
-        );
+        DB::transaction(function () use ($user): void {
+            Notification::query()
+                ->where('company_id', $user->company_id)
+                ->where('employee_id', $user->id)
+                ->where('is_read', false)
+                ->update(['is_read' => true, 'read_at' => now()]);
+        });
 
-        return response()->json(['marked_read' => $count]);
+        return response()->json(['message' => 'All notifications marked as read.']);
     }
 
     /**
-     * Delete a single notification.
+     * Delete a notification (DELETE /notifications/{id}).
      */
-    public function destroy(Request $request, AppNotification $notification): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        abort_unless($notification->user_id === (int) $request->user()->id, 403);
+        /** @var Employee $user */
+        $user = $request->user();
 
-        $notification->delete();
+        DB::transaction(function () use ($user, $id): void {
+            $notification = Notification::query()
+                ->where('company_id', $user->company_id)
+                ->where('employee_id', $user->id)
+                ->where('id', $id)
+                ->firstOrFail();
 
-        return response()->json(null, 204);
+            $notification->delete();
+        });
+
+        return response()->json(['message' => 'Notification deleted.']);
     }
 }
