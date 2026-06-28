@@ -5,6 +5,9 @@ parameters:
     tmpDir: storage/phpstan
     reportUnmatchedIgnoredErrors: false
 
+    excludePaths:
+        - app/Core/Auth/Domain/Exceptions
+
     ignoreErrors:
         # Legacy flat structure
         - '#App\\Http\\Controllers#'
@@ -19,10 +22,7 @@ parameters:
         - '#Using nullsafe method call on non-nullable type Illuminate\\Support\\Carbon#'
         - '#Strict comparison using (===|!==) between Illuminate\\Support\\Carbon and null#'
         - '#Strict comparison using (===|!==) between (string|float) and null#'
-        # DomainException DDD
-        - '#Class App\\Core\\Auth\\Domain\\Exceptions\\DomainException not found#'
-        - '#extends unknown class App\\Core\\Auth\\Domain\\Exceptions\\DomainException#'
-        - '#calls parent::__construct\(\) but .* does not extend any class#'
+        # DomainException DDD - handled via excludePaths above
         # CompanyRequest / UserEmployeeLink migration
         - '#Class App\\Core\\Auth\\Domain\\Models\\(CompanyRequest|UserEmployeeLink) not found#'
         # Auth Authenticatable
