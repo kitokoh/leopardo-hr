@@ -11,6 +11,7 @@ CHANGELOG.md merge=union
 *.php   text eol=lf
 *.dart  text eol=lf
 *.sh    text eol=lf
+*.neon  text eol=lf
 # Fichiers binaires
 *.png   binary
 *.jpg   binary

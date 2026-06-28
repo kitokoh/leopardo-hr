@@ -1,0 +1,33 @@
+# CODEOWNERS — Leopardo HR
+# Each line defines the owner(s) for a path pattern.
+# Owners are automatically requested as reviewers on PRs.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global fallback
+*                           @kitokoh
+
+# Backend (Laravel API)
+/api/                       @kitokoh
+
+# Frontend web (Next.js)
+/front/web/                 @kitokoh
+
+# Admin dashboard (Vue.js)
+/front/admin-dashboard/     @kitokoh
+
+# Mobile apps (Flutter)
+/front/mobile_apps/         @kitokoh
+
+# Shared i18n
+/shared/i18n/               @kitokoh
+
+# CI/CD workflows — require explicit approval
+/.github/workflows/         @kitokoh
+
+# OpenAPI spec
+/openapi/                   @kitokoh
+
+# Security-sensitive paths
+/api/app/Http/Middleware/   @kitokoh
+/api/app/Policies/          @kitokoh
+/api/config/                @kitokoh
