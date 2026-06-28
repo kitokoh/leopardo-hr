@@ -1,8 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { useVitrineLocale } from '../lib/vitrine-locale'
 
 export function NewsletterForm() {
+  const { copy } = useVitrineLocale()
+  const t = copy.footer.newsletter
+
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
@@ -21,24 +25,22 @@ export function NewsletterForm() {
       const data = await res.json()
       if (res.ok) {
         setStatus('success')
-        setMessage(data.message || 'Inscription reussie !')
+        setMessage(data.message || t.success)
         setEmail('')
       } else {
         setStatus('error')
-        setMessage(data.message || 'Erreur lors de l\'inscription.')
+        setMessage(data.message || t.error)
       }
     } catch {
       setStatus('error')
-      setMessage('Erreur reseau. Veuillez reessayer.')
+      setMessage(t.error)
     }
   }
 
   return (
     <div className="w-full max-w-md">
-      <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Newsletter</h4>
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-        Recevez nos conseils RH et mises a jour produit.
-      </p>
+      <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{t.title}</h4>
+      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t.description}</p>
       {status === 'success' ? (
         <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">{message}</p>
       ) : (
@@ -47,7 +49,7 @@ export function NewsletterForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="votre@email.com"
+            placeholder={t.placeholder}
             required
             className="flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
@@ -56,7 +58,7 @@ export function NewsletterForm() {
             disabled={status === 'loading'}
             className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
           >
-            {status === 'loading' ? '...' : 'OK'}
+            {status === 'loading' ? '...' : t.button}
           </button>
         </form>
       )}

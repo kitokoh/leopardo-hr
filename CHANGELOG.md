@@ -2,6 +2,26 @@
 # Format : Keep a Changelog (keepachangelog.com)
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.16.255] - 2026-06-21   
+## [4.17.0] - 2026-06-23  
+
+### Added 
+
+- **Architecture multi-app** : Nouvelle architecture RBAC multi-application. L'API supporte désormais plusieurs apps mobiles distinctes selon le `manager_role` de l'employé.
+- **App Mobile RH** : Routes dédiées `/api/v1/hr/**` accessibles uniquement aux `manager_role: rh` (et `principal` par héritage).
+  - `GET /hr/me` — profil RH avec contexte app
+  - `GET /hr/dashboard` — stats RH (employés actifs, invitations en attente, nouveaux du mois)
+  - `GET /hr/team-overview` — vue compacte de l'équipe
+  - `GET /hr/employees` — liste paginée et filtrable
+  - `POST /hr/employees` — ajouter un employé (role=employee forcé, sans assignation de manager_role)
+  - `GET /hr/employees/{id}` — détail employé
+  - `PATCH /hr/employees/{id}` — modifier employé (sans toucher aux rôles)
+- **HrController** : Nouveau contrôleur dédié à l'app RH avec logique d'isolation stricte (le RH ne peut pas créer de managers).
+- **EnsureAppContextMiddleware** : Middleware optionnel `app.context` — valide la cohérence entre le header `X-App-Context` et le rôle de l'utilisateur. Utilisé pour l'audit et la sécurité cross-app.
+- **MobileExperienceService amélioré** : Modules et quick_actions différenciés par rôle — le `principal` voit la gestion des rôles, le `rh` voit les outils RH, l'employé voit le self-service. Nouveau champ `app` dans la réponse indique quelle app mobile l'employé devrait utiliser.
+- **Documentation** : `docs/architecture/MULTI_APP_ARCHITECTURE.md` — cartographie complète des apps, rôles, règles d'assignation et routes par app.
+- **Tests** : `HrAppRoutesTest` — couverture des routes HR app (accès RH, refus employé standard, refus marketing manager, isolation ajout employé sans escalade de rôle).
+
 ## [4.16.255] - 2026-06-21
 
 ### Added
@@ -19,7 +39,11 @@
 - CI : Correction du test Playwright `marketing-funnel.spec.ts` — le formulaire hero email-trial (`section form input[type="email"]`) est désormais dans le DOM via `LegacyHeroSection → HeroSection` qui inclut `QuickTrialEmailForm`.
 ### Fixed
 
-- Growth Module : Correction des marqueurs de conflit Git résiduels dans `routes/modules/growth.php`, `PartnerDashboardController.php`, `CommissionService.php` et `front/web/src/app/(dashboard)/partner/page.tsx` — les fichiers contenaient des `<<<<<<< HEAD` non résolus causant un `ParseError` au boot Laravel (`php artisan package:discover`).
+- Vitrine : Export de `QuickTrialEmailForm` depuis `HeroSection.tsx` pour permettre son usage dans le test E2E Playwright marketing-funnel.
+- CI : Correction du test Playwright `marketing-funnel.spec.ts` — le formulaire hero email-trial (`section form input[type="email"]`) est désormais dans le DOM via `LegacyHeroSection → HeroSection` qui inclut `QuickTrialEmailForm`.
+### Fixed
+
+- Growth Module : Correction des marqueurs de conflit Git résiduels dans `routes/modules/growth.php`, `PartnerDashboardController.php`, `CommissionService.php` et `front/web/src/app/(dashboard)/partner/page.tsx` — les fichiers contenaient des  non résolus causant un `ParseError` au boot Laravel (`php artisan package:discover`).
 - Growth Module Auth : Le middleware des routes `/partner/*` utilise désormais `auth:sanctum` (token Employee) au lieu de `auth:user_api`. Le contrôleur `PartnerDashboardController` résout l'utilisateur global (`public.users`) via `resolveGlobalUser()` — compatible avec les tokens Sanctum Employee émis par l'app web et mobile.
 - Growth Module Frontend : La page `partner/page.tsx` affiche maintenant l'état `not_applied` en cas d'erreur réseau au lieu de rester bloquée sur "Chargement de votre espace".
 - CommissionService : Suppression des exceptions de debug temporaires (`throw new RuntimeException('Failed X')`) remplacées par des retours `null` propres conformes à la logique production.

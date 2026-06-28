@@ -1,0 +1,21 @@
+includes:
+    - phpstan.neon
+
+parameters:
+    level: 6
+
+    # Interdire les imports cross-modules
+    # (les modules ne peuvent pas s'importer mutuellement)
+    checkMissingIterableValueType: false
+
+    ignoreErrors:
+        # Legacy flat structure — tolérée pendant la migration
+        - '#App\\Http\\Controllers#'
+        - '#App\\Services#'
+        - '#App\\Models#'
+
+    # Chemins à analyser en priorité
+    paths:
+        - api/app/Core
+        - api/app/Modules
+        - api/app/Shared

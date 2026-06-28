@@ -1,5 +1,5 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
-
+  
 ## Objectif   
 
 Definir une couverture backend exhaustive pour la CI GitHub Actions, alignee sur les roles reels de l'application, les domaines metier critiques et les risques multitenant.
@@ -57,7 +57,7 @@ Note 2026-05-28 : les demandes RH visibles par mobile manager doivent etre decis
 
 Note 2026-05-28 : la liste mobile manager `GET /api/v1/employees` doit exposer `work_state` / `work_state_label` pour les etats `present`, `break`, `leave`, `mission`, `absent`, `offline`. Les scenarios API doivent verifier que ces etats restent scopes au tenant et que seul un manager principal peut modifier `role` / `manager_role` via `PATCH /employees/{employee}`.
 
-Note 2026-06-01 : la liste mobile manager `GET /api/v1/employees` doit rester compatible avec `EmployeeResource` en production stricte et avec les colonnes optionnelles absentes sur un environnement partiellement migré. Les scenarios API doivent verifier que le payload pagine expose les champs utiles au mobile (`company_id`, contacts personnels, salaire, horaire, biometrie, `extra_data`, `work_state`) sans erreur de modele partiellement charge et sans fuite inter-tenant. Les selects relationnels `company` / `schedule`, la recherche et le tri attendance doivent rester proteges par `Schema::hasColumn` afin de ne pas casser Render quand un tenant historique n'a pas encore toutes les colonnes optionnelles.
+Note 2026-06-01 : la liste mobile manager `GET /api/v1/employees` doit rester compatible avec `EmployeeResource` en production stricte et avec les colonnes optionnelles absentes sur un environnement partiellement migrÃ©. Les scenarios API doivent verifier que le payload pagine expose les champs utiles au mobile (`company_id`, contacts personnels, salaire, horaire, biometrie, `extra_data`, `work_state`) sans erreur de modele partiellement charge et sans fuite inter-tenant. Les selects relationnels `company` / `schedule`, la recherche et le tri attendance doivent rester proteges par `Schema::hasColumn` afin de ne pas casser Render quand un tenant historique n'a pas encore toutes les colonnes optionnelles.
 
 Note 2026-06-07 : la liste mobile manager `GET /api/v1/employees` doit aussi exposer un contexte entreprise complet (`company`, `currency`, `features`) en reutilisant l'entreprise courante resolue par le middleware tenant. En shared PostgreSQL, ne pas eager-loader `Company` via le `search_path` tenant : un schema `shared_tenants` peut masquer `public.companies` et produire `company=null` dans le mobile.
 
@@ -358,7 +358,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ## Modules API etendus (v4.2.0)
 
-### Module A — Conges avances
+### Module A â Conges avances
 - `GET /api/v1/leave-policies` retourne la liste des politiques actives
 - `POST /api/v1/leave-policies` cree une politique (manager RH uniquement)
 - `GET /api/v1/leave-policies/{id}` retourne le detail d'une politique
@@ -373,7 +373,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Couverture Feature : CRUD policy existant, index tenant-scope, balances manager/self-service, accrual success + refus cross-tenant employee/policy, accrual index tenant-scope.
 - Scheduler : `leave:accrue` accumule les soldes le 1er de chaque mois
 
-### Module B — Contrats
+### Module B â Contrats
 - `POST /api/v1/contracts` cree un contrat en statut draft (manager RH)
 - `PUT /api/v1/contracts/{id}` modifie un contrat
 - `POST /api/v1/contracts/{id}/activate` active un contrat draft (signed_at auto)
@@ -391,14 +391,14 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Self-service : un employe ne peut pas consulter, generer le PDF ou lire les avenants du contrat d'un collegue
 - Scheduler : `contracts:alert-expiring` alerte a 30/15/7 jours
 
-### Module C — Avances salaire mobile
+### Module C â Avances salaire mobile
 - `GET /api/v1/salary-advances` retourne les avances de l'employe connecte, et la liste tenant pour manager/RH autorise.
 - `POST /api/v1/salary-advances` permet a un employe de demander une avance avec `amount`, `reason` et `repayment_months`.
 - RBAC : un employe ne peut creer une demande que pour lui-meme ; la decision reste reservee au workflow RH/manager.
 - Isolation tenant : la liste et les decisions ne doivent jamais exposer les avances d'un autre tenant.
 - Contrat mobile : apres creation, la reponse expose `status=pending`, `amount`, `reason`, `repayment_months`, `monthly_deduction`, `amount_remaining` et `repayment_plan` si calcule.
 
-### Module K — Workflows d'approbation
+### Module K â Workflows d'approbation
 - `GET /api/v1/approval-workflows` liste les workflows (admin RH)
 - `POST /api/v1/approval-workflows` cree un workflow
 - `PUT /api/v1/approval-workflows/{id}` modifie un workflow
@@ -408,7 +408,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `POST /api/v1/approvals/{id}/reject` rejette avec commentaire obligatoire
 - `GET /api/v1/approvals/history` historique des decisions
 
-### Module C — Recrutement/ATS
+### Module C â Recrutement/ATS
 - `POST /api/v1/recruitment/jobs` cree une offre d'emploi (manager RH)
 - `PUT /api/v1/recruitment/jobs/{id}` publie une offre (status draft -> published, published_at auto)
 - `POST /api/v1/recruitment/jobs/{id}/applicants` ajoute un candidat
@@ -416,47 +416,47 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - RBAC : employes non-managers recoivent 403 sur toutes les routes recrutement
 - Isolation : listes, details, mises a jour et creation de candidats restent scopees au `company_id` courant.
 
-### Module D — Formation/LMS
+### Module D â Formation/LMS
 - `POST /api/v1/training/courses` cree un cours (manager RH)
 - `POST /api/v1/training/courses/{id}/sessions` planifie une session
 - `POST /api/v1/training/sessions/{id}/enroll` inscrit un employe
 - `PUT /api/v1/training/enrollments/{id}` complete une inscription (score, feedback)
 - Isolation : catalogue, details, sessions, trainers et enrollments refusent les ressources ou employees hors tenant.
 
-### Module E — Prets employes
+### Module E â Prets employes
 - `POST /api/v1/loans` cree un pret avec echeancier auto-genere
 - `PUT /api/v1/loans/{id}/approve` approuve un pret (manager RH)
 - `PUT /api/v1/loans/{id}/disburse` debloque les fonds (apres approbation)
 - Validation : un pret non approuve ne peut pas etre debloque (422)
 - Isolation : manager ne voit que les prets de son tenant et ne peut pas creer/approuver un pret pour un employe externe.
 
-### Module F — Notes de frais
+### Module F â Notes de frais
 - `POST /api/v1/expense-claims` cree une note avec items
 - `PUT /api/v1/expense-claims/{id}/submit` soumet pour approbation
 - `PUT /api/v1/expense-claims/{id}/approve` approuve (manager RH)
 - Validation : seul le draft peut etre soumis, seul le submitted peut etre approuve
 - Isolation : employe ne voit que ses notes, manager seulement celles de son tenant, et les approvals cross-tenant retournent 404.
 
-### Module G — Organigramme
+### Module G â Organigramme
 - `GET /api/v1/org-chart` retourne l'arbre hierarchique complet
 - `GET /api/v1/org-chart/{id}/subordinates` retourne les subordonnes directs
 - `GET /api/v1/org-chart/{id}/manager-chain` retourne la chaine manageriale ascendante
 
-### Module H — Rapports RH
+### Module H â Rapports RH
 - `GET /api/v1/reports/headcount` retourne effectifs par departement, type contrat, genre (payload mis en cache par tenant avec TTL `HR_REPORT_HEADCOUNT_CACHE_TTL`, desactive si `0`)
 - `GET /api/v1/reports/turnover?months=12` retourne embauches/departs par mois
 - `GET /api/v1/reports/absenteeism?month=5&year=2026` retourne jours absence par type
 - `GET /api/v1/reports/payroll-summary` retourne masse salariale brute/nette
 - RBAC : uniquement managers
 
-### Module I — Webhooks
+### Module I â Webhooks
 - `POST /api/v1/webhooks` cree un endpoint avec secret genere (principal)
 - `GET /api/v1/webhooks/events` retourne la liste des evenements disponibles
 - `GET /api/v1/webhooks/{id}` inclut les 20 dernieres livraisons
 - `DELETE /api/v1/webhooks/{id}` supprime un endpoint
 - RBAC : uniquement principal
 
-### Module J — Audit Trail
+### Module J â Audit Trail
 - `GET /api/v1/audit-logs` retourne les logs filtres par action, type, user, date
 - `GET /api/v1/audit-logs/{id}` retourne le detail avec old/new values
 - `GET /api/v1/audit-logs/export-csv` exporte les logs en CSV avec filtres `from`/`to` (stream chunked)
@@ -499,7 +499,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Couverture Feature : liste scopee tenant, creation manager, calcul via contrat `PayrollCalculator`, validation run + bulletins + dispatch warmup PDF + fichier local `pdf_path`, annulation draft, refus paid et refus d'acces cross-tenant.
 
 ### Pay Slips
-- `GET /api/v1/pay-slips` liste paginee tous les bulletins du tenant (manager), filtres optionnels `payroll_run_id` (404 si run hors tenant), `status` (`calculated|validated|sent`), sans lignes de detail — utilise par le SPA admin pour eviter un GET par run
+- `GET /api/v1/pay-slips` liste paginee tous les bulletins du tenant (manager), filtres optionnels `payroll_run_id` (404 si run hors tenant), `status` (`calculated|validated|sent`), sans lignes de detail â utilise par le SPA admin pour eviter un GET par run
 - `GET /api/v1/payroll-runs/{id}/pay-slips` liste les bulletins d'un run (manager), avec lignes chargees (legacy / detail par run)
 - `GET /api/v1/pay-slips/{id}` detail bulletin avec lignes (manager ou employe concerne)
 - `GET /api/v1/pay-slips/{id}/pdf` telecharge le PDF du bulletin (manager ou employe proprietaire) ; si `pdf_path` pointe vers un fichier present sur le disque `local`, le fichier est servi sinon generation synchrone DomPDF
@@ -533,9 +533,9 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ### Vehicle Sub-Resources
 - `GET /api/v1/vehicles/{id}/position` position GPS actuelle (via Traccar)
-- `GET /api/v1/vehicles/{id}/trips` historique trajets paginé
-- `GET /api/v1/vehicles/{id}/alerts` alertes du vehicule paginées
-- `GET /api/v1/vehicles/{id}/maintenance` historique maintenance paginé
+- `GET /api/v1/vehicles/{id}/trips` historique trajets paginÃ©
+- `GET /api/v1/vehicles/{id}/alerts` alertes du vehicule paginÃ©es
+- `GET /api/v1/vehicles/{id}/maintenance` historique maintenance paginÃ©
 
 ### Affectations Chauffeurs
 - `POST /api/v1/vehicles/{id}/assign` affecter un chauffeur
@@ -579,7 +579,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - RBAC : authentification Sanctum requise
 
 ### Historique conversations
-- `GET /api/ai/chat/history` retourne les conversations paginées de l'utilisateur
+- `GET /api/ai/chat/history` retourne les conversations paginÃ©es de l'utilisateur
 - `DELETE /api/ai/chat/{conversationId}` supprime une conversation
 - Isolation tenant : chaque utilisateur ne voit que ses conversations dans son entreprise
 
@@ -592,8 +592,8 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ### Tool Registry
 - `GET /api/ai/tools` liste les outils IA actifs (debug/admin)
-- Les outils sont filtrés par role (employee, manager, admin)
-- 15 outils enregistrés : get_employees, search_employees, get_departments, get_headcount, etc.
+- Les outils sont filtrÃ©s par role (employee, manager, admin)
+- 15 outils enregistrÃ©s : get_employees, search_employees, get_departments, get_headcount, etc.
 
 ### Middlewares IA
 - `AIFeatureCheck` : bloque si `AI_ENABLED=false`
@@ -604,7 +604,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ## Modules RH Avances (Sprint 11-12)
 
-### Recrutement — Actions avancees
+### Recrutement â Actions avancees
 - `POST /api/v1/recruitment/jobs/{id}/publish` publier une offre (draft -> published)
 - `POST /api/v1/recruitment/jobs/{id}/close` fermer une offre (published -> closed)
 - `DELETE /api/v1/recruitment/jobs/{id}` supprimer (draft uniquement)
@@ -710,7 +710,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ---
 
-## IA Avancee — Voice, Agents, Analytics (Sprint 17-18)
+## IA Avancee â Voice, Agents, Analytics (Sprint 17-18)
 
 ### Voice IA
 - `POST /api/v1/ai/voice/transcribe` audio -> texte (Whisper ou Deepgram)
@@ -738,16 +738,16 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ---
 
-## DevOps — Health enrichi, Metrics, Structured Logging (Post-Sprint)
+## DevOps â Health enrichi, Metrics, Structured Logging (Post-Sprint)
 
 ### Health enrichi
-- `GET /api/v1/health` — Inclut desormais : queue (driver + size), memory (usage_mb, peak_mb, limit_mb), environment, uptime_seconds
-- `GET /api/v1/health/live` — Sonde liveness inchangee
-- `GET /api/v1/health/ready` — Sonde readiness inchangee
+- `GET /api/v1/health` â Inclut desormais : queue (driver + size), memory (usage_mb, peak_mb, limit_mb), environment, uptime_seconds
+- `GET /api/v1/health/live` â Sonde liveness inchangee
+- `GET /api/v1/health/ready` â Sonde readiness inchangee
 
 ### Metrics platform
-- `GET /api/v1/metrics` — Retourne: companies (total, active, trial), employees (total, active), system (php_version, laravel_version, memory_usage_mb, cache_driver, queue_driver, db_driver)
-- `GET /api/v1/platform/metrics/overview` — Retourne: revenue (currency, mrr, arr, collected_30d, overdue_total), companies, subscriptions, billing, system et generated_at pour le cockpit super-admin
+- `GET /api/v1/metrics` â Retourne: companies (total, active, trial), employees (total, active), system (php_version, laravel_version, memory_usage_mb, cache_driver, queue_driver, db_driver)
+- `GET /api/v1/platform/metrics/overview` â Retourne: revenue (currency, mrr, arr, collected_30d, overdue_total), companies, subscriptions, billing, system et generated_at pour le cockpit super-admin
 
 ### Structured Logging
 - Middleware `StructuredLogging` enregistre chaque requete API en JSON : method, uri, status, duration_ms, ip, user_agent, user_id, company_id, request_id
@@ -755,7 +755,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Channel `audit` : daily JSON logs dans `storage/logs/audit.log` (90 jours retention)
 - Couverture Feature : requetes API non-health journalisees sur le channel `structured`, sondes health exclues du bruit de logs
 
-## Paie avancee — PDF, Bank Export, Billing (Post-Sprint)
+## Paie avancee â PDF, Bank Export, Billing (Post-Sprint)
 
 ### Bulletin de paie PDF
 - `GET /api/v1/pay-slips` liste paginee les bulletins du tenant (manager), filtres `payroll_run_id` / `status`
@@ -794,7 +794,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `POST /api/v1/social-declarations/cnss-ma` genere une declaration trimestrielle CNSS Maroc avec jours travailles
 - `POST /api/v1/social-declarations/dsn-fr` genere une declaration mensuelle DSN simplifiee France (format S10/S20/S21/S44)
   - Parametres : `month` (1-12), `year` (2020-2099)
-  - Mapping types contrat : CDI→01, CDD→02, INTERIM→03, APPRENTISSAGE→04, PROFESSIONNALISATION→05, STAGE→07
+  - Mapping types contrat : CDIâ01, CDDâ02, INTERIMâ03, APPRENTISSAGEâ04, PROFESSIONNALISATIONâ05, STAGEâ07
   - La reponse contient `content` (texte DSN), `filename` (DSN_FR_MM_YYYY_date.dsn), `employee_count`
 - Les trois endpoints sont reserves aux roles manager (isManager)
 - Les calculs s'appuient sur les bulletins valides (`pay_slips` status=validated) du mois/trimestre demande
@@ -896,12 +896,12 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 
 ### SSO SAML/OIDC (Plan 15 K2)
-- `GET /api/v1/sso/providers` retourne la liste des protocoles SSO supportes (SAML 2.0, OpenID Connect) — public, pas d'auth
-- `GET /api/v1/sso/status` retourne le statut SSO de l'entreprise (enabled, provider) — RBAC manager principal uniquement
-- `POST /api/v1/sso/configure` configure SSO pour l'entreprise (provider in:saml,oidc, entity_id URL, sso_url URL) — RBAC manager principal
-- `DELETE /api/v1/sso/disable` desactive SSO pour l'entreprise — RBAC manager principal
-- `POST /api/v1/sso/saml/{companyId}/callback` recoit la reponse SAML de l'IdP — stub, validation complete a implementer
-- `GET /api/v1/sso/oidc/{companyId}/callback` recoit le callback OIDC (code, state, id_token) — stub, echange token a implementer
+- `GET /api/v1/sso/providers` retourne la liste des protocoles SSO supportes (SAML 2.0, OpenID Connect) â public, pas d'auth
+- `GET /api/v1/sso/status` retourne le statut SSO de l'entreprise (enabled, provider) â RBAC manager principal uniquement
+- `POST /api/v1/sso/configure` configure SSO pour l'entreprise (provider in:saml,oidc, entity_id URL, sso_url URL) â RBAC manager principal
+- `DELETE /api/v1/sso/disable` desactive SSO pour l'entreprise â RBAC manager principal
+- `POST /api/v1/sso/saml/{companyId}/callback` recoit la reponse SAML de l'IdP â stub, validation complete a implementer
+- `GET /api/v1/sso/oidc/{companyId}/callback` recoit le callback OIDC (code, state, id_token) â stub, echange token a implementer
 - Les endpoints de gestion (status, configure, disable) sont proteges par auth:sanctum + tenant
 - Les callbacks sont publics (recus directement de l'IdP)
 - Configuration stockee en JSONB dans company_sso_configs (unique par company_id)
@@ -915,10 +915,10 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Authentification requise : les endpoints retournent 401 sans token valide
 
 ### Push Notifications / Device Tokens (G8 - Batch 1)
-- `POST /api/v1/device-tokens` enregistre un token FCM (platform: ios/android/web, token: string) — self-service employe
-- `DELETE /api/v1/device-tokens` supprime un token FCM — self-service employe
+- `POST /api/v1/device-tokens` enregistre un token FCM (platform: ios/android/web, token: string) â self-service employe
+- `DELETE /api/v1/device-tokens` supprime un token FCM â self-service employe
 - `GET /api/v1/device-tokens` liste les tokens actifs de l'employe connecte
-- `POST /api/v1/push-notifications/send` envoie une notification push a un employe — RBAC manager uniquement
+- `POST /api/v1/push-notifications/send` envoie une notification push a un employe â RBAC manager uniquement
 - Les tokens invalides (NotRegistered, InvalidRegistration) sont automatiquement desactives
 
 ### Calendar Sync (L6 - Batch 1)
@@ -929,28 +929,28 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `GET /api/v1/calendar/events?from=2026-01-01&to=2026-12-31` liste les evenements calendrier synchronises
 
 ### ZKTeco Integration (L5 - Batch 1)
-- `GET /api/v1/zkteco/devices` liste les pointeuses ZKTeco de l'entreprise — RBAC manager
+- `GET /api/v1/zkteco/devices` liste les pointeuses ZKTeco de l'entreprise â RBAC manager
 - `POST /api/v1/zkteco/devices` enregistre une nouvelle pointeuse (serial_number, name, ip_address, port, protocol)
 - `GET /api/v1/zkteco/devices/{id}` detail pointeuse + historique sync
 - `PUT /api/v1/zkteco/devices/{id}` met a jour une pointeuse
 - `DELETE /api/v1/zkteco/devices/{id}` supprime une pointeuse
-- `POST /api/v1/zkteco/heartbeat/{serialNumber}` heartbeat device → marque online — pas d'auth Sanctum
-- `POST /api/v1/zkteco/sync-attendance/{serialNumber}` sync pointages depuis device — pas d'auth Sanctum
-- `POST /api/v1/zkteco/devices/{serialNumber}/push-users` pousse la liste employes vers le device — RBAC manager
+- `POST /api/v1/zkteco/heartbeat/{serialNumber}` heartbeat device â marque online â pas d'auth Sanctum
+- `POST /api/v1/zkteco/sync-attendance/{serialNumber}` sync pointages depuis device â pas d'auth Sanctum
+- `POST /api/v1/zkteco/devices/{serialNumber}/push-users` pousse la liste employes vers le device â RBAC manager
 - `GET /api/v1/zkteco/devices/{id}/sync-logs` historique des synchronisations
 
 ### Kiosk Extensions (H1-H4 - Batch 1)
 - `POST /api/v1/kiosks/{deviceCode}/employee-info` info employe post-pointage (nom, departement, poste, photo, pointage du jour, solde conges)
 - `GET /api/v1/kiosks/{deviceCode}/announcements` annonces actives pour le kiosk (titre, corps, priorite, dates)
 - `POST /api/v1/kiosks/{deviceCode}/leave-balance` solde conges par identifiant employe
-- `POST /api/v1/kiosks/{deviceCode}/qr-punch` pointage par QR code (decode base64 JSON → matricule/employee_id)
+- `POST /api/v1/kiosks/{deviceCode}/qr-punch` pointage par QR code (decode base64 JSON â matricule/employee_id)
 - Tous les endpoints kiosk necessitent le header X-Kiosk-Token pour l'authentification device
 
 ### Auth Token Refresh (D4 - Iteration 13)
 - `POST /api/v1/auth/refresh-token` genere un nouveau token Sanctum avec les memes abilities
 - L'ancien token est supprime apres rotation
 - Le nouveau token respecte la duree d'expiration configuree dans `sanctum.expiration`
-- Necessite `auth:sanctum` — tout role authentifie peut rafraichir son token
+- Necessite `auth:sanctum` â tout role authentifie peut rafraichir son token
 
 ### Queue Jobs (D2 - Iteration 13)
 - `ProcessPayrollBatchJob` dispatche sur la queue `payroll` avec 3 retries et 600s timeout
@@ -994,8 +994,8 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 
 ### API Manager Middleware RBAC (API Consolidation - v4.16.129)
 - `EnsureApiManagerMiddleware` enregistre comme `api.manager` dans `bootstrap/app.php`
-- `api.manager` sans parametres autorise tout manager (principal, rh, dept, comptable, superviseur) — refuse les employes simples avec `403 MANAGER_REQUIRED`
-- `api.manager:principal,rh` autorise uniquement les roles specifies — refuse les autres managers avec `403 INSUFFICIENT_ROLE`
+- `api.manager` sans parametres autorise tout manager (principal, rh, dept, comptable, superviseur) â refuse les employes simples avec `403 MANAGER_REQUIRED`
+- `api.manager:principal,rh` autorise uniquement les roles specifies â refuse les autres managers avec `403 INSUFFICIENT_ROLE`
 - `api.manager:principal` sur `/billing/subscription` refuse RH, dept, superviseur et employes
 - `api.manager:principal,comptable` sur `/payroll-runs` refuse RH, dept, superviseur et employes
 - `api.manager:principal,rh,comptable` sur `/export/employees` refuse dept, superviseur et employes
@@ -1013,23 +1013,23 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Tous utilisent `sharedTableExists()` pour tolerer les tables absentes
 - `cleanupExistingCompany()` nettoie les 12 nouvelles tables avant re-seed
 
-### Plans 60-65 — Double Validation Avances & Paiement en Masse (Redis Upstash)
+### Plans 60-65 â Double Validation Avances & Paiement en Masse (Redis Upstash)
 
-#### Plan 58 — Personnalisation Entreprise / Branding Tenant
+#### Plan 58 â Personnalisation Entreprise / Branding Tenant
 - `GET /api/v1/company/branding` : retourne le branding de l'entreprise courante depuis `companies.metadata.branding`, lisible par tout utilisateur authentifie du tenant.
 - `PATCH /api/v1/company/branding` : reserve aux managers `principal` et `rh`, valide `display_name`, `logo_url`, `primary_color`, `accent_color`, `brand_mode`.
 - Upload logo optionnel via champ multipart `logo`, stockage sur disk `public`, URL stable retournee dans `data.branding.logo_url`.
 - Validation stricte des couleurs au format hex `#RRGGBB`, fallback lisible cote API/mobile si la valeur est absente ou invalide.
 - `CompanyBrandingControllerTest` couvre lecture employee, refus modification employee, modification manager/RH, upload logo et validation couleur.
 
-#### Plan 60 — Double Validation Avances Salaire
+#### Plan 60 â Double Validation Avances Salaire
 - `PUT /api/v1/salary-advances/{id}/manager-approve` : manager approuve, met `validation_status=manager_approved` et `manager_approved_at`
 - `PUT /api/v1/salary-advances/{id}/mark-paid` : comptable/manager declare paiement, met `payment_declared_at` et `payment_declared_by`
 - `PUT /api/v1/salary-advances/{id}/confirm-received` : employe confirme reception, met `employee_confirmed_at`
 - Acces refuse a un employe sans role manager sur les endpoints d'approbation (403)
 - Acces refuse a un manager d'une autre entreprise (404)
 
-#### Plan 61 — Cycles de Paie & Solde Employe (PayrollCycleController)
+#### Plan 61 â Cycles de Paie & Solde Employe (PayrollCycleController)
 - `GET /api/v1/payroll/cycles` : retourne la liste paginee des PayrollRuns pour l'entreprise (manager requis)
 - `GET /api/v1/payroll/cycles/current` : retourne `period_start`, `period_end`, `label` du cycle courant calcule
 - `GET /api/v1/me/balance` : retourne le solde paie self-service du cycle courant avec devise, avances deduites et reste
@@ -1039,19 +1039,19 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - Acces refuse a un employe consultant le solde d'un autre employe sans etre manager (403)
 - Acces refuse a un manager consultant un employe hors de son entreprise (404)
 
-#### Plan 62 — Generation PDF Bulletins de Paie Async (GeneratePaySlipPdfJob)
+#### Plan 62 â Generation PDF Bulletins de Paie Async (GeneratePaySlipPdfJob)
 - `GeneratePaySlipPdfJob` dispatche sur la queue `pdf` avec `tries=3`, `timeout=120`
 - Le job genere le PDF via dompdf, stocke dans `payslips/{company_id}/{year}/{month}/{employee_id}.pdf`
 - Met a jour `pay_slips.pdf_path` apres generation
 - Notifie l'employe via `PushNotificationService` apres generation reussie
 - Failure silencieuse si `PayrollRun`, `Employee`, `Company` ou `PaySlip` introuvable (log warning, pas d'exception)
 
-#### Plan 63 — Architecture Redis Upstash / QueueHealthCheck
+#### Plan 63 â Architecture Redis Upstash / QueueHealthCheck
 - `php artisan queue:health-check` retourne JSON avec `redis_ok`, `redis_latency_ms`, profondeurs des queues `default`, `documents`, `pdf`, `notifications`, `payroll`, `webhooks`
 - Retourne `status=error` si Redis inaccessible (exit FAILURE)
 - Options `--queue=pdf --queue=payroll` limitent le check aux queues specifiees
 
-#### Plan 64 — Cloture Automatique Presences, Timezone et GPS doux
+#### Plan 64 â Cloture Automatique Presences, Timezone et GPS doux
 - `php artisan attendance:auto-close` cloture les pointages sans `check_out` selon `company.metadata.attendance_auto_close` ou le fallback 12h
 - `--threshold=N` parametre le seuil fallback en heures
 - `--dry-run` preview sans ecriture
@@ -1060,7 +1060,7 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - `POST /api/v1/attendance/check-in|check-out` accepte `device_timezone`, `gps_lat`, `gps_lng`, `gps_accuracy`; le backend stocke UTC, retourne timezone locale + geofence doux (`inside=false` ne bloque pas) et expose `gps.accuracy_m`
 - Plan 67.3 ajoute le garde mobile/API `validate-mobile-location-readiness.ps1` pour garantir que les apps employee/manager collectent le GPS sans bloquer et que l'API conserve ce contrat.
 
-#### Plan 65 — Paiement en Masse (BulkPaymentController + ProcessBulkPaymentJob)
+#### Plan 65 â Paiement en Masse (BulkPaymentController + ProcessBulkPaymentJob)
 - `POST /api/v1/payroll-runs/{id}/bulk-pay` : dispatch `ProcessBulkPaymentJob` sur queue `payroll`, retourne 202 Accepted
 - Retourne 422 si le run n'est pas en status `validated` ou `calculated`
 - Retourne 409 si un job bulk-pay est deja en cours pour ce run (detection via Redis)
@@ -1083,12 +1083,27 @@ Note 2026-06-01 : `GET /api/v1/launch-readiness` est un cockpit lancement tenant
 - POST /api/v1/partners/profile : soumet une candidature partenaire.
 - GET /api/v1/partners/commissions : liste les commissions d'un partenaire actif.
 - GET /api/v1/partners/links : gere les liens de parrainage (liste, creation, desactivation).
-- GET /api/v1/growth/referral : point d'entree tracking des clics via code affili�.
+- GET /api/v1/growth/referral : point d'entree tracking des clics via code affilié.
 - L'acces aux ressources partenaires refuse les candidatures en attente.
 - Les ecritures de statistiques de clic et de cookie restent tolerantes aux blocs ad-blocker.
 
+#### Phase 2 — Architecture Multi-App RBAC (v4.17.0)
+
+- `GET /api/v1/hr/dashboard` : accessible RH (`manager_role=rh`) et principal. Retourne stats employes actifs, invitations en attente, nouveaux du mois.
+- `GET /api/v1/hr/me` : profil RH avec `app=rh`, `role_label=Responsable RH`.
+- `GET /api/v1/hr/team-overview` : vue compacte de l'equipe avec departements et postes.
+- `GET /api/v1/hr/employees` : liste paginee/filtree des employes (search, status, contract_type).
+- `POST /api/v1/hr/employees` : creation d'employe par RH — `role` force a `employee`, `manager_role` force a `null` meme si envoye dans le payload.
+- `GET /api/v1/hr/employees/{id}` / `PATCH /api/v1/hr/employees/{id}` : lecture et modification employe par RH, sans possibilite de changer `role` ou `manager_role`.
+- Acces refuse (403 MANAGER_REQUIRED) si `role=employee` tente d'acceder a `/hr/**`.
+- Acces refuse (403 INSUFFICIENT_ROLE) si `manager_role=marketing` tente d'acceder a `/hr/**`.
+- `EnsureAppContextMiddleware` (alias `app.context`) : valide header `X-App-Context` optionnel. Retourne 400 si contexte inconnu, 403 si role incompatible avec le contexte declare.
+- `GET /api/v1/auth/me` : champ `mobile_experience.app` retourne `{id, name, deep_link_scheme}` selon le role — `principal` => manager, `rh` => rh, `employee` => employee.
+- `mobile_experience.modules` differencie les modules selon le role : principal voit `role_management`, rh voit `hr_employees` + `hr_team_overview`, employee voit self-service uniquement.
+
 #### Module Growth - Correction Auth v4.16.255
-- POST /api/v1/partner/apply : accessible via token Sanctum Employee (guard uth:sanctum) � esolveGlobalUser() cree l'entree User dans public.users si elle n'existe pas encore pour l'employe authentifie.
+- POST /api/v1/partner/apply : accessible via token Sanctum Employee (guard uth:sanctum)  
+esolveGlobalUser() cree l'entree User dans public.users si elle n'existe pas encore pour l'employe authentifie.
 - GET /api/v1/partner/stats : retourne les stats de commission uniquement si le token Employee correspond a un enregistrement Partner actif dans public.partners. Retourne 403 NOT_A_PARTNER sinon.
 - POST /api/v1/partner/payout : demande de paiement liee au partner resolu depuis le token Employee Sanctum.
 - GET /api/v1/partner/companies : liste les entreprises parrainees par le partner resolu.

@@ -203,6 +203,21 @@ class Employee extends Authenticatable
         return $this->hasManagerRole('rh');
     }
 
+    public function isMarketing(): bool
+    {
+        return $this->hasManagerRole('marketing');
+    }
+
+    public function isComptable(): bool
+    {
+        return $this->hasManagerRole('comptable');
+    }
+
+    public function isDept(): bool
+    {
+        return $this->hasManagerRole('dept');
+    }
+
     /**
      * Route d'accueil suggeree selon le role/sous-role de l'employe.
      */
@@ -212,7 +227,14 @@ class Employee extends Authenticatable
             return 'me.dashboard';
         }
 
-        return 'dashboard';
+        return match($this->manager_role) {
+            'principal' => 'dashboard',
+            'rh'        => 'dashboard',
+            'comptable' => 'dashboard',
+            'marketing' => 'dashboard',
+            'dept'      => 'dashboard',
+            default     => 'dashboard',
+        };
     }
 
     /** @return BelongsTo<Company, $this> */
