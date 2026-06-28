@@ -4,6 +4,14 @@
 
 ## [4.17.2] - 2026-06-28
 
+### Added
+
+- **Mobile Apps — Séparation des applications Manager et RH** :
+  - L'application `leopardo_manager` a été scindée pour créer une application spécifique `leopardo_hr`.
+  - Intégration de `leopardo_hr` dans la matrice de CI canonique `mobile-distribute.yml` pour le déploiement sur Firebase.
+  - Suppression de `mobile-hr-distribution.yml` redondant.
+  - Résolution des chemins de routes et des conflits dans `app.dart` pour le manager et tests associés.
+
 ### Changed
 
 - **Architecture — Auth migré vers Clean Architecture (DDD)** :
