@@ -66,6 +66,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $biometric_face_reference_path
  * @property string|null $biometric_fingerprint_reference_path
  * @property Carbon|null $biometric_consent_at
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $invitation_accepted_at
  * @property Carbon|null $invitation_accepted_at
  * @property string|null $emergency_contact_name
  * @property string|null $emergency_contact_phone

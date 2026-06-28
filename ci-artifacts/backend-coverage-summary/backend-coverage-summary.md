@@ -1,4 +1,0 @@
-- Threshold configured: 60%
-- Backend statement coverage: 62.55% (13334/21316)
-- HTML artifact: api/storage/coverage-html/
-- Clover artifact: api/storage/test-results/clover.xml
