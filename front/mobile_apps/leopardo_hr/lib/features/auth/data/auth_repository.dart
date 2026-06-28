@@ -1,0 +1,261 @@
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
+import 'package:leopardo_core/core/storage/app_preferences.dart';
+import 'package:leopardo_core/models/employee.dart';
+import 'package:leopardo_core/core/storage/secure_storage.dart';
+
+// Note: le Web Client ID Firebase (type 3) est configuré via GoogleSignIn.instance.initialize()
+// dans main.dart — c'est là qu'il doit être passé pour que authenticate() retourne un idToken.
+
+class AuthRepository {
+  final _googleSignIn = GoogleSignIn.instance;
+  final ApiClient apiClient;
+  final SecureStorage storage;
+  final AppPreferences preferences;
+
+  AuthRepository(this.apiClient, this.storage, this.preferences);
+
+  static const _actionTimeout = Duration(seconds: 12);
+  static const _authCheckTimeout = Duration(seconds: 10);
+
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    final response = await apiClient.requestWithRetry(
+      '/auth/login',
+      method: 'POST',
+      data: {'email': email, 'password': password, 'device_name': 'Mobile App'},
+      isLoginRequest: true,
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    final employeeJson = extractEmployeeJson(data);
+    final token = extractToken(data);
+
+    await storage.saveToken(token);
+
+    // Hydrate depuis /auth/me pour recuperer manager_role + capabilities
+    // (la reponse /auth/login ne les expose pas).
+    try {
+      final meResponse = await apiClient.requestWithRetry(
+        '/auth/me',
+        timeoutOverride: _authCheckTimeout,
+        maxRetriesOverride: 0,
+      );
+      final meData = extractDataMap(meResponse.data);
+      if (meData.isNotEmpty) {
+        final employee = Employee.fromJson(meData);
+        await _persistEmployeeContext(employee);
+        return {'employee': employee};
+      }
+    } catch (_) {
+      // Si /auth/me echoue on retombe sur la reponse de login.
+    }
+
+    final employee = Employee.fromJson(employeeJson);
+    await _persistEmployeeContext(employee);
+
+    return {'employee': employee};
+  }
+
+  Future<Map<String, dynamic>> loginWithGoogle() async {
+    // serverClientId est configuré dans GoogleSignIn.instance.initialize() dans main.dart
+    // (web client id type 3 = _kGoogleWebClientId) — obligatoire pour l'idToken backend.
+    final googleUser = await _googleSignIn.authenticate();
+
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+    final String? idToken = googleAuth.idToken;
+
+    if (idToken == null) {
+      throw Exception('Impossible de récupérer le token Google');
+    }
+
+    // On envoie le token au backend.
+    // Note: Le backend doit être capable de vérifier ce token.
+    // Pour simplifier l'intégration Socialite existante, on peut passer par une route
+    // qui accepte le token.
+    final response = await apiClient.requestWithRetry(
+      '/auth/google/token',
+      method: 'POST',
+      data: {'token': idToken, 'device_name': 'Mobile App'},
+      isLoginRequest: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    final employeeJson = extractEmployeeJson(data);
+    final token = extractToken(data);
+
+    await storage.saveToken(token);
+
+    final employee = Employee.fromJson(employeeJson);
+    await _persistEmployeeContext(employee);
+
+    return {'employee': employee};
+  }
+
+  Future<Map<String, dynamic>> register({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+  }) async {
+    final response = await apiClient.requestWithRetry(
+      '/auth/register',
+      method: 'POST',
+      data: {
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        'password': password,
+        'password_confirmation': password,
+        'device_name': 'Mobile App',
+      },
+      isLoginRequest: true,
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+
+    final data = response.data as Map<String, dynamic>;
+    final employeeJson = extractEmployeeJson(data);
+    final token = extractToken(data);
+
+    await storage.saveToken(token);
+
+    final employee = Employee.fromJson(employeeJson);
+    await _persistEmployeeContext(employee);
+
+    return {'employee': employee};
+  }
+
+  Future<void> logout() async {
+    try {
+      await apiClient.requestWithRetry(
+        '/auth/logout',
+        method: 'POST',
+        maxRetriesOverride: 0,
+        timeoutOverride: _actionTimeout,
+      );
+    } catch (_) {
+      // Ignore errors if token is already invalid
+    } finally {
+      await storage.deleteToken();
+      await preferences.clearLocaleSettings();
+    }
+  }
+
+  Future<Map<String, dynamic>?> checkAuth() async {
+    final token = await storage.getToken();
+    if (token == null) return null;
+
+    try {
+      final response = await apiClient.requestWithRetry(
+        '/auth/me',
+        timeoutOverride: _authCheckTimeout,
+        maxRetriesOverride: 0,
+      );
+      final data = extractDataMap(response.data);
+      final employee = Employee.fromJson(data);
+      await _persistEmployeeContext(employee);
+      return {'employee': employee};
+    } catch (e) {
+      await storage.deleteToken();
+      await preferences.clearLocaleSettings();
+      return null;
+    }
+  }
+
+  Future<Employee> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) async {
+    final response = await apiClient.requestWithRetry(
+      '/auth/profile',
+      method: 'PATCH',
+      data: {
+        'first_name': firstName.trim(),
+        'last_name': lastName.trim(),
+        'email': email.trim(),
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+
+    final employee = Employee.fromJson(extractDataMap(response.data));
+    await _persistEmployeeContext(employee);
+    return employee;
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmation,
+  }) async {
+    await apiClient.requestWithRetry(
+      '/auth/change-password',
+      method: 'POST',
+      data: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+        'new_password_confirmation': confirmation,
+      },
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+  }
+
+  Future<Employee> updatePreferredLanguage(String language) async {
+    final response = await apiClient.requestWithRetry(
+      '/auth/language',
+      method: 'PATCH',
+      data: {'language': language.trim().toLowerCase()},
+      maxRetriesOverride: 0,
+      timeoutOverride: _actionTimeout,
+    );
+
+    final employee = Employee.fromJson(extractDataMap(response.data));
+    await _persistEmployeeContext(employee);
+    return employee;
+  }
+
+  static Map<String, dynamic> extractEmployeeJson(
+    Map<String, dynamic> payload,
+  ) {
+    final data = payload['data'];
+    if (data is Map) {
+      final user = data['user'];
+      if (user is Map) {
+        return user.cast<String, dynamic>();
+      }
+
+      return data.cast<String, dynamic>();
+    }
+
+    throw const FormatException('Invalid auth payload: missing employee data');
+  }
+
+  static String extractToken(Map<String, dynamic> payload) {
+    final rootToken = payload['token'];
+    if (rootToken is String && rootToken.isNotEmpty) {
+      return rootToken;
+    }
+
+    final data = payload['data'];
+    if (data is Map) {
+      final nestedToken = data['token'];
+      if (nestedToken is String && nestedToken.isNotEmpty) {
+        return nestedToken;
+      }
+    }
+
+    throw const FormatException('Invalid auth payload: missing token');
+  }
+
+  Future<void> _persistEmployeeContext(Employee employee) {
+    return preferences.saveLocaleSettings(
+      preferredLanguage: employee.language,
+      isRtl: employee.isRtl,
+    );
+  }
+}

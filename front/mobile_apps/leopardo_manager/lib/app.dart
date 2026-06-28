@@ -81,6 +81,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && onPublic) return '/';
+      if (isAuth && ( !authState.employee!.isManager || authState.employee!.isHr ) && !onPublic) {
+        // Redirection si l'utilisateur n'est pas un Manager pur dans l'app Manager
+        return '/welcome';
+      }
+
       return null;
     },
     routes: [
@@ -144,7 +149,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CabinetScreen(),
       ),
       GoRoute(
-        path: '/cabinet/folder/:folderId',
+        path: '/cabinet/:folderId',
         builder: (context, state) {
           final folderId = int.parse(state.pathParameters['folderId']!);
           final folderName = state.extra as String?;

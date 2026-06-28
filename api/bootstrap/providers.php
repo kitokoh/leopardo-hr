@@ -21,4 +21,8 @@ return [
     App\Modules\Fleet\Providers\FleetServiceProvider::class,
     App\Modules\Billing\Providers\BillingServiceProvider::class,
     App\Modules\Cameras\Providers\CamerasServiceProvider::class,
+    // — New DDD modules (Phase 2)
+    App\Modules\Absence\Providers\AbsenceServiceProvider::class,
+    App\Modules\Expense\Providers\ExpenseServiceProvider::class,
+    App\Modules\Notification\Providers\NotificationServiceProvider::class,
 ];
