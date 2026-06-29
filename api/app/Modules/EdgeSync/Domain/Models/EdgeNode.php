@@ -31,6 +31,8 @@ use Illuminate\Support\Carbon;
  * @property array<string,mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
+ * @property-read \App\Models\Company|null $company
  */
 class EdgeNode extends Model
 {
