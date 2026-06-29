@@ -2164,21 +2164,7 @@ class $LocalDepartmentsTable extends LocalDepartments
   }
 }
 
-// ── Database mixin ─────────────────────────────────────────
-
-mixin _$EdgeDatabaseMixin on GeneratedDatabase {
-  $LocalAttendanceLogsTable get localAttendanceLogs =>
-      attachedDatabase.resultSet<$LocalAttendanceLogsTable>(
-          'local_attendance_logs');
-  $LocalAbsencesTable get localAbsences =>
-      attachedDatabase.resultSet<$LocalAbsencesTable>('local_absences');
-  $LocalEmployeesTable get localEmployees =>
-      attachedDatabase.resultSet<$LocalEmployeesTable>('local_employees');
-  $LocalSyncQueueTable get localSyncQueue =>
-      attachedDatabase.resultSet<$LocalSyncQueueTable>('local_sync_queue');
-  $LocalDepartmentsTable get localDepartments =>
-      attachedDatabase.resultSet<$LocalDepartmentsTable>('local_departments');
-}
+// ── Database abstract ─────────────────────────────────────
 
 abstract class _$EdgeDatabase extends GeneratedDatabase {
   _$EdgeDatabase(QueryExecutor e) : super(e);

@@ -1178,3 +1178,28 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `EmployeeRepositoryInterface` — `findById`, `findByEmail`, `paginateByCompany`, `save`, `delete`
 - `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
 - `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
+
+
+## Phase 6 — Edge Sync API offline-first (v4.18.0 — PR #813)
+
+**EdgeSync — Node registration & health**
+- `POST /api/v1/edge/auth/register` : enregistrement d'un node Edge — retourne `edge_token` + licence signée RS256. Validation : `node_id` unique par tenant, `company_id` requis.
+- `POST /api/v1/edge/auth/refresh-token` : renouvellement du token Edge — valide l'ancien token, émet un nouveau.
+- `GET /api/v1/edge/health` : health check public du node — retourne `status`, `node_id`, `pending_sync`, `last_sync`.
+
+**EdgeSync — Data push/pull**
+- `POST /api/v1/edge/push` : pousse un batch d'enregistrements (attendance_logs, absences) depuis le node Edge vers le Cloud. Auth Bearer `edge_token`. Validation : max 100 records/batch (`EDGE_SYNC_BATCH_SIZE`).
+- `GET /api/v1/edge/pull` : tire les delta depuis le Cloud (employees, departments, schedules). Auth Bearer `edge_token`. Retourne uniquement les entités modifiées depuis `last_sync_at`.
+
+**EdgeSync — Cloud admin endpoints**
+- `GET /api/v1/admin/edge-nodes` : liste les nodes Edge du tenant. RBAC : owner/hr_manager uniquement.
+- `GET /api/v1/admin/edge-nodes/{id}` : détail d'un node — statut, licence, dernière sync.
+- `POST /api/v1/admin/edge-nodes/{id}/sync` : déclenche une synchronisation manuelle depuis le Cloud. 404 si node inconnu ou cross-tenant.
+- `POST /api/v1/admin/edge-nodes/{id}/revoke` : révoque la licence d'un node — le node passe en mode dégradé.
+- `GET /api/v1/edge/license-public-key` : retourne la clé publique RS256 utilisée pour vérifier les licences Edge.
+
+**Isolation multitenant**
+- Un node d'un tenant A ne peut jamais voir les données du tenant B (filtrage par `company_id` sur tous les endpoints Edge).
+- Le token Edge est lié à un seul `company_id` — toute requête avec un token invalide ou cross-tenant retourne 401/403.
+
+**Scénarios critiques couverts** : EdgeSyncTest, EdgeOfflineScenarioTest.
