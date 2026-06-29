@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Interfaces\Api\V1;
 
-use App\DTOs\UpdateEmployeeDTO;
-use App\Exceptions\CompanyNotFoundException;
-use App\Http\Controllers\Controller;
+use App\Core\Auth\Application\Actions\ChangePasswordAction;
+use App\Core\Auth\Application\Actions\LoginAction;
+use App\Core\Auth\Application\Actions\LogoutAction;
+use App\Core\Auth\Application\Actions\RefreshTokenAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
+use App\Core\Auth\Application\Actions\UpdateProfileAction;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\DTOs\UpdateEmployeeDTO;
+use App\Exceptions\CompanyNotFoundException;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Models\Language;
-use App\Core\Auth\Infrastructure\Services\AuthService;
-use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,24 +28,28 @@ use Laravel\Socialite\Facades\Socialite;
 class AuthController extends Controller
 {
     public function __construct(
-        private readonly AuthService $authService,
-        private readonly EmployeeService $employeeService,
+        private readonly LoginAction $loginAction,
+        private readonly RegisterAction $registerAction,
+        private readonly LogoutAction $logoutAction,
+        private readonly RefreshTokenAction $refreshTokenAction,
+        private readonly UpdateProfileAction $updateProfileAction,
+        private readonly ChangePasswordAction $changePasswordAction,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $result = $this->authService->login(
+        $result = $this->loginAction->execute(
             email: $request->validated('email'),
             password: $request->validated('password'),
-            deviceName: $request->validated('device_name')
+            deviceName: $request->validated('device_name'),
         );
 
         $employee = $result['employee'];
 
         return (new EmployeeResource($employee))
             ->additional([
-                'token' => $result['token'],
-                'token_type' => $result['token_type'],
+                'token'            => $result['token'],
+                'token_type'       => $result['token_type'],
                 'token_expires_at' => $result['token_expires_at'],
             ])
             ->response();
@@ -49,23 +57,12 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        /** @var Employee $employee */
-        $employee = Employee::create([
-            'first_name' => $request->validated('first_name'),
-            'last_name' => $request->validated('last_name'),
-            'email' => $request->validated('email'),
-            'password_hash' => Hash::make($request->validated('password')),
-            'role' => 'ordinary',
-            'status' => 'active',
-        ]);
+        $result = $this->registerAction->execute($request->validated());
 
-        $tokenName = $request->validated('device_name') ?: 'api';
-        $token = $employee->createToken($tokenName);
-
-        return (new EmployeeResource($employee))
+        return (new EmployeeResource($result['employee']))
             ->additional([
-                'token' => $token->plainTextToken,
-                'token_type' => 'Bearer',
+                'token'      => $result['token'],
+                'token_type' => $result['token_type'],
             ])
             ->response()
             ->setStatusCode(201);
@@ -89,10 +86,7 @@ class AuthController extends Controller
         $employee = $request->user();
         $dto = UpdateEmployeeDTO::fromRequest($request);
 
-        $employee = $this->employeeService->update($employee, $employee, $dto);
-
-        /** @var Employee $fresh */
-        $fresh = $employee->fresh();
+        $fresh = $this->updateProfileAction->execute($employee, $dto);
 
         return (new EmployeeResource($fresh))->response();
     }
@@ -130,51 +124,31 @@ class AuthController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
 
-        if (! Hash::check($request->validated('current_password'), $employee->password_hash)) {
-            return new JsonResponse([
-                'error' => 'INVALID_CURRENT_PASSWORD',
-                'message' => 'INVALID_CURRENT_PASSWORD',
-                'localized_message' => __('errors.INVALID_CURRENT_PASSWORD'),
-            ], 422);
-        }
+        $this->changePasswordAction->execute(
+            employee: $employee,
+            currentPassword: $request->validated('current_password'),
+            newPassword: $request->validated('new_password'),
+        );
 
-        $employee->password_hash = Hash::make($request->validated('new_password'));
-        $employee->save();
-
-        return new JsonResponse([
-            'status' => 'ok',
-        ]);
+        return new JsonResponse(['status' => 'ok']);
     }
 
     public function refreshToken(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $currentToken = $user->currentAccessToken();
+        /** @var Employee $employee */
+        $employee = $request->user();
 
-        $expirationMinutes = (int) config('sanctum.expiration', 0);
-        $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+        $result = $this->refreshTokenAction->execute($employee);
 
-        $newToken = $user->createToken(
-            $currentToken->name ?? 'api',
-            $currentToken->abilities ?? ['*'],
-            $expiresAt
-        );
-
-        $currentToken->delete();
-
-        return new JsonResponse([
-            'token' => $newToken->plainTextToken,
-            'token_type' => 'Bearer',
-            'token_expires_at' => $expiresAt?->toIso8601String(),
-        ]);
+        return new JsonResponse($result);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $token = $request->user()?->currentAccessToken();
-        if ($token) {
-            $token->delete();
-        }
+        /** @var Employee $employee */
+        $employee = $request->user();
+
+        $this->logoutAction->execute($employee);
 
         return new JsonResponse(['message' => 'LOGGED_OUT']);
     }
@@ -198,12 +172,12 @@ class AuthController extends Controller
         if (! $employee) {
             /** @var Employee $employee */
             $employee = Employee::create([
-                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name' => $googleUser->offsetGet('family_name') ?? '',
-                'email' => $googleUser->getEmail(),
+                'first_name'    => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
+                'last_name'     => $googleUser->offsetGet('family_name') ?? '',
+                'email'         => $googleUser->getEmail(),
                 'password_hash' => Hash::make(str()->random(24)),
-                'role' => 'ordinary',
-                'status' => 'active',
+                'role'          => 'ordinary',
+                'status'        => 'active',
             ]);
         }
 
@@ -211,24 +185,24 @@ class AuthController extends Controller
 
         return (new EmployeeResource($employee))
             ->additional([
-                'token' => $token->plainTextToken,
+                'token'      => $token->plainTextToken,
                 'token_type' => 'Bearer',
             ])
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode($employee->wasRecentlyCreated ? 201 : 200);
     }
 
     public function handleGoogleToken(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'token' => 'required|string',
-            'device_name' => 'nullable|string',
+            'access_token' => 'required|string',
+            'device_name'  => 'nullable|string|max:255',
         ]);
 
         try {
-            $googleUser = Socialite::driver('google')->stateless()->userFromToken($validated['token']);
+            $googleUser = Socialite::driver('google')->stateless()->userFromToken($validated['access_token']);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
+            return new JsonResponse(['error' => 'GOOGLE_TOKEN_INVALID', 'message' => $e->getMessage()], 422);
         }
 
         /** @var Employee|null $employee */
@@ -237,24 +211,24 @@ class AuthController extends Controller
         if (! $employee) {
             /** @var Employee $employee */
             $employee = Employee::create([
-                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name' => $googleUser->offsetGet('family_name') ?? '',
-                'email' => $googleUser->getEmail(),
+                'first_name'    => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
+                'last_name'     => $googleUser->offsetGet('family_name') ?? '',
+                'email'         => $googleUser->getEmail(),
                 'password_hash' => Hash::make(str()->random(24)),
-                'role' => 'ordinary',
-                'status' => 'active',
+                'role'          => 'ordinary',
+                'status'        => 'active',
             ]);
         }
 
-        $tokenName = $validated['device_name'] ?? 'google-auth';
+        $tokenName = $validated['device_name'] ?? 'google-mobile';
         $token = $employee->createToken($tokenName);
 
         return (new EmployeeResource($employee))
             ->additional([
-                'token' => $token->plainTextToken,
+                'token'      => $token->plainTextToken,
                 'token_type' => 'Bearer',
             ])
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode($employee->wasRecentlyCreated ? 201 : 200);
     }
 }

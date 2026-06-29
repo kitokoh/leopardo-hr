@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
- * HrController — Leopardo RH Mobile App
+ * HrController â€” Leopardo RH Mobile App
  *
  * Endpoints ONLY accessible to employees with manager_role = 'rh'.
  * These routes are protected by middleware: api.manager:rh,principal
@@ -148,7 +148,7 @@ class HrController extends Controller
             'manager_role'      => null,                // Only principal can assign manager roles
             'status'            => 'active',
             'preferred_language' => 'fr',
-            'password_hash'     => Hash::make(Str::random(32)), // Temporary — will be set via invitation
+            'password_hash'     => Hash::make(Str::random(32)), // Temporary â€” will be set via invitation
         ]);
 
         return response()->json([

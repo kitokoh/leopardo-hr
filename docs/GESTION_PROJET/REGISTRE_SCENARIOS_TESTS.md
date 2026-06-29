@@ -165,3 +165,6 @@ Quand un domaine gagne une feature significative, ajouter:
 | Absence DDD | docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md | Tests - Leopardo RH | AbsenceServiceTest | backend-tests |
 | Expense DDD | docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md | Tests - Leopardo RH | ExpenseServiceTest | backend-tests |
 | Notification DDD | docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md | Tests - Leopardo RH | NotificationTest | backend-tests |
+
+- v4.16.256 : Migration routes vers modules DDD — Les 8 derniers contrôleurs (`MeController`, `SiteController`, `EstimationController`, `NotificationStreamController`, `AdvancedReportController`, `AuditLogController`, `EmployeeLoanController`, `PredictionController`) ont été déplacés vers les modules métier (`App\Modules\HR\...`, `App\Modules\Payroll\...`, `App\Modules\Notification\...`). Les anciens contrôleurs ont été supprimés. Scenarios couverts par les tests existants (FrontendApiContractTest, backend feature tests).
+| Routes DDD Migration | docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md | Tests - Leopardo RH | FrontendApiContractTest | backend-tests |
