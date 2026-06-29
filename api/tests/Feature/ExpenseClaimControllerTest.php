@@ -165,4 +165,223 @@ class ExpenseClaimControllerTest extends TestCase
             ->assertJsonCount(2, 'data');
         $this->putJson("/api/v1/expense-claims/{$foreignClaim->id}/approve")->assertNotFound();
     }
+
+    public function test_manager_can_reject_expense_claim_with_reason(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $employee->id,
+            'title'        => 'Frais de deplacement',
+            'total_amount' => 3000,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [
+            'reason' => 'Justificatifs manquants',
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.status', 'rejected');
+    }
+
+    public function test_reject_requires_reason_field(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $employee->id,
+            'title'        => 'Frais divers',
+            'total_amount' => 1000,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [])
+            ->assertStatus(422);
+    }
+
+    public function test_non_manager_cannot_approve(): void
+    {
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+        $coworker = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $coworker->id,
+            'title'        => 'Taxi',
+            'total_amount' => 800,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+            ->assertStatus(403);
+    }
+
+    public function test_non_manager_cannot_reject(): void
+    {
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+        $coworker = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $coworker->id,
+            'title'        => 'Repas client',
+            'total_amount' => 2500,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [
+            'reason' => 'test',
+        ])->assertStatus(403);
+    }
+
+    public function test_manager_from_foreign_tenant_gets_404_on_approve(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+
+        $foreignManager = Employee::factory()->managerRh()->create(['company_id' => $otherCompany->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $employee->id,
+            'title'        => 'Hotel conference',
+            'total_amount' => 15000,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($foreignManager);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+            ->assertNotFound();
+    }
+
+    public function test_manager_from_foreign_tenant_gets_404_on_reject(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+
+        $foreignManager = Employee::factory()->managerRh()->create(['company_id' => $otherCompany->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $employee->id,
+            'title'        => 'Formation externe',
+            'total_amount' => 8000,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($foreignManager);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [
+            'reason' => 'Tentative cross-tenant',
+        ])->assertNotFound();
+    }
+
+    public function test_employee_cannot_submit_already_submitted_claim(): void
+    {
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $employee->id,
+            'title'        => 'Achat fournitures',
+            'total_amount' => 500,
+            'currency'     => 'DZD',
+            'status'       => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/submit")
+            ->assertStatus(422);
+    }
+
+    public function test_show_returns_404_for_cross_tenant(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+
+        $foreignEmployee = Employee::factory()->create([
+            'company_id' => $otherCompany->id,
+            'role' => 'employee',
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        $claim = ExpenseClaim::create([
+            'company_id'   => $company->id,
+            'employee_id'  => $employee->id,
+            'title'        => 'Deplacement Alger',
+            'total_amount' => 4500,
+            'currency'     => 'DZD',
+            'status'       => 'draft',
+        ]);
+
+        Sanctum::actingAs($foreignEmployee);
+
+        $this->getJson("/api/v1/expense-claims/{$claim->id}")
+            ->assertNotFound();
+    }
 }

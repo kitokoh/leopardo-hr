@@ -2,6 +2,11 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.5] - 2026-06-29
+
+### Fixed
+- **Expense Routes — Middleware sécurisé** : Toutes les routes expense-claims sont maintenant protégées par `['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan']`. Suppression de la route `POST /approve` dupliquée (conservation uniquement de `PUT /approve`). Nettoyage des commentaires TODO dans `hr_extended.php`.
+
 ## [4.17.4] - 2026-06-28
 
 ### Fixed
