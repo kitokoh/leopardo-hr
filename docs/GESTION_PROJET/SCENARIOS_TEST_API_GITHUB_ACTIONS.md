@@ -1162,3 +1162,19 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 **Auth Google OAuth améliorée**
 - `POST /api/v1/auth/google/token` : connexion via token Google — mock Socialite renforcé (`stateless()->userFromToken()`). Test de rejet 401 pour email inconnu. Test cross-tenant garantissant l'absence de fuite d'isolation.
 - Tests couverts : GoogleAuthGlobalLookupTest (lookup global, rejet inconnu, isolation cross-tenant).
+
+## Phase 5 — Migration AbsenceController DDD + HR Domain/Contracts (v4.17.9)
+
+**Absence — Controller DDD canonique (remplacement Planning module)**
+- `GET /api/v1/absences` : liste paginée avec filtres `status`, `month`, `year`, `employee_id`. RBAC : employee voit ses propres absences, manager voit toutes celles du tenant.
+- `POST /api/v1/absences` : création — rules de solde, conflits de dates gérés par `AbsenceService`.
+- `GET /api/v1/absences/{id}` : 404 cross-tenant, 403 si employee ne possède pas l'absence.
+- `PUT /api/v1/absences/{id}/approve` : manager uniquement — 404 cross-tenant, 403 non-manager.
+- `PUT /api/v1/absences/{id}/reject` : manager uniquement — champ `rejected_reason` requis.
+- `DELETE /api/v1/absences/{id}` : employee peut annuler sa propre absence — 404 cross-tenant, 403 si pas propriétaire.
+- Correction bug : `absence.php` avait un double prefix `/v1/v1/absences` — corrigé en `absences` (routes étaient mortes).
+
+**HR Domain/Contracts**
+- `EmployeeRepositoryInterface` — `findById`, `findByEmail`, `paginateByCompany`, `save`, `delete`
+- `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
+- `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
