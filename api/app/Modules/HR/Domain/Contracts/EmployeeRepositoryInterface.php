@@ -14,7 +14,7 @@ interface EmployeeRepositoryInterface
     public function findByEmail(string $email): ?Employee;
 
     /**
-     * @return LengthAwarePaginator<Employee>
+     * @return LengthAwarePaginator<int, Employee>
      */
     public function paginateByCompany(int $companyId, int $perPage = 15): LengthAwarePaginator;
 
