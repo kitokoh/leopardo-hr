@@ -92,7 +92,7 @@ class GoogleAuthGlobalLookupTest extends TestCase
 
         // 4. Call the token endpoint
         $response = $this->postJson('/api/v1/auth/google/token', [
-            'token' => 'fake-token',
+            'access_token' => 'fake-token',
             'device_name' => 'test-device',
         ]);
 
