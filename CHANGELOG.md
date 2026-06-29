@@ -20,6 +20,11 @@
 
 ### Fixed
 - **Expense Routes — Route reject** : Ajout de `PUT /expense-claims/{expenseClaim}/reject` en complément de `POST` pour cohérence avec les conventions REST et les tests.
+## [4.17.7] - 2026-06-29
+
+### Added
+- **Documentation DDD** : `docs/ARCHITECTURE_STATUS.md` — audit complet de l'état DDD pour les 12 modules (Domain, Application, Infrastructure, Interfaces, Providers, Tests).
+- **Tests EmployeeLoan** : Suite de tests Feature couvrant création, liste, remboursement, et isolation multi-tenant pour `EmployeeLoanController`.
 
 ## [4.17.4] - 2026-06-28
 
