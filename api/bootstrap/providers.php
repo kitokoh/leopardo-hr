@@ -25,4 +25,6 @@ return [
     App\Modules\Absence\Providers\AbsenceServiceProvider::class,
     App\Modules\Expense\Providers\ExpenseServiceProvider::class,
     App\Modules\Notification\Providers\NotificationServiceProvider::class,
+    // — Leopardo Edge Sync (Phase 3 — Offline First)
+    App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider::class,
 ];
