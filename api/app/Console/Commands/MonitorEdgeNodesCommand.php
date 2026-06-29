@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Models\Company;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
+use App\Modules\EdgeSync\Notifications\EdgeNodeSilentNotification;
+use App\Modules\EdgeSync\Notifications\EdgeLicenseExpiringNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Carbon;
@@ -40,9 +42,10 @@ class MonitorEdgeNodesCommand extends Command
                 $node->last_seen_at->diffForHumans()
             ));
 
-            // TODO: send notification to company admin
-            // Notification::route('mail', $node->company->email)
-            //     ->notify(new EdgeNodeSilentNotification($node));
+            if ($node->company?->email) {
+                Notification::route('mail', $node->company->email)
+                    ->notify(new EdgeNodeSilentNotification($node));
+            }
         }
 
         // ── Expiring licenses ─────────────────────────────────────
@@ -61,6 +64,12 @@ class MonitorEdgeNodesCommand extends Command
 
             // Mark as pending renewal
             $license->update(['validation_status' => 'pending_renewal']);
+
+            $company = $license->edgeNode?->company;
+            if ($company?->email) {
+                Notification::route('mail', $company->email)
+                    ->notify(new EdgeLicenseExpiringNotification($license));
+            }
         }
 
         // ── Expired licenses ──────────────────────────────────────

@@ -41,7 +41,7 @@ class SyncService {
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {
-    Connectivity().onConnectivityChanged.listen(_onConnectivityChanged);
+    Connectivity().onConnectivityChanged.listen(_onConnectivityChangedList);
     _syncTimer = Timer.periodic(
       const Duration(minutes: 5),
       (_) => syncNow(),
@@ -73,7 +73,8 @@ class SyncService {
     _setMode(SyncMode.offline);
   }
 
-  void _onConnectivityChanged(ConnectivityResult result) {
+  void _onConnectivityChangedList(List<ConnectivityResult> results) {
+    final result = results.isNotEmpty ? results.first : ConnectivityResult.none;
     if (result == ConnectivityResult.none) {
       _setMode(SyncMode.offline);
     } else {

@@ -1,0 +1,267 @@
+<template>
+  <div class="p-6 max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+          Nodes Edge
+        </h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Gestion des nodes Edge Leopardo — synchronisation offline-first
+        </p>
+      </div>
+      <button
+        @click="refresh"
+        :class="['btn-secondary flex items-center gap-2 text-sm', { 'opacity-50 cursor-not-allowed': loading }]"
+        :disabled="loading"
+      >
+        <span :class="['i-heroicons-arrow-path w-4 h-4', { 'animate-spin': loading }]" />
+        Actualiser
+      </button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <StatCard
+        label="Nodes total"
+        :value="stats.total"
+        icon="i-heroicons-server"
+        color="indigo"
+      />
+      <StatCard
+        label="En ligne"
+        :value="stats.online"
+        icon="i-heroicons-check-circle"
+        color="green"
+      />
+      <StatCard
+        label="Hors ligne"
+        :value="stats.offline"
+        icon="i-heroicons-x-circle"
+        color="gray"
+      />
+      <StatCard
+        label="Licences expirées"
+        :value="stats.licenseExpired"
+        icon="i-heroicons-shield-exclamation"
+        color="red"
+      />
+    </div>
+
+    <!-- Nodes table -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
+        <span class="i-heroicons-arrow-path animate-spin w-8 h-8 mx-auto block mb-3" />
+        Chargement des nodes…
+      </div>
+
+      <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
+        <span class="i-heroicons-server w-10 h-10 mx-auto block mb-3 opacity-30" />
+        <p class="font-medium">Aucun node Edge enregistré</p>
+        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
+      </div>
+
+      <table v-else class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50 dark:bg-gray-700/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            <th class="px-4 py-3 font-medium">Node</th>
+            <th class="px-4 py-3 font-medium">Statut</th>
+            <th class="px-4 py-3 font-medium">Licence</th>
+            <th class="px-4 py-3 font-medium">Dernière sync</th>
+            <th class="px-4 py-3 font-medium">En attente</th>
+            <th class="px-4 py-3 font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+          <tr
+            v-for="node in nodes"
+            :key="node.id"
+            class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+          >
+            <!-- Node identity -->
+            <td class="px-4 py-3">
+              <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">
+                {{ node.node_id }}
+              </div>
+              <div class="text-xs text-gray-400 mt-0.5">{{ node.company_name }}</div>
+            </td>
+
+            <!-- Online/offline status -->
+            <td class="px-4 py-3">
+              <span
+                :class="[
+                  'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium',
+                  node.is_online
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                ]"
+              >
+                <span
+                  :class="['w-1.5 h-1.5 rounded-full', node.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-400']"
+                />
+                {{ node.is_online ? 'En ligne' : 'Hors ligne' }}
+              </span>
+              <div v-if="node.silent_since && !node.is_online" class="text-xs text-red-400 mt-0.5">
+                Silencieux depuis {{ formatDuration(node.silent_since) }}
+              </div>
+            </td>
+
+            <!-- License -->
+            <td class="px-4 py-3">
+              <span
+                :class="[
+                  'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                  licenseClass(node.license_status)
+                ]"
+              >
+                {{ licenseLabel(node.license_status) }}
+              </span>
+              <div v-if="node.license_expires_at" class="text-xs text-gray-400 mt-0.5">
+                Exp. {{ formatDate(node.license_expires_at) }}
+              </div>
+            </td>
+
+            <!-- Last sync -->
+            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
+              {{ node.last_sync_at ? formatRelative(node.last_sync_at) : '—' }}
+            </td>
+
+            <!-- Pending records -->
+            <td class="px-4 py-3">
+              <span
+                :class="[
+                  'text-sm font-medium',
+                  node.pending_records > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-400'
+                ]"
+              >
+                {{ node.pending_records }}
+              </span>
+            </td>
+
+            <!-- Actions -->
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <button
+                  @click="triggerSync(node)"
+                  :disabled="!node.is_online || syncingNodeId === node.id"
+                  class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
+                  title="Déclencher une synchronisation manuelle"
+                >
+                  {{ syncingNodeId === node.id ? 'Sync…' : 'Sync' }}
+                </button>
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                <button
+                  @click="viewNode(node)"
+                  class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 font-medium"
+                >
+                  Détails
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Node detail modal -->
+    <EdgeNodeModal
+      v-if="selectedNode"
+      :node="selectedNode"
+      @close="selectedNode = null"
+      @sync="triggerSync"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import StatCard from '@/components/edge/EdgeStatCard.vue';
+import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
+import { useEdgeNodesStore } from '@/stores/edgeNodes';
+
+const store = useEdgeNodesStore();
+const loading = ref(false);
+const syncingNodeId = ref<string | null>(null);
+const selectedNode = ref<EdgeNode | null>(null);
+let refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+const nodes = computed(() => store.nodes);
+const stats = computed(() => ({
+  total: nodes.value.length,
+  online: nodes.value.filter((n) => n.is_online).length,
+  offline: nodes.value.filter((n) => !n.is_online).length,
+  licenseExpired: nodes.value.filter((n) => n.license_status === 'expired').length,
+}));
+
+async function refresh() {
+  loading.value = true;
+  try {
+    await store.fetchNodes();
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function triggerSync(node: EdgeNode) {
+  syncingNodeId.value = node.id;
+  try {
+    await store.triggerSync(node.id);
+    await refresh();
+  } finally {
+    syncingNodeId.value = null;
+  }
+}
+
+function viewNode(node: EdgeNode) {
+  selectedNode.value = node;
+}
+
+function licenseClass(status: string) {
+  return {
+    active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    expiring_soon: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+    expired: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    revoked: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
+  }[status] ?? 'bg-gray-100 text-gray-600';
+}
+
+function licenseLabel(status: string) {
+  return {
+    active: 'Active',
+    expiring_soon: 'Expire bientôt',
+    expired: 'Expirée',
+    revoked: 'Révoquée',
+  }[status] ?? status;
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function formatRelative(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'à l\'instant';
+  if (mins < 60) return `il y a ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `il y a ${hrs} h`;
+  return formatDate(iso);
+}
+
+function formatDuration(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  return `${hrs} h ${mins % 60} min`;
+}
+
+onMounted(() => {
+  refresh();
+  refreshTimer = setInterval(refresh, 60_000);
+});
+
+onUnmounted(() => {
+  if (refreshTimer) clearInterval(refreshTimer);
+});
+</script>
