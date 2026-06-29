@@ -14,6 +14,14 @@
   - Dashboard UI Edge nodes : page admin Next.js pour la liste, le statut online/offline, le sync manuel et les licences.
   - Kiosque ZKTeco : `config.example.json` mis à jour pour pointer vers `http://leopardo.local` quand Edge est actif.
   - Monitoring Laravel : commande `edge:detect-silent-nodes` + cron toutes les 30 min — détecte les nodes silencieux depuis >30 min et notifie le manager.
+## [4.17.9] - 2026-06-29
+
+### Added
+- **HR — Domain/Contracts** : Ajout de `EmployeeRepositoryInterface`, `DepartmentRepositoryInterface`, `ContractRepositoryInterface` dans `App\Modules\HR\Domain\Contracts\`. Pose les interfaces DDD nécessaires pour découpler l'infrastructure de persistance du domaine métier HR.
+- **Branch Protection** : `Backend Coverage Gate` ajouté comme required check dans `BRANCH_PROTECTION_REQUIRED.md`.
+
+### Changed
+- **Absence — Migration controller vers module DDD** : `App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController` remplace `App\Modules\Planning\Interfaces\Api\V1\AbsenceController` (fichier orphelin supprimé). Le controller dispose maintenant de : RBAC complet (employee vs manager), `AbsenceResource`, filtres month/year/status, pagination configurable, méthode `destroy`. Correction du double-prefix `v1/v1` dans `absence.php` (les routes étaient mortes) : les routes sont maintenant correctement montées sous `/api/v1/absences`.
 
 ## [4.17.5] - 2026-06-29
 
