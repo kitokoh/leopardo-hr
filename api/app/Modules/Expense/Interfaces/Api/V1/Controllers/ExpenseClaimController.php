@@ -113,7 +113,9 @@ class ExpenseClaimController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        abort_unless($expenseClaim->company_id === $actor->company_id && $actor->isManager(), 403);
+        // Return 404 for cross-tenant resources (security: don't leak existence)
+        abort_unless($expenseClaim->company_id === $actor->company_id, 404);
+        abort_unless($actor->isManager(), 403);
 
         $expenseClaim->update([
             'status'      => 'approved',
@@ -128,7 +130,9 @@ class ExpenseClaimController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        abort_unless($expenseClaim->company_id === $actor->company_id && $actor->isManager(), 403);
+        // Return 404 for cross-tenant resources (security: don't leak existence)
+        abort_unless($expenseClaim->company_id === $actor->company_id, 404);
+        abort_unless($actor->isManager(), 403);
 
         $request->validate(['reason' => 'required|string|max:500']);
 
