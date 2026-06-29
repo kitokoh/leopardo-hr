@@ -5,6 +5,7 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:drift/drift.dart' show Value;
 import '../database/edge_database.dart';
 import 'sync_service.dart';
 
