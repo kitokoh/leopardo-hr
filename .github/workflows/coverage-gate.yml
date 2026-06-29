@@ -14,13 +14,16 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_BACKEND_COVERAGE_MIN: "60"
-  BACKEND_COVERAGE_TARGET: "60"
+  DEFAULT_BACKEND_COVERAGE_MIN: "65"
+  BACKEND_COVERAGE_TARGET: "65"
 
 concurrency:
   group: coverage-gate-${{ github.ref }}
   cancel-in-progress: true
 
+# Pour activer comme required check :
+# Settings > Branches > Protection > Required status checks
+# > ajouter "Backend Coverage (PHP 8.4 + PostgreSQL 16)"
 jobs:
   backend-coverage:
     name: Backend Coverage (PHP 8.4 + PostgreSQL 16)
@@ -230,8 +233,8 @@ jobs:
               `| **Threshold** | ${threshold}% |`,
               `| **Status** | ${passed ? 'PASSED' : 'FAILED'} |`,
               '',
-              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 60).`,
-              `> Target: ratchet to 60% after the next backend coverage uplift lot is stable.`,
+              `> Configure threshold via GitHub variable \`BACKEND_COVERAGE_MIN\` (default: 65).`,
+              `> Target: ratchet to 65% after the next backend coverage uplift lot is stable.`,
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
@@ -258,5 +261,5 @@ jobs:
       - name: Fail if coverage below threshold
         if: steps.gate.outputs.passed == 'false'
         run: |
-          echo "Coverage gate failed. Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
+          echo "Coverage gate failed (threshold: ${COVERAGE_MIN:-65}%). Increase test coverage or adjust BACKEND_COVERAGE_MIN variable."
           exit 1
