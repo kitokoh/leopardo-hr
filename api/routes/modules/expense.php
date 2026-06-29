@@ -13,6 +13,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     Route::middleware('api.manager')->group(function (): void {
         Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
+        Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
         Route::post('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
     });
 });
