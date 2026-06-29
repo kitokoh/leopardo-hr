@@ -16,7 +16,7 @@ class EdgeSyncServiceProvider extends ServiceProvider
         $this->app->singleton(CloudDeltaBuilder::class);
 
         $this->mergeConfigFrom(
-            __DIR__ . '/../../../../../config/edge.php',
+            __DIR__ . '/../../../../config/edge.php',
             'edge'
         );
     }

@@ -3,60 +3,38 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-          Nodes Edge
-        </h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Nodes Edge</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Gestion des nodes Edge Leopardo — synchronisation offline-first
         </p>
       </div>
       <button
         @click="refresh"
-        :class="['btn-secondary flex items-center gap-2 text-sm', { 'opacity-50 cursor-not-allowed': loading }]"
         :disabled="loading"
+        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span :class="['i-heroicons-arrow-path w-4 h-4', { 'animate-spin': loading }]" />
+        <span :class="['inline-block w-4 h-4', loading ? 'animate-spin' : '']">↻</span>
         Actualiser
       </button>
     </div>
 
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <StatCard
-        label="Nodes total"
-        :value="stats.total"
-        icon="i-heroicons-server"
-        color="indigo"
-      />
-      <StatCard
-        label="En ligne"
-        :value="stats.online"
-        icon="i-heroicons-check-circle"
-        color="green"
-      />
-      <StatCard
-        label="Hors ligne"
-        :value="stats.offline"
-        icon="i-heroicons-x-circle"
-        color="gray"
-      />
-      <StatCard
-        label="Licences expirées"
-        :value="stats.licenseExpired"
-        icon="i-heroicons-shield-exclamation"
-        color="red"
-      />
+      <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
+      <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
+      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
+      <EdgeStatCard label="Licences expirées" :value="stats.licenseExpired" icon="⚠️" color="red" />
     </div>
 
     <!-- Nodes table -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
-        <span class="i-heroicons-arrow-path animate-spin w-8 h-8 mx-auto block mb-3" />
-        Chargement des nodes…
+        <div class="text-4xl mb-3 animate-spin inline-block">↻</div>
+        <p>Chargement des nodes…</p>
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
-        <span class="i-heroicons-server w-10 h-10 mx-auto block mb-3 opacity-30" />
+        <div class="text-4xl mb-3 opacity-30">🖥️</div>
         <p class="font-medium">Aucun node Edge enregistré</p>
         <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
       </div>
@@ -78,15 +56,11 @@
             :key="node.id"
             class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
           >
-            <!-- Node identity -->
             <td class="px-4 py-3">
-              <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">
-                {{ node.node_id }}
-              </div>
+              <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">{{ node.node_id }}</div>
               <div class="text-xs text-gray-400 mt-0.5">{{ node.company_name }}</div>
             </td>
 
-            <!-- Online/offline status -->
             <td class="px-4 py-3">
               <span
                 :class="[
@@ -96,9 +70,7 @@
                     : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                 ]"
               >
-                <span
-                  :class="['w-1.5 h-1.5 rounded-full', node.is_online ? 'bg-green-500 animate-pulse' : 'bg-gray-400']"
-                />
+                <span :class="['w-1.5 h-1.5 rounded-full', node.is_online ? 'bg-green-500' : 'bg-gray-400']" />
                 {{ node.is_online ? 'En ligne' : 'Hors ligne' }}
               </span>
               <div v-if="node.silent_since && !node.is_online" class="text-xs text-red-400 mt-0.5">
@@ -106,14 +78,8 @@
               </div>
             </td>
 
-            <!-- License -->
             <td class="px-4 py-3">
-              <span
-                :class="[
-                  'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
-                  licenseClass(node.license_status)
-                ]"
-              >
+              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', licenseClass(node.license_status)]">
                 {{ licenseLabel(node.license_status) }}
               </span>
               <div v-if="node.license_expires_at" class="text-xs text-gray-400 mt-0.5">
@@ -121,39 +87,27 @@
               </div>
             </td>
 
-            <!-- Last sync -->
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
               {{ node.last_sync_at ? formatRelative(node.last_sync_at) : '—' }}
             </td>
 
-            <!-- Pending records -->
             <td class="px-4 py-3">
-              <span
-                :class="[
-                  'text-sm font-medium',
-                  node.pending_records > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-400'
-                ]"
-              >
+              <span :class="['text-sm font-medium', node.pending_records > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-400']">
                 {{ node.pending_records }}
               </span>
             </td>
 
-            <!-- Actions -->
             <td class="px-4 py-3">
               <div class="flex items-center gap-2">
                 <button
                   @click="triggerSync(node)"
                   :disabled="!node.is_online || syncingNodeId === node.id"
-                  class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
-                  title="Déclencher une synchronisation manuelle"
+                  class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   {{ syncingNodeId === node.id ? 'Sync…' : 'Sync' }}
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
-                <button
-                  @click="viewNode(node)"
-                  class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 font-medium"
-                >
+                <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
                   Détails
                 </button>
               </div>
@@ -173,17 +127,17 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import StatCard from '@/components/edge/EdgeStatCard.vue';
+import EdgeStatCard from '@/components/edge/EdgeStatCard.vue';
 import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
 import { useEdgeNodesStore } from '@/stores/edgeNodes';
 
 const store = useEdgeNodesStore();
 const loading = ref(false);
-const syncingNodeId = ref<string | null>(null);
-const selectedNode = ref<EdgeNode | null>(null);
-let refreshTimer: ReturnType<typeof setInterval> | null = null;
+const syncingNodeId = ref(null);
+const selectedNode = ref(null);
+let refreshTimer = null;
 
 const nodes = computed(() => store.nodes);
 const stats = computed(() => ({
@@ -202,7 +156,7 @@ async function refresh() {
   }
 }
 
-async function triggerSync(node: EdgeNode) {
+async function triggerSync(node) {
   syncingNodeId.value = node.id;
   try {
     await store.triggerSync(node.id);
@@ -212,43 +166,45 @@ async function triggerSync(node: EdgeNode) {
   }
 }
 
-function viewNode(node: EdgeNode) {
+function viewNode(node) {
   selectedNode.value = node;
 }
 
-function licenseClass(status: string) {
-  return {
+function licenseClass(status) {
+  const map = {
     active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     expiring_soon: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
     expired: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
     revoked: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-  }[status] ?? 'bg-gray-100 text-gray-600';
+  };
+  return map[status] ?? 'bg-gray-100 text-gray-600';
 }
 
-function licenseLabel(status: string) {
-  return {
+function licenseLabel(status) {
+  const map = {
     active: 'Active',
     expiring_soon: 'Expire bientôt',
     expired: 'Expirée',
     revoked: 'Révoquée',
-  }[status] ?? status;
+  };
+  return map[status] ?? status;
 }
 
-function formatDate(iso: string) {
+function formatDate(iso) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-function formatRelative(iso: string) {
+function formatRelative(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'à l\'instant';
+  if (mins < 1) return "à l'instant";
   if (mins < 60) return `il y a ${mins} min`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `il y a ${hrs} h`;
   return formatDate(iso);
 }
 
-function formatDuration(iso: string) {
+function formatDuration(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 60) return `${mins} min`;
