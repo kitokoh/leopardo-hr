@@ -209,15 +209,7 @@ class AuthController extends Controller
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
-            /** @var Employee $employee */
-            $employee = Employee::create([
-                'first_name'    => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name'     => $googleUser->offsetGet('family_name') ?? '',
-                'email'         => $googleUser->getEmail(),
-                'password_hash' => Hash::make(str()->random(24)),
-                'role'          => 'ordinary',
-                'status'        => 'active',
-            ]);
+            return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';
@@ -228,7 +220,6 @@ class AuthController extends Controller
                 'token'      => $token->plainTextToken,
                 'token_type' => 'Bearer',
             ])
-            ->response()
-            ->setStatusCode($employee->wasRecentlyCreated ? 201 : 200);
+            ->response();
     }
 }
