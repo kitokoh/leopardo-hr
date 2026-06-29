@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\AI\Predictions\AbsenteeismPredictor;
 use App\AI\Predictions\ProactiveNotificationService;
@@ -12,6 +12,12 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * PredictionController — AI-powered HR predictions for principal/rh managers.
+ *
+ * Migrated from App\Http\Controllers\Api\V1\PredictionController.
+ * Delegates to App\AI\Predictions\* services (AI module, outside DDD scope).
+ */
 class PredictionController extends Controller
 {
     public function turnover(Request $request, TurnoverPredictor $predictor): JsonResponse

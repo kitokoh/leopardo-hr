@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserInvitation;
@@ -9,13 +9,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Module 6 — Public Onboarding API
+ * Module 6 â€” Public Onboarding API
  *
- * Endpoints publics (sans auth) permettant à un employé invité de :
- *   1. Vérifier la validité de son token d'invitation
- *   2. Activer son compte en définissant son mot de passe
+ * Endpoints publics (sans auth) permettant Ã  un employÃ© invitÃ© de :
+ *   1. VÃ©rifier la validitÃ© de son token d'invitation
+ *   2. Activer son compte en dÃ©finissant son mot de passe
  *
- * Utilisé par l'app mobile et le web frontend.
+ * UtilisÃ© par l'app mobile et le web frontend.
  */
 class OnboardingController extends Controller
 {
@@ -24,8 +24,8 @@ class OnboardingController extends Controller
     /**
      * GET /onboarding/invitation/{token}
      *
-     * Vérifie qu'un token d'invitation est valide et retourne les infos
-     * nécessaires pour afficher le formulaire d'activation (nom, email, company).
+     * VÃ©rifie qu'un token d'invitation est valide et retourne les infos
+     * nÃ©cessaires pour afficher le formulaire d'activation (nom, email, company).
      */
     public function show(Request $request, string $token): JsonResponse
     {
@@ -46,7 +46,7 @@ class OnboardingController extends Controller
             return new JsonResponse([
                 'error' => [
                     'code' => 'INVITATION_ALREADY_ACCEPTED',
-                    'message' => 'Cette invitation a déjà été acceptée.',
+                    'message' => 'Cette invitation a dÃ©jÃ  Ã©tÃ© acceptÃ©e.',
                 ],
             ], 410);
         }
@@ -55,7 +55,7 @@ class OnboardingController extends Controller
             return new JsonResponse([
                 'error' => [
                     'code' => 'INVITATION_EXPIRED',
-                    'message' => 'Cette invitation a expiré.',
+                    'message' => 'Cette invitation a expirÃ©.',
                 ],
             ], 410);
         }
@@ -74,8 +74,8 @@ class OnboardingController extends Controller
     /**
      * POST /onboarding/invitation/{token}/activate
      *
-     * Active le compte de l'employé en définissant son mot de passe.
-     * Retourne un token Sanctum pour connexion immédiate après activation.
+     * Active le compte de l'employÃ© en dÃ©finissant son mot de passe.
+     * Retourne un token Sanctum pour connexion immÃ©diate aprÃ¨s activation.
      */
     public function activate(Request $request, string $token): JsonResponse
     {
@@ -101,7 +101,7 @@ class OnboardingController extends Controller
             return new JsonResponse([
                 'error' => [
                     'code' => 'INVITATION_ALREADY_ACCEPTED',
-                    'message' => 'Cette invitation a déjà été acceptée.',
+                    'message' => 'Cette invitation a dÃ©jÃ  Ã©tÃ© acceptÃ©e.',
                 ],
             ], 410);
         }
@@ -110,7 +110,7 @@ class OnboardingController extends Controller
             return new JsonResponse([
                 'error' => [
                     'code' => 'INVITATION_EXPIRED',
-                    'message' => 'Cette invitation a expiré.',
+                    'message' => 'Cette invitation a expirÃ©.',
                 ],
             ], 410);
         }

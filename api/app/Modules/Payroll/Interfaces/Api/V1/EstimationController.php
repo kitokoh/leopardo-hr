@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+declare(strict_types=1);
+
+namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Estimation\DailySummaryRequest;
@@ -12,9 +14,18 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
+/**
+ * EstimationController — manager-scoped salary estimation per employee.
+ *
+ * Migrated from App\Http\Controllers\Api\V1\EstimationController.
+ * Self-service equivalent lives in MeController (HR module).
+ * All endpoints require the Employee policy (viewAny = manager).
+ */
 class EstimationController extends Controller
 {
-    public function __construct(private readonly EstimationService $estimationService) {}
+    public function __construct(
+        private readonly EstimationService $estimationService,
+    ) {}
 
     public function dailySummary(DailySummaryRequest $request, string $employeeId): JsonResponse
     {
@@ -23,7 +34,7 @@ class EstimationController extends Controller
 
         $summary = $this->estimationService->dailySummary(
             employee: $employee,
-            date: $request->validated('date')
+            date: $request->validated('date'),
         );
 
         return new JsonResponse(['data' => $summary]);
@@ -38,7 +49,7 @@ class EstimationController extends Controller
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,
             from: $request->validated('from'),
-            to: $request->validated('to')
+            to: $request->validated('to'),
         );
 
         return new JsonResponse(['data' => $estimate]);
@@ -53,13 +64,13 @@ class EstimationController extends Controller
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,
             from: $request->validated('from'),
-            to: $request->validated('to')
+            to: $request->validated('to'),
         );
 
         $company = currentCompany();
 
         $pdf = Pdf::loadView('pdf.receipt', [
-            'company' => $company,
+            'company'  => $company,
             'employee' => $employee,
             'estimate' => $estimate,
         ]);
@@ -68,7 +79,7 @@ class EstimationController extends Controller
             'receipt_estimate_employee_%s_%s_%s.pdf',
             $employee->id,
             $request->validated('from'),
-            $request->validated('to')
+            $request->validated('to'),
         );
 
         return $pdf->download($fileName);

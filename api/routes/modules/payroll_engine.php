@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Routes Payroll Engine — salaires, composants, bulletins, exports bancaires.
+ *
+ * Namespaces migrés vers App\Modules\Payroll\* (nouvelle architecture modulaire).
  *
  * RBAC:
  *   - /me/pay-slips: all employees (own pay slips)
@@ -9,22 +13,22 @@
  *   - Everything else: managers (principal, comptable)
  */
 
-use App\Http\Controllers\Api\V1\BankExportController;
-use App\Http\Controllers\Api\V1\BulkPaymentController;
-use App\Http\Controllers\Api\V1\CotisationSimulationController;
-use App\Http\Controllers\Api\V1\PaymentBatchController;
-use App\Http\Controllers\Api\V1\PaymentDocumentController;
-use App\Http\Controllers\Api\V1\PayrollCycleController;
-use App\Http\Controllers\Api\V1\PayrollRunController;
-use App\Http\Controllers\Api\V1\PaySlipController;
-use App\Http\Controllers\Api\V1\SalaryComponentController;
-use App\Http\Controllers\Api\V1\SalaryStructureController;
-use App\Http\Controllers\Api\V1\SocialContributionController;
-use App\Http\Controllers\Api\V1\SocialDeclarationController;
-use App\Http\Controllers\Api\V1\TaxSlabController;
+use App\Modules\Payroll\Interfaces\Api\V1\BankExportController;
+use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
+use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
+use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
+use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
+use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
+use App\Modules\Payroll\Interfaces\Api\V1\SalaryStructureController;
+use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionController;
+use App\Modules\Payroll\Interfaces\Api\V1\SocialDeclarationController;
+use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'throttle:payroll-sensitive'])->group(function () {
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'throttle:payroll-sensitive'])->group(function (): void {
 
     // ── Self-service pay slips (all employees) ───────────────────────────
     Route::get('/me/pay-slips', [PaySlipController::class, 'myPaySlips']);
@@ -38,7 +42,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/cotisation-simulation', [CotisationSimulationController::class, 'simulate']);
 
     // ── Manager-only payroll routes (principal, comptable) ───────────────
-    Route::middleware('api.manager:principal,comptable')->group(function () {
+    Route::middleware('api.manager:principal,comptable')->group(function (): void {
 
         // Salary Structures
         Route::get('/salary-structures', [SalaryStructureController::class, 'index']);

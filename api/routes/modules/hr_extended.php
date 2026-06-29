@@ -1,8 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Routes RH etendues — Modules congés avancés, contrats, recrutement,
  * formation, prêts, frais, organigramme, rapports, webhooks, audit.
+ *
+ * Namespaces migrés vers App\Modules\* (nouvelle architecture modulaire).
+ * Controllers non encore migrés vers Modules (TODO) :
+ *   - AdvancedReportController  → TODO: Modules\HR\Interfaces\Api\V1\Controllers\
+ *   - AuditLogController        → TODO: Modules\HR\Interfaces\Api\V1\Controllers\
+ *   - EmployeeLoanController    → TODO: Modules\Payroll\Interfaces\Api\V1\
+ *   - PredictionController      → TODO: Modules\HR\Interfaces\Api\V1\Controllers\
  *
  * RBAC:
  *   - /me/* routes: all authenticated employees
@@ -12,21 +21,24 @@
  *   - Approval actions: context-dependent (manager for workflows, all for own approvals)
  */
 
-use App\Http\Controllers\Api\V1\AdvancedReportController;
-use App\Http\Controllers\Api\V1\ApprovalController;
-use App\Http\Controllers\Api\V1\AuditLogController;
-use App\Http\Controllers\Api\V1\ContractController;
-use App\Http\Controllers\Api\V1\EmployeeLoanController;
-use App\Http\Controllers\Api\V1\ExpenseClaimController;
-use App\Http\Controllers\Api\V1\HrReportController;
-use App\Http\Controllers\Api\V1\JobPostingActionController;
-use App\Http\Controllers\Api\V1\LeavePolicyController;
-use App\Http\Controllers\Api\V1\OrgChartController;
-use App\Http\Controllers\Api\V1\PredictionController;
-use App\Http\Controllers\Api\V1\RecruitmentController;
-use App\Http\Controllers\Api\V1\SelfServiceController;
-use App\Http\Controllers\Api\V1\TrainingController;
-use App\Http\Controllers\Api\V1\WebhookController;
+// ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Modules\Attendance\Interfaces\Api\V1\ApprovalController;
+use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
+use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\HrReportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\OrgChartController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\SelfServiceController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\TrainingController;
+use App\Modules\Planning\Interfaces\Api\V1\LeavePolicyController;
+use App\Modules\Recruitment\Interfaces\Api\V1\JobPostingActionController;
+use App\Modules\Recruitment\Interfaces\Api\V1\RecruitmentController;
+
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
+use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -51,7 +63,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);
     Route::put('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
 
-    // ── Approval actions (employee can see their pending, managers approve) ──
+    // ── Approval actions ─────────────────────────────────────────────────
     Route::get('/approvals/pending', [ApprovalController::class, 'pending']);
     Route::post('/approvals/{approvalRequest}/approve', [ApprovalController::class, 'approve']);
     Route::post('/approvals/{approvalRequest}/reject', [ApprovalController::class, 'reject']);
@@ -160,7 +172,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
             Route::get('/cost-analysis', [AdvancedReportController::class, 'costAnalysis']);
         });
 
-        // ── Webhooks ─────────────────────────────────────────────────────
+        // ── Webhooks (module Billing gère les endpoints) ─────────────────
         Route::get('/webhooks/events', [WebhookController::class, 'events']);
         Route::get('/webhooks', [WebhookController::class, 'index']);
         Route::post('/webhooks', [WebhookController::class, 'store']);
@@ -168,12 +180,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::put('/webhooks/{webhookEndpoint}', [WebhookController::class, 'update']);
         Route::delete('/webhooks/{webhookEndpoint}', [WebhookController::class, 'destroy']);
 
-        // ── Audit Trail ──────────────────────────────────────────────────
+        // ── Audit Trail
         Route::get('/audit-logs', [AuditLogController::class, 'index']);
         Route::get('/audit-logs/export-csv', [AuditLogController::class, 'exportCsv']);
         Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show']);
 
-        // ── IA Predictions ───────────────────────────────────────────────
+        // ── IA Predictions
         Route::prefix('predictions')->group(function (): void {
             Route::get('/turnover', [PredictionController::class, 'turnover']);
             Route::get('/absenteeism', [PredictionController::class, 'absenteeism']);
