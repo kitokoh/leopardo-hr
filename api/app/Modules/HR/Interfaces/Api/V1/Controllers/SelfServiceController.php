@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
@@ -127,6 +127,6 @@ class SelfServiceController extends Controller
             ->orderBy('due_date')
             ->get();
 
-        return response()->json(['data' => $repayments]); // LoanRepayment — no dedicated Resource yet
+        return response()->json(['data' => $repayments]); // LoanRepayment â€” no dedicated Resource yet
     }
 }

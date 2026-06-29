@@ -29,6 +29,28 @@
 
 ### Changed
 
+- **Architecture DDD — Migration complète des routes vers les modules** : Correction des namespaces de 17 contrôleurs HR (`ContractController`, `DepartmentController`, `EmployeeController`, `SelfServiceController`, `OrgChartController`, `TrainingController`, etc.) vers `App\Modules\HR\Interfaces\Api\V1\Controllers`. Mise à jour des docs de gouvernance CI.
+- **PHPStan modules** : Configuration `phpstan-modules.neon` consolidée avec `excludePaths` pour les modèles DDD non stabilisés, level 3, sans BOM.
+
+## [4.17.2] - 2026-06-28
+
+### Added
+
+- **Mobile Apps — Séparation des applications Manager et RH** :
+  - L'application `leopardo_manager` a été scindée pour créer une application spécifique `leopardo_hr`.
+  - Intégration de `leopardo_hr` dans la matrice de CI canonique `mobile-distribute.yml` pour le déploiement sur Firebase.
+  - Suppression de `mobile-hr-distribution.yml` redondant.
+  - Résolution des chemins de routes et des conflits dans `app.dart` pour le manager et tests associés.
+
+### Changed
+
+- **Architecture — Migration Finale des Routes vers les Modules (DDD)** :
+  - Création des 8 derniers contrôleurs modulaires (`MeController`, `SiteController`, `EstimationController`, `NotificationStreamController`, `AdvancedReportController`, `AuditLogController`, `EmployeeLoanController`, `PredictionController`).
+  - Suppression définitive des anciens contrôleurs dans `app/Http/Controllers/Api/V1/` devenus obsolètes.
+  - Refactorisation de `AuthController` avec l'implémentation de 6 nouvelles classes d'Actions (`LoginAction`, `LogoutAction`, `RefreshTokenAction`, etc.).
+  - Nettoyage et correction des types stricts dans les Actions Auth pour PHPStan.
+  - Mise à jour du document de référence `api/ARCHITECTURE.md` pour refléter l'état 100% migré des routes.
+
 - **Architecture — Auth migré vers Clean Architecture (DDD)** :
   - Contrôleurs Auth déplacés de `App\Http\Controllers\Api\V1` vers `App\Core\Auth\Interfaces\Api\V1` (AuthController, PlatformAuthController, UserAuthController).
   - Services Auth déplacés de `App\Services` vers `App\Core\Auth\Infrastructure\Services` (AuthService, UserAuthService).

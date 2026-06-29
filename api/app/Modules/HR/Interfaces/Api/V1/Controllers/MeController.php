@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+declare(strict_types=1);
+
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AttendanceTodayResource;
@@ -12,18 +14,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
- * MeController — endpoints self-service pour l'employe connecte.
+ * MeController — self-service endpoints for the authenticated employee.
  *
- * Ces routes existent pour permettre a un employe (role=employee ou manager
- * avec n'importe quel sous-role) de consulter ses propres heures, heures
- * supplementaires et du estime sans avoir besoin de connaitre son id.
- *
- * Les controllers /employees/{id}/* restent reserves aux managers via la
- * policy viewAny sur le modele Employee.
+ * Migrated from App\Http\Controllers\Api\V1\MeController.
+ * Employees consult their own hours and estimates without needing their own ID.
+ * Manager-scoped /employees/{id}/* routes stay protected by the Employee policy.
  */
 class MeController extends Controller
 {
-    public function __construct(private readonly EstimationService $estimationService) {}
+    public function __construct(
+        private readonly EstimationService $estimationService,
+    ) {}
 
     public function dailySummary(Request $request): JsonResponse
     {
@@ -49,6 +50,7 @@ class MeController extends Controller
             ->orderByRaw('CASE WHEN check_out IS NULL THEN 1 ELSE 0 END DESC')
             ->orderByDesc('session_number')
             ->first();
+
         $summary = $this->estimationService->dailySummary($employee, $dateKey);
 
         return (new AttendanceTodayResource($employee, $log, $company->timezone, $summary))->response();
@@ -66,7 +68,7 @@ class MeController extends Controller
 
         $validated = $request->validate([
             'from' => ['nullable', 'date_format:Y-m-d'],
-            'to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
+            'to'   => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
         ]);
 
         $estimate = $this->estimationService->quickEstimate(
@@ -87,15 +89,15 @@ class MeController extends Controller
         $today = now('UTC')->setTimezone($company->timezone)->startOfDay();
 
         $validated = $request->validate([
-            'year' => ['nullable', 'integer', 'min:2000', 'max:2100'],
+            'year'  => ['nullable', 'integer', 'min:2000', 'max:2100'],
             'month' => ['nullable', 'integer', 'min:1', 'max:12'],
         ]);
 
-        $year = (int) ($validated['year'] ?? $today->format('Y'));
+        $year  = (int) ($validated['year'] ?? $today->format('Y'));
         $month = (int) ($validated['month'] ?? $today->format('m'));
 
         $from = Carbon::create($year, $month, 1, 0, 0, 0, $company->timezone)->startOfMonth();
-        $to = $from->copy()->endOfMonth();
+        $to   = $from->copy()->endOfMonth();
 
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,
@@ -105,7 +107,7 @@ class MeController extends Controller
 
         return new JsonResponse([
             'data' => array_merge($estimate, [
-                'year' => $year,
+                'year'  => $year,
                 'month' => $month,
             ]),
         ]);
