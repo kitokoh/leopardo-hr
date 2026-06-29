@@ -7,12 +7,6 @@ declare(strict_types=1);
  * formation, prêts, frais, organigramme, rapports, webhooks, audit.
  *
  * Namespaces migrés vers App\Modules\* (nouvelle architecture modulaire).
- * Controllers non encore migrés vers Modules (TODO) :
- *   - AdvancedReportController  → TODO: Modules\HR\Interfaces\Api\V1\Controllers\
- *   - AuditLogController        → TODO: Modules\HR\Interfaces\Api\V1\Controllers\
- *   - EmployeeLoanController    → TODO: Modules\Payroll\Interfaces\Api\V1\
- *   - PredictionController      → TODO: Modules\HR\Interfaces\Api\V1\Controllers\
- *
  * RBAC:
  *   - /me/* routes: all authenticated employees
  *   - Admin routes (policies, contracts CRUD, recruitment, webhooks, audit): managers
@@ -24,7 +18,6 @@ declare(strict_types=1);
 // ── Modules migrés ─────────────────────────────────────────────────────────────
 use App\Modules\Attendance\Interfaces\Api\V1\ApprovalController;
 use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
-use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\HrReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OrgChartController;
@@ -56,12 +49,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/org-chart', [OrgChartController::class, 'index']);
     Route::get('/org-chart/{employee}/subordinates', [OrgChartController::class, 'subordinates'])->whereNumber('employee');
     Route::get('/org-chart/{employee}/manager-chain', [OrgChartController::class, 'managerChain'])->whereNumber('employee');
-
-    // ── Expense Claims (employees can submit, managers approve) ──────────
-    Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);
-    Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
-    Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);
-    Route::put('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
 
     // ── Approval actions ─────────────────────────────────────────────────
     Route::get('/approvals/pending', [ApprovalController::class, 'pending']);
@@ -139,10 +126,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // ── Loan management ──────────────────────────────────────────────
         Route::put('/loans/{employeeLoan}/approve', [EmployeeLoanController::class, 'approve']);
         Route::put('/loans/{employeeLoan}/disburse', [EmployeeLoanController::class, 'disburse']);
-
-        // ── Expense approval ─────────────────────────────────────────────
-        Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
-        Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
 
         // ── Approval Workflows (principal, rh) ───────────────────────────
         Route::get('/approval-workflows', [ApprovalController::class, 'indexWorkflows']);
