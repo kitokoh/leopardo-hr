@@ -12,6 +12,7 @@ Apply these settings in GitHub repository rules for `main` and `develop`.
   - `Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)`
   - `Backend Security (Composer Audit)`
   - `Backend Quality (Pint + PHP Syntax + PHPStan/Larastan)`
+  - `Backend Coverage Gate`
   - `Mobile Flutter (Stable Channel)`
   - `Governance Gates (changelog + canonical files)`
   - `Dependency Review (PR Security)`
