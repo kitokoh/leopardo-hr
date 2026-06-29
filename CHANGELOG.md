@@ -29,6 +29,21 @@
 
 ### Changed
 
+- **Architecture DDD — Migration complète des routes vers les modules** : Correction des namespaces de 17 contrôleurs HR (`ContractController`, `DepartmentController`, `EmployeeController`, `SelfServiceController`, `OrgChartController`, `TrainingController`, etc.) vers `App\Modules\HR\Interfaces\Api\V1\Controllers`. Mise à jour des docs de gouvernance CI.
+- **PHPStan modules** : Configuration `phpstan-modules.neon` consolidée avec `excludePaths` pour les modèles DDD non stabilisés, level 3, sans BOM.
+
+## [4.17.2] - 2026-06-28
+
+### Added
+
+- **Mobile Apps — Séparation des applications Manager et RH** :
+  - L'application `leopardo_manager` a été scindée pour créer une application spécifique `leopardo_hr`.
+  - Intégration de `leopardo_hr` dans la matrice de CI canonique `mobile-distribute.yml` pour le déploiement sur Firebase.
+  - Suppression de `mobile-hr-distribution.yml` redondant.
+  - Résolution des chemins de routes et des conflits dans `app.dart` pour le manager et tests associés.
+
+### Changed
+
 - **Architecture — Migration Finale des Routes vers les Modules (DDD)** :
   - Création des 8 derniers contrôleurs modulaires (`MeController`, `SiteController`, `EstimationController`, `NotificationStreamController`, `AdvancedReportController`, `AuditLogController`, `EmployeeLoanController`, `PredictionController`).
   - Suppression définitive des anciens contrôleurs dans `app/Http/Controllers/Api/V1/` devenus obsolètes.
