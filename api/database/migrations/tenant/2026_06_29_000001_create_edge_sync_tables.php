@@ -11,7 +11,7 @@ return new class extends Migration
         // Edge nodes — one per client site
         Schema::create('edge_nodes', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('company_id')->index();
+            $table->uuid('company_id')->nullable()->index(); // NULL en mode schema isolé — pas de FK cross-schema
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('site_address')->nullable();
@@ -27,8 +27,6 @@ return new class extends Migration
             $table->json('capabilities')->default('{}');
             $table->json('metadata')->default('{}');
             $table->timestamps();
-
-            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
         });
 
         // Sync audit logs
@@ -74,7 +72,7 @@ return new class extends Migration
         // Signed offline licenses
         Schema::create('edge_licenses', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('company_id')->index();
+            $table->uuid('company_id')->nullable()->index(); // NULL en mode schema isolé — pas de FK cross-schema
             $table->uuid('edge_node_id')->unique(); // one license per node
             $table->string('license_key')->unique();
             $table->text('signed_payload');          // JWT-signed blob
@@ -86,7 +84,6 @@ return new class extends Migration
             $table->string('validation_status')->default('valid'); // valid|expired|revoked|pending_renewal
             $table->timestamps();
 
-            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->foreign('edge_node_id')->references('id')->on('edge_nodes')->cascadeOnDelete();
         });
     }

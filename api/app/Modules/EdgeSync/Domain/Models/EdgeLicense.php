@@ -27,6 +27,9 @@ use Illuminate\Support\Carbon;
  * @property string $validation_status  valid|expired|revoked|pending_renewal
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
+ * @property-read EdgeNode|null $edgeNode
+ * @property-read \App\Models\Company|null $company
  */
 class EdgeLicense extends Model
 {
