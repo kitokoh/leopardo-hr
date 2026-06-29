@@ -34,6 +34,7 @@ import 'package:leopardo_employee/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_employee/features/ai_voice/screens/ai_voice_screen.dart';
 import 'package:leopardo_employee/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
+import 'package:leopardo_employee/features/smart_attendance/screens/smart_attendance_screen.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
@@ -180,6 +181,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/smart-attendance',
+        builder: (context, state) => const SmartAttendanceScreen(),
       ),
     ],
   );
