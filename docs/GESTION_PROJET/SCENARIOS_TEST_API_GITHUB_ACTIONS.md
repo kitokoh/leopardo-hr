@@ -1150,3 +1150,15 @@ Les 8 derniers contrôleurs ont été migrés vers leurs modules métier respect
 Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimés.
 
 **Scenarios couverts** : FrontendApiContractTest, backend feature tests existants.
+
+## Phase 4 — Amélioration des tests Google OAuth et ajout PUT /reject Expense (v4.17.8)
+
+**Expense — Route reject REST-compliant**
+- `PUT /api/v1/expense-claims/{id}/reject` : rejet d'une note de frais par un manager — valide champ `reason` obligatoire (422 si absent). Retourne 200 + payload `data.status=rejected`.
+- `POST /api/v1/expense-claims/{id}/reject` : synonyme conservé pour compatibilité backward.
+- Isolation multitenant : un manager d'un autre tenant reçoit 404 (non 403), préservant l'opacité de l'existence de la ressource.
+- Rôle : seul un employee avec `manager_role` peut approuver/rejeter (403 sinon).
+
+**Auth Google OAuth améliorée**
+- `POST /api/v1/auth/google/token` : connexion via token Google — mock Socialite renforcé (`stateless()->userFromToken()`). Test de rejet 401 pour email inconnu. Test cross-tenant garantissant l'absence de fuite d'isolation.
+- Tests couverts : GoogleAuthGlobalLookupTest (lookup global, rejet inconnu, isolation cross-tenant).

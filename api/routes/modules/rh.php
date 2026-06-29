@@ -7,10 +7,6 @@ declare(strict_types=1);
  * APV L.08 — Un module = un route group Laravel.
  *
  * Namespaces migrés vers App\Modules\* (nouvelle architecture modulaire).
- * Controllers non encore migrés (temporaires, depuis App\Http\Controllers\Api\V1) :
- *   - MeController         → TODO: créer Modules\HR\Interfaces\Api\V1\Controllers\MeController
- *   - SiteController       → TODO: créer Modules\HR\Interfaces\Api\V1\Controllers\SiteController
- *   - NotificationStreamController → TODO: Modules\Notification\Interfaces\Api\V1\Controllers\
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
