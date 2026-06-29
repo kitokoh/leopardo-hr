@@ -2,6 +2,19 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.18.0] - 2026-06-30
+
+### Added
+- **Edge Sync — Offline-First Architecture (Phase 4)** : PR #813 — Finalisation complète du module Edge Sync.
+  - `edge_database.g.dart` : code généré Drift v2.14 pour les 5 tables (`LocalAttendanceLogs`, `LocalAbsences`, `LocalEmployees`, `LocalSyncQueue`, `LocalDepartments`). Livré dans le dépôt pour garantir la reproductibilité CI sans SDK Dart installé.
+  - `sync_service.dart` : adaptation API `connectivity_plus ^6` — callback `onConnectivityChanged` reçoit désormais `List<ConnectivityResult>` au lieu de `ConnectivityResult`.
+  - `EdgeSyncServiceProvider` : correction du chemin `mergeConfigFrom` (5 niveaux `../../../../../` au lieu de 6) pour pointer correctement vers `api/config/edge.php`.
+  - `api/.env.example` : ajout des variables `EDGE_NODE_ID`, `EDGE_TOKEN`, `EDGE_LICENSE_PRIVATE_KEY`, `EDGE_LICENSE_PUBLIC_KEY`, `CLOUD_API_URL`.
+  - PWA offline `front/web-offline/` : interface Next.js statique avec service worker pour l'accès à `http://leopardo.local` sans mobile.
+  - Dashboard UI Edge nodes : page admin Next.js pour la liste, le statut online/offline, le sync manuel et les licences.
+  - Kiosque ZKTeco : `config.example.json` mis à jour pour pointer vers `http://leopardo.local` quand Edge est actif.
+  - Monitoring Laravel : commande `edge:detect-silent-nodes` + cron toutes les 30 min — détecte les nodes silencieux depuis >30 min et notifie le manager.
+
 ## [4.17.5] - 2026-06-29
 
 ### Fixed

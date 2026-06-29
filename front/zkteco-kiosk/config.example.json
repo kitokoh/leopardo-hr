@@ -1,4 +1,5 @@
 {
+  "_comment": "Leopardo ZKTeco Kiosk — config.example.json. Copier vers config.json et adapter.",
   "apiBaseUrl": "https://gestionemployerbackend.onrender.com/api/v1",
   "deviceCode": "KIOSK001",
   "kioskToken": "REPLACE_WITH_KIOSK_SYNC_TOKEN",
@@ -8,5 +9,13 @@
   "autoSync": true,
   "syncIntervalSeconds": 60,
   "listenHost": "127.0.0.1",
-  "listenPort": 8037
+  "listenPort": 8037,
+  "edge": {
+    "enabled": false,
+    "_comment": "Mettre enabled=true quand un Edge node Leopardo est actif sur le réseau local.",
+    "baseUrl": "http://leopardo.local:7878",
+    "fallbackToCloud": true,
+    "healthCheckPath": "/api/edge/health",
+    "healthCheckIntervalSeconds": 30
+  }
 }
