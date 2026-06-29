@@ -107,6 +107,12 @@ Schedule::command('attendance:auto-close --threshold=12')
     ->hourly()
     ->withoutOverlapping()
     ->onOneServer();
+
+// SmartAttendance — fermeture automatique des sessions GPS orphelines
+Schedule::command('smart-attendance:auto-close --hours=14')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();
 Schedule::command('queue:health-check')
     ->everyFiveMinutes()
     ->when(fn (): bool => config('queue.default') === 'redis')
