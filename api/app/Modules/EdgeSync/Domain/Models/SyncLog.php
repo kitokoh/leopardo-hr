@@ -58,7 +58,7 @@ class SyncLog extends Model
     public function getDurationSecondsAttribute(): ?int
     {
         if ($this->started_at && $this->finished_at) {
-            return $this->finished_at->diffInSeconds($this->started_at);
+            return (int) $this->finished_at->diffInSeconds($this->started_at);
         }
 
         return null;
