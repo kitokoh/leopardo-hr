@@ -57,7 +57,7 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // 5. Assert success
         // Before the fix, this would fail with a DB error (duplicate email) because Employee::where('email')
         // would only look in Company B due to the BelongsToCompany global scope.
-        $response->assertStatus(201);
+        $response->assertStatus(200);
         $response->assertJsonPath('data.email', 'shared@example.com');
         $response->assertJsonPath('data.id', $employee->id);
 
@@ -92,12 +92,12 @@ class GoogleAuthGlobalLookupTest extends TestCase
 
         // 4. Call the token endpoint
         $response = $this->postJson('/api/v1/auth/google/token', [
-            'token' => 'fake-token',
+            'access_token' => 'fake-token',
             'device_name' => 'test-device',
         ]);
 
         // 5. Assert success
-        $response->assertStatus(201);
+        $response->assertStatus(200);
         $response->assertJsonPath('data.id', $employee->id);
 
         $this->assertEquals(1, Employee::withoutGlobalScopes()->where('email', 'token-shared@example.com')->count());

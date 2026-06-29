@@ -2,6 +2,21 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.4] - 2026-06-28
+
+### Fixed
+
+- **Auth — Employee implements HasApiTokens** : `Employee` déclare maintenant explicitement `implements HasApiTokensContract` pour résoudre le `TypeError` dans `LogoutAction` et `RefreshTokenAction` lors de l'appel à `execute()` avec un `Employee`.
+- **Modules\HR\UserInvitationService — import TenantManager** : Ajout du `use App\Services\TenantManager` manquant qui causait un `BindingResolutionException` à l'injection de dépendance.
+- **Recruitment\RecruitmentService — PHPStan CarbonInterface** : `published_at` est maintenant assigné via `Carbon::instance(now())` pour satisfaire le type `Carbon|null` déclaré sur `JobPosting::$published_at`.
+
+## [4.17.3] - 2026-06-28
+
+### Changed
+
+- **Architecture DDD — Migration complète des routes vers les modules** : Correction des namespaces de 17 contrôleurs HR (`ContractController`, `DepartmentController`, `EmployeeController`, `SelfServiceController`, `OrgChartController`, `TrainingController`, etc.) vers `App\Modules\HR\Interfaces\Api\V1\Controllers`. Mise à jour des docs de gouvernance CI.
+- **PHPStan modules** : Configuration `phpstan-modules.neon` consolidée avec `excludePaths` pour les modèles DDD non stabilisés, level 3, sans BOM.
+
 ## [4.17.2] - 2026-06-28
 
 ### Added
@@ -13,6 +28,13 @@
   - Résolution des chemins de routes et des conflits dans `app.dart` pour le manager et tests associés.
 
 ### Changed
+
+- **Architecture — Migration Finale des Routes vers les Modules (DDD)** :
+  - Création des 8 derniers contrôleurs modulaires (`MeController`, `SiteController`, `EstimationController`, `NotificationStreamController`, `AdvancedReportController`, `AuditLogController`, `EmployeeLoanController`, `PredictionController`).
+  - Suppression définitive des anciens contrôleurs dans `app/Http/Controllers/Api/V1/` devenus obsolètes.
+  - Refactorisation de `AuthController` avec l'implémentation de 6 nouvelles classes d'Actions (`LoginAction`, `LogoutAction`, `RefreshTokenAction`, etc.).
+  - Nettoyage et correction des types stricts dans les Actions Auth pour PHPStan.
+  - Mise à jour du document de référence `api/ARCHITECTURE.md` pour refléter l'état 100% migré des routes.
 
 - **Architecture — Auth migré vers Clean Architecture (DDD)** :
   - Contrôleurs Auth déplacés de `App\Http\Controllers\Api\V1` vers `App\Core\Auth\Interfaces\Api\V1` (AuthController, PlatformAuthController, UserAuthController).

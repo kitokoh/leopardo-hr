@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+declare(strict_types=1);
+
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Applicant;
@@ -10,6 +12,12 @@ use App\Models\TrainingEnrollment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * AdvancedReportController — cross-domain HR analytics for managers.
+ *
+ * Migrated from App\Http\Controllers\Api\V1\AdvancedReportController.
+ * All endpoints restricted to managers (isManager check).
+ */
 class AdvancedReportController extends Controller
 {
     public function recruitmentPipeline(Request $request): JsonResponse
@@ -90,7 +98,7 @@ class AdvancedReportController extends Controller
 
         return response()->json([
             'data' => [
-                'by_department' => $byDepartment,
+                'by_department'    => $byDepartment,
                 'by_contract_type' => $byContractType,
             ],
         ]);
@@ -117,9 +125,9 @@ class AdvancedReportController extends Controller
 
         return response()->json([
             'data' => [
-                'year' => $year,
-                'active_loans_total' => $loanCosts,
-                'training_enrollments_count' => $trainingCost,
+                'year'                        => $year,
+                'active_loans_total'          => $loanCosts,
+                'training_enrollments_count'  => $trainingCost,
             ],
         ]);
     }

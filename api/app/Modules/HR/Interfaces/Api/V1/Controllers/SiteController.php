@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+declare(strict_types=1);
+
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Site\StoreSiteRequest;
@@ -12,6 +14,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
+/**
+ * SiteController — CRUD for company work sites.
+ *
+ * Migrated from App\Http\Controllers\Api\V1\SiteController.
+ * Read/write restricted to managers; all authenticated employees can read their site.
+ */
 class SiteController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
@@ -22,10 +30,12 @@ class SiteController extends Controller
             abort(403);
         }
 
-        return SiteResource::collection(Site::query()
-            ->select(['id', 'company_id', 'name', 'address', 'gps_lat', 'gps_lng', 'gps_radius_m', 'created_at'])
-            ->orderBy('name')
-            ->get());
+        return SiteResource::collection(
+            Site::query()
+                ->select(['id', 'company_id', 'name', 'address', 'gps_lat', 'gps_lng', 'gps_radius_m', 'created_at'])
+                ->orderBy('name')
+                ->get()
+        );
     }
 
     public function store(StoreSiteRequest $request): JsonResponse
@@ -67,6 +77,6 @@ class SiteController extends Controller
 
         $site->delete();
 
-        return response()->json(['message' => 'Site deleted successfully']);
+        return new JsonResponse(['message' => 'Site deleted successfully']);
     }
 }

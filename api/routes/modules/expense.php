@@ -16,6 +16,7 @@ Route::prefix('v1/expense-claims')->group(function () {
     Route::post('/',                         [ExpenseClaimController::class, 'store']);
     Route::get('/{expenseClaim}',            [ExpenseClaimController::class, 'show']);
     Route::post('/{expenseClaim}/submit',    [ExpenseClaimController::class, 'submit']);
+    Route::put('/{expenseClaim}/approve',    [ExpenseClaimController::class, 'approve']);
     Route::post('/{expenseClaim}/approve',   [ExpenseClaimController::class, 'approve']);
     Route::post('/{expenseClaim}/reject',    [ExpenseClaimController::class, 'reject']);
 });

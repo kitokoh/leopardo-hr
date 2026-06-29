@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AuditLogResource;
@@ -12,6 +12,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * AuditLogController — immutable audit trail for principal managers.
+ *
+ * Migrated from App\Http\Controllers\Api\V1\AuditLogController.
+ * Read-only (no store/update/destroy) — audit logs are append-only.
+ * Restricted to hasManagerRole('principal').
+ */
 class AuditLogController extends Controller
 {
     public function index(Request $request): JsonResponse

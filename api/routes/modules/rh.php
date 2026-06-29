@@ -1,32 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Routes RH — modules 1-7 complets.
  * APV L.08 — Un module = un route group Laravel.
+ *
+ * Namespaces migrés vers App\Modules\* (nouvelle architecture modulaire).
+ * Controllers non encore migrés (temporaires, depuis App\Http\Controllers\Api\V1) :
+ *   - MeController         → TODO: créer Modules\HR\Interfaces\Api\V1\Controllers\MeController
+ *   - SiteController       → TODO: créer Modules\HR\Interfaces\Api\V1\Controllers\SiteController
+ *   - NotificationStreamController → TODO: Modules\Notification\Interfaces\Api\V1\Controllers\
  */
 
-use App\Http\Controllers\Api\V1\AbsenceController;
-use App\Http\Controllers\Api\V1\AttendanceController;
-use App\Http\Controllers\Api\V1\BiometricEnrollmentController;
-use App\Http\Controllers\Api\V1\DepartmentController;
-use App\Http\Controllers\Api\V1\EmployeeController;
-use App\Http\Controllers\Api\V1\EmployeeImportController;
-use App\Http\Controllers\Api\V1\EstimationController;
-use App\Http\Controllers\Api\V1\EvaluationController;
-use App\Http\Controllers\Api\V1\InvitationController;
-use App\Http\Controllers\Api\V1\KioskController;
-use App\Http\Controllers\Api\V1\MeController;
-use App\Http\Controllers\Api\V1\NotificationController;
-use App\Http\Controllers\Api\V1\NotificationStreamController;
-use App\Http\Controllers\Api\V1\OnboardingQrController;
-use App\Http\Controllers\Api\V1\PayrollController;
-use App\Http\Controllers\Api\V1\PayrollCycleController;
-use App\Http\Controllers\Api\V1\PositionController;
-use App\Http\Controllers\Api\V1\ProjectController;
-use App\Http\Controllers\Api\V1\SalaryAdvanceController;
-use App\Http\Controllers\Api\V1\ScheduleController;
-use App\Http\Controllers\Api\V1\SiteController;
-use App\Http\Controllers\Api\V1\TaskController;
+// ── Modules migrés ─────────────────────────────────────────────────────────────
+use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
+use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
+use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\OnboardingQrController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PositionController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
+use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\SalaryAdvanceController;
+use App\Modules\Planning\Interfaces\Api\V1\AbsenceController;
+use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
+use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
+use App\Modules\Planning\Interfaces\Api\V1\TaskController;
+
+use App\Modules\HR\Interfaces\Api\V1\Controllers\MeController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\SiteController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
+use App\Modules\Payroll\Interfaces\Api\V1\EstimationController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {

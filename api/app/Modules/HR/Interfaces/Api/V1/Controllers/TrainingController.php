@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\HR\Interfaces\Api\V1;
+namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TrainingCourseResource;
@@ -18,7 +18,7 @@ use Illuminate\Validation\Rule;
 
 class TrainingController extends Controller
 {
-    // ── Courses ─────────────────────────────────────────────────────────────
+    // â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public function indexCourses(Request $request): JsonResponse
     {
@@ -103,7 +103,7 @@ class TrainingController extends Controller
         return (new TrainingCourseResource($trainingCourse->fresh()))->response();
     }
 
-    // ── Sessions ────────────────────────────────────────────────────────────
+    // â”€â”€ Sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public function indexSessions(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
@@ -182,7 +182,7 @@ class TrainingController extends Controller
         return (new TrainingSessionResource($trainingSession->fresh()))->response();
     }
 
-    // ── Enrollments ─────────────────────────────────────────────────────────
+    // â”€â”€ Enrollments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     public function enroll(Request $request, TrainingSession $trainingSession): JsonResponse
     {
