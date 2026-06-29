@@ -5,91 +5,158 @@ declare(strict_types=1);
 namespace App\Modules\Absence\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Absence\Application\Actions\ApproveAbsence;
-use App\Modules\Absence\Application\Actions\RejectAbsence;
-use App\Modules\Absence\Application\Actions\RequestAbsence;
-use App\Modules\Absence\Application\DTOs\RequestAbsenceDTO;
-use App\Modules\Absence\Domain\Models\Absence;
+use App\Http\Requests\Api\V1\Absence\AbsenceIndexRequest;
+use App\Http\Requests\Api\V1\Absence\RejectAbsenceRequest;
+use App\Http\Requests\Api\V1\Absence\StoreAbsenceRequest;
+use App\Http\Resources\Api\V1\AbsenceResource;
+use App\Models\Absence;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Carbon;
 
 class AbsenceController extends Controller
 {
-    public function __construct(
-        private readonly RequestAbsence $requestAbsence,
-        private readonly ApproveAbsence $approveAbsence,
-        private readonly RejectAbsence  $rejectAbsence,
-    ) {}
+    public function __construct(private readonly AbsenceService $absenceService) {}
 
-    /**
-     * List absences for the authenticated employee's company.
-     */
-    public function index(Request $request): JsonResponse
+    public function index(AbsenceIndexRequest $request): AnonymousResourceCollection
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
         $query = Absence::query()
-            ->with(['employee', 'absenceType'])
-            ->when($request->has('employee_id'), fn ($q) => $q->where('employee_id', $request->employee_id))
-            ->when($request->has('status'), fn ($q) => $q->where('status', $request->status))
-            ->latest();
+            ->select([
+                'id', 'company_id', 'employee_id', 'absence_type_id',
+                'start_date', 'end_date', 'days_count', 'status', 'reason',
+                'approved_by', 'rejected_reason', 'created_at', 'updated_at',
+            ])
+            ->with([
+                'absenceType:id,name,code,deducts_leave',
+                'employee:id,first_name,last_name,email,company_id',
+            ]);
 
-        return response()->json($query->paginate(20));
+        if (! $actor->isManager()) {
+            $query->where('employee_id', $actor->id);
+        } elseif ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->integer('employee_id'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $month      = $request->integer('month');
+            $year       = $request->integer('year');
+            $periodStart = Carbon::createFromDate($year, $month, 1)->startOfDay();
+            $periodEnd   = $periodStart->copy()->endOfMonth();
+            $query
+                ->where('start_date', '<=', $periodEnd->toDateString())
+                ->where('end_date', '>=', $periodStart->toDateString());
+        }
+
+        $validated = $request->validated();
+        $perPage   = (int) ($validated['per_page'] ?? 15);
+        $sortBy    = (string) ($validated['sort_by'] ?? 'created_at');
+        $sortDir   = (string) ($validated['sort_dir'] ?? 'desc');
+
+        $paginated = $query->orderBy($sortBy, $sortDir)->orderByDesc('id')->paginate($perPage);
+
+        return AbsenceResource::collection($paginated);
     }
 
-    /**
-     * Submit a new absence request.
-     */
-    public function store(Request $request): JsonResponse
+    public function store(StoreAbsenceRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'employee_id'      => 'required|integer|exists:employees,id',
-            'absence_type_id'  => 'required|integer|exists:absence_types,id',
-            'start_date'       => 'required|date',
-            'end_date'         => 'required|date|after_or_equal:start_date',
-            'reason'           => 'nullable|string|max:1000',
-        ]);
+        /** @var Employee $actor */
+        $actor   = $request->user();
+        $absence = $this->absenceService->create($actor, $request->validated());
 
-        $absence = $this->requestAbsence->handle(RequestAbsenceDTO::fromArray($validated));
-
-        return response()->json($absence, 201);
+        return (new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name,email,company_id',
+        ])))->response()->setStatusCode(201);
     }
 
-    /**
-     * Show a single absence.
-     */
-    public function show(Absence $absence): JsonResponse
+    public function show(Request $request, Absence $absence): AbsenceResource
     {
-        return response()->json($absence->load(['employee', 'absenceType']));
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if (! $actor->isManager() && $absence->employee_id !== $actor->id) {
+            abort(403);
+        }
+
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name,email,company_id',
+        ]));
     }
 
-    /**
-     * Approve a pending absence.
-     */
-    public function approve(Request $request, Absence $absence): JsonResponse
+    public function approve(Request $request, Absence $absence): AbsenceResource
     {
-        $request->validate(['comment' => 'nullable|string|max:500']);
+        /** @var Employee $actor */
+        $actor = $request->user();
 
-        $absence = $this->approveAbsence->handle(
-            $absence,
-            (int) $request->user()->id,
-            $request->comment
-        );
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
 
-        return response()->json($absence);
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $absence = $this->absenceService->approve($absence, $actor);
+
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name,email,company_id',
+        ]));
     }
 
-    /**
-     * Reject a pending absence.
-     */
-    public function reject(Request $request, Absence $absence): JsonResponse
+    public function reject(RejectAbsenceRequest $request, Absence $absence): AbsenceResource
     {
-        $request->validate(['comment' => 'required|string|max:500']);
+        /** @var Employee $actor */
+        $actor = $request->user();
 
-        $absence = $this->rejectAbsence->handle(
-            $absence,
-            (int) $request->user()->id,
-            $request->comment
-        );
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
 
-        return response()->json($absence);
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $absence = $this->absenceService->reject($absence, $request->validated('rejected_reason'));
+
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name,email,company_id',
+        ]));
+    }
+
+    public function destroy(Request $request, Absence $absence): AbsenceResource
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if ($absence->employee_id !== $actor->id) {
+            abort(403);
+        }
+
+        $absence = $this->absenceService->cancel($absence);
+
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name,email,company_id',
+        ]));
     }
 }
