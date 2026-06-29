@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.17.5] - 2026-06-29
+
+### Fixed
+- **Expense Routes — Middleware sécurisé** : Toutes les routes expense-claims sont maintenant protégées par `['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan']`. Suppression de la route `POST /approve` dupliquée (conservation uniquement de `PUT /approve`). Nettoyage des commentaires TODO dans `hr_extended.php`.
+## [4.17.6] - 2026-06-29
+
+### Added
+- **Tests Expense — Couverture complète** : 8 nouveaux tests Feature pour `ExpenseClaimController` couvrant : rejet avec raison, validation du champ `reason` obligatoire, interdiction non-manager d'approuver/rejeter, isolation cross-tenant (404) pour approve/reject, re-soumission impossible (422), accès cross-tenant à `show` (404).
+
 ## [4.17.4] - 2026-06-28
 
 ### Fixed
