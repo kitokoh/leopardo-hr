@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V1\PlanningController;
+use App\Modules\Planning\Interfaces\Api\V1\PlanningController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->prefix('planning')->group(function (): void {

@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\V1\FleetController;
-use App\Http\Controllers\Api\V1\TrackingSyncController;
-use App\Http\Controllers\Api\V1\VehicleAlertController;
-use App\Http\Controllers\Api\V1\VehicleController;
-use App\Http\Controllers\Api\V1\VehicleMaintenanceController;
-use App\Http\Controllers\Api\V1\VehicleTripController;
+use App\Modules\Fleet\Interfaces\Api\V1\FleetController;
+use App\Modules\Attendance\Interfaces\Api\V1\TrackingSyncController;
+use App\Modules\Fleet\Interfaces\Api\V1\VehicleAlertController;
+use App\Modules\Fleet\Interfaces\Api\V1\VehicleController;
+use App\Modules\Fleet\Interfaces\Api\V1\VehicleMaintenanceController;
+use App\Modules\Fleet\Interfaces\Api\V1\VehicleTripController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {

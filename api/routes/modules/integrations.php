@@ -4,10 +4,10 @@
  * Routes Integrations: push notifications, calendar sync, ZKTeco and kiosks.
  */
 
-use App\Http\Controllers\Api\V1\CalendarSyncController;
-use App\Http\Controllers\Api\V1\DeviceTokenController;
-use App\Http\Controllers\Api\V1\KioskController;
-use App\Http\Controllers\Api\V1\ZktecoController;
+use App\Modules\Attendance\Interfaces\Api\V1\CalendarSyncController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\DeviceTokenController;
+use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
+use App\Modules\Attendance\Interfaces\Api\V1\ZktecoController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
