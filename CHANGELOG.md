@@ -10,6 +10,16 @@
 
 ### Added
 - **Tests Expense — Couverture complète** : 8 nouveaux tests Feature pour `ExpenseClaimController` couvrant : rejet avec raison, validation du champ `reason` obligatoire, interdiction non-manager d'approuver/rejeter, isolation cross-tenant (404) pour approve/reject, re-soumission impossible (422), accès cross-tenant à `show` (404).
+## [4.17.8] - 2026-06-29
+
+### Added
+- **Tests Google OAuth** : Amélioration de `GoogleAuthGlobalLookupTest` — mock Socialite renforcé avec `once()` sur `stateless()` + `userFromToken()`, nouveau test de rejet `401` pour email inconnu, nouveau test cross-tenant pour vérifier l'absence de violation d'isolation.
+
+### Changed
+- **Coverage Gate** : Seuil de couverture backend relevé de 60% à 65% dans `coverage-gate.yml`.
+
+### Fixed
+- **Expense Routes — Route reject** : Ajout de `PUT /expense-claims/{expenseClaim}/reject` en complément de `POST` pour cohérence avec les conventions REST et les tests.
 
 ## [4.17.4] - 2026-06-28
 

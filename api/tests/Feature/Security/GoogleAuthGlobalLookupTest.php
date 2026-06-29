@@ -79,27 +79,59 @@ class GoogleAuthGlobalLookupTest extends TestCase
         $companyB = Company::factory()->create(['name' => 'Company B']);
         app()->instance('current_company', $companyB);
 
-        // 3. Mock Socialite
+        // 3. Mock Socialite — must chain stateless() before userFromToken() exactly as the
+        //    controller does: Socialite::driver('google')->stateless()->userFromToken($token)
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn('token-shared@example.com');
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
 
-        Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
-        $provider->shouldReceive('stateless')->andReturn($provider);
-        $provider->shouldReceive('userFromToken')->with('fake-token')->andReturn($abstractUser);
+        $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
+        // stateless() returns $this so method chaining works
+        $provider->shouldReceive('stateless')->once()->andReturn($provider);
+        $provider->shouldReceive('userFromToken')->once()->with('fake-token')->andReturn($abstractUser);
 
-        // 4. Call the token endpoint
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        // 4. Call the token endpoint — include device_name to exercise that branch
         $response = $this->postJson('/api/v1/auth/google/token', [
             'access_token' => 'fake-token',
-            'device_name' => 'test-device',
+            'device_name'  => 'test-device',
         ]);
 
         // 5. Assert success
         $response->assertStatus(200);
         $response->assertJsonPath('data.id', $employee->id);
 
+        // No duplicate employee should have been created
         $this->assertEquals(1, Employee::withoutGlobalScopes()->where('email', 'token-shared@example.com')->count());
+    }
+
+    public function test_google_login_rejects_unknown_email_with_401()
+    {
+        // Arrange: no employee exists for the Google email being presented
+        $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
+        $abstractUser->shouldReceive('getEmail')->andReturn('nobody@unknown.example');
+
+        $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
+        $provider->shouldReceive('stateless')->once()->andReturn($provider);
+        $provider->shouldReceive('userFromToken')->once()->with('ghost-token')->andReturn($abstractUser);
+
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        // Act: hit the token endpoint with a valid-looking token for an unknown user
+        $response = $this->postJson('/api/v1/auth/google/token', [
+            'access_token' => 'ghost-token',
+            'device_name'  => 'test-device',
+        ]);
+
+        // Assert: controller must refuse with 401 — we do NOT create accounts on the
+        // token endpoint; the OAuth callback flow handles first-time registration.
+        $response->assertStatus(401);
+        $response->assertJsonPath('error', 'EMPLOYEE_NOT_FOUND');
+
+        // Verify no employee was silently created
+        $this->assertEquals(0, Employee::withoutGlobalScopes()->where('email', 'nobody@unknown.example')->count());
     }
 }
