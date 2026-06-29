@@ -10,17 +10,25 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Absence Module Routes
 |--------------------------------------------------------------------------
-| Mounted under the api.php route group (auth:sanctum + tenant middleware).
+| Mounted inside Route::prefix('v1') in api.php.
+| Full paths: /api/v1/absences/...
 */
 
-Route::prefix('v1/absences')->group(function () {
-    Route::get('/',           [AbsenceController::class, 'index']);
-    Route::post('/',          [AbsenceController::class, 'store']);
-    Route::get('/{absence}',  [AbsenceController::class, 'show']);
-    Route::post('/{absence}/approve', [AbsenceController::class, 'approve']);
-    Route::post('/{absence}/reject',  [AbsenceController::class, 'reject']);
-});
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])
+    ->prefix('absences')
+    ->group(function (): void {
+        Route::get('/',                      [AbsenceController::class, 'index']);
+        Route::post('/',                     [AbsenceController::class, 'store']);
+        Route::get('/{absence}',             [AbsenceController::class, 'show'])->whereNumber('absence');
+        Route::put('/{absence}/approve',     [AbsenceController::class, 'approve'])->whereNumber('absence');
+        Route::post('/{absence}/approve',    [AbsenceController::class, 'approve'])->whereNumber('absence');
+        Route::put('/{absence}/reject',      [AbsenceController::class, 'reject'])->whereNumber('absence');
+        Route::post('/{absence}/reject',     [AbsenceController::class, 'reject'])->whereNumber('absence');
+        Route::delete('/{absence}',          [AbsenceController::class, 'destroy'])->whereNumber('absence');
+    });
 
-Route::prefix('v1/employees/{employeeId}/leave-balances')->group(function () {
-    Route::get('/', [LeavePolicyController::class, 'balances']);
-});
+Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])
+    ->prefix('employees/{employeeId}/leave-balances')
+    ->group(function (): void {
+        Route::get('/', [LeavePolicyController::class, 'balances']);
+    });

@@ -24,7 +24,7 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationControlle
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
 use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
 use App\Modules\Payroll\Interfaces\Api\V1\SalaryAdvanceController;
-use App\Modules\Planning\Interfaces\Api\V1\AbsenceController;
+use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
 use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
 use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
 use App\Modules\Planning\Interfaces\Api\V1\TaskController;
