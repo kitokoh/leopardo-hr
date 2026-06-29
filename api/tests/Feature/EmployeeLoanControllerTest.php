@@ -124,6 +124,60 @@ class EmployeeLoanControllerTest extends TestCase
         $this->putJson("/api/v1/loans/{$loan->id}/approve")->assertStatus(403);
     }
 
+    public function test_cross_tenant_loan_returns_404(): void
+    {
+        $company     = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager     = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $foreignLoan = EmployeeLoan::create([
+            'company_id'          => $otherCompany->id,
+            'employee_id'         => Employee::factory()->create(['company_id' => $otherCompany->id])->id,
+            'amount'              => 15000,
+            'currency'            => 'DZD',
+            'installments'        => 3,
+            'installment_amount'  => 5000,
+            'start_date'          => now()->addMonth(),
+            'status'              => 'pending_approval',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        // Manager of company A must receive 404 when accessing a loan from company B
+        $this->getJson("/api/v1/loans/{$foreignLoan->id}")->assertNotFound();
+        $this->putJson("/api/v1/loans/{$foreignLoan->id}/approve")->assertNotFound();
+    }
+
+    public function test_disburse_requires_approved_status(): void
+    {
+        $company  = Company::factory()->create();
+        $manager  = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id, 'role' => 'employee']);
+
+        $pendingLoan = EmployeeLoan::create([
+            'company_id'         => $company->id,
+            'employee_id'        => $employee->id,
+            'amount'             => 25000,
+            'currency'           => 'DZD',
+            'installments'       => 6,
+            'installment_amount' => 4166.67,
+            'start_date'         => now()->addMonth(),
+            'status'             => 'pending_approval',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        // Disburse must fail (422) when loan is still in pending_approval state
+        $this->putJson("/api/v1/loans/{$pendingLoan->id}/disburse")
+            ->assertUnprocessable();
+
+        // After approval, disburse must succeed (200)
+        $pendingLoan->update(['status' => 'approved']);
+
+        $this->putJson("/api/v1/loans/{$pendingLoan->id}/disburse")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'disbursed');
+    }
+
     public function test_loans_are_scoped_to_tenant_and_foreign_employee_is_rejected(): void
     {
         $company = Company::factory()->create();
