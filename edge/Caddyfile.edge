@@ -1,0 +1,25 @@
+# Leopardo Edge — Caddy reverse proxy
+# Serves http://leopardo.local (or IP) for the local network
+
+:80 {
+    # Web UI
+    handle / {
+        reverse_proxy edge-ui:3000
+    }
+
+    # API
+    handle /api/* {
+        reverse_proxy edge-api:80
+    }
+
+    # Health check
+    handle /health {
+        respond "OK" 200
+    }
+
+    encode gzip
+    log {
+        output stdout
+        format console
+    }
+}
