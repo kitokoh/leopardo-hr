@@ -1,0 +1,7 @@
+# SÉCURITÉ — Ne JAMAIS committer les clés privées
+edge_license_private.pem
+*.pem
+*.key
+
+# La clé publique peut être committée (safe à distribuer)
+!edge_license_public.pem
