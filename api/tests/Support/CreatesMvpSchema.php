@@ -805,6 +805,10 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.commissions CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.partner_payout_requests CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.partners CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.edge_licenses CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.sync_queue CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.sync_logs CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.users CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
@@ -1602,6 +1606,94 @@ trait CreatesMvpSchema
                 $table->timestampTz('last_heartbeat_at')->nullable();
                 $table->timestampTz('last_sync_at')->nullable();
                 $table->timestamps();
+            });
+        }
+
+        // ── EdgeSync module tables ──────────────────────────────────
+
+        if (! Schema::hasTable('edge_nodes')) {
+            Schema::create('edge_nodes', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('name');
+                $table->string('slug')->unique();
+                $table->string('site_address')->nullable();
+                $table->string('status')->default('active');
+                $table->string('mode')->default('hybrid');
+                $table->string('license_key')->unique()->nullable();
+                $table->timestamp('license_expires_at')->nullable();
+                $table->timestamp('last_sync_at')->nullable();
+                $table->timestamp('last_seen_at')->nullable();
+                $table->string('local_ip')->nullable();
+                $table->string('public_ip')->nullable();
+                $table->string('edge_version')->default('1.0.0');
+                $table->json('capabilities')->default('{}');
+                $table->json('metadata')->default('{}');
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable('sync_logs')) {
+            Schema::create('sync_logs', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('edge_node_id')->index();
+                $table->string('direction');
+                $table->string('status');
+                $table->integer('records_sent')->default(0);
+                $table->integer('records_received')->default(0);
+                $table->integer('conflicts_detected')->default(0);
+                $table->integer('conflicts_resolved')->default(0);
+                $table->text('error_message')->nullable();
+                $table->json('summary')->default('{}');
+                $table->timestamp('started_at');
+                $table->timestamp('finished_at')->nullable();
+                $table->timestamps();
+
+                $table->foreign('edge_node_id')
+                    ->references('id')->on('edge_nodes')
+                    ->cascadeOnDelete();
+            });
+        }
+
+        if (! Schema::hasTable('sync_queue')) {
+            Schema::create('sync_queue', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('edge_node_id')->index();
+                $table->string('entity_type');
+                $table->string('entity_id');
+                $table->string('operation');
+                $table->json('payload');
+                $table->string('status')->default('pending');
+                $table->integer('attempt_count')->default(0);
+                $table->string('conflict_resolution')->nullable();
+                $table->text('conflict_note')->nullable();
+                $table->timestamp('synced_at')->nullable();
+                $table->timestamps();
+
+                $table->foreign('edge_node_id')
+                    ->references('id')->on('edge_nodes')
+                    ->cascadeOnDelete();
+            });
+        }
+
+        if (! Schema::hasTable('edge_licenses')) {
+            Schema::create('edge_licenses', function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('edge_node_id')->unique();
+                $table->string('license_key')->unique();
+                $table->text('signed_payload');
+                $table->json('allowed_features')->default('[]');
+                $table->integer('max_employees')->default(50);
+                $table->timestamp('issued_at');
+                $table->timestamp('expires_at')->index();
+                $table->timestamp('last_validated_at')->nullable();
+                $table->string('validation_status')->default('valid');
+                $table->timestamps();
+
+                $table->foreign('edge_node_id')
+                    ->references('id')->on('edge_nodes')
+                    ->cascadeOnDelete();
             });
         }
     }

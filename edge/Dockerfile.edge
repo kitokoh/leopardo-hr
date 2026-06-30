@@ -1,0 +1,46 @@
+# ============================================================
+# Leopardo Edge API — Lightweight Laravel for Edge deployment
+# ============================================================
+FROM php:8.4-fpm-alpine
+
+WORKDIR /var/www/html
+
+# Install system deps
+RUN apk add --no-cache \
+    nginx \
+    sqlite \
+    sqlite-dev \
+    curl \
+    zip \
+    unzip \
+    git \
+    nodejs \
+    npm \
+    supervisor
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_sqlite opcache pcntl
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Copy source
+COPY api/ .
+
+# Install PHP dependencies (no dev)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Create data directory
+RUN mkdir -p /var/leopardo && chmod 755 /var/leopardo
+
+# SQLite DB will be at /var/leopardo/edge.sqlite (volume mounted)
+
+# Nginx config
+COPY edge/nginx.edge.conf /etc/nginx/nginx.conf
+
+# Supervisor for nginx + php-fpm
+COPY edge/supervisord.edge.conf /etc/supervisor/conf.d/leopardo.conf
+
+EXPOSE 80
+
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/leopardo.conf"]
