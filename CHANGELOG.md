@@ -2,6 +2,15 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.18.1] - 2026-06-30
+
+### Fixed
+- **PHPStan/Larastan — Vagues 1 à 4** : Réduction de ~5 430 → ~1 277 erreurs baseline (−76%).
+  - **Vague 1** : Ajout de `vendor/larastan/larastan/extension.neon` dans `phpstan.neon` (−2 189 erreurs `property.notFound` Eloquent). Corrections `mixed` dans `AttendanceMonthlyReportService`, `AttendanceAnomalyService`, `AttendanceService`, `PlatformCompanyHealthService`.
+  - **Vague 2** : Annotations `@param/@return array<string, mixed>` dans `CameraService` (−100 erreurs).
+  - **Vague 3** : Types explicites dans `EvaluationController`, `TaskController`, `AbsenceService`, `PayrollCalculator` (−288 erreurs).
+  - **Vague 4** : `FeatureRegistry` — `cache->remember()` typé, `getStatistics()` Builder<Feature> via `newQuery()`, `synchronize()` cast explicites. `PlatformCompanyRequestController` — `DB::table()->value()` cast `int`, `$result['company']` typé. `HrReportController` — closure `groupBy->map()` typée. Tests Absences — `str_pad((string))`, `firstOrFail()`.
+
 ## [4.18.0] - 2026-06-30
 
 ### Added
