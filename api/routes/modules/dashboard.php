@@ -7,10 +7,10 @@
  * Notifications are available to all authenticated employees.
  */
 
-use App\Http\Controllers\Api\V1\DashboardController;
-use App\Http\Controllers\Api\V1\ExportController;
-use App\Http\Controllers\Api\V1\NotificationController;
-use App\Http\Controllers\Api\V1\RoleAssignmentController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\RoleAssignmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {

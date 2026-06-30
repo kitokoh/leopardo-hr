@@ -2,6 +2,16 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.21.0] - 2026-06-30
+
+### Added
+- **Phase 4-5 Routes + Modules DDD** : Migration de 0 routes legacy vers namespaces DDD.
+  - `architecture-check.yml` : extension de la vérification à 17 modules (HR, Billing, Cameras, Absence, Expense, Growth, Platform, Onboarding, Training, Notification, ...).
+  - Modules Billing, Growth, HR, Notification, Onboarding, Platform : controllers migrés vers `Interfaces/Api/V1/Controllers/`.
+  - Routes `dashboard`, `growth`, `hr_app`, `integrations`, `planning`, `sso`, `tracking`, `user` : migration legacy routes.
+  - `openapi.yaml` : endpoints Growth et Onboarding ajoutés.
+  - `api/bootstrap/providers.php` : GrowthServiceProvider + OnboardingServiceProvider enregistrés.
+
 ## [4.18.0] - 2026-06-30
 
 ### Added
