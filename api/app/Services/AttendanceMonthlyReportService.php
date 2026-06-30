@@ -8,13 +8,19 @@ use App\Core\Auth\Domain\Models\Employee;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Carbon as CarbonAlias;
 use Symfony\Component\HttpFoundation\Response;
 
 class AttendanceMonthlyReportService
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function build(Company $company, string $month): array
     {
-        $start = Carbon::createFromFormat('Y-m-d', $month.'-01', $company->timezone)->startOfMonth();
+        $startOrFalse = Carbon::createFromFormat('Y-m-d', $month.'-01', $company->timezone);
+        $start = $startOrFalse instanceof Carbon ? $startOrFalse : Carbon::parse($month.'-01', $company->timezone);
+        $start->startOfMonth();
         $end = $start->copy()->endOfMonth();
 
         $employees = Employee::query()
@@ -55,7 +61,7 @@ class AttendanceMonthlyReportService
             'late_minutes' => (int) $logs->sum(fn (AttendanceLog $log): int => (int) $log->late_minutes),
             'missing_check_outs' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null && $log->check_out === null)->count(),
             'manual_corrections' => $logs->filter(fn (AttendanceLog $log): bool => $log->method === 'manual' || $log->corrected_by !== null)->count(),
-            'worked_days' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null)->pluck('date')->map(fn ($date): string => $date->format('Y-m-d'))->unique()->count(),
+            'worked_days' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null)->pluck('date')->map(fn ($date): string => $date instanceof Carbon ? $date->toDateString() : (string) $date)->unique()->count(),
             'estimated_gross_payroll' => round((float) $rows->sum(fn (array $row): float => (float) $row['estimated_gross_amount']), 2),
             'estimated_overtime_pay' => round((float) $rows->sum(fn (array $row): float => (float) $row['estimated_overtime_amount']), 2),
         ];
@@ -79,6 +85,9 @@ class AttendanceMonthlyReportService
         ];
     }
 
+    /**
+     * @param array<string, mixed> $report
+     */
     public function toCsv(array $report): Response
     {
         $handle = fopen('php://temp', 'r+');
@@ -110,23 +119,34 @@ class AttendanceMonthlyReportService
         $csv = stream_get_contents($handle);
         fclose($handle);
 
+        $reportMonth = (string) ($report['data']['period']['month'] ?? 'export');
+
         return response($csv ?: '', 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="attendance-monthly-report-'.$report['data']['period']['month'].'.csv"',
+            'Content-Disposition' => 'attachment; filename="attendance-monthly-report-'.$reportMonth.'.csv"',
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $report
+     */
     public function toPdf(array $report): Response
     {
         $html = view('pdf.attendance-monthly-report', [
             'report' => $report['data'],
         ])->render();
 
+        $reportMonth = (string) ($report['data']['period']['month'] ?? 'export');
+
         return Pdf::loadHTML($html)
             ->setPaper('a4')
-            ->download('attendance-monthly-report-'.$report['data']['period']['month'].'.pdf');
+            ->download('attendance-monthly-report-'.$reportMonth.'.pdf');
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     * @return array<string, mixed>
+     */
     private function employeeRow(Employee $employee, Collection $logs): array
     {
         return [
@@ -135,7 +155,7 @@ class AttendanceMonthlyReportService
             'name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
             'worked_days' => $logs->filter(fn (AttendanceLog $log): bool => $log->check_in !== null)
                 ->pluck('date')
-                ->map(fn ($date): string => $date->format('Y-m-d'))
+                ->map(fn ($date): string => $date instanceof Carbon ? $date->toDateString() : (string) $date)
                 ->unique()
                 ->count(),
             'worked_hours' => round((float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->hours_worked), 2),
@@ -149,6 +169,9 @@ class AttendanceMonthlyReportService
         ];
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     */
     private function estimatedGrossAmount(Employee $employee, Collection $logs): float
     {
         $workedHours = (float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->hours_worked);
@@ -160,6 +183,9 @@ class AttendanceMonthlyReportService
         return round($workedHours * $this->estimatedHourlyRate($employee), 2);
     }
 
+    /**
+     * @param Collection<int, AttendanceLog> $logs
+     */
     private function estimatedOvertimeAmount(Employee $employee, Collection $logs): float
     {
         $overtimeHours = (float) $logs->sum(fn (AttendanceLog $log): float => (float) $log->overtime_hours);
