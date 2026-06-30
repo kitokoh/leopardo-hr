@@ -169,7 +169,9 @@ class TaskController extends Controller
             abort(404);
         }
 
+        /** @var array{content: string} $data */
         $data = $request->validate(['content' => ['required', 'string', 'max:5000']]);
+        /** @var TaskComment $comment */
         $comment = TaskComment::create(['company_id' => $actor->company_id, 'task_id' => $task->id, 'author_id' => $actor->id, 'content' => $data['content']]);
 
         return (new TaskCommentResource($comment))
@@ -181,7 +183,7 @@ class TaskController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $timezone = currentCompany()->timezone;
+        $timezone = (string) currentCompany()->timezone;
         $today = Carbon::now($timezone)->toDateString();
 
         $query = Task::query()

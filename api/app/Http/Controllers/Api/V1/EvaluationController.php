@@ -79,6 +79,7 @@ class EvaluationController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+        /** @var array{employee_id: int, period: string, score?: int|null, criteria?: array<mixed>|null, strengths?: string|null, improvements?: string|null, overall_comment?: string|null} $data */
         $data = $request->validated();
 
         if (Evaluation::where('employee_id', $data['employee_id'])->where('evaluator_id', $actor->id)->where('period', $data['period'])->exists()) {
