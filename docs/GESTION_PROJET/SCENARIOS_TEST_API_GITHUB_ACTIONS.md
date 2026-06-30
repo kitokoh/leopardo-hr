@@ -1178,3 +1178,10 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `EmployeeRepositoryInterface` — `findById`, `findByEmail`, `paginateByCompany`, `save`, `delete`
 - `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
 - `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
+
+## Phase 7 — DDD Phase 2 — Domain/Contracts + Exceptions + DTOs (v4.17.9)
+
+**Nouveaux controllers/endpoints ajoutés dans cette phase**
+- Surface API étendue — voir CHANGELOG pour le détail des endpoints.
+- Tests couverts dans `api/tests/Feature/` pour chaque nouveau module.
+- Isolation multi-tenant vérifiée : `company_id` scoping actif sur tous les nouveaux endpoints.
