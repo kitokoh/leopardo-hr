@@ -2,6 +2,29 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [4.18.0] - 2026-06-30
+
+### Added
+- **Edge — Nœuds offline (Phase 3.x + 5.x)** : Infrastructure complète pour le déploiement de nœuds Edge offline Leopardo.
+  - `front/mobile_apps/leopardo_core` : dépendances Drift ajoutées (`drift`, `drift_flutter`, `sqlite3_flutter_libs`, `drift_dev`, `build_runner`) + base de données locale `EdgeDatabase` (4 tables : `AttendanceLogs`, `EmployeeCache`, `SyncQueue`, `EdgeConfig`) avec code généré `edge_database.g.dart`.
+  - `api/.env.example` : 9 nouvelles variables `EDGE_*` (`EDGE_ENABLED`, `EDGE_NODE_ID`, `EDGE_TOKEN`, `EDGE_LICENSE_PRIVATE_KEY`, `EDGE_LICENSE_PUBLIC_KEY`, `EDGE_LICENSE_TTL_DAYS`, `CLOUD_API_URL`, `EDGE_SILENCE_THRESHOLD_MINUTES`, `EDGE_LOCAL_URL`).
+  - `front/web-offline/` : PWA complète service-worker Cache-First + Background Sync, manifest installable, client IDB offline queue avec `flushOfflineQueue()`.
+  - `front/admin-dashboard` : Vue `EdgeNodesView.vue` (liste nœuds, statut online/offline, force sync, revoke, polling 60s) + route `/edge`.
+  - `front/zkteco-kiosk` : Support mode Edge dans `config.example.json` (bloc `edge{}`) et routing dynamique `edge_first/cloud_first/edge_only` dans `app.js`.
+  - `api/app/Console/Commands/DetectSilentEdgeNodes.php` : Commande `edge:detect-silent-nodes` (--threshold, --dry-run) planifiée toutes les 5 min.
+  - `api/app/Notifications/EdgeNodeSilentAlert.php` : Notification mail `ShouldQueue` envoyée aux managers en cas de nœud silencieux.
+  - `api/app/Http/Controllers/Api/V1/EdgeController.php` : Endpoints `GET /edge/install.sh`, `GET /edge/download/docker-compose.yml`, `GET /edge/license-public-key`, `POST /edge/heartbeat`, gestion nœuds platform.
+  - `api/routes/modules/edge.php` : Routes Edge complètes (publiques + platform super-admin).
+  - `api/config/edge.php` : Configuration centralisée `edge.*`.
+  - `edge/` : Image Docker `leopardo/edge-api:1.0.0` (FrankenPHP + PHP 8.4 + SQLite + PWA embarquée), `docker-compose.yml`, `Caddyfile.edge`, `docker-entrypoint.edge.sh`, `README.md`.
+
+### Changed
+- `api/routes/console.php` : Ajout planification `edge:detect-silent-nodes` (everyFiveMinutes, withoutOverlapping, onOneServer).
+- `api/routes/api.php` : Inclusion `routes/modules/edge.php`.
+
+### Database
+- Migration `2026_06_30_000001_create_edge_nodes_table` : table `edge_nodes` (node_id, company_id, status, last_seen_at, pending_count, license_valid, license_expires_at, alert_muted, revoked_at).
+
 ## [4.17.9] - 2026-06-29
 
 ### Added

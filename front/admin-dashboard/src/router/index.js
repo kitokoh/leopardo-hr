@@ -258,6 +258,15 @@ const routes = [
           title: 'Administration Growth',
           icon: 'ArrowTrendingUpIcon'
         }
+      },
+      {
+        path: '/edge',
+        name: 'edge',
+        component: () => import('@/views/edge/EdgeNodesView.vue'),
+        meta: {
+          title: 'Edge Nodes',
+          icon: 'ServerIcon'
+        }
       }
     ]
   },
