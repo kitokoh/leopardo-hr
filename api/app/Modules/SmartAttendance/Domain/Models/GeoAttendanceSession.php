@@ -33,6 +33,11 @@ use Illuminate\Support\Carbon;
  * @property string|null $validation_note
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Employee|null          $employee
+ * @property-read Site|null              $site
+ * @property-read Employee|null          $validatedBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, EmployeeLocationEvent> $locationEvents
+ * @property-read AttendanceLog|null     $attendanceLog
  */
 class GeoAttendanceSession extends Model
 {

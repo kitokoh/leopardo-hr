@@ -258,12 +258,12 @@ export function getClientModuleAccess(user?: StoredAuthUser | null): ClientModul
 
 export function getModuleAccessForPath(pathname: string, user?: StoredAuthUser | null): ClientModuleAccess | null {
   // Try exact match first
-  let moduleKey = ROUTE_TO_MODULE[pathname];
+  let moduleKey: ClientModuleKey | undefined = ROUTE_TO_MODULE[pathname];
 
   // Fall back to prefix match for nested routes (e.g. /smart-attendance/sessions)
   if (!moduleKey) {
     const matched = Object.entries(ROUTE_TO_MODULE).find(([route]) => pathname.startsWith(route + '/'));
-    moduleKey = matched?.[1] ?? undefined;
+    moduleKey = matched?.[1];
   }
 
   if (!moduleKey) {
