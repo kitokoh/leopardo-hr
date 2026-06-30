@@ -70,6 +70,11 @@
 
 ### Changed
 - **Absence — Migration controller vers module DDD** : `App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController` remplace `App\Modules\Planning\Interfaces\Api\V1\AbsenceController` (fichier orphelin supprimé). Le controller dispose maintenant de : RBAC complet (employee vs manager), `AbsenceResource`, filtres month/year/status, pagination configurable, méthode `destroy`. Correction du double-prefix `v1/v1` dans `absence.php` (les routes étaient mortes) : les routes sont maintenant correctement montées sous `/api/v1/absences`.
+## [4.17.5-fix3] - 2026-06-30
+
+### Fixed
+- **Smart Attendance — Migration FK** : Suppression de la FK explicite `employees` dans `create_employee_attendance_preferences_table` — évitait une erreur `column does not exist` en CI si la migration s'exécute avant `employees`.
+- **Frontend TypeScript** : `client-features.ts:266` — typage explicite `let moduleKey: ClientModuleKey | undefined` pour corriger `Type 'ClientModuleKey | undefined' is not assignable to type 'ClientModuleKey'`.
 
 ## [4.17.5] - 2026-06-29
 
