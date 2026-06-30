@@ -43,6 +43,17 @@
   - Routes `dashboard`, `growth`, `hr_app`, `integrations`, `planning`, `sso`, `tracking`, `user` : migration legacy routes.
   - `openapi.yaml` : endpoints Growth et Onboarding ajoutés.
   - `api/bootstrap/providers.php` : GrowthServiceProvider + OnboardingServiceProvider enregistrés.
+## [4.18.1] - 2026-06-30
+
+### Fixed
+- **PHPStan vagues 1→4** : Réduction de ~1000 erreurs mixed-types sur les modules Cameras, HR, Payroll, Platform, Services.
+  - `api/phpstan.neon` : Extension Larastan activée + niveaux progressifs.
+  - `CameraService` : Annotations `@var`, `@param`, `@return` sur les méthodes de traitement vidéo.
+  - `AbsenceService`, `AttendanceService`, `AttendanceAnomalyService`, `AttendanceMonthlyReportService` : Types explicites sur collections et retours.
+  - `FeatureRegistry` : Suppression des `mixed` sur `registry[]`.
+  - `PayrollCalculator` : Types sur éléments de calcul.
+  - `PlatformCompanyHealthService` : Annotations métriques.
+  - `EvaluationController`, `HrReportController`, `PlatformCompanyRequestController`, `TaskController` : Types de retour explicites.
 
 ## [4.18.0] - 2026-06-30
 

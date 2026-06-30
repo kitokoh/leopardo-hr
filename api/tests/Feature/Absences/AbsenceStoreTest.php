@@ -170,7 +170,8 @@ class AbsenceStoreTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonPath('data.days_count', 5);
 
-        $absence = Absence::query()->first();
+        /** @var Absence $absence */
+        $absence = Absence::query()->firstOrFail();
         $this->assertSame(5, $absence->days_count);
     }
 
