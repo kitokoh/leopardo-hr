@@ -1,0 +1,39 @@
+{
+    frankenphp
+    {$CADDY_GLOBAL_OPTIONS}
+}
+
+# Nœud Edge Leopardo — accessible via mDNS ou IP LAN
+{$SERVER_NAME:leopardo.local, :80} {
+    encode zstd br gzip
+
+    # --- PWA web offline : accès via /
+    root * /app/public
+    file_server
+
+    # --- API Laravel : /api/*
+    @api path /api/*
+    handle @api {
+        root * /app/public
+        php_server
+    }
+
+    # --- App shell pour la PWA (SPA fallback)
+    @pwa {
+        not path /api/*
+        not path /edge-web/src/*
+        not path /edge-web/sw.js
+        not path /edge-web/manifest.json
+    }
+    handle @pwa {
+        try_files {path} /edge-web/index.html
+        file_server
+    }
+
+    # Logs compacts Edge
+    log {
+        output stderr
+        format console
+        level INFO
+    }
+}
