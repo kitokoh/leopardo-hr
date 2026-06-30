@@ -1201,7 +1201,7 @@ Les anciens contrôleurs dans `App\Http\Controllers\Api\V1\` ont été supprimé
 - `DepartmentRepositoryInterface` — `findById`, `allByCompany`, `save`, `delete`
 - `ContractRepositoryInterface` — `findById`, `activeByEmployee`, `save`, `terminate`
 
-## Phase 7 — DDD Phase 2 — Domain/Contracts + Exceptions + DTOs (v4.17.9)
+## Phase 8 — DDD Phase 3 — Controller Migration + Notification fixes (v4.17.9-fix2)
 
 **Nouveaux controllers/endpoints ajoutés dans cette phase**
 - Surface API étendue — voir CHANGELOG pour le détail des endpoints.

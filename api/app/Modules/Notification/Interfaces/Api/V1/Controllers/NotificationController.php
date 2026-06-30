@@ -7,6 +7,7 @@ namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Models\CommunicationEvent;
 use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -57,7 +58,27 @@ class NotificationController extends Controller
     }
 
     /**
-     * Mark a single notification as read (PUT /notifications/{id}/read).
+     * GET /notifications/unread — Returns only unread notifications.
+     */
+    public function unread(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $notifications = Notification::query()
+            ->where('company_id', $user->company_id)
+            ->where('employee_id', $user->id)
+            ->where('is_read', false)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate(20);
+
+        return NotificationResource::collection($notifications)
+            ->response();
+    }
+
+    /**
+     * Mark a single notification as read (PATCH|PUT /notifications/{id}/read).
      */
     public function markRead(Request $request, string $id): JsonResponse
     {
@@ -73,6 +94,17 @@ class NotificationController extends Controller
                 ->firstOrFail();
 
             $notification->markAsRead();
+
+            // Track the read event for communication analytics
+            CommunicationEvent::create([
+                'company_id'      => $user->company_id,
+                'employee_id'     => $user->id,
+                'notification_id' => $notification->id,
+                'event_name'      => 'notification_read',
+                'channel'         => 'app',
+                'status'          => 'delivered',
+                'occurred_at'     => now(),
+            ]);
 
             return $notification->fresh();
         });
@@ -91,11 +123,34 @@ class NotificationController extends Controller
         $user = $request->user();
 
         DB::transaction(function () use ($user): void {
+            $unread = Notification::query()
+                ->where('company_id', $user->company_id)
+                ->where('employee_id', $user->id)
+                ->where('is_read', false)
+                ->get();
+
+            if ($unread->isEmpty()) {
+                return;
+            }
+
             Notification::query()
                 ->where('company_id', $user->company_id)
                 ->where('employee_id', $user->id)
                 ->where('is_read', false)
                 ->update(['is_read' => true, 'read_at' => now()]);
+
+            $now = now();
+            foreach ($unread as $notification) {
+                CommunicationEvent::create([
+                    'company_id'      => $user->company_id,
+                    'employee_id'     => $user->id,
+                    'notification_id' => $notification->id,
+                    'event_name'      => 'notification_read',
+                    'channel'         => 'app',
+                    'status'          => 'delivered',
+                    'occurred_at'     => $now,
+                ]);
+            }
         });
 
         return response()->json(['message' => 'All notifications marked as read.']);
