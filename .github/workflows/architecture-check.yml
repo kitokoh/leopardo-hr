@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "Checking Clean Architecture module structure..."
           ERRORS=0
-          for MODULE in HR Payroll Attendance Planning Recruitment Cabinet Fleet Billing; do
+          for MODULE in HR Payroll Attendance Planning Recruitment Cabinet Fleet Billing Cameras Absence Expense Growth Platform Onboarding Training Notification; do
             BASE="api/app/Modules/$MODULE"
             for LAYER in Application Domain Infrastructure Interfaces Providers; do
               if [ ! -d "$BASE/$LAYER" ]; then
