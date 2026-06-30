@@ -4429,24 +4429,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
 
 		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\User\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\UserEmployeeLink\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
-
-		-
-			message: '#^Call to an undefined static method App\\Core\\Auth\\Domain\\Models\\UserEmployeeLink\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Http/Controllers/Api/V1/UserEmployeeLinkController.php
-
-		-
 			message: '#^Cannot access property \$id on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -5851,78 +5833,6 @@ parameters:
 			path: app/Http/Requests/Api/V1/UpdateProfileRequest.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$check_in\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$check_out\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$employee\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$employee_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$hours_worked\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$late_minutes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$method\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$overtime_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$source_device_code\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\AttendanceLogResource\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -5941,36 +5851,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
 
 		-
-			message: '#^Cannot access property \$first_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Cannot access property \$last_name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Cannot access property \$matricule on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
-			message: '#^Cannot access property \$photo_path on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
-
-		-
 			message: '#^Cannot call method format\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -5983,66 +5863,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_in\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$check_out\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$hours_worked\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$late_minutes\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$overtime_hours\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\AttendanceLog\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
 			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -6051,12 +5871,6 @@ parameters:
 		-
 			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
-			message: '#^Cannot access property \$timezone on mixed\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
 
@@ -6115,126 +5929,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$address_line\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$biometric_face_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$biometric_fingerprint_enabled\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$emergency_contact_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$emergency_contact_phone\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$manager_role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$matricule\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$middle_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$personal_email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$phone\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$postal_code\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$preferred_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$role\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
 			message: '#^Call to an undefined method App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:hasManagerRole\(\)\.$#'
 			identifier: method.notFound
 			count: 5
@@ -6249,36 +5943,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:isManager\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Cannot access property \$currency on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Cannot access property \$id on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Cannot access property \$language on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Cannot access property \$name on mixed\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Cannot access property \$timezone on mixed\.$#'
-			identifier: property.nonObject
 			count: 1
 			path: app/Http/Resources/Api/V1/EmployeeResource.php
 
