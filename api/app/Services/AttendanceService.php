@@ -48,8 +48,8 @@ class AttendanceService
         $lateMinutes = 0;
 
         if ($schedule) {
-            $checkInLocal = $nowUtc->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $nowUtc->copy()->setTimezone((string) $company->timezone);
+            $startLocal = Carbon::parse($today.' '.(string) $schedule->start_time, (string) $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -132,8 +132,8 @@ class AttendanceService
         $log->punch_meta = array_merge($log->punch_meta ?? [], $punchMeta);
 
         if ($log->status === 'incomplete' && $schedule) {
-            $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $log->check_in->copy()->setTimezone((string) $company->timezone);
+            $startLocal = Carbon::parse($today.' '.(string) $schedule->start_time, (string) $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -228,8 +228,8 @@ class AttendanceService
         $lateMinutes = 0;
 
         if ($schedule) {
-            $checkInLocal = $occurredAt->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $occurredAt->copy()->setTimezone((string) $company->timezone);
+            $startLocal = Carbon::parse($today.' '.(string) $schedule->start_time, (string) $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -276,8 +276,8 @@ class AttendanceService
         $log->status = 'incomplete';
 
         if ($log->check_in && $schedule && $today) {
-            $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $log->check_in->copy()->setTimezone((string) $company->timezone);
+            $startLocal = Carbon::parse($today.' '.(string) $schedule->start_time, (string) $company->timezone);
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
